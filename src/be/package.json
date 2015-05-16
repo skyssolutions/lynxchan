@@ -1,0 +1,11 @@
+{
+  "name": "LynxChan",
+  "version": "0.0.1",
+  "devDependencies": {
+    "mongodb": "latest",
+    "imagemagick": "latest",
+    "jsdom":"latest"
+  },
+  "author": "Stephen Lynx",
+  "license": "MIT"
+}
