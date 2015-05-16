@@ -1,0 +1,15 @@
+boards:
+    boardUrl**: url of the board.
+
+----------------------------------------------------------------------------------------
+
+posts:
+    boardUrl*/***: url of the board the post belongs to.
+    postId(Number)***: unique id of the post inside the board.
+    parent(Number)*: id of another post of where this post belongs to. If undefined, means the post is a thread.
+
+----------------------------------------------------------------------------------------
+ 
+*: duplicated data, foreign key.
+**: unique key
+***:part of a unique key combination.

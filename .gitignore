@@ -1,2 +1,5 @@
 /src/be/node_modules
+/src/be/settings
+/src/be/server.key
+/src/be/server.pem
 /src/fe
