@@ -15,7 +15,7 @@ var fePath;
 
 // boot variables
 var booted = false;
-var debug = process.argv.toString().indexOf('debug') > -1;
+var debug = boot.debug();
 
 // functions
 function main(req, res) {

@@ -19,6 +19,16 @@ var generalSettings;
 var templateSettings;
 var fePath;
 
+var debug = process.argv.toString().indexOf('-d') > -1;
+debug = debug || process.argv.toString().indexOf('--debug') > -1;
+
+var reload = process.argv.toString().indexOf('-r') > -1;
+reload = reload || process.argv.toString().indexOf('--reload') > -1;
+
+exports.debug = function() {
+  return debug;
+};
+
 exports.getDbSettings = function() {
 
   return dbSettings;
@@ -95,26 +105,98 @@ function generateFrontPage() {
 
 }
 
+function regenerateAll() {
+
+  generator.all(function regeneratedAll(error) {
+    if (error) {
+      console.log(error);
+    } else {
+      bootWorkers();
+    }
+  });
+
+}
+
+function checkNotFound(files) {
+
+  if (files.indexOf('/404.html/') === -1) {
+
+    generator.notFound(function generated(error) {
+      if (error) {
+        console.log(error);
+
+      } else {
+        bootWorkers();
+      }
+
+    });
+
+  } else {
+    bootWorkers();
+  }
+
+}
+
+function checkFrontPage(files) {
+
+  if (files.indexOf('/') === -1) {
+    generator.frontPage(function generated(error) {
+      if (error) {
+        console.log(error);
+
+      } else {
+        checkNotFound(files);
+      }
+
+    });
+  } else {
+    checkNotFound(files);
+  }
+
+}
+
 // we need to check if the default pages can be found
 function checkForDefaultPages() {
 
-  var files = db.files();
   generator = require('./engine/generator');
   generator.loadTemplates();
 
-  // TODO update when more default pages are defined
-  files.findOne({
-    filename : '/'
+  if (reload) {
+    regenerateAll();
+    return;
+  }
+
+  var files = db.files();
+
+  files.aggregate({
+    $match : {
+      filename : {
+        $in : [ '/', '/404.html/' ]
+      }
+    }
   }, {
-    uploadDate : 1,
-    _id : 0
-  }, function gotFile(error, file) {
+    $project : {
+      filename : 1,
+      _id : 0
+    }
+  }, {
+    $group : {
+      _id : 1,
+      pages : {
+        $push : '$filename'
+      }
+    }
+  }, function gotFiles(error, files) {
     if (error) {
       console.log(error);
-    } else if (!file) {
-      generateFrontPage();
     } else {
-      bootWorkers();
+
+      if (files.length) {
+        checkFrontPage(files[0].pages);
+      } else {
+        regenerateAll();
+      }
+
     }
   });
 

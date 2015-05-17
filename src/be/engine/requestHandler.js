@@ -6,14 +6,15 @@
 var indexString = 'index.html';
 var url = require('url');
 var miscOps = require('./miscOps');
-var debug = process.argv.toString().indexOf('debug') > -1;
+var verbose = require('../boot').getGeneralSettings().verbose;
 var gridFs = require('./gridFsHandler');
+var staticHandler = require('./staticHandler');
 
 function outputError(error, res) {
 
   var header = miscOps.corsHeader('text/plain');
 
-  if (debug) {
+  if (verbose) {
     console.log(error);
   }
 
@@ -30,7 +31,7 @@ function outputError(error, res) {
 
     res.write('500\n' + error.toString());
 
-    if (!debug) {
+    if (!verbose) {
       console.log(error);
     }
 
@@ -45,15 +46,18 @@ function outputGfsFile(req, res) {
 
   var pathName = url.parse(req.url).pathname;
 
+  // these rules are to conform with how the files are saved on gridfs
   if (pathName.length > 1) {
 
     var delta = pathName.length - indexString.length;
 
+    // if it ends with index.html, strip it
     if (pathName.indexOf(indexString, delta) !== -1) {
 
       pathName = pathName.substring(0, pathName.length - indexString.length);
 
-    } else if (pathName.indexOf('/', pathName.length - 1) !== -1) {
+      // if it doesn't end with a slash, add it
+    } else if (pathName.indexOf('/', pathName.length - 1) === -1) {
       pathName += '/';
     }
   }
@@ -64,6 +68,16 @@ function outputGfsFile(req, res) {
     }
   });
 
+}
+
+function outputStaticFile(req, res) {
+
+  staticHandler.outputFile(req, res, function fileOutput(error) {
+    if (error) {
+      outputError(error, res);
+    }
+
+  });
 }
 
 exports.handle = function(req, res) {
@@ -81,10 +95,9 @@ exports.handle = function(req, res) {
     req.connection.destroy();
   } else if (subdomain.length && subdomain[0] === 'form') {
     req.connection.destroy();
-  } else if (subdomain.length && subdomain[0] === 'media') {
-    req.connection.destroy();
+  } else if (subdomain.length && subdomain[0] === 'static') {
+    outputStaticFile(req, res);
   } else {
-
     outputGfsFile(req, res);
 
   }

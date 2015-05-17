@@ -6,8 +6,8 @@ Latest version of all them.
 
 boot.js is the main file, run it using io.js to start the system. Keep in mind that if you ran setup.sh, you can just run the lynxchan command or start the lynxchan service.
 It accepts the following arguments:
-debug: for development. Will not cache static files and will reload any module besides the ones directly.
-reload: will rebuild all pages on boot.
+--debug, -d: for development. Will not cache static files and will reload any module besides the ones directly under the be directory.
+--reload, -r: will rebuild all pages on boot.
 
 The json api files will be stored on the api directory and acessed by the same subdomain. api.domain/function will use the file api/function.js.
 The form api for support of users without js because they are retarded tin foilers are in the form directory and work the same as the api directory.
@@ -20,6 +20,7 @@ A file called templateSettings.json should be located on the fe directory pointi
 index: template for the site's main page.
 boardPage: template for the pages of the board.
 threadPage: template for the page of a thread.
+notFoundPage: template for the 404 page.
 
 Settings files that goes into the settings directory:
 general.json:
@@ -40,9 +41,9 @@ login is option and password will only be used if login is informed.
 Settings files must contain a json object where each key defined here will have its corresponding value.
 
 Metadata of files on gridfs will have the following values:
-
 boardUrl: board to which the file belongs to. If undefined, file is a default site file.
 type: type of file. May hold one of the following values:
     board: file is a board page.
     thread: file is a thread page.
+status(Number): http status to be used when outputting this page. Defaults to 200 when outputting.
 

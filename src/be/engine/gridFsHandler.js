@@ -7,8 +7,10 @@ var files = db.files();
 var conn = db.conn();
 var files = db.files();
 var mongo = require('mongodb');
-var disable304 = require('../boot').getGeneralSettings().disable304;
+var boot = require('../boot');
+var disable304 = boot.getGeneralSettings().disable304;
 var miscOps = require('./miscOps');
+var verbose = boot.getGeneralSettings().verbose;
 
 // start of writing data
 function writeDataOnOpenFile(gs, data, callback) {
@@ -23,6 +25,10 @@ function writeDataOnOpenFile(gs, data, callback) {
 }
 
 exports.writeData = function(data, destination, mime, meta, callback) {
+
+  if (verbose) {
+    console.log('Writing data on gridfs under \'' + destination + '\'');
+  }
 
   var gs = mongo.GridStore(conn, destination, 'w', {
     'content_type' : mime,
@@ -64,7 +70,7 @@ function streamFile(stats, callback, res) {
   var header = miscOps.corsHeader(stats.contentType);
   header['last-modified'] = stats.uploadDate.toString();
 
-  res.writeHead(200, header);
+  res.writeHead(stats.metadata.status || 200, header);
 
   var gs = mongo.GridStore(conn, stats.filename, 'r');
 
@@ -80,7 +86,21 @@ function streamFile(stats, callback, res) {
 
 }
 
-exports.outputFile = function(file, req, res, callback) {
+function shouldOutput304(lastSeen, filestats) {
+
+  var mTimeMatches = lastSeen === filestats.uploadDate.toString();
+
+  return mTimeMatches && !disable304 && !filestats.metadata.status;
+}
+
+// retry means it has already failed to get a page and now is trying to get the
+// 404 page. It prevents infinite recursion
+exports.outputFile = function(file, req, res, callback, retry) {
+
+  if (verbose) {
+    console.log('Outputting \'' + file + '\' from gridfs');
+
+  }
 
   var lastSeen = req.headers ? req.headers['if-modified-since'] : null;
 
@@ -88,6 +108,7 @@ exports.outputFile = function(file, req, res, callback) {
     filename : file
   }, {
     uploadDate : 1,
+    'metadata.status' : 1,
     contentType : 1,
     filename : 1,
     _id : 0
@@ -95,10 +116,19 @@ exports.outputFile = function(file, req, res, callback) {
     if (error) {
       callback(error);
     } else if (!fileStats) {
-      callback({
-        code : 'ENOENT'
-      });
-    } else if (lastSeen === fileStats.uploadDate.toString() && !disable304) {
+      if (retry) {
+        callback({
+          code : 'ENOENT'
+        });
+      } else {
+        exports.outputFile('/404.html/', req, res, callback, true);
+      }
+
+    } else if (shouldOutput304(lastSeen, fileStats)) {
+      if (verbose) {
+        console.log('304');
+
+      }
       res.writeHead(304);
       res.end();
     } else {
