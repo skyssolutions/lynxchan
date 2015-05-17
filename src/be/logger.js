@@ -1,3 +1,5 @@
+'use strict';
+
 // Creates an UCT formated date in 'yyyy-MM-dd' format
 exports.formatedDate = function(time) {
   time = time || new Date();

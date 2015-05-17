@@ -1,11 +1,15 @@
 #!/usr/bin/env iojs
 
-//Starting point of the application.
-//Holds the loaded settings.
-//Controls the workers.
+'use strict';
+
+// Starting point of the application.
+// Holds the loaded settings.
+// Controls the workers.
 
 var cluster = require('cluster');
+var db = require('./db');
 var fs = require('fs');
+var generator;
 
 var MINIMUM_WORKER_UPTIME = 1000;
 var forkTime = {};
@@ -13,8 +17,10 @@ var forkTime = {};
 var dbSettings;
 var generalSettings;
 var templateSettings;
+var fePath;
 
 exports.getDbSettings = function() {
+
   return dbSettings;
 };
 
@@ -24,6 +30,10 @@ exports.getGeneralSettings = function() {
 
 exports.getTemplateSettings = function() {
   return templateSettings;
+};
+
+exports.getFePath = function() {
+  return fePath;
 };
 
 exports.loadSettings = function() {
@@ -39,35 +49,16 @@ exports.loadSettings = function() {
   generalSettings.address = generalSettings.address || '127.0.0.1';
   generalSettings.port = generalSettings.port || 8080;
 
-  var fePath = generalSettings.fePath || __dirname + '/../fe';
+  fePath = generalSettings.fePath || __dirname + '/../fe';
 
   var templateSettingsPath = fePath + '/templateSettings.json';
 
   templateSettings = JSON.parse(fs.readFileSync(templateSettingsPath));
 
-  var mandatoryTemplates = [ 'index', 'boardPage', 'threadPage' ];
-
-  for (var i = 0; i < mandatoryTemplates.length; i++) {
-
-    var templateName = mandatoryTemplates[i];
-
-    if (!templateSettings[templateName]) {
-
-      throw 'Missing template setting ' + templateName;
-    }
-
-  }
-
 };
 
-try {
-  exports.loadSettings();
-} catch (error) {
-  console.log(error);
-  return;
-}
-
-if (cluster.isMaster) {
+// after everything is all right, call this function to start the workers
+function bootWorkers() {
 
   for (var i = 0; i < require('os').cpus().length; i++) {
     cluster.fork();
@@ -89,6 +80,63 @@ if (cluster.isMaster) {
     }
 
     delete forkTime[worker.id];
+  });
+}
+
+function generateFrontPage() {
+
+  generator.frontPage(function generated(error) {
+    if (error) {
+      console.log(error);
+    } else {
+      bootWorkers();
+    }
+  });
+
+}
+
+// we need to check if the default pages can be found
+function checkForDefaultPages() {
+
+  var files = db.files();
+  generator = require('./engine/generator');
+  generator.loadTemplates();
+
+  // TODO update when more default pages are defined
+  files.findOne({
+    filename : '/'
+  }, {
+    uploadDate : 1,
+    _id : 0
+  }, function gotFile(error, file) {
+    if (error) {
+      console.log(error);
+    } else if (!file) {
+      generateFrontPage();
+    } else {
+      bootWorkers();
+    }
+  });
+
+}
+
+try {
+  exports.loadSettings();
+} catch (error) {
+  console.log(error);
+  return;
+}
+
+if (cluster.isMaster) {
+
+  db.init(function bootedDb(error) {
+
+    if (error) {
+      console.log(error);
+    } else {
+      checkForDefaultPages();
+    }
+
   });
 
 } else {

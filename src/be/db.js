@@ -1,3 +1,8 @@
+'use strict';
+
+// takes care of the database.
+// initializes and provides pointers to collections or the connection pool
+
 var indexesSet = 0;
 
 var cachedDb;
@@ -6,6 +11,7 @@ var maxIndexesSet = 2;
 
 var cachedPosts;
 var cachedBoards;
+var cachedFiles;
 
 function indexSet(callback) {
   indexesSet++;
@@ -54,6 +60,10 @@ exports.conn = function() {
   return cachedDb;
 };
 
+exports.files = function() {
+  return cachedFiles;
+};
+
 exports.posts = function() {
   return cachedPosts;
 };
@@ -69,6 +79,8 @@ function checkCollections(db, callback) {
   initBoards(callback);
 
   initPosts(callback);
+
+  cachedFiles = db.collection('fs.files');
 
 }
 

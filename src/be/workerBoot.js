@@ -1,6 +1,8 @@
-//Continues the boot of the application on worker treads.
-//Initializes the systems
-//Controls connection listeners
+'use strict';
+
+// Continues the boot of the application on worker treads.
+// Initializes the systems
+// Controls connection listeners
 
 var logger = require('./logger');
 var boot = require('./boot');

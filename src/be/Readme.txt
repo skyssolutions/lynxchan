@@ -39,3 +39,10 @@ password: password to use on the database.
 login is option and password will only be used if login is informed.
 Settings files must contain a json object where each key defined here will have its corresponding value.
 
+Metadata of files on gridfs will have the following values:
+
+boardUrl: board to which the file belongs to. If undefined, file is a default site file.
+type: type of file. May hold one of the following values:
+    board: file is a board page.
+    thread: file is a thread page.
+
