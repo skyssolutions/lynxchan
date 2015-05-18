@@ -1,0 +1,7 @@
+This document specifies the required characteristics of each template. The keys used in the templateSettings.json will be used to refer to them. The name of the element should be used as the id.
+
+index:
+Elements:
+    divBoards:
+        type: div.
+        description: contains the listing of boards.

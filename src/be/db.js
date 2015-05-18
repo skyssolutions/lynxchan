@@ -26,7 +26,7 @@ function initPosts(callback) {
 
   cachedPosts.ensureIndex({
     postId : 1,
-    boardUrl : 1
+    boardUri : 1
   }, {
     unique : true
   }, function setIndex(error, index) {
@@ -43,7 +43,7 @@ function initBoards(callback) {
   cachedBoards = cachedDb.collection('boards');
 
   cachedBoards.ensureIndex({
-    boardUrl : 1
+    boardUri : 1
   }, {
     unique : true
   }, function setIndex(error, index) {

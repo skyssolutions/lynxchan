@@ -25,6 +25,9 @@ debug = debug || process.argv.toString().indexOf('--debug') > -1;
 var reload = process.argv.toString().indexOf('-r') > -1;
 reload = reload || process.argv.toString().indexOf('--reload') > -1;
 
+var noDaemon = process.argv.toString().indexOf('-nd') > -1;
+noDaemon = noDaemon || process.argv.toString().indexOf('--no-daemon') > -1;
+
 exports.debug = function() {
   return debug;
 };
@@ -69,6 +72,10 @@ exports.loadSettings = function() {
 
 // after everything is all right, call this function to start the workers
 function bootWorkers() {
+
+  if (noDaemon) {
+    return;
+  }
 
   for (var i = 0; i < require('os').cpus().length; i++) {
     cluster.fork();
@@ -189,14 +196,10 @@ function checkForDefaultPages() {
   }, function gotFiles(error, files) {
     if (error) {
       console.log(error);
+    } else if (files.length) {
+      checkFrontPage(files[0].pages);
     } else {
-
-      if (files.length) {
-        checkFrontPage(files[0].pages);
-      } else {
-        regenerateAll();
-      }
-
+      regenerateAll();
     }
   });
 

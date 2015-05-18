@@ -1,4 +1,5 @@
 LynxChan:
+
 LynxChan is a chan engine designed with the following goals in mind:
 1- Support users not using javascript for the basic functions.
 2- Provide every functionality through a json based RPC.
@@ -14,5 +15,10 @@ Coding standard: https://github.com/felixge/node-style-guide
 The front-end files will not be included in this repository.
 More information can be found at src/be/Readme.txt
 
-The aux doc contains scripts for installation. When running setup.sh you can provide the arguments systemd or upstart to select one of these two init systems.
+The aux directory contains scripts for installation. When running setup.sh you can provide the arguments systemd or upstart to select one of these two init systems.
 After the setup a service called lynxchan will be installed as well a command.
+
+The doc directory contains general documentation.
+
+*WHAT IS THE INTERNET? WHAT IS A CHAN?*
+8chan.co

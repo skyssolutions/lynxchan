@@ -8,6 +8,7 @@ boot.js is the main file, run it using io.js to start the system. Keep in mind t
 It accepts the following arguments:
 --debug, -d: for development. Will not cache static files and will reload any module besides the ones directly under the be directory.
 --reload, -r: will rebuild all pages on boot.
+--no-daemon, -nd: will not start listening. For rebuilding pages while having a server running.
 
 The json api files will be stored on the api directory and acessed by the same subdomain. api.domain/function will use the file api/function.js.
 The form api for support of users without js because they are retarded tin foilers are in the form directory and work the same as the api directory.
@@ -41,9 +42,12 @@ login is option and password will only be used if login is informed.
 Settings files must contain a json object where each key defined here will have its corresponding value.
 
 Metadata of files on gridfs will have the following values:
-boardUrl: board to which the file belongs to. If undefined, file is a default site file.
+boardUri: board to which the file belongs to. If undefined, file is a default site file.
+postId(Number): id of the post the file belongs to.
+originalName: original name of the file.
 type: type of file. May hold one of the following values:
     board: file is a board page.
     thread: file is a thread page.
+    media: file is a media file.
 status(Number): http status to be used when outputting this page. Defaults to 200 when outputting.
 

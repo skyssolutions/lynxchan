@@ -1,10 +1,14 @@
 boards:
-    boardUrl**: url of the board.
+    boardUri**: url of the board. 
+    boardName: name of the board. 32 characters, lower case and numbers only.
+    boardDescription: description of the board. 64 characters.
+    lastPostId: id of last post in this board.
+    lastFileId: id of last file posted in this board.
 
 ----------------------------------------------------------------------------------------
 
 posts:
-    boardUrl*/***: url of the board the post belongs to.
+    boardUri*/***: url of the board the post belongs to.
     postId(Number)***: unique id of the post inside the board.
     parent(Number)*: id of another post of where this post belongs to. If undefined, means the post is a thread.
 
