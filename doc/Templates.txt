@@ -9,18 +9,22 @@ Elements:
 
 boardPage:
 Elements:
-	labelName:
-		type: h1.
-		description: contains the URI and name of the board.
+    labelName:
+        type: h1.
+        description: contains the URI and name of the board.
 
-	labelDescription:
-		type: h3.
-		description: contains the description of the bord.
+    labelDescription:
+        type: h3.
+        description: contains the description of the bord.
 
-	divThreads:
-		type: div.
-		description: contains the list list of threads in the page.
-	
-	divPages:
-		type: div.
-		description: contains the listing of available pages in the board.
+    divThreads:
+        type: div.
+        description: contains the list list of threads in the page.
+    
+    divPages:
+        type: div.
+        description: contains the listing of available pages in the board.
+
+    boardIdentifier:
+        type: input.
+        description: hidden input used to identify the board the page belongs to.

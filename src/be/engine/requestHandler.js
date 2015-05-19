@@ -5,10 +5,12 @@
 
 var indexString = 'index.html';
 var url = require('url');
+var formOps = require('./formOps');
 var miscOps = require('./miscOps');
 var verbose = require('../boot').getGeneralSettings().verbose;
 var gridFs = require('./gridFsHandler');
 var staticHandler = require('./staticHandler');
+var debug = require('../boot').debug();
 
 function outputError(error, res) {
 
@@ -42,6 +44,24 @@ function outputError(error, res) {
 
 }
 
+function processFormRequest(req, res) {
+
+  var pathName = url.parse(req.url).pathname;
+
+  try {
+    if (debug) {
+      var module = require.resolve('../form' + pathName);
+      delete require.cache[module];
+    }
+
+    require('../form' + pathName).process(req, res);
+
+  } catch (error) {
+    formOps.outputError(error, res);
+  }
+
+}
+
 function outputGfsFile(req, res) {
 
   var pathName = url.parse(req.url).pathname;
@@ -62,6 +82,13 @@ function outputGfsFile(req, res) {
   var splitArray = pathName.split('/');
 
   var gotSecondString = splitArray.length === 2 && splitArray[1].length;
+
+  if (pathName.indexOf('.js', pathName.length - 3) !== -1) {
+
+    processFormRequest(req, res);
+
+    return;
+  } else
 
   if (gotSecondString && !/\W/.test(splitArray[1])) {
 
@@ -103,10 +130,8 @@ exports.handle = function(req, res) {
 
   var subdomain = req.headers.host.split('.');
 
-  // TODO
   if (subdomain.length && subdomain[0] === 'api') {
-    req.connection.destroy();
-  } else if (subdomain.length && subdomain[0] === 'form') {
+    // TODO
     req.connection.destroy();
   } else if (subdomain.length && subdomain[0] === 'static') {
     outputStaticFile(req, res);

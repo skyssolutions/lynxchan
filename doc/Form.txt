@@ -1,0 +1,22 @@
+This document describes the form api. The files will be stored in src/be/form and will be acessed by using domain/functionName.js.
+
+Pages will use the request body for parameters and cookies for authentication.
+The parameters should be passed using the request body as usual on posts.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::01
+
+Name: newThread
+
+Description: creates a new thread.
+
+Parameters:
+    name: name of the poster.
+    email: e-mail of the poster.
+    message*: message to be posted.
+    boardUri*: uri of the board. Will be included in the posting form at the generation stage.
+
+------------------------------------------------------------------------------------------
+
+*: mandatory parameters.

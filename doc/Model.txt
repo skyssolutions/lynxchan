@@ -12,6 +12,7 @@ posts:
     postId(Number)***: unique id of the post inside the board.
     parent(Number)*: id of another post of where this post belongs to. If undefined, means the post is a thread.
     lastBump(Date): time of when the post was last bumped.
+    content: text of the post. 2048 characters.
 
 ----------------------------------------------------------------------------------------
  

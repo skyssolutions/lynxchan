@@ -13,9 +13,10 @@ var boards = db.boards();
 var gridFs = require('./gridFsHandler');
 var fs = require('fs');
 var boot = require('../boot');
-var verbose = boot.getGeneralSettings().verbose;
+var settings = boot.getGeneralSettings();
+var pageSize = settings.pageSize;
+var verbose = settings.verbose;
 var serializer = require('jsdom').serializeDocument;
-var pageSize = boot.getGeneralSettings().pageSize;
 var jsdom = require('jsdom').jsdom;
 
 exports.loadTemplates = function() {
@@ -150,6 +151,68 @@ exports.frontPage = function(callback) {
 
 };
 
+// board creation start
+// page creation start
+function generateThreadListing(document, boardUri, page, threads, callback) {
+
+  var threadsDiv = document.getElementById('divThreads');
+
+  if (!threadsDiv) {
+    callback('No threads div on board page template');
+    return;
+  }
+
+  var includedThreads = [];
+
+  for (var i = 0; i < threads.length; i++) {
+    var thread = threads[i];
+
+    includedThreads.push(thread.postId);
+
+    if (i) {
+      threadsDiv.innerHTML += '<br>';
+    }
+
+    var content = thread.postId + '<a href="' + thread.postId + '.html' + '">';
+    content += 'Reply</a>';
+
+    threadsDiv.innerHTML += content;
+
+  }
+
+  var ownName = page === 1 ? '' : page + '.html';
+
+  gridFs.writeData(serializer(document), '/' + boardUri + '/' + ownName,
+      'text/html', {
+        boardUri : boardUri,
+        type : 'board'
+      }, callback);
+
+}
+
+function setPagesListing(document, callback, pageCount, boardUri) {
+  var pagesDiv = document.getElementById('divPages');
+
+  if (!pagesDiv) {
+    callback('No pages div on board page template');
+    return false;
+  }
+
+  var pagesContent = '';
+
+  for (var i = 0; i < pageCount; i++) {
+
+    var pageName = i ? (i + 1) + '.html' : 'index.html';
+
+    pagesContent += '<a href="' + pageName + '">' + (i + 1) + '</a>  ';
+
+  }
+
+  pagesDiv.innerHTML = pagesContent;
+
+  return true;
+}
+
 function setBoardTitleAndDescription(document, callback, boardUri, boardData) {
 
   var titleHeader = document.getElementById('labelName');
@@ -179,38 +242,45 @@ function generatePage(boardUri, page, pageCount, boardData, callback) {
 
   var document = jsdom(boardTemplate);
 
+  var boardIdentifyInput = document.getElementById('boardIdentifier');
+
+  if (!boardIdentifyInput) {
+    callback('No board identify input on board template page');
+    return;
+  }
+
+  boardIdentifyInput.setAttribute('value', boardUri);
+
   if (!setBoardTitleAndDescription(document, callback, boardUri, boardData)) {
     return;
   }
 
-  var pagesDiv = document.getElementById('divPages');
-
-  if (!pagesDiv) {
-    callback('No pages div on board page template');
+  if (!setPagesListing(document, callback, pageCount, boardUri)) {
     return;
   }
 
-  // TODO generate area with threads
+  var toSkip = (page - 1) * pageSize;
 
-  var pagesContent = '';
+  posts.find({
+    boardUri : boardUri,
+    parent : {
+      $exists : 0
+    }
+  }, {
+    postId : 1,
+    content : 1,
+    _id : 0,
+    lastBump : 1,
+  }).sort({
+    lastBump : -1
+  }).skip(toSkip).limit(pageSize).toArray(function(error, threads) {
+    if (error) {
+      callback(error);
+    } else {
+      generateThreadListing(document, boardUri, page, threads, callback);
+    }
+  });
 
-  for (var i = 0; i < pageCount; i++) {
-
-    var pageName = i ? (i + 1) + '.html' : 'index.html';
-
-    pagesContent += '<a href="' + pageName + '">' + (i + 1) + '</a>  ';
-
-  }
-
-  pagesDiv.innerHTML = pagesContent;
-
-  var ownName = page === 1 ? '' : page + '.html';
-
-  gridFs.writeData(serializer(document), '/' + boardUri + '/' + ownName,
-      'text/html', {
-        boardUri : boardUri,
-        type : 'board'
-      }, callback);
 }
 
 exports.page = function(boardUri, page, callback, pageCount, boardData) {
@@ -271,11 +341,12 @@ exports.page = function(boardUri, page, callback, pageCount, boardData) {
     console.log(message + ' of board ' + boardUri);
   }
   // actual function start
-  // TODO
 
   generatePage(boardUri, page, pageCount, boardData, callback);
 
 };
+
+// page creation end
 
 function pageIteration(boardUri, currentPage, pageCount, boardData, callback) {
 
@@ -293,6 +364,8 @@ function pageIteration(boardUri, currentPage, pageCount, boardData, callback) {
   }, pageCount, boardData);
 
 }
+
+// TODO generate only first X pages
 
 exports.board = function(boardUri, callback, boardData) {
 
@@ -343,6 +416,8 @@ exports.board = function(boardUri, callback, boardData) {
   });
 
 };
+
+// board creation end
 
 function iterateBoards(cursor, callback) {
 

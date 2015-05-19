@@ -7,10 +7,10 @@ var files = db.files();
 var conn = db.conn();
 var files = db.files();
 var mongo = require('mongodb');
-var boot = require('../boot');
-var disable304 = boot.getGeneralSettings().disable304;
+var settings = require('../boot').getGeneralSettings();
+var disable304 = settings.disable304;
+var verbose = settings.verbose;
 var miscOps = require('./miscOps');
-var verbose = boot.getGeneralSettings().verbose;
 
 // start of writing data
 function writeDataOnOpenFile(gs, data, callback) {

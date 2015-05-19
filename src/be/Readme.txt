@@ -11,7 +11,7 @@ It accepts the following arguments:
 --no-daemon, -nd: will not start listening. For rebuilding pages while having a server running.
 
 The json api files will be stored on the api directory and acessed by the same subdomain. api.domain/function will use the file api/function.js.
-The form api for support of users without js because they are retarded tin foilers are in the form directory and work the same as the api directory.
+The form api for support of users without js because they are retarded tin foilers are in the form directory and are accessed using domain/function.js.
 The engine directory will hold all scripts that provide functionality but are not to be accessed directly.
 
 The following directories will be expected on the fe directory:
