@@ -56,10 +56,23 @@ function outputGfsFile(req, res) {
 
       pathName = pathName.substring(0, pathName.length - indexString.length);
 
-      // if it doesn't end with a slash, add it
-    } else if (pathName.indexOf('/', pathName.length - 1) === -1) {
-      pathName += '/';
     }
+  }
+
+  var splitArray = pathName.split('/');
+
+  var gotSecondString = splitArray.length === 2 && splitArray[1].length;
+
+  if (gotSecondString && !/\W/.test(splitArray[1])) {
+
+    console.log('redirect from ' + pathName);
+
+    res.writeHead(302, {
+      'Location' : '/' + splitArray[1] + '/'
+
+    });
+    res.end();
+    return;
   }
 
   gridFs.outputFile(pathName, req, res, function streamedFile(error) {

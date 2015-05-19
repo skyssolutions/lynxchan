@@ -74,6 +74,7 @@ exports.loadSettings = function() {
 function bootWorkers() {
 
   if (noDaemon) {
+    db.conn().close();
     return;
   }
 
@@ -126,7 +127,7 @@ function regenerateAll() {
 
 function checkNotFound(files) {
 
-  if (files.indexOf('/404.html/') === -1) {
+  if (files.indexOf('/404.html') === -1) {
 
     generator.notFound(function generated(error) {
       if (error) {
@@ -178,7 +179,7 @@ function checkForDefaultPages() {
   files.aggregate({
     $match : {
       filename : {
-        $in : [ '/', '/404.html/' ]
+        $in : [ '/', '/404.html' ]
       }
     }
   }, {

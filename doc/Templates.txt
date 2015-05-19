@@ -5,3 +5,22 @@ Elements:
     divBoards:
         type: div.
         description: contains the listing of boards.
+
+
+boardPage:
+Elements:
+	labelName:
+		type: h1.
+		description: contains the URI and name of the board.
+
+	labelDescription:
+		type: h3.
+		description: contains the description of the bord.
+
+	divThreads:
+		type: div.
+		description: contains the list list of threads in the page.
+	
+	divPages:
+		type: div.
+		description: contains the listing of available pages in the board.

@@ -31,6 +31,7 @@ address: ip to bind the server on. Defaults to 127.0.0.1
 port(Number): port to listen for http. Defaults to 8080.
 ssl(Boolean): if true, will listen to https on port 443.
 fePath: absolute path to the directory containing the fe files. Defaults to the relative path to the src/fe diretory.
+pageSize(Number): amount of threads on each board page.
 
 db.json:
 address: address of the database.

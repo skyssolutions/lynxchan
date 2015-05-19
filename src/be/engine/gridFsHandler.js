@@ -17,9 +17,12 @@ function writeDataOnOpenFile(gs, data, callback) {
 
   gs.write(data, function wroteData(error) {
 
-    gs.close();
+    // style exception, the parent callback is too simple
+    gs.close(function closed(closeError, result) {
+      callback(error || closeError);
+    });
+    // style exception, the parent callback is too simple
 
-    callback(error);
   });
 
 }
@@ -40,6 +43,7 @@ exports.writeData = function(data, destination, mime, meta, callback) {
       callback(error);
     } else {
 
+      // style exception, the parent callback is too simple
       gs.open(function openedGs(error, gs) {
 
         if (error) {
@@ -50,6 +54,8 @@ exports.writeData = function(data, destination, mime, meta, callback) {
       });
 
     }
+    // style exception, the parent callback is too simple
+
   });
 
 };
@@ -121,7 +127,7 @@ exports.outputFile = function(file, req, res, callback, retry) {
           code : 'ENOENT'
         });
       } else {
-        exports.outputFile('/404.html/', req, res, callback, true);
+        exports.outputFile('/404.html', req, res, callback, true);
       }
 
     } else if (shouldOutput304(lastSeen, fileStats)) {

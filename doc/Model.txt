@@ -11,6 +11,7 @@ posts:
     boardUri*/***: url of the board the post belongs to.
     postId(Number)***: unique id of the post inside the board.
     parent(Number)*: id of another post of where this post belongs to. If undefined, means the post is a thread.
+    lastBump(Date): time of when the post was last bumped.
 
 ----------------------------------------------------------------------------------------
  
