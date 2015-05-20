@@ -1,6 +1,7 @@
 'use strict';
 
-// handles generation of pages based on templates
+// handles logic of page generation.
+// will not actually handle the dom, that happens at domManipulator
 
 var frontPageTemplate;
 var threadTemplate;
@@ -10,13 +11,12 @@ var notFoundTemplate;
 var db = require('../db');
 var posts = db.posts();
 var boards = db.boards();
-var gridFs = require('./gridFsHandler');
 var fs = require('fs');
+var domManipulator = require('./domManipulator');
 var boot = require('../boot');
 var settings = boot.getGeneralSettings();
 var pageSize = settings.pageSize;
 var verbose = settings.verbose;
-var serializer = require('jsdom').serializeDocument;
 var jsdom = require('jsdom').jsdom;
 
 exports.loadTemplates = function() {
@@ -89,45 +89,9 @@ exports.notFound = function(callback) {
     console.log('Generating 404 page');
   }
 
-  // TODO
-  gridFs.writeData(notFoundTemplate, '/404.html', 'text/html', {
-    status : 404
-  }, callback);
+  domManipulator.notFound(jsdom(notFoundTemplate), callback);
+
 };
-
-function generateFrontPage(boardsToList, callback) {
-
-  if (verbose) {
-    console.log('Got boards\n' + JSON.stringify(boardsToList));
-
-  }
-
-  var document = jsdom(frontPageTemplate);
-
-  var boardsDiv = document.getElementById('divBoards');
-
-  if (!boardsDiv) {
-    callback('No board div on front-end template');
-    return;
-  }
-
-  for (var i = 0; i < boardsToList.length; i++) {
-
-    var board = boardsToList[i];
-
-    var block = '<a href="' + board.boardUri + '">';
-    block += '/' + board.boardUri + '/ - ' + board.boardName + '</a>';
-
-    if (i) {
-      block = '<br>' + block;
-    }
-
-    boardsDiv.innerHTML += block;
-
-  }
-
-  gridFs.writeData(serializer(document), '/', 'text/html', {}, callback);
-}
 
 exports.frontPage = function(callback) {
 
@@ -145,64 +109,28 @@ exports.frontPage = function(callback) {
     if (error) {
       callback(error);
     } else {
-      generateFrontPage(results, callback);
+      domManipulator.frontPage(jsdom(frontPageTemplate), results, callback);
     }
+  });
+
+};
+
+exports.defaultPages = function(callback) {
+
+  exports.frontPage(function generatedFrontPage(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.notFound(callback);
+    }
+
   });
 
 };
 
 // board creation start
 // thread pages start
-
-function generatePostListing(document, boardUri, posts, callback) {
-
-  var postsDiv = document.getElementById('divPosts');
-
-  if (!postsDiv) {
-    callback('No posts div on thread template page');
-
-    return;
-  }
-
-  var postsContent = '';
-
-  for (var i = 0; i < posts.length; i++) {
-    // TODO check if is the first post and change style
-
-    var post = posts[i];
-
-    postsContent += post.message + '<br><br>';
-  }
-
-  postsDiv.innerHTML = postsContent;
-
-  var ownName = 'res/' + posts[0].postId + '.html';
-
-  gridFs.writeData(serializer(document), '/' + boardUri + '/' + ownName,
-      'text/html', {
-        boardUri : boardUri,
-        type : 'board'
-      }, callback);
-}
-
-function generateThread(boardUri, posts, boardData, callback) {
-
-  var document = jsdom(threadTemplate);
-
-  var boardIdentifyInput = document.getElementById('boardIdentifier');
-
-  if (!boardIdentifyInput) {
-    callback('No board identify input on thread template page');
-    return;
-  }
-
-  if (!setBoardTitleAndDescription(document, callback, boardUri, boardData)) {
-    return;
-  }
-
-  generatePostListing(document, boardUri, posts, callback);
-
-}
 
 exports.thread = function(boardUri, threadId, callback, boardData) {
 
@@ -248,13 +176,15 @@ exports.thread = function(boardUri, threadId, callback, boardData) {
     message : 1
   }).sort({
     creation : 1
-  }).toArray(function(error, threads) {
-    if (error) {
-      callback(error);
-    } else {
-      generateThread(boardUri, threads, boardData, callback);
-    }
-  });
+  }).toArray(
+      function(error, threads) {
+        if (error) {
+          callback(error);
+        } else {
+          domManipulator.thread(jsdom(threadTemplate), boardUri, boardData,
+              threads, callback);
+        }
+      });
 
 };
 
@@ -299,7 +229,7 @@ function getThreads(boardUri, boardData, callback) {
 
 }
 
-exports.allPages = function(boardUri, callback, boardData) {
+exports.allThreads = function(boardUri, callback, boardData) {
 
   if (!boardData) {
 
@@ -317,7 +247,7 @@ exports.allPages = function(boardUri, callback, boardData) {
       if (error) {
         callback(error);
       } else {
-        exports.allPages(boardUri, callback, board);
+        exports.allThreads(boardUri, callback, board);
       }
     });
 
@@ -332,132 +262,6 @@ exports.allPages = function(boardUri, callback, boardData) {
 
 // page creation start
 function generateThreadListing(document, boardUri, page, threads, callback) {
-
-  var threadsDiv = document.getElementById('divThreads');
-
-  if (!threadsDiv) {
-    callback('No threads div on board page template');
-    return;
-  }
-
-  var includedThreads = [];
-
-  for (var i = 0; i < threads.length; i++) {
-    var thread = threads[i];
-
-    includedThreads.push(thread.postId);
-
-    if (i) {
-      threadsDiv.innerHTML += '<br>';
-    }
-
-    var content = thread.postId + '<a href="res/' + thread.postId + '.html';
-    content += '">Reply</a>';
-
-    threadsDiv.innerHTML += content;
-
-  }
-
-  var ownName = page === 1 ? '' : page + '.html';
-
-  gridFs.writeData(serializer(document), '/' + boardUri + '/' + ownName,
-      'text/html', {
-        boardUri : boardUri,
-        type : 'board'
-      }, callback);
-
-}
-
-function setPagesListing(document, callback, pageCount, boardUri) {
-  var pagesDiv = document.getElementById('divPages');
-
-  if (!pagesDiv) {
-    callback('No pages div on board page template');
-    return false;
-  }
-
-  var pagesContent = '';
-
-  for (var i = 0; i < pageCount; i++) {
-
-    var pageName = i ? (i + 1) + '.html' : 'index.html';
-
-    pagesContent += '<a href="' + pageName + '">' + (i + 1) + '</a>  ';
-
-  }
-
-  pagesDiv.innerHTML = pagesContent;
-
-  return true;
-}
-
-function setBoardTitleAndDescription(document, callback, boardUri, boardData) {
-
-  var titleHeader = document.getElementById('labelName');
-
-  if (!titleHeader) {
-    callback('No title header on template');
-    return false;
-  }
-
-  titleHeader.innerHTML = boardUri;
-
-  var descriptionHeader = document.getElementById('labelDescription');
-
-  if (!descriptionHeader) {
-    callback('No description header on template');
-    return false;
-  }
-
-  titleHeader.innerHTML = '/' + boardUri + '/ - ' + boardData.boardName;
-  descriptionHeader.innerHTML = boardData.boardDescription;
-
-  return true;
-
-}
-
-function generatePage(boardUri, page, pageCount, boardData, callback) {
-
-  var document = jsdom(boardTemplate);
-
-  var boardIdentifyInput = document.getElementById('boardIdentifier');
-
-  if (!boardIdentifyInput) {
-    callback('No board identify input on board template page');
-    return;
-  }
-
-  boardIdentifyInput.setAttribute('value', boardUri);
-
-  if (!setBoardTitleAndDescription(document, callback, boardUri, boardData)) {
-    return;
-  }
-
-  if (!setPagesListing(document, callback, pageCount, boardUri)) {
-    return;
-  }
-
-  var toSkip = (page - 1) * pageSize;
-
-  posts.find({
-    boardUri : boardUri,
-    parent : {
-      $exists : 0
-    }
-  }, {
-    postId : 1,
-    content : 1,
-    _id : 0,
-    lastBump : 1,
-  }).sort({
-    lastBump : -1
-  }).skip(toSkip).limit(pageSize).toArray(function(error, threads) {
-    if (error) {
-      callback(error);
-    } else {
-      generateThreadListing(document, boardUri, page, threads, callback);
-    }
-  });
 
 }
 
@@ -520,7 +324,29 @@ exports.page = function(boardUri, page, callback, pageCount, boardData) {
   }
   // actual function start
 
-  generatePage(boardUri, page, pageCount, boardData, callback);
+  var toSkip = (page - 1) * pageSize;
+
+  posts.find({
+    boardUri : boardUri,
+    parent : {
+      $exists : 0
+    }
+  }, {
+    postId : 1,
+    content : 1,
+    _id : 0,
+    lastBump : 1,
+  }).sort({
+    lastBump : -1
+  }).skip(toSkip).limit(pageSize).toArray(
+      function(error, threads) {
+        if (error) {
+          callback(error);
+        } else {
+          domManipulator.page(jsdom(boardTemplate), boardUri, page, threads,
+              pageCount, boardData, callback);
+        }
+      });
 
 };
 
@@ -531,7 +357,7 @@ function pageIteration(boardUri, currentPage, pageCount, boardData, callback,
 
   if (currentPage < 1) {
     if (rebuildThreadPages) {
-      exports.allPages(boardUri, callback, boardData);
+      exports.allThreads(boardUri, callback, boardData);
     } else {
       callback();
     }

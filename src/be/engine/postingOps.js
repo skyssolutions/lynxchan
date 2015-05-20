@@ -19,6 +19,33 @@ var parametersToSanitize = [ {
   length : 2048
 } ];
 
+function updateBoard(boardUri, threadId, callback) {
+
+  boards.update({
+    boardUri : boardUri
+  }, {
+    $set : {
+      lastPostId : threadId
+    }
+  }, function updatedBoard(error, result) {
+    if (error) {
+      callback(error);
+    } else {
+
+      process.send({
+        board : boardUri
+      });
+      process.send({
+        board : boardUri,
+        thread : threadId
+      });
+
+      callback(null, threadId);
+
+    }
+  });
+}
+
 function createThread(parameters, threadId, callback) {
 
   miscOps.sanitizeStrings(parameters, parametersToSanitize);
@@ -40,7 +67,7 @@ function createThread(parameters, threadId, callback) {
     } else if (error) {
       callback(error);
     } else {
-      callback(null, threadId);
+      updateBoard(parameters.boardUri, threadId, callback);
     }
   });
 
@@ -48,21 +75,18 @@ function createThread(parameters, threadId, callback) {
 
 exports.newThread = function(req, parameters, callback) {
 
-  boards.findAndModify({
+  boards.find({
     boardUri : parameters.boardUri
-  }, [], {
-    $inc : {
-      lastPostId : 1
-    }
   }, {
-    'new' : true
+    _id : 0,
+    lastPostId : 1
   }, function gotBoard(error, board) {
     if (error) {
       callback(error);
     } else if (!board) {
       callback('Board not found');
     } else {
-      createThread(parameters, board.value.lastPostId, callback);
+      createThread(parameters, (board.lastPostId || 0) + 1, callback);
     }
   });
 

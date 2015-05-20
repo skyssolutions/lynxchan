@@ -73,6 +73,8 @@ exports.loadSettings = function() {
 // after everything is all right, call this function to start the workers
 function bootWorkers() {
 
+  var genQueue = require('./generationQueue');
+
   if (noDaemon) {
     db.conn().close();
     return;
@@ -86,6 +88,9 @@ function bootWorkers() {
 
     forkTime[worker.id] = new Date().getTime();
 
+    worker.on('message', function receivedMessage(message) {
+      genQueue.queue(message);
+    });
   });
 
   cluster.on('exit', function(worker, code, signal) {
