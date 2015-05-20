@@ -57,7 +57,7 @@ function processFormRequest(req, res) {
     require('../form' + pathName).process(req, res);
 
   } catch (error) {
-    formOps.outputError(error, res);
+    formOps.outputError(error, 500, res);
   }
 
 }

@@ -7,6 +7,31 @@ var verbose = require('../boot').getGeneralSettings().verbose;
 var queryString = require('querystring');
 var formOps = require('./formOps');
 
+exports.sanitizeOptionalStrings = function(object, parameters) {
+
+  console.log(JSON.stringify(object));
+
+  for (var i = 0; i < parameters.length; i++) {
+    var parameter = parameters[i];
+
+    if (object.hasOwnProperty(parameter.field)) {
+
+      object[parameter.field] = object[parameter.field].toString().trim();
+
+      if (!object[parameter.field].length) {
+
+        delete object[parameter.field];
+
+      } else {
+        object[parameter.field] = object[parameter.field].substring(0,
+            parameter.length);
+      }
+
+    }
+  }
+
+};
+
 exports.getPostData = function(req, res, callback) {
 
   var body = '';
@@ -16,7 +41,7 @@ exports.getPostData = function(req, res, callback) {
 
     if (body.length > REQUEST_LIMIT_SIZE) {
 
-      formOps.outputError('Request too long.', res);
+      formOps.outputError('Request too long.', 411, res);
 
       req.connection.destroy();
     }
@@ -47,7 +72,7 @@ exports.getPostData = function(req, res, callback) {
       callback(parsedCookies, parsedData);
 
     } catch (error) {
-      formOps.outputError(error, res);
+      formOps.outputError(error, 500, res);
     }
 
   });

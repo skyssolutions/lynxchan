@@ -17,16 +17,16 @@ exports.outputMessage = function(message, redirect, res) {
 
 };
 
-exports.outputError = function(error, res) {
+exports.outputError = function(error, code, res) {
 
   if (verbose) {
     console.log(error);
   }
 
   // TODO add template
-  res.writeHead(error.code || 500, miscOps.corsHeader('text/html'));
+  res.writeHead(code, miscOps.corsHeader('text/html'));
 
-  res.end('An error occourred:<br>' + error.toString());
+  res.end('An error occourred:<br>Code ' + code + '<br>' + error.toString());
 
 };
 
@@ -39,8 +39,9 @@ exports.checkBlankParameters = function(object, parameters, res) {
     }
 
     if (res) {
-      res.outputError(
-          'blank parameter: ' + parameter + '<br>Reason: ' + reason, res);
+      var message = 'blank parameter: ' + parameter;
+      message += '<br>Reason: ' + reason;
+      exports.outputError(message, 400, res);
     }
 
     return true;

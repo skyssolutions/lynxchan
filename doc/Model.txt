@@ -8,11 +8,14 @@ boards:
 ----------------------------------------------------------------------------------------
 
 posts:
+    name: name of the poster. 32 characters.
+    email: email of the poster. 64 characters.
+    subject: subject of the thread. 128 characters.
+    message: text of the post. 2048 characters.
     boardUri*/***: url of the board the post belongs to.
     postId(Number)***: unique id of the post inside the board.
     parent(Number)*: id of another post of where this post belongs to. If undefined, means the post is a thread.
     lastBump(Date): time of when the post was last bumped.
-    content: text of the post. 2048 characters.
 
 ----------------------------------------------------------------------------------------
  

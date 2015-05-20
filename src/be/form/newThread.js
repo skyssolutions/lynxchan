@@ -1,13 +1,11 @@
 'use strict';
 
-// handles the thread creation when using forms and not javascript
 var miscOps = require('../engine/miscOps');
 var formOps = require('../engine/formOps');
 var postingOps = require('../engine/postingOps');
+var mandatoryParameters = [ 'message', 'boardUri' ];
 
 function createThread(req, res, parameters) {
-
-  var mandatoryParameters = [ 'message', 'boardUri' ];
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -15,11 +13,11 @@ function createThread(req, res, parameters) {
 
   postingOps.newThread(req, parameters, function threadCreated(error, id) {
     if (error) {
-      formOps.outputError(error, res);
+      formOps.outputError(error, 500, res);
     } else {
       var redirectLink = '../' + parameters.boardUri;
       redirectLink += ' / ' + id + '.html';
-      formOps.outputResponse('Thread created', redirectLink, res);
+      formOps.outputMessage('Thread created', redirectLink, res);
     }
   });
 
