@@ -1,15 +1,13 @@
 'use strict';
 
 // miscellaneous
-// TODO change to use settings
-var REQUEST_LIMIT_SIZE = 1e6;
 var verbose = require('../boot').getGeneralSettings().verbose;
-var queryString = require('querystring');
 var formOps = require('./formOps');
 
-exports.sanitizeOptionalStrings = function(object, parameters) {
-
-  console.log(JSON.stringify(object));
+// parameters must be an array of objects. each object must contain two keys:
+// one with a string with the name of the parameter, the other with a number
+// with its maximum length
+exports.sanitizeStrings = function(object, parameters) {
 
   for (var i = 0; i < parameters.length; i++) {
     var parameter = parameters[i];
@@ -29,53 +27,6 @@ exports.sanitizeOptionalStrings = function(object, parameters) {
 
     }
   }
-
-};
-
-exports.getPostData = function(req, res, callback) {
-
-  var body = '';
-
-  req.on('data', function dataReceived(data) {
-    body += data;
-
-    if (body.length > REQUEST_LIMIT_SIZE) {
-
-      formOps.outputError('Request too long.', 411, res);
-
-      req.connection.destroy();
-    }
-  });
-
-  req.on('end', function dataEnded() {
-
-    try {
-      var parsedData = queryString.parse(body);
-
-      var parsedCookies = {};
-
-      if (req.headers && req.headers.cookie) {
-
-        var cookies = req.headers.cookie.split(';');
-
-        for (var i = 0; i < cookies.length; i++) {
-
-          var cookie = cookies[i];
-
-          var parts = cookie.split('=');
-          parsedCookies[parts.shift().trim()] = decodeURI(parts.join('='));
-
-        }
-
-      }
-
-      callback(parsedCookies, parsedData);
-
-    } catch (error) {
-      formOps.outputError(error, 500, res);
-    }
-
-  });
 
 };
 

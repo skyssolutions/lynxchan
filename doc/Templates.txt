@@ -28,3 +28,21 @@ Elements:
     boardIdentifier:
         type: input.
         description: hidden input used to identify the board the page belongs to.
+
+threadPage:
+Elements:
+    labelName:
+        type: h1.
+        description: contains the URI and name of the board.
+
+    labelDescription:
+        type: h3.
+        description: contains the description of the bord.
+
+    divPosts:
+        type: div.
+        description: contains the listing of posts in the thread, including the OP.
+
+    boardIdentifier:
+        type: input.
+        description: hidden input used to identify the board the page belongs to.

@@ -1,6 +1,5 @@
 'use strict';
 
-var miscOps = require('../engine/miscOps');
 var formOps = require('../engine/formOps');
 var postingOps = require('../engine/postingOps');
 var mandatoryParameters = [ 'message', 'boardUri' ];
@@ -25,7 +24,7 @@ function createThread(req, res, parameters) {
 
 exports.process = function(req, res) {
 
-  miscOps.getPostData(req, res, function gotData(auth, parameters) {
+  formOps.getPostData(req, res, function gotData(auth, parameters) {
 
     createThread(req, res, parameters);
 

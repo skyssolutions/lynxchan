@@ -92,8 +92,6 @@ function outputGfsFile(req, res) {
 
   if (gotSecondString && !/\W/.test(splitArray[1])) {
 
-    console.log('redirect from ' + pathName);
-
     res.writeHead(302, {
       'Location' : '/' + splitArray[1] + '/'
 

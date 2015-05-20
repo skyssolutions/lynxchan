@@ -21,12 +21,13 @@ var parametersToSanitize = [ {
 
 function createThread(parameters, threadId, callback) {
 
-  miscOps.sanitizeOptionalStrings(parameters, parametersToSanitize);
+  miscOps.sanitizeStrings(parameters, parametersToSanitize);
 
   var threadToAdd = {
     boardUri : parameters.boardUri,
     postId : threadId,
     lastBump : new Date(),
+    creation : new Date(),
     subject : parameters.subject,
     name : parameters.name,
     message : parameters.message,

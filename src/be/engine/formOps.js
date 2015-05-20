@@ -2,7 +2,58 @@
 
 // general operations for the form api
 var verbose = require('../boot').getGeneralSettings.verbose;
+var queryString = require('querystring');
 var miscOps = require('./miscOps');
+
+// TODO change to use settings
+var REQUEST_LIMIT_SIZE = 1e6;
+
+exports.getPostData = function(req, res, callback) {
+
+  var body = '';
+
+  req.on('data', function dataReceived(data) {
+    body += data;
+
+    if (body.length > REQUEST_LIMIT_SIZE) {
+
+      exports.outputError('Request too long.', 411, res);
+
+      req.connection.destroy();
+    }
+  });
+
+  req.on('end', function dataEnded() {
+
+    try {
+      var parsedData = queryString.parse(body);
+
+      var parsedCookies = {};
+
+      if (req.headers && req.headers.cookie) {
+
+        var cookies = req.headers.cookie.split(';');
+
+        for (var i = 0; i < cookies.length; i++) {
+
+          var cookie = cookies[i];
+
+          var parts = cookie.split('=');
+          parsedCookies[parts.shift().trim()] = decodeURI(parts.join('='));
+
+        }
+
+      }
+
+      callback(parsedCookies, parsedData);
+
+    } catch (error) {
+      exports.outputError(error, 500, res);
+    }
+
+  });
+
+};
 
 exports.outputMessage = function(message, redirect, res) {
 
