@@ -172,7 +172,7 @@ function checkFrontPage(files) {
 function checkForDefaultPages() {
 
   generator = require('./engine/generator');
-  generator.loadTemplates();
+  require('./engine/domManipulator').loadTemplates();
 
   if (reload) {
     regenerateAll();

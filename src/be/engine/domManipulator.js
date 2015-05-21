@@ -3,25 +3,82 @@
 // handles the final part of page generation. I created this so I would take
 // some stuff out of generator.js since that file was becoming a huge mess
 
+// also, manipulations that are not persistent are meant to be directly
+// requested from this module
+
 var gridFs = require('./gridFsHandler');
 var serializer = require('jsdom').serializeDocument;
 var verbose = require('../boot').getGeneralSettings().verbose;
+var jsdom = require('jsdom').jsdom;
+var boot = require('../boot');
+var fs = require('fs');
+var frontPageTemplate;
+var threadTemplate;
+var boardTemplate;
+var notFoundTemplate;
+var messageTemplate;
 
-exports.notFound = function(document, callback) {
+exports.loadTemplates = function() {
 
-  // TODO
+  var fePath = boot.getFePath() + '/templates/';
+  var templateSettings = boot.getTemplateSettings();
+
+  frontPageTemplate = fs.readFileSync(fePath + templateSettings.index);
+  threadTemplate = fs.readFileSync(fePath + templateSettings.threadPage);
+  boardTemplate = fs.readFileSync(fePath + templateSettings.boardPage);
+  notFoundTemplate = fs.readFileSync(fePath + templateSettings.notFoundPage);
+  messageTemplate = fs.readFileSync(fePath + templateSettings.messagePage);
+
+};
+
+exports.notFound = function(callback) {
+
+  var document = jsdom(notFoundTemplate);
 
   gridFs.writeData(serializer(document), '/404.html', 'text/html', {
     status : 404
   }, callback);
 };
 
-exports.frontPage = function(document, boards, callback) {
+exports.message = function(message, link) {
+
+  try {
+
+    var document = jsdom(messageTemplate);
+
+    var messageLabel = document.getElementById('labelMessage');
+
+    messageLabel.innerHTML = message;
+
+    var redirectLink = document.getElementById('linkRedirect');
+
+    redirectLink.href = link;
+
+    var meta = document.createElement('META');
+
+    meta.httpEquiv = 'refresh';
+    meta.content = '3; url=' + link;
+
+    document.getElementsByTagName('head')[0].appendChild(meta);
+
+    return serializer(document);
+  } catch (error) {
+    if (verbose) {
+      console.log('error ' + error);
+    }
+    return error.toString;
+  }
+
+};
+
+exports.frontPage = function(boards, callback) {
 
   if (verbose) {
     console.log('Got boards\n' + JSON.stringify(boards));
 
   }
+
+  var document = jsdom(frontPageTemplate);
 
   var boardsDiv = document.getElementById('divBoards');
 
@@ -79,7 +136,10 @@ function generatePostListing(document, boardUri, threads, callback) {
       }, callback);
 }
 
-exports.thread = function(document, boardUri, boardData, threads, callback) {
+exports.thread = function(boardUri, boardData, threads, callback) {
+
+  var document = jsdom(threadTemplate);
+
   var boardIdentifyInput = document.getElementById('boardIdentifier');
 
   if (!boardIdentifyInput) {
@@ -177,8 +237,9 @@ function generateThreadListing(document, boardUri, page, threads, callback) {
       }, callback);
 }
 
-exports.page = function(document, boardUri, page, threads, pageCount,
-    boardData, callback) {
+exports.page = function(board, page, threads, pageCount, boardData, callback) {
+
+  var document = jsdom(boardTemplate);
 
   var boardIdentifyInput = document.getElementById('boardIdentifier');
 
@@ -187,15 +248,15 @@ exports.page = function(document, boardUri, page, threads, pageCount,
     return;
   }
 
-  boardIdentifyInput.setAttribute('value', boardUri);
+  boardIdentifyInput.setAttribute('value', board);
 
-  if (!setBoardTitleAndDescription(document, callback, boardUri, boardData)) {
+  if (!setBoardTitleAndDescription(document, callback, board, boardData)) {
     return;
   }
 
-  if (!setPagesListing(document, callback, pageCount, boardUri)) {
+  if (!setPagesListing(document, callback, pageCount, board)) {
     return;
   }
 
-  generateThreadListing(document, boardUri, page, threads, callback);
+  generateThreadListing(document, board, page, threads, callback);
 };

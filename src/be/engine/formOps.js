@@ -4,6 +4,9 @@
 var verbose = require('../boot').getGeneralSettings.verbose;
 var queryString = require('querystring');
 var miscOps = require('./miscOps');
+var jsdom = require('jsdom').jsdom;
+var serializer = require('jsdom').serializeDocument;
+var domManipulator = require('./domManipulator');
 
 // TODO change to use settings
 var REQUEST_LIMIT_SIZE = 1e6;
@@ -61,10 +64,9 @@ exports.outputMessage = function(message, redirect, res) {
     console.log(message);
   }
 
-  // TODO add template
   res.writeHead(200, miscOps.corsHeader('text/html'));
 
-  res.end(message);
+  res.end(domManipulator.message(message, redirect));
 
 };
 

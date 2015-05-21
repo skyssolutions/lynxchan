@@ -3,33 +3,13 @@
 // handles logic of page generation.
 // will not actually handle the dom, that happens at domManipulator
 
-var frontPageTemplate;
-var threadTemplate;
-var boardTemplate;
-var notFoundTemplate;
-
 var db = require('../db');
 var posts = db.posts();
 var boards = db.boards();
-var fs = require('fs');
 var domManipulator = require('./domManipulator');
-var boot = require('../boot');
-var settings = boot.getGeneralSettings();
+var settings = require('../boot').getGeneralSettings();
 var pageSize = settings.pageSize;
 var verbose = settings.verbose;
-var jsdom = require('jsdom').jsdom;
-
-exports.loadTemplates = function() {
-
-  var fePath = boot.getFePath() + '/templates/';
-  var templateSettings = boot.getTemplateSettings();
-
-  frontPageTemplate = fs.readFileSync(fePath + templateSettings.index);
-  threadTemplate = fs.readFileSync(fePath + templateSettings.threadPage);
-  boardTemplate = fs.readFileSync(fePath + templateSettings.boardPage);
-  notFoundTemplate = fs.readFileSync(fePath + templateSettings.notFoundPage);
-
-};
 
 var toGenerate;
 var MAX_TO_GENERATE = 3;
@@ -89,7 +69,7 @@ exports.notFound = function(callback) {
     console.log('Generating 404 page');
   }
 
-  domManipulator.notFound(jsdom(notFoundTemplate), callback);
+  domManipulator.notFound(callback);
 
 };
 
@@ -109,7 +89,7 @@ exports.frontPage = function(callback) {
     if (error) {
       callback(error);
     } else {
-      domManipulator.frontPage(jsdom(frontPageTemplate), results, callback);
+      domManipulator.frontPage(results, callback);
     }
   });
 
@@ -176,15 +156,13 @@ exports.thread = function(boardUri, threadId, callback, boardData) {
     message : 1
   }).sort({
     creation : 1
-  }).toArray(
-      function(error, threads) {
-        if (error) {
-          callback(error);
-        } else {
-          domManipulator.thread(jsdom(threadTemplate), boardUri, boardData,
-              threads, callback);
-        }
-      });
+  }).toArray(function(error, threads) {
+    if (error) {
+      callback(error);
+    } else {
+      domManipulator.thread(boardUri, boardData, threads, callback);
+    }
+  });
 
 };
 
@@ -343,8 +321,8 @@ exports.page = function(boardUri, page, callback, pageCount, boardData) {
         if (error) {
           callback(error);
         } else {
-          domManipulator.page(jsdom(boardTemplate), boardUri, page, threads,
-              pageCount, boardData, callback);
+          domManipulator.page(boardUri, page, threads, pageCount, boardData,
+              callback);
         }
       });
 

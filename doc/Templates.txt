@@ -46,3 +46,13 @@ Elements:
     boardIdentifier:
         type: input.
         description: hidden input used to identify the board the page belongs to.
+
+messagePage:
+Elements:
+    labelMessage:
+        type: h3.
+        description: displays the message itself.
+
+    linkRedirect:
+        type: a.
+        description: link to the redirection of the page.

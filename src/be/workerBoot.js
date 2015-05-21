@@ -104,6 +104,8 @@ function clearCache() {
     delete require.cache[require.resolve('./api/' + apiListing[i])];
   }
 
+  require('./engine/domManipulator').loadTemplates();
+
 }
 
 // functions
