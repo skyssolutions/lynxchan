@@ -58,7 +58,7 @@ exports.getPostData = function(req, res, callback) {
 
 };
 
-exports.outputMessage = function(message, redirect, res) {
+exports.outputResponse = function(message, redirect, res) {
 
   if (verbose) {
     console.log(message);

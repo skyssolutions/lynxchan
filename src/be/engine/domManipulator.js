@@ -18,6 +18,10 @@ var boardTemplate;
 var notFoundTemplate;
 var messageTemplate;
 
+require('jsdom').defaultDocumentFeatures = {
+  FetchExternalResources : false
+};
+
 exports.loadTemplates = function() {
 
   var fePath = boot.getFePath() + '/templates/';

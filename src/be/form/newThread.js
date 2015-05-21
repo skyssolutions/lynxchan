@@ -16,7 +16,7 @@ function createThread(req, res, parameters) {
     } else {
       var redirectLink = '../' + parameters.boardUri;
       redirectLink += '/res/' + id + '.html';
-      formOps.outputMessage('Thread created', redirectLink, res);
+      formOps.outputResponse('Thread created', redirectLink, res);
     }
   });
 

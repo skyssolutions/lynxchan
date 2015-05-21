@@ -6,6 +6,7 @@
 var indexString = 'index.html';
 var url = require('url');
 var formOps = require('./formOps');
+var apiOps = require('./apiOps');
 var miscOps = require('./miscOps');
 var verbose = require('../boot').getGeneralSettings().verbose;
 var gridFs = require('./gridFsHandler');
@@ -44,9 +45,35 @@ function outputError(error, res) {
 
 }
 
+function processApiRequest(req, res) {
+
+  var pathName = url.parse(req.url).pathname;
+
+  if (verbose) {
+    console.log('Processing api request: ' + pathName);
+  }
+
+  try {
+    if (debug) {
+      var module = require.resolve('../api' + pathName);
+      delete require.cache[module];
+    }
+
+    require('../api' + pathName).process(req, res);
+
+  } catch (error) {
+    apiOps.outputError(error, res);
+  }
+
+}
+
 function processFormRequest(req, res) {
 
   var pathName = url.parse(req.url).pathname;
+
+  if (verbose) {
+    console.log('Processing form request: ' + pathName);
+  }
 
   try {
     if (debug) {
@@ -129,8 +156,7 @@ exports.handle = function(req, res) {
   var subdomain = req.headers.host.split('.');
 
   if (subdomain.length && subdomain[0] === 'api') {
-    // TODO
-    req.connection.destroy();
+    processApiRequest(req, res);
   } else if (subdomain.length && subdomain[0] === 'static') {
     outputStaticFile(req, res);
   } else {
