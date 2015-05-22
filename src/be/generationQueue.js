@@ -32,6 +32,7 @@ var queueTree = {};
 var rebuildingAll = false;
 var rebuildingDefaultPages = false;
 var working = false;
+var debug = require('./boot').debug();
 var generator = require('./engine/generator');
 var verbose = require('./boot').getGeneralSettings().verbose;
 
@@ -57,6 +58,17 @@ function clearTree(error, message) {
   }
 
   processQueue();
+
+  if (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+  }
 
 }
 

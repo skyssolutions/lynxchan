@@ -4,6 +4,19 @@ boards:
     boardDescription: description of the board. 64 characters.
     lastPostId: id of last post in this board.
     lastFileId: id of last file posted in this board.
+    threadCount(Number): pre-aggregated number of threads in the board.
+
+----------------------------------------------------------------------------------------
+
+threads:
+    name: name of the poster. 32 characters.
+    email: email of the poster. 64 characters.
+    subject: subject of the thread. 128 characters.
+    message: text of the post. 2048 characters.
+    creation(Date): time when the post was created.
+    boardUri*/***: url of the board the thread belongs to.
+    postId(Number)***: unique id of the thread inside the board.
+    lastBump(Date): time of when the thread was last bumped.
 
 ----------------------------------------------------------------------------------------
 
@@ -14,12 +27,11 @@ posts:
     message: text of the post. 2048 characters.
     creation(Date): time when the post was created.
     boardUri*/***: url of the board the post belongs to.
+    threadId(Number)*/***: id of the thread the post belongs to.
     postId(Number)***: unique id of the post inside the board.
-    parent(Number)*: id of another post of where this post belongs to. If undefined, means the post is a thread.
-    lastBump(Date): time of when the post was last bumped.
-
-----------------------------------------------------------------------------------------
  
+----------------------------------------------------------------------------------------
+
 *: duplicated data, foreign key.
 **: unique key
 ***:part of a unique key combination.

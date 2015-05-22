@@ -5,6 +5,7 @@
 
 var db = require('../db');
 var posts = db.posts();
+var threads = db.threads();
 var boards = db.boards();
 var domManipulator = require('./domManipulator');
 var settings = require('../boot').getGeneralSettings();
@@ -112,7 +113,7 @@ exports.defaultPages = function(callback) {
 // board creation start
 // thread pages start
 
-exports.thread = function(boardUri, threadId, callback, boardData) {
+exports.thread = function(boardUri, threadId, callback, boardData, threadData) {
 
   if (!boardData) {
     if (verbose) {
@@ -134,6 +135,31 @@ exports.thread = function(boardUri, threadId, callback, boardData) {
     });
 
     return;
+  } else if (!threadData) {
+    if (verbose) {
+      console.log('Obtaining thread data.');
+    }
+
+    threads.findOne({
+      boardUri : boardUri,
+      threadId : threadId
+    }, {
+      _id : 0,
+      subject : 1,
+      threadId : 1,
+      name : 1,
+      email : 1,
+      message : 1
+    }, function gotThread(error, thread) {
+      if (error) {
+        callback(error);
+      } else {
+        exports.thread(boardUri, threadId, callback, boardData, thread);
+      }
+
+    });
+
+    return;
   }
 
   if (verbose) {
@@ -142,11 +168,7 @@ exports.thread = function(boardUri, threadId, callback, boardData) {
 
   posts.find({
     boardUri : boardUri,
-    $or : [ {
-      postId : threadId
-    }, {
-      parent : threadId
-    } ]
+    parent : threadId
   }, {
     _id : 0,
     subject : 1,
@@ -156,11 +178,11 @@ exports.thread = function(boardUri, threadId, callback, boardData) {
     message : 1
   }).sort({
     creation : 1
-  }).toArray(function(error, threads) {
+  }).toArray(function(error, posts) {
     if (error) {
       callback(error);
     } else {
-      domManipulator.thread(boardUri, boardData, threads, callback);
+      domManipulator.thread(boardUri, boardData, threadData, posts, callback);
     }
   });
 
@@ -176,14 +198,14 @@ function iterateThreadsCursor(boardUri, boardData, cursor, callback) {
     } else {
 
       // style exception, too simple
-      exports.thread(boardUri, thread.postId, function generatedPage(error) {
+      exports.thread(boardUri, thread.threadId, function generatedPage(error) {
         if (error) {
           callback(error);
         } else {
           iterateThreadsCursor(boardUri, boardData, cursor, callback);
         }
 
-      }, boardData);
+      }, boardData, thread);
       // style exception, too simple
 
     }
@@ -193,14 +215,15 @@ function iterateThreadsCursor(boardUri, boardData, cursor, callback) {
 
 function getThreads(boardUri, boardData, callback) {
 
-  var cursor = posts.find({
+  var cursor = threads.find({
     boardUri : boardUri,
-    parent : {
-      $exists : 0
-    }
   }, {
     _id : 0,
-    postId : 1
+    subject : 1,
+    threadId : 1,
+    name : 1,
+    email : 1,
+    message : 1
   });
 
   iterateThreadsCursor(boardUri, boardData, cursor, callback);
@@ -239,40 +262,11 @@ exports.allThreads = function(boardUri, callback, boardData) {
 // thread pages end
 
 // page creation start
-function generateThreadListing(document, boardUri, page, threads, callback) {
 
-}
+exports.page = function(boardUri, page, callback, boardData) {
 
-exports.page = function(boardUri, page, callback, pageCount, boardData) {
-
-  // we allow for the page count to be informed, but fetch if not sent.
-  if (!pageCount) {
-
-    if (verbose) {
-      console.log('Obtaining total page count.');
-    }
-
-    posts.find({
-      boardUri : boardUri,
-      parent : {
-        $exists : 0
-      }
-    }).count(false, null, function gotCount(error, count) {
-      if (error) {
-        callback(error);
-      } else {
-
-        var pages = Math.floor(count / pageSize) + (count % pageSize ? 1 : 0);
-
-        pages += pages ? 0 : 1;
-
-        exports.page(boardUri, page, callback, pages, boardData);
-      }
-    });
-
-    return;
-    // we allow for the basic board data to be informed, but fetch if not sent.
-  } else if (!boardData) {
+  // we allow for the basic board data to be informed, but fetch if not sent.
+  if (!boardData) {
 
     if (verbose) {
       console.log('Obtaining board data.');
@@ -283,17 +277,23 @@ exports.page = function(boardUri, page, callback, pageCount, boardData) {
     }, {
       _id : 0,
       boardName : 1,
-      boardDescription : 1
+      boardDescription : 1,
+      threadCount : 1
     }, function gotBoard(error, board) {
       if (error) {
         callback(error);
       } else {
-        exports.page(boardUri, page, callback, pageCount, board);
+        exports.page(boardUri, page, callback, board);
       }
     });
 
     return;
   }
+
+  var pageCount = Math.floor(boardData.threadCount / pageSize);
+  pageCount += (boardData.threadCount % pageSize ? 1 : 0);
+
+  pageCount = pageCount || 1;
 
   if (verbose) {
 
@@ -304,13 +304,10 @@ exports.page = function(boardUri, page, callback, pageCount, boardData) {
 
   var toSkip = (page - 1) * pageSize;
 
-  posts.find({
-    boardUri : boardUri,
-    parent : {
-      $exists : 0
-    }
+  threads.find({
+    boardUri : boardUri
   }, {
-    postId : 1,
+    threadId : 1,
     content : 1,
     _id : 0,
     lastBump : 1,
@@ -321,6 +318,7 @@ exports.page = function(boardUri, page, callback, pageCount, boardData) {
         if (error) {
           callback(error);
         } else {
+
           domManipulator.page(boardUri, page, threads, pageCount, boardData,
               callback);
         }
@@ -330,7 +328,7 @@ exports.page = function(boardUri, page, callback, pageCount, boardData) {
 
 // page creation end
 
-function pageIteration(boardUri, currentPage, pageCount, boardData, callback,
+function pageIteration(boardUri, currentPage, boardData, callback,
     rebuildThreadPages) {
 
   if (currentPage < 1) {
@@ -346,10 +344,10 @@ function pageIteration(boardUri, currentPage, pageCount, boardData, callback,
     if (error) {
       callback(error);
     } else {
-      pageIteration(boardUri, --currentPage, pageCount, boardData, callback,
+      pageIteration(boardUri, --currentPage, boardData, callback,
           rebuildThreadPages);
     }
-  }, pageCount, boardData);
+  }, boardData);
 
 }
 
@@ -369,7 +367,8 @@ exports.board = function(boardUri, reloadThreads, callback, boardData) {
     }, {
       _id : 0,
       boardName : 1,
-      boardDescription : 1
+      boardDescription : 1,
+      threadCount : 1
     }, function gotBoard(error, board) {
       if (error) {
         callback(error);
@@ -385,28 +384,21 @@ exports.board = function(boardUri, reloadThreads, callback, boardData) {
     console.log('Generating board ' + boardUri);
   }
 
-  posts.find({
-    boardUri : boardUri,
-    parent : {
-      $exists : 0
+  var pageCount = Math.floor(boardData.threadCount / pageSize);
+  pageCount += (boardData.threadCount % pageSize ? 1 : 0);
+
+  pageCount = pageCount || 1;
+
+  threads.find({
+    boardUri : boardUri
+  }).count(false, null, function gotCount(error, count) {
+    if (error) {
+      callback(error);
+    } else {
+
+      pageIteration(boardUri, pageCount, boardData, callback, reloadThreads);
     }
-  }).count(
-      false,
-      null,
-      function gotCount(error, count) {
-        if (error) {
-          callback(error);
-        } else {
-
-          var pages = Math.floor(count / pageSize);
-          pages += (count % pageSize ? 1 : 0);
-
-          pages += pages ? 0 : 1;
-
-          pageIteration(boardUri, pages, pages, boardData, callback,
-              reloadThreads);
-        }
-      });
+  });
 
 };
 
@@ -446,7 +438,8 @@ exports.boards = function(callback) {
     _id : 0,
     boardUri : 1,
     boardName : 1,
-    boardDescription : 1
+    boardDescription : 1,
+    threadCount : 1
   });
 
   iterateBoards(cursor, callback);

@@ -2,10 +2,12 @@
 
 // any operation regarding posting
 var db = require('../db');
+var threads = db.threads();
+var boards = db.boards();
 var posts = db.posts();
 var miscOps = require('./miscOps');
-var boards = db.boards();
-var parametersToSanitize = [ {
+
+var newThreadParameters = [ {
   field : 'subject',
   length : 128
 }, {
@@ -26,15 +28,21 @@ function updateBoard(boardUri, threadId, callback) {
   }, {
     $set : {
       lastPostId : threadId
+    },
+    $inc : {
+      threadCount : 1
     }
   }, function updatedBoard(error, result) {
     if (error) {
       callback(error);
     } else {
 
+      // signal rebuild of board pages
       process.send({
         board : boardUri
       });
+
+      // signal rebuild of thread
       process.send({
         board : boardUri,
         thread : threadId
@@ -48,11 +56,11 @@ function updateBoard(boardUri, threadId, callback) {
 
 function createThread(parameters, threadId, callback) {
 
-  miscOps.sanitizeStrings(parameters, parametersToSanitize);
+  miscOps.sanitizeStrings(parameters, newThreadParameters);
 
   var threadToAdd = {
     boardUri : parameters.boardUri,
-    postId : threadId,
+    threadId : threadId,
     lastBump : new Date(),
     creation : new Date(),
     subject : parameters.subject,
@@ -61,7 +69,7 @@ function createThread(parameters, threadId, callback) {
     email : parameters.email
   };
 
-  posts.insert(threadToAdd, function createdThread(error) {
+  threads.insert(threadToAdd, function createdThread(error) {
     if (error && error.code === 11000) {
       createThread(parameters, threadId + 1, callback);
     } else if (error) {

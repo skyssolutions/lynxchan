@@ -74,7 +74,7 @@ exports.getAnonJsonData = function(req, res, callback) {
   req.on('end', function dataEnded() {
 
     if (verbose) {
-      console.log('\napi input: ' + body);
+      console.log('Api input: ' + body);
     }
 
     try {
@@ -115,7 +115,7 @@ exports.outputResponse = function(auth, data, status, res) {
   res.writeHead(200, miscOps.corsHeader('application/json'));
 
   if (verbose) {
-    console.log('\nApi output: ' + JSON.stringify(output));
+    console.log('Api output: ' + JSON.stringify(output));
   }
 
   res.end(JSON.stringify(output));

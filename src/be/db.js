@@ -7,9 +7,10 @@ var indexesSet = 0;
 
 var cachedDb;
 
-var maxIndexesSet = 2;
+var maxIndexesSet = 3;
 
 var cachedPosts;
+var cachedThreads;
 var cachedBoards;
 var cachedFiles;
 
@@ -26,6 +27,24 @@ function initPosts(callback) {
 
   cachedPosts.ensureIndex({
     postId : 1,
+    threadId : 1,
+    boardUri : 1
+  }, {
+    unique : true
+  }, function setIndex(error, index) {
+    if (error) {
+      callback(error);
+    } else {
+      indexSet(callback);
+    }
+  });
+}
+
+function initThreads(callback) {
+  cachedThreads = cachedDb.collection('threads');
+
+  cachedThreads.ensureIndex({
+    threadId : 1,
     boardUri : 1
   }, {
     unique : true
@@ -72,11 +91,17 @@ exports.boards = function() {
   return cachedBoards;
 };
 
+exports.threads = function() {
+  return cachedThreads;
+};
+
 function checkCollections(db, callback) {
 
   cachedDb = db;
 
   initBoards(callback);
+
+  initThreads(callback);
 
   initPosts(callback);
 

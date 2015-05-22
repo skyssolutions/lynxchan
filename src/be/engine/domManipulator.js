@@ -11,6 +11,7 @@ var serializer = require('jsdom').serializeDocument;
 var verbose = require('../boot').getGeneralSettings().verbose;
 var jsdom = require('jsdom').jsdom;
 var boot = require('../boot');
+var debug = boot.debug();
 var fs = require('fs');
 var frontPageTemplate;
 var threadTemplate;
@@ -19,7 +20,10 @@ var notFoundTemplate;
 var messageTemplate;
 
 require('jsdom').defaultDocumentFeatures = {
-  FetchExternalResources : false
+  FetchExternalResources : false,
+  ProcessExternalResources : false,
+  // someone said it might break stuff. If weird bugs, disable.
+  MutationEvents : false
 };
 
 exports.loadTemplates = function() {
@@ -70,6 +74,11 @@ exports.message = function(message, link) {
     if (verbose) {
       console.log('error ' + error);
     }
+
+    if (debug) {
+      throw error;
+    }
+
     return error.toString;
   }
 
@@ -79,132 +88,84 @@ exports.frontPage = function(boards, callback) {
 
   if (verbose) {
     console.log('Got boards\n' + JSON.stringify(boards));
-
   }
 
-  var document = jsdom(frontPageTemplate);
+  try {
 
-  var boardsDiv = document.getElementById('divBoards');
+    var document = jsdom(frontPageTemplate);
 
-  if (!boardsDiv) {
-    callback('No board div on front-end template');
-    return;
-  }
+    var boardsDiv = document.getElementById('divBoards');
 
-  for (var i = 0; i < boards.length; i++) {
+    for (var i = 0; i < boards.length; i++) {
 
-    var board = boards[i];
+      var board = boards[i];
 
-    var block = '<a href="' + board.boardUri + '">';
-    block += '/' + board.boardUri + '/ - ' + board.boardName + '</a>';
+      var block = '<a href="' + board.boardUri + '">';
+      block += '/' + board.boardUri + '/ - ' + board.boardName + '</a>';
 
-    if (i) {
-      block = '<br>' + block;
+      if (i) {
+        block = '<br>' + block;
+      }
+
+      boardsDiv.innerHTML += block;
+
     }
 
-    boardsDiv.innerHTML += block;
-
+    gridFs.writeData(serializer(document), '/', 'text/html', {}, callback);
+  } catch (error) {
+    callback(error);
   }
-
-  gridFs.writeData(serializer(document), '/', 'text/html', {}, callback);
 };
 
-function generatePostListing(document, boardUri, threads, callback) {
+function generatePostListing(document, boardUri, thread, posts, callback) {
 
   var postsDiv = document.getElementById('divPosts');
 
-  if (!postsDiv) {
-    callback('No posts div on thread template page');
-
-    return;
-  }
-
   var postsContent = '';
+  postsContent += 'OP: ' + thread.message + '<br><br>';
 
-  for (var i = 0; i < threads.length; i++) {
+  for (var i = 0; i < posts.length; i++) {
     // TODO check if is the first post and change style
 
-    var post = threads[i];
+    var post = posts[i];
 
     postsContent += post.message + '<br><br>';
   }
 
   postsDiv.innerHTML = postsContent;
 
-  var ownName = 'res/' + threads[0].postId + '.html';
+  var ownName = 'res/' + thread.threadId + '.html';
 
   gridFs.writeData(serializer(document), '/' + boardUri + '/' + ownName,
       'text/html', {
         boardUri : boardUri,
         type : 'board'
       }, callback);
+
 }
 
-exports.thread = function(boardUri, boardData, threads, callback) {
+exports.thread = function(boardUri, boardData, threadData, posts, callback) {
 
-  var document = jsdom(threadTemplate);
+  try {
+    var document = jsdom(threadTemplate);
 
-  var boardIdentifyInput = document.getElementById('boardIdentifier');
+    var titleHeader = document.getElementById('labelName');
 
-  if (!boardIdentifyInput) {
-    callback('No board identify input on thread template page');
-    return;
+    titleHeader.innerHTML = boardUri;
+
+    var descriptionHeader = document.getElementById('labelDescription');
+
+    titleHeader.innerHTML = '/' + boardUri + '/ - ' + boardData.boardName;
+    descriptionHeader.innerHTML = boardData.boardDescription;
+
+    var boardIdentifyInput = document.getElementById('boardIdentifier');
+
+    generatePostListing(document, boardUri, threadData, posts, callback);
+  } catch (error) {
+    callback(error);
   }
 
-  if (!setBoardTitleAndDescription(document, callback, boardUri, boardData)) {
-    return;
-  }
-
-  generatePostListing(document, boardUri, threads, callback);
 };
-
-function setBoardTitleAndDescription(document, callback, boardUri, boardData) {
-
-  var titleHeader = document.getElementById('labelName');
-
-  if (!titleHeader) {
-    callback('No title header on template');
-    return false;
-  }
-
-  titleHeader.innerHTML = boardUri;
-
-  var descriptionHeader = document.getElementById('labelDescription');
-
-  if (!descriptionHeader) {
-    callback('No description header on template');
-    return false;
-  }
-
-  titleHeader.innerHTML = '/' + boardUri + '/ - ' + boardData.boardName;
-  descriptionHeader.innerHTML = boardData.boardDescription;
-
-  return true;
-
-}
-
-function setPagesListing(document, callback, pageCount, boardUri) {
-  var pagesDiv = document.getElementById('divPages');
-
-  if (!pagesDiv) {
-    callback('No pages div on board page template');
-    return false;
-  }
-
-  var pagesContent = '';
-
-  for (var i = 0; i < pageCount; i++) {
-
-    var pageName = i ? (i + 1) + '.html' : 'index.html';
-
-    pagesContent += '<a href="' + pageName + '">' + (i + 1) + '</a>  ';
-
-  }
-
-  pagesDiv.innerHTML = pagesContent;
-
-  return true;
-}
 
 function generateThreadListing(document, boardUri, page, threads, callback) {
   var threadsDiv = document.getElementById('divThreads');
@@ -219,13 +180,13 @@ function generateThreadListing(document, boardUri, page, threads, callback) {
   for (var i = 0; i < threads.length; i++) {
     var thread = threads[i];
 
-    includedThreads.push(thread.postId);
+    includedThreads.push(thread.threadId);
 
     if (i) {
       threadsDiv.innerHTML += '<br>';
     }
 
-    var content = thread.postId + '<a href="res/' + thread.postId + '.html';
+    var content = thread.threadId + '<a href="res/' + thread.threadId + '.html';
     content += '">Reply</a>';
 
     threadsDiv.innerHTML += content;
@@ -243,24 +204,37 @@ function generateThreadListing(document, boardUri, page, threads, callback) {
 
 exports.page = function(board, page, threads, pageCount, boardData, callback) {
 
-  var document = jsdom(boardTemplate);
+  try {
 
-  var boardIdentifyInput = document.getElementById('boardIdentifier');
+    var document = jsdom(boardTemplate);
 
-  if (!boardIdentifyInput) {
-    callback('No board identify input on board template page');
-    return;
+    var boardIdentifyInput = document.getElementById('boardIdentifier');
+
+    boardIdentifyInput.setAttribute('value', board);
+
+    var titleHeader = document.getElementById('labelName');
+
+    titleHeader.innerHTML = board;
+
+    var descriptionHeader = document.getElementById('labelDescription');
+
+    titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
+    descriptionHeader.innerHTML = boardData.boardDescription;
+
+    var pagesDiv = document.getElementById('divPages');
+
+    pagesDiv.innerHTML = '';
+
+    for (var i = 0; i < pageCount; i++) {
+
+      var pageName = i ? (i + 1) + '.html' : 'index.html';
+
+      pagesDiv.innerHTML += '<a href="' + pageName + '">' + (i + 1) + '</a>  ';
+
+    }
+
+    generateThreadListing(document, board, page, threads, callback);
+  } catch (error) {
+    callback(error);
   }
-
-  boardIdentifyInput.setAttribute('value', board);
-
-  if (!setBoardTitleAndDescription(document, callback, board, boardData)) {
-    return;
-  }
-
-  if (!setPagesListing(document, callback, pageCount, board)) {
-    return;
-  }
-
-  generateThreadListing(document, board, page, threads, callback);
 };
