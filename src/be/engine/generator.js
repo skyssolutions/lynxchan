@@ -263,6 +263,39 @@ exports.allThreads = function(boardUri, callback, boardData) {
 
 // page creation start
 
+// pre-aggregates the page the thread is sitting in.
+function updateThreadsPage(boardUri, page, threadsArray, pageCount, boardData,
+    callback) {
+
+  var ids = [];
+
+  for (var i = 0; i < threadsArray.length; i++) {
+    ids.push(threadsArray[i].threadId);
+  }
+
+  threads.update({
+    boardUri : boardUri,
+    threadId : {
+      $in : ids
+    }
+  }, {
+    $set : {
+      page : page
+    }
+  }, {
+    multi : true
+  }, function(error, result) {
+    if (error) {
+      callback(error);
+    } else {
+      domManipulator.page(boardUri, page, threadsArray, pageCount, boardData,
+          callback);
+    }
+
+  });
+
+}
+
 exports.page = function(boardUri, page, callback, boardData) {
 
   // we allow for the basic board data to be informed, but fetch if not sent.
@@ -314,12 +347,12 @@ exports.page = function(boardUri, page, callback, boardData) {
   }).sort({
     lastBump : -1
   }).skip(toSkip).limit(pageSize).toArray(
-      function(error, threads) {
+      function(error, threadsArray) {
         if (error) {
           callback(error);
         } else {
 
-          domManipulator.page(boardUri, page, threads, pageCount, boardData,
+          updateThreadsPage(boardUri, page, threadsArray, pageCount, boardData,
               callback);
         }
       });

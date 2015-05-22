@@ -2,57 +2,68 @@ This document specifies the required characteristics of each template. The keys 
 
 index:
 Elements:
-    divBoards:
-        type: div.
-        description: contains the listing of boards.
+divBoards:
+    type: div.
+    description: contains the listing of boards.
 
+------------------------------------------------------------------------------------------
 
 boardPage:
 Elements:
-    labelName:
-        type: h1.
-        description: contains the URI and name of the board.
+labelName:
+    type: h1.
+    description: contains the URI and name of the board.
 
-    labelDescription:
-        type: h3.
-        description: contains the description of the bord.
+labelDescription:
+    type: h3.
+    description: contains the description of the bord.
 
-    divThreads:
-        type: div.
-        description: contains the list list of threads in the page.
+divThreads:
+    type: div.
+    description: contains the list list of threads in the page.
     
-    divPages:
-        type: div.
-        description: contains the listing of available pages in the board.
+divPages:
+    type: div.
+    description: contains the listing of available pages in the board.
 
-    boardIdentifier:
-        type: input.
-        description: hidden input used to identify the board the page belongs to.
+boardIdentifier:
+    type: input.
+    description: hidden input used to identify the board the page belongs to.
+
+------------------------------------------------------------------------------------------
 
 threadPage:
-Elements:
-    labelName:
-        type: h1.
-        description: contains the URI and name of the board.
+labelName:
+    type: h1.
+    description: contains the URI and name of the board.
 
-    labelDescription:
-        type: h3.
-        description: contains the description of the bord.
+labelDescription:
+    type: h3.
+    description: contains the description of the bord.
 
-    divPosts:
-        type: div.
-        description: contains the listing of posts in the thread, including the OP.
+divPosts:
+    type: div.
+    description: contains the listing of posts in the thread, including the OP.
 
-    boardIdentifier:
-        type: input.
-        description: hidden input used to identify the board the page belongs to.
+boardIdentifier:
+    type: input.
+    description: hidden input used to identify the board the page belongs to.
+
+threadIdentifier:
+    type: input.
+    description: hidden input used to identify the thread the page belongs to.
+
+------------------------------------------------------------------------------------------
 
 messagePage:
 Elements:
-    labelMessage:
-        type: h3.
-        description: displays the message itself.
+labelMessage:
+    type: h3.
+    description: displays the message itself.
 
-    linkRedirect:
-        type: a.
-        description: link to the redirection of the page.
+linkRedirect:
+    type: a.
+    description: link to the redirection of the page.
+
+Required tags:
+head

@@ -160,6 +160,12 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback) {
 
     var boardIdentifyInput = document.getElementById('boardIdentifier');
 
+    boardIdentifyInput.setAttribute('value', boardUri);
+
+    var threadIdentifyInput = document.getElementById('threadIdentifier');
+
+    threadIdentifyInput.setAttribute('value', threadData.threadId);
+
     generatePostListing(document, boardUri, threadData, posts, callback);
   } catch (error) {
     callback(error);

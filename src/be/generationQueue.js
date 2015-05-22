@@ -1,6 +1,9 @@
 'use strict';
 
 // handles the page generation queue
+
+// to queue a rebuild, use process.send({message});
+
 // messages can have the following keys:
 // globalRebuild (Boolean): rebuilds every single page
 // defaultPages (Boolean): rebuilds default pages
@@ -30,6 +33,8 @@ var queueTree = {};
 // so we can just tell it is rebuilding everything and ignore any incoming
 // requests
 var rebuildingAll = false;
+
+// so we can tell its rebuilding default pages
 var rebuildingDefaultPages = false;
 var working = false;
 var debug = require('./boot').debug();
@@ -62,9 +67,7 @@ function clearTree(error, message) {
   if (error) {
     if (verbose) {
       console.log(error);
-    }
-
-    if (debug) {
+    } else if (debug) {
       throw error;
     }
 
@@ -129,9 +132,11 @@ function putInQueue(message, boardInformation) {
   }
 
   if (!working) {
+    if (verbose) {
+      console.log('Idle, running processQueue');
+    }
+
     processQueue();
-  } else if (verbose) {
-    console.log('Working, will not run processQueue');
   }
 
 }

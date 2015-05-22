@@ -106,23 +106,16 @@ function bootWorkers() {
   });
 }
 
-function generateFrontPage() {
-
-  generator.frontPage(function generated(error) {
-    if (error) {
-      console.log(error);
-    } else {
-      bootWorkers();
-    }
-  });
-
-}
-
 function regenerateAll() {
 
   generator.all(function regeneratedAll(error) {
     if (error) {
-      console.log(error);
+      if (debug) {
+        throw error;
+      } else if (generalSettings.verbose) {
+        console.log(error);
+      }
+
     } else {
       bootWorkers();
     }
@@ -136,7 +129,11 @@ function checkNotFound(files) {
 
     generator.notFound(function generated(error) {
       if (error) {
-        console.log(error);
+        if (debug) {
+          throw error;
+        } else if (generalSettings.verbose) {
+          console.log(error);
+        }
 
       } else {
         bootWorkers();
@@ -155,7 +152,11 @@ function checkFrontPage(files) {
   if (files.indexOf('/') === -1) {
     generator.frontPage(function generated(error) {
       if (error) {
-        console.log(error);
+        if (debug) {
+          throw error;
+        } else if (generalSettings.verbose) {
+          console.log(error);
+        }
 
       } else {
         checkNotFound(files);

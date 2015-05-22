@@ -39,3 +39,27 @@ Parameters:
     message*: message to be posted. 2048 characters.
     subject: subject of the thread. 128 characters.
     boardUri*: uri of the board.
+
+Output(Number): id of the new thread.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::02
+
+Name: replyThread
+
+Parameters:
+    name: name of the poster. 32 characters.
+    email: e-mail of the poster. 64 characters.
+    message*: message to be posted. 2048 characters.
+    subject: subject of the thread. 128 characters.
+    boardUri*: uri of the board.
+    threadId*: id of the thread
+
+Output(Number): id of the new post.
+
+------------------------------------------------------------------------------------------
+
+*: mandatory parameters
+
+

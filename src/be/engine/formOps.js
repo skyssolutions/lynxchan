@@ -20,7 +20,7 @@ exports.getPostData = function(req, res, callback) {
 
     if (body.length > REQUEST_LIMIT_SIZE) {
 
-      exports.outputError('Request too long.', 411, res);
+      exports.outputError('Request too long.', 413, res);
 
       req.connection.destroy();
     }

@@ -17,6 +17,9 @@ threads:
     boardUri*/***: url of the board the thread belongs to.
     postId(Number)***: unique id of the thread inside the board.
     lastBump(Date): time of when the thread was last bumped.
+    postCount(Number): pre-aggregated number of posts in the thread.
+    latestPosts(Array): pre-aggregated array of ids of the latest posts in this thread.
+    page(Number): pre-aggregated number of the page this thread was assigned to on last board creation. Indexed by 1.
 
 ----------------------------------------------------------------------------------------
 

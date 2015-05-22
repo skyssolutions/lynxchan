@@ -76,6 +76,10 @@ function streamFile(stats, callback, res) {
   var header = miscOps.corsHeader(stats.contentType);
   header['last-modified'] = stats.uploadDate.toString();
 
+  if (verbose) {
+    console.log('Writing last modified: ' + stats.uploadDate.getTime());
+  }
+
   res.writeHead(stats.metadata.status || 200, header);
 
   var gs = mongo.GridStore(conn, stats.filename, 'r');
@@ -95,6 +99,12 @@ function streamFile(stats, callback, res) {
 function shouldOutput304(lastSeen, filestats) {
 
   var mTimeMatches = lastSeen === filestats.uploadDate.toString();
+
+  if (verbose) {
+    var message = 'Comparing\n' + lastSeen + '\n';
+    message += filestats.uploadDate.getTime();
+    console.log(message);
+  }
 
   return mTimeMatches && !disable304 && !filestats.metadata.status;
 }
