@@ -6,7 +6,11 @@ var threads = db.threads();
 var boards = db.boards();
 var posts = db.posts();
 var miscOps = require('./miscOps');
-var previewPosts = require('../boot').getGeneralSettings().previewPostCount;
+var delOps = require('./deletionOps');
+var settings = require('../boot').getGeneralSettings();
+var previewPosts = settings.previewPostCount;
+var threadLimit = settings.maxThreadCount;
+
 var postingParameters = [ {
   field : 'subject',
   length : 128
@@ -22,9 +26,24 @@ var postingParameters = [ {
 } ];
 
 // start of thread creation
+function finishThreadCreation(boardUri, threadId, callback) {
+  // signal rebuild of board pages
+  process.send({
+    board : boardUri
+  });
+
+  // signal rebuild of thread
+  process.send({
+    board : boardUri,
+    thread : threadId
+  });
+
+  callback(null, threadId);
+}
+
 function updateBoardForThreadCreation(boardUri, threadId, callback) {
 
-  boards.update({
+  boards.findOneAndUpdate({
     boardUri : boardUri
   }, {
     $set : {
@@ -33,23 +52,28 @@ function updateBoardForThreadCreation(boardUri, threadId, callback) {
     $inc : {
       threadCount : 1
     }
-  }, function updatedBoard(error, result) {
+  }, {
+    returnOriginal : false
+  }, function updatedBoard(error, board) {
     if (error) {
       callback(error);
     } else {
 
-      // signal rebuild of board pages
-      process.send({
-        board : boardUri
-      });
+      if (board.value.threadCount > threadLimit) {
 
-      // signal rebuild of thread
-      process.send({
-        board : boardUri,
-        thread : threadId
-      });
+        // style exception, too simple
+        delOps.cleanThreads(boardUri, function cleanedThreads(error) {
+          if (error) {
+            callback(error);
+          } else {
+            finishThreadCreation(boardUri, threadId, callback);
+          }
+        });
+        // style exception, too simple
 
-      callback(null, threadId);
+      } else {
+        finishThreadCreation(boardUri, threadId, callback);
+      }
 
     }
   });

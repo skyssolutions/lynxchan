@@ -125,7 +125,6 @@ function generatePostListing(document, boardUri, thread, posts, callback) {
   postsContent += 'OP: ' + thread.message + '<br><br>';
 
   for (var i = 0; i < posts.length; i++) {
-    // TODO check if is the first post and change style
 
     var post = posts[i];
 
@@ -139,7 +138,8 @@ function generatePostListing(document, boardUri, thread, posts, callback) {
   gridFs.writeData(serializer(document), '/' + boardUri + '/' + ownName,
       'text/html', {
         boardUri : boardUri,
-        type : 'board'
+        type : 'thread',
+        threadId : thread.threadId
       }, callback);
 
 }

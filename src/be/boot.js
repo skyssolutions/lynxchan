@@ -110,10 +110,13 @@ function regenerateAll() {
 
   generator.all(function regeneratedAll(error) {
     if (error) {
+
+      if (generalSettings.verbose) {
+        console.log(error);
+      }
+
       if (debug) {
         throw error;
-      } else if (generalSettings.verbose) {
-        console.log(error);
       }
 
     } else {
@@ -129,10 +132,12 @@ function checkNotFound(files) {
 
     generator.notFound(function generated(error) {
       if (error) {
+        if (generalSettings.verbose) {
+          console.log(error);
+        }
+
         if (debug) {
           throw error;
-        } else if (generalSettings.verbose) {
-          console.log(error);
         }
 
       } else {
@@ -152,10 +157,12 @@ function checkFrontPage(files) {
   if (files.indexOf('/') === -1) {
     generator.frontPage(function generated(error) {
       if (error) {
+        if (generalSettings.verbose) {
+          console.log(error);
+        }
+
         if (debug) {
           throw error;
-        } else if (generalSettings.verbose) {
-          console.log(error);
         }
 
       } else {
@@ -202,7 +209,13 @@ function checkForDefaultPages() {
     }
   }, function gotFiles(error, files) {
     if (error) {
-      console.log(error);
+      if (generalSettings.verbose) {
+        console.log(error);
+      }
+
+      if (debug) {
+        throw error;
+      }
     } else if (files.length) {
       checkFrontPage(files[0].pages);
     } else {
@@ -215,7 +228,13 @@ function checkForDefaultPages() {
 try {
   exports.loadSettings();
 } catch (error) {
-  console.log(error);
+  if (generalSettings.verbose) {
+    console.log(error);
+  }
+
+  if (debug) {
+    throw error;
+  }
   return;
 }
 
@@ -224,7 +243,13 @@ if (cluster.isMaster) {
   db.init(function bootedDb(error) {
 
     if (error) {
-      console.log(error);
+      if (generalSettings.verbose) {
+        console.log(error);
+      }
+
+      if (debug) {
+        throw error;
+      }
     } else {
       checkForDefaultPages();
     }

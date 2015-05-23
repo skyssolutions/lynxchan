@@ -65,9 +65,13 @@ function clearTree(error, message) {
   processQueue();
 
   if (error) {
+
     if (verbose) {
       console.log(error);
-    } else if (debug) {
+
+    }
+
+    if (debug) {
       throw error;
     }
 

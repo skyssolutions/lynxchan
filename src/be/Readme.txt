@@ -33,6 +33,7 @@ ssl(Boolean): if true, will listen to https on port 443.
 fePath: absolute path to the directory containing the fe files. Defaults to the relative path to the src/fe diretory.
 pageSize(Number): amount of threads on each board page.
 previewPostCount(Number): number of preview posts on a thread.
+maxThreadCount(Number): maximum amount of threads allowed per board.
 
 db.json:
 address: address of the database.
@@ -45,6 +46,7 @@ Settings files must contain a json object where each key defined here will have 
 
 Metadata of files on gridfs will have the following values:
 boardUri: board to which the file belongs to. If undefined, file is a default site file.
+threadId(Number): id of the thread the file belongs to.
 postId(Number): id of the post the file belongs to.
 originalName: original name of the file.
 type: type of file. May hold one of the following values:
