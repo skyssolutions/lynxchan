@@ -12,6 +12,35 @@ var settings = require('../boot').getGeneralSettings();
 var pageSize = settings.pageSize;
 var verbose = settings.verbose;
 
+var postProjection = {
+  _id : 0,
+  subject : 1,
+  creation : 1,
+  threadId : 1,
+  postId : 1,
+  name : 1,
+  email : 1,
+  message : 1
+};
+var threadProjection = {
+  _id : 0,
+  subject : 1,
+  threadId : 1,
+  creation : 1,
+  name : 1,
+  email : 1,
+  message : 1,
+  lastBump : 1,
+  latestPosts : 1
+};
+var boardProjection = {
+  _id : 0,
+  boardUri : 1,
+  threadCount : 1,
+  boardName : 1,
+  boardDescription : 1
+};
+
 var toGenerate;
 var MAX_TO_GENERATE = 3;
 var reloading;
@@ -79,11 +108,7 @@ exports.frontPage = function(callback) {
     console.log('Generating front-page');
   }
 
-  boards.find({}, {
-    _id : 0,
-    boardUri : 1,
-    boardName : 1
-  }).sort({
+  boards.find({}, boardProjection).sort({
     boardUri : 1
   }).toArray(function gotResults(error, results) {
     if (error) {
@@ -121,11 +146,7 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData) {
 
     boards.findOne({
       boardUri : boardUri
-    }, {
-      _id : 0,
-      boardName : 1,
-      boardDescription : 1
-    }, function gotBoard(error, board) {
+    }, boardProjection, function gotBoard(error, board) {
       if (error) {
         callback(error);
       } else {
@@ -142,14 +163,7 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData) {
     threads.findOne({
       boardUri : boardUri,
       threadId : threadId
-    }, {
-      _id : 0,
-      subject : 1,
-      threadId : 1,
-      name : 1,
-      email : 1,
-      message : 1
-    }, function gotThread(error, thread) {
+    }, threadProjection, function gotThread(error, thread) {
       if (error) {
         callback(error);
       } else {
@@ -168,14 +182,7 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData) {
   posts.find({
     boardUri : boardUri,
     threadId : threadId
-  }, {
-    _id : 0,
-    subject : 1,
-    postId : 1,
-    name : 1,
-    email : 1,
-    message : 1
-  }).sort({
+  }, postProjection).sort({
     creation : 1
   }).toArray(function(error, posts) {
     if (error) {
@@ -216,14 +223,7 @@ function getThreads(boardUri, boardData, callback) {
 
   var cursor = threads.find({
     boardUri : boardUri,
-  }, {
-    _id : 0,
-    subject : 1,
-    threadId : 1,
-    name : 1,
-    email : 1,
-    message : 1
-  });
+  }, threadProjection);
 
   iterateThreadsCursor(boardUri, boardData, cursor, callback);
 
@@ -239,11 +239,7 @@ exports.allThreads = function(boardUri, callback, boardData) {
 
     boards.findOne({
       boardUri : boardUri
-    }, {
-      _id : 0,
-      boardName : 1,
-      boardDescription : 1
-    }, function gotBoard(error, board) {
+    }, boardProjection, function gotBoard(error, board) {
       if (error) {
         callback(error);
       } else {
@@ -280,16 +276,7 @@ function getPreviewPosts(boardUri, page, threadsArray, pageCount, boardData,
       }
     }
   }, {
-    $project : {
-      _id : 0,
-      message : 1,
-      name : 1,
-      creation : 1,
-      postId : 1,
-      threadId : 1,
-      email : 1,
-      subject : 1
-    }
+    $project : postProjection
   }, {
     $group : {
       _id : '$threadId',
@@ -362,12 +349,7 @@ exports.page = function(boardUri, page, callback, boardData) {
 
     boards.findOne({
       boardUri : boardUri
-    }, {
-      _id : 0,
-      boardName : 1,
-      boardDescription : 1,
-      threadCount : 1
-    }, function gotBoard(error, board) {
+    }, boardProjection, function gotBoard(error, board) {
       if (error) {
         callback(error);
       } else {
@@ -394,17 +376,7 @@ exports.page = function(boardUri, page, callback, boardData) {
 
   threads.find({
     boardUri : boardUri
-  }, {
-    _id : 0,
-    name : 1,
-    email : 1,
-    creation : 1,
-    threadId : 1,
-    message : 1,
-    subject : 1,
-    lastBump : 1,
-    latestPosts : 1
-  }).sort({
+  }, threadProjection).sort({
     lastBump : -1
   }).skip(toSkip).limit(pageSize).toArray(
       function(error, threadsArray) {
@@ -457,12 +429,7 @@ exports.board = function(boardUri, reloadThreads, callback, boardData) {
 
     boards.findOne({
       boardUri : boardUri
-    }, {
-      _id : 0,
-      boardName : 1,
-      boardDescription : 1,
-      threadCount : 1
-    }, function gotBoard(error, board) {
+    }, boardProjection, function gotBoard(error, board) {
       if (error) {
         callback(error);
       } else {
@@ -532,13 +499,7 @@ exports.boards = function(callback) {
     console.log('Generating all boards.');
   }
 
-  var cursor = boards.find({}, {
-    _id : 0,
-    boardUri : 1,
-    boardName : 1,
-    boardDescription : 1,
-    threadCount : 1
-  });
+  var cursor = boards.find({}, boardProjection);
 
   iterateBoards(cursor, callback);
 

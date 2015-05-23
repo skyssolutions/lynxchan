@@ -9,6 +9,7 @@ divBoards:
 ------------------------------------------------------------------------------------------
 
 boardPage:
+
 Elements:
 labelName:
     type: h1.
@@ -18,7 +19,7 @@ labelDescription:
     type: h3.
     description: contains the description of the bord.
 
-divThreads:
+divPostings:
     type: div.
     description: contains the list list of threads in the page.
     
@@ -33,6 +34,8 @@ boardIdentifier:
 ------------------------------------------------------------------------------------------
 
 threadPage:
+
+Elements:
 labelName:
     type: h1.
     description: contains the URI and name of the board.
@@ -41,7 +44,7 @@ labelDescription:
     type: h3.
     description: contains the description of the bord.
 
-divPosts:
+divPostings:
     type: div.
     description: contains the listing of posts in the thread, including the OP.
 
@@ -56,6 +59,7 @@ threadIdentifier:
 ------------------------------------------------------------------------------------------
 
 messagePage:
+
 Elements:
 labelMessage:
     type: h3.
@@ -67,3 +71,66 @@ linkRedirect:
 
 Required tags:
 head
+------------------------------------------------------------------------------------------
+
+opCell:
+
+Elements:
+labelName:
+    type: span.
+    description: contains contain the poster's name.
+
+labelEmail:
+    type: span.
+    description: contains contain the poster's e-mail.
+
+labelSubject:
+    type: span.
+    description: contains contain the thread's subject.
+
+labelCreated:
+    type: span.
+    description: contains the when the thread was created.
+
+divMessage:
+    type: div.
+    description: contains the thread's message.
+
+linkReply:
+    type: a.
+    description: contains the link to reply the thread.
+
+linkSelf:
+	type: a.
+	description: contains the link for the post itself.
+
+------------------------------------------------------------------------------------------
+
+postCell
+
+Elements:
+labelName:
+    type: span.
+    description: contains contain the poster's name.
+
+labelEmail:
+    type: span.
+    description: contains contain the poster's e-mail.
+
+labelSubject:
+    type: span.
+    description: contains contain the thread's subject.
+
+labelCreated:
+    type: span.
+    description: contains the when the thread was created.
+
+divMessage:
+    type: div.
+    description: contains the thread's message.
+
+linkSelf:
+	type: a.
+	description: contains the link for the post itself.
+
+------------------------------------------------------------------------------------------

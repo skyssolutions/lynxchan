@@ -121,33 +121,6 @@ exports.frontPage = function(boards, callback) {
   }
 };
 
-function generatePostListing(document, boardUri, thread, posts, callback) {
-
-  var postsDiv = document.getElementById('divPosts');
-
-  var postsContent = '';
-  postsContent += 'OP: ' + thread.message + '<br><br>';
-
-  for (var i = 0; i < posts.length; i++) {
-
-    var post = posts[i];
-
-    postsContent += post.message + '<br><br>';
-  }
-
-  postsDiv.innerHTML = postsContent;
-
-  var ownName = 'res/' + thread.threadId + '.html';
-
-  gridFs.writeData(serializer(document), '/' + boardUri + '/' + ownName,
-      'text/html', {
-        boardUri : boardUri,
-        type : 'thread',
-        threadId : thread.threadId
-      }, callback);
-
-}
-
 exports.thread = function(boardUri, boardData, threadData, posts, callback) {
 
   try {
@@ -170,22 +143,31 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback) {
 
     threadIdentifyInput.setAttribute('value', threadData.threadId);
 
-    generatePostListing(document, boardUri, threadData, posts, callback);
+    addThread(document, threadData, posts, boardUri, true);
+
+    var ownName = 'res/' + threadData.threadId + '.html';
+
+    gridFs.writeData(serializer(document), '/' + boardUri + '/' + ownName,
+        'text/html', {
+          boardUri : boardUri,
+          type : 'thread',
+          threadId : threadData.threadId
+        }, callback);
   } catch (error) {
     callback(error);
   }
 
 };
 
-function addPreviewPosts(document, previewPosts, boardUri) {
+function addPosts(document, posts, boardUri, threadId, innerPage) {
 
-  var divThreads = document.getElementById('divThreads');
+  var divThreads = document.getElementById('divPostings');
 
-  for (var i = 0; i < previewPosts.length; i++) {
+  for (var i = 0; i < posts.length; i++) {
     var postCell = document.createElement('div');
     postCell.innerHTML = postTemplate;
 
-    var post = previewPosts[i];
+    var post = posts[i];
 
     for (var j = 0; j < postCell.childNodes.length; j++) {
       var node = postCell.childNodes[j];
@@ -206,6 +188,12 @@ function addPreviewPosts(document, previewPosts, boardUri) {
       case 'divMessage':
         node.innerHTML = post.message;
         break;
+      case 'linkSelf':
+        postCell.id = post.postId;
+        node.innerHTML = post.postId;
+        var link = (innerPage ? '' : 'res/') + threadId + '.html#';
+        node.href = link + post.postId;
+        break;
       }
     }
 
@@ -215,7 +203,7 @@ function addPreviewPosts(document, previewPosts, boardUri) {
 
 }
 
-function addThreadToPage(document, thread, previewPosts, boardUri) {
+function addThread(document, thread, posts, boardUri, innerPage) {
 
   var threadCell = document.createElement('div');
   threadCell.innerHTML = opTemplate;
@@ -239,16 +227,26 @@ function addThreadToPage(document, thread, previewPosts, boardUri) {
     case 'divMessage':
       node.innerHTML = thread.message;
       break;
+    case 'linkSelf':
+      node.innerHTML = thread.threadId;
+      var link = (innerPage ? '' : 'res/') + thread.threadId + '.html#';
+      node.href = link + thread.threadId;
+      threadCell.id = thread.threadId;
+      break;
     case 'linkReply':
-      node.href = 'res/' + thread.threadId + '.html';
+      if (innerPage) {
+        node.style.display = 'none';
+      } else {
+        node.href = 'res/' + thread.threadId + '.html';
+      }
       break;
 
     }
   }
 
-  document.getElementById('divThreads').appendChild(threadCell);
+  document.getElementById('divPostings').appendChild(threadCell);
 
-  addPreviewPosts(document, previewPosts || [], boardUri);
+  addPosts(document, posts || [], boardUri, thread.threadId, innerPage);
 
 }
 
@@ -264,12 +262,10 @@ function generateThreadListing(document, boardUri, page, threads, preview,
 
   preview = tempPreview;
 
-  var threadsDiv = document.getElementById('divThreads');
-
   for (i = 0; i < threads.length; i++) {
     var thread = threads[i];
 
-    addThreadToPage(document, thread, preview[thread.threadId], boardUri);
+    addThread(document, thread, preview[thread.threadId], boardUri);
 
   }
 
