@@ -213,7 +213,7 @@ function createPost(parameters, postId, thread, callback) {
   var postToAdd = {
     boardUri : parameters.boardUri,
     postId : postId,
-    parent : parameters.threadId,
+    threadId : parameters.threadId,
     creation : new Date(),
     subject : parameters.subject,
     name : parameters.name,

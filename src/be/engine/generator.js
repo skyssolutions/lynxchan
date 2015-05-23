@@ -49,7 +49,6 @@ exports.all = function(callback) {
   reloading = true;
   toGenerate = MAX_TO_GENERATE;
 
-  // TODO call other generations
   exports.frontPage(function reloaded(error) {
     fullReloadCallback(error, callback);
   });
@@ -168,7 +167,7 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData) {
 
   posts.find({
     boardUri : boardUri,
-    parent : threadId
+    threadId : threadId
   }, {
     _id : 0,
     subject : 1,
@@ -263,6 +262,60 @@ exports.allThreads = function(boardUri, callback, boardData) {
 
 // page creation start
 
+function getPreviewPosts(boardUri, page, threadsArray, pageCount, boardData,
+    callback) {
+
+  var postsToFetch = [];
+
+  for (var i = 0; i < threadsArray.length; i++) {
+    if (threadsArray[i].latestPosts) {
+      postsToFetch = postsToFetch.concat(threadsArray[i].latestPosts);
+    }
+  }
+
+  posts.aggregate([ {
+    $match : {
+      postId : {
+        $in : postsToFetch
+      }
+    }
+  }, {
+    $project : {
+      _id : 0,
+      message : 1,
+      name : 1,
+      creation : 1,
+      postId : 1,
+      threadId : 1,
+      email : 1,
+      subject : 1
+    }
+  }, {
+    $group : {
+      _id : '$threadId',
+      preview : {
+        $push : {
+          postId : '$postId',
+          message : '$message',
+          name : '$name',
+          email : '$email',
+          subject : '$subject',
+          creation : '$creation'
+        }
+      }
+    }
+  } ], function gotPosts(error, postsToPreview) {
+    if (error) {
+      callback(error);
+    } else {
+
+      domManipulator.page(boardUri, page, threadsArray, pageCount, boardData,
+          postsToPreview, callback);
+    }
+  });
+
+}
+
 // pre-aggregates the page the thread is sitting in.
 function updateThreadsPage(boardUri, page, threadsArray, pageCount, boardData,
     callback) {
@@ -288,8 +341,10 @@ function updateThreadsPage(boardUri, page, threadsArray, pageCount, boardData,
     if (error) {
       callback(error);
     } else {
-      domManipulator.page(boardUri, page, threadsArray, pageCount, boardData,
+
+      getPreviewPosts(boardUri, page, threadsArray, pageCount, boardData,
           callback);
+
     }
 
   });
@@ -340,10 +395,15 @@ exports.page = function(boardUri, page, callback, boardData) {
   threads.find({
     boardUri : boardUri
   }, {
-    threadId : 1,
-    content : 1,
     _id : 0,
+    name : 1,
+    email : 1,
+    creation : 1,
+    threadId : 1,
+    message : 1,
+    subject : 1,
     lastBump : 1,
+    latestPosts : 1
   }).sort({
     lastBump : -1
   }).skip(toSkip).limit(pageSize).toArray(
@@ -441,6 +501,7 @@ function iterateBoards(cursor, callback) {
 
   cursor.next(function gotResults(error, board) {
     if (error) {
+
       callback(error);
     } else if (!board) {
 
@@ -450,7 +511,11 @@ function iterateBoards(cursor, callback) {
       // style exception parent callback is too simple
       exports.board(board.boardUri, true, function generatedBoard(error) {
 
-        iterateBoards(cursor, callback);
+        if (error) {
+          callback(error);
+        } else {
+          iterateBoards(cursor, callback);
+        }
 
       }, board);
       // style exception parent callback is too simple

@@ -22,6 +22,8 @@ index: template for the site's main page.
 boardPage: template for the pages of the board.
 threadPage: template for the page of a thread.
 notFoundPage: template for the 404 page.
+opCell: template for the OP's.
+postCell: template for thread replies.
 
 Settings files that goes into the settings directory:
 general.json:

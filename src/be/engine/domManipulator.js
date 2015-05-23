@@ -18,6 +18,8 @@ var threadTemplate;
 var boardTemplate;
 var notFoundTemplate;
 var messageTemplate;
+var opTemplate;
+var postTemplate;
 
 require('jsdom').defaultDocumentFeatures = {
   FetchExternalResources : false,
@@ -36,6 +38,8 @@ exports.loadTemplates = function() {
   boardTemplate = fs.readFileSync(fePath + templateSettings.boardPage);
   notFoundTemplate = fs.readFileSync(fePath + templateSettings.notFoundPage);
   messageTemplate = fs.readFileSync(fePath + templateSettings.messagePage);
+  opTemplate = fs.readFileSync(fePath + templateSettings.opCell);
+  postTemplate = fs.readFileSync(fePath + templateSettings.postCell);
 
 };
 
@@ -173,29 +177,99 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback) {
 
 };
 
-function generateThreadListing(document, boardUri, page, threads, callback) {
-  var threadsDiv = document.getElementById('divThreads');
+function addPreviewPosts(document, previewPosts, boardUri) {
 
-  if (!threadsDiv) {
-    callback('No threads div on board page template');
-    return;
-  }
+  var divThreads = document.getElementById('divThreads');
 
-  var includedThreads = [];
+  for (var i = 0; i < previewPosts.length; i++) {
+    var postCell = document.createElement('div');
+    postCell.innerHTML = postTemplate;
 
-  for (var i = 0; i < threads.length; i++) {
-    var thread = threads[i];
+    var post = previewPosts[i];
 
-    includedThreads.push(thread.threadId);
+    for (var j = 0; j < postCell.childNodes.length; j++) {
+      var node = postCell.childNodes[j];
 
-    if (i) {
-      threadsDiv.innerHTML += '<br>';
+      switch (node.id) {
+      case 'labelName':
+        node.innerHTML = post.name;
+        break;
+      case 'labelEmail':
+        node.innerHTML = post.email;
+        break;
+      case 'labelSubject':
+        node.innerHTML = post.subject;
+        break;
+      case 'labelCreated':
+        node.innerHTML = post.creation;
+        break;
+      case 'divMessage':
+        node.innerHTML = post.message;
+        break;
+      }
     }
 
-    var content = thread.threadId + '<a href="res/' + thread.threadId + '.html';
-    content += '">Reply</a>';
+    divThreads.appendChild(postCell);
 
-    threadsDiv.innerHTML += content;
+  }
+
+}
+
+function addThreadToPage(document, thread, previewPosts, boardUri) {
+
+  var threadCell = document.createElement('div');
+  threadCell.innerHTML = opTemplate;
+
+  for (var i = 0; i < threadCell.childNodes.length; i++) {
+    var node = threadCell.childNodes[i];
+
+    switch (node.id) {
+    case 'labelName':
+      node.innerHTML = thread.name;
+      break;
+    case 'labelEmail':
+      node.innerHTML = thread.email;
+      break;
+    case 'labelSubject':
+      node.innerHTML = thread.subject;
+      break;
+    case 'labelCreated':
+      node.innerHTML = thread.creation;
+      break;
+    case 'divMessage':
+      node.innerHTML = thread.message;
+      break;
+    case 'linkReply':
+      node.href = 'res/' + thread.threadId + '.html';
+      break;
+
+    }
+  }
+
+  document.getElementById('divThreads').appendChild(threadCell);
+
+  addPreviewPosts(document, previewPosts || [], boardUri);
+
+}
+
+function generateThreadListing(document, boardUri, page, threads, preview,
+    callback) {
+
+  var tempPreview = {};
+
+  for (var i = 0; i < preview.length; i++) {
+
+    tempPreview[preview[i]._id] = preview[i].preview;
+  }
+
+  preview = tempPreview;
+
+  var threadsDiv = document.getElementById('divThreads');
+
+  for (i = 0; i < threads.length; i++) {
+    var thread = threads[i];
+
+    addThreadToPage(document, thread, preview[thread.threadId], boardUri);
 
   }
 
@@ -208,7 +282,8 @@ function generateThreadListing(document, boardUri, page, threads, callback) {
       }, callback);
 }
 
-exports.page = function(board, page, threads, pageCount, boardData, callback) {
+exports.page = function(board, page, threads, pageCount, boardData, preview,
+    callback) {
 
   try {
 
@@ -239,7 +314,7 @@ exports.page = function(board, page, threads, pageCount, boardData, callback) {
 
     }
 
-    generateThreadListing(document, board, page, threads, callback);
+    generateThreadListing(document, board, page, threads, preview, callback);
   } catch (error) {
     callback(error);
   }

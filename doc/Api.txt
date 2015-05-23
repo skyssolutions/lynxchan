@@ -60,6 +60,17 @@ Output(Number): id of the new post.
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::03**
+
+Name: listBoards
+
+Output(Array): array with available boards. Each object contains the following structure:
+    boardUri: uri of the board.
+    boardName: name of the board.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters
+**: exclusive funcionality to the json api.
 
 
