@@ -20,6 +20,10 @@ threads:
     postCount(Number): pre-aggregated number of posts in the thread.
     latestPosts(Array): pre-aggregated array of ids of the latest posts in this thread.
     page(Number): pre-aggregated number of the page this thread was assigned to on last board creation. Indexed by 1.
+    files(Array): pre-aggregated array of files uploaded with the thread. Each object contains the following fields:
+        originalName: original name of the upload.
+        path: path for the file.
+        thumb: path for the file's thumbnail.
 
 ----------------------------------------------------------------------------------------
 
@@ -32,6 +36,10 @@ posts:
     boardUri*/***: url of the board the post belongs to.
     threadId(Number)*/***: id of the thread the post belongs to.
     postId(Number)***: unique id of the post inside the board.
+    files(Array): pre-aggregated array of files uploaded with the post. Each object contains the following fields:
+        originalName: original name of the upload.
+        path: path for the file.
+        thumb: path for the file's thumbnail.
  
 ----------------------------------------------------------------------------------------
 

@@ -104,14 +104,16 @@ exports.frontPage = function(boards, callback) {
 
       var board = boards[i];
 
-      var block = '<a href="' + board.boardUri + '">';
-      block += '/' + board.boardUri + '/ - ' + board.boardName + '</a>';
+      var link = document.createElement('a');
+
+      link.href = board.boardUri;
+      link.innerHTML = '/' + board.boardUri + '/ - ' + board.boardName;
 
       if (i) {
-        block = '<br>' + block;
+        boardsDiv.appendChild(document.createElement('br'));
       }
 
-      boardsDiv.innerHTML += block;
+      boardsDiv.appendChild(link);
 
     }
 
@@ -166,6 +168,7 @@ function addPosts(document, posts, boardUri, threadId, innerPage) {
   for (var i = 0; i < posts.length; i++) {
     var postCell = document.createElement('div');
     postCell.innerHTML = postTemplate;
+    postCell.setAttribute('class', 'postCell');
 
     var post = posts[i];
 
@@ -207,6 +210,7 @@ function addThread(document, thread, posts, boardUri, innerPage) {
 
   var threadCell = document.createElement('div');
   threadCell.innerHTML = opTemplate;
+  threadCell.setAttribute('class', 'opCell');
 
   for (var i = 0; i < threadCell.childNodes.length; i++) {
     var node = threadCell.childNodes[i];
@@ -278,6 +282,22 @@ function generateThreadListing(document, boardUri, page, threads, preview,
       }, callback);
 }
 
+function addPagesLinks(document, pageCount) {
+  var pagesDiv = document.getElementById('divPages');
+
+  for (var i = 0; i < pageCount; i++) {
+
+    var pageName = i ? (i + 1) + '.html' : 'index.html';
+
+    var link = document.createElement('a');
+    link.href = pageName;
+    link.innerHTML = i + 1;
+
+    pagesDiv.appendChild(link);
+
+  }
+}
+
 exports.page = function(board, page, threads, pageCount, boardData, preview,
     callback) {
 
@@ -298,17 +318,7 @@ exports.page = function(board, page, threads, pageCount, boardData, preview,
     titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
     descriptionHeader.innerHTML = boardData.boardDescription;
 
-    var pagesDiv = document.getElementById('divPages');
-
-    pagesDiv.innerHTML = '';
-
-    for (var i = 0; i < pageCount; i++) {
-
-      var pageName = i ? (i + 1) + '.html' : 'index.html';
-
-      pagesDiv.innerHTML += '<a href="' + pageName + '">' + (i + 1) + '</a>  ';
-
-    }
+    addPagesLinks(document, pageCount);
 
     generateThreadListing(document, board, page, threads, preview, callback);
   } catch (error) {

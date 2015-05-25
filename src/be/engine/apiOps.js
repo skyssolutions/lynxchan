@@ -1,11 +1,44 @@
 'use strict';
 
 // general operations for the json api
-var verbose = require('../boot').getGeneralSettings().verbose;
+var settings = require('../boot').getGeneralSettings();
+var verbose = settings.verbose;
 var miscOps = require('./miscOps');
+var fs = require('fs');
+var crypto = require('crypto');
+var path = require('path');
+var tempDir = settings.tempDirectory || '/tmp';
+var uploadHandler = require('./uploadHandler');
+
+var FILE_EXT_RE = /(\.[_\-a-zA-Z0-9]{0,16}).*/;
+// replace base64 characters with safe-for-filename characters
+var b64Safe = {
+  '/' : '_',
+  '+' : '-'
+};
+
+function uploadPath(baseDir, filename) {
+  var ext = path.extname(filename).replace(FILE_EXT_RE, '$1');
+  var name = randoString(18) + ext;
+  return path.join(baseDir, name);
+}
+
+function randoString(size) {
+  return rando(size).toString('base64').replace(/[\/\+]/g, function(x) {
+    return b64Safe[x];
+  });
+}
+
+function rando(size) {
+  try {
+    return crypto.randomBytes(size);
+  } catch (err) {
+    return crypto.pseudoRandomBytes(size);
+  }
+}
 
 // TODO change to use settings
-var REQUEST_LIMIT_SIZE = 1e6;
+var REQUEST_LIMIT_SIZE = 1e6 * 100;
 
 exports.checkBlankParameters = function(object, parameters, res) {
 
@@ -56,6 +89,51 @@ exports.checkBlankParameters = function(object, parameters, res) {
 
 };
 
+function storeImages(parsedData, res, finalArray, callback) {
+
+  var hasFiles = parsedData.parameters && parsedData.parameters.files;
+
+  if (hasFiles && parsedData.parameters.files.length) {
+    var file = parsedData.parameters.files.shift();
+
+    var matches = file.content.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+
+    var mime = matches[1];
+    var imageBuffer = new Buffer(matches[2], 'base64');
+
+    var location = uploadPath(tempDir, file.name);
+
+    finalArray.push({
+      title : file.name,
+      mime : mime,
+      pathInDisk : location
+    });
+
+    fs.writeFile(location, imageBuffer, function wroteFile(error) {
+      storeImages(parsedData, res, finalArray, callback);
+    });
+
+  } else {
+    var parameters = parsedData.parameters || {};
+    parameters.files = finalArray;
+
+    var endingCb = function() {
+
+      for (var j = 0; j < finalArray.length; j++) {
+        uploadHandler.removeFromDisk(finalArray[j].pathInDisk);
+      }
+
+    };
+
+    res.on('close', endingCb);
+
+    res.on('finish', endingCb);
+
+    callback(parsedData.auth, parameters);
+  }
+
+}
+
 exports.getAnonJsonData = function(req, res, callback) {
 
   var body = '';
@@ -80,10 +158,10 @@ exports.getAnonJsonData = function(req, res, callback) {
     try {
       var parsedData = JSON.parse(body);
 
-      callback(parsedData.auth, parsedData.parameters, parsedData);
+      storeImages(parsedData, res, [], callback);
 
     } catch (error) {
-      exports.outputMessage(null, error.toString(), 'parseError', res);
+      exports.outputResponse(null, error.toString(), 'parseError', res);
     }
 
   });

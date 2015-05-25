@@ -5,6 +5,7 @@
 var db = require('../db');
 var files = db.files();
 var conn = db.conn();
+var boards = db.boards();
 var files = db.files();
 var mongo = require('mongodb');
 var settings = require('../boot').getGeneralSettings();
@@ -60,6 +61,137 @@ exports.writeData = function(data, destination, mime, meta, callback) {
 
 };
 // end of writing data
+
+// start of transferring file to gridfs
+function writeFileOnOpenFile(gs, path, callback) {
+  gs.writeFile(path, function wroteFile(error) {
+
+    // style exception, too simple
+    gs.close(function closed(closeError, result) {
+      callback(error || closeError);
+    });
+    // style exception, too simple
+
+  });
+}
+
+exports.writeFile = function(path, destination, mime, meta, callback) {
+
+  if (verbose) {
+    console.log('Writing file on gridfs under \'' + destination + '\'');
+  }
+
+  var gs = mongo.GridStore(conn, destination, 'w', {
+    'content_type' : mime,
+    metadata : meta
+  });
+
+  exports.removeFiles(destination, function clearedFile(error) {
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      gs.open(function openedGs(error, gs) {
+
+        if (error) {
+          callback(error);
+        } else {
+          writeFileOnOpenFile(gs, path, callback);
+        }
+      });
+      // style exception, too simple
+
+    }
+  });
+
+};
+// end of transferring file to gridfs
+
+// start of saving upload
+function transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb,
+    extension) {
+
+  var fileName = fileId + '.' + extension;
+  fileName = '/' + boardUri + '/media/' + fileName;
+
+  var meta = {
+    boardUri : boardUri,
+    threadId : threadId,
+    type : 'media'
+  };
+
+  if (postId) {
+    meta.postId = postId;
+  }
+
+  file.path = fileName;
+  file.gfsName = fileId + '.' + extension;
+
+  exports.writeFile(file.pathInDisk, fileName, file.mime, meta, cb);
+
+}
+
+function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb) {
+
+  var parts = file.title.split('.');
+
+  var meta = {
+    boardUri : boardUri,
+    threadId : threadId,
+    type : 'media'
+  };
+
+  if (postId) {
+    meta.postId = postId;
+  }
+
+  if (parts.length) {
+    var ext = parts[parts.length - 1].toLowerCase();
+
+    var thumbName = 't_' + fileId + '.' + ext;
+    thumbName = '/' + boardUri + '/media/' + thumbName;
+
+    file.thumbPath = thumbName;
+
+    exports.writeFile(file.pathInDisk + '_t', thumbName, file.mime, meta,
+        function wroteTbToGfs(error) {
+          if (error) {
+            cb(error);
+          } else {
+            transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb,
+                ext);
+          }
+
+        });
+
+  } else {
+    cb('Unknown extension');
+  }
+
+}
+
+exports.saveUpload = function(boardUri, threadId, postId, file, callback) {
+
+  boards.findOneAndUpdate({
+    boardUri : boardUri
+  }, {
+    $inc : {
+      lastFileId : 1
+    }
+  }, {
+    returnOriginal : false
+  }, function incrementedFileId(error, result) {
+    if (error) {
+      callback(error);
+    } else {
+      transferThumbToGfs(boardUri, threadId, postId, result.value.lastFileId,
+          file, callback);
+    }
+  });
+
+};
+// end of saving upload
 
 exports.removeFiles = function(name, callback) {
 

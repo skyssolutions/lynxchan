@@ -2,6 +2,7 @@ Required modules:
 mongodb
 imagemagick
 jsdom
+multiparty
 Latest version of all them.
 
 boot.js is the main file, run it using io.js to start the system. Keep in mind that if you ran setup.sh, you can just run the lynxchan command or start the lynxchan service.
@@ -36,6 +37,7 @@ fePath: absolute path to the directory containing the fe files. Defaults to the 
 pageSize(Number): amount of threads on each board page.
 previewPostCount(Number): number of preview posts on a thread.
 maxThreadCount(Number): maximum amount of threads allowed per board.
+tempDirectory: path for temporary files. Defaults to '/tmp'.
 
 db.json:
 address: address of the database.
@@ -50,7 +52,6 @@ Metadata of files on gridfs will have the following values:
 boardUri: board to which the file belongs to. If undefined, file is a default site file.
 threadId(Number): id of the thread the file belongs to.
 postId(Number): id of the post the file belongs to.
-originalName: original name of the file.
 type: type of file. May hold one of the following values:
     board: file is a board page.
     thread: file is a thread page.

@@ -26,12 +26,18 @@ The global status are:
     ok: operation sucessful.
 
 The back-end will truncate strings longer than the maximum length.
+Files should be sent in a parameter called 'files' containing an array where each object contains the following fields:
+name: original name of the file.
+content: content of the file using base64 encoding. Example of content: 
+data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAECAIAAAAiZtkUAAAAA3NCSVQICAjb4U/gAAAAGXRFWHRTb2Z0d2FyZQBnbm9tZS1zY3JlZW5zaG907wO/PgAAABVJREFUCJlj/P//PwMqYGLAAMQJAQDengMFOtjosAAAAABJRU5ErkJggg==
 
 ------------------------------------------------------------------------------------------
 
 PAG_ID::01
 
 Name: newThread
+
+Description: creates a new thread. Accepts files.
 
 Parameters:
     name: name of the poster. 32 characters.
@@ -47,6 +53,8 @@ Output(Number): id of the new thread.
 PAG_ID::02
 
 Name: replyThread
+
+Description: post a reply to a thread. Accepts files.
 
 Parameters:
     name: name of the poster. 32 characters.

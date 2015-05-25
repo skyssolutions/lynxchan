@@ -6,6 +6,7 @@ var threads = db.threads();
 var boards = db.boards();
 var posts = db.posts();
 var miscOps = require('./miscOps');
+var uploadHandler = require('./uploadHandler');
 var delOps = require('./deletionOps');
 var settings = require('../boot').getGeneralSettings();
 var previewPosts = settings.previewPostCount;
@@ -100,7 +101,19 @@ function createThread(parameters, threadId, callback) {
     } else if (error) {
       callback(error);
     } else {
-      updateBoardForThreadCreation(parameters.boardUri, threadId, callback);
+
+      // style exception, too simple
+      uploadHandler.saveUploads(parameters.boardUri, threadId, null,
+          parameters.files, function savedUploads(error) {
+            if (error) {
+              callback(error);
+            } else {
+              updateBoardForThreadCreation(parameters.boardUri, threadId,
+                  callback);
+            }
+          });
+      // style exception, too simple
+
     }
   });
 
@@ -227,7 +240,19 @@ function createPost(parameters, postId, thread, callback) {
     } else if (error) {
       callback(error);
     } else {
-      updateThread(parameters, postId, thread, callback);
+
+      // style exception, too simple
+      uploadHandler.saveUploads(parameters.boardUri, parameters.threadId,
+          postId, parameters.files, function savedFiles(error) {
+            if (error) {
+              callback(error);
+            } else {
+              updateThread(parameters, postId, thread, callback);
+            }
+
+          });
+      // style exception, too simple
+
     }
   });
 

@@ -4,6 +4,34 @@
 var verbose = require('../boot').getGeneralSettings().verbose;
 var formOps = require('./formOps');
 
+var MIMETYPES = {
+  html : 'text/html',
+  htm : 'text/html',
+  otf : 'application/x-font-otf',
+  ttf : 'application/x-font-ttf',
+  woff : 'application/x-font-woff',
+  js : 'application/javascript',
+  css : 'text/css',
+  png : 'image/png'
+};
+
+exports.getMime = function getHeader(pathName) {
+
+  var pathParts = pathName.split('.');
+
+  var mime;
+
+  if (pathParts.length) {
+    var extension = pathParts[pathParts.length - 1];
+    mime = MIMETYPES[extension.toLowerCase()] || 'text/plain';
+
+  } else {
+    mime = 'text/plain';
+  }
+
+  return mime;
+};
+
 // parameters must be an array of objects. each object must contain two keys:
 // one with a string with the name of the parameter, the other with a number
 // with its maximum length

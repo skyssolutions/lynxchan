@@ -1,60 +1,84 @@
 'use strict';
 
 // general operations for the form api
-var verbose = require('../boot').getGeneralSettings.verbose;
-var queryString = require('querystring');
+var settings = require('../boot').getGeneralSettings();
+var verbose = settings.verbose;
+var multiParty = require('multiparty');
+var parser = new multiParty.Form({
+  uploadDir : settings.tempDirectory || '/tmp',
+  autoFiles : true
+});
 var miscOps = require('./miscOps');
 var jsdom = require('jsdom').jsdom;
-var serializer = require('jsdom').serializeDocument;
 var domManipulator = require('./domManipulator');
-
-// TODO change to use settings
-var REQUEST_LIMIT_SIZE = 1e6;
+var uploadHandler = require('./uploadHandler');
 
 exports.getPostData = function(req, res, callback) {
 
-  var body = '';
+  try {
 
-  req.on('data', function dataReceived(data) {
-    body += data;
+    var parsedCookies = {};
 
-    if (body.length > REQUEST_LIMIT_SIZE) {
+    if (req.headers && req.headers.cookie) {
 
-      exports.outputError('Request too long.', 413, res);
+      var cookies = req.headers.cookie.split(';');
 
-      req.connection.destroy();
-    }
-  });
+      for (var i = 0; i < cookies.length; i++) {
 
-  req.on('end', function dataEnded() {
+        var cookie = cookies[i];
 
-    try {
-      var parsedData = queryString.parse(body);
-
-      var parsedCookies = {};
-
-      if (req.headers && req.headers.cookie) {
-
-        var cookies = req.headers.cookie.split(';');
-
-        for (var i = 0; i < cookies.length; i++) {
-
-          var cookie = cookies[i];
-
-          var parts = cookie.split('=');
-          parsedCookies[parts.shift().trim()] = decodeURI(parts.join('='));
-
-        }
+        var parts = cookie.split('=');
+        parsedCookies[parts.shift().trim()] = decodeURI(parts.join('='));
 
       }
 
-      callback(parsedCookies, parsedData);
-
-    } catch (error) {
-      exports.outputError(error, 500, res);
     }
 
-  });
+    parser.parse(req, function parsed(error, fields, files) {
+      if (error) {
+        throw error;
+      } else {
+        for ( var key in fields) {
+          if (fields.hasOwnProperty(key)) {
+            fields[key] = fields[key][0];
+          }
+        }
+
+        fields.files = [];
+
+        var endingCb = function() {
+
+          for (var j = 0; j < fields.files.length; j++) {
+            uploadHandler.removeFromDisk(fields.files[j].pathInDisk);
+          }
+
+        };
+
+        res.on('close', endingCb);
+
+        res.on('finish', endingCb);
+
+        if (files.files) {
+
+          for (var i = 0; i < files.files.length; i++) {
+            var file = files.files[i];
+
+            fields.files.push({
+              title : file.originalFilename,
+              pathInDisk : file.path,
+              mime : file.headers['content-type']
+            });
+          }
+        }
+
+        callback(parsedCookies, fields);
+
+      }
+
+    });
+  } catch (error) {
+    callback(error);
+  }
 
 };
 

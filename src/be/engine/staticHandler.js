@@ -12,17 +12,6 @@ var gridFs = require('./gridFsHandler');
 var miscOps = require('./miscOps');
 var url = require('url');
 
-var MIMETYPES = {
-  html : 'text/html',
-  htm : 'text/html',
-  otf : 'application/x-font-otf',
-  ttf : 'application/x-font-ttf',
-  woff : 'application/x-font-woff',
-  js : 'application/javascript',
-  css : 'text/css',
-  png : 'image/png'
-};
-
 var filesCache = {};
 
 function respond(fileContent, header, res) {
@@ -84,25 +73,6 @@ function readFileStats(pathName, lastSeen, header, req, res, callback) {
 
 }
 
-function getHeader(pathName) {
-
-  var pathParts = pathName.split('.');
-
-  var header;
-
-  var mime;
-
-  if (pathParts.length) {
-    var extension = pathParts[pathParts.length - 1];
-    mime = MIMETYPES[extension.toLowerCase()] || 'text/plain';
-
-  } else {
-    mime = 'text/plain';
-  }
-
-  return miscOps.corsHeader(mime);
-}
-
 exports.outputFile = function(req, res, callback) {
 
   var lastSeen = req.headers ? req.headers['if-modified-since'] : null;
@@ -113,7 +83,7 @@ exports.outputFile = function(req, res, callback) {
     console.log('Outputting static file \'' + pathName + '\'');
   }
 
-  var header = getHeader(pathName);
+  var header = miscOps.corsHeader(miscOps.getMime(pathName));
 
   var file;
 

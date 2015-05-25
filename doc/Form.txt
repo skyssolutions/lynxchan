@@ -2,6 +2,8 @@ This document describes the form api. The files will be stored in src/be/form an
 
 Pages will use the request body for parameters and cookies for authentication.
 The parameters should be passed using the request body as usual on posts.
+The forms should use multipart/form-data for enctype.
+Files should be sent with an input of type "file" using name "files".
 
 ------------------------------------------------------------------------------------------
 
@@ -9,7 +11,7 @@ PAG_ID::01
 
 Name: newThread
 
-Description: creates a new thread.
+Description: creates a new thread. Accepts files.
 
 Parameters:
     name: name of the poster. 32 characters.
@@ -23,6 +25,8 @@ Parameters:
 PAG_ID::02
 
 Name: replyThread
+
+Description: post a reply to a thread. Accepts files.
 
 Parameters:
     name: name of the poster. 32 characters.
