@@ -79,6 +79,10 @@ opCell:
 Class: opCell
 
 Elements:
+panelUploads:
+	type: div.
+	description: contains the uploads for the post.
+
 labelName:
     type: span.
     description: contains contain the poster's name.
@@ -113,6 +117,10 @@ postCell
 Class: postCell
 
 Elements:
+panelUploads:
+	type: div.
+	description: contains the uploads for the post.
+
 labelName:
     type: span.
     description: contains contain the poster's name.

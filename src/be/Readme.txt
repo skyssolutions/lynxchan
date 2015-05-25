@@ -25,6 +25,7 @@ threadPage: template for the page of a thread.
 notFoundPage: template for the 404 page.
 opCell: template for the OP's.
 postCell: template for thread replies.
+thumb: image to be used for generic thumbnails.
 
 Settings files that goes into the settings directory:
 general.json:

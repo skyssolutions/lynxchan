@@ -52,27 +52,41 @@ function updatePostingFiles(boardUri, threadId, postId, files, file, callback,
 
 }
 
+function cleanThumbNail(boardUri, threadId, postId, files, file, callback,
+    index, saveError) {
+
+  if (file.mime.indexOf('image/') !== -1) {
+
+    exports.removeFromDisk(file.pathInDisk + '_t', function removed(
+        deletionError) {
+      if (saveError || deletionError) {
+        callback(saveError || deletionError);
+      } else {
+        updatePostingFiles(boardUri, threadId, postId, files, file, callback,
+            index);
+      }
+
+    });
+  } else {
+
+    if (saveError) {
+      callback(saveError);
+    } else {
+      updatePostingFiles(boardUri, threadId, postId, files, file, callback,
+          index);
+    }
+  }
+}
+
 function transferFilesToGS(boardUri, threadId, postId, files, file, callback,
     index) {
 
   gsHandler.saveUpload(boardUri, threadId, postId, file,
       function transferedFile(error) {
 
-        // style exception, too simple
-        exports.removeFromDisk(file.pathInDisk + '_t', function removed(
-            deletionError) {
-          if (error || deletionError) {
-            callback(error || deletionError);
-          } else {
-            updatePostingFiles(boardUri, threadId, postId, files, file,
-                callback, index);
-          }
-
-        });
-        // style exception, too simple
-
+        cleanThumbNail(boardUri, threadId, postId, files, file, callback,
+            index, error);
       });
-
 }
 
 exports.saveUploads = function(boardUri, threadId, postId, files, callback,
@@ -84,21 +98,27 @@ exports.saveUploads = function(boardUri, threadId, postId, files, callback,
 
     var file = files[index];
 
-    imagemagick.resize({
-      srcPath : file.pathInDisk,
-      dstPath : file.pathInDisk + '_t',
-      width : 256,
-      height : 256,
-    }, function(error, stdout, stderr) {
-      if (error) {
-        callback(error);
-      } else {
+    if (file.mime.indexOf('image/') !== -1) {
 
-        transferFilesToGS(boardUri, threadId, postId, files, file, callback,
-            index);
+      imagemagick.resize({
+        srcPath : file.pathInDisk,
+        dstPath : file.pathInDisk + '_t',
+        width : 256,
+        height : 256,
+      }, function(error, stdout, stderr) {
+        if (error) {
+          callback(error);
+        } else {
 
-      }
-    });
+          transferFilesToGS(boardUri, threadId, postId, files, file, callback,
+              index);
+
+        }
+      });
+    } else {
+      transferFilesToGS(boardUri, threadId, postId, files, file, callback,
+          index);
+    }
 
   } else {
     callback();

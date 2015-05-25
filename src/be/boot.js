@@ -17,6 +17,7 @@ var forkTime = {};
 var dbSettings;
 var generalSettings;
 var templateSettings;
+var genericThumb;
 var fePath;
 
 var debug = process.argv.toString().indexOf('-d') > -1;
@@ -27,6 +28,10 @@ reload = reload || process.argv.toString().indexOf('--reload') > -1;
 
 var noDaemon = process.argv.toString().indexOf('-nd') > -1;
 noDaemon = noDaemon || process.argv.toString().indexOf('--no-daemon') > -1;
+
+exports.genericThumb = function() {
+  return genericThumb;
+};
 
 exports.debug = function() {
   return debug;
@@ -67,6 +72,12 @@ exports.loadSettings = function() {
   var templateSettingsPath = fePath + '/templateSettings.json';
 
   templateSettings = JSON.parse(fs.readFileSync(templateSettingsPath));
+
+  var thumbExt = templateSettings.thumb.split('.');
+
+  thumbExt = thumbExt[thumbExt.length - 1].toLowerCase();
+
+  genericThumb = '/genericThumb' + '.' + thumbExt;
 
 };
 
@@ -126,6 +137,27 @@ function regenerateAll() {
 
 }
 
+function checkThumb(files) {
+  if (files.indexOf(genericThumb) === -1) {
+    generator.thumb(function generated(error) {
+      if (error) {
+        if (generalSettings.verbose) {
+          console.log(error);
+        }
+
+        if (debug) {
+          throw error;
+        }
+
+      } else {
+        bootWorkers();
+      }
+    });
+  } else {
+    bootWorkers();
+  }
+}
+
 function checkNotFound(files) {
 
   if (files.indexOf('/404.html') === -1) {
@@ -141,13 +173,13 @@ function checkNotFound(files) {
         }
 
       } else {
-        bootWorkers();
+        checkThumb(files);
       }
 
     });
 
   } else {
-    bootWorkers();
+    checkThumb(files);
   }
 
 }
@@ -192,7 +224,7 @@ function checkForDefaultPages() {
   files.aggregate({
     $match : {
       filename : {
-        $in : [ '/', '/404.html' ]
+        $in : [ '/', '/404.html', genericThumb ]
       }
     }
   }, {

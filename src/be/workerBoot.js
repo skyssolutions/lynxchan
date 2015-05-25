@@ -6,6 +6,7 @@
 
 var logger = require('./logger');
 var boot = require('./boot');
+var verbose = boot.getGeneralSettings().verbose;
 var cluster = require('cluster');
 var fs = require('fs');
 var requestHandler;
@@ -29,6 +30,7 @@ function main(req, res) {
     try {
       clearCache();
       boot.loadSettings();
+      require('./engine/domManipulator').loadTemplates();
     } catch (error) {
       console.log(error);
       req.connection.destroy();
@@ -45,38 +47,52 @@ function main(req, res) {
 
 function startListening() {
 
-  if (boot.getGeneralSettings().ssl) {
+  try {
+    require('./engine/domManipulator').loadTemplates();
 
-    try {
+    if (boot.getGeneralSettings().ssl) {
 
-      var options = {
-        key : fs.readFileSync('server.key'),
-        cert : fs.readFileSync('server.pem')
-      };
+      try {
 
-      require('https').createServer(options, function(req, res) {
-        main(req, res);
-      }).listen(443, boot.getGeneralSettings().address);
+        var options = {
+          key : fs.readFileSync('server.key'),
+          cert : fs.readFileSync('server.pem')
+        };
 
-    } catch (error) {
+        require('https').createServer(options, function(req, res) {
+          main(req, res);
+        }).listen(443, boot.getGeneralSettings().address);
+
+      } catch (error) {
+        console.log(error);
+      }
+
+    }
+
+    require('http').createServer(function(req, res) {
+      main(req, res);
+
+    })
+        .listen(boot.getGeneralSettings().port,
+            boot.getGeneralSettings().address);
+
+    booted = true;
+
+    var message = 'Server worker ' + cluster.worker.id;
+    message += ' booted at ' + logger.timestamp();
+
+    requestHandler = require('./engine/requestHandler');
+
+    console.log(message);
+  } catch (error) {
+    if (verbose) {
       console.log(error);
     }
 
+    if (debug) {
+      throw error;
+    }
   }
-
-  require('http').createServer(function(req, res) {
-    main(req, res);
-
-  }).listen(boot.getGeneralSettings().port, boot.getGeneralSettings().address);
-
-  booted = true;
-
-  var message = 'Server worker ' + cluster.worker.id;
-  message += ' booted at ' + logger.timestamp();
-
-  requestHandler = require('./engine/requestHandler');
-
-  console.log(message);
 
 }
 
@@ -102,33 +118,6 @@ function clearCache() {
   for (i = 0; i < apiListing.length; i++) {
 
     delete require.cache[require.resolve('./api/' + apiListing[i])];
-  }
-
-  require('./engine/domManipulator').loadTemplates();
-
-}
-
-// functions
-function main(req, res) {
-
-  if (!booted) {
-    req.connection.destroy();
-    return;
-  }
-
-  if (debug) {
-    try {
-      clearCache();
-    } catch (error) {
-      console.log(error);
-      req.connection.destroy();
-      return;
-    }
-
-    require('./engine/requestHandler').handle(req, res);
-
-  } else {
-    requestHandler.handle(req, res);
   }
 
 }

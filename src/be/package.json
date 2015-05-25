@@ -4,7 +4,8 @@
   "devDependencies": {
     "mongodb": "latest",
     "imagemagick": "latest",
-    "jsdom":"latest"
+    "jsdom":"latest",
+    "multiparty":"latest"
   },
   "author": "Stephen Lynx",
   "license": "MIT"

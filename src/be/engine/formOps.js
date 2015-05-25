@@ -13,6 +13,52 @@ var jsdom = require('jsdom').jsdom;
 var domManipulator = require('./domManipulator');
 var uploadHandler = require('./uploadHandler');
 
+function processParsedRequest(res, fields, files, callback, parsedCookies) {
+
+  for ( var key in fields) {
+    if (fields.hasOwnProperty(key)) {
+      fields[key] = fields[key][0];
+    }
+  }
+
+  fields.files = [];
+
+  var filesToDelete = [];
+
+  var endingCb = function() {
+
+    for (var j = 0; j < filesToDelete.length; j++) {
+      uploadHandler.removeFromDisk(filesToDelete[j]);
+    }
+
+  };
+
+  res.on('close', endingCb);
+
+  res.on('finish', endingCb);
+
+  if (files.files) {
+
+    for (var i = 0; i < files.files.length; i++) {
+      var file = files.files[i];
+
+      filesToDelete.push(file.path);
+
+      if (file.size) {
+
+        fields.files.push({
+          title : file.originalFilename,
+          pathInDisk : file.path,
+          mime : file.headers['content-type']
+        });
+      }
+    }
+  }
+
+  callback(parsedCookies, fields);
+
+}
+
 exports.getPostData = function(req, res, callback) {
 
   try {
@@ -38,40 +84,7 @@ exports.getPostData = function(req, res, callback) {
       if (error) {
         throw error;
       } else {
-        for ( var key in fields) {
-          if (fields.hasOwnProperty(key)) {
-            fields[key] = fields[key][0];
-          }
-        }
-
-        fields.files = [];
-
-        var endingCb = function() {
-
-          for (var j = 0; j < fields.files.length; j++) {
-            uploadHandler.removeFromDisk(fields.files[j].pathInDisk);
-          }
-
-        };
-
-        res.on('close', endingCb);
-
-        res.on('finish', endingCb);
-
-        if (files.files) {
-
-          for (var i = 0; i < files.files.length; i++) {
-            var file = files.files[i];
-
-            fields.files.push({
-              title : file.originalFilename,
-              pathInDisk : file.path,
-              mime : file.headers['content-type']
-            });
-          }
-        }
-
-        callback(parsedCookies, fields);
+        processParsedRequest(res, fields, files, callback, parsedCookies);
 
       }
 

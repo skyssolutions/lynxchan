@@ -161,6 +161,29 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback) {
 
 };
 
+function addFiles(document, node, files) {
+
+  if (!files) {
+    return;
+  }
+
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i];
+    var link = document.createElement('a');
+
+    link.href = file.path;
+
+    var img = document.createElement('img');
+
+    img.src = file.thumb;
+
+    link.appendChild(img);
+
+    node.appendChild(link);
+  }
+
+}
+
 function addPosts(document, posts, boardUri, threadId, innerPage) {
 
   var divThreads = document.getElementById('divPostings');
@@ -184,6 +207,9 @@ function addPosts(document, posts, boardUri, threadId, innerPage) {
         break;
       case 'labelSubject':
         node.innerHTML = post.subject;
+        break;
+      case 'panelUploads':
+        addFiles(document, node, post.files);
         break;
       case 'labelCreated':
         node.innerHTML = post.creation;
@@ -230,6 +256,9 @@ function addThread(document, thread, posts, boardUri, innerPage) {
       break;
     case 'divMessage':
       node.innerHTML = thread.message;
+      break;
+    case 'panelUploads':
+      addFiles(document, node, thread.files);
       break;
     case 'linkSelf':
       node.innerHTML = thread.threadId;

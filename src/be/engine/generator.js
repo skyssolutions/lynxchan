@@ -8,7 +8,11 @@ var posts = db.posts();
 var threads = db.threads();
 var boards = db.boards();
 var domManipulator = require('./domManipulator');
-var settings = require('../boot').getGeneralSettings();
+var boot = require('../boot');
+var settings = boot.getGeneralSettings();
+var miscOps = require('./miscOps');
+var templateSettings = boot.getTemplateSettings();
+var gfsHandler = require('./gridFsHandler');
 var pageSize = settings.pageSize;
 var verbose = settings.verbose;
 
@@ -19,20 +23,24 @@ var postProjection = {
   threadId : 1,
   postId : 1,
   name : 1,
+  files : 1,
   email : 1,
   message : 1
 };
+
 var threadProjection = {
   _id : 0,
   subject : 1,
   threadId : 1,
   creation : 1,
   name : 1,
+  files : 1,
   email : 1,
   message : 1,
   lastBump : 1,
   latestPosts : 1
 };
+
 var boardProjection = {
   _id : 0,
   boardUri : 1,
@@ -42,7 +50,7 @@ var boardProjection = {
 };
 
 var toGenerate;
-var MAX_TO_GENERATE = 3;
+var MAX_TO_GENERATE = 4;
 var reloading;
 
 var fullReloadCallback = function(error, callback) {
@@ -90,6 +98,19 @@ exports.all = function(callback) {
     fullReloadCallback(error, callback);
   });
 
+  exports.thumb(function reloaded(error) {
+    fullReloadCallback(error, callback);
+  });
+
+};
+
+exports.thumb = function(callback) {
+  var filePath = boot.getFePath() + '/templates/' + templateSettings.thumb;
+
+  gfsHandler.writeFile(filePath, boot.genericThumb(), miscOps.getMime(boot
+      .genericThumb()), {}, function wroteThumb(error) {
+    callback(error);
+  });
 };
 
 exports.notFound = function(callback) {
@@ -284,6 +305,7 @@ function getPreviewPosts(boardUri, page, threadsArray, pageCount, boardData,
         $push : {
           postId : '$postId',
           message : '$message',
+          files : '$files',
           name : '$name',
           email : '$email',
           subject : '$subject',

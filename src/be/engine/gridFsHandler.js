@@ -12,6 +12,7 @@ var settings = require('../boot').getGeneralSettings();
 var disable304 = settings.disable304;
 var verbose = settings.verbose;
 var miscOps = require('./miscOps');
+var genericThumb = require('../boot').genericThumb();
 
 // start of writing data
 function writeDataOnOpenFile(gs, data, callback) {
@@ -78,7 +79,9 @@ function writeFileOnOpenFile(gs, path, callback) {
 exports.writeFile = function(path, destination, mime, meta, callback) {
 
   if (verbose) {
-    console.log('Writing file on gridfs under \'' + destination + '\'');
+    var message = 'Writing ' + mime + ' file on gridfs under \'';
+    message += destination + '\'';
+    console.log(message);
   }
 
   var gs = mongo.GridStore(conn, destination, 'w', {
@@ -110,20 +113,10 @@ exports.writeFile = function(path, destination, mime, meta, callback) {
 
 // start of saving upload
 function transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb,
-    extension) {
+    extension, meta) {
 
   var fileName = fileId + '.' + extension;
   fileName = '/' + boardUri + '/media/' + fileName;
-
-  var meta = {
-    boardUri : boardUri,
-    threadId : threadId,
-    type : 'media'
-  };
-
-  if (postId) {
-    meta.postId = postId;
-  }
 
   file.path = fileName;
   file.gfsName = fileId + '.' + extension;
@@ -147,23 +140,31 @@ function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb) {
   }
 
   if (parts.length) {
+
     var ext = parts[parts.length - 1].toLowerCase();
 
-    var thumbName = 't_' + fileId + '.' + ext;
-    thumbName = '/' + boardUri + '/media/' + thumbName;
+    if (file.mime.indexOf('image/') !== -1) {
+      var thumbName = '/' + boardUri + '/media/' + 't_' + fileId + '.' + ext;
 
-    file.thumbPath = thumbName;
+      file.thumbPath = thumbName;
 
-    exports.writeFile(file.pathInDisk + '_t', thumbName, file.mime, meta,
-        function wroteTbToGfs(error) {
-          if (error) {
-            cb(error);
-          } else {
-            transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb,
-                ext);
-          }
+      exports.writeFile(file.pathInDisk + '_t', thumbName, file.mime, meta,
+          function wroteTbToGfs(error) {
+            if (error) {
+              cb(error);
+            } else {
+              transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb,
+                  ext, meta);
+            }
 
-        });
+          });
+    } else {
+
+      file.thumbPath = genericThumb;
+
+      transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb, ext,
+          meta);
+    }
 
   } else {
     cb('Unknown extension');

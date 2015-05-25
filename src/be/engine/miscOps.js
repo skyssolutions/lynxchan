@@ -6,6 +6,8 @@ var formOps = require('./formOps');
 
 var MIMETYPES = {
   html : 'text/html',
+  jpg : 'image/jpeg',
+  jpeg : 'iamge/jpeg',
   htm : 'text/html',
   otf : 'application/x-font-otf',
   ttf : 'application/x-font-ttf',
