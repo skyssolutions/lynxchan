@@ -18,8 +18,10 @@ var threadTemplate;
 var boardTemplate;
 var notFoundTemplate;
 var messageTemplate;
+var loginTemplate;
 var opTemplate;
 var postTemplate;
+var accountTemplate;
 
 require('jsdom').defaultDocumentFeatures = {
   FetchExternalResources : false,
@@ -38,8 +40,31 @@ exports.loadTemplates = function() {
   boardTemplate = fs.readFileSync(fePath + templateSettings.boardPage);
   notFoundTemplate = fs.readFileSync(fePath + templateSettings.notFoundPage);
   messageTemplate = fs.readFileSync(fePath + templateSettings.messagePage);
+  loginTemplate = fs.readFileSync(fePath + templateSettings.loginPage);
   opTemplate = fs.readFileSync(fePath + templateSettings.opCell);
   postTemplate = fs.readFileSync(fePath + templateSettings.postCell);
+  accountTemplate = fs.readFileSync(fePath + templateSettings.accountPage);
+
+};
+
+exports.account = function(login) {
+
+  var document = jsdom(accountTemplate);
+
+  var loginLabel = document.getElementById('labelLogin');
+
+  loginLabel.innerHTML = login;
+
+  return serializer(document);
+
+};
+
+exports.login = function(callback) {
+
+  var document = jsdom(loginTemplate);
+
+  gridFs.writeData(serializer(document), '/login.html', 'text/html', {},
+      callback);
 
 };
 
@@ -184,7 +209,7 @@ function addFiles(document, node, files) {
 
 }
 
-function addPosts(document, posts, boardUri, threadId, innerPage) {
+function addPosts(document, posts, boardUri, threadId) {
 
   var divThreads = document.getElementById('divPostings');
 
@@ -220,7 +245,7 @@ function addPosts(document, posts, boardUri, threadId, innerPage) {
       case 'linkSelf':
         postCell.id = post.postId;
         node.innerHTML = post.postId;
-        var link = (innerPage ? '' : 'res/') + threadId + '.html#';
+        var link = '/' + boardUri + '/res/' + threadId + '.html#';
         node.href = link + post.postId;
         break;
       }
@@ -262,7 +287,7 @@ function addThread(document, thread, posts, boardUri, innerPage) {
       break;
     case 'linkSelf':
       node.innerHTML = thread.threadId;
-      var link = (innerPage ? '' : 'res/') + thread.threadId + '.html#';
+      var link = '/' + boardUri + '/res/' + thread.threadId + '.html#';
       node.href = link + thread.threadId;
       threadCell.id = thread.threadId;
       break;

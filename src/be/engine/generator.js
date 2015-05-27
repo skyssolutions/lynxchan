@@ -50,7 +50,7 @@ var boardProjection = {
 };
 
 var toGenerate;
-var MAX_TO_GENERATE = 4;
+var MAX_TO_GENERATE = 5;
 var reloading;
 
 var fullReloadCallback = function(error, callback) {
@@ -102,9 +102,27 @@ exports.all = function(callback) {
     fullReloadCallback(error, callback);
   });
 
+  exports.login(function reloaded(error) {
+    fullReloadCallback(error, callback);
+  });
+
+};
+
+exports.login = function(callback) {
+  if (verbose) {
+    console.log('Generating login page');
+  }
+
+  domManipulator.login(callback);
+
 };
 
 exports.thumb = function(callback) {
+
+  if (verbose) {
+    console.log('Saving generic thumbnail');
+  }
+
   var filePath = boot.getFePath() + '/templates/' + templateSettings.thumb;
 
   gfsHandler.writeFile(filePath, boot.genericThumb(), miscOps.getMime(boot

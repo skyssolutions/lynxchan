@@ -15,7 +15,7 @@ function createPost(req, res, parameters) {
       formOps.outputError(error, 500, res);
     } else {
       var redirectLink = '../' + parameters.boardUri;
-      redirectLink += '/res/' + parameters.threadId + '.html';
+      redirectLink += '/res/' + parameters.threadId + '.html#' + id;
       formOps.outputResponse('Post created', redirectLink, res);
     }
   });

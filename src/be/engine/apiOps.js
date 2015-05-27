@@ -89,29 +89,34 @@ exports.checkBlankParameters = function(object, parameters, res) {
 
 };
 
-function storeImages(parsedData, res, finalArray, callback) {
+function processFile(parsedData, res, finalArray, toRemove, callback) {
+  var file = parsedData.parameters.files.shift();
+
+  var matches = file.content.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+
+  var location = uploadPath(tempDir, file.name);
+
+  finalArray.push({
+    title : file.name,
+    mime : matches[1],
+    pathInDisk : location
+  });
+
+  toRemove.push(location);
+
+  fs.writeFile(location, new Buffer(matches[2], 'base64'), function wroteFile(
+      error) {
+    storeImages(parsedData, res, finalArray, toRemove, callback);
+  });
+
+}
+
+function storeImages(parsedData, res, finalArray, toRemove, callback) {
 
   var hasFiles = parsedData.parameters && parsedData.parameters.files;
 
   if (hasFiles && parsedData.parameters.files.length) {
-    var file = parsedData.parameters.files.shift();
-
-    var matches = file.content.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-
-    var mime = matches[1];
-    var imageBuffer = new Buffer(matches[2], 'base64');
-
-    var location = uploadPath(tempDir, file.name);
-
-    finalArray.push({
-      title : file.name,
-      mime : mime,
-      pathInDisk : location
-    });
-
-    fs.writeFile(location, imageBuffer, function wroteFile(error) {
-      storeImages(parsedData, res, finalArray, callback);
-    });
+    processFile(parsedData, res, finalArray, toRemove, callback);
 
   } else {
     var parameters = parsedData.parameters || {};
@@ -119,8 +124,8 @@ function storeImages(parsedData, res, finalArray, callback) {
 
     var endingCb = function() {
 
-      for (var j = 0; j < finalArray.length; j++) {
-        uploadHandler.removeFromDisk(finalArray[j].pathInDisk);
+      for (var j = 0; j < toRemove.length; j++) {
+        uploadHandler.removeFromDisk(toRemove[j]);
       }
 
     };
@@ -128,6 +133,10 @@ function storeImages(parsedData, res, finalArray, callback) {
     res.on('close', endingCb);
 
     res.on('finish', endingCb);
+
+    if (verbose) {
+      console.log('Api input: ' + JSON.stringify(parameters));
+    }
 
     callback(parsedData.auth, parameters);
   }
@@ -151,14 +160,10 @@ exports.getAnonJsonData = function(req, res, callback) {
 
   req.on('end', function dataEnded() {
 
-    if (verbose) {
-      console.log('Api input: ' + body);
-    }
-
     try {
       var parsedData = JSON.parse(body);
 
-      storeImages(parsedData, res, [], callback);
+      storeImages(parsedData, res, [], [], callback);
 
     } catch (error) {
       exports.outputResponse(null, error.toString(), 'parseError', res);

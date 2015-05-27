@@ -5,7 +5,8 @@
     "mongodb": "latest",
     "imagemagick": "latest",
     "jsdom":"latest",
-    "multiparty":"latest"
+    "multiparty":"latest",
+    "bcrypt":"latest"
   },
   "author": "Stephen Lynx",
   "license": "MIT"

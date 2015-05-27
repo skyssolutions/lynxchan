@@ -80,8 +80,8 @@ Class: opCell
 
 Elements:
 panelUploads:
-	type: div.
-	description: contains the uploads for the post.
+    type: div.
+    description: contains the uploads for the post.
 
 labelName:
     type: span.
@@ -108,8 +108,8 @@ linkReply:
     description: contains the link to reply the thread.
 
 linkSelf:
-	type: a.
-	description: contains the link for the post itself.
+    type: a.
+    description: contains the link for the post itself.
 
 ------------------------------------------------------------------------------------------
 
@@ -118,8 +118,8 @@ Class: postCell
 
 Elements:
 panelUploads:
-	type: div.
-	description: contains the uploads for the post.
+    type: div.
+    description: contains the uploads for the post.
 
 labelName:
     type: span.
@@ -142,7 +142,16 @@ divMessage:
     description: contains the thread's message.
 
 linkSelf:
-	type: a.
-	description: contains the link for the post itself.
+    type: a.
+    description: contains the link for the post itself.
+
+------------------------------------------------------------------------------------------
+
+accountPage
+
+Elements:
+labelLogin:
+    type: p
+    description: contains the user's login.
 
 ------------------------------------------------------------------------------------------

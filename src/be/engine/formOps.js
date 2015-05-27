@@ -1,7 +1,10 @@
 'use strict';
 
 // general operations for the form api
-var settings = require('../boot').getGeneralSettings();
+var boot = require('../boot');
+var settings = boot.getGeneralSettings();
+var accountOps = require('./accountOps');
+var debug = boot.debug;
 var verbose = settings.verbose;
 var multiParty = require('multiparty');
 var parser = new multiParty.Form({
@@ -59,6 +62,43 @@ function processParsedRequest(res, fields, files, callback, parsedCookies) {
 
 }
 
+exports.getAuthenticatedPost = function(req, res, getParameters, callback) {
+
+  if (getParameters) {
+
+    exports.getPostData(req, res, function(auth, parameters) {
+
+      accountOps.validate(auth, function validated(error, newAuth) {
+        callback(error, newAuth, parameters);
+
+      });
+    });
+  } else {
+    var parsedCookies = {};
+
+    if (req.headers && req.headers.cookie) {
+
+      var cookies = req.headers.cookie.split(';');
+
+      for (var i = 0; i < cookies.length; i++) {
+
+        var cookie = cookies[i];
+
+        var parts = cookie.split('=');
+        parsedCookies[parts.shift().trim()] = decodeURI(parts.join('='));
+
+      }
+
+    }
+
+    accountOps.validate(parsedCookies, function validated(error, newAuth) {
+      callback(error, newAuth);
+
+    });
+  }
+
+};
+
 exports.getPostData = function(req, res, callback) {
 
   try {
@@ -95,13 +135,26 @@ exports.getPostData = function(req, res, callback) {
 
 };
 
-exports.outputResponse = function(message, redirect, res) {
+exports.outputResponse = function(message, redirect, res, cookies) {
 
   if (verbose) {
     console.log(message);
   }
 
-  res.writeHead(200, miscOps.corsHeader('text/html'));
+  var header = miscOps.corsHeader('text/html');
+
+  if (cookies) {
+
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = cookies[i];
+
+      header.push([ 'Set-Cookie', cookie.field + '=' + cookie.value ]);
+
+    }
+
+  }
+
+  res.writeHead(200, header);
 
   res.end(domManipulator.message(message, redirect));
 
@@ -111,6 +164,10 @@ exports.outputError = function(error, code, res) {
 
   if (verbose) {
     console.log(error);
+  }
+
+  if (debug) {
+    throw error;
   }
 
   // TODO add template

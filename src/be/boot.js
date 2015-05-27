@@ -158,11 +158,10 @@ function checkThumb(files) {
   }
 }
 
-function checkNotFound(files) {
+function checkLoginPage(files) {
+  if (files.indexOf('/login.html') === -1) {
 
-  if (files.indexOf('/404.html') === -1) {
-
-    generator.notFound(function generated(error) {
+    generator.login(function generated(error) {
       if (error) {
         if (generalSettings.verbose) {
           console.log(error);
@@ -180,6 +179,31 @@ function checkNotFound(files) {
 
   } else {
     checkThumb(files);
+  }
+}
+
+function checkNotFound(files) {
+
+  if (files.indexOf('/404.html') === -1) {
+
+    generator.notFound(function generated(error) {
+      if (error) {
+        if (generalSettings.verbose) {
+          console.log(error);
+        }
+
+        if (debug) {
+          throw error;
+        }
+
+      } else {
+        checkLoginPage(files);
+      }
+
+    });
+
+  } else {
+    checkLoginPage(files);
   }
 
 }
@@ -224,7 +248,7 @@ function checkForDefaultPages() {
   files.aggregate({
     $match : {
       filename : {
-        $in : [ '/', '/404.html', genericThumb ]
+        $in : [ '/', '/404.html', genericThumb, '/login.html' ]
       }
     }
   }, {

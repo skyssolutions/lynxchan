@@ -3,21 +3,26 @@
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
 
-var indexesSet = 0;
+var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 3;
+var maxIndexesSet = 4;
 
 var cachedPosts;
 var cachedThreads;
 var cachedBoards;
+var cachedUsers;
 var cachedFiles;
 
+var loading;
+
 function indexSet(callback) {
+
   indexesSet++;
 
   if (indexesSet === maxIndexesSet) {
+    loading = false;
     callback(null);
   }
 }
@@ -33,11 +38,37 @@ function initPosts(callback) {
     unique : true
   }, function setIndex(error, index) {
     if (error) {
-      callback(error);
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
     } else {
       indexSet(callback);
     }
   });
+}
+
+function initUsers(callback) {
+
+  cachedUsers = cachedDb.collection('users');
+
+  cachedUsers.ensureIndex({
+    login : 1
+  }, {
+    unique : true
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+
 }
 
 function initThreads(callback) {
@@ -50,7 +81,11 @@ function initThreads(callback) {
     unique : true
   }, function setIndex(error, index) {
     if (error) {
-      callback(error);
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
     } else {
       indexSet(callback);
     }
@@ -67,7 +102,11 @@ function initBoards(callback) {
     unique : true
   }, function setIndex(error, index) {
     if (error) {
-      callback(error);
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
     } else {
       indexSet(callback);
     }
@@ -91,6 +130,10 @@ exports.boards = function() {
   return cachedBoards;
 };
 
+exports.users = function() {
+  return cachedUsers;
+};
+
 exports.threads = function() {
   return cachedThreads;
 };
@@ -105,11 +148,21 @@ function checkCollections(db, callback) {
 
   initPosts(callback);
 
+  initUsers(callback);
+
   cachedFiles = db.collection('fs.files');
 
 }
 
 exports.init = function(callback) {
+
+  if (loading) {
+    callback('Already booting db');
+  }
+
+  loading = true;
+
+  indexesSet = 0;
 
   var dbSettings = require('./boot').getDbSettings();
 

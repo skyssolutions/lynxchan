@@ -43,6 +43,14 @@ posts:
  
 ----------------------------------------------------------------------------------------
 
+users:
+    login**: login of the user. 16 characters. Only a-Z,_ and 0-9 allowed.
+    email**: e-mail of the user. 64 characters.
+    password: hashed password of the user.
+    hash: current hash of the user.
+
+----------------------------------------------------------------------------------------
+
 *: duplicated data, foreign key.
 **: unique key
 ***:part of a unique key combination.

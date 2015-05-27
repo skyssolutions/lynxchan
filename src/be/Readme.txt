@@ -3,6 +3,7 @@ mongodb
 imagemagick
 jsdom
 multiparty
+bcrypt
 Latest version of all them.
 
 boot.js is the main file, run it using io.js to start the system. Keep in mind that if you ran setup.sh, you can just run the lynxchan command or start the lynxchan service.
@@ -26,6 +27,8 @@ notFoundPage: template for the 404 page.
 opCell: template for the OP's.
 postCell: template for thread replies.
 thumb: image to be used for generic thumbnails.
+loginPage: template to be used for the login screen.
+accountPage: template to be used for the account page.
 
 Settings files that goes into the settings directory:
 general.json:

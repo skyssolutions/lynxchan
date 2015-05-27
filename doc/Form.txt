@@ -38,4 +38,35 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::03
+
+Name: account
+
+Description: display the account page for the user. Will redirect to login.html if the user is not logged in.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::04
+
+Name: registerAccount
+
+Description: creates a new account.
+
+Parameters:
+    login*: login of the account. 16 characters. Only a-Z,_ and 0-9 allowed.
+    password*: password of the account.
+    email: e-mail of the account. 64 characters.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::05
+
+Name: login
+
+Description performs login of the user.
+
+Parameters: 
+    login: login of the account. 
+    password: password of the account.
+
 *: mandatory parameters.
