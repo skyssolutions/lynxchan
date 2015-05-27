@@ -4,6 +4,7 @@ imagemagick
 jsdom
 multiparty
 bcrypt
+nodemailer
 Latest version of all them.
 
 boot.js is the main file, run it using io.js to start the system. Keep in mind that if you ran setup.sh, you can just run the lynxchan command or start the lynxchan service.
@@ -29,6 +30,8 @@ postCell: template for thread replies.
 thumb: image to be used for generic thumbnails.
 loginPage: template to be used for the login screen.
 accountPage: template to be used for the account page.
+recoveryEmail: template to be used for the e-mail sent after a recovery request is created.
+resetEmail: template to be used for the e-mail sent after the account's password is reset.
 
 Settings files that goes into the settings directory:
 general.json:
@@ -42,6 +45,7 @@ pageSize(Number): amount of threads on each board page.
 previewPostCount(Number): number of preview posts on a thread.
 maxThreadCount(Number): maximum amount of threads allowed per board.
 tempDirectory: path for temporary files. Defaults to '/tmp'.
+emailSender: e-mail to be used as sender on automated e-mails.
 
 db.json:
 address: address of the database.

@@ -72,9 +72,51 @@ PAG_ID::03**
 
 Name: listBoards
 
+Description: list the boards available.
+
 Output(Array): array with available boards. Each object contains the following structure:
     boardUri: uri of the board.
     boardName: name of the board.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::04
+
+Name: registerAccount
+
+Description: creates a new user account.
+
+Parameters:
+    login*: login of the account. 16 characters. Only a-Z,_ and 0-9 allowed.
+    password*: password of the account.
+    email: e-mail of the account. 64 characters.
+
+Output: the hash of the recently created session for the account.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::05
+
+Name: login
+
+Description: performs login of the user.
+
+Parameters: 
+    login: login of the account. 
+    password: password of the account.
+
+Output: hash of the new session of the user.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::06
+
+Name: requestAccountRecovery
+
+Description: sends an e-mail to the user with a link so he can recover his account.
+
+Parameters:
+    login: login of the account.
 
 ------------------------------------------------------------------------------------------
 

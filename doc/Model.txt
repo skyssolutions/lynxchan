@@ -1,4 +1,4 @@
-boards:
+boards: stores boards.
     boardUri**: url of the board. 
     boardName: name of the board. 32 characters, lower case and numbers only.
     boardDescription: description of the board. 64 characters.
@@ -8,7 +8,7 @@ boards:
 
 ----------------------------------------------------------------------------------------
 
-threads:
+threads: stores board's threads.
     name: name of the poster. 32 characters.
     email: email of the poster. 64 characters.
     subject: subject of the thread. 128 characters.
@@ -27,7 +27,7 @@ threads:
 
 ----------------------------------------------------------------------------------------
 
-posts:
+posts: stores posts.
     name: name of the poster. 32 characters.
     email: email of the poster. 64 characters.
     subject: subject of the thread. 128 characters.
@@ -43,11 +43,18 @@ posts:
  
 ----------------------------------------------------------------------------------------
 
-users:
+users: stores users.
     login**: login of the user. 16 characters. Only a-Z,_ and 0-9 allowed.
     email**: e-mail of the user. 64 characters.
     password: hashed password of the user.
     hash: current hash of the user.
+
+----------------------------------------------------------------------------------------
+
+recoveryRequests: stores active account recovery requests.
+    login*: login of the account that requested to be recovered.
+    recoveryToken: token used to recover the account.
+    expiration(Date): time when the request will expire.
 
 ----------------------------------------------------------------------------------------
 

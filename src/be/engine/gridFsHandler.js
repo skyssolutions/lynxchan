@@ -207,7 +207,7 @@ exports.removeFiles = function(name, callback) {
 function streamFile(stats, callback, res) {
 
   var header = miscOps.corsHeader(stats.contentType);
-  header['last-modified'] = stats.uploadDate.toString();
+  header.push([ 'last-modified', stats.uploadDate.toString() ]);
 
   res.writeHead(stats.metadata.status || 200, header);
 

@@ -1,5 +1,9 @@
 'use strict';
 
+exports.addMinutes = function(date, amount) {
+  return new Date(date.getTime() + amount * 60000);
+};
+
 // Creates an UCT formated date in 'yyyy-MM-dd' format
 exports.formatedDate = function(time) {
   time = time || new Date();

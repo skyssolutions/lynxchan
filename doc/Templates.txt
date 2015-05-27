@@ -155,3 +155,19 @@ labelLogin:
     description: contains the user's login.
 
 ------------------------------------------------------------------------------------------
+
+recoveryEmail
+
+Elements:
+linkRecovery:
+    type: a
+    description: contains the link to be used to reset the account's password.
+
+------------------------------------------------------------------------------------------
+
+resetEmail
+
+Elements:
+labelNewPass:
+    type: p.
+    description: contains the new password of the account.

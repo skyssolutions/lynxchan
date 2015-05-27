@@ -5,6 +5,7 @@
     "mongodb": "latest",
     "imagemagick": "latest",
     "jsdom":"latest",
+    "nodemailer":"latest",
     "multiparty":"latest",
     "bcrypt":"latest"
   },

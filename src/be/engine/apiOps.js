@@ -1,7 +1,9 @@
 'use strict';
 
 // general operations for the json api
-var settings = require('../boot').getGeneralSettings();
+var boot = require('../boot');
+var settings = boot.getGeneralSettings();
+var debug = boot.debug();
 var verbose = settings.verbose;
 var miscOps = require('./miscOps');
 var fs = require('fs');
@@ -177,6 +179,10 @@ exports.outputError = function(error, res) {
 
   if (verbose) {
     console.log(error);
+  }
+
+  if (debug) {
+    throw error;
   }
 
   exports.outputResponse(null, error.toString(), 'error', res);

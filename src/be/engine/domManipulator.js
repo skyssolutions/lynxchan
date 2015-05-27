@@ -21,6 +21,8 @@ var messageTemplate;
 var loginTemplate;
 var opTemplate;
 var postTemplate;
+var recoveryEmailTemplate;
+var resetEmailTemplate;
 var accountTemplate;
 
 require('jsdom').defaultDocumentFeatures = {
@@ -44,6 +46,32 @@ exports.loadTemplates = function() {
   opTemplate = fs.readFileSync(fePath + templateSettings.opCell);
   postTemplate = fs.readFileSync(fePath + templateSettings.postCell);
   accountTemplate = fs.readFileSync(fePath + templateSettings.accountPage);
+
+  var recoveryEmailPath = fePath + templateSettings.recoveryEmail;
+  recoveryEmailTemplate = fs.readFileSync(recoveryEmailPath);
+
+  resetEmailTemplate = fs.readFileSync(fePath + templateSettings.resetEmail);
+};
+
+exports.resetEmail = function(password) {
+
+  var document = jsdom(resetEmailTemplate);
+
+  var link = document.getElementById('labelNewPass');
+  link.innerHTML = password;
+
+  return serializer(document);
+
+};
+
+exports.recoveryEmail = function(recoveryLink) {
+
+  var document = jsdom(recoveryEmailTemplate);
+
+  var link = document.getElementById('linkRecovery');
+  link.href = recoveryLink;
+
+  return serializer(document);
 
 };
 

@@ -7,13 +7,14 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 4;
+var maxIndexesSet = 5;
 
 var cachedPosts;
 var cachedThreads;
 var cachedBoards;
 var cachedUsers;
 var cachedFiles;
+var cachedRecoveryRequests;
 
 var loading;
 
@@ -47,6 +48,28 @@ function initPosts(callback) {
       indexSet(callback);
     }
   });
+}
+
+function initRecoveryRequests(callback) {
+
+  cachedRecoveryRequests = cachedDb.collection('recoveryRequests');
+
+  cachedRecoveryRequests.ensureIndex({
+    expiration : 1
+  }, {
+    expireAfterSeconds : 0
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+
 }
 
 function initUsers(callback) {
@@ -118,6 +141,10 @@ exports.conn = function() {
   return cachedDb;
 };
 
+exports.recoveryRequests = function() {
+  return cachedRecoveryRequests;
+};
+
 exports.files = function() {
   return cachedFiles;
 };
@@ -149,6 +176,8 @@ function checkCollections(db, callback) {
   initPosts(callback);
 
   initUsers(callback);
+
+  initRecoveryRequests(callback);
 
   cachedFiles = db.collection('fs.files');
 

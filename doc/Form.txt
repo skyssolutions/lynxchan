@@ -42,7 +42,7 @@ PAG_ID::03
 
 Name: account
 
-Description: display the account page for the user. Will redirect to login.html if the user is not logged in.
+Description: display the account page for the user. Will redirect to login.html if the user is not logged in. As any other form page that performs account validation, it will require both the login and hash cookies to be set. The hash is the hash created when an account is created or performs login.
 
 ------------------------------------------------------------------------------------------
 
@@ -63,10 +63,44 @@ PAG_ID::05
 
 Name: login
 
-Description performs login of the user.
+Description: performs login of the user.
 
 Parameters: 
     login: login of the account. 
     password: password of the account.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::06
+
+Name: logout
+
+Description: logouts the user, invalidating its authentication cookies.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::07
+
+Name: requestAccountRecovery
+
+Description: sends an e-mail to the user with a link so he can recover his account.
+
+Parameters:
+    login: login of the account.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::08
+
+Name: recoverAccount
+
+Description: creates a new random password and e-mails it to the user. It uses get parameters in the url instead of post parameters.
+
+Parameters:
+    login: login of the account.
+    hash: hash of the recovery request.
+
+------------------------------------------------------------------------------------------
+
 
 *: mandatory parameters.

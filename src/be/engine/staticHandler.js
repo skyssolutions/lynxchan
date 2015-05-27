@@ -24,7 +24,7 @@ function respond(fileContent, header, res) {
 
 function readAndRespond(pathName, modifiedTime, header, res, callback) {
 
-  header['last-modified'] = modifiedTime.toString();
+  header.push([ 'last-modified', modifiedTime.toString() ]);
 
   fs.readFile(fePath + '/static' + pathName, function(error, data) {
 

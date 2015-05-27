@@ -148,7 +148,13 @@ exports.outputResponse = function(message, redirect, res, cookies) {
     for (var i = 0; i < cookies.length; i++) {
       var cookie = cookies[i];
 
-      header.push([ 'Set-Cookie', cookie.field + '=' + cookie.value ]);
+      var toPush = [ 'Set-Cookie', cookie.field + '=' + cookie.value ];
+
+      if (cookie.expiration) {
+        toPush[1] += '; expires=' + cookie.expiration.toString();
+      }
+
+      header.push(toPush);
 
     }
 
