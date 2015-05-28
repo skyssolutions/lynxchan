@@ -118,6 +118,7 @@ exports.validate = function(auth, callback) {
     _id : 0,
     login : 1,
     hash : 1,
+    ownedBoards : 1,
     email : 1
   }, function foundUser(error, user) {
     if (error) {
@@ -126,11 +127,8 @@ exports.validate = function(auth, callback) {
       callback('Not found');
     } else {
       callback(null, {
-        status : 'ok',
-        login : user.login,
-        hash : user.hash,
-        email : user.email
-      });
+        status : 'ok'
+      }, user);
     }
   });
 };

@@ -5,6 +5,7 @@ var boot = require('../boot');
 var settings = boot.getGeneralSettings();
 var debug = boot.debug();
 var verbose = settings.verbose;
+var accountOps = require('./accountOps');
 var miscOps = require('./miscOps');
 var fs = require('fs');
 var crypto = require('crypto');
@@ -144,6 +145,25 @@ function storeImages(parsedData, res, finalArray, toRemove, callback) {
   }
 
 }
+
+exports.getAuthenticatedData = function(req, res, callback) {
+
+  exports.getAnonJsonData(req, res, function gotData(auth, parameters) {
+
+    accountOps.validate(auth, function validatedRequest(error, newAuth,
+        userData) {
+
+      if (error) {
+        exports.outputError(error, res);
+      } else {
+        callback(newAuth, userData, parameters);
+      }
+
+    });
+
+  });
+
+};
 
 exports.getAnonJsonData = function(req, res, callback) {
 

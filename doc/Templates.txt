@@ -5,7 +5,7 @@ Note: postCell and opCell must have the specified elements on the top level. The
 index:
 Elements:
 divBoards:
-    type: div.
+    type: div
     description: contains the listing of boards.
 
 ------------------------------------------------------------------------------------------
@@ -14,23 +14,23 @@ boardPage:
 
 Elements:
 labelName:
-    type: h1.
+    type: h1
     description: contains the URI and name of the board.
 
 labelDescription:
-    type: h3.
+    type: h3
     description: contains the description of the bord.
 
 divPostings:
-    type: div.
+    type: div
     description: contains the list list of threads in the page.
     
 divPages:
-    type: div.
+    type: div
     description: contains the listing of available pages in the board.
 
 boardIdentifier:
-    type: input.
+    type: input
     description: hidden input used to identify the board the page belongs to.
 
 ------------------------------------------------------------------------------------------
@@ -39,23 +39,23 @@ threadPage:
 
 Elements:
 labelName:
-    type: h1.
+    type: h1
     description: contains the URI and name of the board.
 
 labelDescription:
-    type: h3.
+    type: h3
     description: contains the description of the bord.
 
 divPostings:
-    type: div.
+    type: div
     description: contains the listing of posts in the thread, including the OP.
 
 boardIdentifier:
-    type: input.
+    type: input
     description: hidden input used to identify the board the page belongs to.
 
 threadIdentifier:
-    type: input.
+    type: input
     description: hidden input used to identify the thread the page belongs to.
 
 ------------------------------------------------------------------------------------------
@@ -64,11 +64,11 @@ messagePage:
 
 Elements:
 labelMessage:
-    type: h3.
+    type: h3
     description: displays the message itself.
 
 linkRedirect:
-    type: a.
+    type: a
     description: link to the redirection of the page.
 
 Required tags:
@@ -80,11 +80,11 @@ Class: opCell
 
 Elements:
 panelUploads:
-    type: div.
+    type: div
     description: contains the uploads for the post.
 
 labelName:
-    type: span.
+    type: span
     description: contains contain the poster's name.
 
 labelEmail:
@@ -92,23 +92,23 @@ labelEmail:
     description: contains contain the poster's e-mail.
 
 labelSubject:
-    type: span.
+    type: span
     description: contains contain the thread's subject.
 
 labelCreated:
-    type: span.
+    type: span
     description: contains the when the thread was created.
 
 divMessage:
-    type: div.
+    type: div
     description: contains the thread's message.
 
 linkReply:
-    type: a.
+    type: a
     description: contains the link to reply the thread.
 
 linkSelf:
-    type: a.
+    type: a
     description: contains the link for the post itself.
 
 ------------------------------------------------------------------------------------------
@@ -118,31 +118,31 @@ Class: postCell
 
 Elements:
 panelUploads:
-    type: div.
+    type: div
     description: contains the uploads for the post.
 
 labelName:
-    type: span.
+    type: span
     description: contains contain the poster's name.
 
 labelEmail:
-    type: span.
+    type: span
     description: contains contain the poster's e-mail.
 
 labelSubject:
-    type: span.
+    type: span
     description: contains contain the thread's subject.
 
 labelCreated:
-    type: span.
+    type: span
     description: contains the when the thread was created.
 
 divMessage:
-    type: div.
+    type: div
     description: contains the thread's message.
 
 linkSelf:
-    type: a.
+    type: a
     description: contains the link for the post itself.
 
 ------------------------------------------------------------------------------------------
@@ -153,6 +153,10 @@ Elements:
 labelLogin:
     type: p
     description: contains the user's login.
+
+boardsDiv:
+    type:div
+    description: contains the list of boards owned by the user.
 
 ------------------------------------------------------------------------------------------
 

@@ -1,7 +1,8 @@
 boards: stores boards.
-    boardUri**: url of the board. 
-    boardName: name of the board. 32 characters, lower case and numbers only.
-    boardDescription: description of the board. 64 characters.
+    owner*: login of the board owner.
+    boardUri**: url of the board. 32 characters. Only a-Z,_ and 0-9 allowed.
+    boardName: name of the board. 32 characters.
+    boardDescription: description of the board. 128 characters.
     lastPostId: id of last post in this board.
     lastFileId: id of last file posted in this board.
     threadCount(Number): pre-aggregated number of threads in the board.
@@ -47,6 +48,7 @@ users: stores users.
     login**: login of the user. 16 characters. Only a-Z,_ and 0-9 allowed.
     email**: e-mail of the user. 64 characters.
     password: hashed password of the user.
+    ownedBoards(Array): list of the uri's of the boards owned by this user.
     hash: current hash of the user.
 
 ----------------------------------------------------------------------------------------

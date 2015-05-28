@@ -7,6 +7,7 @@
 // messages can have the following keys:
 // globalRebuild (Boolean): rebuilds every single page
 // defaultPages (Boolean): rebuilds default pages
+// frontPage (Boolean): rebuilds the front-page
 // board: boardUri that will be rebuilt
 // buildAll(Boolean): indicates to rebuild every of the board, including thread
 // pages
@@ -36,30 +37,48 @@ var rebuildingAll = false;
 
 // so we can tell its rebuilding default pages
 var rebuildingDefaultPages = false;
+// so we can tell its rebuilding the front-page
+var rebuildingFrontPage = false;
 var working = false;
 var debug = require('./boot').debug();
 var generator = require('./engine/generator');
 var verbose = require('./boot').getGeneralSettings().verbose;
 
-function clearTree(error, message) {
+function checkForGlobalClearing(message) {
 
   if (message.globalRebuild) {
     rebuildingAll = false;
     rebuildingDefaultPages = false;
+    rebuildingFrontPage = false;
+    return true;
   } else if (message.defaultPages) {
     rebuildingDefaultPages = false;
-  } else if (message.buildAll) {
-    delete queueTree[message.board];
-  } else if (!message.page && !message.thread) {
-    queueTree[message.board].buildingPages = false;
-  } else if (message.page) {
-    queueTree[message.board].pages.splice(queueTree[message.board].pages
-        .indexOf(message.page), 1);
+    rebuildingFrontPage = false;
+    return true;
+  } else if (message.frontPage) {
+    rebuildingFrontPage = false;
+    return true;
+  }
 
-  } else {
-    queueTree[message.board].threads.splice(queueTree[message.board].threads
-        .indexOf(message.thread), 1);
+  return false;
+}
 
+function clearTree(error, message) {
+  if (!checkForGlobalClearing(message)) {
+
+    if (message.buildAll) {
+      delete queueTree[message.board];
+    } else if (!message.page && !message.thread) {
+      queueTree[message.board].buildingPages = false;
+    } else if (message.page) {
+      queueTree[message.board].pages.splice(queueTree[message.board].pages
+          .indexOf(message.page), 1);
+
+    } else {
+      queueTree[message.board].threads.splice(queueTree[message.board].threads
+          .indexOf(message.thread), 1);
+
+    }
   }
 
   processQueue();
@@ -102,6 +121,12 @@ function processQueue() {
     generator.defaultPages(function generated(error) {
       clearTree(error, message);
     });
+  } else if (message.frontPage) {
+
+    generator.frontPage(function generated(error) {
+      clearTree(error, message);
+    });
+
   } else if (message.buildAll) {
     generator.board(message.board, true, function generated(error) {
       clearTree(error, message);
@@ -203,6 +228,34 @@ function checkForBoardRebuild(message) {
   checkForPageAndThreadRebuild(message, boardInformation);
 }
 
+function checkForDefaultAndFrontPages(message) {
+
+  if (rebuildingDefaultPages && message.defaultPages) {
+    return;
+  }
+
+  if (message.defaultPages) {
+    rebuildingDefaultPages = true;
+
+    putInQueue(message);
+    return;
+  }
+
+  if (rebuildingFrontPage && message.frontPage) {
+    return;
+  }
+
+  if (message.frontPage) {
+    rebuildingFrontPage = true;
+
+    putInQueue(message);
+    return;
+  }
+
+  checkForBoardRebuild(message);
+
+}
+
 exports.queue = function(message) {
 
   if (verbose) {
@@ -218,17 +271,6 @@ exports.queue = function(message) {
     return;
   }
 
-  if (rebuildingDefaultPages && message.defaultPages) {
-    return;
-  }
-
-  if (message.defaultPages) {
-    rebuildingDefaultPages = true;
-
-    putInQueue(message);
-    return;
-  }
-
-  checkForBoardRebuild(message);
+  checkForDefaultAndFrontPages(message);
 
 };

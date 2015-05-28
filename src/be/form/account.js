@@ -6,21 +6,13 @@ var domManipulator = require('../engine/domManipulator');
 
 exports.process = function(req, res) {
 
-  formOps.getAuthenticatedPost(req, res, false, function gotData(error, auth) {
-    if (error) {
+  formOps.getAuthenticatedPost(req, res, false,
+      function gotData(auth, userData) {
 
-      var header = [ [ 'Location', '/login.html' ] ];
+        res.writeHead(200, miscOps.corsHeader('text/html'));
 
-      res.writeHead(302, header);
+        res.end(domManipulator.account(userData.login, userData.ownedBoards));
 
-      res.end();
-    } else {
-
-      res.writeHead(200, miscOps.corsHeader('text/html'));
-
-      res.end(domManipulator.account(auth.login));
-
-    }
-  });
+      });
 
 };

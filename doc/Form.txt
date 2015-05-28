@@ -102,5 +102,18 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::09
+
+Name: createBoard
+
+Description: creates a new board.
+
+Parameters:
+    boardUri: uri of the new board. 32 characters, lower case and numbers only.
+    boardName: name of the new board. 32 characters.
+    boardDescription: description of the new board. 128 characters.
+
+------------------------------------------------------------------------------------------
+
 
 *: mandatory parameters.

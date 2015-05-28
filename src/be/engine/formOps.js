@@ -16,6 +16,27 @@ var jsdom = require('jsdom').jsdom;
 var domManipulator = require('./domManipulator');
 var uploadHandler = require('./uploadHandler');
 
+function getCookies(req) {
+  var parsedCookies = {};
+
+  if (req.headers && req.headers.cookie) {
+
+    var cookies = req.headers.cookie.split(';');
+
+    for (var i = 0; i < cookies.length; i++) {
+
+      var cookie = cookies[i];
+
+      var parts = cookie.split('=');
+      parsedCookies[parts.shift().trim()] = decodeURI(parts.join('='));
+
+    }
+
+  }
+
+  return parsedCookies;
+}
+
 function processParsedRequest(res, fields, files, callback, parsedCookies) {
 
   for ( var key in fields) {
@@ -62,38 +83,40 @@ function processParsedRequest(res, fields, files, callback, parsedCookies) {
 
 }
 
+function redirectToLogin(res) {
+
+  var header = [ [ 'Location', '/login.html' ] ];
+
+  res.writeHead(302, header);
+
+  res.end();
+}
+
 exports.getAuthenticatedPost = function(req, res, getParameters, callback) {
 
   if (getParameters) {
 
     exports.getPostData(req, res, function(auth, parameters) {
 
-      accountOps.validate(auth, function validated(error, newAuth) {
-        callback(error, newAuth, parameters);
+      accountOps.validate(auth, function validated(error, newAuth, userData) {
+        if (error) {
+          redirectToLogin(res);
+        } else {
+          callback(newAuth, userData, parameters);
+        }
 
       });
     });
   } else {
-    var parsedCookies = {};
 
-    if (req.headers && req.headers.cookie) {
+    accountOps.validate(getCookies(req), function validated(error, newAuth,
+        userData) {
 
-      var cookies = req.headers.cookie.split(';');
-
-      for (var i = 0; i < cookies.length; i++) {
-
-        var cookie = cookies[i];
-
-        var parts = cookie.split('=');
-        parsedCookies[parts.shift().trim()] = decodeURI(parts.join('='));
-
+      if (error) {
+        redirectToLogin(res);
+      } else {
+        callback(newAuth, userData);
       }
-
-    }
-
-    accountOps.validate(parsedCookies, function validated(error, newAuth) {
-      callback(error, newAuth);
-
     });
   }
 
@@ -103,28 +126,11 @@ exports.getPostData = function(req, res, callback) {
 
   try {
 
-    var parsedCookies = {};
-
-    if (req.headers && req.headers.cookie) {
-
-      var cookies = req.headers.cookie.split(';');
-
-      for (var i = 0; i < cookies.length; i++) {
-
-        var cookie = cookies[i];
-
-        var parts = cookie.split('=');
-        parsedCookies[parts.shift().trim()] = decodeURI(parts.join('='));
-
-      }
-
-    }
-
     parser.parse(req, function parsed(error, fields, files) {
       if (error) {
         throw error;
       } else {
-        processParsedRequest(res, fields, files, callback, parsedCookies);
+        processParsedRequest(res, fields, files, callback, getCookies(req));
 
       }
 

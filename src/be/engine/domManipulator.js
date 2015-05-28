@@ -75,13 +75,33 @@ exports.recoveryEmail = function(recoveryLink) {
 
 };
 
-exports.account = function(login) {
+exports.account = function(login, boardList) {
 
   var document = jsdom(accountTemplate);
 
   var loginLabel = document.getElementById('labelLogin');
 
   loginLabel.innerHTML = login;
+
+  if (boardList && boardList.length) {
+
+    var boardDiv = document.getElementById('boardsDiv');
+
+    for (var i = 0; i < boardList.length; i++) {
+      var link = document.createElement('a');
+
+      if (i) {
+        boardDiv.appendChild(document.createElement('br'));
+      }
+
+      link.innerHTML = '/' + boardList[i] + '/';
+      link.href = link.innerHTML;
+
+      boardDiv.appendChild(link);
+
+    }
+
+  }
 
   return serializer(document);
 
@@ -159,7 +179,7 @@ exports.frontPage = function(boards, callback) {
 
       var link = document.createElement('a');
 
-      link.href = board.boardUri;
+      link.href = '/' + board.boardUri + '/';
       link.innerHTML = '/' + board.boardUri + '/ - ' + board.boardName;
 
       if (i) {
