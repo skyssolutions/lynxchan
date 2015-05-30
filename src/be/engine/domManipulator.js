@@ -14,6 +14,8 @@ var jsdom = require('jsdom').jsdom;
 var boot = require('../boot');
 var debug = boot.debug();
 var fs = require('fs');
+
+// templates
 var frontPageTemplate;
 var threadTemplate;
 var boardTemplate;
@@ -27,6 +29,8 @@ var resetEmailTemplate;
 var accountTemplate;
 var gManagementTemplate;
 var staffCellTemplate;
+var bManagementTemplate;
+var volunteerCellTemplate;
 
 require('jsdom').defaultDocumentFeatures = {
   FetchExternalResources : false,
@@ -47,6 +51,9 @@ function loadCellTemplates(fs, fePath, templateSettings) {
   opTemplate = fs.readFileSync(fePath + templateSettings.opCell);
   staffCellTemplate = fs.readFileSync(fePath + templateSettings.staffCell);
   postTemplate = fs.readFileSync(fePath + templateSettings.postCell);
+
+  var volunteerPath = fePath + templateSettings.volunteerCell;
+  volunteerCellTemplate = fs.readFileSync(volunteerPath);
 }
 
 exports.loadTemplates = function() {
@@ -62,9 +69,86 @@ exports.loadTemplates = function() {
   loginTemplate = fs.readFileSync(fePath + templateSettings.loginPage);
   accountTemplate = fs.readFileSync(fePath + templateSettings.accountPage);
   gManagementTemplate = fs.readFileSync(fePath + templateSettings.gManagement);
+  bManagementTemplate = fs.readFileSync(fePath + templateSettings.bManagement);
 
   loadEmailTemplates(fs, fePath, templateSettings);
   loadCellTemplates(fs, fePath, templateSettings);
+
+};
+
+function setBoardOwnerControls(document, boardData) {
+
+  document.getElementById('addVolunteerForm').style.display = 'block';
+
+  document.getElementById('boardIdentifier').setAttribute('value',
+      boardData.boardUri);
+
+  var volunteersDiv = document.getElementById('volunteersDiv');
+
+  var volunteers = boardData.volunteers || [];
+
+  for (var i = 0; i < volunteers.length; i++) {
+
+    var cell = document.createElement('form');
+    cell.enctype = 'multipart/form-data';
+    cell.action = '/setVolunteer.js';
+    cell.method = 'post';
+
+    cell.innerHTML = volunteerCellTemplate;
+
+    for (var j = 0; j < cell.childNodes.length; j++) {
+      var node = cell.childNodes[j];
+
+      switch (node.id) {
+      case 'userIdentifier':
+        node.setAttribute('value', volunteers[i]);
+        break;
+      case 'userLabel':
+        node.innerHTML = volunteers[i];
+        break;
+      case 'boardIdentifier':
+        node.setAttribute('value', boardData.boardUri);
+        break;
+      }
+
+    }
+
+    volunteersDiv.appendChild(cell);
+
+  }
+
+}
+
+exports.boardManagement = function(login, boardData) {
+  try {
+
+    var document = jsdom(bManagementTemplate);
+
+    var boardLabel = document.getElementById('boardLabel');
+
+    var label = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
+    boardLabel.innerHTML = label;
+
+    if (login === boardData.owner) {
+      setBoardOwnerControls(document, boardData);
+    } else {
+      document.getElementById('addVolunteerForm').style.display = 'none';
+
+    }
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
 
 };
 
@@ -274,7 +358,9 @@ exports.account = function(globalRole, login, boardList) {
 
     var gManagementLink = document.getElementById('globalManagementLink');
 
-    gManagementLink.style.display = globalRole < 2 ? 'block' : 'none';
+    var isInStaff = globalRole <= miscOps.getMaxStaffRole();
+
+    gManagementLink.style.display = isInStaff ? 'block' : 'none';
 
     if (boardList && boardList.length) {
 
@@ -399,10 +485,23 @@ exports.frontPage = function(boards, callback) {
   }
 };
 
+function setThreadHiddenIdentifiers(document, boardUri, threadData) {
+  var boardIdentifyInput = document.getElementById('boardIdentifier');
+
+  boardIdentifyInput.setAttribute('value', boardUri);
+
+  var threadIdentifyInput = document.getElementById('threadIdentifier');
+
+  threadIdentifyInput.setAttribute('value', threadData.threadId);
+}
+
 exports.thread = function(boardUri, boardData, threadData, posts, callback) {
 
   try {
     var document = jsdom(threadTemplate);
+
+    var linkManagement = document.getElementById('linkManagement');
+    linkManagement.href = '/boardManagement.js?boardUri=' + boardUri;
 
     var titleHeader = document.getElementById('labelName');
 
@@ -413,13 +512,7 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback) {
     titleHeader.innerHTML = '/' + boardUri + '/ - ' + boardData.boardName;
     descriptionHeader.innerHTML = boardData.boardDescription;
 
-    var boardIdentifyInput = document.getElementById('boardIdentifier');
-
-    boardIdentifyInput.setAttribute('value', boardUri);
-
-    var threadIdentifyInput = document.getElementById('threadIdentifier');
-
-    threadIdentifyInput.setAttribute('value', threadData.threadId);
+    setThreadHiddenIdentifiers(document, boardUri, threadData);
 
     addThread(document, threadData, posts, boardUri, true);
 
@@ -609,6 +702,9 @@ exports.page = function(board, page, threads, pageCount, boardData, preview,
   try {
 
     var document = jsdom(boardTemplate);
+
+    var linkManagement = document.getElementById('linkManagement');
+    linkManagement.href = '/boardManagement.js?boardUri=' + board;
 
     var boardIdentifyInput = document.getElementById('boardIdentifier');
 

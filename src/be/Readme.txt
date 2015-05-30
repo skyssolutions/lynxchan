@@ -15,9 +15,9 @@ It accepts the following arguments:
 --debug, -d: for development. Will not cache static files and will reload any module besides the ones directly under the be directory. It will also cause most errors to crash.
 --reload, -r: will rebuild all pages on boot.
 --no-daemon, -nd: will not start listening. For rebuilding pages while having a server running.
---create-root, -cr will create a new account with the root role. Require the use of the login and password parameters.
---login, -l, informs a login.
---password, -p, informs a password.
+--create-root, -cr: will create a new account with the root role. Require the use of the login and password parameters.
+--login, -l: informs a login.
+--password, -p: informs a password.
 
 Arguments that are meant to inform values should be used in the following manner:
 <argument> <value>
@@ -45,6 +45,9 @@ accountPage: template to be used for the account page.
 recoveryEmail: template to be used for the e-mail sent after a recovery request is created.
 resetEmail: template to be used for the e-mail sent after the account's password is reset.
 globalManagement: template for the site management.
+staffCell: template for the global staff members.
+bManagement: template for board management.
+volunteerCell: template used for the board volunteers.
 
 ---BACK-END SETTINGS---
 Settings files that goes into the settings directory:

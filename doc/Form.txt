@@ -120,7 +120,7 @@ PAG_ID::10
 
 Name: globalManagement
 
-Description: displays page for global staff to perform global management using their global tools like the fancy faggots they are. Requires validation. Forbidden for users with global role higher than 2.
+Description: displays page for global staff to perform global management using their global tools like the fancy faggots they are. Requires validation. Forbidden for users with global role higher than 3.
 
 ------------------------------------------------------------------------------------------
 
@@ -135,5 +135,27 @@ Parameters:
     role(Number): new role of the user.
 
 ------------------------------------------------------------------------------------------
+
+PAG_ID::12
+
+Name: boardManagement
+
+Description: displays page for board management. Requires validation. Allowed only for the board owner and volunteers. This board uses get parameters for ease of use.
+
+Parameters:
+    boardUri: uri of the board the user wishes to manage.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::13
+
+Name: setVolunteer
+
+Description: adds or remove a volunteer from a board. Requires validation. Allowed only for board owners.
+
+Parameters:
+    login: login of the user to be either removed or added to the list of board volunteers.
+    boardUri: board to have its list of volunteers managed.
+    add(Boolean): indicates if the user is to be added or removed from the list of volunteers.
 
 *: mandatory parameters.

@@ -93,7 +93,7 @@ exports.getGlobalRoleLabel = function(role) {
 
 exports.getManagementData = function(userRole, userLogin, callback) {
 
-  if (userRole > 2) {
+  if (userRole > MAX_STAFF_ROLE) {
 
     var error = 'Your global role does not allow you';
 

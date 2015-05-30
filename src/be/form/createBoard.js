@@ -13,7 +13,7 @@ function createBoard(userData, parameters, res) {
   boardOps.createBoard(parameters, userData.login,
       function boardCreated(error) {
         if (error) {
-          formOps.outputError(error, res);
+          formOps.outputError(error, 500, res);
         } else {
           var redirectLink = '/' + parameters.boardUri + '/';
 

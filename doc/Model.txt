@@ -6,6 +6,7 @@ boards: stores boards.
     lastPostId: id of last post in this board.
     lastFileId: id of last file posted in this board.
     threadCount(Number): pre-aggregated number of threads in the board.
+    volunteers(Array): array of logins of the users that are volunteers in the board.
 
 ----------------------------------------------------------------------------------------
 

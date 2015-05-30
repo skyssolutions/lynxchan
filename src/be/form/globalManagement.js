@@ -9,7 +9,7 @@ function getManagementData(userData, res) {
   miscOps.getManagementData(userData.globalRole, userData.login,
       function gotData(error, globalStaff) {
         if (error) {
-          formOps.outputError(error, res);
+          formOps.outputError(error, 500, res);
         } else {
 
           res.writeHead(200, miscOps.corsHeader('text/html'));

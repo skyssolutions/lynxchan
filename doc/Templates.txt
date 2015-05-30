@@ -33,6 +33,10 @@ boardIdentifier:
     type: input
     description: hidden input used to identify the board the page belongs to.
 
+linkManagement:
+    type: a
+    description: link to the board management page.
+
 ------------------------------------------------------------------------------------------
 
 threadPage:
@@ -57,6 +61,10 @@ boardIdentifier:
 threadIdentifier:
     type: input
     description: hidden input used to identify the thread the page belongs to.
+
+linkManagement:
+    type: a
+    description: link to the board management page.
 
 ------------------------------------------------------------------------------------------
 
@@ -220,4 +228,41 @@ roleCombo:
     description: combobox with the possible roles for the user.
 
 ------------------------------------------------------------------------------------------
+
+bManagement:
+
+Elements:
+boardLabel:
+    type: h4
+    description: used to display the board identification.
+
+volunteersDiv:
+    type: div
+    description: holds the list of volunteers of the board.
+
+addVolunteerForm:
+    type: form
+    description: form used to add a new volunteer to the board.
+
+boardIdentifier:
+    type: input
+    description: hidden input used to identify the board to add a new volunteer.
+
+------------------------------------------------------------------------------------------
+
+volunteerCell
+Class: volunteerCell
+
+Elements:
+boardIdentifier:
+    type: input.
+    description: hidden input used to identify the board to remove the volunteer from.
+
+userIdentifier:
+    type: input
+    description: hidden input used to identify the user of the cell.
+
+userLabel:
+    type: span
+    description: label used to identify the user. 
 

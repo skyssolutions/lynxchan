@@ -18,6 +18,102 @@ var newBoardParameters = [ {
   length : 128
 } ];
 
+function managerVolunteer(currentVolunteers, parameters, callback) {
+
+  var isAVolunteer = currentVolunteers.indexOf(parameters.login) > -1;
+
+  if (parameters.add === isAVolunteer) {
+    callback();
+  } else {
+
+    var operation;
+
+    if (isAVolunteer) {
+      operation = {
+        $pull : {
+          volunteers : parameters.login
+        }
+      };
+    } else {
+      operation = {
+        $addToSet : {
+          volunteers : parameters.login
+        }
+      };
+    }
+
+    boards.update({
+      boardUri : parameters.boardUri
+    }, operation, function updatedVolunteers(error) {
+      callback(error);
+    });
+
+  }
+
+}
+
+exports.setVolunteer = function(userData, parameters, callback) {
+
+  boards.findOne({
+    boardUri : parameters.boardUri
+  }, {
+    _id : 0,
+    owner : 1,
+    volunteers : 1
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback('Board not found');
+    } else if (board.owner !== userData.login) {
+      callback('You are not allowed to set volunteers on this board');
+    } else {
+      managerVolunteer(board.volunteers || [], parameters, callback);
+    }
+  });
+
+};
+
+function isAllowedToManageBoard(login, role, boardData) {
+
+  var inGlobalStaff = role <= miscOps.getMaxStaffRole();
+
+  var owner = login === boardData.owner;
+
+  var volunteer;
+
+  if (boardData.volunteers) {
+    volunteer = boardData.volunteers.indexOf(login) > -1;
+  }
+
+  return inGlobalStaff || owner || volunteer;
+
+}
+
+exports.getBoardManagementData = function(login, role, board, callback) {
+
+  boards.findOne({
+    boardUri : board
+  }, {
+    _id : 0,
+    owner : 1,
+    boardUri : 1,
+    boardName : 1,
+    volunteers : 1
+  }, function(error, boardData) {
+    if (error) {
+      callback(error);
+    } else if (!boardData) {
+      callback('Board not found');
+    } else if (isAllowedToManageBoard(login, role, boardData)) {
+      callback(null, boardData);
+    } else {
+      callback('You are not allowed to manage this board.');
+    }
+  });
+
+};
+
 exports.createBoard = function(parameters, user, callback) {
 
   miscOps.sanitizeStrings(parameters, newBoardParameters);
