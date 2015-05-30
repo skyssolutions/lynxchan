@@ -4,6 +4,7 @@ Pages will use the request body for parameters and cookies for authentication.
 The parameters should be passed using the request body as usual on posts.
 The forms should use multipart/form-data for enctype.
 Files should be sent with an input of type "file" using name "files".
+Pages that require proper validation will redirect the user to /login.html if authentication fails. Validation will require both the login and hash cookies to be set. The hash is the hash created when an account is created or performs login.
 
 ------------------------------------------------------------------------------------------
 
@@ -42,7 +43,7 @@ PAG_ID::03
 
 Name: account
 
-Description: display the account page for the user. Will redirect to login.html if the user is not logged in. As any other form page that performs account validation, it will require both the login and hash cookies to be set. The hash is the hash created when an account is created or performs login.
+Description: display the account page for the user. Requires validation.
 
 ------------------------------------------------------------------------------------------
 
@@ -106,7 +107,7 @@ PAG_ID::09
 
 Name: createBoard
 
-Description: creates a new board.
+Description: creates a new board. Requires validation.
 
 Parameters:
     boardUri: uri of the new board. 32 characters, lower case and numbers only.
@@ -115,5 +116,24 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::10
+
+Name: globalManagement
+
+Description: displays page for global staff to perform global management using their global tools like the fancy faggots they are. Requires validation. Forbidden for users with global role higher than 2.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::11
+
+Name: setGlobalRole
+
+Description: changes the global role of an user.  Requires validation.
+
+Parameters:
+    login: login of the user.
+    role(Number): new role of the user.
+
+------------------------------------------------------------------------------------------
 
 *: mandatory parameters.

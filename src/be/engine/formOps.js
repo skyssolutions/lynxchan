@@ -37,6 +37,24 @@ function getCookies(req) {
   return parsedCookies;
 }
 
+function transferFileInformation(filesToDelete, files, fields) {
+
+  for (var i = 0; i < files.files.length; i++) {
+    var file = files.files[i];
+
+    filesToDelete.push(file.path);
+
+    if (file.size) {
+
+      fields.files.push({
+        title : file.originalFilename,
+        pathInDisk : file.path,
+        mime : file.headers['content-type']
+      });
+    }
+  }
+}
+
 function processParsedRequest(res, fields, files, callback, parsedCookies) {
 
   for ( var key in fields) {
@@ -63,20 +81,12 @@ function processParsedRequest(res, fields, files, callback, parsedCookies) {
 
   if (files.files) {
 
-    for (var i = 0; i < files.files.length; i++) {
-      var file = files.files[i];
+    transferFileInformation(filesToDelete, files, fields);
 
-      filesToDelete.push(file.path);
+  }
 
-      if (file.size) {
-
-        fields.files.push({
-          title : file.originalFilename,
-          pathInDisk : file.path,
-          mime : file.headers['content-type']
-        });
-      }
-    }
+  if (verbose) {
+    console.log('Form input: ' + JSON.stringify(fields));
   }
 
   callback(parsedCookies, fields);
@@ -141,13 +151,17 @@ exports.getPostData = function(req, res, callback) {
 
 };
 
-exports.outputResponse = function(message, redirect, res, cookies) {
+exports.outputResponse = function(message, redirect, res, cookies, authBlock) {
 
   if (verbose) {
     console.log(message);
   }
 
   var header = miscOps.corsHeader('text/html');
+
+  if (authBlock && authBlock.authStatus === 'expired') {
+    header.push([ 'Set-Cookie', 'hash=' + authBlock.newHash ]);
+  }
 
   if (cookies) {
 

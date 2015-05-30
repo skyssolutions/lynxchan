@@ -3,6 +3,7 @@
 // miscellaneous
 var verbose = require('../boot').getGeneralSettings().verbose;
 var formOps = require('./formOps');
+var users = require('../db').users();
 
 var MIMETYPES = {
   html : 'text/html',
@@ -65,4 +66,49 @@ exports.sanitizeStrings = function(object, parameters) {
 exports.corsHeader = function(contentType) {
   return [ [ 'Content-Type', contentType ],
       [ 'access-control-allow-origin', '*' ] ];
+};
+
+exports.getGlobalRoleLabel = function(role) {
+
+  switch (role) {
+  case 0:
+    return 'Root';
+  case 1:
+    return 'Admin';
+  case 2:
+    return 'Global volunteer';
+  default:
+    return 'User';
+  }
+
+};
+
+exports.getManagementData = function(userRole, userLogin, callback) {
+
+  if (userRole > 2) {
+
+    var error = 'Your global role does not allow you';
+
+    callback(error + ' to retrieve this information.');
+
+  } else {
+
+    users.find({
+      login : {
+        $ne : userLogin
+      },
+      globalRole : {
+        $gt : userRole,
+        $lt : 3
+      }
+    }, {
+      _id : 0,
+      login : 1,
+      globalRole : 1
+    }).sort({
+      login : 1
+    }).toArray(function gotUsers(error, users) {
+      callback(error, users);
+    });
+  }
 };

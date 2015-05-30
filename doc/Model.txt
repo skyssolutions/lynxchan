@@ -50,6 +50,11 @@ users: stores users.
     password: hashed password of the user.
     ownedBoards(Array): list of the uri's of the boards owned by this user.
     hash: current hash of the user.
+    globalRole (Number): global role of the user. 
+        Anything above 2 means regular user. No powers.
+        2 means global mod. Is able to delete content and apply global bans. 
+        1 means global admin. Has all powers of global mods plus board deletion and global mod assignment. 
+        0 means root. All power of admins plus is able to assign global admins.
 
 ----------------------------------------------------------------------------------------
 

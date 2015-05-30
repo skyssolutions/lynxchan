@@ -1,5 +1,5 @@
 This document specifies the required characteristics of each template. The keys used in the templateSettings.json will be used to refer to them. The name of the element should be used as the id.
-Note: postCell and opCell must have the specified elements on the top level. The contents of these templates will be directly put inside a div.
+Note: postCell, staffCell and opCell must have the specified elements on the top level. The contents of these templates will be directly put inside a div.
 
 
 index:
@@ -158,6 +158,10 @@ boardsDiv:
     type:div
     description: contains the list of boards owned by the user.
 
+globalManagementLink:
+    type: a
+    description: link that leads to the global management page.
+
 ------------------------------------------------------------------------------------------
 
 recoveryEmail
@@ -173,5 +177,47 @@ resetEmail
 
 Elements:
 labelNewPass:
-    type: p.
+    type: p
     description: contains the new password of the account.
+
+------------------------------------------------------------------------------------------
+
+gManagement
+
+Elements:
+divStaff:
+    type: div
+    description: contains the list of the staff of the site.
+
+userLabel:
+    type: h5
+    description: contains general indentification of the logged user.
+
+addStaffForm:
+    type: form
+    description: form used to add a new user to the global staff. 
+
+newStaffCombo:
+    type: select
+    description: combobox used in the addStaffForm to define the role of the new staff member.
+
+------------------------------------------------------------------------------------------
+
+staffCell
+Class: staffCell
+
+Elements:
+userIdentifier:
+    type: input
+    description: hidden input used to identify the user of the cell.
+
+userLabel:
+    type: span
+    description: contains general identification of the user of the cell.
+
+roleCombo:
+    type: select
+    description: combobox with the possible roles for the user.
+
+------------------------------------------------------------------------------------------
+

@@ -19,6 +19,49 @@ var newAccountParameters = [ {
   length : 64
 } ];
 
+exports.setGlobalRole = function(operatorData, parameters, callback) {
+
+  if (isNaN(parameters.role)) {
+    callback('Invalid role');
+    return;
+  } else if (operatorData.globalRole >= parameters.role) {
+    callback('You are not allowed to grant this level of permission to users');
+    return;
+  } else if (operatorData.login === parameters.login) {
+    callback('You cannot change your own role.');
+  }
+
+  users.findOne({
+    login : parameters.login
+  }, {
+    _id : 0,
+    globalRole : 1
+  }, function gotUser(error, user) {
+    if (error) {
+      callback(error);
+    } else if (!user) {
+      callback('User not found');
+    } else if (user.globalRole <= operatorData.globalRole) {
+      callback('You are not allowed to change this user\'s permission');
+    } else {
+
+      // style exception, too simple
+      users.update({
+        login : parameters.login
+      }, {
+        $set : {
+          globalRole : +parameters.role
+        }
+      }, function roleSet(error) {
+        callback(error);
+      });
+      // style exception, too simple
+
+    }
+  });
+
+};
+
 exports.registerUser = function(parameters, callback) {
 
   miscOps.sanitizeStrings(parameters, newAccountParameters);
@@ -43,8 +86,10 @@ exports.registerUser = function(parameters, callback) {
         newUser.email = parameters.email;
       }
       users.insert(newUser, function createdUser(error) {
-        if (error) {
+        if (error && error.code !== 11000) {
           callback(error);
+        } else if (error) {
+          callback('Login is already in use');
         } else {
           exports.createSession(parameters.login, callback);
         }
@@ -119,6 +164,7 @@ exports.validate = function(auth, callback) {
     login : 1,
     hash : 1,
     ownedBoards : 1,
+    globalRole : 1,
     email : 1
   }, function foundUser(error, user) {
     if (error) {
@@ -127,7 +173,7 @@ exports.validate = function(auth, callback) {
       callback('Not found');
     } else {
       callback(null, {
-        status : 'ok'
+        authStatus : 'ok'
       }, user);
     }
   });

@@ -9,7 +9,7 @@ Latest version of all them.
 
 boot.js is the main file, run it using io.js to start the system. Keep in mind that if you ran setup.sh, you can just run the lynxchan command or start the lynxchan service.
 It accepts the following arguments:
---debug, -d: for development. Will not cache static files and will reload any module besides the ones directly under the be directory.
+--debug, -d: for development. Will not cache static files and will reload any module besides the ones directly under the be directory. It will also cause most errors to crash.
 --reload, -r: will rebuild all pages on boot.
 --no-daemon, -nd: will not start listening. For rebuilding pages while having a server running.
 
@@ -32,6 +32,7 @@ loginPage: template to be used for the login screen.
 accountPage: template to be used for the account page.
 recoveryEmail: template to be used for the e-mail sent after a recovery request is created.
 resetEmail: template to be used for the e-mail sent after the account's password is reset.
+globalManagement: template for the site management.
 
 Settings files that goes into the settings directory:
 general.json:

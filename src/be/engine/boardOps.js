@@ -33,8 +33,10 @@ exports.createBoard = function(parameters, user, callback) {
     boardDescription : parameters.boardDescription,
     owner : user
   }, function insertedBoard(error) {
-    if (error) {
+    if (error && error.code !== 11000) {
       callback(error);
+    } else if (error) {
+      callback('Uri already in use.');
     } else {
 
       // style exception, too simple

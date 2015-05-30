@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var mandatoryParameters = [ 'boardUri', 'boardName', 'boardDescription' ];
 var boardOps = require('../engine/boardOps');
 
-function createBoard(auth, userData, parameters, res) {
+function createBoard(userData, parameters, res) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -17,7 +17,7 @@ function createBoard(auth, userData, parameters, res) {
         } else {
           var redirectLink = '/' + parameters.boardUri + '/';
 
-          formOps.outputResponse('Board created.', redirectLink, res, auth);
+          formOps.outputResponse('Board created.', redirectLink, res);
         }
       });
 
@@ -28,7 +28,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    createBoard(auth, userData, parameters, res);
+    createBoard(userData, parameters, res);
 
   });
 

@@ -8,6 +8,7 @@
 
 var gridFs = require('./gridFsHandler');
 var serializer = require('jsdom').serializeDocument;
+var miscOps = require('./miscOps');
 var verbose = require('../boot').getGeneralSettings().verbose;
 var jsdom = require('jsdom').jsdom;
 var boot = require('../boot');
@@ -24,6 +25,8 @@ var postTemplate;
 var recoveryEmailTemplate;
 var resetEmailTemplate;
 var accountTemplate;
+var gManagementTemplate;
+var staffCellTemplate;
 
 require('jsdom').defaultDocumentFeatures = {
   FetchExternalResources : false,
@@ -31,6 +34,20 @@ require('jsdom').defaultDocumentFeatures = {
   // someone said it might break stuff. If weird bugs, disable.
   MutationEvents : false
 };
+
+function loadEmailTemplates(fs, fePath, templateSettings) {
+
+  var recoveryEmailPath = fePath + templateSettings.recoveryEmail;
+  recoveryEmailTemplate = fs.readFileSync(recoveryEmailPath);
+  resetEmailTemplate = fs.readFileSync(fePath + templateSettings.resetEmail);
+
+}
+
+function loadCellTemplates(fs, fePath, templateSettings) {
+  opTemplate = fs.readFileSync(fePath + templateSettings.opCell);
+  staffCellTemplate = fs.readFileSync(fePath + templateSettings.staffCell);
+  postTemplate = fs.readFileSync(fePath + templateSettings.postCell);
+}
 
 exports.loadTemplates = function() {
 
@@ -43,76 +60,262 @@ exports.loadTemplates = function() {
   notFoundTemplate = fs.readFileSync(fePath + templateSettings.notFoundPage);
   messageTemplate = fs.readFileSync(fePath + templateSettings.messagePage);
   loginTemplate = fs.readFileSync(fePath + templateSettings.loginPage);
-  opTemplate = fs.readFileSync(fePath + templateSettings.opCell);
-  postTemplate = fs.readFileSync(fePath + templateSettings.postCell);
   accountTemplate = fs.readFileSync(fePath + templateSettings.accountPage);
+  gManagementTemplate = fs.readFileSync(fePath + templateSettings.gManagement);
 
-  var recoveryEmailPath = fePath + templateSettings.recoveryEmail;
-  recoveryEmailTemplate = fs.readFileSync(recoveryEmailPath);
+  loadEmailTemplates(fs, fePath, templateSettings);
+  loadCellTemplates(fs, fePath, templateSettings);
 
-  resetEmailTemplate = fs.readFileSync(fePath + templateSettings.resetEmail);
+};
+
+function setRoleComboBox(document, node, possibleRoles, user) {
+  for (var k = 0; k < possibleRoles.length; k++) {
+
+    var role = possibleRoles[k];
+
+    var option = document.createElement('option');
+    option.value = role.value;
+    option.innerHTML = role.label;
+
+    if (role.value === user.globalRole) {
+      option.setAttribute('selected', 'selected');
+    }
+
+    node.add(option);
+
+  }
+
+}
+
+function fillStaffDiv(document, possibleRoles, staff) {
+  var divStaff = document.getElementById('divStaff');
+
+  for (var i = 0; i < staff.length; i++) {
+
+    var user = staff[i];
+
+    var cell = document.createElement('form');
+    cell.setAttribute('class', 'staffCell');
+    cell.method = 'post';
+    cell.enctype = 'multipart/form-data';
+    cell.action = '/setGlobalRole.js';
+    cell.innerHTML = staffCellTemplate;
+
+    for (var j = 0; j < cell.childNodes.length; j++) {
+
+      var node = cell.childNodes[j];
+
+      switch (node.id) {
+      case 'userIdentifier':
+        node.setAttribute('value', user.login);
+        break;
+      case 'userLabel':
+        node.innerHTML = user.login + ': ';
+        break;
+      case 'roleCombo':
+        setRoleComboBox(document, node, possibleRoles, user);
+
+        break;
+      }
+
+    }
+
+    divStaff.appendChild(cell);
+
+  }
+}
+
+function getPossibleRoles(role) {
+
+  var roles = [];
+
+  for (var i = role + 1; i < 4; i++) {
+    var toPush = {
+      value : i,
+      label : miscOps.getGlobalRoleLabel(i)
+    };
+
+    roles.push(toPush);
+
+  }
+
+  return roles;
+}
+
+function setNewStaffComboBox(document, userRole) {
+
+  var comboBox = document.getElementById('newStaffCombo');
+
+  for (var i = userRole + 1; i < 3; i++) {
+
+    var option = document.createElement('option');
+    option.value = i;
+    option.innerHTML = miscOps.getGlobalRoleLabel(i);
+
+    comboBox.add(option);
+
+  }
+
+}
+
+exports.globalManagement = function(userRole, userLogin, staff) {
+
+  try {
+    var document = jsdom(gManagementTemplate);
+
+    var newStaffForm = document.getElementById('addStaffForm');
+
+    newStaffForm.style.display = userRole < 2 ? 'block' : 'none';
+
+    if (userRole < 2) {
+      setNewStaffComboBox(document, userRole);
+    }
+
+    var userLabel = document.getElementById('userLabel');
+
+    var userLabelContent = userLogin + ': ';
+    userLabelContent += miscOps.getGlobalRoleLabel(userRole);
+
+    userLabel.innerHTML = userLabelContent;
+
+    fillStaffDiv(document, getPossibleRoles(userRole), staff);
+
+    return serializer(document);
+  } catch (error) {
+
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
 };
 
 exports.resetEmail = function(password) {
 
-  var document = jsdom(resetEmailTemplate);
+  try {
 
-  var link = document.getElementById('labelNewPass');
-  link.innerHTML = password;
+    var document = jsdom(resetEmailTemplate);
 
-  return serializer(document);
+    var link = document.getElementById('labelNewPass');
+    link.innerHTML = password;
 
+    return serializer(document);
+  } catch (error) {
+
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
 };
 
 exports.recoveryEmail = function(recoveryLink) {
 
-  var document = jsdom(recoveryEmailTemplate);
+  try {
 
-  var link = document.getElementById('linkRecovery');
-  link.href = recoveryLink;
+    var document = jsdom(recoveryEmailTemplate);
 
-  return serializer(document);
+    var link = document.getElementById('linkRecovery');
+    link.href = recoveryLink;
 
+    return serializer(document);
+  } catch (error) {
+
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
 };
 
-exports.account = function(login, boardList) {
+function fillBoardsDiv(document, boardList) {
+  var boardDiv = document.getElementById('boardsDiv');
 
-  var document = jsdom(accountTemplate);
+  for (var i = 0; i < boardList.length; i++) {
+    var link = document.createElement('a');
 
-  var loginLabel = document.getElementById('labelLogin');
-
-  loginLabel.innerHTML = login;
-
-  if (boardList && boardList.length) {
-
-    var boardDiv = document.getElementById('boardsDiv');
-
-    for (var i = 0; i < boardList.length; i++) {
-      var link = document.createElement('a');
-
-      if (i) {
-        boardDiv.appendChild(document.createElement('br'));
-      }
-
-      link.innerHTML = '/' + boardList[i] + '/';
-      link.href = link.innerHTML;
-
-      boardDiv.appendChild(link);
-
+    if (i) {
+      boardDiv.appendChild(document.createElement('br'));
     }
+
+    link.innerHTML = '/' + boardList[i] + '/';
+    link.href = link.innerHTML;
+
+    boardDiv.appendChild(link);
 
   }
 
-  return serializer(document);
+}
 
+exports.account = function(globalRole, login, boardList) {
+
+  try {
+
+    var document = jsdom(accountTemplate);
+
+    var loginLabel = document.getElementById('labelLogin');
+
+    loginLabel.innerHTML = login;
+
+    var gManagementLink = document.getElementById('globalManagementLink');
+
+    gManagementLink.style.display = globalRole < 2 ? 'block' : 'none';
+
+    if (boardList && boardList.length) {
+
+      fillBoardsDiv(document, boardList);
+
+    }
+
+    return serializer(document);
+  } catch (error) {
+
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
 };
 
 exports.login = function(callback) {
+  try {
+    var document = jsdom(loginTemplate);
 
-  var document = jsdom(loginTemplate);
+    gridFs.writeData(serializer(document), '/login.html', 'text/html', {},
+        callback);
 
-  gridFs.writeData(serializer(document), '/login.html', 'text/html', {},
-      callback);
+  } catch (error) {
+
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
 
 };
 
