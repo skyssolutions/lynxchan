@@ -1,3 +1,4 @@
+---DEPENDENCIES---
 Required modules:
 mongodb
 imagemagick
@@ -6,13 +7,22 @@ multiparty
 bcrypt
 nodemailer
 Latest version of all them.
+A package.json file is included, so you can install all of them by just running 'npm install' on this directory.
 
+---APPLICATION USAGE---
 boot.js is the main file, run it using io.js to start the system. Keep in mind that if you ran setup.sh, you can just run the lynxchan command or start the lynxchan service.
 It accepts the following arguments:
 --debug, -d: for development. Will not cache static files and will reload any module besides the ones directly under the be directory. It will also cause most errors to crash.
 --reload, -r: will rebuild all pages on boot.
 --no-daemon, -nd: will not start listening. For rebuilding pages while having a server running.
+--create-root, -cr will create a new account with the root role. Require the use of the login and password parameters.
+--login, -l, informs a login.
+--password, -p, informs a password.
 
+Arguments that are meant to inform values should be used in the following manner:
+<argument> <value>
+
+---DIRECTORIES STRUCTURE---
 The json api files will be stored on the api directory and acessed by the same subdomain. api.domain/function will use the file api/function.js.
 The form api for support of users without js because they are retarded tin foilers are in the form directory and are accessed using domain/function.js.
 The engine directory will hold all scripts that provide functionality but are not to be accessed directly.
@@ -20,6 +30,8 @@ The engine directory will hold all scripts that provide functionality but are no
 The following directories will be expected on the fe directory:
 static: static files to be acessed by using the static subdomain.
 templates: will hold the templates, so only the files will have to be specified on the settings.
+
+---TEMPLATES---
 A file called templateSettings.json should be located on the fe directory pointing the correct templates to be used, located on the templates directory. Inform only the name of the file.
 index: template for the site's main page.
 boardPage: template for the pages of the board.
@@ -34,6 +46,7 @@ recoveryEmail: template to be used for the e-mail sent after a recovery request 
 resetEmail: template to be used for the e-mail sent after the account's password is reset.
 globalManagement: template for the site management.
 
+---BACK-END SETTINGS---
 Settings files that goes into the settings directory:
 general.json:
 verbose(Boolean): if true, will output text for debugging on several points, like IO on the json api.
@@ -57,6 +70,7 @@ password: password to use on the database.
 login is option and password will only be used if login is informed.
 Settings files must contain a json object where each key defined here will have its corresponding value.
 
+---GRIDFS---
 Metadata of files on gridfs will have the following values:
 boardUri: board to which the file belongs to. If undefined, file is a default site file.
 threadId(Number): id of the thread the file belongs to.

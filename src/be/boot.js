@@ -20,14 +20,46 @@ var templateSettings;
 var genericThumb;
 var fePath;
 
-var debug = process.argv.toString().indexOf('-d') > -1;
-debug = debug || process.argv.toString().indexOf('--debug') > -1;
+var args = process.argv;
 
-var reload = process.argv.toString().indexOf('-r') > -1;
-reload = reload || process.argv.toString().indexOf('--reload') > -1;
+var debug = args.indexOf('-d') > -1;
+debug = debug || args.indexOf('--debug') > -1;
 
-var noDaemon = process.argv.toString().indexOf('-nd') > -1;
-noDaemon = noDaemon || process.argv.toString().indexOf('--no-daemon') > -1;
+var reload = args.indexOf('-r') > -1;
+reload = reload || args.indexOf('--reload') > -1;
+
+var noDaemon = args.indexOf('-nd') > -1;
+noDaemon = noDaemon || args.indexOf('--no-daemon') > -1;
+
+var createRoot = args.indexOf('-cr') > -1;
+createRoot = createRoot || args.indexOf('--create-root') > -1;
+
+var informedLogin;
+var informedPassword;
+
+if (createRoot) {
+  var loginIndex = args.indexOf('-l');
+  if (loginIndex === -1) {
+    loginIndex = args.indexOf('--login');
+  }
+
+  var passwordIndex = args.indexOf('-p');
+  if (passwordIndex === -1) {
+    passwordIndex = args.indexOf('--password');
+  }
+
+  passwordIndex++;
+  loginIndex++;
+
+  if (passwordIndex && passwordIndex < args.length) {
+    informedPassword = args[passwordIndex];
+  }
+
+  if (loginIndex && loginIndex < args.length) {
+    informedLogin = args[loginIndex];
+  }
+
+}
 
 exports.genericThumb = function() {
   return genericThumb;
@@ -306,6 +338,34 @@ if (cluster.isMaster) {
       if (debug) {
         throw error;
       }
+    } else if (createRoot) {
+
+      // style exception, too simple
+      require('./engine/accountOps').registerUser({
+        login : informedLogin,
+        password : informedPassword
+      }, function createdUser(error) {
+
+        if (error) {
+
+          if (generalSettings.verbose) {
+            console.log(error);
+          }
+
+          if (debug) {
+            throw error;
+          }
+          checkForDefaultPages();
+
+        } else {
+          console.log('Root account ' + informedLogin + ' created.');
+
+          checkForDefaultPages();
+        }
+
+      }, 0);
+      // style exception, too simple
+
     } else {
       checkForDefaultPages();
     }

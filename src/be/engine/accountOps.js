@@ -62,12 +62,15 @@ exports.setGlobalRole = function(operatorData, parameters, callback) {
 
 };
 
-exports.registerUser = function(parameters, callback) {
+exports.registerUser = function(parameters, callback, role) {
 
   miscOps.sanitizeStrings(parameters, newAccountParameters);
 
   if (/\W/.test(parameters.login)) {
     callback('Invalid login');
+    return;
+  } else if (role !== undefined && isNaN(role)) {
+    callback('Invalid role');
     return;
   }
 
@@ -76,12 +79,16 @@ exports.registerUser = function(parameters, callback) {
       callback(error);
     } else {
 
+      // style exception, too simple
       var newUser = {
         login : parameters.login,
         password : hash
       };
 
-      // style exception, too simple
+      if (role !== undefined) {
+        newUser.globalRole = role;
+      }
+
       if (parameters.email) {
         newUser.email = parameters.email;
       }

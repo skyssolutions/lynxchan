@@ -129,7 +129,7 @@ function getPossibleRoles(role) {
 
   var roles = [];
 
-  for (var i = role + 1; i < 4; i++) {
+  for (var i = role + 1; i <= miscOps.getMaxStaffRole() + 1; i++) {
     var toPush = {
       value : i,
       label : miscOps.getGlobalRoleLabel(i)
@@ -146,7 +146,7 @@ function setNewStaffComboBox(document, userRole) {
 
   var comboBox = document.getElementById('newStaffCombo');
 
-  for (var i = userRole + 1; i < 3; i++) {
+  for (var i = userRole + 1; i <= miscOps.getMaxStaffRole(); i++) {
 
     var option = document.createElement('option');
     option.value = i;

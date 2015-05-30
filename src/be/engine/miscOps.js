@@ -5,6 +5,8 @@ var verbose = require('../boot').getGeneralSettings().verbose;
 var formOps = require('./formOps');
 var users = require('../db').users();
 
+var MAX_STAFF_ROLE = 3;
+
 var MIMETYPES = {
   html : 'text/html',
   jpg : 'image/jpeg',
@@ -16,6 +18,10 @@ var MIMETYPES = {
   js : 'application/javascript',
   css : 'text/css',
   png : 'image/png'
+};
+
+exports.getMaxStaffRole = function() {
+  return MAX_STAFF_ROLE;
 };
 
 exports.getMime = function getHeader(pathName) {
@@ -77,6 +83,8 @@ exports.getGlobalRoleLabel = function(role) {
     return 'Admin';
   case 2:
     return 'Global volunteer';
+  case 3:
+    return 'Global janitor';
   default:
     return 'User';
   }
@@ -99,7 +107,7 @@ exports.getManagementData = function(userRole, userLogin, callback) {
       },
       globalRole : {
         $gt : userRole,
-        $lt : 3
+        $lte : MAX_STAFF_ROLE
       }
     }, {
       _id : 0,
