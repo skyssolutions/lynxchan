@@ -240,13 +240,17 @@ volunteersDiv:
     type: div
     description: holds the list of volunteers of the board.
 
-addVolunteerForm:
-    type: form
-    description: form used to add a new volunteer to the board.
+ownerControlDiv:
+    type: div
+    description: div containing the actions exclusive to the board owner.
 
-boardIdentifier:
+addVolunteerBoardIdentifier:
     type: input
     description: hidden input used to identify the board to add a new volunteer.
+
+transferBoardIdentifier:
+    type: input
+    description: hidden input used to identify the board to transfer it to a new owner.
 
 ------------------------------------------------------------------------------------------
 

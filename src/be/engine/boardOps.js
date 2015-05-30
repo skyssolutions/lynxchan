@@ -18,7 +18,80 @@ var newBoardParameters = [ {
   length : 128
 } ];
 
-function managerVolunteer(currentVolunteers, parameters, callback) {
+function updateUsersOwnedBoards(userData, parameters, callback) {
+
+  users.update({
+    login : userData.login
+  }, {
+    $pull : {
+      ownedBoards : parameters.boardUri
+    }
+  }, function removedFromPreviousOwner(error) {
+    if (error) {
+      callback(error);
+
+    } else {
+
+      // style exception, too simple
+      users.update({
+        login : parameters.login
+      }, {
+        $addToSet : {
+          ownedBoards : parameters.boardUri
+        }
+      }, function addedToNewOwner(error) {
+        callback(error);
+      });
+      // style exception, too simple
+
+    }
+  });
+
+}
+
+exports.transfer = function(userData, parameters, callback) {
+
+  boards.findOne({
+    boardUri : parameters.boardUri
+  }, {
+    _id : 0,
+    owner : 1
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback('Board not found');
+    } else if (userData.login !== board.owner) {
+      callback('You are not allowed to perform this operation');
+    } else {
+
+      // style exception, too simple
+      boards.update({
+        boardUri : parameters.boardUri
+      }, {
+        $set : {
+          owner : parameters.login
+        },
+        $pull : {
+          volunteers : parameters.login
+        }
+      }, function transferedBoard(error) {
+        if (error) {
+          callback(error);
+        } else {
+          updateUsersOwnedBoards(userData, parameters, callback);
+        }
+
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+function manageVolunteer(currentVolunteers, parameters, callback) {
 
   var isAVolunteer = currentVolunteers.indexOf(parameters.login) > -1;
 
@@ -54,6 +127,11 @@ function managerVolunteer(currentVolunteers, parameters, callback) {
 
 exports.setVolunteer = function(userData, parameters, callback) {
 
+  if (userData.login === parameters.login) {
+    callback('You cannot set yourself as a volunteer.');
+    return;
+  }
+
   boards.findOne({
     boardUri : parameters.boardUri
   }, {
@@ -68,7 +146,7 @@ exports.setVolunteer = function(userData, parameters, callback) {
     } else if (board.owner !== userData.login) {
       callback('You are not allowed to set volunteers on this board');
     } else {
-      managerVolunteer(board.volunteers || [], parameters, callback);
+      manageVolunteer(board.volunteers || [], parameters, callback);
     }
   });
 

@@ -78,9 +78,12 @@ exports.loadTemplates = function() {
 
 function setBoardOwnerControls(document, boardData) {
 
-  document.getElementById('addVolunteerForm').style.display = 'block';
+  document.getElementById('ownerControlDiv').style.display = 'block';
 
-  document.getElementById('boardIdentifier').setAttribute('value',
+  document.getElementById('addVolunteerBoardIdentifier').setAttribute('value',
+      boardData.boardUri);
+
+  document.getElementById('transferBoardIdentifier').setAttribute('value',
       boardData.boardUri);
 
   var volunteersDiv = document.getElementById('volunteersDiv');
@@ -132,7 +135,7 @@ exports.boardManagement = function(login, boardData) {
     if (login === boardData.owner) {
       setBoardOwnerControls(document, boardData);
     } else {
-      document.getElementById('addVolunteerForm').style.display = 'none';
+      document.getElementById('ownerControlDiv').style.display = 'none';
 
     }
 

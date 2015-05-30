@@ -158,4 +158,18 @@ Parameters:
     boardUri: board to have its list of volunteers managed.
     add(Boolean): indicates if the user is to be added or removed from the list of volunteers.
 
+------------------------------------------------------------------------------------------
+
+PAG_ID::14
+
+Name: transferBoardOwnership
+
+Description: transfers the board to another user. Required validaiton. Allowed only for board owners.
+
+Parameters:
+    boardUri: board to be transfered.
+    login: login of the new owner.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
