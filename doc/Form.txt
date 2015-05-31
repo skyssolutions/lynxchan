@@ -128,7 +128,7 @@ PAG_ID::11
 
 Name: setGlobalRole
 
-Description: changes the global role of an user.  Requires validation.
+Description: changes the global role of an user. Requires validation.
 
 Parameters:
     login: login of the user.
@@ -164,7 +164,7 @@ PAG_ID::14
 
 Name: transferBoardOwnership
 
-Description: transfers the board to another user. Required validaiton. Allowed only for board owners.
+Description: transfers the board to another user. Requires validation. Allowed only for board owners.
 
 Parameters:
     boardUri: board to be transfered.

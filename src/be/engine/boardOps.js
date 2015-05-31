@@ -49,7 +49,35 @@ function updateUsersOwnedBoards(userData, parameters, callback) {
 
 }
 
+function performTransfer(userData, parameters, callback) {
+
+  boards.update({
+    boardUri : parameters.boardUri
+  }, {
+    $set : {
+      owner : parameters.login
+    },
+    $pull : {
+      volunteers : parameters.login
+    }
+  }, function transferedBoard(error) {
+    if (error) {
+      callback(error);
+    } else {
+      updateUsersOwnedBoards(userData, parameters, callback);
+    }
+
+  });
+
+}
+
 exports.transfer = function(userData, parameters, callback) {
+
+  if (userData.login === parameters.login) {
+    callback();
+    return;
+
+  }
 
   boards.findOne({
     boardUri : parameters.boardUri
@@ -66,22 +94,16 @@ exports.transfer = function(userData, parameters, callback) {
     } else {
 
       // style exception, too simple
-      boards.update({
-        boardUri : parameters.boardUri
-      }, {
-        $set : {
-          owner : parameters.login
-        },
-        $pull : {
-          volunteers : parameters.login
-        }
-      }, function transferedBoard(error) {
+      users.count({
+        login : parameters.login
+      }, function gotCount(error, count) {
         if (error) {
           callback(error);
+        } else if (!count) {
+          callback('User not found');
         } else {
-          updateUsersOwnedBoards(userData, parameters, callback);
+          performTransfer(userData, parameters, callback);
         }
-
       });
       // style exception, too simple
 
@@ -115,10 +137,22 @@ function manageVolunteer(currentVolunteers, parameters, callback) {
       };
     }
 
-    boards.update({
-      boardUri : parameters.boardUri
-    }, operation, function updatedVolunteers(error) {
-      callback(error);
+    users.count({
+      login : parameters.login
+    }, function gotCount(error, count) {
+      if (error) {
+        callback(error);
+      } else if (!count && !isAVolunteer) {
+        callback('User not found');
+      } else {
+        // style exception, too simple
+        boards.update({
+          boardUri : parameters.boardUri
+        }, operation, function updatedVolunteers(error) {
+          callback(error);
+        });
+        // style exception, too simple
+      }
     });
 
   }
