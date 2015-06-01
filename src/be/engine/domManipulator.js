@@ -595,6 +595,11 @@ function addPosts(document, posts, boardUri, threadId) {
         var link = '/' + boardUri + '/res/' + threadId + '.html#';
         node.href = link + post.postId;
         break;
+
+      case 'deletionCheckBox':
+        var name = boardUri + '-' + threadId + '-' + post.postId;
+        node.setAttribute('name', name);
+        break;
       }
     }
 
@@ -644,6 +649,10 @@ function addThread(document, thread, posts, boardUri, innerPage) {
       } else {
         node.href = 'res/' + thread.threadId + '.html';
       }
+      break;
+
+    case 'deletionCheckBox':
+      node.setAttribute('name', boardUri + '-' + thread.threadId);
       break;
 
     }

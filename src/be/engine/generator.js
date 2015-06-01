@@ -205,6 +205,8 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData) {
     }, threadProjection, function gotThread(error, thread) {
       if (error) {
         callback(error);
+      } else if (!thread) {
+        callback('No thread');
       } else {
         exports.thread(boardUri, threadId, callback, boardData, thread);
       }
@@ -281,6 +283,8 @@ exports.allThreads = function(boardUri, callback, boardData) {
     }, boardProjection, function gotBoard(error, board) {
       if (error) {
         callback(error);
+      } else if (!board) {
+        callback('Board not found');
       } else {
         exports.allThreads(boardUri, callback, board);
       }
@@ -392,6 +396,8 @@ exports.page = function(boardUri, page, callback, boardData) {
     }, boardProjection, function gotBoard(error, board) {
       if (error) {
         callback(error);
+      } else if (!board) {
+        callback('Board not found');
       } else {
         exports.page(boardUri, page, callback, board);
       }
@@ -472,6 +478,8 @@ exports.board = function(boardUri, reloadThreads, callback, boardData) {
     }, boardProjection, function gotBoard(error, board) {
       if (error) {
         callback(error);
+      } else if (!board) {
+        callback('Board not found');
       } else {
         exports.board(boardUri, reloadThreads, callback, board);
       }

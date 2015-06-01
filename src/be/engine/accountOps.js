@@ -86,7 +86,7 @@ exports.registerUser = function(parameters, callback, role) {
       };
 
       if (role !== undefined) {
-        newUser.globalRole = role;
+        newUser.globalRole = +role;
       }
 
       if (parameters.email) {

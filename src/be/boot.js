@@ -31,13 +31,14 @@ reload = reload || args.indexOf('--reload') > -1;
 var noDaemon = args.indexOf('-nd') > -1;
 noDaemon = noDaemon || args.indexOf('--no-daemon') > -1;
 
-var createRoot = args.indexOf('-cr') > -1;
-createRoot = createRoot || args.indexOf('--create-root') > -1;
+var createAccount = args.indexOf('-ca') > -1;
+createAccount = createAccount || args.indexOf('--create-account') > -1;
 
 var informedLogin;
 var informedPassword;
+var informedRole;
 
-if (createRoot) {
+if (createAccount) {
   var loginIndex = args.indexOf('-l');
   if (loginIndex === -1) {
     loginIndex = args.indexOf('--login');
@@ -48,6 +49,12 @@ if (createRoot) {
     passwordIndex = args.indexOf('--password');
   }
 
+  var roleIndex = args.indexOf('-gr');
+  if (roleIndex === -1) {
+    roleIndex = args.indexOf('--global-role');
+  }
+
+  roleIndex++;
   passwordIndex++;
   loginIndex++;
 
@@ -57,6 +64,10 @@ if (createRoot) {
 
   if (loginIndex && loginIndex < args.length) {
     informedLogin = args[loginIndex];
+  }
+
+  if (roleIndex && roleIndex < args.length) {
+    informedRole = args[roleIndex];
   }
 
 }
@@ -338,7 +349,7 @@ if (cluster.isMaster) {
       if (debug) {
         throw error;
       }
-    } else if (createRoot) {
+    } else if (createAccount) {
 
       // style exception, too simple
       require('./engine/accountOps').registerUser({
@@ -358,12 +369,12 @@ if (cluster.isMaster) {
           checkForDefaultPages();
 
         } else {
-          console.log('Root account ' + informedLogin + ' created.');
+          console.log('Account ' + informedLogin + ' created.');
 
           checkForDefaultPages();
         }
 
-      }, 0);
+      }, informedRole);
       // style exception, too simple
 
     } else {

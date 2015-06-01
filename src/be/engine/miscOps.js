@@ -57,11 +57,10 @@ exports.sanitizeStrings = function(object, parameters) {
 
         delete object[parameter.field];
 
-      } else {
+      } else if (parameter.length) {
         object[parameter.field] = object[parameter.field].substring(0,
             parameter.length);
       }
-
     }
   }
 

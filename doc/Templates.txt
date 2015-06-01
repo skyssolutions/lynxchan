@@ -119,6 +119,10 @@ linkSelf:
     type: a
     description: contains the link for the post itself.
 
+deletionCheckBox:
+    type: input
+    description: checkbox used for deletion or reporting.
+
 ------------------------------------------------------------------------------------------
 
 postCell
@@ -152,6 +156,10 @@ divMessage:
 linkSelf:
     type: a
     description: contains the link for the post itself.
+
+deletionCheckBox:
+    type: input
+    description: checkbox used for deletion or reporting.
 
 ------------------------------------------------------------------------------------------
 

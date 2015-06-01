@@ -15,9 +15,10 @@ It accepts the following arguments:
 --debug, -d: for development. Will not cache static files and will reload any module besides the ones directly under the be directory. It will also cause most errors to crash.
 --reload, -r: will rebuild all pages on boot.
 --no-daemon, -nd: will not start listening. For rebuilding pages while having a server running.
---create-root, -cr: will create a new account with the root role. Require the use of the login and password parameters.
+--create-account, -ca: will create a new account. Require the use of the login, role and password parameters.
 --login, -l: informs a login.
 --password, -p: informs a password.
+--global-role, -gr: informs a role.
 
 Arguments that are meant to inform values should be used in the following manner:
 <argument> <value>

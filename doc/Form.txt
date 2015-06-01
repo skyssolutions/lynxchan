@@ -20,6 +20,7 @@ Parameters:
     message*: message to be posted. 2048 characters.
     subject: subject of the thread. 128 characters.
     boardUri*: uri of the board. Will be included in the posting form at the generation stage.
+    password: password to be used for deletion.
 
 ------------------------------------------------------------------------------------------
 
@@ -34,6 +35,7 @@ Parameters:
     email: e-mail of the poster. 64 characters.
     message*: message to be posted. 2048 characters.
     subject: subject of the thread. 128 characters.
+    password: password to be used for deletion.
     boardUri*: uri of the board.
     threadId*: id of the thread. Will be included in the posting form at the generation stage.
 
@@ -169,6 +171,17 @@ Description: transfers the board to another user. Requires validation. Allowed o
 Parameters:
     boardUri: board to be transfered.
     login: login of the new owner.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::15
+
+Name: deleteContent
+
+Description: deletes posts or threads. the inputs will have their names generated on the page generation stage.
+
+Parameters:
+    password: password to be used for deletion.
 
 ------------------------------------------------------------------------------------------
 

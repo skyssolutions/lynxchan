@@ -24,6 +24,9 @@ var postingParameters = [ {
 }, {
   field : 'message',
   length : 2048
+}, {
+  field : 'password',
+  length : 8
 } ];
 
 // start of thread creation
@@ -94,6 +97,10 @@ function createThread(parameters, threadId, callback) {
     message : parameters.message,
     email : parameters.email
   };
+
+  if (parameters.password) {
+    threadToAdd.password = parameters.password;
+  }
 
   threads.insert(threadToAdd, function createdThread(error) {
     if (error && error.code === 11000) {
@@ -233,6 +240,10 @@ function createPost(parameters, postId, thread, callback) {
     message : parameters.message,
     email : parameters.email
   };
+
+  if (parameters.password) {
+    postToAdd.password = parameters.password;
+  }
 
   posts.insert(postToAdd, function createdPost(error) {
     if (error && error.code === 11000) {
