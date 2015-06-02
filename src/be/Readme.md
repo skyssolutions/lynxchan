@@ -1,34 +1,35 @@
----DEPENDENCIES---
+#Dependencies
 Required modules:
-mongodb
-imagemagick
-jsdom
-multiparty
-bcrypt
-nodemailer
+* mongodb: database driver.
+* imagemagick: used for creating thumbnails.
+* jsdom: used for handling DOM to create HTML from the templates.
+* multiparty: used when parsing requests to the form api.
+* bcrypt: used for encrypting passwords.
+* nodemailer: used to send e-mails for people resetting account passwords.
 Latest version of all them.
+
 A package.json file is included, so you can install all of them by just running 'npm install' on this directory.
 
----APPLICATION USAGE---
-boot.js is the main file, run it using io.js to start the system. Keep in mind that if you ran setup.sh, you can just run the lynxchan command or start the lynxchan service.
+#Application usage
+`boot.js` is the main file, run it using Io.js to start the system. Keep in mind that if you ran `aux/setup.sh`, you can just run the `lynxchan` command or start the `lynxchan` service.
 It accepts the following arguments:
---debug, -d: for development. Will not cache static files and will reload any module besides the ones directly under the be directory. It will also cause most errors to crash.
---reload, -r: will rebuild all pages on boot.
---no-daemon, -nd: will not start listening. For rebuilding pages while having a server running.
---create-account, -ca: will create a new account. Require the use of the login, role and password parameters.
---login, -l: informs a login.
---password, -p: informs a password.
---global-role, -gr: informs a role.
+`--debug`, `-d`: for development. Will not cache static files and will reload any module besides the ones directly under the be directory. It will also cause most errors to crash.
+`--reload`, `-r`: will rebuild all pages on boot.
+`--no-daemon`, `-nd`: will not start listening. For rebuilding pages while having a server running.
+`--create-account`, `-ca`: will create a new account. Require the use of the login, role and password parameters.
+`--login, `-l`: informs a login.
+`--password, `-p`: informs a password.
+`--global-role`, `-gr`: informs a role.
 
 Arguments that are meant to inform values should be used in the following manner:
-<argument> <value>
+`argument value`
 
----DIRECTORIES STRUCTURE---
-The json api files will be stored on the api directory and acessed by the same subdomain. api.domain/function will use the file api/function.js.
-The form api for support of users without js because they are retarded tin foilers are in the form directory and are accessed using domain/function.js.
-The engine directory will hold all scripts that provide functionality but are not to be accessed directly.
+#DIRECTORIES STRUCTURE
+The json api files will be stored on the api directory and accessed by the same subdomain. `api.domain/function` will use the file `api/function.js`.
+The form api for support of users without js because they are retarded tin foilers are in the form directory and are accessed using `domain/function.js`.
+The engine directory will hold all scripts that provide functionality but are not to be accessed directly. There are also some few files directly under the `src/be` directory.
 
-The following directories will be expected on the fe directory:
+The following directories will be expected on the front-end directory:
 static: static files to be acessed by using the static subdomain.
 templates: will hold the templates, so only the files will have to be specified on the settings.
 

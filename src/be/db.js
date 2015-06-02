@@ -10,6 +10,7 @@ var cachedDb;
 var maxIndexesSet = 5;
 
 var cachedPosts;
+var cachedReports;
 var cachedThreads;
 var cachedBoards;
 var cachedUsers;
@@ -165,6 +166,10 @@ exports.threads = function() {
   return cachedThreads;
 };
 
+exports.reports = function() {
+  return cachedReports;
+};
+
 function checkCollections(db, callback) {
 
   cachedDb = db;
@@ -178,6 +183,8 @@ function checkCollections(db, callback) {
   initUsers(callback);
 
   initRecoveryRequests(callback);
+
+  cachedReports = db.collection('reports');
 
   cachedFiles = db.collection('fs.files');
 

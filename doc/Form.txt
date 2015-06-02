@@ -176,12 +176,15 @@ Parameters:
 
 PAG_ID::15
 
-Name: deleteContent
+Name: contentActions
 
-Description: deletes posts or threads. The inputs of the posts will have their names generated on the page generation stage. If the password is not provided, authentication is required.
+Description: deletes or reports posts and threads. The inputs of the posts will have their names generated on the page generation stage. If the password is not provided for deletion, authentication is required.
 
 Parameters:
     password: password to be used for deletion.
+    reason: reason of the report.
+    action: action to be performed. 'delete' and 'report' may be used, case insensitive.
+    global: if any value is passed, indicates the reports are global.
 
 ------------------------------------------------------------------------------------------
 
@@ -193,5 +196,7 @@ Description: deletes a board. Requires validation. Allowed for board owners and 
 
 Parameters:
     boardUri: uri of the board to be deleted.
+
+------------------------------------------------------------------------------------------
 
 *: mandatory parameters.

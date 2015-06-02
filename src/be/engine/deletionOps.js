@@ -432,7 +432,8 @@ function getThreadsToDelete(userData, board, threadsToDelete, postsToDelete,
       parameters);
 
   if (!threadQueryBlock) {
-    callback('Unable to query, password is probably missing.');
+    iterateBoardsToDelete(userData, parameters, threadsToDelete, postsToDelete,
+        foundBoards, callback);
     return;
   }
 
@@ -493,6 +494,19 @@ function iterateBoardsToDelete(userData, parameters, threadsToDelete,
 
 }
 
+function printAuth(userData, parameters, threadsToDelete, postsToDelete) {
+  if (parameters.password) {
+    console.log('Using password ' + parameters.password);
+  }
+
+  if (userData) {
+    console.log('User identification ' + JSON.stringify(userData));
+  }
+
+  console.log('Deleting threads: ' + JSON.stringify(threadsToDelete));
+  console.log('Deleting posts: ' + JSON.stringify(postsToDelete));
+}
+
 // TODO document this thing before anything else
 exports.posting = function(userData, parameters, threadsToDelete,
     postsToDelete, callback) {
@@ -500,11 +514,8 @@ exports.posting = function(userData, parameters, threadsToDelete,
   var foundBoards = [];
 
   if (verbose) {
-    if (parameters.password) {
-      console.log('Using password ' + parameters.password);
-    }
-    console.log('Deleting threads: ' + JSON.stringify(threadsToDelete));
-    console.log('Deleting posts: ' + JSON.stringify(postsToDelete));
+
+    printAuth(userData, parameters, threadsToDelete, postsToDelete);
   }
 
   for ( var key in threadsToDelete) {

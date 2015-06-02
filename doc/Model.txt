@@ -71,8 +71,9 @@ recoveryRequests: stores active account recovery requests.
 
 reports: stores reports of threads and posts.
     boardUri: board where the content resides.
-    threadId: thread where the content resides or the offending thread.
-    postId: offending post.
+    global(Boolean): indicates if the report is global.
+    threadId(Number): thread where the content resides or the offending thread.
+    postId(Number): offending post.
     closedBy: when the report is closed, the login of the person that closed it will be set.
     reason: reason of why the content is breaking any rules. 256 characters.
 
