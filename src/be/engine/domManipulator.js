@@ -76,15 +76,22 @@ exports.loadTemplates = function() {
 
 };
 
-function setBoardOwnerControls(document, boardData) {
-
-  document.getElementById('ownerControlDiv').style.display = 'block';
-
+function setIdentifiers(document, boardData) {
   document.getElementById('addVolunteerBoardIdentifier').setAttribute('value',
+      boardData.boardUri);
+
+  document.getElementById('deletionIdentifier').setAttribute('value',
       boardData.boardUri);
 
   document.getElementById('transferBoardIdentifier').setAttribute('value',
       boardData.boardUri);
+}
+
+function setBoardOwnerControls(document, boardData) {
+
+  document.getElementById('ownerControlDiv').style.display = 'block';
+
+  setIdentifiers(document, boardData);
 
   var volunteersDiv = document.getElementById('volunteersDiv');
 

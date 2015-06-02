@@ -260,6 +260,10 @@ transferBoardIdentifier:
     type: input
     description: hidden input used to identify the board to transfer it to a new owner.
 
+deletionIdentifier:
+    type: input
+    description: idden input used to identify the board to delete it.
+
 ------------------------------------------------------------------------------------------
 
 volunteerCell

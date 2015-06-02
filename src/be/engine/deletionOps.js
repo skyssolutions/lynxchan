@@ -4,6 +4,7 @@
 
 var db = require('../db');
 var files = db.files();
+var users = db.users();
 var posts = db.posts();
 var threads = db.threads();
 var miscOps = require('./miscOps');
@@ -186,6 +187,26 @@ function reaggregateLatestPosts(board, parentThreads, callback, index) {
 
 }
 
+function signalAndLoop(parentThreads, board, userData, parameters,
+    threadsToDelete, postsToDelete, foundBoards, callback) {
+
+  for (var i = 0; i < parentThreads.length; i++) {
+    var parentThread = parentThreads[i];
+
+    process.send({
+      board : board.boardUri,
+      thread : parentThread
+    });
+  }
+
+  process.send({
+    board : board.boardUri
+  });
+
+  iterateBoardsToDelete(userData, parameters, threadsToDelete, postsToDelete,
+      foundBoards, callback);
+}
+
 function updateBoardAndThreads(userData, board, threadsToDelete, postsToDelete,
     parameters, foundBoards, callback, foundThreads, parentThreads) {
 
@@ -199,30 +220,18 @@ function updateBoardAndThreads(userData, board, threadsToDelete, postsToDelete,
     if (error) {
       callback(error);
     } else {
-
+      // style exception, too simple
       reaggregateLatestPosts(board, parentThreads,
           function reaggregated(error) {
             if (error) {
               callback(error);
             } else {
-              for (var i = 0; i < parentThreads.length; i++) {
-                var parentThread = parentThreads[i];
+              signalAndLoop(parentThreads, board, userData, parameters,
+                  threadsToDelete, postsToDelete, foundBoards, callback);
 
-                process.send({
-                  board : board.boardUri,
-                  thread : parentThread
-                });
-              }
-
-              process.send({
-                board : board.boardUri
-              });
-
-              iterateBoardsToDelete(userData, parameters, threadsToDelete,
-                  postsToDelete, foundBoards, callback);
             }
           });
-
+      // style exception, too simple
     }
 
   });
@@ -520,3 +529,123 @@ exports.posting = function(userData, parameters, threadsToDelete,
 
 };
 // end of content deletion process ( hope you enjoyed your ride)
+
+// start of board deletion
+
+function deleteBoardContent(board, callback) {
+  threads.remove({
+    boardUri : board.boardUri
+  }, function threadsDeleted(error) {
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      posts.remove({
+        boardUri : board.boardUri
+      }, function removedPosts(error) {
+
+        process.send({
+          frontPage : true
+        });
+
+        callback(error);
+
+      });
+      // style exception, too simple
+
+    }
+  });
+
+}
+
+function deleteBoardFiles(board, callback) {
+
+  files.aggregate([ {
+    $match : {
+      'metadata.boardUri' : board.boardUri
+    }
+  }, {
+    $group : {
+      _id : 0,
+      files : {
+        $push : '$filename'
+      }
+    }
+  } ], function gotFiles(error, results) {
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      gridFs.removeFiles(results[0].files, function deletedFiles(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          deleteBoardContent(board, callback);
+        }
+
+      });
+      // style exception, too simple
+
+    }
+  });
+
+}
+
+function deleteBoard(board, callback) {
+
+  boards.remove({
+    boardUri : board.boardUri
+  }, function removedBoard(error) {
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      users.update({
+        login : board.owner
+      }, {
+        $pull : {
+          ownedBoards : board.boardUri
+        }
+      }, function updatedUserBoards(error) {
+        if (error) {
+          callback(error);
+        } else {
+          deleteBoardFiles(board, callback);
+        }
+      });
+
+      // style exception, too simple
+
+    }
+  });
+
+}
+
+exports.board = function(userData, boardUri, callback) {
+
+  var isUser = userData.globalRole >= miscOps.getMaxStaffRole();
+
+  boards.findOne({
+    boardUri : boardUri
+  }, {
+    _id : 0,
+    boardUri : 1,
+    owner : 1
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback('Board not found');
+    } else if (board.owner !== userData.login && isUser) {
+      callback('You are not allowed to perform this operation');
+    } else {
+      deleteBoard(board, callback);
+    }
+  });
+
+};
+// end of board deletion

@@ -178,11 +178,20 @@ PAG_ID::15
 
 Name: deleteContent
 
-Description: deletes posts or threads. the inputs will have their names generated on the page generation stage.
+Description: deletes posts or threads. The inputs of the posts will have their names generated on the page generation stage. If the password is not provided, authentication is required.
 
 Parameters:
     password: password to be used for deletion.
 
 ------------------------------------------------------------------------------------------
+
+PAG_ID::16
+
+Name: deleteBoard
+
+Description: deletes a board. Requires validation. Allowed for board owners and users with global role lower than 2.
+
+Parameters:
+    boardUri: uri of the board to be deleted.
 
 *: mandatory parameters.
