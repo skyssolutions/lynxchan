@@ -160,7 +160,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::14
+PAG_ID::13
 
 Name: transferBoardOwnership
 
@@ -169,6 +169,32 @@ Description: transfers the board to another user. Requires validation. Allowed o
 Parameters:
     boardUri: board to be transfered.
     login: login of the new owner.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::14
+
+Name: deleteContent
+
+Description: deletes posts or threads. If the password is not provided, authentication is required.
+
+Parameters:
+    password: password to be used for deletion.
+    postings(Array): array of content to be deleted. Contains objects with the following fields:
+        board: board to which the content belongs.
+        thread: thread to be deleted.
+        post: post to be deleted.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::15
+
+Name: deleteBoard
+
+Description: deletes a board. Requires validation. Allowed for board owners and users with global role lower than 2.
+
+Parameters:
+    boardUri: uri of the board to be deleted.
 
 ------------------------------------------------------------------------------------------
 

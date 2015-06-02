@@ -220,8 +220,6 @@ exports.outputResponse = function(auth, data, status, res) {
 
   res.writeHead(200, miscOps.corsHeader('application/json'));
 
-  console.log(verbose);
-
   if (verbose) {
     console.log('Api output: ' + JSON.stringify(output));
   }

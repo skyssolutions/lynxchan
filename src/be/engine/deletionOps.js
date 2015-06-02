@@ -500,6 +500,9 @@ exports.posting = function(userData, parameters, threadsToDelete,
   var foundBoards = [];
 
   if (verbose) {
+    if (parameters.password) {
+      console.log('Using password ' + parameters.password);
+    }
     console.log('Deleting threads: ' + JSON.stringify(threadsToDelete));
     console.log('Deleting posts: ' + JSON.stringify(postsToDelete));
   }
