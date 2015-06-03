@@ -17,8 +17,8 @@ It accepts the following arguments:
 * `--reload`, `-r`: will rebuild all pages on boot.
 * `--no-daemon`, `-nd`: will not start listening. For rebuilding pages while having a server running.
 * `--create-account`, `-ca`: will create a new account. Require the use of the login, role and password parameters.
-* `--login, `-l`: informs a login.
-* `--password, `-p`: informs a password.
+* `--login`, `-l`: informs a login.
+* `--password`, `-p`: informs a password.
 * `--global-role`, `-gr`: informs a role.
 
 Arguments that are meant to inform values should be used in the following manner:

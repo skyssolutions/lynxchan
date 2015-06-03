@@ -49,7 +49,7 @@ posts: stores posts.
 
 users: stores users.
     login**: login of the user. 16 characters. Only a-Z,_ and 0-9 allowed.
-    email**: e-mail of the user. 64 characters.
+    email: e-mail of the user. 64 characters.
     password: hashed password of the user.
     ownedBoards(Array): list of the uri's of the boards owned by this user.
     hash: current hash of the user.
@@ -70,11 +70,12 @@ recoveryRequests: stores active account recovery requests.
 ----------------------------------------------------------------------------------------
 
 reports: stores reports of threads and posts.
-    boardUri: board where the content resides.
+    _id**: unique id of the report.
+    boardUri*: board where the content resides.
     global(Boolean): indicates if the report is global.
-    threadId(Number): thread where the content resides or the offending thread.
-    postId(Number): offending post.
-    closedBy: when the report is closed, the login of the person that closed it will be set.
+    threadId(Number)*: thread where the content resides or the offending thread.
+    postId(Number)*: offending post.
+    closedBy*: when the report is closed, the login of the person that closed it will be set.
     reason: reason of why the content is breaking any rules. 256 characters.
     creation(Date): date of when the report was filled.
     closing(Date): date of when the report was closed.

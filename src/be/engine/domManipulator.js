@@ -32,6 +32,8 @@ var staffCellTemplate;
 var bManagementTemplate;
 var volunteerCellTemplate;
 var reportCellTemplate;
+var closedReportCellTemplate;
+var closedReportsPage;
 
 require('jsdom').defaultDocumentFeatures = {
   FetchExternalResources : false,
@@ -54,6 +56,9 @@ function loadCellTemplates(fs, fePath, templateSettings) {
   postTemplate = fs.readFileSync(fePath + templateSettings.postCell);
   reportCellTemplate = fs.readFileSync(fePath + templateSettings.reportCell);
 
+  var closedReportPath = fePath + templateSettings.closedReportCell;
+  closedReportCellTemplate = fs.readFileSync(closedReportPath);
+
   var volunteerPath = fePath + templateSettings.volunteerCell;
   volunteerCellTemplate = fs.readFileSync(volunteerPath);
 }
@@ -73,9 +78,80 @@ exports.loadTemplates = function() {
   gManagementTemplate = fs.readFileSync(fePath + templateSettings.gManagement);
   bManagementTemplate = fs.readFileSync(fePath + templateSettings.bManagement);
 
+  var closedReportsPath = fePath + templateSettings.closedReportsPage;
+  closedReportsPage = fs.readFileSync(closedReportsPath);
+
   loadEmailTemplates(fs, fePath, templateSettings);
   loadCellTemplates(fs, fePath, templateSettings);
 
+};
+
+function getReportLink(report) {
+  var link = '/' + report.boardUri + '/res/';
+  link += report.threadId + '.html#';
+
+  if (report.postId) {
+    link += report.postId;
+  } else {
+    link += report.threadId;
+  }
+
+  return link;
+}
+
+exports.closedReports = function(reports, callback) {
+  try {
+
+    // TODO remove
+    console.log(JSON.stringify(reports));
+
+    var document = jsdom(closedReportsPage);
+
+    var reportsDiv = document.getElementById('reportDiv');
+
+    for (var i = 0; i < reports.length; i++) {
+
+      var report = reports[i];
+      var cell = document.createElement('div');
+
+      cell.innerHTML = closedReportCellTemplate;
+
+      for (var j = 0; j < cell.childNodes.length; j++) {
+        var node = cell.childNodes[j];
+
+        switch (node.id) {
+        case 'reasonLabel':
+          node.innerHTML = report.reason;
+          break;
+        case 'link':
+          node.setAttribute('href', getReportLink(report));
+          break;
+        case 'closedByLabel':
+          node.innerHTML = report.closedBy;
+          break;
+        case 'closedDateLabel':
+          node.innerHTML = report.closing;
+          break;
+        }
+      }
+
+      reportsDiv.appendChild(cell);
+
+    }
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
 };
 
 function setBoardControlIdentifiers(document, boardData) {
@@ -131,6 +207,13 @@ function setBoardOwnerControls(document, boardData) {
 
 }
 
+function setBoilerPlate(cell, action, cssClass) {
+  cell.method = 'post';
+  cell.enctype = 'multipart/form-data';
+  cell.action = action;
+  cell.setAttribute('class', cssClass);
+}
+
 function setReportList(document, reports) {
 
   var reportDiv = document.getElementById('reportDiv');
@@ -138,11 +221,11 @@ function setReportList(document, reports) {
   for (var i = 0; i < reports.length; i++) {
     var report = reports[i];
 
-    var cell = document.createElement('div');
+    var cell = document.createElement('form');
 
     cell.innerHTML = reportCellTemplate;
 
-    cell.setAttribute('class', 'reportCell');
+    setBoilerPlate(cell, '/closeReport.js', 'reportCell');
 
     for (var j = 0; j < cell.childNodes.length; j++) {
       var node = cell.childNodes[j];
@@ -153,10 +236,8 @@ function setReportList(document, reports) {
           node.innerHTML = report.reason;
         }
         break;
-      case 'closedByLabel':
-        if (report.closedBy) {
-          node.innerHTML = report.closedBy;
-        }
+      case 'idIdentifier':
+        node.setAttribute('value', report._id);
         break;
       case 'link':
 
@@ -185,6 +266,11 @@ exports.boardManagement = function(login, boardData, reports) {
   try {
 
     var document = jsdom(bManagementTemplate);
+
+    var closedReportsLink = document.getElementById('closedReportsLink');
+
+    var closedReportsUrl = '/closedReports.js?boardUri=' + boardData.boardUri;
+    closedReportsLink.setAttribute('href', closedReportsUrl);
 
     var boardLabel = document.getElementById('boardLabel');
 

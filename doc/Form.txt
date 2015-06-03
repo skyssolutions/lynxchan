@@ -199,4 +199,26 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::17
+
+Name: closeReport
+
+Description: closes a report. Requires authentication.
+
+Parameters:
+    reportId: id of the report to be closed.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::18
+
+Name: closedReports
+
+Description: display the list of closed reports. Requires authentication. It uses get parameters instead of post.
+
+Parameters:
+    boardUri: board to display the closed reports of. If not informed, global repors will be displayed instead. 
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

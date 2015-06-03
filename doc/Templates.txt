@@ -300,11 +300,43 @@ reasonLabel:
     type: span
     description: holds the reason of the report.
 
-closedByLabel:
+link:
+    type: a
+    description: link to the reported content.
+
+idIdentifier:
+    type: input
+    description: hidden input holding the identification of the report.
+
+------------------------------------------------------------------------------------------
+
+closedReportsPage
+
+Elements:
+reportDiv:
+    type: div
+    description: div containing the reports.
+
+------------------------------------------------------------------------------------------
+
+closedReportCell
+Class: closedReportCell
+
+Elements:
+reasonLabel:
     type: span
-    description: holds the login of the user that closed the report.
+    description: holds the reason of the report.
 
 link:
     type: a
     description: link to the reported content.
+
+closedByLabel:
+    type: span
+    description: holds the login of the user that closed the report.
+
+closedDateLabel:
+    type: span
+    description: holds the date of when the report was closed.
+
 
