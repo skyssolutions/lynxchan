@@ -7,7 +7,7 @@ var miscOps = require('../engine/miscOps');
 function getManagementData(userData, res) {
 
   miscOps.getManagementData(userData.globalRole, userData.login,
-      function gotData(error, globalStaff) {
+      function gotData(error, globalStaff, globalReports) {
         if (error) {
           formOps.outputError(error, 500, res);
         } else {
@@ -15,7 +15,7 @@ function getManagementData(userData, res) {
           res.writeHead(200, miscOps.corsHeader('text/html'));
 
           res.end(domManipulator.globalManagement(userData.globalRole,
-              userData.login, globalStaff));
+              userData.login, globalStaff, globalReports));
 
         }
       });

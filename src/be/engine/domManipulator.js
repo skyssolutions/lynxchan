@@ -78,7 +78,7 @@ exports.loadTemplates = function() {
 
 };
 
-function setIdentifiers(document, boardData) {
+function setBoardControlIdentifiers(document, boardData) {
   document.getElementById('addVolunteerBoardIdentifier').setAttribute('value',
       boardData.boardUri);
 
@@ -93,7 +93,7 @@ function setBoardOwnerControls(document, boardData) {
 
   document.getElementById('ownerControlDiv').style.display = 'block';
 
-  setIdentifiers(document, boardData);
+  setBoardControlIdentifiers(document, boardData);
 
   var volunteersDiv = document.getElementById('volunteersDiv');
 
@@ -306,10 +306,12 @@ function setNewStaffComboBox(document, userRole) {
 
 }
 
-exports.globalManagement = function(userRole, userLogin, staff) {
+exports.globalManagement = function(userRole, userLogin, staff, reports) {
 
   try {
     var document = jsdom(gManagementTemplate);
+
+    setReportList(document, reports);
 
     var newStaffForm = document.getElementById('addStaffForm');
 

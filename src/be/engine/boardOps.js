@@ -208,8 +208,9 @@ function getBoardReports(boardData, callback) {
   reports.find({
     boardUri : boardData.boardUri,
     closedBy : {
-      $exists : 0
-    }
+      $exists : false
+    },
+    global : false
   }).sort({
     creation : -1
   }).toArray(function(error, reports) {

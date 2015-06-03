@@ -24,7 +24,7 @@ There are about a half-dozen. They are defined in the `package.json` file, so yo
 3. Run `aux/setup.sh` as root. Optionally add either the argument `upstart` or `systemd` to install a service to act as a daemon using the `iojs` user.
 
 # Running
-You can either run the `lynxchan` command or start the `lynxchan` service. You could just run the `src/be/boot.js` file. Install is optional. Except step 0.
+You can either run the `lynxchan` command or start the `lynxchan` service. You could just run the `src/be/boot.js` file. Install is optional.
 
 # Aux
 There a couple of utility scripts there besides the install one. Rotating logs for the upstart service, removing installs and such.
@@ -39,7 +39,7 @@ Note that the front-end directory is in the ignore. I am designing this project 
 
 # Back-end
 The back-end project is a [Nodeclipse](http://www.nodeclipse.org/) project with lint and formatting defined. IMO eclipse is a shit, but it makes it very practical to automatically format and clean everything
-Coding standard: [Felix's Node style guide](https://github.com/felixge/node-style-guide)
+Coding standard: [Felix's Node style guide](https://github.com/felixge/node-style-guide).
 More information can be found at [src/be/Readme.md](src/be/Readme.md).
 
 # Contributing

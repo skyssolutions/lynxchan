@@ -3,7 +3,9 @@
 // miscellaneous
 var verbose = require('../boot').getGeneralSettings().verbose;
 var formOps = require('./formOps');
-var users = require('../db').users();
+var db = require('../db');
+var users = db.users();
+var reports = db.reports();
 
 var MAX_STAFF_ROLE = 3;
 
@@ -115,7 +117,25 @@ exports.getManagementData = function(userRole, userLogin, callback) {
     }).sort({
       login : 1
     }).toArray(function gotUsers(error, users) {
-      callback(error, users);
+
+      if (error) {
+        callback(error);
+      } else {
+
+        // style exception, too simple
+        reports.find({
+          global : true,
+          closedBy : {
+            $exists : false
+          }
+        }).sort({
+          creation : -1
+        }).toArray(function(gotReportserror, reports) {
+          callback(error, users, reports);
+        });
+      }
+      // style exception, too simple
+
     });
   }
 };
