@@ -4,6 +4,7 @@
 
 var db = require('../db');
 var miscOps = require('./miscOps');
+var reports = db.reports();
 var users = db.users();
 var boards = db.boards();
 
@@ -202,6 +203,23 @@ function isAllowedToManageBoard(login, role, boardData) {
 
 }
 
+function getBoardReports(boardData, callback) {
+
+  reports.find({
+    boardUri : boardData.boardUri,
+    closedBy : {
+      $exists : 0
+    }
+  }).sort({
+    creation : -1
+  }).toArray(function(error, reports) {
+
+    callback(error, boardData, reports);
+
+  });
+
+}
+
 exports.getBoardManagementData = function(login, role, board, callback) {
 
   boards.findOne({
@@ -218,7 +236,7 @@ exports.getBoardManagementData = function(login, role, board, callback) {
     } else if (!boardData) {
       callback('Board not found');
     } else if (isAllowedToManageBoard(login, role, boardData)) {
-      callback(null, boardData);
+      getBoardReports(boardData, callback);
     } else {
       callback('You are not allowed to manage this board.');
     }

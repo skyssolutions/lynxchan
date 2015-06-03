@@ -9,13 +9,14 @@ var formOps = require('../engine/formOps');
 function getBoardManagementData(board, userData, res) {
 
   boardOps.getBoardManagementData(userData.login, userData.globalRole, board,
-      function gotManagementData(error, boardData) {
+      function gotManagementData(error, boardData, reports) {
         if (error) {
           formOps.outputError(error, 500, res);
         } else {
           res.writeHead(200, miscOps.corsHeader('text/html'));
 
-          res.end(domManipulator.boardManagement(userData.login, boardData));
+          res.end(domManipulator.boardManagement(userData.login, boardData,
+              reports));
         }
       });
 

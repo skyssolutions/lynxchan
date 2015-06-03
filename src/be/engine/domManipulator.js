@@ -31,6 +31,7 @@ var gManagementTemplate;
 var staffCellTemplate;
 var bManagementTemplate;
 var volunteerCellTemplate;
+var reportCellTemplate;
 
 require('jsdom').defaultDocumentFeatures = {
   FetchExternalResources : false,
@@ -51,6 +52,7 @@ function loadCellTemplates(fs, fePath, templateSettings) {
   opTemplate = fs.readFileSync(fePath + templateSettings.opCell);
   staffCellTemplate = fs.readFileSync(fePath + templateSettings.staffCell);
   postTemplate = fs.readFileSync(fePath + templateSettings.postCell);
+  reportCellTemplate = fs.readFileSync(fePath + templateSettings.reportCell);
 
   var volunteerPath = fePath + templateSettings.volunteerCell;
   volunteerCellTemplate = fs.readFileSync(volunteerPath);
@@ -129,7 +131,57 @@ function setBoardOwnerControls(document, boardData) {
 
 }
 
-exports.boardManagement = function(login, boardData) {
+function setReportList(document, reports) {
+
+  var reportDiv = document.getElementById('reportDiv');
+
+  for (var i = 0; i < reports.length; i++) {
+    var report = reports[i];
+
+    var cell = document.createElement('div');
+
+    cell.innerHTML = reportCellTemplate;
+
+    cell.setAttribute('class', 'reportCell');
+
+    for (var j = 0; j < cell.childNodes.length; j++) {
+      var node = cell.childNodes[j];
+
+      switch (node.id) {
+      case 'reasonLabel':
+        if (report.reason) {
+          node.innerHTML = report.reason;
+        }
+        break;
+      case 'closedByLabel':
+        if (report.closedBy) {
+          node.innerHTML = report.closedBy;
+        }
+        break;
+      case 'link':
+
+        var link = '/' + report.boardUri + '/res/' + report.threadId + '.html#';
+
+        if (report.postId) {
+          link += report.postId;
+        } else {
+          link += report.threadId;
+        }
+
+        node.setAttribute('href', link);
+
+        break;
+      }
+    }
+
+    reportDiv.appendChild(cell);
+
+  }
+
+}
+
+exports.boardManagement = function(login, boardData, reports) {
+
   try {
 
     var document = jsdom(bManagementTemplate);
@@ -138,6 +190,8 @@ exports.boardManagement = function(login, boardData) {
 
     var label = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
     boardLabel.innerHTML = label;
+
+    setReportList(document, reports);
 
     if (login === boardData.owner) {
       setBoardOwnerControls(document, boardData);

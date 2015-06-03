@@ -262,7 +262,11 @@ transferBoardIdentifier:
 
 deletionIdentifier:
     type: input
-    description: idden input used to identify the board to delete it.
+    description: hidden input used to identify the board to delete it.
+
+reportDiv:
+    type: div
+    description: div containing the reports of the board.
 
 ------------------------------------------------------------------------------------------
 
@@ -281,4 +285,22 @@ userIdentifier:
 userLabel:
     type: span
     description: label used to identify the user. 
+
+------------------------------------------------------------------------------------------
+
+reportCell
+Class: reportCell
+
+Elements:
+reasonLabel:
+    type: span
+    description: holds the reason of the report.
+
+closedByLabel:
+    type: span
+    description: holds the login of the user that closed the report.
+
+link:
+    type: a
+    description: link to the reported content.
 

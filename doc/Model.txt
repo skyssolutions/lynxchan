@@ -76,6 +76,8 @@ reports: stores reports of threads and posts.
     postId(Number): offending post.
     closedBy: when the report is closed, the login of the person that closed it will be set.
     reason: reason of why the content is breaking any rules. 256 characters.
+    creation(Date): date of when the report was filled.
+    closing(Date): date of when the report was closed.
 
 *: duplicated data, foreign key.
 **: unique key

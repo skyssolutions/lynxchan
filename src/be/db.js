@@ -7,7 +7,7 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 5;
+var maxIndexesSet = 6;
 
 var cachedPosts;
 var cachedReports;
@@ -27,6 +27,29 @@ function indexSet(callback) {
     loading = false;
     callback(null);
   }
+}
+
+function initReports(callback) {
+  cachedReports = cachedDb.collection('reports');
+
+  cachedReports.ensureIndex({
+    boardUri : 1,
+    global : 1,
+    threadId : 1,
+    postId : 1
+  }, {
+    unique : true
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
 }
 
 function initPosts(callback) {
@@ -182,9 +205,9 @@ function checkCollections(db, callback) {
 
   initUsers(callback);
 
-  initRecoveryRequests(callback);
+  initReports(callback);
 
-  cachedReports = db.collection('reports');
+  initRecoveryRequests(callback);
 
   cachedFiles = db.collection('fs.files');
 

@@ -8,18 +8,22 @@ var reports = db.reports();
 function createReport(report, reportedContent, parameters, callback) {
 
   var toAdd = {
-    reason : parameters.reason,
     global : parameters.global,
     boardUri : report.board,
-    threadId : +report.thread
+    threadId : +report.thread,
+    creation : new Date()
   };
+
+  if (parameters.reason) {
+    toAdd.reason = parameters.reason;
+  }
 
   if (report.post) {
     toAdd.postId = +report.post;
   }
 
   reports.insert(toAdd, function createdReport(error) {
-    if (error) {
+    if (error && error.code !== 11000) {
       callback(error);
     } else {
       exports.report(reportedContent, parameters, callback);

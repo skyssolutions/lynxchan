@@ -5,6 +5,7 @@
 var db = require('../db');
 var files = db.files();
 var users = db.users();
+var reports = db.reports();
 var posts = db.posts();
 var threads = db.threads();
 var miscOps = require('./miscOps');
@@ -608,6 +609,20 @@ function deleteBoardFiles(board, callback) {
 
 }
 
+function deleteBoardReports(board, callback) {
+
+  reports.remove({
+    boardUri : board.boardUri
+  }, function reportsDeleted(error) {
+    if (error) {
+      callback(error);
+    } else {
+      deleteBoardFiles(board, callback);
+    }
+  });
+
+}
+
 function deleteBoard(board, callback) {
 
   boards.remove({
@@ -628,7 +643,7 @@ function deleteBoard(board, callback) {
         if (error) {
           callback(error);
         } else {
-          deleteBoardFiles(board, callback);
+          deleteBoardReports(board, callback);
         }
       });
 
