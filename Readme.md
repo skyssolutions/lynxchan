@@ -38,11 +38,11 @@ The front end are static files and templates. They are handled as a separate pro
 Note that the front-end directory is in the ignore. I am designing this project to have a modular front-end, so theres no point in having a default front-end in the repository.
 
 # Back-end
-The back-end project is a [Nodeclipse](http://www.nodeclipse.org/) project with lint and formatting defined. IMO eclipse is a shit, but it makes it very practical to automatically format and clean everything
+The back-end project is a [Nodeclipse](http://www.nodeclipse.org/) project with lint and formatting defined. IMO eclipse is a shit, but it makes it very practical to automatically format and clean everything.
 Coding standard: [Felix's Node style guide](https://github.com/felixge/node-style-guide).
 More information can be found at [src/be/Readme.md](src/be/Readme.md).
 
 # Contributing
-I would rather not having other people writing the initial code for the engine, but if you wish to suggest and discuss features or contribute to a default front-end to replace the placeholder ones I am using, you can find me under the name StephenLynx on #/tech/ at Rizon or e-mail me at sergio.a.vianna@gmail.com.
+I would rather not having other people writing the initial code for the engine, but if you wish to suggest and discuss features or contribute to a default front-end to replace the placeholder ones I am using, you can find me under the name StephenLynx on #lynxchan at Rizon or e-mail me at sergio.a.vianna@gmail.com.
 
 [WHAT IS THE INTERNET? WHAT IS A CHAN?](http://8chan.co)

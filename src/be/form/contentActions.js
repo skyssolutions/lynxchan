@@ -54,7 +54,7 @@ function processSplitKeyForDeletion(splitKey, threadsToDelete, postsToDelete) {
   }
 }
 
-function processSplitKeyForReporting(splitKey, reportedObjects) {
+function processSplitKeyForGeneralUse(splitKey, reportedObjects) {
   var longEnough = splitKey.length > 1;
 
   if (longEnough && !/\W/.test(splitKey[0]) && !isNaN(splitKey[1])) {
@@ -87,19 +87,19 @@ function processParameters(userData, parameters, res) {
 
       var splitKey = key.split('-');
 
-      if (parameters.action.toLowerCase() === 'report') {
-        processSplitKeyForReporting(splitKey, reportedObjects);
-      } else {
+      if (parameters.action.toLowerCase() === 'delete') {
         processSplitKeyForDeletion(splitKey, threads, posts);
+      } else {
+        processSplitKeyForGeneralUse(splitKey, reportedObjects);
       }
     }
   }
 
+  parameters.global = parameters.hasOwnProperty('global');
+
   if (parameters.action.toLowerCase() === 'report') {
 
     miscOps.sanitizeStrings(parameters, reportFields);
-
-    parameters.global = parameters.hasOwnProperty('global');
 
     modOps.report(reportedObjects, parameters, function createdReports(error) {
       if (error) {
@@ -109,6 +109,16 @@ function processParameters(userData, parameters, res) {
       }
 
     });
+  } else if (parameters.action.toLowerCase() === 'ban') {
+
+    modOps.ban(userData, reportedObjects, parameters, function(error) {
+      if (error) {
+        formOps.outputError(error, 500, res);
+      } else {
+        formOps.outputResponse('Users banned', '/', res);
+      }
+    });
+
   } else {
 
     deleteOps.posting(userData, parameters, threads, posts,
@@ -139,8 +149,11 @@ exports.process = function(req, res) {
         }
       }
 
-      var deleting = parameters.action.toLowerCase() === 'delete';
-      var authenticate = !parameters.password && deleting;
+      var action = parameters.action.toLowerCase();
+
+      var deleting = action === 'delete';
+      var banning = action === 'ban';
+      var authenticate = banning || (!parameters.password && deleting);
 
       if (authenticate) {
 

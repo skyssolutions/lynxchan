@@ -11,6 +11,7 @@ var delOps = require('./deletionOps');
 var settings = require('../boot').getGeneralSettings();
 var previewPosts = settings.previewPostCount;
 var threadLimit = settings.maxThreadCount;
+var bumpLimit = settings.autoSageLimit;
 
 var postingParameters = [ {
   field : 'subject',
@@ -83,13 +84,14 @@ function updateBoardForThreadCreation(boardUri, threadId, callback) {
   });
 }
 
-function createThread(parameters, threadId, callback) {
+function createThread(req, parameters, threadId, callback) {
 
   miscOps.sanitizeStrings(parameters, postingParameters);
 
   var threadToAdd = {
     boardUri : parameters.boardUri,
     threadId : threadId,
+    ip : req.connection.remoteAddress,
     lastBump : new Date(),
     creation : new Date(),
     subject : parameters.subject,
@@ -104,7 +106,7 @@ function createThread(parameters, threadId, callback) {
 
   threads.insert(threadToAdd, function createdThread(error) {
     if (error && error.code === 11000) {
-      createThread(parameters, threadId + 1, callback);
+      createThread(req, parameters, threadId + 1, callback);
     } else if (error) {
       callback(error);
     } else {
@@ -139,7 +141,7 @@ exports.newThread = function(req, parameters, callback) {
     } else if (!board) {
       callback('Board not found');
     } else {
-      createThread(parameters, (board.lastPostId || 0) + 1, callback);
+      createThread(req, parameters, (board.lastPostId || 0) + 1, callback);
     }
   });
 
@@ -208,8 +210,15 @@ function updateThread(parameters, postId, thread, callback) {
     }
   };
 
-  if (parameters.email !== 'sage') {
-    updateBlock.$set.lastBump = new Date();
+  if (!thread.autoSage) {
+
+    if (thread.postCount >= bumpLimit) {
+      updateBlock.$set.autoSage = true;
+    }
+
+    if (parameters.email !== 'sage') {
+      updateBlock.$set.lastBump = new Date();
+    }
   }
 
   threads.update({
@@ -226,13 +235,14 @@ function updateThread(parameters, postId, thread, callback) {
 
 }
 
-function createPost(parameters, postId, thread, callback) {
+function createPost(req, parameters, postId, thread, callback) {
 
   miscOps.sanitizeStrings(parameters, postingParameters);
 
   var postToAdd = {
     boardUri : parameters.boardUri,
     postId : postId,
+    ip : req.connection.remoteAddress,
     threadId : parameters.threadId,
     creation : new Date(),
     subject : parameters.subject,
@@ -247,7 +257,7 @@ function createPost(parameters, postId, thread, callback) {
 
   posts.insert(postToAdd, function createdPost(error) {
     if (error && error.code === 11000) {
-      createPost(parameters, postId + 1, thread, callback);
+      createPost(req, parameters, postId + 1, thread, callback);
     } else if (error) {
       callback(error);
     } else {
@@ -269,13 +279,15 @@ function createPost(parameters, postId, thread, callback) {
 
 }
 
-function getThread(parameters, postId, callback) {
+function getThread(req, parameters, postId, callback) {
 
   threads.findOne({
     boardUri : parameters.boardUri,
     threadId : parameters.threadId
   }, {
     latestPosts : 1,
+    autoSage : 1,
+    postCount : 1,
     page : 1,
     _id : 1
   }, function gotThread(error, thread) {
@@ -284,7 +296,7 @@ function getThread(parameters, postId, callback) {
     } else if (!thread) {
       callback('Thread not found');
     } else {
-      createPost(parameters, postId, thread, callback);
+      createPost(req, parameters, postId, thread, callback);
     }
   });
 
@@ -305,7 +317,7 @@ exports.newPost = function(req, parameters, callback) {
     } else if (!board) {
       callback('Board not found');
     } else {
-      getThread(parameters, (board.lastPostId || 0) + 1, callback);
+      getThread(req, parameters, (board.lastPostId || 0) + 1, callback);
     }
   });
 

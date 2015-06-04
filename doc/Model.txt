@@ -13,6 +13,7 @@ boards: stores boards.
 threads: stores board's threads.
     name: name of the poster. 32 characters.
     password: password used to delete the thread. 8 characters.
+    ip: ip of the poster.
     email: email of the poster. 64 characters.
     subject: subject of the thread. 128 characters.
     message: text of the post. 2048 characters.
@@ -20,6 +21,7 @@ threads: stores board's threads.
     boardUri*/***: url of the board the thread belongs to.
     postId(Number)***: unique id of the thread inside the board.
     lastBump(Date): time of when the thread was last bumped.
+    autoSage(Boolean): indicates the thread cannot be bumped anymore.
     postCount(Number): pre-aggregated number of posts in the thread.
     latestPosts(Array): pre-aggregated array of ids of the latest posts in this thread.
     page(Number): pre-aggregated number of the page this thread was assigned to on last board creation. Indexed by 1.
@@ -35,6 +37,7 @@ posts: stores posts.
     password: password used to delete the post. 8 characters.
     email: email of the poster. 64 characters.
     subject: subject of the thread. 128 characters.
+    ip: ip of the poster.
     message: text of the post. 2048 characters.
     creation(Date): time when the post was created.
     boardUri*/***: url of the board the post belongs to.
@@ -79,6 +82,16 @@ reports: stores reports of threads and posts.
     reason: reason of why the content is breaking any rules. 256 characters.
     creation(Date): date of when the report was filled.
     closing(Date): date of when the report was closed.
+
+----------------------------------------------------------------------------------------
+
+bans: stores bans.
+    _id:**: unique id of the ban.
+    appliedBy*: login of the user that applied the ban.
+    expiration(Date): date of when the ban will expire.
+    reason: reason of the ban. 256 characters.
+    ip: banned ip.
+    boardUri*: board of the ban. If not set, the ban is global.
 
 *: duplicated data, foreign key.
 **: unique key

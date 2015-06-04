@@ -66,6 +66,18 @@ linkManagement:
     type: a
     description: link to the board management page.
 
+linkMod:
+    type: a
+    description: link to the moderation page of the thread.
+
+inputBan:
+    type: input
+    description: submit input used to ban users.
+
+divExpiration:
+    type: div
+    description: area to input the expiration of bans.
+
 ------------------------------------------------------------------------------------------
 
 messagePage:
@@ -271,6 +283,10 @@ deletionIdentifier:
 reportDiv:
     type: div
     description: div containing the reports of the board.
+
+closedReportsLink:
+    type: a
+    description: link to the page that will display closed reports.
 
 ------------------------------------------------------------------------------------------
 

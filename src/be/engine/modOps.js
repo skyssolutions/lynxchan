@@ -4,10 +4,16 @@ var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var db = require('../db');
 var boards = db.boards();
+var bans = db.bans();
 var threads = db.threads();
 var posts = db.posts();
 var reports = db.reports();
 var miscOps = require('./miscOps');
+
+var banArguments = [ {
+  field : 'reason',
+  length : 256
+} ];
 
 function getReports(parameters, callback) {
 
@@ -38,7 +44,7 @@ exports.getClosedReports = function(userData, parameters, callback) {
         callback(error);
       } else if (!board) {
         callback('Board not found');
-      } else if (!isInBoardStaff(userData, board) && !isOnGlobalStaff) {
+      } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
         callback('You are not allowed to view reports for this board.');
       } else {
         getReports(parameters, callback);
@@ -65,7 +71,7 @@ function closeReport(userData, parameters, callback) {
   });
 }
 
-function isInBoardStaff(userData, board) {
+exports.isInBoardStaff = function(userData, board) {
 
   var isOwner = board.owner === userData.login;
 
@@ -75,7 +81,7 @@ function isInBoardStaff(userData, board) {
 
   return isOwner || isVolunteer;
 
-}
+};
 
 exports.closeReport = function(userData, parameters, callback) {
 
@@ -102,7 +108,7 @@ exports.closeReport = function(userData, parameters, callback) {
           callback(error);
         } else if (!board) {
           callback('Board not found');
-        } else if (!isInBoardStaff(userData, board)) {
+        } else if (!exports.isInBoardStaff(userData, board)) {
           callback('You are not allowed to close reports for this board.');
         } else {
           closeReport(userData, parameters, callback);
@@ -181,6 +187,196 @@ exports.report = function(reportedContent, parameters, callback) {
       threads.count(queryBlock, countCb);
     }
 
+  }
+
+};
+
+function createBans(foundIps, foundBoards, board, userData, reportedObjects,
+    parameters, callback) {
+
+  var operations = [];
+
+  for (var i = 0; i < foundIps.length; i++) {
+
+    var ban = {
+      reason : parameters.reason,
+      expiration : parameters.expiration,
+      ip : foundIps[i],
+      appliedBy : userData.login
+    };
+
+    if (!parameters.global) {
+      ban.boardUri = board;
+    }
+
+    operations.push({
+      insertOne : {
+        document : ban
+      }
+    });
+
+  }
+
+  bans.bulkWrite(operations, function createdBans(error, result) {
+    if (error) {
+      callback(error);
+    } else {
+      console.log('bans inserted');
+      iterateBoards(foundBoards, userData, reportedObjects, parameters,
+          callback);
+    }
+  });
+
+}
+
+function getPostIps(foundIps, foundBoards, informedPosts, board, userData,
+    reportedObjects, parameters, callback) {
+
+  posts.aggregate([ {
+    $match : {
+      boardUri : board,
+      ip : {
+        $nin : foundIps
+      },
+      postId : {
+        $in : informedPosts
+      }
+    }
+  }, {
+    $group : {
+      _id : 0,
+      ips : {
+        $addToSet : '$ip'
+      }
+    }
+  } ], function gotIps(error, results) {
+
+    if (error) {
+      callback(error);
+    } else if (!results.length) {
+
+      createBans(foundIps, foundBoards, board, userData, reportedObjects,
+          parameters, callback);
+
+    } else {
+      createBans(foundIps.concact(results[0].ips), foundBoards, board,
+          userData, reportedObjects, parameters, callback);
+    }
+  });
+
+}
+
+function getThreadIps(board, foundBoards, userData, reportedObjects,
+    parameters, callback) {
+
+  var informedThreads = [];
+  var informedPosts = [];
+
+  for (var i = 0; i < reportedObjects.length; i++) {
+
+    var object = reportedObjects[i];
+
+    if (board === object.board) {
+
+      if (object.post) {
+        informedPosts.push(+object.post);
+      } else {
+        informedThreads.push(+object.thread);
+      }
+
+    }
+
+  }
+
+  threads.aggregate([ {
+    $match : {
+      boardUri : board,
+      threadId : {
+        $in : informedThreads
+      }
+    }
+  }, {
+    $group : {
+      _id : 0,
+      ips : {
+        $addToSet : '$ip'
+      }
+    }
+  } ], function gotIps(error, results) {
+
+    if (error) {
+      callback(error);
+    } else if (!results.length) {
+      getPostIps([], foundBoards, informedPosts, board, userData,
+          reportedObjects, parameters, callback);
+    } else {
+      getPostIps(results[0].ips, foundBoards, informedPosts, board, userData,
+          reportedObjects, parameters, callback);
+    }
+
+  });
+
+}
+
+function iterateBoards(foundBoards, userData, reportedObjects, parameters,
+    callback) {
+
+  if (!foundBoards.length) {
+    callback();
+    return;
+  }
+
+  var board = foundBoards.shift();
+
+  boards.findOne({
+    boardUri : board
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      iterateBoards(foundBoards, userData, reportedObjects, parameters,
+          callback);
+    } else if (!exports.isInBoardStaff(userData, board) && !parameters.global) {
+      iterateBoards(foundBoards, userData, reportedObjects, parameters,
+          callback);
+    } else {
+      getThreadIps(board.boardUri, foundBoards, userData, reportedObjects,
+          parameters, callback);
+    }
+  });
+
+}
+
+exports.ban = function(userData, reportedObjects, parameters, callback) {
+
+  miscOps.sanitizeStrings(parameters, banArguments);
+
+  var expiration = Date.parse(parameters.expiration || '');
+
+  if (isNaN(expiration)) {
+    callback('Invalid expiration');
+
+    return;
+  } else {
+    parameters.expiration = new Date(expiration);
+  }
+
+  var allowedToGlobalBan = userData.globalRole < miscOps.getMaxStaffRole();
+
+  if (parameters.global && !allowedToGlobalBan) {
+    callback('You are not allowed to issue global bans');
+  } else {
+    var foundBoards = [];
+
+    for (var i = 0; i < reportedObjects.length; i++) {
+      var report = reportedObjects[i];
+
+      if (foundBoards.indexOf(report.board) === -1) {
+        foundBoards.push(report.board);
+      }
+    }
+
+    iterateBoards(foundBoards, userData, reportedObjects, parameters, callback);
   }
 
 };

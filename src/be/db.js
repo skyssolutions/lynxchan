@@ -7,12 +7,13 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 6;
+var maxIndexesSet = 7;
 
 var cachedPosts;
 var cachedReports;
 var cachedThreads;
 var cachedBoards;
+var cachedBans;
 var cachedUsers;
 var cachedFiles;
 var cachedRecoveryRequests;
@@ -27,6 +28,27 @@ function indexSet(callback) {
     loading = false;
     callback(null);
   }
+}
+
+function initBans(callback) {
+
+  cachedBans = cachedDb.collection('bans');
+
+  cachedBans.ensureIndex({
+    expiration : 1
+  }, {
+    expireAfterSeconds : 0
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
 }
 
 function initReports(callback) {
@@ -173,6 +195,10 @@ exports.files = function() {
   return cachedFiles;
 };
 
+exports.bans = function() {
+  return cachedBans;
+};
+
 exports.posts = function() {
   return cachedPosts;
 };
@@ -206,6 +232,8 @@ function checkCollections(db, callback) {
   initUsers(callback);
 
   initReports(callback);
+
+  initBans(callback);
 
   initRecoveryRequests(callback);
 

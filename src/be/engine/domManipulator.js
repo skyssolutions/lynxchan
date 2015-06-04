@@ -647,13 +647,40 @@ function setThreadHiddenIdentifiers(document, boardUri, threadData) {
   threadIdentifyInput.setAttribute('value', threadData.threadId);
 }
 
-exports.thread = function(boardUri, boardData, threadData, posts, callback) {
+function setThreadLinks(document, boardData, threadData) {
+
+  var linkModeration = '/mod.js?boardUri=' + boardData.boardUri;
+  linkModeration += '&threadId=' + threadData.threadId;
+
+  var moderationElement = document.getElementById('linkMod');
+  moderationElement.href = linkModeration;
+
+  var linkManagement = document.getElementById('linkManagement');
+  linkManagement.href = '/boardManagement.js?boardUri=' + boardData.boardUri;
+}
+
+function setModdingInformation(document, boardUri, boardData, threadData,
+    posts, callback) {
+
+  document.getElementById('inputBan').style.display = 'block';
+  document.getElementById('divExpiration').style.display = 'block';
+
+  callback(null, serializer(document));
+
+}
+
+function hideModElements(document) {
+  document.getElementById('inputBan').style.display = 'none';
+  document.getElementById('divExpiration').style.display = 'none';
+}
+
+exports.thread = function(boardUri, boardData, threadData, posts, callback,
+    modding) {
 
   try {
     var document = jsdom(threadTemplate);
 
-    var linkManagement = document.getElementById('linkManagement');
-    linkManagement.href = '/boardManagement.js?boardUri=' + boardUri;
+    setThreadLinks(document, boardData, threadData);
 
     var titleHeader = document.getElementById('labelName');
 
@@ -670,12 +697,22 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback) {
 
     var ownName = 'res/' + threadData.threadId + '.html';
 
-    gridFs.writeData(serializer(document), '/' + boardUri + '/' + ownName,
-        'text/html', {
-          boardUri : boardUri,
-          type : 'thread',
-          threadId : threadData.threadId
-        }, callback);
+    if (modding) {
+
+      setModdingInformation(document, boardUri, boardData, threadData, posts,
+          callback);
+
+    } else {
+      hideModElements(document);
+
+      gridFs.writeData(serializer(document), '/' + boardUri + '/' + ownName,
+          'text/html', {
+            boardUri : boardUri,
+            type : 'thread',
+            threadId : threadData.threadId
+          }, callback);
+    }
+
   } catch (error) {
     callback(error);
   }

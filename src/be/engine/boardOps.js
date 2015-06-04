@@ -189,8 +189,6 @@ exports.setVolunteer = function(userData, parameters, callback) {
 
 function isAllowedToManageBoard(login, role, boardData) {
 
-  var inGlobalStaff = role <= miscOps.getMaxStaffRole();
-
   var owner = login === boardData.owner;
 
   var volunteer;
@@ -199,7 +197,7 @@ function isAllowedToManageBoard(login, role, boardData) {
     volunteer = boardData.volunteers.indexOf(login) > -1;
   }
 
-  return inGlobalStaff || owner || volunteer;
+  return owner || volunteer;
 
 }
 

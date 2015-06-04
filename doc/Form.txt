@@ -183,8 +183,9 @@ Description: deletes or reports posts and threads. The inputs of the posts will 
 Parameters:
     password: password to be used for deletion.
     reason: reason of the report.
-    action: action to be performed. 'delete' and 'report' may be used, case insensitive.
+    action: action to be performed. 'ban', 'delete' and 'report' may be used, case insensitive.
     global: if any value is passed, indicates the reports are global.
+    expiration: date able to be converted to a new Date of when the bans should expire.
 
 ------------------------------------------------------------------------------------------
 
@@ -218,6 +219,18 @@ Description: display the list of closed reports. Requires authentication. It use
 
 Parameters:
     boardUri: board to display the closed reports of. If not informed, global repors will be displayed instead. 
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::19
+
+Name: mod
+
+Description: displays a thread in moderation mode, allowing for the user to ban users, lock and pin the thread. Requires authentication. It uses get parameters instead of post.
+
+Parameters:
+    boardUri: board containing the thread.
+    threadId: id of the thread.
 
 ------------------------------------------------------------------------------------------
 

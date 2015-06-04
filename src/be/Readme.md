@@ -63,6 +63,7 @@ Settings files that goes into the settings directory:
 * `fePath`: absolute path to the directory containing the fe files. Defaults to the relative path to the src/fe diretory.
 * `pageSize`(Number): amount of threads on each board page.
 * `previewPostCount`(Number): number of preview posts on a thread.
+* `autoSageLimit`(Number): how many posts a thread must hit at once so it becomes impossible to bump.
 * `maxThreadCount`(Number): maximum amount of threads allowed per board.
 * `tempDirectory`: path for temporary files. Defaults to '/tmp'.
 * `emailSender`: e-mail to be used as sender on automated e-mails.
