@@ -245,4 +245,15 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::21
+
+Name: liftBan
+
+Description: removes a ban. Requires authentication.
+
+Parameters:
+    banId: id of the ban to be lifted.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

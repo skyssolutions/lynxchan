@@ -368,7 +368,7 @@ closedDateLabel:
 bansPage:
 
 Elements:
-divBans:
+bansDiv:
     type: div
     description: holds the ban list.
 

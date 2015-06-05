@@ -295,6 +295,12 @@ function createBans(foundIps, foundBoards, board, userData, reportedObjects,
 
   }
 
+  if (!operations.length) {
+    callback();
+
+    return;
+  }
+
   bans.bulkWrite(operations, function createdBans(error, result) {
     if (error) {
       callback(error);
@@ -336,8 +342,8 @@ function getPostIps(foundIps, foundBoards, informedPosts, board, userData,
           parameters, callback);
 
     } else {
-      createBans(foundIps.concact(results[0].ips), foundBoards, board,
-          userData, reportedObjects, parameters, callback);
+      createBans(foundIps.concat(results[0].ips), foundBoards, board, userData,
+          reportedObjects, parameters, callback);
     }
   });
 
@@ -456,4 +462,67 @@ exports.ban = function(userData, reportedObjects, parameters, callback) {
     iterateBoards(foundBoards, userData, reportedObjects, parameters, callback);
   }
 
-};// end of ban process
+};
+// end of ban process
+
+// start of ban lift
+
+function liftBan(ban, callback) {
+
+  bans.remove({
+    _id : new ObjectID(ban._id)
+  }, function banRemoved(error) {
+    callback(error);
+  });
+
+}
+
+function checkForBoardPermission(ban, login, callback) {
+
+  boards.findOne({
+    boardUri : ban.boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback();
+    } else {
+      board.volunteers = board.volunteers || [];
+
+      if (board.owner === login || board.volunteers.indexOf(login) > -1) {
+        liftBan(ban, callback);
+      } else {
+        callback('You are not allowed to lift bans from this board.');
+      }
+    }
+  });
+
+}
+
+exports.liftBan = function(userData, parameters, callback) {
+
+  bans.findOne({
+    _id : new ObjectID(parameters.banId),
+    expiration : {
+      $gt : new Date()
+    }
+  }, function gotBan(error, ban) {
+    if (error) {
+      callback(error);
+    } else if (!ban) {
+      callback();
+    } else if (ban.boardUri) {
+
+      checkForBoardPermission(ban, userData.login, callback);
+
+    } else if (userData.globalRole >= miscOps.getMaxStaffRole()) {
+      callback('You are not allowed to lift global bans.');
+    } else {
+      liftBan(ban, callback);
+    }
+  });
+
+};
+
+// end of ban lift
+

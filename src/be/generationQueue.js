@@ -42,6 +42,7 @@ var rebuildingFrontPage = false;
 var working = false;
 var debug = require('./boot').debug();
 var generator = require('./engine/generator');
+var domManipulator = require('./engine/domManipulator');
 var verbose = require('./boot').getGeneralSettings().verbose;
 
 function checkForGlobalClearing(message) {
@@ -64,6 +65,7 @@ function checkForGlobalClearing(message) {
 }
 
 function clearTree(error, message) {
+
   if (!checkForGlobalClearing(message)) {
 
     if (message.buildAll) {
@@ -98,6 +100,30 @@ function clearTree(error, message) {
 
 }
 
+function processMessage(message) {
+
+  var generationCallback = function(error) {
+    clearTree(error, message);
+  };
+
+  if (message.globalRebuild) {
+    generator.all(generationCallback);
+  } else if (message.defaultPages) {
+    generator.defaultPages(generationCallback);
+  } else if (message.frontPage) {
+    generator.frontPage(generationCallback);
+  } else if (message.buildAll) {
+    generator.board(message.board, true, generationCallback);
+  } else if (!message.page && !message.thread) {
+    generator.board(message.board, false, generationCallback);
+  } else if (message.page) {
+    generator.page(message.board, message.page, generationCallback);
+  } else {
+    generator.thread(message.board, message.thread, generationCallback);
+  }
+
+}
+
 function processQueue() {
   if (!queueArray.length) {
 
@@ -113,37 +139,11 @@ function processQueue() {
     console.log('Processing ' + JSON.stringify(message));
   }
 
-  if (message.globalRebuild) {
-    generator.all(function generated(error) {
-      clearTree(error, message);
-    });
-  } else if (message.defaultPages) {
-    generator.defaultPages(function generated(error) {
-      clearTree(error, message);
-    });
-  } else if (message.frontPage) {
-
-    generator.frontPage(function generated(error) {
-      clearTree(error, message);
-    });
-
-  } else if (message.buildAll) {
-    generator.board(message.board, true, function generated(error) {
-      clearTree(error, message);
-    });
-  } else if (!message.page && !message.thread) {
-    generator.board(message.board, false, function generated(error) {
-      clearTree(error, message);
-    });
-  } else if (message.page) {
-    generator.page(message.board, message.page, function generated(error) {
-      clearTree(error, message);
-    });
-  } else {
-    generator.thread(message.board, message.thread, function generated(error) {
-      clearTree(error, message);
-    });
+  if (debug) {
+    domManipulator.loadTemplates();
   }
+
+  processMessage(message);
 
 }
 
