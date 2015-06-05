@@ -20,6 +20,8 @@ threads: stores board's threads.
     creation(Date): time when the post was created.
     boardUri*/***: url of the board the thread belongs to.
     postId(Number)***: unique id of the thread inside the board.
+    locked(Boolean): indicates if the thread is locked and cannot be replied to.
+    pinned(Boolean): indicates if the thread is pinned and will be listed on top of unpinned threads.
     lastBump(Date): time of when the thread was last bumped.
     autoSage(Boolean): indicates the thread cannot be bumped anymore.
     postCount(Number): pre-aggregated number of posts in the thread.

@@ -35,6 +35,8 @@ var threadProjection = {
   creation : 1,
   name : 1,
   files : 1,
+  locked : 1,
+  pinned : 1,
   email : 1,
   message : 1,
   lastBump : 1,
@@ -424,6 +426,8 @@ exports.page = function(boardUri, page, callback, boardData) {
     boardUri : boardUri
   }, threadProjection).sort({
     lastBump : -1
+  }).sort({
+    pinned : -1
   }).skip(toSkip).limit(pageSize).toArray(
       function(error, threadsArray) {
         if (error) {

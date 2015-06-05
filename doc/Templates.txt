@@ -78,6 +78,18 @@ divExpiration:
     type: div
     description: area to input the expiration of bans.
 
+divControls:
+    type: div
+    description: div with general controls, like lock and pin.
+
+controlBoardIdentifier:
+    type: input
+    description: hidden input to identify the board for the controls page.
+
+controlThreadIdentifier:
+    type: input
+    description: hidden input to identify the thread for the controls page.
+
 ------------------------------------------------------------------------------------------
 
 messagePage:
@@ -134,6 +146,14 @@ linkSelf:
 deletionCheckBox:
     type: input
     description: checkbox used for deletion or reporting.
+
+lockIndicator:
+    type: any
+    description: element that indicates the thread is locked.
+
+pinIndicator: 
+    type: any
+    description: element that indicates the thread is pinned.
 
 ------------------------------------------------------------------------------------------
 

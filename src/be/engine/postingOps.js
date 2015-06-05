@@ -288,6 +288,7 @@ function getThread(req, parameters, postId, callback) {
   }, {
     latestPosts : 1,
     autoSage : 1,
+    locked : 1,
     postCount : 1,
     page : 1,
     _id : 1
@@ -296,6 +297,8 @@ function getThread(req, parameters, postId, callback) {
       callback(error);
     } else if (!thread) {
       callback('Thread not found');
+    } else if (thread.locked) {
+      callback('You cannot reply to a locked thread');
     } else {
       createPost(req, parameters, postId, thread, callback);
     }

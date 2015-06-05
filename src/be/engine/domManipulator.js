@@ -741,6 +741,12 @@ function setModdingInformation(document, boardUri, boardData, threadData,
 
   document.getElementById('inputBan').style.display = 'block';
   document.getElementById('divExpiration').style.display = 'block';
+  document.getElementById('divControls').style.display = 'block';
+
+  document.getElementById('controlBoardIdentifier').setAttribute('value',
+      boardUri);
+  document.getElementById('controlThreadIdentifier').setAttribute('value',
+      threadData.threadId);
 
   callback(null, serializer(document));
 
@@ -749,6 +755,7 @@ function setModdingInformation(document, boardUri, boardData, threadData,
 function hideModElements(document) {
   document.getElementById('inputBan').style.display = 'none';
   document.getElementById('divExpiration').style.display = 'none';
+  document.getElementById('divControls').style.display = 'none';
 }
 
 exports.thread = function(boardUri, boardData, threadData, posts, callback,
@@ -884,6 +891,12 @@ function addThread(document, thread, posts, boardUri, innerPage) {
     switch (node.id) {
     case 'labelName':
       node.innerHTML = thread.name;
+      break;
+    case 'pinIndicator':
+      node.style.display = thread.pinned ? 'block' : 'none';
+      break;
+    case 'lockIndicator':
+      node.style.display = thread.locked ? 'block' : 'none';
       break;
     case 'labelEmail':
       node.innerHTML = thread.email;

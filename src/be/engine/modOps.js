@@ -525,4 +525,118 @@ exports.liftBan = function(userData, parameters, callback) {
 };
 
 // end of ban lift
+// start of thread lock process
+function getThreadToChangeLock(parameters, callback) {
+  threads.findOne({
+    boardUri : parameters.boardUri,
+    threadId : +parameters.threadId
+  }, function gotThread(error, thread) {
+    if (error) {
+      callback(error);
+    } else if (!thread) {
+      callback('Thread not found');
+    } else {
+      // style exception, too simple
 
+      threads.updateOne({
+        boardUri : parameters.boardUri,
+        threadId : +parameters.threadId
+      }, {
+        $set : {
+          locked : parameters.lock ? true : false
+        }
+      }, function changedThreadLock(error) {
+        // signal rebuild of thread
+        process.send({
+          board : thread.boardUri,
+          thread : thread.threadId
+        });
+        callback(error);
+      });
+
+      // style exception, too simple
+
+    }
+  });
+
+}
+
+exports.setThreadLock = function(userData, parameters, callback) {
+
+  boards.findOne({
+    boardUri : parameters.boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback('Board not found');
+    } else if (!exports.isInBoardStaff(userData, board)) {
+      callback('You are not allowed to lock or unlock threads in this board.');
+    } else {
+      getThreadToChangeLock(parameters, callback);
+    }
+  });
+
+};
+
+// end of thread lock process
+// start of thread pin process
+function getThreadToChangePin(parameters, callback) {
+  threads.findOne({
+    boardUri : parameters.boardUri,
+    threadId : +parameters.threadId
+  }, function gotThread(error, thread) {
+    if (error) {
+      callback(error);
+    } else if (!thread) {
+      callback('Thread not found');
+    } else {
+      // style exception, too simple
+
+      threads.updateOne({
+        boardUri : parameters.boardUri,
+        threadId : +parameters.threadId
+      }, {
+        $set : {
+          pinned : parameters.pin ? true : false
+        }
+      }, function changedThreadPin(error) {
+        // signal rebuild of board pages
+        process.send({
+          board : thread.boardUri
+        });
+
+        // signal rebuild of thread
+        process.send({
+          board : thread.boardUri,
+          thread : thread.threadId
+        });
+
+        callback(error);
+      });
+
+      // style exception, too simple
+
+    }
+  });
+
+}
+
+exports.setThreadPin = function(userData, parameters, callback) {
+
+  boards.findOne({
+    boardUri : parameters.boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback('Board not found');
+    } else if (!exports.isInBoardStaff(userData, board)) {
+      callback('You are not allowed to pin or inpin threads in this board.');
+    } else {
+      getThreadToChangePin(parameters, callback);
+    }
+  });
+
+};
+// end of thread pin process

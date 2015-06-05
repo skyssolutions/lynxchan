@@ -256,4 +256,19 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::22
+
+Name: threadControls
+
+Description: performs general control actions on a thread, like locking and pinning. Requires authentication.
+
+Parameters:
+    boardUri: board that contains the thread.
+    threadId: id of the thread to be locked or unlocked.
+    lock: indicates if the thread must be locked. Any value sent will lock, if not sent, will unlock.
+    pin: indicates if the thread must be pinned. Any value will pin, if not sent, will unpin.
+    action: indicates the action to be taken. Valid values are 'lock' and 'pin'.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
