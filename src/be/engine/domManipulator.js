@@ -33,7 +33,9 @@ var bManagementTemplate;
 var volunteerCellTemplate;
 var reportCellTemplate;
 var closedReportCellTemplate;
-var closedReportsPage;
+var closedReportsPageTemplate;
+var bansPageTemplate;
+var banCellTemplate;
 
 require('jsdom').defaultDocumentFeatures = {
   FetchExternalResources : false,
@@ -42,7 +44,7 @@ require('jsdom').defaultDocumentFeatures = {
   MutationEvents : false
 };
 
-function loadEmailTemplates(fs, fePath, templateSettings) {
+function loadEmailTemplates(fePath, templateSettings) {
 
   var recoveryEmailPath = fePath + templateSettings.recoveryEmail;
   recoveryEmailTemplate = fs.readFileSync(recoveryEmailPath);
@@ -50,7 +52,7 @@ function loadEmailTemplates(fs, fePath, templateSettings) {
 
 }
 
-function loadCellTemplates(fs, fePath, templateSettings) {
+function loadCellTemplates(fePath, templateSettings) {
   opTemplate = fs.readFileSync(fePath + templateSettings.opCell);
   staffCellTemplate = fs.readFileSync(fePath + templateSettings.staffCell);
   postTemplate = fs.readFileSync(fePath + templateSettings.postCell);
@@ -61,13 +63,14 @@ function loadCellTemplates(fs, fePath, templateSettings) {
 
   var volunteerPath = fePath + templateSettings.volunteerCell;
   volunteerCellTemplate = fs.readFileSync(volunteerPath);
+
+  banCellTemplate = fs.readFileSync(fePath + templateSettings.banCell);
 }
 
-exports.loadTemplates = function() {
+function loadMainTemplates(fePath, templateSettings) {
 
-  var fePath = boot.getFePath() + '/templates/';
-  var templateSettings = boot.getTemplateSettings();
-
+  bManagementTemplate = fs.readFileSync(fePath + templateSettings.bManagement);
+  bansPageTemplate = fs.readFileSync(fePath + templateSettings.bansPage);
   frontPageTemplate = fs.readFileSync(fePath + templateSettings.index);
   threadTemplate = fs.readFileSync(fePath + templateSettings.threadPage);
   boardTemplate = fs.readFileSync(fePath + templateSettings.boardPage);
@@ -76,13 +79,78 @@ exports.loadTemplates = function() {
   loginTemplate = fs.readFileSync(fePath + templateSettings.loginPage);
   accountTemplate = fs.readFileSync(fePath + templateSettings.accountPage);
   gManagementTemplate = fs.readFileSync(fePath + templateSettings.gManagement);
-  bManagementTemplate = fs.readFileSync(fePath + templateSettings.bManagement);
 
   var closedReportsPath = fePath + templateSettings.closedReportsPage;
-  closedReportsPage = fs.readFileSync(closedReportsPath);
+  closedReportsPageTemplate = fs.readFileSync(closedReportsPath);
+}
 
-  loadEmailTemplates(fs, fePath, templateSettings);
-  loadCellTemplates(fs, fePath, templateSettings);
+exports.loadTemplates = function() {
+
+  var fePath = boot.getFePath() + '/templates/';
+  var templateSettings = boot.getTemplateSettings();
+
+  loadMainTemplates(fePath, templateSettings);
+  loadEmailTemplates(fePath, templateSettings);
+  loadCellTemplates(fePath, templateSettings);
+
+};
+
+exports.bans = function(bans) {
+
+  try {
+
+    var document = jsdom(bansPageTemplate);
+
+    var bansDiv = document.getElementById('bansDiv');
+
+    for (var i = 0; i < bans.length; i++) {
+
+      var ban = bans[i];
+      var cell = document.createElement('form');
+      cell.innerHTML = banCellTemplate;
+
+      setBoilerPlate(cell, '/liftBan.js', 'banCell');
+
+      for (var j = 0; j < cell.childNodes.length; j++) {
+        var node = cell.childNodes[j];
+
+        switch (node.id) {
+        case 'reasonLabel':
+          node.innerHTML = ban.reason;
+          break;
+        case 'expirationLabel':
+          node.innerHTML = ban.expiration;
+          break;
+        case 'appliedByLabel':
+          node.innerHTML = ban.appliedBy;
+          break;
+        case 'boardLabel':
+          node.innerHTML = ban.boardUri ? ban.boardUri : 'all boards';
+          break;
+        case 'idIdentifier':
+          node.setAttribute('value', ban._id);
+          break;
+
+        }
+      }
+
+      bansDiv.appendChild(cell);
+    }
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+
+  }
 
 };
 
@@ -102,10 +170,7 @@ function getReportLink(report) {
 exports.closedReports = function(reports, callback) {
   try {
 
-    // TODO remove
-    console.log(JSON.stringify(reports));
-
-    var document = jsdom(closedReportsPage);
+    var document = jsdom(closedReportsPageTemplate);
 
     var reportsDiv = document.getElementById('reportDiv');
 
@@ -178,11 +243,9 @@ function setBoardOwnerControls(document, boardData) {
   for (var i = 0; i < volunteers.length; i++) {
 
     var cell = document.createElement('form');
-    cell.enctype = 'multipart/form-data';
-    cell.action = '/setVolunteer.js';
-    cell.method = 'post';
-
     cell.innerHTML = volunteerCellTemplate;
+
+    setBoilerPlate(cell, '/setVolunteer.js', 'volunteerCell');
 
     for (var j = 0; j < cell.childNodes.length; j++) {
       var node = cell.childNodes[j];
@@ -272,6 +335,10 @@ exports.boardManagement = function(login, boardData, reports) {
     var closedReportsUrl = '/closedReports.js?boardUri=' + boardData.boardUri;
     closedReportsLink.setAttribute('href', closedReportsUrl);
 
+    var bansUrl = '/bans.js?boardUri=' + boardData.boardUri;
+
+    document.getElementById('bansLink').href = bansUrl;
+
     var boardLabel = document.getElementById('boardLabel');
 
     var label = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
@@ -329,11 +396,9 @@ function fillStaffDiv(document, possibleRoles, staff) {
     var user = staff[i];
 
     var cell = document.createElement('form');
-    cell.setAttribute('class', 'staffCell');
-    cell.method = 'post';
-    cell.enctype = 'multipart/form-data';
-    cell.action = '/setGlobalRole.js';
     cell.innerHTML = staffCellTemplate;
+
+    setBoilerPlate(cell, '/setGlobalRole.js', 'staffCell');
 
     for (var j = 0; j < cell.childNodes.length; j++) {
 
@@ -392,6 +457,16 @@ function setNewStaffComboBox(document, userRole) {
 
 }
 
+function setBansLink(userRole, document) {
+  var bansLink = document.getElementById('bansLink');
+  if (userRole < 3) {
+    bansLink.style.display = 'block';
+  } else {
+    bansLink.style.display = 'none';
+
+  }
+}
+
 exports.globalManagement = function(userRole, userLogin, staff, reports) {
 
   try {
@@ -402,6 +477,8 @@ exports.globalManagement = function(userRole, userLogin, staff, reports) {
     var newStaffForm = document.getElementById('addStaffForm');
 
     newStaffForm.style.display = userRole < 2 ? 'block' : 'none';
+
+    setBansLink(userRole, document);
 
     if (userRole < 2) {
       setNewStaffComboBox(document, userRole);

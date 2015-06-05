@@ -218,7 +218,7 @@ Name: closedReports
 Description: display the list of closed reports. Requires authentication. It uses get parameters instead of post.
 
 Parameters:
-    boardUri: board to display the closed reports of. If not informed, global repors will be displayed instead. 
+    boardUri: board to display the closed reports of. If not informed, global reports will be displayed instead. 
 
 ------------------------------------------------------------------------------------------
 
@@ -231,6 +231,17 @@ Description: displays a thread in moderation mode, allowing for the user to ban 
 Parameters:
     boardUri: board containing the thread.
     threadId: id of the thread.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::20
+
+Name: bans
+
+Description: displays the global or board bans. Requires authentication. Uses get parameters instead of post.
+
+Parameters:
+    boardUri: board to display the bans of. If not informed, global bans will be displayed instead. 
 
 ------------------------------------------------------------------------------------------
 

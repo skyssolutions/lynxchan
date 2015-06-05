@@ -233,6 +233,10 @@ reportDiv:
     type: div
     description: div containing global reports.
 
+bansLink:
+    type: a
+    description: link to the bans page.
+
 ------------------------------------------------------------------------------------------
 
 staffCell
@@ -287,6 +291,10 @@ reportDiv:
 closedReportsLink:
     type: a
     description: link to the page that will display closed reports.
+
+bansLink:
+    type: a
+    description: link to the bans page.
 
 ------------------------------------------------------------------------------------------
 
@@ -355,4 +363,34 @@ closedDateLabel:
     type: span
     description: holds the date of when the report was closed.
 
+------------------------------------------------------------------------------------------
+
+bansPage:
+
+Elements:
+divBans:
+    type: div
+    description: holds the ban list.
+
+------------------------------------------------------------------------------------------
+
+banCell:
+Class: banCell
+
+Elements:
+reasonLabel:
+    type: span
+    description: holds the reason of the ban.
+
+expirationLabel:
+    type: span
+    description: holds the expiration of the ban.
+    
+appliedByLabel:
+    type: span
+    description: holds the login of the user that applied the ban.
+
+boardLabel: 
+    type: span
+    description: holds the board in which the ban relates to.
 

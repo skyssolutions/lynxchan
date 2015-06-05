@@ -15,7 +15,66 @@ var banArguments = [ {
   length : 256
 } ];
 
-function getReports(parameters, callback) {
+exports.isInBoardStaff = function(userData, board) {
+
+  var isOwner = board.owner === userData.login;
+
+  var volunteers = board.volunteers || [];
+
+  var isVolunteer = volunteers.indexOf(userData.login) > -1;
+
+  return isOwner || isVolunteer;
+
+};
+
+// start of reading bans
+
+function getBans(parameters, callback) {
+  var queryBlock = {
+    expiration : {
+      $gt : new Date()
+    },
+    boardUri : parameters.boardUri ? parameters.boardUri : {
+      $exists : false
+    }
+  };
+
+  bans.find(queryBlock).sort({
+    creation : -1
+  }).toArray(function gotBans(error, bans) {
+    callback(error, bans);
+  });
+}
+
+exports.getBans = function(userData, parameters, callback) {
+
+  var isOnGlobalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+
+  if (parameters.boardUri) {
+    boards.findOne({
+      boardUri : parameters.boardUri
+    }, function gotBoard(error, board) {
+      if (error) {
+        callback(error);
+      } else if (!board) {
+        callback('Board not found');
+      } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
+        callback('You are not allowed to view bans for this board.');
+      } else {
+        getBans(parameters, callback);
+      }
+    });
+  } else if (!isOnGlobalStaff) {
+    callback('You are not allowed to view global bans');
+  } else {
+    getBans(parameters, callback);
+  }
+
+};
+// end of reading bans
+
+// start of reading of closed reports
+function getClosedReports(parameters, callback) {
 
   var queryBlock = {
     closedBy : {
@@ -47,17 +106,19 @@ exports.getClosedReports = function(userData, parameters, callback) {
       } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
         callback('You are not allowed to view reports for this board.');
       } else {
-        getReports(parameters, callback);
+        getClosedReports(parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
     callback('You are not allowed to view global reports');
   } else {
-    getReports(parameters, callback);
+    getClosedReports(parameters, callback);
   }
 
 };
+// end of reading of closed reports
 
+// start of closing reports
 function closeReport(userData, parameters, callback) {
   reports.updateOne({
     _id : new ObjectID(parameters.reportId)
@@ -70,18 +131,6 @@ function closeReport(userData, parameters, callback) {
     callback(error);
   });
 }
-
-exports.isInBoardStaff = function(userData, board) {
-
-  var isOwner = board.owner === userData.login;
-
-  var volunteers = board.volunteers || [];
-
-  var isVolunteer = volunteers.indexOf(userData.login) > -1;
-
-  return isOwner || isVolunteer;
-
-};
 
 exports.closeReport = function(userData, parameters, callback) {
 
@@ -125,8 +174,10 @@ exports.closeReport = function(userData, parameters, callback) {
   });
 
 };
+// end of closing reports
 
-function createReport(report, reportedContent, parameters, callback) {
+// start of report process
+function createReport(req, report, reportedContent, parameters, callback) {
 
   var toAdd = {
     global : parameters.global,
@@ -147,13 +198,13 @@ function createReport(report, reportedContent, parameters, callback) {
     if (error && error.code !== 11000) {
       callback(error);
     } else {
-      exports.report(reportedContent, parameters, callback);
+      exports.report(req, reportedContent, parameters, callback);
     }
   });
 
 }
 
-exports.report = function(reportedContent, parameters, callback) {
+exports.report = function(req, reportedContent, parameters, callback) {
 
   if (!reportedContent.length) {
     callback();
@@ -161,36 +212,63 @@ exports.report = function(reportedContent, parameters, callback) {
 
     var report = reportedContent.shift();
 
-    var queryBlock = {
-      boardUri : report.board,
-      threadId : +report.thread
-    };
-
-    var countCb = function(error, count) {
+    bans.count({
+      ip : req.connection.remoteAddress,
+      expiration : {
+        $gt : new Date()
+      },
+      $or : [ {
+        boardUri : report.board
+      }, {
+        boardUri : {
+          $exists : false
+        }
+      } ]
+    }, function gotCount(error, count) {
       if (error) {
         callback(error);
-      } else if (!count) {
-        exports.report(reportedContent, parameters, callback);
+      } else if (count) {
+        exports.report(req, reportedContent, parameters, callback);
       } else {
-        createReport(report, reportedContent, parameters, callback);
+
+        // style exception, too simple
+        var queryBlock = {
+          boardUri : report.board,
+          threadId : +report.thread
+        };
+
+        var countCb = function(error, count) {
+          if (error) {
+            callback(error);
+          } else if (!count) {
+            exports.report(req, reportedContent, parameters, callback);
+          } else {
+            createReport(req, report, reportedContent, parameters, callback);
+          }
+
+        };
+
+        if (report.post) {
+
+          queryBlock.postId = +report.post;
+
+          posts.count(queryBlock, countCb);
+
+        } else {
+          threads.count(queryBlock, countCb);
+        }
+
+        // style exception, too simple
       }
 
-    };
-
-    if (report.post) {
-
-      queryBlock.postId = +report.post;
-
-      posts.count(queryBlock, countCb);
-
-    } else {
-      threads.count(queryBlock, countCb);
-    }
+    });
 
   }
 
 };
 
+// end of ban process
+// start of ban process
 function createBans(foundIps, foundBoards, board, userData, reportedObjects,
     parameters, callback) {
 
@@ -221,7 +299,6 @@ function createBans(foundIps, foundBoards, board, userData, reportedObjects,
     if (error) {
       callback(error);
     } else {
-      console.log('bans inserted');
       iterateBoards(foundBoards, userData, reportedObjects, parameters,
           callback);
     }
@@ -379,4 +456,4 @@ exports.ban = function(userData, reportedObjects, parameters, callback) {
     iterateBoards(foundBoards, userData, reportedObjects, parameters, callback);
   }
 
-};
+};// end of ban process

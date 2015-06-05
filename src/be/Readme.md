@@ -39,6 +39,8 @@ A file called `templateSettings.json` should be located on the front-end directo
 * `boardPage`: template for the pages of the board.
 * `threadPage`: template for the page of a thread.
 * `notFoundPage`: template for the 404 page.
+* `errorPage`: template used for the error page.
+* `messagePage`: template used for the general message page.
 * `opCell`: template for the OP's.
 * `postCell`: template for thread replies.
 * `thumb`: image to be used for generic thumbnails.
@@ -51,6 +53,10 @@ A file called `templateSettings.json` should be located on the front-end directo
 * `bManagement`: template for board management.
 * `volunteerCell`: template used for the board volunteers.
 * `reportCell`: template used for reports.
+* `closedReportsPage`: templated used for the page of closed reports.
+* `closedReportCell`: template used for the closed reports cell.
+* `bansPage`: template used for the bans page.
+* `banCell`: template used for the bans cell.
 
 # Back-end settings
 Settings files that goes into the settings directory:
@@ -85,5 +91,8 @@ Metadata of files on gridfs will have the following values:
 * `threadId`(Number): id of the thread the file belongs to.
 * `postId`(Number): id of the post the file belongs to.
 * `status`(Number): http status to be used when outputting this page. Defaults to 200 when outputting.
-* `type`: type of file. May hold one of the following values: `board`, `thread` or `media`.
+* `type`: type of file. May hold one of the following values: 
+  * `board`
+  * `thread` 
+  * `media`
 

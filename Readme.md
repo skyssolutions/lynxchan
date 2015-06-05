@@ -1,3 +1,8 @@
+# Status:
+Pre-alpha: 3 checkpoints to alpha.
+Alpha: 14 checkpoints to beta.
+Beta: 7 checkpoints to release.
+
 # About
 **LynxChan** is a chan engine designed with the following goals in mind:
 1. Support users not using javascript for the basic functions.
@@ -6,28 +11,22 @@
 4. Support the most amount of users with the least hardware power.
 5. Having a modular front-end so people can easily create and use different templates.
 
-# License
-MIT. Do whatever you want, I don't even know what is written there. I just know you can't sue me.
-
 # Required software
 * [Io.js](http://iojs.org)
 * [MongoDB](https://www.mongodb.org/)
 * [ImageMagick](http://www.imagemagick.org/script/index.php)
-
-# Dependencies
-Browse to `src/be` and run `npm install`.
-There are about a half-dozen. They are defined in the `package.json` file, so you don't have to worry with details.
 
 # Install
 1. Create the required settings file in the `src/be/settings` directory. Instructions can be found at `src/be/readme.md`.
 2. Create the user `iojs` on the system and make sure he has access to the `src/be` directory and the designed front-end directory.
 3. Run `aux/setup.sh` as root. Optionally add either the argument `upstart` or `systemd` to install a service to act as a daemon using the `iojs` user.
 
+# Dependencies
+Browse to `src/be` and run `npm install`.
+There are about a half-dozen. They are defined in the `package.json` file, so you don't have to worry with details.
+
 # Running
 You can either run the `lynxchan` command or start the `lynxchan` service. You could just run the `src/be/boot.js` file. Install is optional.
-
-# Aux
-There a couple of utility scripts there besides the install one. Rotating logs for the upstart service, removing installs and such.
 
 # Documentation
 As in many things, I am very anal about documentation.
@@ -41,6 +40,12 @@ Note that the front-end directory is in the ignore. I am designing this project 
 The back-end project is a [Nodeclipse](http://www.nodeclipse.org/) project with lint and formatting defined. IMO eclipse is a shit, but it makes it very practical to automatically format and clean everything.
 Coding standard: [Felix's Node style guide](https://github.com/felixge/node-style-guide).
 More information can be found at [src/be/Readme.md](src/be/Readme.md).
+
+# Aux
+There a couple of utility scripts there besides the install one. Rotating logs for the upstart service, removing installs and such.
+
+# License
+MIT. Do whatever you want, I don't even know what is written there. I just know you can't sue me.
 
 # Contributing
 I would rather not having other people writing the initial code for the engine, but if you wish to suggest and discuss features or contribute to a default front-end to replace the placeholder ones I am using, you can find me under the name StephenLynx on #lynxchan at Rizon or e-mail me at sergio.a.vianna@gmail.com.

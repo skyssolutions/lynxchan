@@ -10,15 +10,29 @@ function createThread(req, res, parameters) {
     return;
   }
 
-  postingOps.newThread(req, parameters, function threadCreated(error, id) {
-    if (error) {
-      formOps.outputError(error, 500, res);
-    } else {
-      var redirectLink = '../' + parameters.boardUri;
-      redirectLink += '/res/' + id + '.html';
-      formOps.outputResponse('Thread created', redirectLink, res);
-    }
-  });
+  formOps.checkForBan(req, parameters.boardUri, res,
+      function checkedBan(error) {
+
+        if (error) {
+          formOps.outputError(error, 500, res);
+        } else {
+
+          // style exception, too simple
+          postingOps.newThread(req, parameters, function threadCreated(error,
+              id) {
+            if (error) {
+              formOps.outputError(error, 500, res);
+            } else {
+              var redirectLink = '../' + parameters.boardUri;
+              redirectLink += '/res/' + id + '.html';
+              formOps.outputResponse('Thread created', redirectLink, res);
+            }
+          });
+          // style exception, too simple
+
+        }
+
+      });
 
 }
 

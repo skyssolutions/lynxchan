@@ -76,7 +76,7 @@ function processSplitKeyForGeneralUse(splitKey, reportedObjects) {
   }
 }
 
-function processParameters(userData, parameters, res) {
+function processParameters(req, userData, parameters, res) {
 
   var reportedObjects = [];
   var threads = {};
@@ -101,7 +101,8 @@ function processParameters(userData, parameters, res) {
 
     miscOps.sanitizeStrings(parameters, reportFields);
 
-    modOps.report(reportedObjects, parameters, function createdReports(error) {
+    modOps.report(req, reportedObjects, parameters, function createdReports(
+        error) {
       if (error) {
         formOps.outputError(error, 500, res);
       } else {
@@ -162,13 +163,13 @@ exports.process = function(req, res) {
           if (error) {
             formOps.outputError(error, 500, res);
           } else {
-            processParameters(userData, parameters, res);
+            processParameters(req, userData, parameters, res);
           }
         });
         // style exception,too simple
 
       } else {
-        processParameters(null, parameters, res);
+        processParameters(req, null, parameters, res);
       }
 
     });

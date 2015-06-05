@@ -5,6 +5,7 @@ var db = require('../db');
 var threads = db.threads();
 var boards = db.boards();
 var posts = db.posts();
+var bans = db.bans();
 var miscOps = require('./miscOps');
 var uploadHandler = require('./uploadHandler');
 var delOps = require('./deletionOps');

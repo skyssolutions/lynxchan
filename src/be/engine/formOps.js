@@ -3,6 +3,7 @@
 // general operations for the form api
 var boot = require('../boot');
 var settings = boot.getGeneralSettings();
+var bans = require('../db').bans();
 var accountOps = require('./accountOps');
 var debug = boot.debug;
 var verbose = settings.verbose;
@@ -250,5 +251,54 @@ exports.checkBlankParameters = function(object, parameters, res) {
   }
 
   return false;
+
+};
+
+function outputBanMessage(ban, res) {
+
+  res.writeHead(200, miscOps.corsHeader('text/html'));
+  // add template
+
+  var response = 'You have been banned from ';
+
+  if (ban.boardUri) {
+    response += '/' + ban.boardUri + '/';
+  } else {
+    response += 'all boards';
+  }
+
+  response += ' until ' + ban.expiration + ' by ' + ban.appliedBy + '.<br>';
+
+  response += 'Reason: ' + ban.reason;
+
+  res.end(response);
+
+}
+
+exports.checkForBan = function(req, boardUri, res, callback) {
+
+  var ip = req.connection.remoteAddress;
+
+  bans.findOne({
+    ip : ip,
+    expiration : {
+      $gt : new Date()
+    },
+    $or : [ {
+      boardUri : boardUri
+    }, {
+      boardUri : {
+        $exists : false
+      }
+    } ]
+  }, function gotBan(error, ban) {
+    if (error) {
+      callback(error);
+    } else if (ban) {
+      outputBanMessage(ban, res);
+    } else {
+      callback();
+    }
+  });
 
 };

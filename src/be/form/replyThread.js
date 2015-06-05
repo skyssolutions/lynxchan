@@ -10,15 +10,29 @@ function createPost(req, res, parameters) {
     return;
   }
 
-  postingOps.newPost(req, parameters, function postCreated(error, id) {
-    if (error) {
-      formOps.outputError(error, 500, res);
-    } else {
-      var redirectLink = '../' + parameters.boardUri;
-      redirectLink += '/res/' + parameters.threadId + '.html#' + id;
-      formOps.outputResponse('Post created', redirectLink, res);
-    }
-  });
+  formOps.checkForBan(req, parameters.boardUri, res,
+      function checkedBan(error) {
+
+        if (error) {
+          formOps.outputError(error, 500, res);
+        } else {
+
+          // style exception, too simple
+
+          postingOps.newPost(req, parameters, function postCreated(error, id) {
+            if (error) {
+              formOps.outputError(error, 500, res);
+            } else {
+              var redirectLink = '../' + parameters.boardUri;
+              redirectLink += '/res/' + parameters.threadId + '.html#' + id;
+              formOps.outputResponse('Post created', redirectLink, res);
+            }
+          });
+          // style exception, too simple
+
+        }
+
+      });
 
 }
 
