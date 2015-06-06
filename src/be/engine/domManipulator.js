@@ -232,8 +232,6 @@ function setBoardControlIdentifiers(document, boardData) {
 
 function setBoardOwnerControls(document, boardData) {
 
-  document.getElementById('ownerControlDiv').style.display = 'block';
-
   setBoardControlIdentifiers(document, boardData);
 
   var volunteersDiv = document.getElementById('volunteersDiv');
@@ -459,11 +457,11 @@ function setNewStaffComboBox(document, userRole) {
 
 function setBansLink(userRole, document) {
   var bansLink = document.getElementById('bansLink');
-  if (userRole < 3) {
-    bansLink.style.display = 'block';
-  } else {
-    bansLink.style.display = 'none';
 
+  var displayBans = userRole < miscOps.getMaxStaffRole();
+
+  if (!displayBans) {
+    bansLink.style.display = 'none';
   }
 }
 
@@ -476,12 +474,12 @@ exports.globalManagement = function(userRole, userLogin, staff, reports) {
 
     var newStaffForm = document.getElementById('addStaffForm');
 
-    newStaffForm.style.display = userRole < 2 ? 'block' : 'none';
-
     setBansLink(userRole, document);
 
     if (userRole < 2) {
       setNewStaffComboBox(document, userRole);
+    } else {
+      newStaffForm.style.display = 'none';
     }
 
     var userLabel = document.getElementById('userLabel');
@@ -587,9 +585,11 @@ exports.account = function(globalRole, login, boardList) {
 
     var gManagementLink = document.getElementById('globalManagementLink');
 
-    var isInStaff = globalRole <= miscOps.getMaxStaffRole();
+    var globalStaff = globalRole <= miscOps.getMaxStaffRole();
 
-    gManagementLink.style.display = isInStaff ? 'block' : 'none';
+    if (!globalStaff) {
+      gManagementLink.style.display = 'none';
+    }
 
     if (boardList && boardList.length) {
 
@@ -738,10 +738,6 @@ function setThreadLinks(document, boardData, threadData) {
 
 function setModdingInformation(document, boardUri, boardData, threadData,
     posts, callback) {
-
-  document.getElementById('inputBan').style.display = 'block';
-  document.getElementById('divExpiration').style.display = 'block';
-  document.getElementById('divControls').style.display = 'block';
 
   document.getElementById('controlBoardIdentifier').setAttribute('value',
       boardUri);
@@ -893,10 +889,14 @@ function addThread(document, thread, posts, boardUri, innerPage) {
       node.innerHTML = thread.name;
       break;
     case 'pinIndicator':
-      node.style.display = thread.pinned ? 'block' : 'none';
+      if (!thread.pinned) {
+        node.style.display = 'none';
+      }
       break;
     case 'lockIndicator':
-      node.style.display = thread.locked ? 'block' : 'none';
+      if (!thread.locked) {
+        node.style.display = 'none';
+      }
       break;
     case 'labelEmail':
       node.innerHTML = thread.email;

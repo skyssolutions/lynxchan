@@ -546,6 +546,12 @@ function getThreadToChangeLock(parameters, callback) {
           locked : parameters.lock ? true : false
         }
       }, function changedThreadLock(error) {
+        // signal rebuild of page
+        process.send({
+          board : thread.boardUri,
+          page : thread.page
+        });
+
         // signal rebuild of thread
         process.send({
           board : thread.boardUri,
