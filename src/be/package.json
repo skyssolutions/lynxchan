@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "devDependencies": {
     "mongodb": "latest",
-    "imagemagick": "latest",
+    "gm": "latest",
     "jsdom":"latest",
     "nodemailer":"latest",
     "multiparty":"latest",

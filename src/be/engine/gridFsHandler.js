@@ -112,6 +112,7 @@ exports.writeFile = function(path, destination, mime, meta, callback) {
 // end of transferring file to gridfs
 
 // start of saving upload
+// TODO transfer the logic to upload handler
 function transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb,
     extension, meta) {
 

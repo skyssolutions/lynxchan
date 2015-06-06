@@ -2,7 +2,9 @@
 
 // handles any action regarding user uploads
 var fs = require('fs');
-var imagemagick = require('imagemagick');
+var im = require('gm').subClass({
+  imageMagick : true
+});
 var gsHandler = require('./gridFsHandler');
 var db = require('../db');
 var threads = db.threads();
@@ -100,21 +102,16 @@ exports.saveUploads = function(boardUri, threadId, postId, files, callback,
 
     if (file.mime.indexOf('image/') !== -1) {
 
-      imagemagick.resize({
-        srcPath : file.pathInDisk,
-        dstPath : file.pathInDisk + '_t',
-        width : 256,
-        height : 256,
-      }, function(error, stdout, stderr) {
-        if (error) {
-          callback(error);
-        } else {
-
-          transferFilesToGS(boardUri, threadId, postId, files, file, callback,
-              index);
-
-        }
-      });
+      im(file.pathInDisk).resize(256, 256).noProfile().write(
+          file.pathInDisk + '_t',
+          function(error) {
+            if (error) {
+              callback(error);
+            } else {
+              transferFilesToGS(boardUri, threadId, postId, files, file,
+                  callback, index);
+            }
+          });
     } else {
       transferFilesToGS(boardUri, threadId, postId, files, file, callback,
           index);
