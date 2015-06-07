@@ -352,7 +352,10 @@ if (cluster.isMaster) {
         throw error;
       }
     } else {
-      db.scheduleExpiredCaptchaCheck(true);
+
+      if (!noDaemon) {
+        db.scheduleExpiredCaptchaCheck(true);
+      }
 
       if (createAccount) {
 

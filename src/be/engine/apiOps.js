@@ -9,6 +9,7 @@ var accountOps = require('./accountOps');
 var miscOps = require('./miscOps');
 var fs = require('fs');
 var crypto = require('crypto');
+var captchaOps = require('./captchaOps');
 var path = require('path');
 var tempDir = settings.tempDirectory || '/tmp';
 var uploadHandler = require('./uploadHandler');
@@ -143,7 +144,7 @@ function storeImages(parsedData, res, finalArray, toRemove, callback) {
 
 }
 
-exports.getAuthenticatedData = function(req, res, callback) {
+exports.getAuthenticatedData = function(req, res, callback, checkCaptcha) {
 
   exports.getAnonJsonData(req, res, function gotData(auth, parameters) {
 
@@ -158,11 +159,11 @@ exports.getAuthenticatedData = function(req, res, callback) {
 
     });
 
-  });
+  }, checkCaptcha);
 
 };
 
-exports.getAnonJsonData = function(req, res, callback) {
+exports.getAnonJsonData = function(req, res, callback, checkCaptcha) {
 
   var body = '';
 
@@ -182,7 +183,21 @@ exports.getAnonJsonData = function(req, res, callback) {
     try {
       var parsedData = JSON.parse(body);
 
-      storeImages(parsedData, res, [], [], callback);
+      if (checkCaptcha) {
+
+        // style exception, too simple
+        captchaOps.attemptCaptcha(parsedData.captchaId,
+            parsedData.parameters.captcha, function attemptedCaptcha(error) {
+              if (error) {
+                exports.outputError(error, res);
+              } else {
+                storeImages(parsedData, res, [], [], callback);
+              }
+            });
+        // style exception, too simple
+      } else {
+        storeImages(parsedData, res, [], [], callback);
+      }
 
     } catch (error) {
       exports.outputResponse(null, error.toString(), 'parseError', res);

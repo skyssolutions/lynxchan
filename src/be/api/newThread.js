@@ -26,6 +26,6 @@ exports.process = function(req, res) {
 
     createThread(req, res, parameters);
 
-  });
+  }, true);
 
 };

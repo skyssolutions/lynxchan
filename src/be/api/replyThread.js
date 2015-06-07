@@ -26,6 +26,6 @@ exports.process = function(req, res) {
 
     createPost(req, res, parameters);
 
-  });
+  }, true);
 
 };

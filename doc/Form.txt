@@ -20,7 +20,7 @@ Parameters:
     message*: message to be posted. 2048 characters.
     subject: subject of the thread. 128 characters.
     boardUri*: uri of the board. Will be included in the posting form at the generation stage.
-    password: password to be used for deletion.
+    password: password to be used for deletion. 8 characters.
     captcha: captcha input.
 
 ------------------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ Parameters:
     email: e-mail of the poster. 64 characters.
     message*: message to be posted. 2048 characters.
     subject: subject of the thread. 128 characters.
-    password: password to be used for deletion.
+    password: password to be used for deletion. 8 characters.
     boardUri*: uri of the board.
     threadId*: id of the thread. Will be included in the posting form at the generation stage.
     captcha: captcha input.

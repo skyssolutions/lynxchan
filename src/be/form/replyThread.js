@@ -43,11 +43,9 @@ exports.process = function(req, res) {
 
     // style exception, too simple
     captchaOps.attemptCaptcha(auth.captchaId, parameters.captcha,
-        function attemptedCaptcha(error, success) {
+        function attemptedCaptcha(error) {
           if (error) {
             formOps.outputError(error, 500, res);
-          } else if (!success) {
-            formOps.outputError('You failed the captcha', 500, res);
           } else {
             createPost(req, res, parameters);
           }

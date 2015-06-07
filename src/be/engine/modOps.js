@@ -119,16 +119,16 @@ exports.getClosedReports = function(userData, parameters, callback) {
 // end of reading of closed reports
 
 // start of closing reports
-function closeReport(userData, parameters, callback) {
+function closeReport(report, userData, callback) {
   reports.updateOne({
-    _id : new ObjectID(parameters.reportId)
+    _id : new ObjectID(report._id)
   }, {
     $set : {
       closedBy : userData.login,
       closing : new Date()
     }
   }, function closedReport(error) {
-    callback(error);
+    callback(error, report.global, report.boardUri);
   });
 }
 
@@ -160,7 +160,7 @@ exports.closeReport = function(userData, parameters, callback) {
         } else if (!exports.isInBoardStaff(userData, board)) {
           callback('You are not allowed to close reports for this board.');
         } else {
-          closeReport(userData, parameters, callback);
+          closeReport(report, userData, callback);
         }
 
       });
@@ -168,7 +168,7 @@ exports.closeReport = function(userData, parameters, callback) {
       // style exception, too simple
 
     } else {
-      closeReport(userData, parameters, callback);
+      closeReport(report, userData, callback);
     }
 
   });

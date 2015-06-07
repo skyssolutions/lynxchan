@@ -5,11 +5,13 @@ var modOps = require('../engine/modOps');
 
 function closeReport(userData, parameters, res) {
 
-  modOps.closeReport(userData, parameters, function reportClosed(error) {
+  modOps.closeReport(userData, parameters, function reportClosed(error, global,
+      board) {
     if (error) {
       formOps.outputError(error, res);
     } else {
-      formOps.outputResponse('Report closed', '/', res);
+      formOps.outputResponse('Report closed', global ? '/globalManagement.js'
+          : '/boardManagement.js?boardUri=' + board, res);
     }
   });
 

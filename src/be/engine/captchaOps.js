@@ -2,6 +2,8 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
+var settings = require('../boot').getGeneralSettings();
+var verbose = settings.verbose;
 var logger = require('../logger');
 var exec = require('child_process').exec;
 var im = require('gm').subClass({
@@ -294,6 +296,10 @@ exports.checkForCaptcha = function(req, callback) {
 
 exports.attemptCaptcha = function(id, input, callback) {
 
+  if (verbose) {
+    console.log('Attempting to solve captcha ' + id + ' with answer ' + input);
+  }
+
   captchas.findOneAndDelete({
     _id : new ObjectID(id),
     expiration : {
@@ -304,9 +310,11 @@ exports.attemptCaptcha = function(id, input, callback) {
     if (error) {
       callback(error);
     } else if (captcha.value && captcha.value.answer === input) {
-      callback(null, true);
-    } else {
       callback();
+    } else if (!captcha.value) {
+      callback('Expired captcha.');
+    } else {
+      callback('Incorrect captcha');
     }
 
   });
