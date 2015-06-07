@@ -21,6 +21,7 @@ Parameters:
     subject: subject of the thread. 128 characters.
     boardUri*: uri of the board. Will be included in the posting form at the generation stage.
     password: password to be used for deletion.
+    captcha: captcha input.
 
 ------------------------------------------------------------------------------------------
 
@@ -38,6 +39,7 @@ Parameters:
     password: password to be used for deletion.
     boardUri*: uri of the board.
     threadId*: id of the thread. Will be included in the posting form at the generation stage.
+    captcha: captcha input.
 
 ------------------------------------------------------------------------------------------
 
@@ -268,6 +270,14 @@ Parameters:
     lock: indicates if the thread must be locked. Any value sent will lock, if not sent, will unlock.
     pin: indicates if the thread must be pinned. Any value will pin, if not sent, will unpin.
     action: indicates the action to be taken. Valid values are 'lock' and 'pin'.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::23
+
+Name: captcha
+
+Description: returns a captcha image in png format.
 
 ------------------------------------------------------------------------------------------
 

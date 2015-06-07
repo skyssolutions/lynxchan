@@ -7,7 +7,7 @@
 // Controls the workers.
 
 var cluster = require('cluster');
-var db = require('./db');
+var db;
 var fs = require('fs');
 var generator;
 
@@ -337,6 +337,8 @@ try {
   return;
 }
 
+db = require('./db');
+
 if (cluster.isMaster) {
 
   db.init(function bootedDb(error) {
@@ -349,36 +351,40 @@ if (cluster.isMaster) {
       if (debug) {
         throw error;
       }
-    } else if (createAccount) {
-
-      // style exception, too simple
-      require('./engine/accountOps').registerUser({
-        login : informedLogin,
-        password : informedPassword
-      }, function createdUser(error) {
-
-        if (error) {
-
-          if (generalSettings.verbose) {
-            console.log(error);
-          }
-
-          if (debug) {
-            throw error;
-          }
-          checkForDefaultPages();
-
-        } else {
-          console.log('Account ' + informedLogin + ' created.');
-
-          checkForDefaultPages();
-        }
-
-      }, informedRole);
-      // style exception, too simple
-
     } else {
-      checkForDefaultPages();
+      db.scheduleExpiredCaptchaCheck(true);
+
+      if (createAccount) {
+
+        // style exception, too simple
+        require('./engine/accountOps').registerUser({
+          login : informedLogin,
+          password : informedPassword
+        }, function createdUser(error) {
+
+          if (error) {
+
+            if (generalSettings.verbose) {
+              console.log(error);
+            }
+
+            if (debug) {
+              throw error;
+            }
+            checkForDefaultPages();
+
+          } else {
+            console.log('Account ' + informedLogin + ' created.');
+
+            checkForDefaultPages();
+          }
+
+        }, informedRole);
+        // style exception, too simple
+
+      } else {
+        checkForDefaultPages();
+      }
     }
 
   });

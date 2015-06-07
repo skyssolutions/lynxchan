@@ -3,11 +3,18 @@
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
 
+var gridFsHandler;
+var boot = require('./boot');
+var settings = boot.getGeneralSettings();
+var verbose = settings.verbose;
+var debug = boot.debug();
+var captchaExpiration = settings.captchaExpiration || 1;
+
 var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 7;
+var maxIndexesSet = 8;
 
 var cachedPosts;
 var cachedReports;
@@ -15,10 +22,89 @@ var cachedThreads;
 var cachedBoards;
 var cachedBans;
 var cachedUsers;
+var cachedCaptchas;
 var cachedFiles;
 var cachedRecoveryRequests;
 
 var loading;
+
+exports.scheduleExpiredCaptchaCheck = function(immediate) {
+  if (immediate) {
+    gridFsHandler = require('./engine/gridFsHandler');
+    checkExpiredCaptchas();
+  } else {
+
+    setTimeout(function() {
+
+      if (verbose) {
+        console.log('Running expiration check');
+      }
+
+      checkExpiredCaptchas();
+    }, captchaExpiration * 1000 * 60);
+
+  }
+};
+
+function checkExpiredCaptchas() {
+  cachedFiles.aggregate([ {
+    $match : {
+      'metadata.type' : 'captcha',
+      'metadata.expiration' : {
+        $lte : new Date()
+      }
+    }
+  }, {
+    $group : {
+      _id : 0,
+      files : {
+        $push : '$filename'
+      }
+    }
+  } ], function gotExpiredFiles(error, results) {
+    if (error) {
+
+      if (verbose) {
+        console.log(error);
+      }
+
+      if (debug) {
+        throw error;
+      }
+
+    } else if (results.length) {
+
+      var expiredFiles = results[0].files;
+
+      if (verbose) {
+        var message = 'deleting expired captchas: ';
+        message += JSON.stringify(expiredFiles);
+        console.log(message);
+      }
+
+      // style exception, too simple
+      gridFsHandler.removeFiles(expiredFiles, function deletedFiles(error) {
+        if (error) {
+          if (verbose) {
+            console.log(error);
+          }
+
+          if (debug) {
+            throw error;
+          }
+        } else {
+          exports.scheduleExpiredCaptchaCheck();
+        }
+      });
+
+      // style exception, too simple
+
+    } else {
+      exports.scheduleExpiredCaptchaCheck();
+    }
+  });
+
+}
 
 function indexSet(callback) {
 
@@ -26,8 +112,29 @@ function indexSet(callback) {
 
   if (indexesSet === maxIndexesSet) {
     loading = false;
-    callback(null);
+    callback();
   }
+}
+
+function initCaptchas(callback) {
+
+  cachedCaptchas = cachedDb.collection('captchas');
+
+  cachedCaptchas.ensureIndex({
+    expiration : 1
+  }, {
+    expireAfterSeconds : 0
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
 }
 
 function initBans(callback) {
@@ -215,6 +322,10 @@ exports.threads = function() {
   return cachedThreads;
 };
 
+exports.captchas = function() {
+  return cachedCaptchas;
+};
+
 exports.reports = function() {
   return cachedReports;
 };
@@ -234,6 +345,8 @@ function checkCollections(db, callback) {
   initReports(callback);
 
   initBans(callback);
+
+  initCaptchas(callback);
 
   initRecoveryRequests(callback);
 

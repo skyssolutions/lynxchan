@@ -88,12 +88,21 @@ reports: stores reports of threads and posts.
 ----------------------------------------------------------------------------------------
 
 bans: stores bans.
-    _id:**: unique id of the ban.
+    _id**: unique id of the ban.
     appliedBy*: login of the user that applied the ban.
     expiration(Date): date of when the ban will expire.
     reason: reason of the ban. 256 characters.
     ip: banned ip.
     boardUri*: board of the ban. If not set, the ban is global.
+
+----------------------------------------------------------------------------------------
+
+captchas: stores captchas.
+	_id**: unique id of the captcha.
+	answer: answer to the captcha.
+	expiration(Date): date of when the captcha will expire.
+
+----------------------------------------------------------------------------------------
 
 *: duplicated data, foreign key.
 **: unique key

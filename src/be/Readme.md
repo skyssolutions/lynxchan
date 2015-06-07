@@ -73,6 +73,8 @@ Settings files that goes into the settings directory:
 * `maxThreadCount`(Number): maximum amount of threads allowed per board.
 * `tempDirectory`: path for temporary files. Defaults to '/tmp'.
 * `emailSender`: e-mail to be used as sender on automated e-mails.
+* `captchaExpiration`: expiration in minutes of captchas. Defaults to 1 minute.
+* `captchaFonts`(Array): array of absolute paths to font files in the system to be used in the captcha. Optional.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.
@@ -88,6 +90,7 @@ Settings files must contain a json object where each key defined here will have 
 # GridFS
 Metadata of files on gridfs will have the following values:
 * `boardUri`: board to which the file belongs to. If undefined, file is a default site file.
+* `expiration`: time of when the file is expired and no longer valid.
 * `threadId`(Number): id of the thread the file belongs to.
 * `postId`(Number): id of the post the file belongs to.
 * `status`(Number): http status to be used when outputting this page. Defaults to 200 when outputting.
@@ -95,4 +98,5 @@ Metadata of files on gridfs will have the following values:
   * `board`
   * `thread` 
   * `media`
+  * `captcha` 
 

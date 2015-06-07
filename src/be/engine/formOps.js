@@ -17,7 +17,7 @@ var jsdom = require('jsdom').jsdom;
 var domManipulator = require('./domManipulator');
 var uploadHandler = require('./uploadHandler');
 
-function getCookies(req) {
+exports.getCookies = function(req) {
   var parsedCookies = {};
 
   if (req.headers && req.headers.cookie) {
@@ -36,7 +36,7 @@ function getCookies(req) {
   }
 
   return parsedCookies;
-}
+};
 
 function transferFileInformation(filesToDelete, files, fields) {
 
@@ -120,8 +120,8 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback) {
     });
   } else {
 
-    accountOps.validate(getCookies(req), function validated(error, newAuth,
-        userData) {
+    accountOps.validate(exports.getCookies(req), function validated(error,
+        newAuth, userData) {
 
       if (error) {
         redirectToLogin(res);
@@ -141,7 +141,8 @@ exports.getPostData = function(req, res, callback) {
       if (error) {
         throw error;
       } else {
-        processParsedRequest(res, fields, files, callback, getCookies(req));
+        processParsedRequest(res, fields, files, callback, exports
+            .getCookies(req));
 
       }
 

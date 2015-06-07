@@ -80,7 +80,7 @@ exports.writeFile = function(path, destination, mime, meta, callback) {
 
   if (verbose) {
     var message = 'Writing ' + mime + ' file on gridfs under \'';
-    message += destination + '\'';
+    message += destination + '\' from ' + path;
     console.log(message);
   }
 
@@ -205,10 +205,26 @@ exports.removeFiles = function(name, callback) {
   });
 };
 
-function streamFile(stats, callback, res) {
+function streamFile(stats, callback, cookies, res) {
 
   var header = miscOps.corsHeader(stats.contentType);
   header.push([ 'last-modified', stats.uploadDate.toString() ]);
+
+  if (cookies) {
+
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = cookies[i];
+
+      var toPush = [ 'Set-Cookie', cookie.field + '=' + cookie.value ];
+
+      if (cookie.expiration) {
+        toPush[1] += '; expires=' + cookie.expiration.toString();
+      }
+
+      header.push(toPush);
+
+    }
+  }
 
   res.writeHead(stats.metadata.status || 200, header);
 
@@ -235,7 +251,7 @@ function shouldOutput304(lastSeen, filestats) {
 
 // retry means it has already failed to get a page and now is trying to get the
 // 404 page. It prevents infinite recursion
-exports.outputFile = function(file, req, res, callback, retry) {
+exports.outputFile = function(file, req, res, callback, cookies, retry) {
 
   if (verbose) {
     console.log('Outputting \'' + file + '\' from gridfs');
@@ -261,7 +277,7 @@ exports.outputFile = function(file, req, res, callback, retry) {
           code : 'ENOENT'
         });
       } else {
-        exports.outputFile('/404.html', req, res, callback, true);
+        exports.outputFile('/404.html', req, res, callback, cookies, true);
       }
 
     } else if (shouldOutput304(lastSeen, fileStats)) {
@@ -272,7 +288,7 @@ exports.outputFile = function(file, req, res, callback, retry) {
       res.writeHead(304);
       res.end();
     } else {
-      streamFile(fileStats, callback, res);
+      streamFile(fileStats, callback, cookies, res);
     }
   });
 

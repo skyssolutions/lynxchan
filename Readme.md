@@ -1,15 +1,14 @@
 # Status:
-Pre-alpha: 3 checkpoints to alpha.
-Alpha: 14 checkpoints to beta.
-Beta: 7 checkpoints to release.
+* Pre-alpha: 3 checkpoints to alpha.
+* Alpha: 14 checkpoints to beta.
+* Beta: 7 checkpoints to release.
 
 # About
 **LynxChan** is a chan engine designed with the following goals in mind:
 1. Support users not using javascript for the basic functions.
 2. Provide every functionality through a json based RPC.
-3. Pre-generate pages to reduce load.
-4. Support the most amount of users with the least hardware power.
-5. Having a modular front-end so people can easily create and use different templates.
+3. Support the most amount of users with the least hardware power.
+4. Having a modular front-end so people can easily create and use different templates.
 
 # Required software
 * [Io.js](http://iojs.org)
