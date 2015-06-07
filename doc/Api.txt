@@ -219,6 +219,43 @@ Parameters:
     
 ------------------------------------------------------------------------------------------
 
+PAG_ID::17
+
+Name: closeReport
+
+Description: closes a report. Requires authentication.
+
+Parameters:
+    reportId: id of the report to be closed.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::18
+
+Name: setThreadLock
+
+Description: turns a thread lock on or off.
+
+Parameters:
+    boardUri: board that contains the thread.
+    threadId: id of the thread.
+    lock(Boolean): indicates if the thread must be locked.
+    
+------------------------------------------------------------------------------------------
+
+PAG_ID::19
+
+Name: setThreadPin
+
+Description: turns a thread pin on or off.
+
+Parameters:
+    boardUri: board that contains the thread.
+    threadId: id of the thread.
+    pin(Boolean): indicates if the thread must be pinned.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters
 **: exclusive funcionality to the json api.
 

@@ -41,6 +41,14 @@ var distortLimiter = 30;
 var minDistorts = 3;
 var maxDistorts = 5;
 
+// used to control how many circles are draw on the background
+var minCircles = 10;
+var maxCircles = 15;
+
+// used to control how large the circles can be
+var minCircleSize = 25;
+var maxCircleSize = 50;
+
 var minLines = 1;
 var maxLines = 3;
 var lineWidth = 2;
@@ -222,7 +230,24 @@ function generateImage(text, id, callback) {
 
   var path = tempDirectory + '/' + id + '.png';
 
-  var image = im(width, height, bgColor).fill(getRandomColor());
+  var image = im(width, height, bgColor).stroke('black').fill('transparent');
+
+  for (var i = 0; i < getRandomInt(minCircles, maxCircles); i++) {
+
+    var start = {
+      x : getRandomInt(0, width),
+      y : getRandomInt(0, height)
+    };
+
+    var size = getRandomInt(minCircleSize, maxCircleSize);
+
+    var end = {
+      x : getRandomInt(start.x, start.x + size),
+      y : getRandomInt(start.y, start.y + size),
+    };
+
+    image.drawCircle(start.x, start.y, end.x, end.y);
+  }
 
   if (fonts.length) {
     var font = fonts[getRandomInt(0, fonts.length - 1)];
@@ -230,7 +255,8 @@ function generateImage(text, id, callback) {
 
   }
 
-  image.fontSize(fontSize).drawText(0, 0, text, 'center');
+  image.stroke('transparent').fill(getRandomColor()).fontSize(fontSize)
+      .drawText(0, 0, text, 'center');
 
   if (noise) {
     image.noise(noise);
