@@ -9,8 +9,10 @@
 var gridFs = require('./gridFsHandler');
 var serializer = require('jsdom').serializeDocument;
 var miscOps = require('./miscOps');
-var verbose = require('../boot').getGeneralSettings().verbose;
+var settings = require('../boot').getGeneralSettings();
+var verbose = settings.verbose;
 var jsdom = require('jsdom').jsdom;
+var siteTitle = settings.siteTitle || 'Undefined site title';
 var boot = require('../boot');
 var debug = boot.debug();
 var fs = require('fs');
@@ -118,6 +120,8 @@ exports.bans = function(bans) {
 
     var document = jsdom(bansPageTemplate);
 
+    document.title = 'Bans';
+
     var bansDiv = document.getElementById('bansDiv');
 
     for (var i = 0; i < bans.length; i++) {
@@ -182,6 +186,8 @@ exports.closedReports = function(reports, callback) {
   try {
 
     var document = jsdom(closedReportsPageTemplate);
+
+    document.title = 'Closed reports';
 
     var reportsDiv = document.getElementById('reportDiv');
 
@@ -295,20 +301,26 @@ function setReportList(document, reports) {
 
 }
 
+function setBoardManagementLinks(document, boardData) {
+  var closedReportsLink = document.getElementById('closedReportsLink');
+
+  var closedReportsUrl = '/closedReports.js?boardUri=' + boardData.boardUri;
+  closedReportsLink.setAttribute('href', closedReportsUrl);
+
+  var bansUrl = '/bans.js?boardUri=' + boardData.boardUri;
+
+  document.getElementById('bansLink').href = bansUrl;
+}
+
 exports.boardManagement = function(login, boardData, reports) {
 
   try {
 
     var document = jsdom(bManagementTemplate);
 
-    var closedReportsLink = document.getElementById('closedReportsLink');
+    document.title = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
 
-    var closedReportsUrl = '/closedReports.js?boardUri=' + boardData.boardUri;
-    closedReportsLink.setAttribute('href', closedReportsUrl);
-
-    var bansUrl = '/bans.js?boardUri=' + boardData.boardUri;
-
-    document.getElementById('bansLink').href = bansUrl;
+    setBoardManagementLinks(document, boardData);
 
     var boardLabel = document.getElementById('boardLabel');
 
@@ -432,6 +444,8 @@ exports.globalManagement = function(userRole, userLogin, staff, reports) {
   try {
     var document = jsdom(gManagementTemplate);
 
+    document.title = 'Global management';
+
     setReportList(document, reports);
 
     var newStaffForm = document.getElementById('addStaffForm');
@@ -541,6 +555,8 @@ exports.account = function(globalRole, login, boardList) {
 
     var document = jsdom(accountTemplate);
 
+    document.title = 'Welcome, ' + login;
+
     var loginLabel = document.getElementById('labelLogin');
 
     loginLabel.innerHTML = login;
@@ -578,6 +594,8 @@ exports.login = function(callback) {
   try {
     var document = jsdom(loginTemplate);
 
+    document.title = 'Login, register or reset passsword';
+
     gridFs.writeData(serializer(document), '/login.html', 'text/html', {},
         callback);
 
@@ -600,6 +618,8 @@ exports.notFound = function(callback) {
 
   var document = jsdom(notFoundTemplate);
 
+  document.title = 'File not found';
+
   gridFs.writeData(serializer(document), '/404.html', 'text/html', {
     status : 404
   }, callback);
@@ -610,6 +630,8 @@ exports.message = function(message, link) {
   try {
 
     var document = jsdom(messageTemplate);
+
+    document.title = message;
 
     var messageLabel = document.getElementById('labelMessage');
 
@@ -650,6 +672,8 @@ exports.frontPage = function(boards, callback) {
   try {
 
     var document = jsdom(frontPageTemplate);
+
+    document.title = siteTitle;
 
     var boardsDiv = document.getElementById('divBoards');
 
@@ -716,11 +740,46 @@ function hideModElements(document) {
   document.getElementById('divControls').style.display = 'none';
 }
 
+function setThreadTitle(document, boardUri, threadData) {
+  var title = '/' + boardUri + '/ - ';
+
+  if (threadData.subject) {
+    title += threadData.subject;
+  } else {
+    title += threadData.message.substring(0, 256);
+  }
+
+  document.title = title;
+}
+
+function setModElements(modding, document, boardUri, boardData, threadData,
+    posts, callback) {
+
+  if (modding) {
+
+    setModdingInformation(document, boardUri, boardData, threadData, posts,
+        callback);
+
+  } else {
+    hideModElements(document);
+    var ownName = 'res/' + threadData.threadId + '.html';
+
+    gridFs.writeData(serializer(document), '/' + boardUri + '/' + ownName,
+        'text/html', {
+          boardUri : boardUri,
+          type : 'thread',
+          threadId : threadData.threadId
+        }, callback);
+  }
+}
+
 exports.thread = function(boardUri, boardData, threadData, posts, callback,
     modding) {
 
   try {
     var document = jsdom(threadTemplate);
+
+    setThreadTitle(document, boardUri, threadData);
 
     setThreadLinks(document, boardData, threadData);
 
@@ -737,23 +796,8 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
 
     addThread(document, threadData, posts, boardUri, true);
 
-    var ownName = 'res/' + threadData.threadId + '.html';
-
-    if (modding) {
-
-      setModdingInformation(document, boardUri, boardData, threadData, posts,
-          callback);
-
-    } else {
-      hideModElements(document);
-
-      gridFs.writeData(serializer(document), '/' + boardUri + '/' + ownName,
-          'text/html', {
-            boardUri : boardUri,
-            type : 'thread',
-            threadId : threadData.threadId
-          }, callback);
-    }
+    setModElements(modding, document, boardUri, boardData, threadData, posts,
+        callback);
 
   } catch (error) {
     callback(error);
@@ -784,6 +828,28 @@ function addFiles(document, node, files) {
 
 }
 
+function setPostInnerElements(document, boardUri, threadId, post, postCell) {
+
+  postCell.getElementsByClassName('labelName')[0].innerHTML = post.name;
+  postCell.getElementsByClassName('labelEmail')[0].innerHTML = post.email;
+  postCell.getElementsByClassName('labelSubject')[0].innerHTML = post.subject;
+  addFiles(document, postCell.getElementsByClassName('panelUploads')[0],
+      post.files);
+
+  var labelCreated = postCell.getElementsByClassName('labelCreated')[0];
+  labelCreated.innerHTML = post.creation;
+
+  postCell.getElementsByClassName('divMessage')[0].innerHTML = post.message;
+
+  var link = postCell.getElementsByClassName('linkSelf')[0];
+  link.innerHTML = post.postId;
+  link.href = '/' + boardUri + '/res/' + threadId + '.html#' + post.postI;
+
+  var checkboxName = boardUri + '-' + threadId + '-' + post.postId;
+  postCell.getElementsByClassName('deletionCheckBox')[0].setAttribute('name',
+      checkboxName);
+}
+
 function addPosts(document, posts, boardUri, threadId) {
 
   var divThreads = document.getElementById('divPostings');
@@ -795,41 +861,9 @@ function addPosts(document, posts, boardUri, threadId) {
 
     var post = posts[i];
 
-    for (var j = 0; j < postCell.childNodes.length; j++) {
-      var node = postCell.childNodes[j];
+    postCell.id = post.postId;
 
-      switch (node.id) {
-      case 'labelName':
-        node.innerHTML = post.name;
-        break;
-      case 'labelEmail':
-        node.innerHTML = post.email;
-        break;
-      case 'labelSubject':
-        node.innerHTML = post.subject;
-        break;
-      case 'panelUploads':
-        addFiles(document, node, post.files);
-        break;
-      case 'labelCreated':
-        node.innerHTML = post.creation;
-        break;
-      case 'divMessage':
-        node.innerHTML = post.message;
-        break;
-      case 'linkSelf':
-        postCell.id = post.postId;
-        node.innerHTML = post.postId;
-        var link = '/' + boardUri + '/res/' + threadId + '.html#';
-        node.href = link + post.postId;
-        break;
-
-      case 'deletionCheckBox':
-        var name = boardUri + '-' + threadId + '-' + post.postId;
-        node.setAttribute('name', name);
-        break;
-      }
-    }
+    setPostInnerElements(document, boardUri, threadId, post, postCell);
 
     divThreads.appendChild(postCell);
 
@@ -837,64 +871,63 @@ function addPosts(document, posts, boardUri, threadId) {
 
 }
 
+function setThreadComplexElements(boardUri, thread, threadCell, innerPage) {
+
+  if (!thread.pinned) {
+    var pinIndicator = threadCell.getElementsByClassName('pinIndicator')[0];
+    pinIndicator.style.display = 'none';
+  }
+
+  if (!thread.locked) {
+    var lockIndicator = threadCell.getElementsByClassName('lockIndicator')[0];
+    lockIndicator.style.display = 'none';
+  }
+
+  var linkReply = threadCell.getElementsByClassName('linkReply')[0];
+  if (innerPage) {
+    linkReply.style.display = 'none';
+  } else {
+    linkReply.href = 'res/' + thread.threadId + '.html';
+  }
+
+  threadCell.getElementsByClassName('deletionCheckBox')[0].setAttribute('name',
+      boardUri + '-' + thread.threadId);
+
+  var linkSelf = threadCell.getElementsByClassName('linkSelf')[0];
+  linkSelf.innerHTML = thread.threadId;
+
+  var link = '/' + boardUri + '/res/' + thread.threadId + '.html#';
+  linkSelf.href = link + thread.threadId;
+
+}
+
+function setThreadSimpleElements(threadCell, thread) {
+  threadCell.getElementsByClassName('labelName')[0].innerHTML = thread.name;
+  threadCell.getElementsByClassName('labelEmail')[0].innerHTML = thread.email;
+
+  var subjectLabel = threadCell.getElementsByClassName('labelSubject')[0];
+  subjectLabel.innerHTML = thread.subject;
+
+  var labelCreation = threadCell.getElementsByClassName('labelCreated')[0];
+  labelCreation.innerHTML = thread.creation;
+
+  var divMessage = threadCell.getElementsByClassName('divMessage')[0];
+  divMessage.innerHTML = thread.message;
+}
+
 function addThread(document, thread, posts, boardUri, innerPage) {
 
   var threadCell = document.createElement('div');
   threadCell.innerHTML = opTemplate;
   threadCell.setAttribute('class', 'opCell');
+  threadCell.id = thread.threadId;
 
-  for (var i = 0; i < threadCell.childNodes.length; i++) {
-    var node = threadCell.childNodes[i];
+  setThreadComplexElements(boardUri, thread, threadCell, innerPage);
 
-    switch (node.id) {
-    case 'labelName':
-      node.innerHTML = thread.name;
-      break;
-    case 'pinIndicator':
-      if (!thread.pinned) {
-        node.style.display = 'none';
-      }
-      break;
-    case 'lockIndicator':
-      if (!thread.locked) {
-        node.style.display = 'none';
-      }
-      break;
-    case 'labelEmail':
-      node.innerHTML = thread.email;
-      break;
-    case 'labelSubject':
-      node.innerHTML = thread.subject;
-      break;
-    case 'labelCreated':
-      node.innerHTML = thread.creation;
-      break;
-    case 'divMessage':
-      node.innerHTML = thread.message;
-      break;
-    case 'panelUploads':
-      addFiles(document, node, thread.files);
-      break;
-    case 'linkSelf':
-      node.innerHTML = thread.threadId;
-      var link = '/' + boardUri + '/res/' + thread.threadId + '.html#';
-      node.href = link + thread.threadId;
-      threadCell.id = thread.threadId;
-      break;
-    case 'linkReply':
-      if (innerPage) {
-        node.style.display = 'none';
-      } else {
-        node.href = 'res/' + thread.threadId + '.html';
-      }
-      break;
+  setThreadSimpleElements(threadCell, thread);
 
-    case 'deletionCheckBox':
-      node.setAttribute('name', boardUri + '-' + thread.threadId);
-      break;
-
-    }
-  }
+  addFiles(document, threadCell.getElementsByClassName('panelUploads')[0],
+      thread.files);
 
   document.getElementById('divPostings').appendChild(threadCell);
 
@@ -952,6 +985,8 @@ exports.page = function(board, page, threads, pageCount, boardData, preview,
   try {
 
     var document = jsdom(boardTemplate);
+
+    document.title = '/' + board + '/' + ' - ' + boardData.boardName;
 
     var linkManagement = document.getElementById('linkManagement');
     linkManagement.href = '/boardManagement.js?boardUri=' + board;

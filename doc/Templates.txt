@@ -105,8 +105,7 @@ Required tags:
 head
 ------------------------------------------------------------------------------------------
 
-opCell:
-Class: opCell
+opCell*:
 
 Elements:
 panelUploads:
@@ -155,8 +154,7 @@ pinIndicator:
 
 ------------------------------------------------------------------------------------------
 
-postCell
-Class: postCell
+postCell*:
 
 Elements:
 panelUploads:

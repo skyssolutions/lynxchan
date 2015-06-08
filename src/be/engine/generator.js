@@ -422,22 +422,34 @@ exports.page = function(boardUri, page, callback, boardData) {
 
   var toSkip = (page - 1) * pageSize;
 
-  threads.find({
-    boardUri : boardUri
-  }, threadProjection).sort({
-    lastBump : -1
-  }).sort({
-    pinned : -1
-  }).skip(toSkip).limit(pageSize).toArray(
-      function(error, threadsArray) {
-        if (error) {
-          callback(error);
-        } else {
+  threads.aggregate([ {
+    $match : {
+      boardUri : boardUri
+    }
+  }, {
+    $project : threadProjection
+  }, {
+    $sort : {
+      lastBump : -1
+    }
+  }, {
+    $sort : {
+      pinned : -1
+    }
+  }, {
+    $skip : toSkip
+  }, {
+    $limit : pageSize
+  } ], function gotThreads(error, threadsArray) {
+    if (error) {
+      callback(error);
+    } else {
 
-          updateThreadsPage(boardUri, page, threadsArray, pageCount, boardData,
-              callback);
-        }
-      });
+      updateThreadsPage(boardUri, page, threadsArray, pageCount, boardData,
+          callback);
+    }
+
+  });
 
 };
 

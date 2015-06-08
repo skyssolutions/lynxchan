@@ -36,10 +36,6 @@ exports.scheduleExpiredCaptchaCheck = function(immediate) {
 
     setTimeout(function() {
 
-      if (verbose) {
-        console.log('Running expiration check');
-      }
-
       checkExpiredCaptchas();
     }, captchaExpiration * 1000 * 60);
 
