@@ -69,6 +69,8 @@ exports.process = function(req, res) {
       }
     }
 
+    parameters.postings = parameters.postings || [];
+
     if (!parameters.password) {
 
       // style exception,too simple

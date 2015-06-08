@@ -212,10 +212,10 @@ Description: reports posts or threads.
 Parameters: 
     reason: reason of the report. 256 characters.    
     global(Boolean): indicates if the reports are global.
-    postings(Array): array of content to be deleted. Contains objects with the following fields:
+    postings(Array): array of content to be reported. Contains objects with the following fields:
         board: board to which the content belongs.
-        thread: thread to be deleted or that contains the post to be reported.
-        post: post to be deleted.
+        thread: thread to be reported or that contains the post to be reported.
+        post: post to be reported.
     
 ------------------------------------------------------------------------------------------
 
@@ -253,6 +253,34 @@ Parameters:
     boardUri: board that contains the thread.
     threadId: id of the thread.
     pin(Boolean): indicates if the thread must be pinned.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::20
+
+Name: banUsers
+
+Description: ban the ips of the selected posts and/or threads.
+
+Parameters:
+    reason: reason of the report. 256 characters.  
+    expiration: date able to be converted to a new Date of when the bans should expire.
+    global(Boolean): indicates if the bans are global.
+    postings(Array): array of content to be banned. Contains objects with the following fields:
+        board: board to which the content belongs.
+        thread: thread to be banned or that contains the post to be banned.
+        post: post to be banned.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::21
+
+Name: liftBan
+
+Description: removes a ban. Requires authentication.
+
+Parameters:
+    banId: id of the ban to be lifted.
 
 ------------------------------------------------------------------------------------------
 

@@ -27,9 +27,6 @@ function outputModData(boardData, thread, posts, res) {
 
 function getPostingData(boardData, parameters, res) {
 
-  console.log(JSON.stringify(boardData));
-  console.log(JSON.stringify(parameters));
-
   threads.findOne({
     threadId : +parameters.threadId,
     boardUri : boardData.boardUri

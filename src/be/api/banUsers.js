@@ -4,18 +4,18 @@ var apiOps = require('../engine/apiOps');
 var miscOps = require('../engine/miscOps');
 var modOps = require('../engine/modOps');
 
-var reportFields = [ {
+var banFields = [ {
   field : 'reason',
   length : 256
 } ];
 
-function reportContent(req, parameters, res) {
+function reportContent(userData, parameters, res) {
 
-  miscOps.sanitizeStrings(parameters, reportFields);
+  miscOps.sanitizeStrings(parameters, banFields);
 
   parameters.global = parameters.global ? true : false;
 
-  modOps.report(req, parameters.postings || [], parameters,
+  modOps.ban(userData, parameters.postings || [], parameters,
       function createdReports(error) {
         if (error) {
           apiOps.outputError(error, res);
@@ -28,9 +28,10 @@ function reportContent(req, parameters, res) {
 
 exports.process = function(req, res) {
 
-  apiOps.getAnonJsonData(req, res, function gotData(auth, parameters) {
+  apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
+      parameters) {
 
-    reportContent(req, parameters, res);
+    reportContent(userData, parameters, res);
 
   });
 

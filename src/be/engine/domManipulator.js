@@ -95,6 +95,23 @@ exports.loadTemplates = function() {
 
 };
 
+function setBanCell(ban, cell) {
+
+  cell.getElementsByClassName('reasonLabel')[0].innerHTML = ban.reason;
+
+  var expirationLabel = cell.getElementsByClassName('expirationLabel')[0];
+  expirationLabel.innerHTML = ban.expiration;
+
+  var appliedByLabel = cell.getElementsByClassName('appliedByLabel')[0];
+  appliedByLabel.innerHTML = ban.appliedBy;
+
+  var boardLabel = cell.getElementsByClassName('boardLabel')[0];
+  boardLabel.innerHTML = ban.boardUri ? ban.boardUri : 'All boards';
+
+  cell.getElementsByClassName('idIdentifier')[0].setAttribute('value', ban._id);
+
+}
+
 exports.bans = function(bans) {
 
   try {
@@ -111,29 +128,7 @@ exports.bans = function(bans) {
 
       setBoilerPlate(cell, '/liftBan.js', 'banCell');
 
-      for (var j = 0; j < cell.childNodes.length; j++) {
-        var node = cell.childNodes[j];
-
-        switch (node.id) {
-        case 'reasonLabel':
-          node.innerHTML = ban.reason;
-          break;
-        case 'expirationLabel':
-          node.innerHTML = ban.expiration;
-          break;
-        case 'appliedByLabel':
-          node.innerHTML = ban.appliedBy;
-          break;
-        case 'boardLabel':
-          node.innerHTML = ban.boardUri ? ban.boardUri : 'all boards';
-          break;
-        case 'idIdentifier':
-          node.setAttribute('value', ban._id);
-          break;
-
-        }
-      }
-
+      setBanCell(ban, cell);
       bansDiv.appendChild(cell);
     }
 
@@ -167,6 +162,22 @@ function getReportLink(report) {
   return link;
 }
 
+function setClosedReportCell(cell, report) {
+  if (report.reason) {
+    var reason = cell.getElementsByClassName('reasonLabel')[0];
+    reason.innerHTML = report.reason;
+  }
+
+  var reportLink = cell.getElementsByClassName('link')[0];
+  reportLink.setAttribute('href', getReportLink(report));
+
+  var closedBy = cell.getElementsByClassName('closedByLabel')[0];
+  closedBy.innerHTML = report.closedBy;
+
+  var closedDate = cell.getElementsByClassName('closedDateLabel')[0];
+  closedDate.innerHTML = report.closing;
+}
+
 exports.closedReports = function(reports, callback) {
   try {
 
@@ -180,25 +191,9 @@ exports.closedReports = function(reports, callback) {
       var cell = document.createElement('div');
 
       cell.innerHTML = closedReportCellTemplate;
+      cell.setAttribute('class', 'closedReportCell');
 
-      for (var j = 0; j < cell.childNodes.length; j++) {
-        var node = cell.childNodes[j];
-
-        switch (node.id) {
-        case 'reasonLabel':
-          node.innerHTML = report.reason;
-          break;
-        case 'link':
-          node.setAttribute('href', getReportLink(report));
-          break;
-        case 'closedByLabel':
-          node.innerHTML = report.closedBy;
-          break;
-        case 'closedDateLabel':
-          node.innerHTML = report.closing;
-          break;
-        }
-      }
+      setClosedReportCell(cell, report);
 
       reportsDiv.appendChild(cell);
 
@@ -245,22 +240,13 @@ function setBoardOwnerControls(document, boardData) {
 
     setBoilerPlate(cell, '/setVolunteer.js', 'volunteerCell');
 
-    for (var j = 0; j < cell.childNodes.length; j++) {
-      var node = cell.childNodes[j];
+    cell.getElementsByClassName('userIdentifier')[0].setAttribute('value',
+        volunteers[i]);
 
-      switch (node.id) {
-      case 'userIdentifier':
-        node.setAttribute('value', volunteers[i]);
-        break;
-      case 'userLabel':
-        node.innerHTML = volunteers[i];
-        break;
-      case 'boardIdentifier':
-        node.setAttribute('value', boardData.boardUri);
-        break;
-      }
+    cell.getElementsByClassName('userLabel')[0].innerHTML = volunteers[i];
 
-    }
+    cell.getElementsByClassName('boardIdentifier')[0].setAttribute('value',
+        boardData.boardUri);
 
     volunteersDiv.appendChild(cell);
 
@@ -273,6 +259,19 @@ function setBoilerPlate(cell, action, cssClass) {
   cell.enctype = 'multipart/form-data';
   cell.action = action;
   cell.setAttribute('class', cssClass);
+}
+
+function setReportCell(cell, report) {
+  if (report.reason) {
+    var reason = cell.getElementsByClassName('reasonLabel')[0];
+    reason.innerHTML = report.reason;
+  }
+
+  var identifier = cell.getElementsByClassName('idIdentifier')[0];
+  identifier.setAttribute('value', report._id);
+
+  var reportLink = cell.getElementsByClassName('link')[0];
+  reportLink.setAttribute('href', getReportLink(report));
 }
 
 function setReportList(document, reports) {
@@ -288,33 +287,7 @@ function setReportList(document, reports) {
 
     setBoilerPlate(cell, '/closeReport.js', 'reportCell');
 
-    for (var j = 0; j < cell.childNodes.length; j++) {
-      var node = cell.childNodes[j];
-
-      switch (node.id) {
-      case 'reasonLabel':
-        if (report.reason) {
-          node.innerHTML = report.reason;
-        }
-        break;
-      case 'idIdentifier':
-        node.setAttribute('value', report._id);
-        break;
-      case 'link':
-
-        var link = '/' + report.boardUri + '/res/' + report.threadId + '.html#';
-
-        if (report.postId) {
-          link += report.postId;
-        } else {
-          link += report.threadId;
-        }
-
-        node.setAttribute('href', link);
-
-        break;
-      }
-    }
+    setReportCell(cell, report);
 
     reportDiv.appendChild(cell);
 
@@ -398,24 +371,13 @@ function fillStaffDiv(document, possibleRoles, staff) {
 
     setBoilerPlate(cell, '/setGlobalRole.js', 'staffCell');
 
-    for (var j = 0; j < cell.childNodes.length; j++) {
+    cell.getElementsByClassName('userIdentifier')[0].setAttribute('value',
+        user.login);
 
-      var node = cell.childNodes[j];
+    cell.getElementsByClassName('userLabel')[0].innerHTML = user.login + ': ';
 
-      switch (node.id) {
-      case 'userIdentifier':
-        node.setAttribute('value', user.login);
-        break;
-      case 'userLabel':
-        node.innerHTML = user.login + ': ';
-        break;
-      case 'roleCombo':
-        setRoleComboBox(document, node, possibleRoles, user);
-
-        break;
-      }
-
-    }
+    setRoleComboBox(document, cell.getElementsByClassName('roleCombo')[0],
+        possibleRoles, user);
 
     divStaff.appendChild(cell);
 

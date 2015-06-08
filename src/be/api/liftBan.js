@@ -1,15 +1,15 @@
 'use strict';
 
-var formOps = require('../engine/formOps');
+var apiOps = require('../engine/apiOps');
 var modOps = require('../engine/modOps');
 
 function liftBan(userData, parameters, res) {
 
   modOps.liftBan(userData, parameters, function banLifted(error) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      apiOps.outputError(error, res);
     } else {
-      formOps.outputResponse('Ban lifted', '/', res);
+      apiOps.outputResponse(null, null, 'ok', res);
     }
   });
 
@@ -17,7 +17,7 @@ function liftBan(userData, parameters, res) {
 
 exports.process = function(req, res) {
 
-  formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
+  apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
     liftBan(userData, parameters, res);
