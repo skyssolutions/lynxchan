@@ -1,5 +1,11 @@
 {
   "name": "LynxChan",
+  "description": "The best chan engine you will ever shitpost with",
+  "readme": "Refer to Readme.md and src/be/Readme.md",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/mrseth/LynxChan.git"
+  },
   "version": "0.0.1",
   "devDependencies": {
     "mongodb": "latest",

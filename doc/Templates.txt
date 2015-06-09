@@ -112,13 +112,9 @@ panelUploads:
     type: div
     description: contains the uploads for the post.
 
-labelName:
-    type: span
-    description: contains contain the poster's name.
-
-labelEmail:
-    type: span.
-    description: contains contain the poster's e-mail.
+linkName:
+    type: a
+    description: contains contain the poster's name and links to the poster e-mail.
 
 labelSubject:
     type: span
@@ -161,13 +157,9 @@ panelUploads:
     type: div
     description: contains the uploads for the post.
 
-labelName:
-    type: span
-    description: contains contain the poster's name.
-
-labelEmail:
-    type: span
-    description: contains contain the poster's e-mail.
+linkName:
+    type: a
+    description: contains contain the poster's name and links to the poster e-mail.
 
 labelSubject:
     type: span

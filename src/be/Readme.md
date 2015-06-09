@@ -75,6 +75,7 @@ Settings files that goes into the settings directory:
 * `emailSender`: e-mail to be used as sender on automated e-mails.
 * `captchaExpiration`: expiration in minutes of captchas. Defaults to 1 minute.
 * `captchaFonts`(Array): array of absolute paths to font files in the system to be used in the captcha. Optional.
+* `siteTitle`: name to be used as the title of the front-page.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

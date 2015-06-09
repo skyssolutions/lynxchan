@@ -97,12 +97,42 @@ exports.loadTemplates = function() {
 
 };
 
+function pad(value) {
+  if (value < 10) {
+    value = '0' + value;
+  }
+
+  return value;
+}
+
+function formatToDisplay(d) {
+  var day = pad(d.getDate());
+
+  var weekDays = [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ];
+
+  var month = pad(d.getMonth() + 1);
+
+  var year = d.getFullYear() + 1;
+
+  var weekDay = weekDays[d.getDay()];
+
+  var hour = pad(d.getHours());
+
+  var minute = pad(d.getMinutes());
+
+  var second = pad(d.getSeconds());
+
+  var toReturn = month + '/' + day + '/' + year;
+
+  return toReturn + ' (' + weekDay + ') ' + hour + ':' + minute + ':' + second;
+}
+
 function setBanCell(ban, cell) {
 
   cell.getElementsByClassName('reasonLabel')[0].innerHTML = ban.reason;
 
   var expirationLabel = cell.getElementsByClassName('expirationLabel')[0];
-  expirationLabel.innerHTML = ban.expiration;
+  expirationLabel.innerHTML = formatToDisplay(ban.expiration);
 
   var appliedByLabel = cell.getElementsByClassName('appliedByLabel')[0];
   appliedByLabel.innerHTML = ban.appliedBy;
@@ -828,26 +858,45 @@ function addFiles(document, node, files) {
 
 }
 
-function setPostInnerElements(document, boardUri, threadId, post, postCell) {
-
-  postCell.getElementsByClassName('labelName')[0].innerHTML = post.name;
-  postCell.getElementsByClassName('labelEmail')[0].innerHTML = post.email;
-  postCell.getElementsByClassName('labelSubject')[0].innerHTML = post.subject;
-  addFiles(document, postCell.getElementsByClassName('panelUploads')[0],
-      post.files);
-
-  var labelCreated = postCell.getElementsByClassName('labelCreated')[0];
-  labelCreated.innerHTML = post.creation;
-
-  postCell.getElementsByClassName('divMessage')[0].innerHTML = post.message;
-
+function setPostComplexElements(postCell, post, boardUri, threadId, document) {
   var link = postCell.getElementsByClassName('linkSelf')[0];
   link.innerHTML = post.postId;
-  link.href = '/' + boardUri + '/res/' + threadId + '.html#' + post.postI;
+  link.href = '/' + boardUri + '/res/' + threadId + '.html#' + post.postId;
 
   var checkboxName = boardUri + '-' + threadId + '-' + post.postId;
   postCell.getElementsByClassName('deletionCheckBox')[0].setAttribute('name',
       checkboxName);
+
+  addFiles(document, postCell.getElementsByClassName('panelUploads')[0],
+      post.files);
+}
+
+function setPostInnerElements(document, boardUri, threadId, post, postCell) {
+
+  post.name = post.name || 'Anonymous';
+
+  var linkName = postCell.getElementsByClassName('linkName')[0];
+
+  linkName.innerHTML = post.name;
+
+  if (post.email) {
+    linkName.href = 'mailto:' + post.email;
+  }
+
+  var subjectLabel = postCell.getElementsByClassName('labelSubject')[0];
+  if (post.subject) {
+    subjectLabel.innerHTML = post.subject;
+  } else {
+    subjectLabel.style.display = 'none';
+  }
+
+  var labelCreated = postCell.getElementsByClassName('labelCreated')[0];
+  labelCreated.innerHTML = formatToDisplay(post.creation);
+
+  postCell.getElementsByClassName('divMessage')[0].innerHTML = post.message;
+
+  setPostComplexElements(postCell, post, boardUri, threadId, document);
+
 }
 
 function addPosts(document, posts, boardUri, threadId) {
@@ -902,14 +951,26 @@ function setThreadComplexElements(boardUri, thread, threadCell, innerPage) {
 }
 
 function setThreadSimpleElements(threadCell, thread) {
-  threadCell.getElementsByClassName('labelName')[0].innerHTML = thread.name;
-  threadCell.getElementsByClassName('labelEmail')[0].innerHTML = thread.email;
+
+  thread.name = thread.name || 'Anonymous';
+
+  var linkName = threadCell.getElementsByClassName('linkName')[0];
+
+  linkName.innerHTML = thread.name;
+
+  if (thread.email) {
+    linkName.href = 'mailto:' + thread.email;
+  }
 
   var subjectLabel = threadCell.getElementsByClassName('labelSubject')[0];
-  subjectLabel.innerHTML = thread.subject;
+  if (thread.subject) {
+    subjectLabel.innerHTML = thread.subject;
+  } else {
+    subjectLabel.style.display = 'none';
+  }
 
   var labelCreation = threadCell.getElementsByClassName('labelCreated')[0];
-  labelCreation.innerHTML = thread.creation;
+  labelCreation.innerHTML = formatToDisplay(thread.creation);
 
   var divMessage = threadCell.getElementsByClassName('divMessage')[0];
   divMessage.innerHTML = thread.message;
