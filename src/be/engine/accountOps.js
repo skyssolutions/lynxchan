@@ -177,7 +177,7 @@ exports.validate = function(auth, callback) {
     if (error) {
       callback(error);
     } else if (!user) {
-      callback('Not found');
+      callback('Invalid account');
     } else {
       callback(null, {
         authStatus : 'ok'

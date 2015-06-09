@@ -10,6 +10,20 @@ var db = require('../db');
 var threads = db.threads();
 var posts = db.posts();
 
+exports.getImageBounds = function(path, callback) {
+
+  im(path).identify(function(error, stats) {
+
+    if (!error) {
+      callback(null, stats.size.width, stats.size.height);
+    } else {
+      callback(error);
+    }
+
+  });
+
+};
+
 exports.removeFromDisk = function(path, callback) {
   fs.unlink(path, function removedFile(error) {
     if (callback) {
@@ -39,7 +53,10 @@ function updatePostingFiles(boardUri, threadId, postId, files, file, callback,
         originalName : file.title,
         path : file.path,
         thumb : file.thumbPath,
-        name : file.gfsName
+        name : file.gfsName,
+        size : file.size,
+        width : file.width,
+        height : file.height
       }
     }
   }, function updatedPosting(error) {

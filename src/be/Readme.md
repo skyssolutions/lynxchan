@@ -25,12 +25,12 @@ Arguments that are meant to inform values should be used in the following manner
 `argument value`
 
 # Directory structure
-The json api files will be stored on the api directory and accessed by the same subdomain. `api.domain/function` will use the file `api/function.js`.
+The json api files will be stored on the api directory and accessed by the same sub-domain. `api.domain/function` will use the file `api/function.js`.
 The form api for support of users without js because they are retarded tin foilers are in the form directory and are accessed using `domain/function.js`.
 The `engine` directory will hold all scripts that provide functionality but are not to be accessed directly. There are also some few files directly under the `src/be` directory.
 
 The following directories will be expected on the front-end directory:
-* `static`: static files to be acessed by using the static subdomain.
+* `static`: static files to be accessed by using the static sub-domain.
 * `templates`: will hold the templates, so only the files will have to be specified on the settings.
 
 # Templates
@@ -53,20 +53,21 @@ A file called `templateSettings.json` should be located on the front-end directo
 * `bManagement`: template for board management.
 * `volunteerCell`: template used for the board volunteers.
 * `reportCell`: template used for reports.
-* `closedReportsPage`: templated used for the page of closed reports.
+* `closedReportsPage`: template used for the page of closed reports.
 * `closedReportCell`: template used for the closed reports cell.
 * `bansPage`: template used for the bans page.
 * `banCell`: template used for the bans cell.
+* `uploadCell`: template used for uploads cell.
 
 # Back-end settings
 Settings files that goes into the settings directory:
-`general.json`: contains general settins for the application. Holds the following settings:
+`general.json`: contains general settings for the application. Holds the following settings:
 * `verbose`(Boolean): if true, will output text for debugging on several points, like IO on the json api.
 * `disable304`: if true, will never use http status 304.
 * `address`: ip to bind the server on. Defaults to 127.0.0.1
 * `port`(Number): port to listen for http. Defaults to 8080.
 * `ssl`(Boolean): if true, will listen to https on port 443.
-* `fePath`: absolute path to the directory containing the fe files. Defaults to the relative path to the src/fe diretory.
+* `fePath`: absolute path to the directory containing the fe files. Defaults to the relative path to the src/fe directory.
 * `pageSize`(Number): amount of threads on each board page.
 * `previewPostCount`(Number): number of preview posts on a thread.
 * `autoSageLimit`(Number): how many posts a thread must hit at once so it becomes impossible to bump.

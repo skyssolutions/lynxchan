@@ -31,6 +31,9 @@ threads: stores board's threads.
         originalName: original name of the upload.
         path: path for the file.
         thumb: path for the file's thumbnail.
+        size(Number) size in bytes of the file.
+        width(Number): width of the file, if image.
+        height(Number): size of the file, if image.
 
 ----------------------------------------------------------------------------------------
 
@@ -49,6 +52,9 @@ posts: stores posts.
         originalName: original name of the upload.
         path: path for the file.
         thumb: path for the file's thumbnail.
+        size(Number) size in bytes of the file.
+        width(Number): width of the file, if image.
+        height(Number): size of the file, if image.
  
 ----------------------------------------------------------------------------------------
 
@@ -98,9 +104,9 @@ bans: stores bans.
 ----------------------------------------------------------------------------------------
 
 captchas: stores captchas.
-	_id**: unique id of the captcha.
-	answer: answer to the captcha.
-	expiration(Date): date of when the captcha will expire.
+    _id**: unique id of the captcha.
+    answer: answer to the captcha.
+    expiration(Date): date of when the captcha will expire.
 
 ----------------------------------------------------------------------------------------
 

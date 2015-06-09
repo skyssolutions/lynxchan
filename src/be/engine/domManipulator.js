@@ -38,6 +38,9 @@ var closedReportCellTemplate;
 var closedReportsPageTemplate;
 var bansPageTemplate;
 var banCellTemplate;
+var uploadCellTemplate;
+
+var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 
 require('jsdom').defaultDocumentFeatures = {
   FetchExternalResources : false,
@@ -59,6 +62,8 @@ function loadCellTemplates(fePath, templateSettings) {
   staffCellTemplate = fs.readFileSync(fePath + templateSettings.staffCell);
   postTemplate = fs.readFileSync(fePath + templateSettings.postCell);
   reportCellTemplate = fs.readFileSync(fePath + templateSettings.reportCell);
+
+  uploadCellTemplate = fs.readFileSync(fePath + templateSettings.uploadCell);
 
   var closedReportPath = fePath + templateSettings.closedReportCell;
   closedReportCellTemplate = fs.readFileSync(closedReportPath);
@@ -97,7 +102,7 @@ exports.loadTemplates = function() {
 
 };
 
-function pad(value) {
+function padDateField(value) {
   if (value < 10) {
     value = '0' + value;
   }
@@ -105,22 +110,22 @@ function pad(value) {
   return value;
 }
 
-function formatToDisplay(d) {
-  var day = pad(d.getDate());
+function formatDateToDisplay(d) {
+  var day = padDateField(d.getDate());
 
   var weekDays = [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ];
 
-  var month = pad(d.getMonth() + 1);
+  var month = padDateField(d.getMonth() + 1);
 
   var year = d.getFullYear() + 1;
 
   var weekDay = weekDays[d.getDay()];
 
-  var hour = pad(d.getHours());
+  var hour = padDateField(d.getHours());
 
-  var minute = pad(d.getMinutes());
+  var minute = padDateField(d.getMinutes());
 
-  var second = pad(d.getSeconds());
+  var second = padDateField(d.getSeconds());
 
   var toReturn = month + '/' + day + '/' + year;
 
@@ -132,7 +137,7 @@ function setBanCell(ban, cell) {
   cell.getElementsByClassName('reasonLabel')[0].innerHTML = ban.reason;
 
   var expirationLabel = cell.getElementsByClassName('expirationLabel')[0];
-  expirationLabel.innerHTML = formatToDisplay(ban.expiration);
+  expirationLabel.innerHTML = formatDateToDisplay(ban.expiration);
 
   var appliedByLabel = cell.getElementsByClassName('appliedByLabel')[0];
   appliedByLabel.innerHTML = ban.appliedBy;
@@ -160,7 +165,7 @@ exports.bans = function(bans) {
       var cell = document.createElement('form');
       cell.innerHTML = banCellTemplate;
 
-      setBoilerPlate(cell, '/liftBan.js', 'banCell');
+      setFormCellBoilerPlate(cell, '/liftBan.js', 'banCell');
 
       setBanCell(ban, cell);
       bansDiv.appendChild(cell);
@@ -274,7 +279,7 @@ function setBoardOwnerControls(document, boardData) {
     var cell = document.createElement('form');
     cell.innerHTML = volunteerCellTemplate;
 
-    setBoilerPlate(cell, '/setVolunteer.js', 'volunteerCell');
+    setFormCellBoilerPlate(cell, '/setVolunteer.js', 'volunteerCell');
 
     cell.getElementsByClassName('userIdentifier')[0].setAttribute('value',
         volunteers[i]);
@@ -290,7 +295,7 @@ function setBoardOwnerControls(document, boardData) {
 
 }
 
-function setBoilerPlate(cell, action, cssClass) {
+function setFormCellBoilerPlate(cell, action, cssClass) {
   cell.method = 'post';
   cell.enctype = 'multipart/form-data';
   cell.action = action;
@@ -321,7 +326,7 @@ function setReportList(document, reports) {
 
     cell.innerHTML = reportCellTemplate;
 
-    setBoilerPlate(cell, '/closeReport.js', 'reportCell');
+    setFormCellBoilerPlate(cell, '/closeReport.js', 'reportCell');
 
     setReportCell(cell, report);
 
@@ -411,7 +416,7 @@ function fillStaffDiv(document, possibleRoles, staff) {
     var cell = document.createElement('form');
     cell.innerHTML = staffCellTemplate;
 
-    setBoilerPlate(cell, '/setGlobalRole.js', 'staffCell');
+    setFormCellBoilerPlate(cell, '/setGlobalRole.js', 'staffCell');
 
     cell.getElementsByClassName('userIdentifier')[0].setAttribute('value',
         user.login);
@@ -835,6 +840,35 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
 
 };
 
+function formatFileSize(size) {
+
+  var orderIndex = 0;
+
+  while (orderIndex < sizeOrders.length - 1 && size > 1024) {
+
+    orderIndex++;
+    size /= 1024;
+
+  }
+
+  return size.toFixed(2) + sizeOrders[orderIndex];
+
+}
+
+function setLinks(document, cell, file) {
+  var thumbLink = cell.getElementsByClassName('imageLink')[0];
+  thumbLink.href = file.path;
+
+  var img = document.createElement('img');
+  img.src = file.thumb;
+
+  thumbLink.appendChild(img);
+
+  var nameLink = cell.getElementsByClassName('nameLink')[0];
+  nameLink.href = file.path;
+  nameLink.innerHTML = file.name;
+}
+
 function addFiles(document, node, files) {
 
   if (!files) {
@@ -843,17 +877,21 @@ function addFiles(document, node, files) {
 
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
-    var link = document.createElement('a');
+    var cell = document.createElement('div');
+    cell.innerHTML = uploadCellTemplate;
+    cell.setAttribute('class', 'uploadCell');
 
-    link.href = file.path;
+    setLinks(document, cell, file);
 
-    var img = document.createElement('img');
+    var infoString = formatFileSize(file.size);
 
-    img.src = file.thumb;
+    if (file.width) {
+      infoString += ', ' + file.width + 'x' + file.height;
+    }
 
-    link.appendChild(img);
+    cell.getElementsByClassName('infoLabel')[0].innerHTML = infoString;
 
-    node.appendChild(link);
+    node.appendChild(cell);
   }
 
 }
@@ -891,7 +929,7 @@ function setPostInnerElements(document, boardUri, threadId, post, postCell) {
   }
 
   var labelCreated = postCell.getElementsByClassName('labelCreated')[0];
-  labelCreated.innerHTML = formatToDisplay(post.creation);
+  labelCreated.innerHTML = formatDateToDisplay(post.creation);
 
   postCell.getElementsByClassName('divMessage')[0].innerHTML = post.message;
 
@@ -970,7 +1008,7 @@ function setThreadSimpleElements(threadCell, thread) {
   }
 
   var labelCreation = threadCell.getElementsByClassName('labelCreated')[0];
-  labelCreation.innerHTML = formatToDisplay(thread.creation);
+  labelCreation.innerHTML = formatDateToDisplay(thread.creation);
 
   var divMessage = threadCell.getElementsByClassName('divMessage')[0];
   divMessage.innerHTML = thread.message;

@@ -5,6 +5,7 @@ var boot = require('../boot');
 var settings = boot.getGeneralSettings();
 var bans = require('../db').bans();
 var accountOps = require('./accountOps');
+var uploadHandler = require('./uploadHandler');
 var debug = boot.debug;
 var verbose = settings.verbose;
 var multiParty = require('multiparty');
@@ -38,22 +39,62 @@ exports.getCookies = function(req) {
   return parsedCookies;
 };
 
-function transferFileInformation(filesToDelete, files, fields) {
+function getUploadDimensions(toPush, filesToDelete, files, fields,
+    parsedCookies, callback) {
 
-  for (var i = 0; i < files.files.length; i++) {
-    var file = files.files[i];
+  uploadHandler.getImageBounds(toPush.pathInDisk, function gotBounds(error,
+      width, height) {
+    if (!error) {
+      toPush.width = width;
+      toPush.height = height;
+
+      fields.files.push(toPush);
+    }
+
+    transferFileInformation(filesToDelete, files, fields, parsedCookies,
+        callback);
+  });
+
+}
+
+function transferFileInformation(filesToDelete, files, fields, parsedCookies,
+    callback) {
+
+  if (files.files.length) {
+
+    var file = files.files.shift();
 
     filesToDelete.push(file.path);
 
     if (file.size) {
-
-      fields.files.push({
+      var toPush = {
+        size : file.size,
         title : file.originalFilename,
         pathInDisk : file.path,
         mime : file.headers['content-type']
-      });
+      };
+
+      if (toPush.mime.indexOf('image/') > -1) {
+
+        getUploadDimensions(toPush, filesToDelete, files, fields,
+            parsedCookies, callback);
+
+      } else {
+        fields.files.push(toPush);
+
+        transferFileInformation(filesToDelete, files, fields, parsedCookies,
+            callback);
+      }
+
+    } else {
+      transferFileInformation(filesToDelete, files, fields, parsedCookies,
+          callback);
     }
+
+  } else {
+    callback(parsedCookies, fields);
   }
+
 }
 
 function processParsedRequest(res, fields, files, callback, parsedCookies) {
@@ -80,17 +121,17 @@ function processParsedRequest(res, fields, files, callback, parsedCookies) {
 
   res.on('finish', endingCb);
 
-  if (files.files) {
-
-    transferFileInformation(filesToDelete, files, fields);
-
-  }
-
   if (verbose) {
     console.log('Form input: ' + JSON.stringify(fields));
   }
+  if (files.files) {
 
-  callback(parsedCookies, fields);
+    transferFileInformation(filesToDelete, files, fields, parsedCookies,
+        callback);
+
+  } else {
+    callback(parsedCookies, fields);
+  }
 
 }
 

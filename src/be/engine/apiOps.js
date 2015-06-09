@@ -90,6 +90,22 @@ exports.checkBlankParameters = function(object, parameters, res) {
 
 };
 
+function getImageBounds(toPush, parsedData, res, finalArray, toRemove, cb) {
+
+  uploadHandler.getImageBounds(toPush.pathInDisk, function gotBounds(error,
+      width, height) {
+    if (!error) {
+      toPush.width = width;
+      toPush.height = height;
+
+      finalArray.push(toPush);
+    }
+
+    storeImages(parsedData, res, finalArray, toRemove, cb);
+  });
+
+}
+
 function processFile(parsedData, res, finalArray, toRemove, callback) {
   var file = parsedData.parameters.files.shift();
 
@@ -97,26 +113,58 @@ function processFile(parsedData, res, finalArray, toRemove, callback) {
 
   var location = uploadPath(tempDir, file.name);
 
-  finalArray.push({
-    title : file.name,
-    mime : matches[1],
-    pathInDisk : location
-  });
+  var content = matches[2];
 
-  toRemove.push(location);
-
-  fs.writeFile(location, new Buffer(matches[2], 'base64'), function wroteFile(
+  fs.writeFile(location, new Buffer(content, 'base64'), function wroteFile(
       error) {
-    storeImages(parsedData, res, finalArray, toRemove, callback);
+
+    if (!error) {
+      toRemove.push(location);
+
+      // style exception, too simple
+
+      fs.stat(location, function gotStats(error, stats) {
+        if (error) {
+          storeImages(parsedData, res, finalArray, toRemove, callback);
+        } else {
+
+          var toPush = {
+            title : file.name,
+            size : stats.size,
+            mime : matches[1],
+            pathInDisk : location
+          };
+
+          if (toPush.mime.indexOf('image/') > -1) {
+
+            getImageBounds(toPush, parsedData, res, finalArray, toRemove,
+                callback);
+
+          } else {
+
+            finalArray.push(toPush);
+
+            storeImages(parsedData, res, finalArray, toRemove, callback);
+          }
+
+        }
+
+      });
+
+      // style exception, too simple
+    } else {
+      storeImages(parsedData, res, finalArray, toRemove, callback);
+    }
+
   });
 
 }
 
 function storeImages(parsedData, res, finalArray, toRemove, callback) {
 
-  var hasFiles = parsedData.parameters && parsedData.parameters.files;
+  var hasFilesField = parsedData.parameters && parsedData.parameters.files;
 
-  if (hasFiles && parsedData.parameters.files.length) {
+  if (hasFilesField && parsedData.parameters.files.length) {
     processFile(parsedData, res, finalArray, toRemove, callback);
 
   } else {
