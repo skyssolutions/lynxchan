@@ -91,6 +91,222 @@ function loadMainTemplates(fePath, templateSettings) {
   closedReportsPageTemplate = fs.readFileSync(closedReportsPath);
 }
 
+function checkPageErrors(errors, tests) {
+
+  for (var i = 0; i < tests.length; i++) {
+
+    var test = tests[i];
+
+    var document = jsdom(test.content);
+
+    var errorFound = false;
+
+    var error = '\nPage ' + test.template;
+
+    for (var j = 0; j < test.fields.length; j++) {
+
+      var field = test.fields[j];
+
+      if (!document.getElementById(field)) {
+        errorFound = true;
+        error += '\nError, missing element ' + field;
+      }
+
+    }
+
+    if (errorFound) {
+      errors.push(error);
+    }
+
+  }
+
+}
+
+function getTestCell(document, content) {
+
+  var toReturn = document.createElement('div');
+
+  toReturn.innerHTML = content;
+
+  return toReturn;
+}
+
+function checkCellErrors(errors, tests) {
+
+  var document = jsdom('<html></html>');
+
+  for (var i = 0; i < tests.length; i++) {
+
+    var test = tests[i];
+
+    var cell = getTestCell(document, test.content);
+
+    var errorFound = false;
+
+    var error = '\nCell ' + test.template;
+
+    for (var j = 0; j < test.fields.length; j++) {
+
+      var field = test.fields[j];
+
+      if (!cell.getElementsByClassName(field).length) {
+        errorFound = true;
+        error += '\nError, missing element ' + field;
+      } else if (cell.getElementsByClassName(field).length > 1) {
+        errorFound = true;
+        error += '\nWarning, more than one element with class ' + field;
+      }
+
+    }
+
+    if (errorFound) {
+      errors.push(error);
+    }
+
+  }
+
+}
+
+function testTemplates(settings) {
+
+  var cellTests = [
+      {
+        template : 'opCell',
+        content : opTemplate,
+        fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
+            'divMessage', 'linkReply', 'linkSelf', 'deletionCheckBox',
+            'lockIndicator', 'pinIndicator' ]
+      },
+      {
+        template : 'postCell',
+        content : postTemplate,
+        fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
+            'divMessage', 'linkSelf', 'deletionCheckBox' ]
+      },
+      {
+        template : 'staffCell',
+        content : staffCellTemplate,
+        fields : [ 'userIdentifier', 'userLabel', 'roleCombo' ]
+      },
+      {
+        template : 'volunteerCell',
+        content : volunteerCellTemplate,
+        fields : [ 'boardIdentifier', 'userIdentifier', 'userLabel' ]
+      },
+      {
+        template : 'reportCell',
+        content : reportCellTemplate,
+        fields : [ 'reasonLabel', 'link', 'idIdentifier' ]
+      },
+      {
+        template : 'closedReportCell',
+        content : closedReportCellTemplate,
+        fields : [ 'reasonLabel', 'link', 'closedByLabel', 'closedDateLabel' ]
+      },
+      {
+        template : 'banCell',
+        content : banCellTemplate,
+        fields : [ 'reasonLabel', 'expirationLabel', 'appliedByLabel',
+            'boardLabel' ]
+      }, {
+        template : 'uploadCell',
+        content : uploadCellTemplate,
+        fields : [ 'infoLabel', 'imageLink', 'nameLink' ]
+      } ];
+
+  var pageTests = [
+      {
+        template : 'resetEmail',
+        content : resetEmailTemplate,
+        fields : [ 'labelNewPass' ]
+      },
+      {
+        template : 'recoveryEmail',
+        content : recoveryEmailTemplate,
+        fields : [ 'linkRecovery' ]
+      },
+      {
+        template : 'index',
+        content : frontPageTemplate,
+        fields : [ 'divBoards' ]
+      },
+      {
+        template : 'boardPage',
+        content : boardTemplate,
+        fields : [ 'labelName', 'labelDescription', 'divPostings', 'divPages',
+            'boardIdentifier', 'linkManagement' ]
+      },
+      {
+        template : 'threadPage',
+        content : threadTemplate,
+        fields : [ 'labelName', 'labelDescription', 'divPostings',
+            'boardIdentifier', 'linkManagement', 'threadIdentifier', 'linkMod',
+            'inputBan', 'divExpiration', 'divControls',
+            'controlBoardIdentifier', 'controlThreadIdentifier',
+            'checkboxLock', 'checkboxPin' ]
+      },
+      {
+        template : 'messagePage',
+        content : messageTemplate,
+        fields : [ 'labelMessage', 'linkRedirect' ]
+      },
+      {
+        template : 'accountPage',
+        content : accountTemplate,
+        fields : [ 'labelLogin', 'boardsDiv', 'globalManagementLink' ]
+      },
+      {
+        template : 'gManagement',
+        content : gManagementTemplate,
+        fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
+            'reportDiv', 'bansLink' ]
+      },
+      {
+        template : 'bManagement',
+        content : bManagementTemplate,
+        fields : [ 'volunteersDiv', 'boardLabel', 'ownerControlDiv',
+            'addVolunteerBoardIdentifier', 'transferBoardIdentifier',
+            'deletionIdentifier', 'reportDiv', 'closedReportsLink', 'bansLink' ]
+      }, {
+        template : 'closedReportsPage',
+        content : closedReportsPageTemplate,
+        fields : [ 'reportDiv' ]
+      }, {
+        template : 'bansPage',
+        content : bansPageTemplate,
+        fields : [ 'bansDiv' ]
+      } ];
+
+  var errors = [];
+
+  checkCellErrors(errors, cellTests);
+
+  checkPageErrors(errors, pageTests);
+
+  if (errors.length) {
+
+    console.log('Were found issues with templates.');
+
+    if (verbose) {
+
+      for (var i = 0; i < errors.length; i++) {
+
+        var error = errors[i];
+
+        console.log(error);
+
+      }
+    } else {
+      console.log('Enable verbose mode to output them.');
+    }
+
+    if (debug) {
+      throw 'Fix the issues on the templates or run without debug mode';
+    }
+
+  }
+}
+
 exports.loadTemplates = function() {
 
   var fePath = boot.getFePath() + '/templates/';
@@ -99,6 +315,8 @@ exports.loadTemplates = function() {
   loadMainTemplates(fePath, templateSettings);
   loadEmailTemplates(fePath, templateSettings);
   loadCellTemplates(fePath, templateSettings);
+
+  testTemplates(templateSettings);
 
 };
 

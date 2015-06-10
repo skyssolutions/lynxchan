@@ -536,7 +536,6 @@ function setNewThreadSettings(parameters, thread, callback) {
   var changeLock = parameters.lock !== thread.locked;
 
   if (!changeLock && !changePin) {
-    console.log('no change needed');
     callback();
 
     return;
