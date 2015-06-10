@@ -96,6 +96,8 @@ function createThread(req, parameters, threadId, callback) {
     lastBump : new Date(),
     creation : new Date(),
     subject : parameters.subject,
+    pinned : false,
+    locked : false,
     name : parameters.name,
     message : parameters.message,
     email : parameters.email

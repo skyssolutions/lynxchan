@@ -3,9 +3,9 @@
 var apiOps = require('../engine/apiOps');
 var modOps = require('../engine/modOps');
 
-function setThreadPin(userData, parameters, res) {
+function setThreadSettings(userData, parameters, res) {
 
-  modOps.setThreadPin(userData, parameters, function pinSet(error) {
+  modOps.setThreadSettings(userData, parameters, function settingsSet(error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
@@ -20,7 +20,7 @@ exports.process = function(req, res) {
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    setThreadPin(userData, parameters, res);
+    setThreadSettings(userData, parameters, res);
 
   });
 

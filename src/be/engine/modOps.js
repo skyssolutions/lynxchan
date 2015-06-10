@@ -525,69 +525,61 @@ exports.liftBan = function(userData, parameters, callback) {
 };
 
 // end of ban lift
-// start of thread lock process
-function getThreadToChangeLock(parameters, callback) {
-  threads.findOne({
-    boardUri : parameters.boardUri,
-    threadId : +parameters.threadId
-  }, function gotThread(error, thread) {
-    if (error) {
-      callback(error);
-    } else if (!thread) {
-      callback('Thread not found');
-    } else {
-      // style exception, too simple
 
-      threads.updateOne({
-        boardUri : parameters.boardUri,
-        threadId : +parameters.threadId
-      }, {
-        $set : {
-          locked : parameters.lock ? true : false
-        }
-      }, function changedThreadLock(error) {
+// start of thread settings process
+function setNewThreadSettings(parameters, thread, callback) {
+
+  parameters.lock = parameters.lock ? true : false;
+  parameters.pin = parameters.pin ? true : false;
+
+  var changePin = parameters.pin !== thread.pinned;
+  var changeLock = parameters.lock !== thread.locked;
+
+  if (!changeLock && !changePin) {
+    console.log('no change needed');
+    callback();
+
+    return;
+  }
+
+  threads.updateOne({
+    _id : new ObjectID(thread._id)
+  }, {
+    $set : {
+      locked : parameters.lock,
+      pinned : parameters.pin
+    }
+  }, function updatedThread(error) {
+
+    if (!error) {
+      // signal rebuild of thread
+      process.send({
+        board : thread.boardUri,
+        thread : thread.threadId
+      });
+
+      if (changePin) {
+        // signal rebuild of board pages
+        process.send({
+          board : thread.boardUri
+        });
+      } else {
         // signal rebuild of page
         process.send({
           board : thread.boardUri,
           page : thread.page
         });
-
-        // signal rebuild of thread
-        process.send({
-          board : thread.boardUri,
-          thread : thread.threadId
-        });
-        callback(error);
-      });
-
-      // style exception, too simple
+      }
 
     }
-  });
 
+    callback(error);
+
+  });
 }
 
-exports.setThreadLock = function(userData, parameters, callback) {
+function getThreadToChangeSettings(parameters, callback) {
 
-  boards.findOne({
-    boardUri : parameters.boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback('Board not found');
-    } else if (!exports.isInBoardStaff(userData, board)) {
-      callback('You are not allowed to lock or unlock threads in this board.');
-    } else {
-      getThreadToChangeLock(parameters, callback);
-    }
-  });
-
-};
-
-// end of thread lock process
-// start of thread pin process
-function getThreadToChangePin(parameters, callback) {
   threads.findOne({
     boardUri : parameters.boardUri,
     threadId : +parameters.threadId
@@ -597,38 +589,14 @@ function getThreadToChangePin(parameters, callback) {
     } else if (!thread) {
       callback('Thread not found');
     } else {
-      // style exception, too simple
 
-      threads.updateOne({
-        boardUri : parameters.boardUri,
-        threadId : +parameters.threadId
-      }, {
-        $set : {
-          pinned : parameters.pin ? true : false
-        }
-      }, function changedThreadPin(error) {
-        // signal rebuild of board pages
-        process.send({
-          board : thread.boardUri
-        });
-
-        // signal rebuild of thread
-        process.send({
-          board : thread.boardUri,
-          thread : thread.threadId
-        });
-
-        callback(error);
-      });
-
-      // style exception, too simple
+      setNewThreadSettings(parameters, thread, callback);
 
     }
   });
-
 }
 
-exports.setThreadPin = function(userData, parameters, callback) {
+exports.setThreadSettings = function(userData, parameters, callback) {
 
   boards.findOne({
     boardUri : parameters.boardUri
@@ -638,11 +606,13 @@ exports.setThreadPin = function(userData, parameters, callback) {
     } else if (!board) {
       callback('Board not found');
     } else if (!exports.isInBoardStaff(userData, board)) {
-      callback('You are not allowed to pin or inpin threads in this board.');
+      error = 'You are not allowed to change thread settingso in this board.';
+      callback(error);
     } else {
-      getThreadToChangePin(parameters, callback);
+      getThreadToChangeSettings(parameters, callback);
     }
   });
 
 };
-// end of thread pin process
+
+// start of thread settings process

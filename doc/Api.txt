@@ -232,31 +232,19 @@ Parameters:
 
 PAG_ID::18
 
-Name: setThreadLock
+Name: changeThreadSettings
 
-Description: turns a thread lock on or off.
+Description: change lock and pin settings of a thread.
 
 Parameters:
     boardUri: board that contains the thread.
     threadId: id of the thread.
     lock(Boolean): indicates if the thread must be locked.
+    pin(Boolean): indicates if the thread must be pinned.
     
 ------------------------------------------------------------------------------------------
 
 PAG_ID::19
-
-Name: setThreadPin
-
-Description: turns a thread pin on or off.
-
-Parameters:
-    boardUri: board that contains the thread.
-    threadId: id of the thread.
-    pin(Boolean): indicates if the thread must be pinned.
-
-------------------------------------------------------------------------------------------
-
-PAG_ID::20
 
 Name: banUsers
 
@@ -273,7 +261,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::21
+PAG_ID::20
 
 Name: liftBan
 

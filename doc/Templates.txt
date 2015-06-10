@@ -88,6 +88,14 @@ controlThreadIdentifier:
     type: input
     description: hidden input to identify the thread for the controls page.
 
+checkboxLock:	
+	type: input
+	description: checkbox indicating if the thread is locked.
+
+checkboxPin:	
+	type: input
+	description: checkbox indicating if the thread is pinned.
+
 ------------------------------------------------------------------------------------------
 
 messagePage:

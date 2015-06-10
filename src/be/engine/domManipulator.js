@@ -760,6 +760,14 @@ function setThreadLinks(document, boardData, threadData) {
 function setModdingInformation(document, boardUri, boardData, threadData,
     posts, callback) {
 
+  if (threadData.locked) {
+    document.getElementById('checkboxLock').setAttribute('checked', true);
+  }
+
+  if (threadData.pinned) {
+    document.getElementById('checkboxPin').setAttribute('checked', true);
+  }
+
   document.getElementById('controlBoardIdentifier').setAttribute('value',
       boardUri);
   document.getElementById('controlThreadIdentifier').setAttribute('value',
@@ -851,7 +859,7 @@ function formatFileSize(size) {
 
   }
 
-  return size.toFixed(2) + sizeOrders[orderIndex];
+  return size.toFixed(2) + ' ' + sizeOrders[orderIndex];
 
 }
 
@@ -869,7 +877,7 @@ function setLinks(document, cell, file) {
   nameLink.innerHTML = file.name;
 }
 
-function addFiles(document, node, files) {
+function setUploadCell(document, node, files) {
 
   if (!files) {
     return;
@@ -905,7 +913,7 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document) {
   postCell.getElementsByClassName('deletionCheckBox')[0].setAttribute('name',
       checkboxName);
 
-  addFiles(document, postCell.getElementsByClassName('panelUploads')[0],
+  setUploadCell(document, postCell.getElementsByClassName('panelUploads')[0],
       post.files);
 }
 
@@ -1025,7 +1033,7 @@ function addThread(document, thread, posts, boardUri, innerPage) {
 
   setThreadSimpleElements(threadCell, thread);
 
-  addFiles(document, threadCell.getElementsByClassName('panelUploads')[0],
+  setUploadCell(document, threadCell.getElementsByClassName('panelUploads')[0],
       thread.files);
 
   document.getElementById('divPostings').appendChild(threadCell);
