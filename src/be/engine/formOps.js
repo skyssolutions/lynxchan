@@ -9,14 +9,13 @@ var uploadHandler = require('./uploadHandler');
 var debug = boot.debug();
 var verbose = settings.verbose;
 var multiParty = require('multiparty');
-var parser = new multiParty.Form({
-  uploadDir : settings.tempDirectory || '/tmp',
-  autoFiles : true
-});
 var miscOps = require('./miscOps');
 var jsdom = require('jsdom').jsdom;
 var domManipulator = require('./domManipulator');
 var uploadHandler = require('./uploadHandler');
+var uploadDir = settings.tempDirectory || '/tmp';
+var maxRequestSize = settings.maxRequestSize || 2 * 1024 * 1024;
+var maxFileSize = settings.maxFileSize || Infinity;
 
 exports.getCookies = function(req) {
   var parsedCookies = {};
@@ -39,8 +38,7 @@ exports.getCookies = function(req) {
   return parsedCookies;
 };
 
-function getUploadDimensions(toPush, filesToDelete, files, fields,
-    parsedCookies, callback) {
+function getUploadDimensions(toPush, files, fields, parsedCookies, callback) {
 
   uploadHandler.getImageBounds(toPush.pathInDisk, function gotBounds(error,
       width, height) {
@@ -51,22 +49,18 @@ function getUploadDimensions(toPush, filesToDelete, files, fields,
       fields.files.push(toPush);
     }
 
-    transferFileInformation(filesToDelete, files, fields, parsedCookies,
-        callback);
+    transferFileInformation(files, fields, parsedCookies, callback);
   });
 
 }
 
-function transferFileInformation(filesToDelete, files, fields, parsedCookies,
-    callback) {
+function transferFileInformation(files, fields, parsedCookies, callback) {
 
   if (files.files.length) {
 
     var file = files.files.shift();
 
-    filesToDelete.push(file.path);
-
-    if (file.size) {
+    if (file.size && file.size < maxFileSize) {
       var toPush = {
         size : file.size,
         title : file.originalFilename,
@@ -76,22 +70,23 @@ function transferFileInformation(filesToDelete, files, fields, parsedCookies,
 
       if (toPush.mime.indexOf('image/') > -1) {
 
-        getUploadDimensions(toPush, filesToDelete, files, fields,
-            parsedCookies, callback);
+        getUploadDimensions(toPush, files, fields, parsedCookies, callback);
 
       } else {
         fields.files.push(toPush);
 
-        transferFileInformation(filesToDelete, files, fields, parsedCookies,
-            callback);
+        transferFileInformation(files, fields, parsedCookies, callback);
       }
 
     } else {
-      transferFileInformation(filesToDelete, files, fields, parsedCookies,
-          callback);
+      transferFileInformation(files, fields, parsedCookies, callback);
     }
 
   } else {
+    if (verbose) {
+      console.log('Form input: ' + JSON.stringify(fields));
+    }
+
     callback(parsedCookies, fields);
   }
 
@@ -107,29 +102,15 @@ function processParsedRequest(res, fields, files, callback, parsedCookies) {
 
   fields.files = [];
 
-  var filesToDelete = [];
-
-  var endingCb = function() {
-
-    for (var j = 0; j < filesToDelete.length; j++) {
-      uploadHandler.removeFromDisk(filesToDelete[j]);
-    }
-
-  };
-
-  res.on('close', endingCb);
-
-  res.on('finish', endingCb);
-
-  if (verbose) {
-    console.log('Form input: ' + JSON.stringify(fields));
-  }
   if (files.files) {
 
-    transferFileInformation(filesToDelete, files, fields, parsedCookies,
-        callback);
+    transferFileInformation(files, fields, parsedCookies, callback);
 
   } else {
+    if (verbose) {
+      console.log('Form input: ' + JSON.stringify(fields));
+    }
+
     callback(parsedCookies, fields);
   }
 
@@ -178,9 +159,42 @@ exports.getPostData = function(req, res, callback) {
 
   try {
 
+    var parser = new multiParty.Form({
+      uploadDir : uploadDir,
+      autoFiles : true
+    });
+
+    var filesToDelete = [];
+
+    var endingCb = function() {
+
+      for (var j = 0; j < filesToDelete.length; j++) {
+
+        uploadHandler.removeFromDisk(filesToDelete[j]);
+      }
+
+    };
+
+    res.on('close', endingCb);
+
+    res.on('finish', endingCb);
+
+    parser.on('file', function(name, file) {
+
+      filesToDelete.push(file.path);
+
+    });
+
+    parser.on('progress', function(bytesReceived) {
+      if (bytesReceived > maxRequestSize) {
+        req.connection.destroy();
+      }
+    });
+
     parser.parse(req, function parsed(error, fields, files) {
+
       if (error) {
-        throw error;
+        exports.outputError(error, 500, res);
       } else {
         processParsedRequest(res, fields, files, callback, exports
             .getCookies(req));
@@ -188,8 +202,9 @@ exports.getPostData = function(req, res, callback) {
       }
 
     });
+
   } catch (error) {
-    callback(error);
+    exports.outputError(error, 500, res);
   }
 
 };

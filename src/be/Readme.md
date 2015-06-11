@@ -13,7 +13,7 @@ A package.json file is included, so you can install all of them by just running 
 # Application usage
 `boot.js` is the main file, run it using Io.js to start the system. Keep in mind that if you ran `aux/setup.sh`, you can just run the `lynxchan` command or start the `lynxchan` service.
 It accepts the following arguments:
-* `--debug`, `-d`: for development. Will not cache static files and will reload any module besides the ones directly under the be directory. It will also cause most errors to crash.
+* `--debug`, `-d`: for development. Will not cache static files and will reload any module besides the ones directly under the be directory. It will also cause errors to crash and will clean any file in the temporary directory older than one minute every minute.
 * `--reload`, `-r`: will rebuild all pages on boot.
 * `--no-daemon`, `-nd`: will not start listening. For rebuilding pages while having a server running.
 * `--create-account`, `-ca`: will create a new account. Require the use of the login, role and password parameters.
@@ -77,6 +77,8 @@ Settings files that goes into the settings directory:
 * `captchaExpiration`: expiration in minutes of captchas. Defaults to 1 minute.
 * `captchaFonts`(Array): array of absolute paths to font files in the system to be used in the captcha. Optional.
 * `siteTitle`: name to be used as the title of the front-page.
+* `maxRequestSize`: maximum size in bytes of incoming requests. Defaults to 2MB.
+* `maxFileSize`: maximum size in bytes of individual uploaded files. Defaults to infinity.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

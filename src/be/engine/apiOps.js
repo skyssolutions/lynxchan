@@ -13,6 +13,8 @@ var captchaOps = require('./captchaOps');
 var path = require('path');
 var tempDir = settings.tempDirectory || '/tmp';
 var uploadHandler = require('./uploadHandler');
+var maxRequestSize = settings.maxRequestSize || 2 * 1024 * 1024;
+var maxFileSize = settings.maxFileSize || Infinity;
 
 var FILE_EXT_RE = /(\.[_\-a-zA-Z0-9]{0,16}).*/;
 // replace base64 characters with safe-for-filename characters
@@ -40,9 +42,6 @@ function rando(size) {
     return crypto.pseudoRandomBytes(size);
   }
 }
-
-// TODO change to use settings
-var REQUEST_LIMIT_SIZE = 1e6 * 100;
 
 exports.checkBlankParameters = function(object, parameters, res) {
 
@@ -128,25 +127,29 @@ function processFile(parsedData, res, finalArray, toRemove, callback) {
           storeImages(parsedData, res, finalArray, toRemove, callback);
         } else {
 
-          var toPush = {
-            title : file.name,
-            size : stats.size,
-            mime : matches[1],
-            pathInDisk : location
-          };
-
-          if (toPush.mime.indexOf('image/') > -1) {
-
-            getImageBounds(toPush, parsedData, res, finalArray, toRemove,
-                callback);
-
+          if (stats.size > maxFileSize) {
+            storeImages(parsedData, res, finalArray, toRemove, callback);
           } else {
 
-            finalArray.push(toPush);
+            var toPush = {
+              title : file.name,
+              size : stats.size,
+              mime : matches[1],
+              pathInDisk : location
+            };
 
-            storeImages(parsedData, res, finalArray, toRemove, callback);
+            if (toPush.mime.indexOf('image/') > -1) {
+
+              getImageBounds(toPush, parsedData, res, finalArray, toRemove,
+                  callback);
+
+            } else {
+
+              finalArray.push(toPush);
+
+              storeImages(parsedData, res, finalArray, toRemove, callback);
+            }
           }
-
         }
 
       });
@@ -215,13 +218,14 @@ exports.getAnonJsonData = function(req, res, callback, checkCaptcha) {
 
   var body = '';
 
+  var totalLength = 0;
+
   req.on('data', function dataReceived(data) {
     body += data;
 
-    if (body.length > REQUEST_LIMIT_SIZE) {
+    totalLength += data.length;
 
-      exports.outputResponse(null, null, 'tooLong', res);
-
+    if (totalLength > maxRequestSize) {
       req.connection.destroy();
     }
   });

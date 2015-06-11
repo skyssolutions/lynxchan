@@ -9,6 +9,7 @@
 var cluster = require('cluster');
 var db;
 var fs = require('fs');
+var logger = require('./logger');
 var generator;
 
 var MINIMUM_WORKER_UPTIME = 1000;
@@ -19,6 +20,7 @@ var generalSettings;
 var templateSettings;
 var genericThumb;
 var fePath;
+var tempDirectory;
 
 var args = process.argv;
 
@@ -111,6 +113,8 @@ exports.loadSettings = function() {
   generalSettings.port = generalSettings.port || 8080;
 
   fePath = generalSettings.fePath || __dirname + '/../fe';
+
+  tempDirectory = generalSettings.tempDirectory || '/tmp';
 
   var templateSettingsPath = fePath + '/templateSettings.json';
 
@@ -339,7 +343,44 @@ try {
 
 db = require('./db');
 
+function scheduleTempFilesCleaning() {
+
+  setTimeout(function() {
+
+    removeExpiredTempFiles(function removedExpiredFiles(error) {
+      if (error) {
+        if (generalSettings.verbose) {
+          console.log(error);
+        }
+        if (debug) {
+          throw error;
+        }
+      } else {
+        scheduleTempFilesCleaning();
+      }
+
+    });
+  }, 1000 * 60);
+
+}
+
 if (cluster.isMaster) {
+
+  if (debug) {
+
+    removeExpiredTempFiles(function removedExpiredFiles(error) {
+      if (error) {
+        if (generalSettings.verbose) {
+          console.log(error);
+        }
+        if (debug) {
+          throw error;
+        }
+      } else {
+        scheduleTempFilesCleaning();
+      }
+    });
+  }
 
   db.init(function bootedDb(error) {
 
@@ -395,4 +436,48 @@ if (cluster.isMaster) {
 } else {
 
   require('./workerBoot').boot();
+}
+
+function iterateFiles(files, callback) {
+
+  if (files.length) {
+    var file = tempDirectory + '/' + files.shift();
+
+    fs.stat(file, function gotStats(error, stats) {
+
+      if (error) {
+        callback(error);
+      } else {
+
+        var deleteFile = stats.isFile() && !stats.size;
+
+        if (deleteFile && new Date() > logger.addMinutes(stats.ctime, 1)) {
+
+          if (generalSettings.verbose) {
+            console.log('Removing expired tmp file ' + file);
+          }
+
+          fs.unlink(file);
+        }
+
+        iterateFiles(files, callback);
+      }
+
+    });
+  } else {
+    callback();
+
+  }
+
+}
+
+function removeExpiredTempFiles(callback) {
+  fs.readdir(tempDirectory, function gotFiles(error, files) {
+    if (error) {
+      callback(error);
+    } else {
+      iterateFiles(files, callback);
+    }
+
+  });
 }
