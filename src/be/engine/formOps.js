@@ -6,7 +6,7 @@ var settings = boot.getGeneralSettings();
 var bans = require('../db').bans();
 var accountOps = require('./accountOps');
 var uploadHandler = require('./uploadHandler');
-var debug = boot.debug;
+var debug = boot.debug();
 var verbose = settings.verbose;
 var multiParty = require('multiparty');
 var parser = new multiParty.Form({
@@ -239,10 +239,9 @@ exports.outputError = function(error, code, res) {
     throw error;
   }
 
-  // TODO add template
   res.writeHead(code, miscOps.corsHeader('text/html'));
 
-  res.end('An error occourred:<br>Code ' + code + '<br>' + error.toString());
+  res.end(domManipulator.error(code, error.toString()));
 
 };
 

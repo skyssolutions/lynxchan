@@ -88,13 +88,13 @@ controlThreadIdentifier:
     type: input
     description: hidden input to identify the thread for the controls page.
 
-checkboxLock:	
-	type: input
-	description: checkbox indicating if the thread is locked.
+checkboxLock:    
+    type: input
+    description: checkbox indicating if the thread is locked.
 
-checkboxPin:	
-	type: input
-	description: checkbox indicating if the thread is pinned.
+checkboxPin:    
+    type: input
+    description: checkbox indicating if the thread is pinned.
 
 ------------------------------------------------------------------------------------------
 
@@ -417,16 +417,29 @@ Root element: div
 
 Elements:
 infoLabel:
-	type: span
-	description: holds general information about the file.
+    type: span
+    description: holds general information about the file.
 
 imageLink:
-	type: a
-	description: holds the thumbnail of the image and links to the file.
+    type: a
+    description: holds the thumbnail of the image and links to the file.
 
 nameLink:
-	type: a
-	description: alternative link to the image using the name of the file instead of a thumbnail.
+    type: a
+    description: alternative link to the image using the name of the file instead of a thumbnail.
+
+------------------------------------------------------------------------------------------
+
+errorPage:
+
+Elements:
+codeLabel:
+    type:h2
+    description: holds the error code.
+
+errorLabel:
+    type: h4
+    description: holds the error message.
 
 ------------------------------------------------------------------------------------------
 

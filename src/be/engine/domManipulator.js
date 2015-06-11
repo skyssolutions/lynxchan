@@ -39,6 +39,7 @@ var closedReportsPageTemplate;
 var bansPageTemplate;
 var banCellTemplate;
 var uploadCellTemplate;
+var errorTemplate;
 
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 
@@ -86,6 +87,7 @@ function loadMainTemplates(fePath, templateSettings) {
   loginTemplate = fs.readFileSync(fePath + templateSettings.loginPage);
   accountTemplate = fs.readFileSync(fePath + templateSettings.accountPage);
   gManagementTemplate = fs.readFileSync(fePath + templateSettings.gManagement);
+  errorTemplate = fs.readFileSync(fePath + templateSettings.errorPage);
 
   var closedReportsPath = fePath + templateSettings.closedReportsPage;
   closedReportsPageTemplate = fs.readFileSync(closedReportsPath);
@@ -221,6 +223,11 @@ function testTemplates(settings) {
         fields : [ 'labelNewPass' ]
       },
       {
+        template : 'errorPage',
+        content : errorTemplate,
+        fields : [ 'codeLabel', 'errorLabel' ]
+      },
+      {
         template : 'recoveryEmail',
         content : recoveryEmailTemplate,
         fields : [ 'linkRecovery' ]
@@ -317,6 +324,33 @@ exports.loadTemplates = function() {
   loadCellTemplates(fePath, templateSettings);
 
   testTemplates(templateSettings);
+
+};
+
+exports.error = function(code, message) {
+
+  try {
+
+    var document = jsdom(errorTemplate);
+
+    document.getElementById('codeLabel').innerHTML = code;
+
+    document.getElementById('errorLabel').innerHTML = message;
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+
+  }
 
 };
 
