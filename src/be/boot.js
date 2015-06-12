@@ -393,25 +393,9 @@ function scheduleTempFilesCleaning() {
 
 }
 
-if (cluster.isMaster) {
+function checkDbVersions() {
 
-  if (debug) {
-
-    removeExpiredTempFiles(function removedExpiredFiles(error) {
-      if (error) {
-        if (generalSettings.verbose) {
-          console.log(error);
-        }
-        if (debug) {
-          throw error;
-        }
-      } else {
-        scheduleTempFilesCleaning();
-      }
-    });
-  }
-
-  db.init(function bootedDb(error) {
+  db.checkVersion(function checkedVersion(error) {
 
     if (error) {
       if (generalSettings.verbose) {
@@ -444,6 +428,7 @@ if (cluster.isMaster) {
             if (debug) {
               throw error;
             }
+
             checkForDefaultPages();
 
           } else {
@@ -458,6 +443,44 @@ if (cluster.isMaster) {
       } else {
         checkForDefaultPages();
       }
+    }
+
+  });
+
+}
+
+if (cluster.isMaster) {
+
+  if (debug) {
+
+    removeExpiredTempFiles(function removedExpiredFiles(error) {
+      if (error) {
+        if (generalSettings.verbose) {
+          console.log(error);
+        }
+        if (debug) {
+          throw error;
+        }
+      } else {
+        scheduleTempFilesCleaning();
+      }
+    });
+  }
+
+  db.init(function bootedDb(error) {
+
+    if (error) {
+      if (generalSettings.verbose) {
+        console.log(error);
+      }
+
+      if (debug) {
+        throw error;
+      }
+    } else {
+
+      checkDbVersions();
+
     }
 
   });

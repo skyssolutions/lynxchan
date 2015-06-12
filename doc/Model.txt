@@ -110,6 +110,15 @@ captchas: stores captchas.
 
 ----------------------------------------------------------------------------------------
 
+witnessedReleases: stores data about the releases the application went through and enables it to use this information to update the database structure in updates.
+    version(Number): the version of the database that has been used at one point or the other.
+    active(Boolean): indicates if its the current version.
+    deploy(Date): date of when the version started being used.
+    upgraded(Boolean): indicates if the version have already been upgraded from.
+
+----------------------------------------------------------------------------------------
+
+
 *: duplicated data, foreign key.
 **: unique key
 ***:part of a unique key combination.

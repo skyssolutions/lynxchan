@@ -1,5 +1,7 @@
 'use strict';
 
+var dbVersion = 1;
+
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
 
@@ -16,6 +18,7 @@ var cachedDb;
 
 var maxIndexesSet = 8;
 
+var cachedVersions;
 var cachedPosts;
 var cachedReports;
 var cachedThreads;
@@ -28,6 +31,7 @@ var cachedRecoveryRequests;
 
 var loading;
 
+// start of captcha cleanup
 exports.scheduleExpiredCaptchaCheck = function(immediate) {
   if (immediate) {
     gridFsHandler = require('./engine/gridFsHandler');
@@ -101,6 +105,126 @@ function checkExpiredCaptchas() {
   });
 
 }
+// end of captcha cleanup
+
+// start of version check
+
+function registerLatestVersion(callback) {
+
+  if (verbose) {
+    console.log('Checking if latest version is ' + dbVersion);
+  }
+
+  cachedVersions.count({
+    version : dbVersion,
+    active : true
+  }, function gotVersion(error, count) {
+    if (error) {
+      callback(error);
+    } else if (count) {
+      callback();
+    } else {
+
+      // style exception, too simple
+      if (verbose) {
+        console.log('Registering current version as ' + dbVersion);
+      }
+
+      cachedVersions.insert({
+        version : dbVersion,
+        deploy : new Date(),
+        active : true,
+        upgraded : false
+      }, function addedVersion(error) {
+        callback(error);
+
+      });
+
+      // style exception, too simple
+
+    }
+  });
+}
+
+// Implement upgrades here. The version is the current version.
+function upgrade(version, callback) {
+
+  switch (version) {
+  default:
+    callback('Cannot upgrade from version ' + version);
+  }
+
+}
+
+function iterateUpgrades(currentVersion, callback) {
+
+  if (verbose) {
+    console.log('Iterating db version ' + currentVersion);
+  }
+
+  if (currentVersion === dbVersion) {
+    registerLatestVersion(callback);
+    return;
+  }
+
+  upgrade(currentVersion, function upgraded(error) {
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+
+      cachedVersions.updateOne({
+        version : currentVersion
+      }, {
+        $set : {
+          version : currentVersion,
+          active : false,
+          upgraded : true
+        }
+      }, {
+        upsert : true
+      }, function confirmedUpgrade(error) {
+        if (error) {
+          callback(error);
+        } else {
+          iterateUpgrades(currentVersion + 1, callback);
+        }
+      });
+
+      // style exception, too simple
+
+    }
+  });
+
+}
+
+exports.checkVersion = function(callback) {
+
+  cachedVersions = cachedDb.collection('witnessedReleases');
+
+  cachedVersions.findOne({
+    version : {
+      $lt : dbVersion
+    },
+    upgraded : false
+  }, {
+    sort : {
+      version : -1
+    }
+  }, function gotLatestVersion(error, version) {
+    if (error) {
+      callback(error);
+    } else if (!version) {
+      registerLatestVersion(callback);
+    } else {
+      iterateUpgrades(version.version, callback);
+    }
+
+  });
+
+};
+// end of version check
 
 function indexSet(callback) {
 
@@ -108,10 +232,12 @@ function indexSet(callback) {
 
   if (indexesSet === maxIndexesSet) {
     loading = false;
+
     callback();
   }
 }
 
+// start of index initialization
 function initCaptchas(callback) {
 
   cachedCaptchas = cachedDb.collection('captchas');
@@ -286,6 +412,10 @@ function initBoards(callback) {
 
 }
 
+// end of index initialization
+
+// start of getters
+
 exports.conn = function() {
   return cachedDb;
 };
@@ -325,6 +455,8 @@ exports.captchas = function() {
 exports.reports = function() {
   return cachedReports;
 };
+
+// end of getters
 
 function checkCollections(db, callback) {
 
