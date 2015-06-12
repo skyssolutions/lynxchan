@@ -443,5 +443,22 @@ errorLabel:
 
 ------------------------------------------------------------------------------------------
 
+banPage:
+
+Elements:
+boardLabel:
+    type: span
+    description: holds the board where the ban took place.
+
+reasonLabel:
+    type: span
+    description: holds the reason of the ban.
+
+expirationLabel:     
+    type: span
+    description: holds the expiration of the ban.
+
+------------------------------------------------------------------------------------------
+
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.
 

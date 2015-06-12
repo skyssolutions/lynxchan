@@ -27,6 +27,7 @@ The global status are:
     construction: page is under construction and unavailable.
     denied: user is not allowed to perform the requested operation.
     ok: operation sucessful.
+    banned: user is banned. In this case, data will contain and object with the following fields: reason, board, expiration.
 
 The back-end will truncate strings longer than the maximum length.
 Files should be sent in a parameter called 'files' containing an array where each object contains the following fields:

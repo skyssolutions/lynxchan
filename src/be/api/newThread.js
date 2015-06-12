@@ -9,15 +9,23 @@ function createThread(req, res, parameters) {
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
   }
-
-  postingOps.newThread(req, parameters, function threadCreated(error, id) {
+  apiOps.checkForBan(req, parameters.boardUri, res, function checked(error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
-      apiOps.outputResponse(null, id, 'ok', res);
+
+      // style exception, too simple
+      postingOps.newThread(req, parameters, function threadCreated(error, id) {
+        if (error) {
+          apiOps.outputError(error, res);
+        } else {
+          apiOps.outputResponse(null, id, 'ok', res);
+        }
+      });
+      // style exception, too simple
+
     }
   });
-
 }
 
 exports.process = function(req, res) {

@@ -269,8 +269,8 @@ exports.checkBlankParameters = function(object, parameters, res) {
     }
 
     if (res) {
-      var message = 'blank parameter: ' + parameter;
-      message += '<br>Reason: ' + reason;
+      var message = 'Blank parameter: ' + parameter;
+      message += ', ' + reason;
       exports.outputError(message, 400, res);
     }
 
@@ -310,27 +310,6 @@ exports.checkBlankParameters = function(object, parameters, res) {
 
 };
 
-function outputBanMessage(ban, res) {
-
-  res.writeHead(200, miscOps.corsHeader('text/html'));
-  // add template
-
-  var response = 'You have been banned from ';
-
-  if (ban.boardUri) {
-    response += '/' + ban.boardUri + '/';
-  } else {
-    response += 'all boards';
-  }
-
-  response += ' until ' + ban.expiration + ' by ' + ban.appliedBy + '.<br>';
-
-  response += 'Reason: ' + ban.reason;
-
-  res.end(response);
-
-}
-
 exports.checkForBan = function(req, boardUri, res, callback) {
 
   var ip = req.connection.remoteAddress;
@@ -351,7 +330,11 @@ exports.checkForBan = function(req, boardUri, res, callback) {
     if (error) {
       callback(error);
     } else if (ban) {
-      outputBanMessage(ban, res);
+      res.writeHead(200, miscOps.corsHeader('text/html'));
+
+      var board = ban.boardUri ? '/' + ban.boardUri + '/' : 'all boards';
+
+      res.end(domManipulator.ban(ban.reason, ban.expiration, board));
     } else {
       callback();
     }

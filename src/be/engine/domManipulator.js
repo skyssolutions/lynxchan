@@ -40,6 +40,7 @@ var bansPageTemplate;
 var banCellTemplate;
 var uploadCellTemplate;
 var errorTemplate;
+var banPageTemplate;
 
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 
@@ -88,6 +89,7 @@ function loadMainTemplates(fePath, templateSettings) {
   accountTemplate = fs.readFileSync(fePath + templateSettings.accountPage);
   gManagementTemplate = fs.readFileSync(fePath + templateSettings.gManagement);
   errorTemplate = fs.readFileSync(fePath + templateSettings.errorPage);
+  banPageTemplate = fs.readFileSync(fePath + templateSettings.banPage);
 
   var closedReportsPath = fePath + templateSettings.closedReportsPage;
   closedReportsPageTemplate = fs.readFileSync(closedReportsPath);
@@ -257,10 +259,16 @@ function testTemplates(settings) {
         content : messageTemplate,
         fields : [ 'labelMessage', 'linkRedirect' ]
       },
+
       {
         template : 'accountPage',
         content : accountTemplate,
         fields : [ 'labelLogin', 'boardsDiv', 'globalManagementLink' ]
+      },
+      {
+        template : 'banPage',
+        content : banPageTemplate,
+        fields : [ 'boardLabel', 'reasonLabel', 'expirationLabel' ]
       },
       {
         template : 'gManagement',
@@ -324,6 +332,37 @@ exports.loadTemplates = function() {
   loadCellTemplates(fePath, templateSettings);
 
   testTemplates(templateSettings);
+
+};
+
+exports.ban = function(reason, expiration, board) {
+
+  try {
+
+    var document = jsdom(banPageTemplate);
+
+    document.getElementById('reasonLabel').innerHTML = reason;
+
+    document.getElementById('boardLabel').innerHTML = board;
+
+    expiration = formatDateToDisplay(expiration);
+
+    document.getElementById('expirationLabel').innerHTML = expiration;
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+
+  }
 
 };
 

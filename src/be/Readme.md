@@ -58,6 +58,7 @@ A file called `templateSettings.json` should be located on the front-end directo
 * `bansPage`: template used for the bans page.
 * `banCell`: template used for the bans cell.
 * `uploadCell`: template used for uploads cell.
+* `banPage`: template used for the ban page.
 
 # Back-end settings
 Settings files that goes into the settings directory:

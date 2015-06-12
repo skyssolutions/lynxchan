@@ -10,11 +10,22 @@ function createPost(req, res, parameters) {
     return;
   }
 
-  postingOps.newPost(req, parameters, function postCreated(error, id) {
+  apiOps.checkForBan(req, parameters.boardUri, res, function checked(error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
-      apiOps.outputResponse(null, id, 'ok', res);
+
+      // style exception, too simple
+
+      postingOps.newPost(req, parameters, function postCreated(error, id) {
+        if (error) {
+          apiOps.outputError(error, res);
+        } else {
+          apiOps.outputResponse(null, id, 'ok', res);
+        }
+      });
+      // style exception, too simple
+
     }
   });
 

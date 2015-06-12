@@ -7,6 +7,7 @@ var debug = boot.debug();
 var verbose = settings.verbose;
 var accountOps = require('./accountOps');
 var miscOps = require('./miscOps');
+var bans = require('../db').bans();
 var fs = require('fs');
 var crypto = require('crypto');
 var captchaOps = require('./captchaOps');
@@ -292,4 +293,36 @@ exports.outputResponse = function(auth, data, status, res) {
   }
 
   res.end(JSON.stringify(output));
+};
+
+exports.checkForBan = function(req, boardUri, res, callback) {
+
+  var ip = req.connection.remoteAddress;
+
+  bans.findOne({
+    ip : ip,
+    expiration : {
+      $gt : new Date()
+    },
+    $or : [ {
+      boardUri : boardUri
+    }, {
+      boardUri : {
+        $exists : false
+      }
+    } ]
+  }, function gotBan(error, ban) {
+    if (error) {
+      callback(error);
+    } else if (ban) {
+      exports.outputResponse(null, {
+        reason : ban.reason,
+        expiration : ban.expiration,
+        board : ban.boardUri ? '/' + ban.boardUri + '/' : 'all boards'
+      }, 'banned', res);
+    } else {
+      callback();
+    }
+  });
+
 };
