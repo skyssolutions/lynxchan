@@ -12,10 +12,11 @@ var fs = require('fs');
 var crypto = require('crypto');
 var captchaOps = require('./captchaOps');
 var path = require('path');
-var tempDir = settings.tempDirectory || '/tmp';
+var tempDir = boot.tempDir();
 var uploadHandler = require('./uploadHandler');
-var maxRequestSize = settings.maxRequestSize || 2 * 1024 * 1024;
-var maxFileSize = settings.maxFileSize || Infinity;
+var maxRequestSize = boot.maxRequestSize();
+var maxFileSize = boot.maxFileSize();
+var acceptedMimes = uploadHandler.supportedMimes();
 
 var FILE_EXT_RE = /(\.[_\-a-zA-Z0-9]{0,16}).*/;
 // replace base64 characters with safe-for-filename characters
@@ -128,14 +129,16 @@ function processFile(parsedData, res, finalArray, toRemove, callback) {
           storeImages(parsedData, res, finalArray, toRemove, callback);
         } else {
 
-          if (stats.size > maxFileSize) {
+          var mime = matches[1];
+
+          if (stats.size > maxFileSize || acceptedMimes.indexOf(mime) === -1) {
             storeImages(parsedData, res, finalArray, toRemove, callback);
           } else {
 
             var toPush = {
               title : file.name,
               size : stats.size,
-              mime : matches[1],
+              mime : mime,
               pathInDisk : location
             };
 

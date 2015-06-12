@@ -9,6 +9,17 @@ var gsHandler = require('./gridFsHandler');
 var db = require('../db');
 var threads = db.threads();
 var posts = db.posts();
+var settings = require('../boot').getGeneralSettings();
+
+var supportedMimes = settings.acceptedMimes;
+
+if (!supportedMimes) {
+  supportedMimes = [ 'image/png', 'image/jpeg', 'image/gif' ];
+}
+
+exports.supportedMimes = function() {
+  return supportedMimes;
+};
 
 exports.getImageBounds = function(path, callback) {
 

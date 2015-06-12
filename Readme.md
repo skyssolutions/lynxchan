@@ -16,7 +16,7 @@
 * [ImageMagick](http://www.imagemagick.org/script/index.php)
 
 # Install
-1. Create the required settings file in the `src/be/settings` directory. Instructions can be found at `src/be/readme.md`.
+1. Create the required settings file in the `src/be/settings` directory. Instructions can be found at `src/be/readme.md`. There is also a directory called settings.example with a set of functional settings.
 2. Create the user `iojs` on the system and make sure he has access to the `src/be` directory and the designed front-end directory.
 3. Run `aux/setup.sh` as root. Optionally add either the argument `upstart` or `systemd` to install a service to act as a daemon using the `iojs` user.
 

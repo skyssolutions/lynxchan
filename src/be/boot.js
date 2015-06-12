@@ -21,6 +21,8 @@ var templateSettings;
 var genericThumb;
 var fePath;
 var tempDirectory;
+var maxRequestSize;
+var maxFileSize;
 
 var args = process.argv;
 
@@ -99,6 +101,23 @@ exports.getFePath = function() {
   return fePath;
 };
 
+exports.tempDir = function() {
+
+  return tempDirectory;
+
+};
+
+function setMaxSizes() {
+  if (generalSettings.maxFileSizeMB) {
+    maxFileSize = generalSettings.maxFileSizeMB * 1024 * 1024;
+  } else {
+    maxFileSize = Infinity;
+  }
+
+  maxRequestSize = (generalSettings.maxRequestSizeMB || 2) * 1024 * 1024;
+
+}
+
 exports.loadSettings = function() {
 
   var dbSettingsPath = __dirname + '/settings/db.json';
@@ -116,6 +135,8 @@ exports.loadSettings = function() {
 
   tempDirectory = generalSettings.tempDirectory || '/tmp';
 
+  setMaxSizes();
+
   var templateSettingsPath = fePath + '/templateSettings.json';
 
   templateSettings = JSON.parse(fs.readFileSync(templateSettingsPath));
@@ -126,6 +147,14 @@ exports.loadSettings = function() {
 
   genericThumb = '/genericThumb' + '.' + thumbExt;
 
+};
+
+exports.maxRequestSize = function() {
+  return maxRequestSize;
+};
+
+exports.maxFileSize = function() {
+  return maxFileSize;
 };
 
 // after everything is all right, call this function to start the workers

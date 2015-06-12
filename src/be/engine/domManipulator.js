@@ -341,6 +341,8 @@ exports.ban = function(reason, expiration, board) {
 
     var document = jsdom(banPageTemplate);
 
+    document.title = 'b& :^)';
+
     document.getElementById('reasonLabel').innerHTML = reason;
 
     document.getElementById('boardLabel').innerHTML = board;
@@ -371,6 +373,8 @@ exports.error = function(code, message) {
   try {
 
     var document = jsdom(errorTemplate);
+
+    document.title = 'Error';
 
     document.getElementById('codeLabel').innerHTML = code;
 

@@ -78,8 +78,9 @@ Settings files that goes into the settings directory:
 * `captchaExpiration`: expiration in minutes of captchas. Defaults to 1 minute.
 * `captchaFonts`(Array): array of absolute paths to font files in the system to be used in the captcha. Optional.
 * `siteTitle`: name to be used as the title of the front-page.
-* `maxRequestSize`: maximum size in bytes of incoming requests. Defaults to 2MB.
-* `maxFileSize`: maximum size in bytes of individual uploaded files. Defaults to infinity.
+* `maxRequestSizeMB`: maximum size in megabytes of incoming requests. Defaults to 2MB.
+* `maxFileSizeMB`: maximum size in megabytes of individual uploaded files. Defaults to infinity.
+* `acceptedMimes`(Array): accepted mimes on uploads. Defaults to `[ 'image/png', 'image/jpeg', 'image/gif' ]`.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

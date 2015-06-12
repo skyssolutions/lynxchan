@@ -13,9 +13,10 @@ var miscOps = require('./miscOps');
 var jsdom = require('jsdom').jsdom;
 var domManipulator = require('./domManipulator');
 var uploadHandler = require('./uploadHandler');
-var uploadDir = settings.tempDirectory || '/tmp';
-var maxRequestSize = settings.maxRequestSize || 2 * 1024 * 1024;
-var maxFileSize = settings.maxFileSize || Infinity;
+var uploadDir = boot.tempDir();
+var maxRequestSize = boot.maxRequestSize();
+var maxFileSize = boot.maxFileSize();
+var acceptedMimes = uploadHandler.supportedMimes();
 
 exports.getCookies = function(req) {
   var parsedCookies = {};
@@ -60,12 +61,16 @@ function transferFileInformation(files, fields, parsedCookies, callback) {
 
     var file = files.files.shift();
 
-    if (file.size && file.size < maxFileSize) {
+    var mime = file.headers['content-type'];
+
+    var acceptableSize = file.size && file.size < maxFileSize;
+
+    if (acceptableSize && acceptedMimes.indexOf(mime) > -1) {
       var toPush = {
         size : file.size,
         title : file.originalFilename,
         pathInDisk : file.path,
-        mime : file.headers['content-type']
+        mime : mime
       };
 
       if (toPush.mime.indexOf('image/') > -1) {

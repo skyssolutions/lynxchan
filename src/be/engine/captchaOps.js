@@ -2,7 +2,8 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
-var settings = require('../boot').getGeneralSettings();
+var boot = require('../boot');
+var settings = boot.getGeneralSettings();
 var verbose = settings.verbose;
 var logger = require('../logger');
 var exec = require('child_process').exec;
@@ -16,7 +17,7 @@ var captchaExpiration = settings.captchaExpiration || 1;
 var uploadHandler = require('./uploadHandler');
 var formOps = require('./formOps');
 var gridFsHandler = require('./gridFsHandler');
-var tempDirectory = settings.tempDirectory || '/tmp';
+var tempDirectory = boot.tempDir();
 
 // captcha settings
 var fonts = settings.captchaFonts || [];
