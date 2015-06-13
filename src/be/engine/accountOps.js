@@ -19,6 +19,11 @@ var newAccountParameters = [ {
   length : 64
 } ];
 
+var changeSettingsParameters = [ {
+  field : 'email',
+  length : 64
+} ];
+
 exports.setGlobalRole = function(operatorData, parameters, callback) {
 
   if (isNaN(parameters.role)) {
@@ -186,6 +191,7 @@ exports.validate = function(auth, callback) {
   });
 };
 
+// start of reset request
 function emailUserOfRequest(login, email, hash, callback) {
 
   var recoveryLink = '/recoverAccount.js?hash=' + hash + '&login=' + login;
@@ -237,7 +243,7 @@ function lookForUserEmailOfRequest(login, callback) {
       callback(error);
     } else if (!user) {
       callback('Account not found');
-    } else if (!user.email) {
+    } else if (!user.email || !user.email.length) {
       callback('Account doesn\'t have an email associated to it.');
     } else {
       generateRequest(login, user.email, callback);
@@ -270,7 +276,9 @@ exports.requestRecovery = function(login, callback) {
   });
 
 };
+// end of reset request
 
+// start of password reset
 function emailUserNewPassword(email, newPass, callback) {
 
   var content = domManipulator.resetEmail(newPass);
@@ -339,3 +347,91 @@ exports.recoverAccount = function(parameters, callback) {
     }
   });
 };
+
+// end of password reset
+
+exports.changeSettings = function(userData, parameters, callback) {
+
+  miscOps.sanitizeStrings(parameters, changeSettingsParameters);
+
+  users.updateOne({
+    login : userData.login
+  }, {
+    $set : {
+      email : parameters.email
+    }
+  }, function updatedSettings(error) {
+    callback(error);
+  });
+
+};
+
+// start of password change
+function changePassword(userData, parameters, callback) {
+
+  bcrypt.hash(parameters.newPassword, 8, function(error, hash) {
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      users.updateOne({
+        login : userData.login
+      }, {
+        $set : {
+          password : hash
+        }
+      }, function updatedPassword(error) {
+        if (error) {
+          callback(error);
+        } else {
+          exports.createSession(userData.login, callback);
+        }
+      });
+
+      // style exception, too simple
+    }
+  });
+
+}
+
+exports.changePassword = function(userData, parameters, callback) {
+
+  if (parameters.newPassword !== parameters.confirmation) {
+
+    callback('Confirmation does not match');
+    return;
+  }
+
+  users.findOne({
+    login : userData.login
+  }, function gotUser(error, user) {
+    if (error) {
+      callback(error);
+    } else if (!user) {
+      callback('User not found');
+    } else {
+
+      // style exception, too simple
+
+      bcrypt.compare(parameters.password, user.password, function(error,
+          matches) {
+
+        if (error) {
+          callback(error);
+        } else if (!matches) {
+          callback('Incorrect current password');
+        } else {
+          changePassword(userData, parameters, callback);
+        }
+      });
+
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+// end of password change

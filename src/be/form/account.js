@@ -11,8 +11,7 @@ exports.process = function(req, res) {
 
         res.writeHead(200, miscOps.corsHeader('text/html'));
 
-        res.end(domManipulator.account(userData.globalRole, userData.login,
-            userData.ownedBoards));
+        res.end(domManipulator.account(userData));
 
       });
 

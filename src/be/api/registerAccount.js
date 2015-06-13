@@ -2,7 +2,7 @@
 
 var apiOps = require('../engine/apiOps');
 var accountOps = require('../engine/accountOps');
-var mandatoryParameters = [ 'login', 'password' ];
+var mandatoryParameters = [ 'login' ];
 
 function createAccount(parameters, res) {
 

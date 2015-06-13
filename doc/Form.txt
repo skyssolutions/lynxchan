@@ -280,4 +280,28 @@ Description: returns a captcha image in png format.
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::24
+
+Name: changeAccountSettings
+
+Description: changes general account settings.
+
+Parameters:
+    email: new e-mail of the account. 64 characters.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::25
+
+Name: changeAccountPassword
+
+Description: changes account password.
+
+Parameters: 
+    password: current password.
+    newPassword: new password.
+    confirmation: repeat of new password.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

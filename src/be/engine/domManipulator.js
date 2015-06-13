@@ -263,7 +263,8 @@ function testTemplates(settings) {
       {
         template : 'accountPage',
         content : accountTemplate,
-        fields : [ 'labelLogin', 'boardsDiv', 'globalManagementLink' ]
+        fields : [ 'labelLogin', 'boardsDiv', 'emailField',
+            'globalManagementLink' ]
       },
       {
         template : 'banPage',
@@ -879,29 +880,34 @@ function fillBoardsDiv(document, boardList) {
 
 }
 
-exports.account = function(globalRole, login, boardList) {
+exports.account = function(userData) {
 
   try {
 
     var document = jsdom(accountTemplate);
 
-    document.title = 'Welcome, ' + login;
+    document.title = 'Welcome, ' + userData.login;
 
     var loginLabel = document.getElementById('labelLogin');
 
-    loginLabel.innerHTML = login;
+    loginLabel.innerHTML = userData.login;
 
     var gManagementLink = document.getElementById('globalManagementLink');
 
-    var globalStaff = globalRole <= miscOps.getMaxStaffRole();
+    var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
     if (!globalStaff) {
       gManagementLink.style.display = 'none';
     }
 
-    if (boardList && boardList.length) {
+    if (userData.email && userData.email.length) {
+      document.getElementById('emailField').setAttribute('value',
+          userData.email);
+    }
 
-      fillBoardsDiv(document, boardList);
+    if (userData.ownedBoards && userData.ownedBoards.length) {
+
+      fillBoardsDiv(document, userData.ownedBoards);
 
     }
 

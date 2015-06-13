@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var accountOps = require('../engine/accountOps');
-var mandatoryParameters = [ 'login', 'password' ];
+var mandatoryParameters = [ 'login' ];
 
 function login(res, parameters) {
 

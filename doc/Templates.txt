@@ -1,5 +1,9 @@
 This document specifies the required characteristics of each template. The keys used in the templateSettings.json will be used to refer to them. The name of the element should be used as the id.
 
+------------------------------------------------------------------------------------------
+
+TEM_ID::01
+
 index:
 Elements:
 divBoards:
@@ -7,6 +11,8 @@ divBoards:
     description: contains the listing of boards.
 
 ------------------------------------------------------------------------------------------
+
+TEM_ID::02
 
 boardPage:
 
@@ -36,6 +42,8 @@ linkManagement:
     description: link to the board management page.
 
 ------------------------------------------------------------------------------------------
+
+TEM_ID::03
 
 threadPage:
 
@@ -98,6 +106,8 @@ checkboxPin:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::04
+
 messagePage:
 
 Elements:
@@ -112,6 +122,8 @@ linkRedirect:
 Required tags:
 head
 ------------------------------------------------------------------------------------------
+
+TEM_ID::05
 
 opCell*:
 
@@ -158,6 +170,8 @@ pinIndicator:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::06
+
 postCell*:
 
 Elements:
@@ -191,7 +205,9 @@ deletionCheckBox:
 
 ------------------------------------------------------------------------------------------
 
-accountPage
+TEM_ID::07
+
+accountPage:
 
 Elements:
 labelLogin:
@@ -206,9 +222,15 @@ globalManagementLink:
     type: a
     description: link that leads to the global management page.
 
+emailField:
+    type: input
+    description: field that holds the user e-mail.
+
 ------------------------------------------------------------------------------------------
 
-recoveryEmail
+TEM_ID::08
+
+recoveryEmail:
 
 Elements:
 linkRecovery:
@@ -217,7 +239,9 @@ linkRecovery:
 
 ------------------------------------------------------------------------------------------
 
-resetEmail
+TEM_ID::09
+
+resetEmail:
 
 Elements:
 labelNewPass:
@@ -226,7 +250,9 @@ labelNewPass:
 
 ------------------------------------------------------------------------------------------
 
-gManagement
+TEM_ID::10
+
+gManagement:
 
 Elements:
 divStaff:
@@ -255,6 +281,8 @@ bansLink:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::11
+
 staffCell*:
 Root element: form
 
@@ -272,6 +300,8 @@ roleCombo:
     description: combobox with the possible roles for the user.
 
 ------------------------------------------------------------------------------------------
+
+TEM_ID::12
 
 bManagement:
 
@@ -314,6 +344,8 @@ bansLink:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::13
+
 volunteerCell*:
 Root element: form
 
@@ -331,6 +363,8 @@ userLabel:
     description: label used to identify the user. 
 
 ------------------------------------------------------------------------------------------
+
+TEM_ID::14
 
 reportCell*:
 Root element: form
@@ -350,6 +384,8 @@ idIdentifier:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::15
+
 closedReportsPage:
 
 Elements:
@@ -358,6 +394,8 @@ reportDiv:
     description: div containing the reports.
 
 ------------------------------------------------------------------------------------------
+
+TEM_ID::16
 
 closedReportCell*:
 Root element: div
@@ -381,6 +419,8 @@ closedDateLabel:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::17
+
 bansPage:
 
 Elements:
@@ -389,6 +429,8 @@ bansDiv:
     description: holds the ban list.
 
 ------------------------------------------------------------------------------------------
+
+TEM_ID::18
 
 banCell*:
 Root element: form
@@ -412,6 +454,8 @@ boardLabel:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::19
+
 uploadCell*:
 Root element: div
 
@@ -430,6 +474,8 @@ nameLink:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::20
+
 errorPage:
 
 Elements:
@@ -442,6 +488,8 @@ errorLabel:
     description: holds the error message.
 
 ------------------------------------------------------------------------------------------
+
+TEM_ID::21
 
 banPage:
 

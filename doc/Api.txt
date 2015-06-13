@@ -273,6 +273,30 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::21
+
+Name: changeAccountSettings
+
+Description: changes general account settings.
+
+Parameters:
+    email: new e-mail of the account. 64 characters.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::22
+
+Name: changeAccountPassword
+
+Description: changes account password.
+
+Parameters: 
+    password: current password.
+    newPassword: new password.
+    confirmation: repeat of new password.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters
 **: exclusive funcionality to the json api.
 
