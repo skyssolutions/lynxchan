@@ -17,6 +17,7 @@ var uploadDir = boot.tempDir();
 var maxRequestSize = boot.maxRequestSize();
 var maxFileSize = boot.maxFileSize();
 var acceptedMimes = uploadHandler.supportedMimes();
+var maxFiles = settings.maxFiles || 3;
 
 exports.getCookies = function(req) {
   var parsedCookies = {};
@@ -57,7 +58,7 @@ function getUploadDimensions(toPush, files, fields, parsedCookies, callback) {
 
 function transferFileInformation(files, fields, parsedCookies, callback) {
 
-  if (files.files.length) {
+  if (files.files.length && fields.files.length < maxFiles) {
 
     var file = files.files.shift();
 

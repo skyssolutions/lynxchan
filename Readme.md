@@ -1,5 +1,4 @@
 # Status:
-* Pre-alpha: 1 checkpoint to alpha.
 * Alpha: 14 checkpoints to beta.
 * Beta: 7 checkpoints to release.
 

@@ -81,6 +81,7 @@ Settings files that goes into the settings directory:
 * `maxRequestSizeMB`: maximum size in megabytes of incoming requests. Defaults to 2MB.
 * `maxFileSizeMB`: maximum size in megabytes of individual uploaded files. Defaults to infinity.
 * `acceptedMimes`(Array): accepted mimes on uploads. Defaults to `[ 'image/png', 'image/jpeg', 'image/gif' ]`.
+* `maxFiles`(Number): maximum amount of files on each post. Defaults to 3.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

@@ -17,6 +17,7 @@ var uploadHandler = require('./uploadHandler');
 var maxRequestSize = boot.maxRequestSize();
 var maxFileSize = boot.maxFileSize();
 var acceptedMimes = uploadHandler.supportedMimes();
+var maxFiles = settings.maxFiles || 3;
 
 var FILE_EXT_RE = /(\.[_\-a-zA-Z0-9]{0,16}).*/;
 // replace base64 characters with safe-for-filename characters
@@ -171,7 +172,9 @@ function storeImages(parsedData, res, finalArray, toRemove, callback) {
 
   var hasFilesField = parsedData.parameters && parsedData.parameters.files;
 
-  if (hasFilesField && parsedData.parameters.files.length) {
+  var tooManyFiles = finalArray.length === maxFiles;
+
+  if (!tooManyFiles && hasFilesField && parsedData.parameters.files.length) {
     processFile(parsedData, res, finalArray, toRemove, callback);
 
   } else {

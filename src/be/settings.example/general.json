@@ -13,5 +13,6 @@
   "emailSender": "no-reply@lynxchan.com",
   "siteTitle": "My chan, with blacjack and hookers",
   "maxRequestSizeMB": 3,
-  "maxFileSizeMB": 1
+  "maxFileSizeMB": 1,
+  "maxFiles": 3
 }
