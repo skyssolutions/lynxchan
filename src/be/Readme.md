@@ -59,6 +59,8 @@ A file called `templateSettings.json` should be located on the front-end directo
 * `banCell`: template used for the bans cell.
 * `uploadCell`: template used for uploads cell.
 * `banPage`: template used for the ban page.
+* `bannerManagementPage`: template used for the banner management page.
+* `bannerCell`: template used to list a board's banners.
 
 # Back-end settings
 Settings files that goes into the settings directory:
@@ -106,4 +108,5 @@ Metadata of files on gridfs will have the following values:
   * `thread` 
   * `media`
   * `captcha` 
+  * `banner`
 

@@ -342,6 +342,10 @@ bansLink:
     type: a
     description: link to the bans page.
 
+bannerManagementLink:
+    type: a
+    description: link to the banner management page.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::13
@@ -505,6 +509,37 @@ reasonLabel:
 expirationLabel:     
     type: span
     description: holds the expiration of the ban.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::22
+
+bannerManagementPage:
+
+Elements:
+bannersDiv:
+    type: div.
+    description: holds the existing banners.
+
+boardIdentifier:
+    type: input.
+    description: hidden input used to identify the board when creating banners.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::23
+
+bannerCell*:
+Root element: form
+
+Elements:
+bannerImage:
+    type: img.
+    description: holds the link to the banner.
+
+bannerIdentifier:
+    type: input.
+    description: hidden input that holds the identifier of the banner.
 
 ------------------------------------------------------------------------------------------
 

@@ -41,6 +41,8 @@ var banCellTemplate;
 var uploadCellTemplate;
 var errorTemplate;
 var banPageTemplate;
+var bannerManagementTemplate;
+var bannerCellTemplate;
 
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 
@@ -74,25 +76,35 @@ function loadCellTemplates(fePath, templateSettings) {
   volunteerCellTemplate = fs.readFileSync(volunteerPath);
 
   banCellTemplate = fs.readFileSync(fePath + templateSettings.banCell);
+
+  bannerCellTemplate = fs.readFileSync(fePath + templateSettings.bannerCell);
 }
 
-function loadMainTemplates(fePath, templateSettings) {
+function loadDynamicTemplates(fePath, templateSettings) {
 
   bManagementTemplate = fs.readFileSync(fePath + templateSettings.bManagement);
   bansPageTemplate = fs.readFileSync(fePath + templateSettings.bansPage);
-  frontPageTemplate = fs.readFileSync(fePath + templateSettings.index);
-  threadTemplate = fs.readFileSync(fePath + templateSettings.threadPage);
-  boardTemplate = fs.readFileSync(fePath + templateSettings.boardPage);
   notFoundTemplate = fs.readFileSync(fePath + templateSettings.notFoundPage);
   messageTemplate = fs.readFileSync(fePath + templateSettings.messagePage);
-  loginTemplate = fs.readFileSync(fePath + templateSettings.loginPage);
   accountTemplate = fs.readFileSync(fePath + templateSettings.accountPage);
   gManagementTemplate = fs.readFileSync(fePath + templateSettings.gManagement);
   errorTemplate = fs.readFileSync(fePath + templateSettings.errorPage);
   banPageTemplate = fs.readFileSync(fePath + templateSettings.banPage);
 
+  var bannerManagementPath = fePath + templateSettings.bannerManagementPage;
+  bannerManagementTemplate = fs.readFileSync(bannerManagementPath);
+
   var closedReportsPath = fePath + templateSettings.closedReportsPage;
   closedReportsPageTemplate = fs.readFileSync(closedReportsPath);
+}
+
+function loadMainTemplates(fePath, templateSettings) {
+
+  threadTemplate = fs.readFileSync(fePath + templateSettings.threadPage);
+  frontPageTemplate = fs.readFileSync(fePath + templateSettings.index);
+  boardTemplate = fs.readFileSync(fePath + templateSettings.boardPage);
+  loginTemplate = fs.readFileSync(fePath + templateSettings.loginPage);
+
 }
 
 function checkPageErrors(errors, tests) {
@@ -175,6 +187,11 @@ function testTemplates(settings) {
 
   var cellTests = [
       {
+        template : 'bannerCell',
+        content : bannerCellTemplate,
+        fields : [ 'bannerImage', 'bannerIdentifier' ]
+      },
+      {
         template : 'opCell',
         content : opTemplate,
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
@@ -223,6 +240,11 @@ function testTemplates(settings) {
         template : 'resetEmail',
         content : resetEmailTemplate,
         fields : [ 'labelNewPass' ]
+      },
+      {
+        template : 'bannerManagementPage',
+        content : bannerManagementTemplate,
+        fields : [ 'bannersDiv', 'boardIdentifier' ]
       },
       {
         template : 'errorPage',
@@ -282,7 +304,8 @@ function testTemplates(settings) {
         content : bManagementTemplate,
         fields : [ 'volunteersDiv', 'boardLabel', 'ownerControlDiv',
             'addVolunteerBoardIdentifier', 'transferBoardIdentifier',
-            'deletionIdentifier', 'reportDiv', 'closedReportsLink', 'bansLink' ]
+            'deletionIdentifier', 'reportDiv', 'closedReportsLink', 'bansLink',
+            'bannerManagementLink' ]
       }, {
         template : 'closedReportsPage',
         content : closedReportsPageTemplate,
@@ -330,9 +353,55 @@ exports.loadTemplates = function() {
 
   loadMainTemplates(fePath, templateSettings);
   loadEmailTemplates(fePath, templateSettings);
+  loadDynamicTemplates(fePath, templateSettings);
   loadCellTemplates(fePath, templateSettings);
 
   testTemplates(templateSettings);
+
+};
+
+exports.bannerManagement = function(boardUri, banners) {
+
+  try {
+
+    var document = jsdom(bannerManagementTemplate);
+
+    document.title = 'Banners of /' + boardUri + '/';
+
+    document.getElementById('boardIdentifier').setAttribute('value', boardUri);
+
+    var bannerDiv = document.getElementById('bannersDiv');
+
+    for (var i = 0; i < banners.length; i++) {
+      var banner = banners[i];
+
+      var cell = document.createElement('form');
+      cell.innerHTML = bannerCellTemplate;
+
+      setFormCellBoilerPlate(cell, '/deleteBanner.js', 'bannerCell');
+
+      cell.getElementsByClassName('bannerImage')[0].src = banner.filename;
+
+      cell.getElementsByClassName('bannerIdentifier')[0].setAttribute('value',
+          banner._id);
+
+      bannerDiv.appendChild(cell);
+    }
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+
+  }
 
 };
 
@@ -641,6 +710,10 @@ function setBoardManagementLinks(document, boardData) {
   var bansUrl = '/bans.js?boardUri=' + boardData.boardUri;
 
   document.getElementById('bansLink').href = bansUrl;
+
+  var bannersUrl = '/bannerManagement.js?boardUri=' + boardData.boardUri;
+
+  document.getElementById('bannerManagementLink').href = bannersUrl;
 }
 
 exports.boardManagement = function(login, boardData, reports) {

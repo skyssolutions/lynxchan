@@ -2,8 +2,12 @@
 
 // handles board operations
 
+var mongo = require('mongodb');
+var ObjectID = mongo.ObjectID;
 var db = require('../db');
 var miscOps = require('./miscOps');
+var gridFsHandler = require('./gridFsHandler');
+var files = db.files();
 var reports = db.reports();
 var users = db.users();
 var boards = db.boards();
@@ -291,3 +295,108 @@ exports.createBoard = function(parameters, user, callback) {
   });
 
 };
+
+exports.getBannerData = function(user, boardUri, callback) {
+
+  boards.findOne({
+    boardUri : boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback('Board not found.');
+    } else if (board.owner !== user) {
+      callback('You are not allowed to manage this board\'s banners.');
+    } else {
+
+      // style exception, too simple
+      files.find({
+        'metadata.boardUri' : boardUri,
+        'metadata.type' : 'banner'
+      }).sort({
+        uploadDate : 1
+      }).toArray(function(error, banners) {
+        callback(error, banners);
+      });
+      // style exception, too simple
+    }
+  });
+
+};
+
+exports.addBanner = function(user, parameters, callback) {
+
+  if (!parameters.files.length) {
+    callback('No files sent.');
+    return;
+  } else if (parameters.files[0].mime.indexOf('image/') === -1) {
+    callback('File is not an image');
+    return;
+  }
+
+  boards.findOne({
+    boardUri : parameters.boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback('Board not found.');
+    } else if (board.owner !== user) {
+      callback('You are not allowed to create banners for this board.');
+    } else {
+      var bannerPath = '/' + parameters.boardUri + '/banners/';
+      bannerPath += new Date().getTime();
+
+      var file = parameters.files[0];
+
+      gridFsHandler.writeFile(file.pathInDisk, bannerPath, file.mime, {
+        boardUri : parameters.boardUri,
+        status : 200,
+        type : 'banner'
+      }, callback);
+    }
+  });
+
+};
+// start of banner deletion
+
+function removeBanner(banner, callback) {
+  gridFsHandler.removeFiles(banner.filename, function removedFile(error) {
+    callback(error, banner.metadata.boardUri);
+  });
+
+}
+
+exports.deleteBanner = function(login, parameters, callback) {
+
+  files.findOne({
+    _id : new ObjectID(parameters.bannerId)
+  }, function gotBanner(error, banner) {
+    if (error) {
+      callback(error);
+    } else if (!banner) {
+      callback('Banner not found');
+    } else {
+      // style exception, too simple
+
+      boards.findOne({
+        boardUri : banner.metadata.boardUri
+      }, function gotBoard(error, board) {
+        if (error) {
+          callback(error);
+        } else if (!board) {
+          callback('Board not found');
+        } else if (board.owner !== login) {
+          callback('You are not allowed to delete banners from this board');
+        } else {
+          removeBanner(banner, callback);
+        }
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+// end of banner deletion
