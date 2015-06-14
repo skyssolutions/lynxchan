@@ -337,4 +337,15 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::29
+
+Name: randomBanner
+
+Description: displays a random barner for the specified board. Displays the default banner if no banners are found for the board. Uses get parameters.
+
+Parameters:
+    boardUri: board uri.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

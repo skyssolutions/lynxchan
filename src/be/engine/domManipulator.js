@@ -265,7 +265,7 @@ function testTemplates(settings) {
         template : 'boardPage',
         content : boardTemplate,
         fields : [ 'labelName', 'labelDescription', 'divPostings', 'divPages',
-            'boardIdentifier', 'linkManagement' ]
+            'boardIdentifier', 'linkManagement', 'bannerImage' ]
       },
       {
         template : 'threadPage',
@@ -274,7 +274,7 @@ function testTemplates(settings) {
             'boardIdentifier', 'linkManagement', 'threadIdentifier', 'linkMod',
             'inputBan', 'divExpiration', 'divControls',
             'controlBoardIdentifier', 'controlThreadIdentifier',
-            'checkboxLock', 'checkboxPin' ]
+            'checkboxLock', 'checkboxPin', 'bannerImage' ]
       },
       {
         template : 'messagePage',
@@ -1200,14 +1200,7 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
 
     setThreadLinks(document, boardData, threadData);
 
-    var titleHeader = document.getElementById('labelName');
-
-    titleHeader.innerHTML = boardUri;
-
-    var descriptionHeader = document.getElementById('labelDescription');
-
-    titleHeader.innerHTML = '/' + boardUri + '/ - ' + boardData.boardName;
-    descriptionHeader.innerHTML = boardData.boardDescription;
+    setHeader(document, boardUri, boardData);
 
     setThreadHiddenIdentifiers(document, boardUri, threadData);
 
@@ -1460,6 +1453,19 @@ function addPagesLinks(document, pageCount) {
   }
 }
 
+function setHeader(document, board, boardData) {
+
+  var titleHeader = document.getElementById('labelName');
+  titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
+
+  var descriptionHeader = document.getElementById('labelDescription');
+  descriptionHeader.innerHTML = boardData.boardDescription;
+
+  var linkBanner = '/randomBanner.js?boardUri=' + board;
+  document.getElementById('bannerImage').src = linkBanner;
+
+}
+
 exports.page = function(board, page, threads, pageCount, boardData, preview,
     callback) {
 
@@ -1476,14 +1482,7 @@ exports.page = function(board, page, threads, pageCount, boardData, preview,
 
     boardIdentifyInput.setAttribute('value', board);
 
-    var titleHeader = document.getElementById('labelName');
-
-    titleHeader.innerHTML = board;
-
-    var descriptionHeader = document.getElementById('labelDescription');
-
-    titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
-    descriptionHeader.innerHTML = boardData.boardDescription;
+    setHeader(document, board, boardData);
 
     addPagesLinks(document, pageCount);
 

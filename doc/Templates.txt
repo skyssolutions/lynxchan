@@ -41,6 +41,10 @@ linkManagement:
     type: a
     description: link to the board management page.
 
+bannerImage:
+    type: img
+    description: holds the link that displays a banner to the board.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::03
@@ -103,6 +107,10 @@ checkboxLock:
 checkboxPin:    
     type: input
     description: checkbox indicating if the thread is pinned.
+
+bannerImage:
+    type: img
+    description: holds the link that displays a banner to the board.
 
 ------------------------------------------------------------------------------------------
 

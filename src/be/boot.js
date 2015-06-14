@@ -19,6 +19,7 @@ var dbSettings;
 var generalSettings;
 var templateSettings;
 var genericThumb;
+var defaultBanner;
 var fePath;
 var tempDirectory;
 var maxRequestSize;
@@ -80,6 +81,10 @@ exports.genericThumb = function() {
   return genericThumb;
 };
 
+exports.defaultBanner = function() {
+  return defaultBanner;
+};
+
 exports.debug = function() {
   return debug;
 };
@@ -118,6 +123,20 @@ function setMaxSizes() {
 
 }
 
+function setDefaultImages() {
+  var thumbExt = templateSettings.thumb.split('.');
+
+  thumbExt = thumbExt[thumbExt.length - 1].toLowerCase();
+
+  genericThumb = '/genericThumb' + '.' + thumbExt;
+
+  var bannerExt = templateSettings.defaultBanner.split('.');
+
+  bannerExt = bannerExt[bannerExt.length - 1].toLowerCase();
+
+  defaultBanner = '/defaultBanner' + '.' + bannerExt;
+}
+
 exports.loadSettings = function() {
 
   var dbSettingsPath = __dirname + '/settings/db.json';
@@ -141,11 +160,7 @@ exports.loadSettings = function() {
 
   templateSettings = JSON.parse(fs.readFileSync(templateSettingsPath));
 
-  var thumbExt = templateSettings.thumb.split('.');
-
-  thumbExt = thumbExt[thumbExt.length - 1].toLowerCase();
-
-  genericThumb = '/genericThumb' + '.' + thumbExt;
+  setDefaultImages();
 
 };
 
@@ -215,7 +230,7 @@ function regenerateAll() {
 
 function checkThumb(files) {
   if (files.indexOf(genericThumb) === -1) {
-    generator.thumb(function generated(error) {
+    generator.defaultBanner(function generated(error) {
       if (error) {
         if (generalSettings.verbose) {
           console.log(error);
@@ -234,6 +249,27 @@ function checkThumb(files) {
   }
 }
 
+function checkBanner(files) {
+  if (files.indexOf(defaultBanner) === -1) {
+    generator.defaultBanner(function generated(error) {
+      if (error) {
+        if (generalSettings.verbose) {
+          console.log(error);
+        }
+
+        if (debug) {
+          throw error;
+        }
+
+      } else {
+        checkThumb(files);
+      }
+    });
+  } else {
+    checkThumb(files);
+  }
+}
+
 function checkLoginPage(files) {
   if (files.indexOf('/login.html') === -1) {
 
@@ -248,13 +284,13 @@ function checkLoginPage(files) {
         }
 
       } else {
-        checkThumb(files);
+        checkBanner(files);
       }
 
     });
 
   } else {
-    checkThumb(files);
+    checkBanner(files);
   }
 }
 
@@ -324,7 +360,7 @@ function checkForDefaultPages() {
   files.aggregate({
     $match : {
       filename : {
-        $in : [ '/', '/404.html', genericThumb, '/login.html' ]
+        $in : [ '/', '/404.html', genericThumb, '/login.html', defaultBanner ]
       }
     }
   }, {

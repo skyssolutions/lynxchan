@@ -126,6 +126,10 @@ var MIMETYPES = {
   zip : 'application/zip'
 };
 
+exports.getRandomInt = function(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
 exports.getMaxStaffRole = function() {
   return MAX_STAFF_ROLE;
 };
