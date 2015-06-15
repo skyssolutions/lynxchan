@@ -2,9 +2,11 @@
 
 // handles the final part of page generation. I created this so I would take
 // some stuff out of generator.js since that file was becoming a huge mess
+// UPDATE
+// now THIS file became a huge mess :^)
 
 // also, manipulations that are not persistent are meant to be directly
-// requested from this module
+// requested from this module instead of using a callback
 
 var gridFs = require('./gridFsHandler');
 var serializer = require('jsdom').serializeDocument;
@@ -53,6 +55,7 @@ require('jsdom').defaultDocumentFeatures = {
   MutationEvents : false
 };
 
+// Section 1: Initialization {
 function loadEmailTemplates(fePath, templateSettings) {
 
   var recoveryEmailPath = fePath + templateSettings.recoveryEmail;
@@ -107,6 +110,7 @@ function loadMainTemplates(fePath, templateSettings) {
 
 }
 
+// Section 1.1: Tests {
 function checkPageErrors(errors, tests) {
 
   for (var i = 0; i < tests.length; i++) {
@@ -345,6 +349,7 @@ function testTemplates(settings) {
 
   }
 }
+// } Section 1.1: Tests
 
 exports.loadTemplates = function() {
 
@@ -359,7 +364,309 @@ exports.loadTemplates = function() {
   testTemplates(templateSettings);
 
 };
+// } Section 1: Initialization
 
+// Section 2: Shared functions {
+
+function setFormCellBoilerPlate(cell, action, cssClass) {
+  cell.method = 'post';
+  cell.enctype = 'multipart/form-data';
+  cell.action = action;
+  cell.setAttribute('class', cssClass);
+}
+
+function getReportLink(report) {
+  var link = '/' + report.boardUri + '/res/';
+  link += report.threadId + '.html#';
+
+  if (report.postId) {
+    link += report.postId;
+  } else {
+    link += report.threadId;
+  }
+
+  return link;
+}
+
+// Section 2.1: Date formatting functions {
+function padDateField(value) {
+  if (value < 10) {
+    value = '0' + value;
+  }
+
+  return value;
+}
+
+function formatDateToDisplay(d) {
+  var day = padDateField(d.getDate());
+
+  var weekDays = [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ];
+
+  var month = padDateField(d.getMonth() + 1);
+
+  var year = d.getFullYear() + 1;
+
+  var weekDay = weekDays[d.getDay()];
+
+  var hour = padDateField(d.getHours());
+
+  var minute = padDateField(d.getMinutes());
+
+  var second = padDateField(d.getSeconds());
+
+  var toReturn = month + '/' + day + '/' + year;
+
+  return toReturn + ' (' + weekDay + ') ' + hour + ':' + minute + ':' + second;
+}
+// } Section 2.1: Date formatting functions
+
+function setReportList(document, reports) {
+
+  var reportDiv = document.getElementById('reportDiv');
+
+  for (var i = 0; i < reports.length; i++) {
+    var report = reports[i];
+
+    var cell = document.createElement('form');
+
+    cell.innerHTML = reportCellTemplate;
+
+    setFormCellBoilerPlate(cell, '/closeReport.js', 'reportCell');
+
+    if (report.reason) {
+      var reason = cell.getElementsByClassName('reasonLabel')[0];
+      reason.innerHTML = report.reason;
+    }
+
+    var identifier = cell.getElementsByClassName('idIdentifier')[0];
+    identifier.setAttribute('value', report._id);
+
+    var reportLink = cell.getElementsByClassName('link')[0];
+    reportLink.setAttribute('href', getReportLink(report));
+
+    reportDiv.appendChild(cell);
+
+  }
+
+}
+
+function setHeader(document, board, boardData) {
+
+  var titleHeader = document.getElementById('labelName');
+  titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
+
+  var descriptionHeader = document.getElementById('labelDescription');
+  descriptionHeader.innerHTML = boardData.boardDescription;
+
+  var linkBanner = '/randomBanner.js?boardUri=' + board;
+  document.getElementById('bannerImage').src = linkBanner;
+
+}
+
+// Section 2.2: Thread content {
+function addThread(document, thread, posts, boardUri, innerPage) {
+
+  var threadCell = document.createElement('div');
+  threadCell.innerHTML = opTemplate;
+  threadCell.setAttribute('class', 'opCell');
+  threadCell.id = thread.threadId;
+
+  setThreadComplexElements(boardUri, thread, threadCell, innerPage);
+
+  setThreadSimpleElements(threadCell, thread);
+
+  setUploadCell(document, threadCell.getElementsByClassName('panelUploads')[0],
+      thread.files);
+
+  document.getElementById('divPostings').appendChild(threadCell);
+
+  addPosts(document, posts || [], boardUri, thread.threadId, innerPage);
+
+}
+
+// Section 2.2.1: Post content {
+function setPostComplexElements(postCell, post, boardUri, threadId, document) {
+  var link = postCell.getElementsByClassName('linkSelf')[0];
+  link.innerHTML = post.postId;
+  link.href = '/' + boardUri + '/res/' + threadId + '.html#' + post.postId;
+
+  var checkboxName = boardUri + '-' + threadId + '-' + post.postId;
+  postCell.getElementsByClassName('deletionCheckBox')[0].setAttribute('name',
+      checkboxName);
+
+  setUploadCell(document, postCell.getElementsByClassName('panelUploads')[0],
+      post.files);
+}
+
+function setPostInnerElements(document, boardUri, threadId, post, postCell) {
+
+  post.name = post.name || 'Anonymous';
+
+  var linkName = postCell.getElementsByClassName('linkName')[0];
+
+  linkName.innerHTML = post.name;
+
+  if (post.email) {
+    linkName.href = 'mailto:' + post.email;
+  }
+
+  var subjectLabel = postCell.getElementsByClassName('labelSubject')[0];
+  if (post.subject) {
+    subjectLabel.innerHTML = post.subject;
+  } else {
+    subjectLabel.style.display = 'none';
+  }
+
+  var labelCreated = postCell.getElementsByClassName('labelCreated')[0];
+  labelCreated.innerHTML = formatDateToDisplay(post.creation);
+
+  postCell.getElementsByClassName('divMessage')[0].innerHTML = post.message;
+
+  setPostComplexElements(postCell, post, boardUri, threadId, document);
+
+}
+
+function addPosts(document, posts, boardUri, threadId) {
+
+  var divThreads = document.getElementById('divPostings');
+
+  for (var i = 0; i < posts.length; i++) {
+    var postCell = document.createElement('div');
+    postCell.innerHTML = postTemplate;
+    postCell.setAttribute('class', 'postCell');
+
+    var post = posts[i];
+
+    postCell.id = post.postId;
+
+    setPostInnerElements(document, boardUri, threadId, post, postCell);
+
+    divThreads.appendChild(postCell);
+
+  }
+
+}
+// } Section 2.2.1: Post content
+
+function setThreadComplexElements(boardUri, thread, threadCell, innerPage) {
+
+  if (!thread.pinned) {
+    var pinIndicator = threadCell.getElementsByClassName('pinIndicator')[0];
+    pinIndicator.style.display = 'none';
+  }
+
+  if (!thread.locked) {
+    var lockIndicator = threadCell.getElementsByClassName('lockIndicator')[0];
+    lockIndicator.style.display = 'none';
+  }
+
+  var linkReply = threadCell.getElementsByClassName('linkReply')[0];
+  if (innerPage) {
+    linkReply.style.display = 'none';
+  } else {
+    linkReply.href = 'res/' + thread.threadId + '.html';
+  }
+
+  threadCell.getElementsByClassName('deletionCheckBox')[0].setAttribute('name',
+      boardUri + '-' + thread.threadId);
+
+  var linkSelf = threadCell.getElementsByClassName('linkSelf')[0];
+  linkSelf.innerHTML = thread.threadId;
+
+  var link = '/' + boardUri + '/res/' + thread.threadId + '.html#';
+  linkSelf.href = link + thread.threadId;
+
+}
+
+function setThreadSimpleElements(threadCell, thread) {
+
+  thread.name = thread.name || 'Anonymous';
+
+  var linkName = threadCell.getElementsByClassName('linkName')[0];
+
+  linkName.innerHTML = thread.name;
+
+  if (thread.email) {
+    linkName.href = 'mailto:' + thread.email;
+  }
+
+  var subjectLabel = threadCell.getElementsByClassName('labelSubject')[0];
+  if (thread.subject) {
+    subjectLabel.innerHTML = thread.subject;
+  } else {
+    subjectLabel.style.display = 'none';
+  }
+
+  var labelCreation = threadCell.getElementsByClassName('labelCreated')[0];
+  labelCreation.innerHTML = formatDateToDisplay(thread.creation);
+
+  var divMessage = threadCell.getElementsByClassName('divMessage')[0];
+  divMessage.innerHTML = thread.message;
+}
+
+// Section 2.2.2: Uploads {
+function formatFileSize(size) {
+
+  var orderIndex = 0;
+
+  while (orderIndex < sizeOrders.length - 1 && size > 1024) {
+
+    orderIndex++;
+    size /= 1024;
+
+  }
+
+  return size.toFixed(2) + ' ' + sizeOrders[orderIndex];
+
+}
+
+function setUploadLinks(document, cell, file) {
+  var thumbLink = cell.getElementsByClassName('imageLink')[0];
+  thumbLink.href = file.path;
+
+  var img = document.createElement('img');
+  img.src = file.thumb;
+
+  thumbLink.appendChild(img);
+
+  var nameLink = cell.getElementsByClassName('nameLink')[0];
+  nameLink.href = file.path;
+  nameLink.innerHTML = file.name;
+}
+
+function setUploadCell(document, node, files) {
+
+  if (!files) {
+    return;
+  }
+
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i];
+    var cell = document.createElement('div');
+    cell.innerHTML = uploadCellTemplate;
+    cell.setAttribute('class', 'uploadCell');
+
+    setUploadLinks(document, cell, file);
+
+    var infoString = formatFileSize(file.size);
+
+    if (file.width) {
+      infoString += ', ' + file.width + 'x' + file.height;
+    }
+
+    cell.getElementsByClassName('infoLabel')[0].innerHTML = infoString;
+
+    node.appendChild(cell);
+  }
+
+}
+// } Section 2.2.2: Uploads
+
+// } Section 2.2: Thread content
+
+// } Section 2: Shared functions
+
+// Section 3: Dynamic pages {
 exports.bannerManagement = function(boardUri, banners) {
 
   try {
@@ -467,36 +774,7 @@ exports.error = function(code, message) {
 
 };
 
-function padDateField(value) {
-  if (value < 10) {
-    value = '0' + value;
-  }
-
-  return value;
-}
-
-function formatDateToDisplay(d) {
-  var day = padDateField(d.getDate());
-
-  var weekDays = [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ];
-
-  var month = padDateField(d.getMonth() + 1);
-
-  var year = d.getFullYear() + 1;
-
-  var weekDay = weekDays[d.getDay()];
-
-  var hour = padDateField(d.getHours());
-
-  var minute = padDateField(d.getMinutes());
-
-  var second = padDateField(d.getSeconds());
-
-  var toReturn = month + '/' + day + '/' + year;
-
-  return toReturn + ' (' + weekDay + ') ' + hour + ':' + minute + ':' + second;
-}
-
+// Section 3.1: Bans {
 function setBanCell(ban, cell) {
 
   cell.getElementsByClassName('reasonLabel')[0].innerHTML = ban.reason;
@@ -552,20 +830,9 @@ exports.bans = function(bans) {
   }
 
 };
+// } Section 3.1: Bans
 
-function getReportLink(report) {
-  var link = '/' + report.boardUri + '/res/';
-  link += report.threadId + '.html#';
-
-  if (report.postId) {
-    link += report.postId;
-  } else {
-    link += report.threadId;
-  }
-
-  return link;
-}
-
+// Section 3.2: Closed reports {
 function setClosedReportCell(cell, report) {
   if (report.reason) {
     var reason = cell.getElementsByClassName('reasonLabel')[0];
@@ -619,7 +886,9 @@ exports.closedReports = function(reports, callback) {
     return error.toString();
   }
 };
+// } Section 3.2: Closed reports
 
+// Section 3.3: Board control {
 function setBoardControlIdentifiers(document, boardData) {
   document.getElementById('addVolunteerBoardIdentifier').setAttribute('value',
       boardData.boardUri);
@@ -655,47 +924,6 @@ function setBoardOwnerControls(document, boardData) {
         boardData.boardUri);
 
     volunteersDiv.appendChild(cell);
-
-  }
-
-}
-
-function setFormCellBoilerPlate(cell, action, cssClass) {
-  cell.method = 'post';
-  cell.enctype = 'multipart/form-data';
-  cell.action = action;
-  cell.setAttribute('class', cssClass);
-}
-
-function setReportCell(cell, report) {
-  if (report.reason) {
-    var reason = cell.getElementsByClassName('reasonLabel')[0];
-    reason.innerHTML = report.reason;
-  }
-
-  var identifier = cell.getElementsByClassName('idIdentifier')[0];
-  identifier.setAttribute('value', report._id);
-
-  var reportLink = cell.getElementsByClassName('link')[0];
-  reportLink.setAttribute('href', getReportLink(report));
-}
-
-function setReportList(document, reports) {
-
-  var reportDiv = document.getElementById('reportDiv');
-
-  for (var i = 0; i < reports.length; i++) {
-    var report = reports[i];
-
-    var cell = document.createElement('form');
-
-    cell.innerHTML = reportCellTemplate;
-
-    setFormCellBoilerPlate(cell, '/closeReport.js', 'reportCell');
-
-    setReportCell(cell, report);
-
-    reportDiv.appendChild(cell);
 
   }
 
@@ -755,7 +983,9 @@ exports.boardManagement = function(login, boardData, reports) {
   }
 
 };
+// } Section 3.3: Board control
 
+// Section 3.4: Global Management {
 function setRoleComboBox(document, node, possibleRoles, user) {
   for (var k = 0; k < possibleRoles.length; k++) {
 
@@ -833,7 +1063,7 @@ function setNewStaffComboBox(document, userRole) {
 
 }
 
-function setBansLink(userRole, document) {
+function setGlobalBansLink(userRole, document) {
   var bansLink = document.getElementById('bansLink');
 
   var displayBans = userRole < miscOps.getMaxStaffRole();
@@ -854,7 +1084,7 @@ exports.globalManagement = function(userRole, userLogin, staff, reports) {
 
     var newStaffForm = document.getElementById('addStaffForm');
 
-    setBansLink(userRole, document);
+    setGlobalBansLink(userRole, document);
 
     if (userRole < 2) {
       setNewStaffComboBox(document, userRole);
@@ -885,6 +1115,7 @@ exports.globalManagement = function(userRole, userLogin, staff, reports) {
     return error.toString();
   }
 };
+// } Section 3.4: Global Management
 
 exports.resetEmail = function(password) {
 
@@ -934,7 +1165,8 @@ exports.recoveryEmail = function(recoveryLink) {
   }
 };
 
-function fillBoardsDiv(document, boardList) {
+// Section 3.5: Account {
+function fillOwnedBoardsDiv(document, boardList) {
   var boardDiv = document.getElementById('boardsDiv');
 
   for (var i = 0; i < boardList.length; i++) {
@@ -980,7 +1212,7 @@ exports.account = function(userData) {
 
     if (userData.ownedBoards && userData.ownedBoards.length) {
 
-      fillBoardsDiv(document, userData.ownedBoards);
+      fillOwnedBoardsDiv(document, userData.ownedBoards);
 
     }
 
@@ -998,41 +1230,7 @@ exports.account = function(userData) {
     return error.toString();
   }
 };
-
-exports.login = function(callback) {
-  try {
-    var document = jsdom(loginTemplate);
-
-    document.title = 'Login, register or reset passsword';
-
-    gridFs.writeData(serializer(document), '/login.html', 'text/html', {},
-        callback);
-
-  } catch (error) {
-
-    if (verbose) {
-      console.log(error);
-    }
-
-    if (debug) {
-      throw error;
-    }
-
-    return error.toString();
-  }
-
-};
-
-exports.notFound = function(callback) {
-
-  var document = jsdom(notFoundTemplate);
-
-  document.title = 'File not found';
-
-  gridFs.writeData(serializer(document), '/404.html', 'text/html', {
-    status : 404
-  }, callback);
-};
+// } Section 3.5: Account
 
 exports.message = function(message, link) {
 
@@ -1068,6 +1266,44 @@ exports.message = function(message, link) {
     }
 
     return error.toString;
+  }
+
+};
+
+// Section 3: Dynamic pages
+
+// Section 4: Static pages {
+exports.notFound = function(callback) {
+
+  var document = jsdom(notFoundTemplate);
+
+  document.title = 'File not found';
+
+  gridFs.writeData(serializer(document), '/404.html', 'text/html', {
+    status : 404
+  }, callback);
+};
+
+exports.login = function(callback) {
+  try {
+    var document = jsdom(loginTemplate);
+
+    document.title = 'Login, register or reset passsword';
+
+    gridFs.writeData(serializer(document), '/login.html', 'text/html', {},
+        callback);
+
+  } catch (error) {
+
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
   }
 
 };
@@ -1109,6 +1345,7 @@ exports.frontPage = function(boards, callback) {
   }
 };
 
+// Section 4.1: Thread {
 function setThreadHiddenIdentifiers(document, boardUri, threadData) {
   var boardIdentifyInput = document.getElementById('boardIdentifier');
 
@@ -1214,201 +1451,9 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
   }
 
 };
+// } Section 4.1: Thread
 
-function formatFileSize(size) {
-
-  var orderIndex = 0;
-
-  while (orderIndex < sizeOrders.length - 1 && size > 1024) {
-
-    orderIndex++;
-    size /= 1024;
-
-  }
-
-  return size.toFixed(2) + ' ' + sizeOrders[orderIndex];
-
-}
-
-function setLinks(document, cell, file) {
-  var thumbLink = cell.getElementsByClassName('imageLink')[0];
-  thumbLink.href = file.path;
-
-  var img = document.createElement('img');
-  img.src = file.thumb;
-
-  thumbLink.appendChild(img);
-
-  var nameLink = cell.getElementsByClassName('nameLink')[0];
-  nameLink.href = file.path;
-  nameLink.innerHTML = file.name;
-}
-
-function setUploadCell(document, node, files) {
-
-  if (!files) {
-    return;
-  }
-
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i];
-    var cell = document.createElement('div');
-    cell.innerHTML = uploadCellTemplate;
-    cell.setAttribute('class', 'uploadCell');
-
-    setLinks(document, cell, file);
-
-    var infoString = formatFileSize(file.size);
-
-    if (file.width) {
-      infoString += ', ' + file.width + 'x' + file.height;
-    }
-
-    cell.getElementsByClassName('infoLabel')[0].innerHTML = infoString;
-
-    node.appendChild(cell);
-  }
-
-}
-
-function setPostComplexElements(postCell, post, boardUri, threadId, document) {
-  var link = postCell.getElementsByClassName('linkSelf')[0];
-  link.innerHTML = post.postId;
-  link.href = '/' + boardUri + '/res/' + threadId + '.html#' + post.postId;
-
-  var checkboxName = boardUri + '-' + threadId + '-' + post.postId;
-  postCell.getElementsByClassName('deletionCheckBox')[0].setAttribute('name',
-      checkboxName);
-
-  setUploadCell(document, postCell.getElementsByClassName('panelUploads')[0],
-      post.files);
-}
-
-function setPostInnerElements(document, boardUri, threadId, post, postCell) {
-
-  post.name = post.name || 'Anonymous';
-
-  var linkName = postCell.getElementsByClassName('linkName')[0];
-
-  linkName.innerHTML = post.name;
-
-  if (post.email) {
-    linkName.href = 'mailto:' + post.email;
-  }
-
-  var subjectLabel = postCell.getElementsByClassName('labelSubject')[0];
-  if (post.subject) {
-    subjectLabel.innerHTML = post.subject;
-  } else {
-    subjectLabel.style.display = 'none';
-  }
-
-  var labelCreated = postCell.getElementsByClassName('labelCreated')[0];
-  labelCreated.innerHTML = formatDateToDisplay(post.creation);
-
-  postCell.getElementsByClassName('divMessage')[0].innerHTML = post.message;
-
-  setPostComplexElements(postCell, post, boardUri, threadId, document);
-
-}
-
-function addPosts(document, posts, boardUri, threadId) {
-
-  var divThreads = document.getElementById('divPostings');
-
-  for (var i = 0; i < posts.length; i++) {
-    var postCell = document.createElement('div');
-    postCell.innerHTML = postTemplate;
-    postCell.setAttribute('class', 'postCell');
-
-    var post = posts[i];
-
-    postCell.id = post.postId;
-
-    setPostInnerElements(document, boardUri, threadId, post, postCell);
-
-    divThreads.appendChild(postCell);
-
-  }
-
-}
-
-function setThreadComplexElements(boardUri, thread, threadCell, innerPage) {
-
-  if (!thread.pinned) {
-    var pinIndicator = threadCell.getElementsByClassName('pinIndicator')[0];
-    pinIndicator.style.display = 'none';
-  }
-
-  if (!thread.locked) {
-    var lockIndicator = threadCell.getElementsByClassName('lockIndicator')[0];
-    lockIndicator.style.display = 'none';
-  }
-
-  var linkReply = threadCell.getElementsByClassName('linkReply')[0];
-  if (innerPage) {
-    linkReply.style.display = 'none';
-  } else {
-    linkReply.href = 'res/' + thread.threadId + '.html';
-  }
-
-  threadCell.getElementsByClassName('deletionCheckBox')[0].setAttribute('name',
-      boardUri + '-' + thread.threadId);
-
-  var linkSelf = threadCell.getElementsByClassName('linkSelf')[0];
-  linkSelf.innerHTML = thread.threadId;
-
-  var link = '/' + boardUri + '/res/' + thread.threadId + '.html#';
-  linkSelf.href = link + thread.threadId;
-
-}
-
-function setThreadSimpleElements(threadCell, thread) {
-
-  thread.name = thread.name || 'Anonymous';
-
-  var linkName = threadCell.getElementsByClassName('linkName')[0];
-
-  linkName.innerHTML = thread.name;
-
-  if (thread.email) {
-    linkName.href = 'mailto:' + thread.email;
-  }
-
-  var subjectLabel = threadCell.getElementsByClassName('labelSubject')[0];
-  if (thread.subject) {
-    subjectLabel.innerHTML = thread.subject;
-  } else {
-    subjectLabel.style.display = 'none';
-  }
-
-  var labelCreation = threadCell.getElementsByClassName('labelCreated')[0];
-  labelCreation.innerHTML = formatDateToDisplay(thread.creation);
-
-  var divMessage = threadCell.getElementsByClassName('divMessage')[0];
-  divMessage.innerHTML = thread.message;
-}
-
-function addThread(document, thread, posts, boardUri, innerPage) {
-
-  var threadCell = document.createElement('div');
-  threadCell.innerHTML = opTemplate;
-  threadCell.setAttribute('class', 'opCell');
-  threadCell.id = thread.threadId;
-
-  setThreadComplexElements(boardUri, thread, threadCell, innerPage);
-
-  setThreadSimpleElements(threadCell, thread);
-
-  setUploadCell(document, threadCell.getElementsByClassName('panelUploads')[0],
-      thread.files);
-
-  document.getElementById('divPostings').appendChild(threadCell);
-
-  addPosts(document, posts || [], boardUri, thread.threadId, innerPage);
-
-}
-
+// Section 4.2: Board {
 function generateThreadListing(document, boardUri, page, threads, preview,
     callback) {
 
@@ -1453,19 +1498,6 @@ function addPagesLinks(document, pageCount) {
   }
 }
 
-function setHeader(document, board, boardData) {
-
-  var titleHeader = document.getElementById('labelName');
-  titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
-
-  var descriptionHeader = document.getElementById('labelDescription');
-  descriptionHeader.innerHTML = boardData.boardDescription;
-
-  var linkBanner = '/randomBanner.js?boardUri=' + board;
-  document.getElementById('bannerImage').src = linkBanner;
-
-}
-
 exports.page = function(board, page, threads, pageCount, boardData, preview,
     callback) {
 
@@ -1491,3 +1523,6 @@ exports.page = function(board, page, threads, pageCount, boardData, preview,
     callback(error);
   }
 };
+// } Section 4.2: Board
+
+// Section 4: Static pages
