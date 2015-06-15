@@ -487,7 +487,7 @@ function checkDbVersions() {
 
 if (cluster.isMaster) {
 
-  if (debug) {
+  if (debug && !noDaemon) {
 
     removeExpiredTempFiles(function removedExpiredFiles(error) {
       if (error) {

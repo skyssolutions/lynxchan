@@ -1,16 +1,15 @@
 'use strict';
 
-var formOps = require('../engine/formOps');
+var apiOps = require('../engine/apiOps');
 var boardOps = require('../engine/boardOps');
 
 function createBanner(parameters, userData, res) {
 
   boardOps.addBanner(userData.login, parameters, function createdBanner(error) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      apiOps.outputError(error, res);
     } else {
-      formOps.outputResponse('Banner created.',
-          '/bannerManagement.js?boardUri=' + parameters.boardUri, res);
+      apiOps.outputResponse(null, null, 'ok', res);
     }
   });
 
@@ -18,7 +17,7 @@ function createBanner(parameters, userData, res) {
 
 exports.process = function(req, res) {
 
-  formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
+  apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
     createBanner(parameters, userData, res);

@@ -297,6 +297,28 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::23
+
+Name: createBanner
+
+Description: adds a new banner to the board. Accepts files. Requires an image as the first image sent. Uses only the first file. Requires authentication. Restricted to the board owner.
+
+Parameters:
+    boardUri: board to add the banner to.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::24
+
+Name: deleteBanner
+
+Description: deletes a banner. Requires authentication. Restricted to the board owner.
+
+Parameters:
+    bannerId: unique identifier of the banner.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters
 **: exclusive funcionality to the json api.
 
