@@ -12,7 +12,9 @@ var settings = require('../boot').getGeneralSettings();
 var disable304 = settings.disable304;
 var verbose = settings.verbose;
 var miscOps = require('./miscOps');
-var genericThumb = require('../boot').genericThumb();
+var boot = require('../boot');
+var genericThumb = boot.genericThumb();
+var spoilerPath = boot.spoilerImage();
 
 // start of writing data
 function writeDataOnOpenFile(gs, data, callback) {
@@ -126,7 +128,8 @@ function transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb,
 
 }
 
-function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb) {
+function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb,
+    spoiler) {
 
   var parts = file.title.split('.');
 
@@ -144,7 +147,7 @@ function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb) {
 
     var ext = parts[parts.length - 1].toLowerCase();
 
-    if (file.mime.indexOf('image/') !== -1) {
+    if (file.mime.indexOf('image/') !== -1 && !spoiler) {
       var thumbName = '/' + boardUri + '/media/' + 't_' + fileId + '.' + ext;
 
       file.thumbPath = thumbName;
@@ -161,7 +164,7 @@ function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb) {
           });
     } else {
 
-      file.thumbPath = genericThumb;
+      file.thumbPath = spoiler ? spoilerPath : genericThumb;
 
       transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb, ext,
           meta);
@@ -173,7 +176,8 @@ function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb) {
 
 }
 
-exports.saveUpload = function(boardUri, threadId, postId, file, callback) {
+exports.saveUpload = function(boardUri, threadId, postId, file, callback,
+    spoiler) {
 
   boards.findOneAndUpdate({
     boardUri : boardUri
@@ -188,7 +192,7 @@ exports.saveUpload = function(boardUri, threadId, postId, file, callback) {
       callback(error);
     } else {
       transferThumbToGfs(boardUri, threadId, postId, result.value.lastFileId,
-          file, callback);
+          file, callback, spoiler);
     }
   });
 

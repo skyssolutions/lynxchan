@@ -62,6 +62,7 @@ A file called `templateSettings.json` should be located on the front-end directo
 * `bannerManagementPage`: template used for the banner management page.
 * `bannerCell`: template used to list a board's banners.
 * `defaultBanner`: default banner used when a board have no banners.
+* `spoiler`: spoiler thumbnail.
 
 # Back-end settings
 Settings files that goes into the settings directory:

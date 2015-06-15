@@ -51,6 +51,7 @@ Parameters:
     boardUri*: uri of the board.
     password: password to be used for deletion. 8 characters.
     captcha: captcha input.
+    spoiler(Boolean): indicates if the images should be spoilered.
 
 Output(Number): id of the new thread.
 
@@ -71,6 +72,7 @@ Parameters:
     threadId*: id of the thread.
     password: password to be used for deletion. 8 characters.
     captcha: captcha input.
+    spoiler(Boolean): indicates if the images should be spoilered.
 
 Output(Number): id of the new post.
 

@@ -20,6 +20,7 @@ var generalSettings;
 var templateSettings;
 var genericThumb;
 var defaultBanner;
+var spoilerImage;
 var fePath;
 var tempDirectory;
 var maxRequestSize;
@@ -81,6 +82,10 @@ exports.genericThumb = function() {
   return genericThumb;
 };
 
+exports.spoilerImage = function() {
+  return spoilerImage;
+};
+
 exports.defaultBanner = function() {
   return defaultBanner;
 };
@@ -135,6 +140,12 @@ function setDefaultImages() {
   bannerExt = bannerExt[bannerExt.length - 1].toLowerCase();
 
   defaultBanner = '/defaultBanner' + '.' + bannerExt;
+
+  var spoilerExt = templateSettings.spoiler.split('.');
+
+  spoilerExt = spoilerExt[spoilerExt.length - 1].toLowerCase();
+
+  spoilerImage = '/spoiler' + '.' + spoilerExt;
 }
 
 exports.loadSettings = function() {
@@ -270,6 +281,27 @@ function checkBanner(files) {
   }
 }
 
+function checkSpoilerImage(files) {
+  if (files.indexOf(spoilerImage) === -1) {
+    generator.spoiler(function generated(error) {
+      if (error) {
+        if (generalSettings.verbose) {
+          console.log(error);
+        }
+
+        if (debug) {
+          throw error;
+        }
+
+      } else {
+        checkBanner(files);
+      }
+    });
+  } else {
+    checkBanner(files);
+  }
+}
+
 function checkLoginPage(files) {
   if (files.indexOf('/login.html') === -1) {
 
@@ -284,13 +316,13 @@ function checkLoginPage(files) {
         }
 
       } else {
-        checkBanner(files);
+        checkSpoilerImage(files);
       }
 
     });
 
   } else {
-    checkBanner(files);
+    checkSpoilerImage(files);
   }
 }
 
@@ -360,7 +392,8 @@ function checkForDefaultPages() {
   files.aggregate({
     $match : {
       filename : {
-        $in : [ '/', '/404.html', genericThumb, '/login.html', defaultBanner ]
+        $in : [ '/', '/404.html', genericThumb, '/login.html', defaultBanner,
+            spoilerImage ]
       }
     }
   }, {

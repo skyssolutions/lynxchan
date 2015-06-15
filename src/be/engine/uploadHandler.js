@@ -44,7 +44,7 @@ exports.removeFromDisk = function(path, callback) {
 };
 
 function updatePostingFiles(boardUri, threadId, postId, files, file, callback,
-    index) {
+    index, spoiler) {
 
   var queryBlock = {
     boardUri : boardUri,
@@ -74,7 +74,7 @@ function updatePostingFiles(boardUri, threadId, postId, files, file, callback,
     if (error) {
       callback(error);
     } else {
-      exports.saveUploads(boardUri, threadId, postId, files, callback,
+      exports.saveUploads(boardUri, threadId, postId, files, spoiler, callback,
           index + 1);
     }
 
@@ -83,9 +83,9 @@ function updatePostingFiles(boardUri, threadId, postId, files, file, callback,
 }
 
 function cleanThumbNail(boardUri, threadId, postId, files, file, callback,
-    index, saveError) {
+    index, saveError, spoiler) {
 
-  if (file.mime.indexOf('image/') !== -1) {
+  if (file.mime.indexOf('image/') !== -1 && !spoiler) {
 
     exports.removeFromDisk(file.pathInDisk + '_t', function removed(
         deletionError) {
@@ -93,7 +93,7 @@ function cleanThumbNail(boardUri, threadId, postId, files, file, callback,
         callback(saveError || deletionError);
       } else {
         updatePostingFiles(boardUri, threadId, postId, files, file, callback,
-            index);
+            index, spoiler);
       }
 
     });
@@ -103,24 +103,24 @@ function cleanThumbNail(boardUri, threadId, postId, files, file, callback,
       callback(saveError);
     } else {
       updatePostingFiles(boardUri, threadId, postId, files, file, callback,
-          index);
+          index, spoiler);
     }
   }
 }
 
 function transferFilesToGS(boardUri, threadId, postId, files, file, callback,
-    index) {
+    index, spoiler) {
 
   gsHandler.saveUpload(boardUri, threadId, postId, file,
       function transferedFile(error) {
 
         cleanThumbNail(boardUri, threadId, postId, files, file, callback,
-            index, error);
-      });
+            index, error, spoiler);
+      }, spoiler);
 }
 
-exports.saveUploads = function(boardUri, threadId, postId, files, callback,
-    index) {
+exports.saveUploads = function(boardUri, threadId, postId, files, spoiler,
+    callback, index) {
 
   index = index || 0;
 
@@ -128,7 +128,7 @@ exports.saveUploads = function(boardUri, threadId, postId, files, callback,
 
     var file = files[index];
 
-    if (file.mime.indexOf('image/') !== -1) {
+    if (file.mime.indexOf('image/') !== -1 && !spoiler) {
 
       im(file.pathInDisk).resize(256, 256).noProfile().write(
           file.pathInDisk + '_t',
@@ -137,12 +137,12 @@ exports.saveUploads = function(boardUri, threadId, postId, files, callback,
               callback(error);
             } else {
               transferFilesToGS(boardUri, threadId, postId, files, file,
-                  callback, index);
+                  callback, index, spoiler);
             }
           });
     } else {
       transferFilesToGS(boardUri, threadId, postId, files, file, callback,
-          index);
+          index, spoiler);
     }
 
   } else {

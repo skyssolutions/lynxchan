@@ -52,7 +52,7 @@ var boardProjection = {
 };
 
 var toGenerate;
-var MAX_TO_GENERATE = 6;
+var MAX_TO_GENERATE = 7;
 var reloading;
 
 var fullReloadCallback = function(error, callback) {
@@ -92,6 +92,10 @@ exports.all = function(callback) {
     fullReloadCallback(error, callback);
   });
 
+  exports.spoiler(function reloaded(error) {
+    fullReloadCallback(error, callback);
+  });
+
   exports.defaultBanner(function reloaded(error) {
     fullReloadCallback(error, callback);
   });
@@ -120,6 +124,22 @@ exports.login = function(callback) {
   }
 
   domManipulator.login(callback);
+
+};
+
+exports.spoiler = function(callback) {
+
+  if (verbose) {
+    console.log('Saving spoiler image');
+  }
+
+  var filePath = boot.getFePath() + '/templates/';
+  filePath += templateSettings.spoiler;
+
+  gfsHandler.writeFile(filePath, boot.spoilerImage(), miscOps.getMime(boot
+      .spoilerImage()), {}, function wroteBanner(error) {
+    callback(error);
+  });
 
 };
 

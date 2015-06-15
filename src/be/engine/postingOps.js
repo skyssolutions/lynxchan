@@ -115,7 +115,7 @@ function createThread(req, parameters, threadId, callback) {
 
       // style exception, too simple
       uploadHandler.saveUploads(parameters.boardUri, threadId, null,
-          parameters.files, function savedUploads(error) {
+          parameters.files, parameters.spoiler, function savedUploads(error) {
             if (error) {
               callback(error);
             } else {
@@ -266,7 +266,8 @@ function createPost(req, parameters, postId, thread, callback) {
 
       // style exception, too simple
       uploadHandler.saveUploads(parameters.boardUri, parameters.threadId,
-          postId, parameters.files, function savedFiles(error) {
+          postId, parameters.files, parameters.spoiler, function savedFiles(
+              error) {
             if (error) {
               callback(error);
             } else {
