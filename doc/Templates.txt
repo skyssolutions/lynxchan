@@ -45,14 +45,6 @@ bannerImage:
     type: img
     description: holds the link that displays a banner to the board.
 
-linkCatalogHeader:
-    type: a
-    description: holds the link to the board catalog.
-
-linkCatalogFooter:
-    type: a
-    description: holds the link to the catalog in the footer.
-
 ------------------------------------------------------------------------------------------
 
 TEM_ID::03
@@ -119,10 +111,6 @@ checkboxPin:
 bannerImage:
     type: img
     description: holds the link that displays a banner to the board.
-
-linkCatalogHeader:
-    type: a
-    description: holds the link to the board catalog.
 
 ------------------------------------------------------------------------------------------
 
@@ -572,9 +560,9 @@ divThreads:
     type: div.
     description: holds the threads in the board.
 
-linkBoard:
-    type: a.
-    description: holds the link that points to the board.
+labelBoard:
+    type: span.
+    description: holds the board title.
 
 ------------------------------------------------------------------------------------------
 

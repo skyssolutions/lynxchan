@@ -121,12 +121,12 @@ function processMessage(message) {
     generator.frontPage(generationCallback);
   } else if (message.buildAll) {
     generator.board(message.board, true, generationCallback);
+  } else if (message.catalog) {
+    generator.catalog(message.board, generationCallback);
   } else if (!message.page && !message.thread) {
     generator.board(message.board, false, generationCallback);
   } else if (message.page) {
     generator.page(message.board, message.page, generationCallback);
-  } else if (message.catalog) {
-    generator.catalog(message.board, generationCallback);
   } else {
     generator.thread(message.board, message.thread, generationCallback);
   }

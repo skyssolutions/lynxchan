@@ -238,7 +238,7 @@ function testTemplates(settings) {
       {
         template : 'catalogPage',
         content : catalogPageTemplate,
-        fields : [ 'divThreads', 'linkBoard' ]
+        fields : [ 'divThreads', 'labelBoard' ]
       },
       {
         template : 'resetEmail',
@@ -269,8 +269,7 @@ function testTemplates(settings) {
         template : 'boardPage',
         content : boardTemplate,
         fields : [ 'labelName', 'labelDescription', 'divPostings', 'divPages',
-            'boardIdentifier', 'linkManagement', 'bannerImage',
-            'linkCatalogHeader', 'linkCatalogFooter' ]
+            'boardIdentifier', 'linkManagement', 'bannerImage' ]
       },
       {
         template : 'threadPage',
@@ -279,7 +278,7 @@ function testTemplates(settings) {
             'boardIdentifier', 'linkManagement', 'threadIdentifier', 'linkMod',
             'inputBan', 'divExpiration', 'divControls',
             'controlBoardIdentifier', 'controlThreadIdentifier',
-            'checkboxLock', 'checkboxPin', 'bannerImage', 'linkCatalogHeader' ]
+            'checkboxLock', 'checkboxPin', 'bannerImage' ]
       },
       {
         template : 'messagePage',

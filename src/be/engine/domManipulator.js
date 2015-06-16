@@ -116,9 +116,6 @@ function setHeader(document, board, boardData) {
   var linkBanner = '/randomBanner.js?boardUri=' + board;
   document.getElementById('bannerImage').src = linkBanner;
 
-  var catalogLink = '/' + board + '/catalog.html';
-  document.getElementById('linkCatalogHeader').href = catalogLink;
-
 }
 
 // Section 1.2: Thread content {
@@ -1176,9 +1173,6 @@ exports.page = function(board, page, threads, pageCount, boardData, preview,
 
     addPagesLinks(document, pageCount);
 
-    var catalogLink = '/' + board + '/catalog.html';
-    document.getElementById('linkCatalogFooter').href = catalogLink;
-
     generateThreadListing(document, board, page, threads, preview, callback);
   } catch (error) {
     callback(error);
@@ -1188,19 +1182,24 @@ exports.page = function(board, page, threads, pageCount, boardData, preview,
 
 // Section 3.3: Catalog {
 
-function setCell(boardUri, document, cell, thread) {
-
-  var thumbLink = cell.getElementsByClassName('linkThumb')[0];
-
+function setCellThumb(thumbLink, boardUri, document, thread) {
   thumbLink.href = '/' + boardUri + '/res/' + thread.threadId + '.html';
 
   if (thread.files && thread.files.length) {
     var thumbImage = document.createElement('img');
+    thumbImage.style.width = '128px';
+
     thumbImage.src = thread.files[0].thumb;
     thumbLink.appendChild(thumbImage);
   } else {
     thumbLink.innerHTML = 'Open';
   }
+}
+
+function setCell(boardUri, document, cell, thread) {
+
+  setCellThumb(cell.getElementsByClassName('linkThumb')[0], boardUri, document,
+      thread);
 
   var labelReplies = cell.getElementsByClassName('labelReplies')[0];
   labelReplies.innerHTML = thread.postCount || 0;
@@ -1221,10 +1220,9 @@ exports.catalog = function(boardUri, threads, callback) {
 
     var document = jsdom(templateHandler.catalogPageTemplate());
 
-    var linkBoard = document.getElementById('linkBoard');
+    document.title = '/' + boardUri + '/ - Catalog';
 
-    linkBoard.innerHTML = '/' + boardUri + '/';
-    linkBoard.href = '/' + boardUri + '/';
+    document.getElementById('labelBoard').innerHTML = '/' + boardUri + '/';
 
     var threadsDiv = document.getElementById('divThreads');
 
