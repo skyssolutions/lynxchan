@@ -111,4 +111,5 @@ Metadata of files on gridfs will have the following values:
   * `media`
   * `captcha` 
   * `banner`
+  * `catalog`
 

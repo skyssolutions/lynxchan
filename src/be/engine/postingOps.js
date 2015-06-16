@@ -177,6 +177,12 @@ function updateBoardForPostCreation(parameters, postId, thread, callback) {
     thread : parameters.threadId
   });
 
+  // signal rebuild of board
+  process.send({
+    board : parameters.boardUri,
+    catalog : true
+  });
+
   boards.update({
     boardUri : parameters.boardUri
   }, {

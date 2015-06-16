@@ -8,365 +8,20 @@
 // also, manipulations that are not persistent are meant to be directly
 // requested from this module instead of using a callback
 
+var boot = require('../boot');
+var settings = boot.getGeneralSettings();
 var gridFs = require('./gridFsHandler');
 var serializer = require('jsdom').serializeDocument;
 var miscOps = require('./miscOps');
-var settings = require('../boot').getGeneralSettings();
-var verbose = settings.verbose;
 var jsdom = require('jsdom').jsdom;
 var siteTitle = settings.siteTitle || 'Undefined site title';
-var boot = require('../boot');
 var debug = boot.debug();
-var fs = require('fs');
-
-// templates
-var frontPageTemplate;
-var threadTemplate;
-var boardTemplate;
-var notFoundTemplate;
-var messageTemplate;
-var loginTemplate;
-var opTemplate;
-var postTemplate;
-var recoveryEmailTemplate;
-var resetEmailTemplate;
-var accountTemplate;
-var gManagementTemplate;
-var staffCellTemplate;
-var bManagementTemplate;
-var volunteerCellTemplate;
-var reportCellTemplate;
-var closedReportCellTemplate;
-var closedReportsPageTemplate;
-var bansPageTemplate;
-var banCellTemplate;
-var uploadCellTemplate;
-var errorTemplate;
-var banPageTemplate;
-var bannerManagementTemplate;
-var bannerCellTemplate;
+var verbose = settings.verbose;
+var templateHandler = require('./templateHandler');
 
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 
-require('jsdom').defaultDocumentFeatures = {
-  FetchExternalResources : false,
-  ProcessExternalResources : false,
-  // someone said it might break stuff. If weird bugs, disable.
-  MutationEvents : false
-};
-
-// Section 1: Initialization {
-function loadEmailTemplates(fePath, templateSettings) {
-
-  var recoveryEmailPath = fePath + templateSettings.recoveryEmail;
-  recoveryEmailTemplate = fs.readFileSync(recoveryEmailPath);
-  resetEmailTemplate = fs.readFileSync(fePath + templateSettings.resetEmail);
-
-}
-
-function loadCellTemplates(fePath, templateSettings) {
-  opTemplate = fs.readFileSync(fePath + templateSettings.opCell);
-  staffCellTemplate = fs.readFileSync(fePath + templateSettings.staffCell);
-  postTemplate = fs.readFileSync(fePath + templateSettings.postCell);
-  reportCellTemplate = fs.readFileSync(fePath + templateSettings.reportCell);
-
-  uploadCellTemplate = fs.readFileSync(fePath + templateSettings.uploadCell);
-
-  var closedReportPath = fePath + templateSettings.closedReportCell;
-  closedReportCellTemplate = fs.readFileSync(closedReportPath);
-
-  var volunteerPath = fePath + templateSettings.volunteerCell;
-  volunteerCellTemplate = fs.readFileSync(volunteerPath);
-
-  banCellTemplate = fs.readFileSync(fePath + templateSettings.banCell);
-
-  bannerCellTemplate = fs.readFileSync(fePath + templateSettings.bannerCell);
-}
-
-function loadDynamicTemplates(fePath, templateSettings) {
-
-  bManagementTemplate = fs.readFileSync(fePath + templateSettings.bManagement);
-  bansPageTemplate = fs.readFileSync(fePath + templateSettings.bansPage);
-  notFoundTemplate = fs.readFileSync(fePath + templateSettings.notFoundPage);
-  messageTemplate = fs.readFileSync(fePath + templateSettings.messagePage);
-  accountTemplate = fs.readFileSync(fePath + templateSettings.accountPage);
-  gManagementTemplate = fs.readFileSync(fePath + templateSettings.gManagement);
-  errorTemplate = fs.readFileSync(fePath + templateSettings.errorPage);
-  banPageTemplate = fs.readFileSync(fePath + templateSettings.banPage);
-
-  var bannerManagementPath = fePath + templateSettings.bannerManagementPage;
-  bannerManagementTemplate = fs.readFileSync(bannerManagementPath);
-
-  var closedReportsPath = fePath + templateSettings.closedReportsPage;
-  closedReportsPageTemplate = fs.readFileSync(closedReportsPath);
-}
-
-function loadMainTemplates(fePath, templateSettings) {
-
-  threadTemplate = fs.readFileSync(fePath + templateSettings.threadPage);
-  frontPageTemplate = fs.readFileSync(fePath + templateSettings.index);
-  boardTemplate = fs.readFileSync(fePath + templateSettings.boardPage);
-  loginTemplate = fs.readFileSync(fePath + templateSettings.loginPage);
-
-}
-
-// Section 1.1: Tests {
-function checkPageErrors(errors, tests) {
-
-  for (var i = 0; i < tests.length; i++) {
-
-    var test = tests[i];
-
-    var document = jsdom(test.content);
-
-    var errorFound = false;
-
-    var error = '\nPage ' + test.template;
-
-    for (var j = 0; j < test.fields.length; j++) {
-
-      var field = test.fields[j];
-
-      if (!document.getElementById(field)) {
-        errorFound = true;
-        error += '\nError, missing element ' + field;
-      }
-
-    }
-
-    if (errorFound) {
-      errors.push(error);
-    }
-
-  }
-
-}
-
-function getTestCell(document, content) {
-
-  var toReturn = document.createElement('div');
-
-  toReturn.innerHTML = content;
-
-  return toReturn;
-}
-
-function checkCellErrors(errors, tests) {
-
-  var document = jsdom('<html></html>');
-
-  for (var i = 0; i < tests.length; i++) {
-
-    var test = tests[i];
-
-    var cell = getTestCell(document, test.content);
-
-    var errorFound = false;
-
-    var error = '\nCell ' + test.template;
-
-    for (var j = 0; j < test.fields.length; j++) {
-
-      var field = test.fields[j];
-
-      if (!cell.getElementsByClassName(field).length) {
-        errorFound = true;
-        error += '\nError, missing element ' + field;
-      } else if (cell.getElementsByClassName(field).length > 1) {
-        errorFound = true;
-        error += '\nWarning, more than one element with class ' + field;
-      }
-
-    }
-
-    if (errorFound) {
-      errors.push(error);
-    }
-
-  }
-
-}
-
-function testTemplates(settings) {
-
-  var cellTests = [
-      {
-        template : 'bannerCell',
-        content : bannerCellTemplate,
-        fields : [ 'bannerImage', 'bannerIdentifier' ]
-      },
-      {
-        template : 'opCell',
-        content : opTemplate,
-        fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
-            'divMessage', 'linkReply', 'linkSelf', 'deletionCheckBox',
-            'lockIndicator', 'pinIndicator' ]
-      },
-      {
-        template : 'postCell',
-        content : postTemplate,
-        fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
-            'divMessage', 'linkSelf', 'deletionCheckBox' ]
-      },
-      {
-        template : 'staffCell',
-        content : staffCellTemplate,
-        fields : [ 'userIdentifier', 'userLabel', 'roleCombo' ]
-      },
-      {
-        template : 'volunteerCell',
-        content : volunteerCellTemplate,
-        fields : [ 'boardIdentifier', 'userIdentifier', 'userLabel' ]
-      },
-      {
-        template : 'reportCell',
-        content : reportCellTemplate,
-        fields : [ 'reasonLabel', 'link', 'idIdentifier' ]
-      },
-      {
-        template : 'closedReportCell',
-        content : closedReportCellTemplate,
-        fields : [ 'reasonLabel', 'link', 'closedByLabel', 'closedDateLabel' ]
-      },
-      {
-        template : 'banCell',
-        content : banCellTemplate,
-        fields : [ 'reasonLabel', 'expirationLabel', 'appliedByLabel',
-            'boardLabel' ]
-      }, {
-        template : 'uploadCell',
-        content : uploadCellTemplate,
-        fields : [ 'infoLabel', 'imageLink', 'nameLink' ]
-      } ];
-
-  var pageTests = [
-      {
-        template : 'resetEmail',
-        content : resetEmailTemplate,
-        fields : [ 'labelNewPass' ]
-      },
-      {
-        template : 'bannerManagementPage',
-        content : bannerManagementTemplate,
-        fields : [ 'bannersDiv', 'boardIdentifier' ]
-      },
-      {
-        template : 'errorPage',
-        content : errorTemplate,
-        fields : [ 'codeLabel', 'errorLabel' ]
-      },
-      {
-        template : 'recoveryEmail',
-        content : recoveryEmailTemplate,
-        fields : [ 'linkRecovery' ]
-      },
-      {
-        template : 'index',
-        content : frontPageTemplate,
-        fields : [ 'divBoards' ]
-      },
-      {
-        template : 'boardPage',
-        content : boardTemplate,
-        fields : [ 'labelName', 'labelDescription', 'divPostings', 'divPages',
-            'boardIdentifier', 'linkManagement', 'bannerImage' ]
-      },
-      {
-        template : 'threadPage',
-        content : threadTemplate,
-        fields : [ 'labelName', 'labelDescription', 'divPostings',
-            'boardIdentifier', 'linkManagement', 'threadIdentifier', 'linkMod',
-            'inputBan', 'divExpiration', 'divControls',
-            'controlBoardIdentifier', 'controlThreadIdentifier',
-            'checkboxLock', 'checkboxPin', 'bannerImage' ]
-      },
-      {
-        template : 'messagePage',
-        content : messageTemplate,
-        fields : [ 'labelMessage', 'linkRedirect' ]
-      },
-
-      {
-        template : 'accountPage',
-        content : accountTemplate,
-        fields : [ 'labelLogin', 'boardsDiv', 'emailField',
-            'globalManagementLink' ]
-      },
-      {
-        template : 'banPage',
-        content : banPageTemplate,
-        fields : [ 'boardLabel', 'reasonLabel', 'expirationLabel' ]
-      },
-      {
-        template : 'gManagement',
-        content : gManagementTemplate,
-        fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
-            'reportDiv', 'bansLink' ]
-      },
-      {
-        template : 'bManagement',
-        content : bManagementTemplate,
-        fields : [ 'volunteersDiv', 'boardLabel', 'ownerControlDiv',
-            'addVolunteerBoardIdentifier', 'transferBoardIdentifier',
-            'deletionIdentifier', 'reportDiv', 'closedReportsLink', 'bansLink',
-            'bannerManagementLink' ]
-      }, {
-        template : 'closedReportsPage',
-        content : closedReportsPageTemplate,
-        fields : [ 'reportDiv' ]
-      }, {
-        template : 'bansPage',
-        content : bansPageTemplate,
-        fields : [ 'bansDiv' ]
-      } ];
-
-  var errors = [];
-
-  checkCellErrors(errors, cellTests);
-
-  checkPageErrors(errors, pageTests);
-
-  if (errors.length) {
-
-    console.log('Were found issues with templates.');
-
-    if (verbose) {
-
-      for (var i = 0; i < errors.length; i++) {
-
-        var error = errors[i];
-
-        console.log(error);
-
-      }
-    } else {
-      console.log('Enable verbose mode to output them.');
-    }
-
-    if (debug) {
-      throw 'Fix the issues on the templates or run without debug mode';
-    }
-
-  }
-}
-// } Section 1.1: Tests
-
-exports.loadTemplates = function() {
-
-  var fePath = boot.getFePath() + '/templates/';
-  var templateSettings = boot.getTemplateSettings();
-
-  loadMainTemplates(fePath, templateSettings);
-  loadEmailTemplates(fePath, templateSettings);
-  loadDynamicTemplates(fePath, templateSettings);
-  loadCellTemplates(fePath, templateSettings);
-
-  testTemplates(templateSettings);
-
-};
-// } Section 1: Initialization
-
-// Section 2: Shared functions {
+// Section 1: Shared functions {
 
 function setFormCellBoilerPlate(cell, action, cssClass) {
   cell.method = 'post';
@@ -388,7 +43,7 @@ function getReportLink(report) {
   return link;
 }
 
-// Section 2.1: Date formatting functions {
+// Section 1.1: Date formatting functions {
 function padDateField(value) {
   if (value < 10) {
     value = '0' + value;
@@ -418,7 +73,7 @@ function formatDateToDisplay(d) {
 
   return toReturn + ' (' + weekDay + ') ' + hour + ':' + minute + ':' + second;
 }
-// } Section 2.1: Date formatting functions
+// } Section 1.1: Date formatting functions
 
 function setReportList(document, reports) {
 
@@ -429,7 +84,7 @@ function setReportList(document, reports) {
 
     var cell = document.createElement('form');
 
-    cell.innerHTML = reportCellTemplate;
+    cell.innerHTML = templateHandler.reportCellTemplate();
 
     setFormCellBoilerPlate(cell, '/closeReport.js', 'reportCell');
 
@@ -461,13 +116,16 @@ function setHeader(document, board, boardData) {
   var linkBanner = '/randomBanner.js?boardUri=' + board;
   document.getElementById('bannerImage').src = linkBanner;
 
+  var catalogLink = '/' + board + '/catalog.html';
+  document.getElementById('linkCatalogHeader').href = catalogLink;
+
 }
 
-// Section 2.2: Thread content {
+// Section 1.2: Thread content {
 function addThread(document, thread, posts, boardUri, innerPage) {
 
   var threadCell = document.createElement('div');
-  threadCell.innerHTML = opTemplate;
+  threadCell.innerHTML = templateHandler.opTemplate();
   threadCell.setAttribute('class', 'opCell');
   threadCell.id = thread.threadId;
 
@@ -484,7 +142,7 @@ function addThread(document, thread, posts, boardUri, innerPage) {
 
 }
 
-// Section 2.2.1: Post content {
+// Section 1.2.1: Post content {
 function setPostComplexElements(postCell, post, boardUri, threadId, document) {
   var link = postCell.getElementsByClassName('linkSelf')[0];
   link.innerHTML = post.postId;
@@ -532,7 +190,7 @@ function addPosts(document, posts, boardUri, threadId) {
 
   for (var i = 0; i < posts.length; i++) {
     var postCell = document.createElement('div');
-    postCell.innerHTML = postTemplate;
+    postCell.innerHTML = templateHandler.postTemplate();
     postCell.setAttribute('class', 'postCell');
 
     var post = posts[i];
@@ -546,7 +204,7 @@ function addPosts(document, posts, boardUri, threadId) {
   }
 
 }
-// } Section 2.2.1: Post content
+// } Section 1.2.1: Post content
 
 function setThreadComplexElements(boardUri, thread, threadCell, innerPage) {
 
@@ -604,7 +262,7 @@ function setThreadSimpleElements(threadCell, thread) {
   divMessage.innerHTML = thread.message;
 }
 
-// Section 2.2.2: Uploads {
+// Section 1.2.2: Uploads {
 function formatFileSize(size) {
 
   var orderIndex = 0;
@@ -643,7 +301,7 @@ function setUploadCell(document, node, files) {
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
     var cell = document.createElement('div');
-    cell.innerHTML = uploadCellTemplate;
+    cell.innerHTML = templateHandler.uploadCellTemplate();
     cell.setAttribute('class', 'uploadCell');
 
     setUploadLinks(document, cell, file);
@@ -660,18 +318,18 @@ function setUploadCell(document, node, files) {
   }
 
 }
-// } Section 2.2.2: Uploads
+// } Section 1.2.2: Uploads
 
-// } Section 2.2: Thread content
+// } Section 1.2: Thread content
 
-// } Section 2: Shared functions
+// } Section 1: Shared functions
 
-// Section 3: Dynamic pages {
+// Section 2: Dynamic pages {
 exports.bannerManagement = function(boardUri, banners) {
 
   try {
 
-    var document = jsdom(bannerManagementTemplate);
+    var document = jsdom(templateHandler.bannerManagementTemplate());
 
     document.title = 'Banners of /' + boardUri + '/';
 
@@ -683,7 +341,7 @@ exports.bannerManagement = function(boardUri, banners) {
       var banner = banners[i];
 
       var cell = document.createElement('form');
-      cell.innerHTML = bannerCellTemplate;
+      cell.innerHTML = templateHandler.bannerCellTemplate();
 
       setFormCellBoilerPlate(cell, '/deleteBanner.js', 'bannerCell');
 
@@ -716,7 +374,7 @@ exports.ban = function(reason, expiration, board) {
 
   try {
 
-    var document = jsdom(banPageTemplate);
+    var document = jsdom(templateHandler.banPageTemplate());
 
     document.title = 'b& :^)';
 
@@ -749,7 +407,7 @@ exports.error = function(code, message) {
 
   try {
 
-    var document = jsdom(errorTemplate);
+    var document = jsdom(templateHandler.errorTemplate());
 
     document.title = 'Error';
 
@@ -774,7 +432,7 @@ exports.error = function(code, message) {
 
 };
 
-// Section 3.1: Bans {
+// Section 2.1: Bans {
 function setBanCell(ban, cell) {
 
   cell.getElementsByClassName('reasonLabel')[0].innerHTML = ban.reason;
@@ -796,7 +454,7 @@ exports.bans = function(bans) {
 
   try {
 
-    var document = jsdom(bansPageTemplate);
+    var document = jsdom(templateHandler.bansPageTemplate());
 
     document.title = 'Bans';
 
@@ -806,7 +464,7 @@ exports.bans = function(bans) {
 
       var ban = bans[i];
       var cell = document.createElement('form');
-      cell.innerHTML = banCellTemplate;
+      cell.innerHTML = templateHandler.banCellTemplate();
 
       setFormCellBoilerPlate(cell, '/liftBan.js', 'banCell');
 
@@ -830,9 +488,9 @@ exports.bans = function(bans) {
   }
 
 };
-// } Section 3.1: Bans
+// } Section 2.1: Bans
 
-// Section 3.2: Closed reports {
+// Section 2.2: Closed reports {
 function setClosedReportCell(cell, report) {
   if (report.reason) {
     var reason = cell.getElementsByClassName('reasonLabel')[0];
@@ -852,7 +510,7 @@ function setClosedReportCell(cell, report) {
 exports.closedReports = function(reports, callback) {
   try {
 
-    var document = jsdom(closedReportsPageTemplate);
+    var document = jsdom(templateHandler.closedReportsPageTemplate());
 
     document.title = 'Closed reports';
 
@@ -863,7 +521,7 @@ exports.closedReports = function(reports, callback) {
       var report = reports[i];
       var cell = document.createElement('div');
 
-      cell.innerHTML = closedReportCellTemplate;
+      cell.innerHTML = templateHandler.closedReportCellTemplate();
       cell.setAttribute('class', 'closedReportCell');
 
       setClosedReportCell(cell, report);
@@ -886,9 +544,9 @@ exports.closedReports = function(reports, callback) {
     return error.toString();
   }
 };
-// } Section 3.2: Closed reports
+// } Section 2.2: Closed reports
 
-// Section 3.3: Board control {
+// Section 2.3: Board control {
 function setBoardControlIdentifiers(document, boardData) {
   document.getElementById('addVolunteerBoardIdentifier').setAttribute('value',
       boardData.boardUri);
@@ -911,7 +569,7 @@ function setBoardOwnerControls(document, boardData) {
   for (var i = 0; i < volunteers.length; i++) {
 
     var cell = document.createElement('form');
-    cell.innerHTML = volunteerCellTemplate;
+    cell.innerHTML = templateHandler.volunteerCellTemplate();
 
     setFormCellBoilerPlate(cell, '/setVolunteer.js', 'volunteerCell');
 
@@ -948,7 +606,7 @@ exports.boardManagement = function(login, boardData, reports) {
 
   try {
 
-    var document = jsdom(bManagementTemplate);
+    var document = jsdom(templateHandler.bManagementTemplate());
 
     document.title = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
 
@@ -983,9 +641,9 @@ exports.boardManagement = function(login, boardData, reports) {
   }
 
 };
-// } Section 3.3: Board control
+// } Section 2.3: Board control
 
-// Section 3.4: Global Management {
+// Section 2.4: Global Management {
 function setRoleComboBox(document, node, possibleRoles, user) {
   for (var k = 0; k < possibleRoles.length; k++) {
 
@@ -1013,7 +671,7 @@ function fillStaffDiv(document, possibleRoles, staff) {
     var user = staff[i];
 
     var cell = document.createElement('form');
-    cell.innerHTML = staffCellTemplate;
+    cell.innerHTML = templateHandler.staffCellTemplate();
 
     setFormCellBoilerPlate(cell, '/setGlobalRole.js', 'staffCell');
 
@@ -1076,7 +734,7 @@ function setGlobalBansLink(userRole, document) {
 exports.globalManagement = function(userRole, userLogin, staff, reports) {
 
   try {
-    var document = jsdom(gManagementTemplate);
+    var document = jsdom(templateHandler.gManagementTemplate());
 
     document.title = 'Global management';
 
@@ -1115,13 +773,13 @@ exports.globalManagement = function(userRole, userLogin, staff, reports) {
     return error.toString();
   }
 };
-// } Section 3.4: Global Management
+// } Section 2.4: Global Management
 
 exports.resetEmail = function(password) {
 
   try {
 
-    var document = jsdom(resetEmailTemplate);
+    var document = jsdom(templateHandler.resetEmailTemplate());
 
     var link = document.getElementById('labelNewPass');
     link.innerHTML = password;
@@ -1145,7 +803,7 @@ exports.recoveryEmail = function(recoveryLink) {
 
   try {
 
-    var document = jsdom(recoveryEmailTemplate);
+    var document = jsdom(templateHandler.recoveryEmailTemplate());
 
     var link = document.getElementById('linkRecovery');
     link.href = recoveryLink;
@@ -1165,7 +823,7 @@ exports.recoveryEmail = function(recoveryLink) {
   }
 };
 
-// Section 3.5: Account {
+// Section 2.5: Account {
 function fillOwnedBoardsDiv(document, boardList) {
   var boardDiv = document.getElementById('boardsDiv');
 
@@ -1189,7 +847,7 @@ exports.account = function(userData) {
 
   try {
 
-    var document = jsdom(accountTemplate);
+    var document = jsdom(templateHandler.accountTemplate());
 
     document.title = 'Welcome, ' + userData.login;
 
@@ -1230,13 +888,13 @@ exports.account = function(userData) {
     return error.toString();
   }
 };
-// } Section 3.5: Account
+// } Section 2.5: Account
 
 exports.message = function(message, link) {
 
   try {
 
-    var document = jsdom(messageTemplate);
+    var document = jsdom(templateHandler.messageTemplate());
 
     document.title = message;
 
@@ -1270,12 +928,12 @@ exports.message = function(message, link) {
 
 };
 
-// Section 3: Dynamic pages
+// Section 2: Dynamic pages
 
-// Section 4: Static pages {
+// Section 3: Static pages {
 exports.notFound = function(callback) {
 
-  var document = jsdom(notFoundTemplate);
+  var document = jsdom(templateHandler.notFoundTemplate());
 
   document.title = 'File not found';
 
@@ -1286,7 +944,7 @@ exports.notFound = function(callback) {
 
 exports.login = function(callback) {
   try {
-    var document = jsdom(loginTemplate);
+    var document = jsdom(templateHandler.loginTemplate());
 
     document.title = 'Login, register or reset passsword';
 
@@ -1316,7 +974,7 @@ exports.frontPage = function(boards, callback) {
 
   try {
 
-    var document = jsdom(frontPageTemplate);
+    var document = jsdom(templateHandler.frontPageTemplate());
 
     document.title = siteTitle;
 
@@ -1345,7 +1003,7 @@ exports.frontPage = function(boards, callback) {
   }
 };
 
-// Section 4.1: Thread {
+// Section 3.1: Thread {
 function setThreadHiddenIdentifiers(document, boardUri, threadData) {
   var boardIdentifyInput = document.getElementById('boardIdentifier');
 
@@ -1431,7 +1089,7 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
     modding) {
 
   try {
-    var document = jsdom(threadTemplate);
+    var document = jsdom(templateHandler.threadTemplate());
 
     setThreadTitle(document, boardUri, threadData);
 
@@ -1451,9 +1109,9 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
   }
 
 };
-// } Section 4.1: Thread
+// } Section 3.1: Thread
 
-// Section 4.2: Board {
+// Section 3.2: Board {
 function generateThreadListing(document, boardUri, page, threads, preview,
     callback) {
 
@@ -1503,7 +1161,7 @@ exports.page = function(board, page, threads, pageCount, boardData, preview,
 
   try {
 
-    var document = jsdom(boardTemplate);
+    var document = jsdom(templateHandler.boardTemplate());
 
     document.title = '/' + board + '/' + ' - ' + boardData.boardName;
 
@@ -1518,11 +1176,82 @@ exports.page = function(board, page, threads, pageCount, boardData, preview,
 
     addPagesLinks(document, pageCount);
 
+    var catalogLink = '/' + board + '/catalog.html';
+    document.getElementById('linkCatalogFooter').href = catalogLink;
+
     generateThreadListing(document, board, page, threads, preview, callback);
   } catch (error) {
     callback(error);
   }
 };
-// } Section 4.2: Board
+// } Section 3.2: Board
 
-// Section 4: Static pages
+// Section 3.3: Catalog {
+
+function setCell(boardUri, document, cell, thread) {
+
+  var thumbLink = cell.getElementsByClassName('linkThumb')[0];
+
+  thumbLink.href = '/' + boardUri + '/res/' + thread.threadId + '.html';
+
+  if (thread.files && thread.files.length) {
+    var thumbImage = document.createElement('img');
+    thumbImage.src = thread.files[0].thumb;
+    thumbLink.appendChild(thumbImage);
+  } else {
+    thumbLink.innerHTML = 'Open';
+  }
+
+  var labelReplies = cell.getElementsByClassName('labelReplies')[0];
+  labelReplies.innerHTML = thread.postCount || 0;
+
+  var labelImages = cell.getElementsByClassName('labelImages')[0];
+  labelImages.innerHTML = thread.fileCount || 0;
+  cell.getElementsByClassName('labelPage')[0].innerHTML = thread.page;
+  if (thread.subject) {
+    cell.getElementsByClassName('labelSubject')[0].innerHTML = thread.subject;
+  }
+  cell.getElementsByClassName('divMessage')[0].innerHTML = thread.message;
+
+}
+
+exports.catalog = function(boardUri, threads, callback) {
+
+  try {
+
+    var document = jsdom(templateHandler.catalogPageTemplate());
+
+    var linkBoard = document.getElementById('linkBoard');
+
+    linkBoard.innerHTML = '/' + boardUri + '/';
+    linkBoard.href = '/' + boardUri + '/';
+
+    var threadsDiv = document.getElementById('divThreads');
+
+    for (var i = 0; i < threads.length; i++) {
+      var thread = threads[i];
+
+      var cell = document.createElement('div');
+      cell.innerHTML = templateHandler.catalogCellTemplate();
+      cell.setAttribute('class', 'catalogCell');
+
+      setCell(boardUri, document, cell, thread);
+
+      threadsDiv.appendChild(cell);
+    }
+
+    gridFs.writeData(serializer(document), '/' + boardUri + '/catalog.html',
+        'text/html', {
+          boardUri : boardUri,
+          type : 'catalog'
+        }, callback);
+
+  } catch (error) {
+    callback(error);
+  }
+
+};
+
+// } Section 3.3: Catalog
+
+// Section 3: Static pages

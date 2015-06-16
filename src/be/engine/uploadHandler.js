@@ -44,7 +44,27 @@ exports.removeFromDisk = function(path, callback) {
 };
 
 function updatePostingFiles(boardUri, threadId, postId, files, file, callback,
-    index, spoiler) {
+    index, spoiler, updatedFileCount) {
+
+  if (postId && !updatedFileCount) {
+    threads.updateOne({
+      threadId : threadId,
+      boardUri : boardUri
+    }, {
+      $inc : {
+        fileCount : 1
+      }
+    }, function updatedFileCount(error) {
+      if (error) {
+        callback(error);
+      } else {
+        updatePostingFiles(boardUri, threadId, postId, files, file, callback,
+            index, spoiler, updatedFileCount, true);
+      }
+    });
+
+    return;
+  }
 
   var queryBlock = {
     boardUri : boardUri,

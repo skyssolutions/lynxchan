@@ -30,7 +30,7 @@ function main(req, res) {
     try {
       clearCache();
       boot.loadSettings();
-      require('./engine/domManipulator').loadTemplates();
+      require('./engine/templateHandler').loadTemplates();
     } catch (error) {
       console.log(error);
       req.connection.destroy();
@@ -48,7 +48,7 @@ function main(req, res) {
 function startListening() {
 
   try {
-    require('./engine/domManipulator').loadTemplates();
+    require('./engine/templateHandler').loadTemplates();
 
     if (boot.getGeneralSettings().ssl) {
 

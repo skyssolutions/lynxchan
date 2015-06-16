@@ -1,5 +1,5 @@
 # Status:
-* Alpha: 11 checkpoints to beta.
+* Alpha: 10 checkpoints to beta.
 * Beta: 7 checkpoints to release.
 
 # About
@@ -36,7 +36,7 @@ Note that the front-end directory is in the ignore. I am designing this project 
 
 # Back-end
 The back-end project is a [Nodeclipse](http://www.nodeclipse.org/) project with lint and formatting defined. IMO eclipse is a shit, but it makes it very practical to automatically format and clean everything.
-Coding standard: [Felix's Node style guide](https://github.com/felixge/node-style-guide).
+Coding standard: [Felix's Node style guide](https://github.com/felixge/node-style-guide). Additionally, all files that reach 1k LOC must be organized into sections. See src/be/engine/domManipulator.js.
 More information can be found at [src/be/Readme.md](src/be/Readme.md).
 
 # Aux

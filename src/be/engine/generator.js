@@ -34,13 +34,16 @@ var threadProjection = {
   threadId : 1,
   creation : 1,
   name : 1,
+  page : 1,
   files : 1,
   locked : 1,
   pinned : 1,
   email : 1,
   message : 1,
   lastBump : 1,
-  latestPosts : 1
+  latestPosts : 1,
+  postCount : 1,
+  fileCount : 1
 };
 
 var boardProjection = {
@@ -496,15 +499,43 @@ exports.page = function(boardUri, page, callback, boardData) {
 
 // page creation end
 
+exports.catalog = function(boardUri, callback) {
+
+  if (verbose) {
+    console.log('Building catalog of ' + boardUri);
+  }
+
+  threads.find({
+    boardUri : boardUri
+  }, threadProjection).sort({
+    lastBump : -1
+  }).toArray(function gotThreads(error, threads) {
+    if (error) {
+      callback(error);
+    } else {
+      domManipulator.catalog(boardUri, threads, callback);
+    }
+  });
+
+};
+
 function pageIteration(boardUri, currentPage, boardData, callback,
     rebuildThreadPages) {
 
   if (currentPage < 1) {
-    if (rebuildThreadPages) {
-      exports.allThreads(boardUri, callback, boardData);
-    } else {
-      callback();
-    }
+
+    exports.catalog(boardUri, function generatedCatalog(error) {
+      if (error) {
+        callback(error);
+      } else {
+        if (rebuildThreadPages) {
+          exports.allThreads(boardUri, callback, boardData);
+        } else {
+          callback();
+        }
+      }
+    });
+
     return;
   }
 
@@ -518,8 +549,6 @@ function pageIteration(boardUri, currentPage, boardData, callback,
   }, boardData);
 
 }
-
-// TODO generate only first X pages
 
 exports.board = function(boardUri, reloadThreads, callback, boardData) {
 

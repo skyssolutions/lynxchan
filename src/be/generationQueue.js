@@ -5,16 +5,17 @@
 // to queue a rebuild, use process.send({message});
 
 // messages can have the following keys:
-// globalRebuild (Boolean): rebuilds every single page
-// defaultPages (Boolean): rebuilds default pages
-// frontPage (Boolean): rebuilds the front-page
-// board: boardUri that will be rebuilt
-// buildAll(Boolean): indicates to rebuild every of the board, including thread
-// pages
-// page(Number): page to be rebuilt
-// thread(Number): thread to be rebuilt
-// if only board is informed, its pages will be rebuilt without rebuilding the
-// threads
+// globalRebuild (Boolean): rebuilds every single page.
+// defaultPages (Boolean): rebuilds default pages.
+// frontPage (Boolean): rebuilds the front-page.
+// board: boardUri that will be rebuilt.
+// catalog(Boolean): indicates to rebuild only the board catalog.
+// buildAll(Boolean): indicates to rebuild every page of the board, including
+// thread pages.
+// page(Number): page to be rebuilt.
+// thread(Number): thread to be rebuilt.
+// if only board is informed, its pages and catalog will be rebuilt without
+// rebuilding the threads.
 
 // so we can know the order we will process the objects
 var queueArray = [];
@@ -26,6 +27,8 @@ var queueArray = [];
 // buildingPages indicates we are already rebuilding the board pages.
 // buildingAll may hold a boolean so we know we are already rebuilding the whole
 // board, ignore anything incoming for the board.
+// buildingCatalog indicates we are already building the catalog without the
+// board pages.
 // pages is an array with the numbers of pages to be rebuilt, indexed from 1.
 // [2,5] means we will rebuild pages 2 and 5
 // threads is an array with the ids of threads to be rebuilt.
@@ -43,6 +46,7 @@ var working = false;
 var debug = require('./boot').debug();
 var generator = require('./engine/generator');
 var domManipulator = require('./engine/domManipulator');
+var templateHandler = require('./engine/templateHandler');
 var verbose = require('./boot').getGeneralSettings().verbose;
 
 function checkForGlobalClearing(message) {
@@ -72,6 +76,9 @@ function clearTree(error, message) {
       delete queueTree[message.board];
     } else if (!message.page && !message.thread) {
       queueTree[message.board].buildingPages = false;
+      queueTree[message.board].buildingCatalog = false;
+    } else if (message.catalog) {
+      queueTree[message.board].buildingCatalog = false;
     } else if (message.page) {
       queueTree[message.board].pages.splice(queueTree[message.board].pages
           .indexOf(message.page), 1);
@@ -118,6 +125,8 @@ function processMessage(message) {
     generator.board(message.board, false, generationCallback);
   } else if (message.page) {
     generator.page(message.board, message.page, generationCallback);
+  } else if (message.catalog) {
+    generator.catalog(message.board, generationCallback);
   } else {
     generator.thread(message.board, message.thread, generationCallback);
   }
@@ -140,7 +149,7 @@ function processQueue() {
   }
 
   if (debug) {
-    domManipulator.loadTemplates();
+    templateHandler.loadTemplates();
   }
 
   processMessage(message);
@@ -171,6 +180,16 @@ function putInQueue(message, boardInformation) {
 }
 
 function checkForPageAndThreadRebuild(message, boardInformation) {
+
+  if (boardInformation.buildingCatalog && message.catalog) {
+    return;
+  }
+
+  if (message.catalog) {
+    boardInformation.buildingCatalog = true;
+    putInQueue(message, boardInformation);
+    return;
+  }
 
   var boardThreads = boardInformation.threads;
   var isRebuildingThread = boardThreads.indexOf(message.thread) !== -1;
