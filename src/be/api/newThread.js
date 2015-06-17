@@ -4,7 +4,7 @@ var apiOps = require('../engine/apiOps');
 var postingOps = require('../engine/postingOps');
 var mandatoryParameters = [ 'message', 'boardUri' ];
 
-function createThread(req, res, parameters) {
+function createThread(req, res, parameters, userData) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -15,7 +15,8 @@ function createThread(req, res, parameters) {
     } else {
 
       // style exception, too simple
-      postingOps.newThread(req, parameters, function threadCreated(error, id) {
+      postingOps.newThread(req, userData, parameters, function threadCreated(
+          error, id) {
         if (error) {
           apiOps.outputError(error, res);
         } else {
@@ -30,10 +31,11 @@ function createThread(req, res, parameters) {
 
 exports.process = function(req, res) {
 
-  apiOps.getAnonJsonData(req, res, function gotData(auth, parameters) {
+  apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
+      parameters) {
 
-    createThread(req, res, parameters);
+    createThread(req, res, parameters, userData);
 
-  }, true);
+  }, true, true);
 
 };

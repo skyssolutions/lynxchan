@@ -31,6 +31,24 @@ var postingParameters = [ {
   length : 8
 } ];
 
+function getSignedRole(userData, board) {
+
+  board.volunteers = board.volunteers || [];
+
+  if (!userData) {
+    return null;
+  } else if (board.owner === userData.login) {
+    return 'Board owner';
+  } else if (board.volunteers.indexOf(userData.login) > -1) {
+    return 'Board volunteer';
+  } else if (userData.globalRole > miscOps.getMaxStaffRole) {
+    return null;
+  } else {
+    return miscOps.getGlobalRoleLabel(userData.globalRole);
+  }
+
+}
+
 function createId(salt, boardUri, ip) {
   return crypto.createHash('sha256').update(salt + ip + boardUri).digest('hex')
       .substring(0, 6);
@@ -91,7 +109,7 @@ function updateBoardForThreadCreation(boardUri, threadId, callback) {
   });
 }
 
-function createThread(req, parameters, threadId, callback) {
+function createThread(req, userData, parameters, board, threadId, callback) {
 
   miscOps.sanitizeStrings(parameters, postingParameters);
 
@@ -114,6 +132,7 @@ function createThread(req, parameters, threadId, callback) {
     subject : parameters.subject,
     pinned : false,
     locked : false,
+    signedRole : getSignedRole(userData, board),
     name : parameters.name,
     message : parameters.message,
     email : parameters.email
@@ -125,7 +144,7 @@ function createThread(req, parameters, threadId, callback) {
 
   threads.insert(threadToAdd, function createdThread(error) {
     if (error && error.code === 11000) {
-      createThread(req, parameters, threadId + 1, callback);
+      createThread(req, userData, parameters, board, threadId + 1, callback);
     } else if (error) {
       callback(error);
     } else {
@@ -147,12 +166,14 @@ function createThread(req, parameters, threadId, callback) {
 
 }
 
-exports.newThread = function(req, parameters, callback) {
+exports.newThread = function(req, userData, parameters, callback) {
 
   boards.findOne({
     boardUri : parameters.boardUri
   }, {
     _id : 0,
+    owner : 1,
+    volunteers : 1,
     lastPostId : 1
   }, function gotBoard(error, board) {
     if (error) {
@@ -160,7 +181,8 @@ exports.newThread = function(req, parameters, callback) {
     } else if (!board) {
       callback('Board not found');
     } else {
-      createThread(req, parameters, (board.lastPostId || 0) + 1, callback);
+      createThread(req, userData, parameters, board,
+          (board.lastPostId || 0) + 1, callback);
     }
   });
 
@@ -260,7 +282,7 @@ function updateThread(parameters, postId, thread, callback) {
 
 }
 
-function createPost(req, parameters, postId, thread, callback) {
+function createPost(req, parameters, userData, postId, thread, board, cb) {
 
   miscOps.sanitizeStrings(parameters, postingParameters);
 
@@ -271,6 +293,7 @@ function createPost(req, parameters, postId, thread, callback) {
     postId : postId,
     ip : ip,
     threadId : parameters.threadId,
+    signedRole : getSignedRole(userData, board),
     creation : new Date(),
     subject : parameters.subject,
     name : parameters.name,
@@ -285,9 +308,9 @@ function createPost(req, parameters, postId, thread, callback) {
 
   posts.insert(postToAdd, function createdPost(error) {
     if (error && error.code === 11000) {
-      createPost(req, parameters, postId + 1, thread, callback);
+      createPost(req, parameters, userData, postId + 1, thread, board, cb);
     } else if (error) {
-      callback(error);
+      cb(error);
     } else {
 
       // style exception, too simple
@@ -295,9 +318,9 @@ function createPost(req, parameters, postId, thread, callback) {
           postId, parameters.files, parameters.spoiler, function savedFiles(
               error) {
             if (error) {
-              callback(error);
+              cb(error);
             } else {
-              updateThread(parameters, postId, thread, callback);
+              updateThread(parameters, postId, thread, cb);
             }
 
           });
@@ -308,7 +331,7 @@ function createPost(req, parameters, postId, thread, callback) {
 
 }
 
-function getThread(req, parameters, postId, callback) {
+function getThread(req, parameters, userData, postId, board, callback) {
 
   threads.findOne({
     boardUri : parameters.boardUri,
@@ -329,28 +352,31 @@ function getThread(req, parameters, postId, callback) {
     } else if (thread.locked) {
       callback('You cannot reply to a locked thread');
     } else {
-      createPost(req, parameters, postId, thread, callback);
+      createPost(req, parameters, userData, postId, thread, board, callback);
     }
   });
 
 }
 
-exports.newPost = function(req, parameters, callback) {
-
+exports.newPost = function(req, userData, parameters, callback) {
+  // TODO sign with role
   parameters.threadId = +parameters.threadId;
 
   boards.findOne({
     boardUri : parameters.boardUri
   }, {
     _id : 0,
-    lastPostId : 1
+    lastPostId : 1,
+    owner : 1,
+    volunteers : 1
   }, function gotBoard(error, board) {
     if (error) {
       callback(error);
     } else if (!board) {
       callback('Board not found');
     } else {
-      getThread(req, parameters, (board.lastPostId || 0) + 1, callback);
+      getThread(req, parameters, userData, (board.lastPostId || 0) + 1, board,
+          callback);
     }
   });
 

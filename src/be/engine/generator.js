@@ -26,6 +26,7 @@ var postProjection = {
   files : 1,
   email : 1,
   id : 1,
+  signedRole : 1,
   message : 1
 };
 
@@ -33,6 +34,7 @@ var threadProjection = {
   _id : 0,
   id : 1,
   subject : 1,
+  signedRole : 1,
   threadId : 1,
   creation : 1,
   name : 1,

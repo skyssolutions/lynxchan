@@ -181,6 +181,10 @@ labelId:
     type: span
     description: holds the poster's thread-wise id.
 
+labelRole:
+    type: span
+    description: holds the role of the user in the board. If the user doesn't have a role in the board, it will display its global role, if the user is not a regular user.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::06
@@ -192,6 +196,10 @@ Elements:
 panelUploads:
     type: div
     description: contains the uploads for the post.
+
+labelRole:
+    type: span
+    description: holds the role of the user in the board. If the user doesn't have a role in the board, it will display its global role, if the user is not a regular user.
 
 linkName:
     type: a

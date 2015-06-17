@@ -126,6 +126,8 @@ function addThread(document, thread, posts, boardUri, innerPage) {
   threadCell.setAttribute('class', 'opCell');
   threadCell.id = thread.threadId;
 
+  setThreaLinks(threadCell, thread, boardUri, innerPage);
+
   setThreadComplexElements(boardUri, thread, threadCell, innerPage);
 
   setThreadSimpleElements(threadCell, thread);
@@ -148,6 +150,14 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document) {
   var checkboxName = boardUri + '-' + threadId + '-' + post.postId;
   postCell.getElementsByClassName('deletionCheckBox')[0].setAttribute('name',
       checkboxName);
+
+  var labelRole = postCell.getElementsByClassName('labelRole')[0];
+
+  if (post.signedRole) {
+    labelRole.innerHTML = post.signedRole;
+  } else {
+    labelRole.style.display = 'none';
+  }
 
   setUploadCell(document, postCell.getElementsByClassName('panelUploads')[0],
       post.files);
@@ -204,8 +214,22 @@ function addPosts(document, posts, boardUri, threadId) {
 
 }
 // } Section 1.2.1: Post content
+function setThreaLinks(threadCell, thread, boardUri, innerPage) {
+  var linkReply = threadCell.getElementsByClassName('linkReply')[0];
+  if (innerPage) {
+    linkReply.style.display = 'none';
+  } else {
+    linkReply.href = 'res/' + thread.threadId + '.html';
+  }
 
-function setThreadComplexElements(boardUri, thread, threadCell, innerPage) {
+  var linkSelf = threadCell.getElementsByClassName('linkSelf')[0];
+  linkSelf.innerHTML = thread.threadId;
+
+  var link = '/' + boardUri + '/res/' + thread.threadId + '.html#';
+  linkSelf.href = link + thread.threadId;
+}
+
+function setThreadComplexElements(boardUri, thread, threadCell) {
 
   if (!thread.pinned) {
     var pinIndicator = threadCell.getElementsByClassName('pinIndicator')[0];
@@ -217,21 +241,16 @@ function setThreadComplexElements(boardUri, thread, threadCell, innerPage) {
     lockIndicator.style.display = 'none';
   }
 
-  var linkReply = threadCell.getElementsByClassName('linkReply')[0];
-  if (innerPage) {
-    linkReply.style.display = 'none';
-  } else {
-    linkReply.href = 'res/' + thread.threadId + '.html';
-  }
-
   threadCell.getElementsByClassName('deletionCheckBox')[0].setAttribute('name',
       boardUri + '-' + thread.threadId);
 
-  var linkSelf = threadCell.getElementsByClassName('linkSelf')[0];
-  linkSelf.innerHTML = thread.threadId;
+  var labelRole = threadCell.getElementsByClassName('labelRole')[0];
 
-  var link = '/' + boardUri + '/res/' + thread.threadId + '.html#';
-  linkSelf.href = link + thread.threadId;
+  if (thread.signedRole) {
+    labelRole.innerHTML = thread.signedRole;
+  } else {
+    labelRole.style.display = 'none';
+  }
 
 }
 

@@ -202,14 +202,15 @@ function storeImages(parsedData, res, finalArray, toRemove, callback) {
 
 }
 
-exports.getAuthenticatedData = function(req, res, callback, checkCaptcha) {
+exports.getAuthenticatedData = function(req, res, callback, checkCaptcha,
+    optionalAuth) {
 
   exports.getAnonJsonData(req, res, function gotData(auth, parameters) {
 
     accountOps.validate(auth, function validatedRequest(error, newAuth,
         userData) {
 
-      if (error) {
+      if (error && !!optionalAuth) {
         exports.outputError(error, res);
       } else {
         callback(newAuth, userData, parameters);

@@ -131,14 +131,15 @@ function redirectToLogin(res) {
   res.end();
 }
 
-exports.getAuthenticatedPost = function(req, res, getParameters, callback) {
+exports.getAuthenticatedPost = function(req, res, getParameters, callback,
+    optionalAuth) {
 
   if (getParameters) {
 
     exports.getPostData(req, res, function(auth, parameters) {
 
       accountOps.validate(auth, function validated(error, newAuth, userData) {
-        if (error) {
+        if (error && !optionalAuth) {
           redirectToLogin(res);
         } else {
           callback(newAuth, userData, parameters);
@@ -151,7 +152,7 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback) {
     accountOps.validate(exports.getCookies(req), function validated(error,
         newAuth, userData) {
 
-      if (error) {
+      if (error && !optionalAuth) {
         redirectToLogin(res);
       } else {
         callback(newAuth, userData);

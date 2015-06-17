@@ -5,7 +5,7 @@ var postingOps = require('../engine/postingOps');
 var captchaOps = require('../engine/captchaOps');
 var mandatoryParameters = [ 'message', 'boardUri', 'threadId' ];
 
-function createPost(req, res, parameters) {
+function createPost(req, res, parameters, userData) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -20,7 +20,8 @@ function createPost(req, res, parameters) {
 
           // style exception, too simple
 
-          postingOps.newPost(req, parameters, function postCreated(error, id) {
+          postingOps.newPost(req, userData, parameters, function postCreated(
+              error, id) {
             if (error) {
               formOps.outputError(error, 500, res);
             } else {
@@ -39,18 +40,21 @@ function createPost(req, res, parameters) {
 
 exports.process = function(req, res) {
 
-  formOps.getPostData(req, res, function gotData(auth, parameters) {
+  formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
+      parameters) {
+
+    var cookies = formOps.getCookies(req);
 
     // style exception, too simple
-    captchaOps.attemptCaptcha(auth.captchaId, parameters.captcha,
+    captchaOps.attemptCaptcha(cookies.captchaId, parameters.captcha,
         function attemptedCaptcha(error) {
           if (error) {
             formOps.outputError(error, 500, res);
           } else {
-            createPost(req, res, parameters);
+            createPost(req, res, parameters, userData);
           }
         });
     // style exception, too simple
-  });
+  }, true);
 
 };

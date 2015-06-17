@@ -12,6 +12,7 @@ boards: stores boards.
 
 threads: stores board's threads.
     name: name of the poster. 32 characters.
+    signedRole: role of the user that posted the thread.
     password: password used to delete the thread. 8 characters.
     ip: ip of the poster.
     salt: thread's salt used for id generation.
@@ -42,6 +43,7 @@ threads: stores board's threads.
 
 posts: stores posts.
     name: name of the poster. 32 characters.
+    signedRole: role of the user that posted the thread.
     password: password used to delete the post. 8 characters.
     email: email of the poster. 64 characters.
     id: thread-wise id of the poster.
