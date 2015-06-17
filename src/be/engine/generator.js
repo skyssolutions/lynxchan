@@ -25,11 +25,13 @@ var postProjection = {
   name : 1,
   files : 1,
   email : 1,
+  id : 1,
   message : 1
 };
 
 var threadProjection = {
   _id : 0,
+  id : 1,
   subject : 1,
   threadId : 1,
   creation : 1,
@@ -375,6 +377,7 @@ function getPreviewPosts(boardUri, page, threadsArray, pageCount, boardData,
           message : '$message',
           files : '$files',
           name : '$name',
+          id : '$id',
           email : '$email',
           subject : '$subject',
           creation : '$creation'

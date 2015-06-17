@@ -155,6 +155,8 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document) {
 
 function setPostInnerElements(document, boardUri, threadId, post, postCell) {
 
+  postCell.getElementsByClassName('labelId')[0].innerHTML = post.id;
+
   post.name = post.name || 'Anonymous';
 
   var linkName = postCell.getElementsByClassName('linkName')[0];
@@ -236,6 +238,8 @@ function setThreadComplexElements(boardUri, thread, threadCell, innerPage) {
 function setThreadSimpleElements(threadCell, thread) {
 
   thread.name = thread.name || 'Anonymous';
+
+  threadCell.getElementsByClassName('labelId')[0].innerHTML = thread.id;
 
   var linkName = threadCell.getElementsByClassName('linkName')[0];
 
@@ -1187,7 +1191,12 @@ function setCellThumb(thumbLink, boardUri, document, thread) {
 
   if (thread.files && thread.files.length) {
     var thumbImage = document.createElement('img');
-    thumbImage.style.width = '128px';
+
+    if (thread.files[0].height > thread.files[0].width) {
+      thumbImage.style.height = '128px';
+    } else {
+      thumbImage.style.width = '128px';
+    }
 
     thumbImage.src = thread.files[0].thumb;
     thumbLink.appendChild(thumbImage);
@@ -1210,6 +1219,15 @@ function setCell(boardUri, document, cell, thread) {
   if (thread.subject) {
     cell.getElementsByClassName('labelSubject')[0].innerHTML = thread.subject;
   }
+
+  if (!thread.pinned) {
+    cell.getElementsByClassName('pinIndicator')[0].style.display = 'none';
+  }
+
+  if (!thread.locked) {
+    cell.getElementsByClassName('lockIndicator')[0].style.display = 'none';
+  }
+
   cell.getElementsByClassName('divMessage')[0].innerHTML = thread.message;
 
 }

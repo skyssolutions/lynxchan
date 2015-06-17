@@ -183,7 +183,7 @@ function testTemplates(settings) {
         template : 'catalogCell',
         content : catalogCellTemplate,
         fields : [ 'linkThumb', 'labelReplies', 'labelImages', 'labelPage',
-            'labelSubject', 'divMessage' ]
+            'labelSubject', 'divMessage', 'lockIndicator', 'pinIndicator' ]
       },
       {
         template : 'bannerCell',
@@ -195,13 +195,13 @@ function testTemplates(settings) {
         content : opTemplate,
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkReply', 'linkSelf', 'deletionCheckBox',
-            'lockIndicator', 'pinIndicator' ]
+            'lockIndicator', 'pinIndicator', 'labelId' ]
       },
       {
         template : 'postCell',
         content : postTemplate,
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
-            'divMessage', 'linkSelf', 'deletionCheckBox' ]
+            'divMessage', 'linkSelf', 'deletionCheckBox', 'labelId' ]
       },
       {
         template : 'staffCell',

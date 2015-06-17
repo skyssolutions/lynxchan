@@ -134,6 +134,7 @@ head
 TEM_ID::05
 
 opCell*:
+Root element: form
 
 Elements:
 panelUploads:
@@ -176,11 +177,16 @@ pinIndicator:
     type: any
     description: element that indicates the thread is pinned.
 
+labelId:
+    type: span
+    description: holds the poster's thread-wise id.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::06
 
 postCell*:
+Root element: form
 
 Elements:
 panelUploads:
@@ -210,6 +216,10 @@ linkSelf:
 deletionCheckBox:
     type: input
     description: checkbox used for deletion or reporting.
+
+labelId:
+    type: span
+    description: holds the poster's thread-wise id.
 
 ------------------------------------------------------------------------------------------
 
@@ -595,6 +605,16 @@ labelSubject:
 divMessage:
     type: div.
     description: holds the message posted by the OP.
+
+lockIndicator:
+    type: any
+    description: element that indicates the thread is locked.
+
+pinIndicator: 
+    type: any
+    description: element that indicates the thread is pinned.
+
+
 
 ------------------------------------------------------------------------------------------
 

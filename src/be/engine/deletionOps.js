@@ -98,6 +98,7 @@ exports.cleanThreads = function(boardUri, callback) {
     }
   }, {
     $sort : {
+      pinned : -1,
       lastBump : -1
     }
   }, {

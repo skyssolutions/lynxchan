@@ -14,6 +14,8 @@ threads: stores board's threads.
     name: name of the poster. 32 characters.
     password: password used to delete the thread. 8 characters.
     ip: ip of the poster.
+    salt: thread's salt used for id generation.
+    id: thread-wise id of the poster.
     email: email of the poster. 64 characters.
     subject: subject of the thread. 128 characters.
     message: text of the post. 2048 characters.
@@ -42,6 +44,7 @@ posts: stores posts.
     name: name of the poster. 32 characters.
     password: password used to delete the post. 8 characters.
     email: email of the poster. 64 characters.
+    id: thread-wise id of the poster.
     subject: subject of the thread. 128 characters.
     ip: ip of the poster.
     message: text of the post. 2048 characters.

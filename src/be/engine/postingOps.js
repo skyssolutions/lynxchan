@@ -8,6 +8,7 @@ var posts = db.posts();
 var miscOps = require('./miscOps');
 var uploadHandler = require('./uploadHandler');
 var delOps = require('./deletionOps');
+var crypto = require('crypto');
 var settings = require('../boot').getGeneralSettings();
 var previewPosts = settings.previewPostCount;
 var threadLimit = settings.maxThreadCount;
@@ -29,6 +30,12 @@ var postingParameters = [ {
   field : 'password',
   length : 8
 } ];
+
+function createId(salt, boardUri, ip) {
+  return crypto.createHash('sha256').update(salt + ip + boardUri).digest('hex')
+      .substring(0, 6);
+
+}
 
 // start of thread creation
 function finishThreadCreation(boardUri, threadId, callback) {
@@ -88,10 +95,20 @@ function createThread(req, parameters, threadId, callback) {
 
   miscOps.sanitizeStrings(parameters, postingParameters);
 
+  var salt = crypto.createHash('sha256').update(
+      threadId + parameters.toString() + Math.random() + new Date()).digest(
+      'hex');
+
+  var ip = req.connection.remoteAddress;
+
+  var id = createId(salt, parameters.boardUri, ip);
+
   var threadToAdd = {
     boardUri : parameters.boardUri,
     threadId : threadId,
-    ip : req.connection.remoteAddress,
+    salt : salt,
+    ip : ip,
+    id : id,
     lastBump : new Date(),
     creation : new Date(),
     subject : parameters.subject,
@@ -247,14 +264,17 @@ function createPost(req, parameters, postId, thread, callback) {
 
   miscOps.sanitizeStrings(parameters, postingParameters);
 
+  var ip = req.connection.remoteAddress;
+
   var postToAdd = {
     boardUri : parameters.boardUri,
     postId : postId,
-    ip : req.connection.remoteAddress,
+    ip : ip,
     threadId : parameters.threadId,
     creation : new Date(),
     subject : parameters.subject,
     name : parameters.name,
+    id : createId(thread.salt, parameters.boardUri, ip),
     message : parameters.message,
     email : parameters.email
   };
@@ -297,6 +317,7 @@ function getThread(req, parameters, postId, callback) {
     latestPosts : 1,
     autoSage : 1,
     locked : 1,
+    salt : 1,
     postCount : 1,
     page : 1,
     _id : 1
