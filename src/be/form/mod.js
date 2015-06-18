@@ -38,6 +38,7 @@ function getPostingData(boardData, parameters, res) {
     pinned : 1,
     creation : 1,
     id : 1,
+    banMessage : 1,
     name : 1,
     files : 1,
     email : 1,
@@ -63,6 +64,7 @@ function getPostingData(boardData, parameters, res) {
         name : 1,
         files : 1,
         email : 1,
+        banMessage : 1,
         message : 1
       }).sort({
         creation : 1

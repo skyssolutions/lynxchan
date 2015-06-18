@@ -185,12 +185,20 @@ labelRole:
     type: span
     description: holds the role of the user in the board. If the user doesn't have a role in the board, it will display its global role, if the user is not a regular user.
 
+divBanMessage:
+    type: div
+    description: holds the ban message, if the content was used for a ban.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::06
 
 postCell*:
 Root element: form
+
+divBanMessage:
+    type: div
+    description: holds the ban message, if the content was used for a ban.
 
 Elements:
 panelUploads:

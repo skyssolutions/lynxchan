@@ -195,14 +195,15 @@ function testTemplates(settings) {
         content : opTemplate,
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkReply', 'linkSelf', 'deletionCheckBox',
-            'lockIndicator', 'pinIndicator', 'labelId', 'labelRole' ]
+            'lockIndicator', 'pinIndicator', 'labelId', 'labelRole',
+            'divBanMessage' ]
       },
       {
         template : 'postCell',
         content : postTemplate,
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkSelf', 'deletionCheckBox', 'labelId',
-            'labelRole' ]
+            'labelRole', 'divBanMessage' ]
       },
       {
         template : 'staffCell',

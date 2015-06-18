@@ -159,6 +159,14 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document) {
     labelRole.style.display = 'none';
   }
 
+  var banMessageLabel = postCell.getElementsByClassName('divBanMessage')[0];
+
+  if (!post.banMessage) {
+    banMessageLabel.style.display = 'none';
+  } else {
+    banMessageLabel.innerHTML = post.banMessage;
+  }
+
   setUploadCell(document, postCell.getElementsByClassName('panelUploads')[0],
       post.files);
 }
@@ -230,6 +238,14 @@ function setThreaLinks(threadCell, thread, boardUri, innerPage) {
 }
 
 function setThreadComplexElements(boardUri, thread, threadCell) {
+
+  var banMessageLabel = threadCell.getElementsByClassName('divBanMessage')[0];
+
+  if (!thread.banMessage) {
+    banMessageLabel.style.display = 'none';
+  } else {
+    banMessageLabel.innerHTML = thread.banMessage;
+  }
 
   if (!thread.pinned) {
     var pinIndicator = threadCell.getElementsByClassName('pinIndicator')[0];

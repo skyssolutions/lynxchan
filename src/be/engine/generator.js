@@ -24,6 +24,7 @@ var postProjection = {
   postId : 1,
   name : 1,
   files : 1,
+  banMessage : 1,
   email : 1,
   id : 1,
   signedRole : 1,
@@ -35,6 +36,7 @@ var threadProjection = {
   id : 1,
   subject : 1,
   signedRole : 1,
+  banMessage : 1,
   threadId : 1,
   creation : 1,
   name : 1,
@@ -376,6 +378,7 @@ function getPreviewPosts(boardUri, page, threadsArray, pageCount, boardData,
       preview : {
         $push : {
           postId : '$postId',
+          banMessage : '$banMessage',
           message : '$message',
           files : '$files',
           name : '$name',
