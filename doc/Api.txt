@@ -257,6 +257,7 @@ Parameters:
     reason: reason of the report. 256 characters.  
     expiration: date able to be converted to a new Date of when the bans should expire.
     global(Boolean): indicates if the bans are global.
+    banMessage: message to be displayed in the banned content.
     postings(Array): array of content to be banned. Contains objects with the following fields:
         board: board to which the content belongs.
         thread: thread to be banned or that contains the post to be banned.

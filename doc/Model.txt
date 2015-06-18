@@ -15,6 +15,7 @@ threads: stores board's threads.
     signedRole: role of the user that posted the thread.
     password: password used to delete the thread. 8 characters.
     ip: ip of the poster.
+    banMessage: message to be displayed indicating this message was a cause to a ban. 128 characters.
     salt: thread's salt used for id generation.
     id: thread-wise id of the poster.
     email: email of the poster. 64 characters.
@@ -50,6 +51,7 @@ posts: stores posts.
     subject: subject of the thread. 128 characters.
     ip: ip of the poster.
     message: text of the post. 2048 characters.
+    banMessage: message to be displayed indicating this message was a cause to a ban. 128 characters.
     creation(Date): time when the post was created.
     boardUri*/***: url of the board the post belongs to.
     threadId(Number)*/***: id of the thread the post belongs to.

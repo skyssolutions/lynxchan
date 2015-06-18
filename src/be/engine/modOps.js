@@ -9,10 +9,19 @@ var threads = db.threads();
 var posts = db.posts();
 var reports = db.reports();
 var miscOps = require('./miscOps');
+var settings = require('../boot').getGeneralSettings();
+var defaultBanMessage = settings.defaultBanMessage;
+
+if (!defaultBanMessage) {
+  defaultBanMessage = '(USER WAS BANNED FOR THIS POST)';
+}
 
 var banArguments = [ {
   field : 'reason',
   length : 256
+}, {
+  field : 'banMessage',
+  length : 128
 } ];
 
 exports.isInBoardStaff = function(userData, board) {
@@ -269,8 +278,53 @@ exports.report = function(req, reportedContent, parameters, callback) {
 
 // end of ban process
 // start of ban process
+function updateThreadsBanMessage(foundBoards, userData, reportedObjects,
+    parameters, callback, informedThreads, informedPosts, board) {
+
+  threads.updateMany({
+    boardUri : board,
+    threadId : {
+      $in : informedThreads
+    }
+  }, {
+    $set : {
+      banMessage : parameters.banMessage || defaultBanMessage
+    }
+  }, function setMessage(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+
+      posts.updateMany({
+        boardUri : board,
+        postId : {
+          $in : informedPosts
+        }
+      }, {
+        $set : {
+          banMessage : parameters.banMessage || defaultBanMessage
+        }
+      }, function setMessage(error) {
+        if (error) {
+          callback(error);
+        } else {
+          iterateBoards(foundBoards, userData, reportedObjects, parameters,
+              callback);
+        }
+
+      });
+      // style exception, too simple
+    }
+
+  });
+
+}
+
 function createBans(foundIps, foundBoards, board, userData, reportedObjects,
-    parameters, callback) {
+    parameters, callback, informedThreads, informedPosts) {
 
   var operations = [];
 
@@ -305,15 +359,15 @@ function createBans(foundIps, foundBoards, board, userData, reportedObjects,
     if (error) {
       callback(error);
     } else {
-      iterateBoards(foundBoards, userData, reportedObjects, parameters,
-          callback);
+      updateThreadsBanMessage(foundBoards, userData, reportedObjects,
+          parameters, callback, informedThreads, informedPosts, board);
     }
   });
 
 }
 
 function getPostIps(foundIps, foundBoards, informedPosts, board, userData,
-    reportedObjects, parameters, callback) {
+    reportedObjects, parameters, callback, informedThreads) {
 
   posts.aggregate([ {
     $match : {
@@ -332,20 +386,22 @@ function getPostIps(foundIps, foundBoards, informedPosts, board, userData,
         $addToSet : '$ip'
       }
     }
-  } ], function gotIps(error, results) {
+  } ],
+      function gotIps(error, results) {
 
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
+        if (error) {
+          callback(error);
+        } else if (!results.length) {
 
-      createBans(foundIps, foundBoards, board, userData, reportedObjects,
-          parameters, callback);
+          createBans(foundIps, foundBoards, board, userData, reportedObjects,
+              parameters, callback, informedThreads, informedPosts);
 
-    } else {
-      createBans(foundIps.concat(results[0].ips), foundBoards, board, userData,
-          reportedObjects, parameters, callback);
-    }
-  });
+        } else {
+          createBans(foundIps.concat(results[0].ips), foundBoards, board,
+              userData, reportedObjects, parameters, callback, informedThreads,
+              informedPosts);
+        }
+      });
 
 }
 
@@ -391,10 +447,10 @@ function getThreadIps(board, foundBoards, userData, reportedObjects,
       callback(error);
     } else if (!results.length) {
       getPostIps([], foundBoards, informedPosts, board, userData,
-          reportedObjects, parameters, callback);
+          reportedObjects, parameters, callback, informedThreads);
     } else {
       getPostIps(results[0].ips, foundBoards, informedPosts, board, userData,
-          reportedObjects, parameters, callback);
+          reportedObjects, parameters, callback, informedThreads);
     }
 
   });

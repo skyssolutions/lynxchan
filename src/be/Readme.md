@@ -86,6 +86,7 @@ Settings files that goes into the settings directory:
 * `maxFileSizeMB`: maximum size in megabytes of individual uploaded files. Defaults to infinity.
 * `acceptedMimes`(Array): accepted mimes on uploads. Defaults to `[ 'image/png', 'image/jpeg', 'image/gif' ]`.
 * `maxFiles`(Number): maximum amount of files on each post. Defaults to 3.
+* `defaultBanMessage`: default ban message to be used for banned content when the person applying the ban doesn't submit a message.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

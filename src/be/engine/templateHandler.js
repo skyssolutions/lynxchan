@@ -277,9 +277,9 @@ function testTemplates(settings) {
         content : threadTemplate,
         fields : [ 'labelName', 'labelDescription', 'divPostings',
             'boardIdentifier', 'linkManagement', 'threadIdentifier', 'linkMod',
-            'inputBan', 'divExpiration', 'divControls',
-            'controlBoardIdentifier', 'controlThreadIdentifier',
-            'checkboxLock', 'checkboxPin', 'bannerImage' ]
+            'inputBan', 'divBanInput', 'divControls', 'controlBoardIdentifier',
+            'controlThreadIdentifier', 'checkboxLock', 'checkboxPin',
+            'bannerImage' ]
       },
       {
         template : 'messagePage',

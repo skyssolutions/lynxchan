@@ -84,9 +84,9 @@ inputBan:
     type: input
     description: submit input used to ban users.
 
-divExpiration:
+divBanInput:
     type: div
-    description: area to input the expiration of bans.
+    description: area to input information specific to bans.
 
 divControls:
     type: div

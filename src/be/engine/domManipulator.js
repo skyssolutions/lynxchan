@@ -1068,7 +1068,7 @@ function setModdingInformation(document, boardUri, boardData, threadData,
 
 function hideModElements(document) {
   document.getElementById('inputBan').style.display = 'none';
-  document.getElementById('divExpiration').style.display = 'none';
+  document.getElementById('divBanInput').style.display = 'none';
   document.getElementById('divControls').style.display = 'none';
 }
 

@@ -14,5 +14,6 @@
   "siteTitle": "My chan, with blacjack and hookers",
   "maxRequestSizeMB": 3,
   "maxFileSizeMB": 1,
-  "maxFiles": 3
+  "maxFiles": 3,
+  "defaultBanMessage":"(USER WAS BANNED FOR THIS POST)"
 }
