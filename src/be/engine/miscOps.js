@@ -154,24 +154,36 @@ exports.getMime = function getHeader(pathName) {
 // parameters must be an array of objects. each object must contain two keys:
 // one with a string with the name of the parameter, the other with a number
 // with its maximum length
+function sanitizeParameter(object, parameter) {
+
+  if (object.hasOwnProperty(parameter.field)) {
+
+    object[parameter.field] = object[parameter.field].toString().trim();
+
+    if (!object[parameter.field].length) {
+
+      delete object[parameter.field];
+
+    } else if (parameter.length) {
+      object[parameter.field] = object[parameter.field].substring(0,
+          parameter.length);
+
+      if (parameter.removeHTML) {
+        object[parameter.field] = object[parameter.field].replace(/[<>]/g, '');
+      }
+
+    }
+  }
+}
+
 exports.sanitizeStrings = function(object, parameters) {
 
   for (var i = 0; i < parameters.length; i++) {
+
     var parameter = parameters[i];
 
-    if (object.hasOwnProperty(parameter.field)) {
+    sanitizeParameter(object, parameter);
 
-      object[parameter.field] = object[parameter.field].toString().trim();
-
-      if (!object[parameter.field].length) {
-
-        delete object[parameter.field];
-
-      } else if (parameter.length) {
-        object[parameter.field] = object[parameter.field].substring(0,
-            parameter.length);
-      }
-    }
   }
 
 };

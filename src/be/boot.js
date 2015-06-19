@@ -37,6 +37,9 @@ reload = reload || args.indexOf('--reload') > -1;
 var noDaemon = args.indexOf('-nd') > -1;
 noDaemon = noDaemon || args.indexOf('--no-daemon') > -1;
 
+var setRole = args.indexOf('-sr') > -1;
+setRole = setRole || args.indexOf('--set-role') > -1;
+
 var createAccount = args.indexOf('-ca') > -1;
 createAccount = createAccount || args.indexOf('--create-account') > -1;
 
@@ -44,7 +47,7 @@ var informedLogin;
 var informedPassword;
 var informedRole;
 
-if (createAccount) {
+if (createAccount || setRole) {
   var loginIndex = args.indexOf('-l');
   if (loginIndex === -1) {
     loginIndex = args.indexOf('--login');
@@ -462,6 +465,65 @@ function scheduleTempFilesCleaning() {
 
 }
 
+var createAccountFunction = function() {
+  require('./engine/accountOps').registerUser({
+    login : informedLogin,
+    password : informedPassword
+  }, function createdUser(error) {
+
+    if (error) {
+
+      if (generalSettings.verbose) {
+        console.log(error);
+      }
+
+      if (debug) {
+        throw error;
+      }
+
+      checkForDefaultPages();
+
+    } else {
+      console.log('Account ' + informedLogin + ' created.');
+
+      checkForDefaultPages();
+    }
+
+  }, informedRole);
+
+};
+
+var setRoleFunction = function() {
+
+  console.log(informedRole);
+
+  require('./engine/accountOps').setGlobalRole(null, {
+    role : informedRole,
+    login : informedLogin
+  }, function setRole(error) {
+
+    if (error) {
+
+      if (generalSettings.verbose) {
+        console.log(error);
+      }
+
+      if (debug) {
+        throw error;
+      }
+
+      checkForDefaultPages();
+
+    } else {
+      console.log('Set role ' + informedRole + ' for ' + informedLogin + '.');
+
+      checkForDefaultPages();
+    }
+
+  }, true);
+
+};
+
 function checkDbVersions() {
 
   db.checkVersion(function checkedVersion(error) {
@@ -482,32 +544,11 @@ function checkDbVersions() {
 
       if (createAccount) {
 
-        // style exception, too simple
-        require('./engine/accountOps').registerUser({
-          login : informedLogin,
-          password : informedPassword
-        }, function createdUser(error) {
+        createAccountFunction();
 
-          if (error) {
+      } else if (setRole) {
 
-            if (generalSettings.verbose) {
-              console.log(error);
-            }
-
-            if (debug) {
-              throw error;
-            }
-
-            checkForDefaultPages();
-
-          } else {
-            console.log('Account ' + informedLogin + ' created.');
-
-            checkForDefaultPages();
-          }
-
-        }, informedRole);
-        // style exception, too simple
+        setRoleFunction();
 
       } else {
         checkForDefaultPages();

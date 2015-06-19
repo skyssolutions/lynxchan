@@ -20,6 +20,7 @@ It accepts the following arguments:
 * `--login`, `-l`: informs a login.
 * `--password`, `-p`: informs a password.
 * `--global-role`, `-gr`: informs a role.
+* `--set-role`, `-sr`: set a new role for an existing account. Will not be used if `-ca` is used.
 
 Arguments that are meant to inform values should be used in the following manner:
 `argument value`

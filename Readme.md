@@ -1,6 +1,6 @@
 # Status:
-* Alpha: 5 checkpoints to beta.
-* Beta: 10 checkpoints to release.
+* Alpha: 4 checkpoints to beta.
+* Beta: 11 checkpoints to release.
 
 # About
 **LynxChan** is a chan engine designed with the following goals in mind:
@@ -38,6 +38,9 @@ Note that the front-end directory is in the ignore. I am designing this project 
 The back-end project is a [Nodeclipse](http://www.nodeclipse.org/) project with lint and formatting defined. IMO eclipse is a shit, but it makes it very practical to automatically format and clean everything.
 Coding standard: [Felix's Node style guide](https://github.com/felixge/node-style-guide). Additionally, all files that reach 1k LOC must be organized into sections. See src/be/engine/domManipulator.js.
 More information can be found at [src/be/Readme.md](src/be/Readme.md).
+
+# Supported systems
+GNU/Linux
 
 # Aux
 There a couple of utility scripts there besides the install one. Rotating logs for the upstart service, removing installs and such.

@@ -17,16 +17,20 @@ var bumpLimit = settings.autoSageLimit;
 
 var postingParameters = [ {
   field : 'subject',
-  length : 128
+  length : 128,
+  removeHTML : true
 }, {
   field : 'email',
-  length : 64
+  length : 64,
+  removeHTML : true
 }, {
   field : 'name',
-  length : 32
+  length : 32,
+  removeHTML : true
 }, {
   field : 'message',
-  length : 2048
+  length : 2048,
+  removeHTML : true
 }, {
   field : 'password',
   length : 8

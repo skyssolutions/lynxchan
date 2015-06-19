@@ -24,15 +24,15 @@ var changeSettingsParameters = [ {
   length : 64
 } ];
 
-exports.setGlobalRole = function(operatorData, parameters, callback) {
+exports.setGlobalRole = function(operatorData, parameters, callback, override) {
 
   if (isNaN(parameters.role)) {
     callback('Invalid role');
     return;
-  } else if (operatorData.globalRole >= parameters.role) {
+  } else if (!override && operatorData.globalRole >= parameters.role) {
     callback('You are not allowed to grant this level of permission to users');
     return;
-  } else if (operatorData.login === parameters.login) {
+  } else if (!override && operatorData.login === parameters.login) {
     callback('You cannot change your own role.');
   }
 
@@ -46,7 +46,7 @@ exports.setGlobalRole = function(operatorData, parameters, callback) {
       callback(error);
     } else if (!user) {
       callback('User not found');
-    } else if (user.globalRole <= operatorData.globalRole) {
+    } else if (!override && user.globalRole <= operatorData.globalRole) {
       callback('You are not allowed to change this user\'s permission');
     } else {
 
