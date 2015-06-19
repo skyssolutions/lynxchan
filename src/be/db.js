@@ -16,7 +16,7 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 8;
+var maxIndexesSet = 9;
 
 var cachedVersions;
 var cachedPosts;
@@ -27,6 +27,7 @@ var cachedBans;
 var cachedUsers;
 var cachedCaptchas;
 var cachedFiles;
+var cachedTripcodes;
 var cachedRecoveryRequests;
 
 var loading;
@@ -259,6 +260,27 @@ function initCaptchas(callback) {
   });
 }
 
+function initTripcodes(callback) {
+
+  cachedTripcodes = cachedDb.collection('secureTripcodes');
+
+  cachedTripcodes.ensureIndex({
+    tripcode : 1
+  }, {
+    unique : 1
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+}
+
 function initBans(callback) {
 
   cachedBans = cachedDb.collection('bans');
@@ -456,6 +478,10 @@ exports.reports = function() {
   return cachedReports;
 };
 
+exports.tripcodes = function() {
+  return cachedTripcodes;
+};
+
 // end of getters
 
 function checkCollections(db, callback) {
@@ -477,6 +503,8 @@ function checkCollections(db, callback) {
   initCaptchas(callback);
 
   initRecoveryRequests(callback);
+
+  initTripcodes(callback);
 
   cachedFiles = db.collection('fs.files');
 

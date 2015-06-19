@@ -4,6 +4,7 @@
 var db = require('../db');
 var threads = db.threads();
 var boards = db.boards();
+var tripcodes = db.tripcodes();
 var posts = db.posts();
 var miscOps = require('./miscOps');
 var uploadHandler = require('./uploadHandler');
@@ -30,6 +31,86 @@ var postingParameters = [ {
   field : 'password',
   length : 8
 } ];
+
+function generateSecureTripcode(name, password, parameters, callback) {
+
+  var tripcode = crypto.createHash('sha256').update(password + Math.random())
+      .digest('base64').substring(0, 6);
+
+  tripcodes.insert({
+    password : password,
+    tripcode : tripcode
+  }, function createdTripcode(error) {
+    if (error && error.code === 11000) {
+      generateSecureTripcode(name, password, parameters, callback);
+    } else {
+
+      parameters.name = name + '##' + tripcode;
+      callback(error, parameters);
+    }
+  });
+
+}
+
+function checkForSecureTripcode(name, parameters, callback) {
+
+  var password = name.substring(name.indexOf('##') + 2);
+
+  name = name.substring(0, name.indexOf('##'));
+
+  tripcodes.findOne({
+    password : password
+  }, function gotTripcode(error, tripcode) {
+    if (error) {
+      callback(error);
+    } else if (!tripcode) {
+
+      generateSecureTripcode(name, password, parameters, callback);
+
+    } else {
+
+      parameters.name = name + '##' + tripcode.tripcode;
+
+      callback(null, parameters);
+    }
+
+  });
+
+}
+
+function checkForTripcode(parameters, callback) {
+
+  var name = parameters.name;
+
+  if (!name || name.indexOf('#') === -1) {
+
+    callback(null, parameters);
+    return;
+  }
+
+  var secure = name.indexOf('##') > -1;
+
+  if (!secure) {
+
+    var password = name.substring(name.indexOf('#') + 1);
+    name = name.substring(0, name.indexOf('#'));
+
+    if (!password.length) {
+      callback(null, parameters);
+      return;
+    }
+
+    password = crypto.createHash('sha256').update(password).digest('base64')
+        .substring(0, 6);
+
+    parameters.name = name + '#' + password;
+
+    callback(null, parameters);
+  } else {
+    checkForSecureTripcode(name, parameters, callback);
+  }
+
+}
 
 function getSignedRole(userData, board) {
 
@@ -111,8 +192,6 @@ function updateBoardForThreadCreation(boardUri, threadId, callback) {
 
 function createThread(req, userData, parameters, board, threadId, callback) {
 
-  miscOps.sanitizeStrings(parameters, postingParameters);
-
   var salt = crypto.createHash('sha256').update(
       threadId + parameters.toString() + Math.random() + new Date()).digest(
       'hex');
@@ -181,8 +260,20 @@ exports.newThread = function(req, userData, parameters, callback) {
     } else if (!board) {
       callback('Board not found');
     } else {
-      createThread(req, userData, parameters, board,
-          (board.lastPostId || 0) + 1, callback);
+
+      miscOps.sanitizeStrings(parameters, postingParameters);
+
+      // style exception, too simple
+      checkForTripcode(parameters, function setTripCode(error, parameters) {
+        if (error) {
+          callback(error);
+        } else {
+          createThread(req, userData, parameters, board,
+              (board.lastPostId || 0) + 1, callback);
+        }
+      });
+      // style exception, too simple
+
     }
   });
 
@@ -284,8 +375,6 @@ function updateThread(parameters, postId, thread, callback) {
 
 function createPost(req, parameters, userData, postId, thread, board, cb) {
 
-  miscOps.sanitizeStrings(parameters, postingParameters);
-
   var ip = req.connection.remoteAddress;
 
   var postToAdd = {
@@ -352,14 +441,28 @@ function getThread(req, parameters, userData, postId, board, callback) {
     } else if (thread.locked) {
       callback('You cannot reply to a locked thread');
     } else {
-      createPost(req, parameters, userData, postId, thread, board, callback);
+
+      miscOps.sanitizeStrings(parameters, postingParameters);
+
+      // style exception, too simple
+      checkForTripcode(parameters,
+          function setTripCode(error, parameters) {
+            if (error) {
+              callback(error);
+            } else {
+              createPost(req, parameters, userData, postId, thread, board,
+                  callback);
+            }
+          });
+      // style exception, too simple
+
     }
   });
 
 }
 
 exports.newPost = function(req, userData, parameters, callback) {
-  // TODO sign with role
+
   parameters.threadId = +parameters.threadId;
 
   boards.findOne({

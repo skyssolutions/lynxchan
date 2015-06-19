@@ -1,6 +1,6 @@
 # Status:
-* Alpha: 8 checkpoints to beta.
-* Beta: 7 checkpoints to release.
+* Alpha: 5 checkpoints to beta.
+* Beta: 10 checkpoints to release.
 
 # About
 **LynxChan** is a chan engine designed with the following goals in mind:

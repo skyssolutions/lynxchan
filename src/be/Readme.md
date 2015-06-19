@@ -80,13 +80,13 @@ Settings files that goes into the settings directory:
 * `tempDirectory`: path for temporary files. Defaults to '/tmp'.
 * `emailSender`: e-mail to be used as sender on automated e-mails.
 * `captchaExpiration`: expiration in minutes of captchas. Defaults to 1 minute.
-* `captchaFonts`(Array): array of absolute paths to font files in the system to be used in the captcha. Optional.
+* `captchaFonts`(Array): array of absolute paths to font files in the system to be randomly used in the captcha. Optional.
 * `siteTitle`: name to be used as the title of the front-page.
 * `maxRequestSizeMB`: maximum size in megabytes of incoming requests. Defaults to 2MB.
 * `maxFileSizeMB`: maximum size in megabytes of individual uploaded files. Defaults to infinity.
 * `acceptedMimes`(Array): accepted mimes on uploads. Defaults to `[ 'image/png', 'image/jpeg', 'image/gif' ]`.
 * `maxFiles`(Number): maximum amount of files on each post. Defaults to 3.
-* `defaultBanMessage`: default ban message to be used for banned content when the person applying the ban doesn't submit a message.
+* `defaultBanMessage`: default ban message to be used for banned content when the person applying the ban does not submit a message. Defaults to `(USER WAS BANNED FOR THIS POST)`;
 
 `db.json`: contains database connection information.
 * `address`: address of the database.
@@ -100,7 +100,7 @@ Settings files that goes into the settings directory:
 Settings files must contain a json object where each key defined here will have its corresponding value.
 
 # GridFS
-Metadata of files on gridfs will have the following values:
+Meta-data of files on gridfs will have the following values:
 * `boardUri`: board to which the file belongs to. If undefined, file is a default site file.
 * `expiration`: time of when the file is expired and no longer valid.
 * `threadId`(Number): id of the thread the file belongs to.

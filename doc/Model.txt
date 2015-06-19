@@ -126,6 +126,12 @@ witnessedReleases: stores data about the releases the application went through a
 
 ----------------------------------------------------------------------------------------
 
+secureTripcodes: stores the secure tripcodes data.
+    password: password of the tripcode.
+    tripcode**: tripcode value to be displayed.
+
+----------------------------------------------------------------------------------------
+
 
 *: duplicated data, foreign key.
 **: unique key

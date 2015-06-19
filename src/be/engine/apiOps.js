@@ -210,7 +210,7 @@ exports.getAuthenticatedData = function(req, res, callback, checkCaptcha,
     accountOps.validate(auth, function validatedRequest(error, newAuth,
         userData) {
 
-      if (error && !!optionalAuth) {
+      if (error && !optionalAuth) {
         exports.outputError(error, res);
       } else {
         callback(newAuth, userData, parameters);
