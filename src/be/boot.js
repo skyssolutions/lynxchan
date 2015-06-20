@@ -164,8 +164,8 @@ exports.loadSettings = function() {
 
   generalSettings = JSON.parse(fs.readFileSync(generalSettingsPath));
 
-  generalSettings.address = generalSettings.address || '127.0.0.1';
-  generalSettings.port = generalSettings.port || 8080;
+  generalSettings.address = generalSettings.address || '0.0.0.0';
+  generalSettings.port = generalSettings.port || 80;
 
   fePath = generalSettings.fePath || __dirname + '/../fe';
 
@@ -178,6 +178,30 @@ exports.loadSettings = function() {
   templateSettings = JSON.parse(fs.readFileSync(templateSettingsPath));
 
   setDefaultImages();
+
+};
+
+exports.previewPostCount = function() {
+
+  return generalSettings.previewPostCount || 5;
+
+};
+
+exports.maxThreads = function() {
+
+  return generalSettings.maxThreadCount || 50;
+
+};
+
+exports.captchaExpiration = function() {
+
+  return generalSettings.captchaExpiration || 5;
+
+};
+
+exports.maxFiles = function() {
+
+  return generalSettings.maxFiles || 3;
 
 };
 

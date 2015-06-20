@@ -11,9 +11,11 @@ var threads = db.threads();
 var miscOps = require('./miscOps');
 var gridFs = require('./gridFsHandler');
 var boards = db.boards();
-var settings = require('../boot').getGeneralSettings();
+var boot = require('../boot');
+var previewPosts = boot.previewPostCount();
+var settings = boot.getGeneralSettings();
 var verbose = settings.verbose;
-var threadLimit = settings.maxThreadCount;
+var threadLimit = boot.maxThreads();
 
 function removeThreads(boardUri, threadsToDelete, callback) {
 
@@ -152,7 +154,7 @@ function reaggregateLatestPosts(board, parentThreads, callback, index) {
       creation : -1
     }
   }, {
-    $limit : settings.previewPostCount
+    $limit : previewPosts
   }, {
     $group : {
       _id : 0,

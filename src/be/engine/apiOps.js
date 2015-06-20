@@ -17,7 +17,7 @@ var uploadHandler = require('./uploadHandler');
 var maxRequestSize = boot.maxRequestSize();
 var maxFileSize = boot.maxFileSize();
 var acceptedMimes = uploadHandler.supportedMimes();
-var maxFiles = settings.maxFiles || 3;
+var maxFiles = boot.maxFiles();
 
 var FILE_EXT_RE = /(\.[_\-a-zA-Z0-9]{0,16}).*/;
 // replace base64 characters with safe-for-filename characters

@@ -10,7 +10,7 @@ var boot = require('./boot');
 var settings = boot.getGeneralSettings();
 var verbose = settings.verbose;
 var debug = boot.debug();
-var captchaExpiration = settings.captchaExpiration || 1;
+var captchaExpiration = boot.captchaExpiration();
 
 var indexesSet;
 

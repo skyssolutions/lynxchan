@@ -72,19 +72,19 @@ Settings files that goes into the settings directory:
 `general.json`: contains general settings for the application. Holds the following settings:
 * `verbose`(Boolean): if true, will output text for debugging on several points, like IO on the json api.
 * `disable304`: if true, will never use http status 304.
-* `address`: ip to bind the server on. Defaults to 127.0.0.1
-* `port`(Number): port to listen for http. Defaults to 8080.
+* `address`: ip to bind the server on. Defaults to `0.0.0.0`.
+* `port`(Number): port to listen for http. Defaults to 80.
 * `ssl`(Boolean): if true, will listen to https on port 443.
 * `fePath`: absolute path to the directory containing the fe files. Defaults to the relative path to the src/fe directory.
-* `pageSize`(Number): amount of threads on each board page.
-* `previewPostCount`(Number): number of preview posts on a thread.
-* `autoSageLimit`(Number): how many posts a thread must hit at once so it becomes impossible to bump.
-* `maxThreadCount`(Number): maximum amount of threads allowed per board.
-* `tempDirectory`: path for temporary files. Defaults to '/tmp'.
-* `emailSender`: e-mail to be used as sender on automated e-mails.
-* `captchaExpiration`: expiration in minutes of captchas. Defaults to 1 minute.
+* `pageSize`(Number): amount of threads on each board page. Defaults to 10.
+* `previewPostCount`(Number): number of preview posts on a thread. Defaults to 5.
+* `autoSageLimit`(Number): how many posts a thread must hit at once so it becomes impossible to bump. Defaults to 500.
+* `maxThreadCount`(Number): maximum amount of threads allowed per board. Defaults to 50.
+* `tempDirectory`: path for temporary files. Defaults to `/tmp`.
+* `emailSender`: e-mail to be used as sender on automated e-mails. Defaults to `noreply@mychan.com`.
+* `captchaExpiration`: expiration in minutes of captchas. Defaults to 5 minutes.
 * `captchaFonts`(Array): array of absolute paths to font files in the system to be randomly used in the captcha. Optional.
-* `siteTitle`: name to be used as the title of the front-page.
+* `siteTitle`: name to be used as the title of the front-page. Defaults to `My chan`.
 * `maxRequestSizeMB`: maximum size in megabytes of incoming requests. Defaults to 2MB.
 * `maxFileSizeMB`: maximum size in megabytes of individual uploaded files. Defaults to infinity.
 * `acceptedMimes`(Array): accepted mimes on uploads. Defaults to `[ 'image/png', 'image/jpeg', 'image/gif' ]`.

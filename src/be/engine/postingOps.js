@@ -10,10 +10,11 @@ var miscOps = require('./miscOps');
 var uploadHandler = require('./uploadHandler');
 var delOps = require('./deletionOps');
 var crypto = require('crypto');
-var settings = require('../boot').getGeneralSettings();
-var previewPosts = settings.previewPostCount;
-var threadLimit = settings.maxThreadCount;
-var bumpLimit = settings.autoSageLimit;
+var boot = require('../boot');
+var settings = boot.getGeneralSettings();
+var previewPosts = boot.previewPostCount();
+var threadLimit = boot.maxThreads();
+var bumpLimit = settings.autoSageLimit || 500;
 
 var postingParameters = [ {
   field : 'subject',

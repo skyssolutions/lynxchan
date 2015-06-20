@@ -13,7 +13,7 @@ var settings = boot.getGeneralSettings();
 var miscOps = require('./miscOps');
 var templateSettings = boot.getTemplateSettings();
 var gfsHandler = require('./gridFsHandler');
-var pageSize = settings.pageSize;
+var pageSize = settings.pageSize || 10;
 var verbose = settings.verbose;
 
 var postProjection = {

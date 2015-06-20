@@ -17,7 +17,7 @@ var uploadDir = boot.tempDir();
 var maxRequestSize = boot.maxRequestSize();
 var maxFileSize = boot.maxFileSize();
 var acceptedMimes = uploadHandler.supportedMimes();
-var maxFiles = settings.maxFiles || 3;
+var maxFiles = boot.maxFiles();
 
 exports.getCookies = function(req) {
   var parsedCookies = {};

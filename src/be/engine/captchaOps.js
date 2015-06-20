@@ -12,8 +12,9 @@ var im = require('gm').subClass({
 });
 var captchas = require('../db').captchas();
 var crypto = require('crypto');
-var settings = require('../boot').getGeneralSettings();
-var captchaExpiration = settings.captchaExpiration || 1;
+var boot = require('../boot');
+var settings = boot.getGeneralSettings();
+var captchaExpiration = boot.captchaExpiration();
 var uploadHandler = require('./uploadHandler');
 var formOps = require('./formOps');
 var gridFsHandler = require('./gridFsHandler');
