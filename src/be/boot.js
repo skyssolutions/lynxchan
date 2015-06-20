@@ -34,6 +34,9 @@ debug = debug || args.indexOf('--debug') > -1;
 var reload = args.indexOf('-r') > -1;
 reload = reload || args.indexOf('--reload') > -1;
 
+var reloadLogin = args.indexOf('-rl') > -1;
+var reloadLogin = reloadLogin || args.indexOf('--reload-login') > -1;
+
 var noDaemon = args.indexOf('-nd') > -1;
 noDaemon = noDaemon || args.indexOf('--no-daemon') > -1;
 
@@ -242,6 +245,28 @@ function regenerateAll() {
 
 }
 
+function regenerateLoginPage() {
+  if (reloadLogin) {
+    generator.login(function generatedLogin(error) {
+      if (error) {
+        if (generalSettings.verbose) {
+          console.log(error);
+        }
+
+        if (debug) {
+          throw error;
+        }
+      } else {
+        bootWorkers();
+      }
+
+    });
+  } else {
+    bootWorkers();
+  }
+
+}
+
 function checkThumb(files) {
   if (files.indexOf(genericThumb) === -1) {
     generator.defaultBanner(function generated(error) {
@@ -255,11 +280,11 @@ function checkThumb(files) {
         }
 
       } else {
-        bootWorkers();
+        regenerateLoginPage();
       }
     });
   } else {
-    bootWorkers();
+    regenerateLoginPage();
   }
 }
 
@@ -489,7 +514,7 @@ var createAccountFunction = function() {
       checkForDefaultPages();
     }
 
-  }, informedRole);
+  }, informedRole, true);
 
 };
 

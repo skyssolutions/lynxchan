@@ -10,10 +10,11 @@
   "devDependencies": {
     "mongodb": "latest",
     "gm": "latest",
-    "jsdom":"latest",
-    "nodemailer":"latest",
-    "multiparty":"latest",
-    "bcrypt":"latest"
+    "jsdom": "latest",
+    "nodemailer": "latest",
+    "multiparty": "latest",
+    "bcrypt": "latest",
+    "markdown": "latest"
   },
   "author": "Stephen Lynx",
   "license": "MIT"

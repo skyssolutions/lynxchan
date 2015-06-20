@@ -9,11 +9,12 @@
   "maxThreadCount": 50,
   "autoSageLimit": 500,
   "captchaExpiration": 5,
-  "tempDirectory": "/tmp/lynxchan",
-  "emailSender": "no-reply@lynxchan.com",
+  "tempDirectory": "/tmp",
+  "emailSender": "no-reply@mychan.com",
   "siteTitle": "My chan, with blacjack and hookers",
   "maxRequestSizeMB": 3,
   "maxFileSizeMB": 1,
   "maxFiles": 3,
-  "defaultBanMessage":"(USER WAS BANNED FOR THIS POST)"
+  "defaultBanMessage":"(USER WAS BANNED FOR THIS POST)",
+  "disableAccountCreation":false
 }

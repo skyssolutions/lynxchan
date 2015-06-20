@@ -6,6 +6,7 @@ Required modules:
 * multiparty: used when parsing requests to the form api.
 * bcrypt: used for encrypting passwords.
 * nodemailer: used to send e-mails for people resetting account passwords.
+* markdown: used for basic markdown translation from text to html.
 Latest version of all them.
 
 A package.json file is included, so you can install all of them by just running `npm install` on this directory.
@@ -15,6 +16,7 @@ A package.json file is included, so you can install all of them by just running 
 It accepts the following arguments:
 * `--debug`, `-d`: for development. Will not cache static files and will reload any module besides the ones directly under the be directory. It will also cause errors to crash and will clean any file in the temporary directory older than one minute every minute.
 * `--reload`, `-r`: will rebuild all pages on boot.
+* `--reload-login`, `-rl`: will rebuild login page on boot.
 * `--no-daemon`, `-nd`: will not start listening. For rebuilding pages while having a server running.
 * `--create-account`, `-ca`: will create a new account. Require the use of the login, role and password parameters.
 * `--login`, `-l`: informs a login.
@@ -88,6 +90,7 @@ Settings files that goes into the settings directory:
 * `acceptedMimes`(Array): accepted mimes on uploads. Defaults to `[ 'image/png', 'image/jpeg', 'image/gif' ]`.
 * `maxFiles`(Number): maximum amount of files on each post. Defaults to 3.
 * `defaultBanMessage`: default ban message to be used for banned content when the person applying the ban does not submit a message. Defaults to `(USER WAS BANNED FOR THIS POST)`;
+* `disableAccountCreation`(Boolean): disables account creation for users.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

@@ -238,6 +238,11 @@ function testTemplates(settings) {
 
   var pageTests = [
       {
+        template : 'loginPage',
+        content : loginTemplate,
+        fields : [ 'divCreation' ]
+      },
+      {
         template : 'catalogPage',
         content : catalogPageTemplate,
         fields : [ 'divThreads', 'labelBoard' ]

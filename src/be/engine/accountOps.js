@@ -9,7 +9,9 @@ var domManipulator = require('./domManipulator');
 var logger = require('../logger');
 var crypto = require('crypto');
 var mailer = require('nodemailer').createTransport();
-var sender = require('../boot').getGeneralSettings().emailSender;
+var settings = require('../boot').getGeneralSettings();
+var sender = settings.emailSender;
+var creationDisabled = settings.disableAccountCreation;
 
 var newAccountParameters = [ {
   field : 'login',
@@ -67,7 +69,12 @@ exports.setGlobalRole = function(operatorData, parameters, callback, override) {
 
 };
 
-exports.registerUser = function(parameters, callback, role) {
+exports.registerUser = function(parameters, callback, role, override) {
+
+  if (!override && creationDisabled) {
+    callback('Account creation is disabled.');
+    return;
+  }
 
   miscOps.sanitizeStrings(parameters, newAccountParameters);
 

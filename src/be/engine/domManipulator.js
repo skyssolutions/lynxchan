@@ -17,6 +17,7 @@ var jsdom = require('jsdom').jsdom;
 var siteTitle = settings.siteTitle || 'Undefined site title';
 var debug = boot.debug();
 var verbose = settings.verbose;
+var accountCreationDisabled = settings.disableAccountCreation;
 var templateHandler = require('./templateHandler');
 
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
@@ -983,6 +984,10 @@ exports.login = function(callback) {
     var document = jsdom(templateHandler.loginTemplate());
 
     document.title = 'Login, register or reset passsword';
+
+    if (accountCreationDisabled) {
+      document.getElementById('divCreation').style.display = 'none';
+    }
 
     gridFs.writeData(serializer(document), '/login.html', 'text/html', {},
         callback);
