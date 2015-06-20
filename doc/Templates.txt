@@ -45,6 +45,10 @@ bannerImage:
     type: img
     description: holds the link that displays a banner to the board.
 
+captchaDiv:
+    type: div
+    description: holds the captcha elements.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::03
@@ -111,6 +115,10 @@ checkboxPin:
 bannerImage:
     type: img
     description: holds the link that displays a banner to the board.
+
+captchaDiv:
+    type: div
+    description: holds the captcha elements.
 
 ------------------------------------------------------------------------------------------
 
@@ -399,6 +407,10 @@ boardSettingsIdentifier:
 disableIdsCheckbox:
     type: input
     description: checkbox that indicates if the option to disable ids is turned on. 
+
+disableCaptchaCheckbox:
+    type: input
+    description: checkbox that indicates if the option to disable captchas is turned on. 
 
 ------------------------------------------------------------------------------------------
 

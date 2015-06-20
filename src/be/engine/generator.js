@@ -57,6 +57,7 @@ var boardProjection = {
   boardUri : 1,
   threadCount : 1,
   boardName : 1,
+  settings : 1,
   boardDescription : 1
 };
 

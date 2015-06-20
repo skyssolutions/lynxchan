@@ -10,7 +10,6 @@ var miscOps = require('./miscOps');
 var bans = require('../db').bans();
 var fs = require('fs');
 var crypto = require('crypto');
-var captchaOps = require('./captchaOps');
 var path = require('path');
 var tempDir = boot.tempDir();
 var uploadHandler = require('./uploadHandler');
@@ -197,15 +196,15 @@ function storeImages(parsedData, res, finalArray, toRemove, callback) {
       console.log('Api input: ' + JSON.stringify(parameters));
     }
 
-    callback(parsedData.auth, parameters);
+    callback(parsedData.auth, parameters, parsedData.captchaId);
   }
 
 }
 
-exports.getAuthenticatedData = function(req, res, callback, checkCaptcha,
-    optionalAuth) {
+exports.getAuthenticatedData = function(req, res, callback, optionalAuth) {
 
-  exports.getAnonJsonData(req, res, function gotData(auth, parameters) {
+  exports.getAnonJsonData(req, res, function gotData(auth, parameters,
+      captchaId) {
 
     accountOps.validate(auth, function validatedRequest(error, newAuth,
         userData) {
@@ -213,16 +212,16 @@ exports.getAuthenticatedData = function(req, res, callback, checkCaptcha,
       if (error && !optionalAuth) {
         exports.outputError(error, res);
       } else {
-        callback(newAuth, userData, parameters);
+        callback(newAuth, userData, parameters, captchaId);
       }
 
     });
 
-  }, checkCaptcha);
+  });
 
 };
 
-exports.getAnonJsonData = function(req, res, callback, checkCaptcha) {
+exports.getAnonJsonData = function(req, res, callback) {
 
   var body = '';
 
@@ -243,21 +242,7 @@ exports.getAnonJsonData = function(req, res, callback, checkCaptcha) {
     try {
       var parsedData = JSON.parse(body);
 
-      if (checkCaptcha) {
-
-        // style exception, too simple
-        captchaOps.attemptCaptcha(parsedData.captchaId,
-            parsedData.parameters.captcha, function attemptedCaptcha(error) {
-              if (error) {
-                exports.outputError(error, res);
-              } else {
-                storeImages(parsedData, res, [], [], callback);
-              }
-            });
-        // style exception, too simple
-      } else {
-        storeImages(parsedData, res, [], [], callback);
-      }
+      storeImages(parsedData, res, [], [], callback);
 
     } catch (error) {
       exports.outputResponse(null, error.toString(), 'parseError', res);

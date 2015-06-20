@@ -9,6 +9,7 @@ boards: stores boards.
     volunteers(Array): array of logins of the users that are volunteers in the board.
     settings(Array): list of settings of the board. May contain the following strings:
         disableIds: disables recording of thread-wise ids.
+        disableCaptcha: disable captchas for posting in the board.
 
 ----------------------------------------------------------------------------------------
 

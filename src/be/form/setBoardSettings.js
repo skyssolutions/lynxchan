@@ -3,10 +3,7 @@
 var formOps = require('../engine/formOps');
 var boardOps = require('../engine/boardOps');
 var mandatoryParameters = [ 'boardUri', 'boardName', 'boardDescription' ];
-var possibleSettings = [ {
-  parameter : 'disableIds',
-  setting : 'disableIds'
-} ];
+var possibleSettings = [ 'disableIds', 'disableCaptcha' ];
 
 function setBoardSettings(userData, parameters, res) {
 
@@ -20,8 +17,8 @@ function setBoardSettings(userData, parameters, res) {
 
     var setting = possibleSettings[i];
 
-    if (parameters[setting.parameter]) {
-      desiredSettings.push(setting.setting);
+    if (parameters[setting]) {
+      desiredSettings.push(setting);
     }
 
   }

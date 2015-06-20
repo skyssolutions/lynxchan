@@ -323,7 +323,16 @@ exports.checkForCaptcha = function(req, callback) {
 
 };
 
-exports.attemptCaptcha = function(id, input, callback) {
+exports.attemptCaptcha = function(id, input, board, callback) {
+
+  if (board.settings.indexOf('disableCaptcha') > -1) {
+    if (verbose) {
+      console.log('Captcha disabled');
+    }
+
+    callback();
+    return;
+  }
 
   if (verbose) {
     console.log('Attempting to solve captcha ' + id + ' with answer ' + input);

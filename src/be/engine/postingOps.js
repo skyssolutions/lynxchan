@@ -6,6 +6,7 @@ var threads = db.threads();
 var boards = db.boards();
 var tripcodes = db.tripcodes();
 var posts = db.posts();
+var captchaOps = require('./captchaOps');
 var miscOps = require('./miscOps');
 var uploadHandler = require('./uploadHandler');
 var delOps = require('./deletionOps');
@@ -252,7 +253,32 @@ function createThread(req, userData, parameters, board, threadId, callback) {
 
 }
 
-exports.newThread = function(req, userData, parameters, callback) {
+function checkCaptchaForThread(req, userData, parameters, board, threadId,
+    callback, captchaId) {
+
+  captchaOps.attemptCaptcha(captchaId, parameters.captcha, board,
+      function solvedCaptcha(error) {
+        if (error) {
+          callback(error);
+        } else {
+          // style exception, too simple
+          checkForTripcode(parameters,
+              function setTripCode(error, parameters) {
+                if (error) {
+                  callback(error);
+                } else {
+                  createThread(req, userData, parameters, board, threadId,
+                      callback);
+                }
+              });
+          // style exception, too simple
+        }
+
+      });
+
+}
+
+exports.newThread = function(req, userData, parameters, captchaId, callback) {
 
   boards.findOne({
     boardUri : parameters.boardUri
@@ -271,16 +297,8 @@ exports.newThread = function(req, userData, parameters, callback) {
 
       miscOps.sanitizeStrings(parameters, postingParameters);
 
-      // style exception, too simple
-      checkForTripcode(parameters, function setTripCode(error, parameters) {
-        if (error) {
-          callback(error);
-        } else {
-          createThread(req, userData, parameters, board,
-              (board.lastPostId || 0) + 1, callback);
-        }
-      });
-      // style exception, too simple
+      checkCaptchaForThread(req, userData, parameters, board,
+          (board.lastPostId || 0) + 1, callback, captchaId);
 
     }
   });
@@ -473,7 +491,7 @@ function getThread(req, parameters, userData, postId, board, callback) {
 
 }
 
-exports.newPost = function(req, userData, parameters, callback) {
+exports.newPost = function(req, userData, parameters, captchaId, callback) {
 
   parameters.threadId = +parameters.threadId;
 
@@ -491,8 +509,23 @@ exports.newPost = function(req, userData, parameters, callback) {
     } else if (!board) {
       callback('Board not found');
     } else {
-      getThread(req, parameters, userData, (board.lastPostId || 0) + 1, board,
-          callback);
+
+      // style exception, too simple
+
+      captchaOps.attemptCaptcha(captchaId, parameters.captcha, board,
+          function solvedCaptcha(error) {
+
+            if (error) {
+              callback(error);
+            } else {
+              getThread(req, parameters, userData, (board.lastPostId || 0) + 1,
+                  board, callback);
+            }
+
+          });
+
+      // style exception, too simple
+
     }
   });
 

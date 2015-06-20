@@ -5,7 +5,7 @@ var postingOps = require('../engine/postingOps');
 var captchaOps = require('../engine/captchaOps');
 var mandatoryParameters = [ 'message', 'boardUri' ];
 
-function createThread(req, res, parameters, userData) {
+function createThread(req, res, parameters, userData, captchaId) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -19,7 +19,7 @@ function createThread(req, res, parameters, userData) {
         } else {
 
           // style exception, too simple
-          postingOps.newThread(req, userData, parameters,
+          postingOps.newThread(req, userData, parameters, captchaId,
               function threadCreated(error, id) {
                 if (error) {
                   formOps.outputError(error, 500, res);
@@ -44,17 +44,7 @@ exports.process = function(req, res) {
 
     var cookies = formOps.getCookies(req);
 
-    // style exception, too simple
-    captchaOps.attemptCaptcha(cookies.captchaId, parameters.captcha,
-        function attemptedCaptcha(error) {
-          if (error) {
-            formOps.outputError(error, 500, res);
-          } else {
-            createThread(req, res, parameters, userData);
-          }
-        });
-    // style exception, too simple
-
+    createThread(req, res, parameters, userData, cookies.captchaId);
   }, true);
 
 };

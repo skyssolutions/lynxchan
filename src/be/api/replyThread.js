@@ -4,7 +4,7 @@ var apiOps = require('../engine/apiOps');
 var postingOps = require('../engine/postingOps');
 var mandatoryParameters = [ 'message', 'boardUri', 'threadId' ];
 
-function createPost(req, res, parameters, userData) {
+function createPost(req, res, parameters, userData, captchaId) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -17,14 +17,14 @@ function createPost(req, res, parameters, userData) {
 
       // style exception, too simple
 
-      postingOps.newPost(req, userData, parameters, function postCreated(error,
-          id) {
-        if (error) {
-          apiOps.outputError(error, res);
-        } else {
-          apiOps.outputResponse(null, id, 'ok', res);
-        }
-      });
+      postingOps.newPost(req, userData, parameters, captchaId,
+          function postCreated(error, id) {
+            if (error) {
+              apiOps.outputError(error, res);
+            } else {
+              apiOps.outputResponse(null, id, 'ok', res);
+            }
+          });
       // style exception, too simple
 
     }
@@ -35,10 +35,10 @@ function createPost(req, res, parameters, userData) {
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
-      parameters) {
+      parameters, captchaId) {
 
-    createPost(req, res, parameters, userData);
+    createPost(req, res, parameters, userData, captchaId);
 
-  }, true, true);
+  }, true);
 
 };

@@ -118,6 +118,12 @@ function setHeader(document, board, boardData) {
   var linkBanner = '/randomBanner.js?boardUri=' + board;
   document.getElementById('bannerImage').src = linkBanner;
 
+  var settings = boardData.settings;
+
+  if (settings.indexOf('disableCaptcha') > -1) {
+    document.getElementById('captchaDiv').style.display = 'none';
+  }
+
 }
 
 // Section 1.2: Thread content {
@@ -619,7 +625,12 @@ function setBoardControlCheckBoxes(document, boardData) {
   var settings = boardData.settings;
 
   if (settings.indexOf('disableIds') > -1) {
-    document.getElementById('disableIdsCheckbox').checked = true;
+    document.getElementById('disableIdsCheckbox').setAttribute('checked', true);
+  }
+
+  if (settings.indexOf('disableCaptcha') > -1) {
+    document.getElementById('disableCaptchaCheckbox').setAttribute('checked',
+        true);
   }
 
 }

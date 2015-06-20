@@ -31,7 +31,15 @@ function checkBoardRebuild(board, params) {
 
   var descriptionChanged = board.boardDescription !== params.boardDescription;
 
-  if (nameChanged || descriptionChanged) {
+  var oldSettings = board.settings;
+  var newSettings = params.settings;
+
+  var hadCaptcha = oldSettings.indexOf('disableCaptcha') === -1;
+  var hasCaptcha = newSettings.indexOf('disableCaptcha') === -1;
+
+  var captchaChanged = hadCaptcha !== hasCaptcha;
+
+  if (nameChanged || descriptionChanged || captchaChanged) {
 
     process.send({
       board : params.boardUri,
