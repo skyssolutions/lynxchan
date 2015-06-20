@@ -14,7 +14,7 @@ var boards = db.boards();
 var settings = require('../boot').getGeneralSettings();
 var restrictedBoardCreation = settings.restrictBoardCreation;
 
-var newBoardParameters = [ {
+var boardParameters = [ {
   field : 'boardUri',
   length : 32
 }, {
@@ -24,6 +24,72 @@ var newBoardParameters = [ {
   field : 'boardDescription',
   length : 128
 } ];
+
+function checkBoardRebuild(board, params) {
+
+  var nameChanged = board.boardName !== params.boardName;
+
+  var descriptionChanged = board.boardDescription !== params.boardDescription;
+
+  if (nameChanged || descriptionChanged) {
+
+    process.send({
+      board : params.boardUri,
+      buildAll : true
+    });
+
+  }
+
+  if (nameChanged) {
+    process.send({
+      frontPage : true
+    });
+  }
+
+}
+
+function saveNewSettings(board, parameters, callback) {
+
+  boards.updateOne({
+    boardUri : parameters.boardUri
+  }, {
+    $set : {
+      boardName : parameters.boardName,
+      boardDescription : parameters.boardDescription,
+      settings : parameters.settings
+    }
+  }, function updatedBoard(error) {
+
+    checkBoardRebuild(board, parameters);
+
+    callback(error);
+
+  });
+
+}
+
+exports.setSettings = function(userData, parameters, callback) {
+
+  boards.findOne({
+    boardUri : parameters.boardUri
+  }, function(error, board) {
+
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback('Board not found');
+    } else if (board.owner !== userData.login) {
+      callback('You are not allowed to change this board settings.');
+    } else {
+      miscOps.sanitizeStrings(parameters, boardParameters);
+
+      saveNewSettings(board, parameters, callback);
+
+    }
+
+  });
+
+};
 
 function updateUsersOwnedBoards(userData, parameters, callback) {
 
@@ -234,6 +300,8 @@ exports.getBoardManagementData = function(login, role, board, callback) {
     owner : 1,
     boardUri : 1,
     boardName : 1,
+    settings : 1,
+    boardDescription : 1,
     volunteers : 1
   }, function(error, boardData) {
     if (error) {
@@ -258,7 +326,7 @@ exports.createBoard = function(parameters, userData, callback) {
     return;
   }
 
-  miscOps.sanitizeStrings(parameters, newBoardParameters);
+  miscOps.sanitizeStrings(parameters, boardParameters);
 
   if (/\W/.test(parameters.boardUri)) {
     callback('Invalid uri');
@@ -269,7 +337,8 @@ exports.createBoard = function(parameters, userData, callback) {
     boardUri : parameters.boardUri,
     boardName : parameters.boardName,
     boardDescription : parameters.boardDescription,
-    owner : userData.login
+    owner : userData.login,
+    settings : []
   }, function insertedBoard(error) {
     if (error && error.code !== 11000) {
       callback(error);

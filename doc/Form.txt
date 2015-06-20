@@ -351,4 +351,18 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::30
+
+Name: setBoardSettings
+
+Description: changes board settings. Requires authentication. Rescricted to the board owner.
+
+Parameters:
+    boardUri: board uri.
+    boardName: new name of the board. 32 characters.
+    boardDescription: new description of the board. 128 characters.
+    disableIds: if any value is passed, ids on threads and posts will be disabled.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

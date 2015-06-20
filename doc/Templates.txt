@@ -384,6 +384,22 @@ bannerManagementLink:
     type: a
     description: link to the banner management page.
 
+boardNameField:
+    type: input
+    description: field that holds the board name.
+
+boardDescriptionField:
+    type: input
+    description: field that holds the board name.
+
+boardSettingsIdentifier:
+    type: input
+    description: hidden input that holds the board identifier to change its settings.
+
+disableIdsCheckbox:
+    type: input
+    description: checkbox that indicates if the option to disable ids is turned on. 
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::13

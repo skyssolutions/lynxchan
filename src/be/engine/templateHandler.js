@@ -196,14 +196,14 @@ function testTemplates(settings) {
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkReply', 'linkSelf', 'deletionCheckBox',
             'lockIndicator', 'pinIndicator', 'labelId', 'labelRole',
-            'divBanMessage' ]
+            'divBanMessage', 'spanId' ]
       },
       {
         template : 'postCell',
         content : postTemplate,
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkSelf', 'deletionCheckBox', 'labelId',
-            'labelRole', 'divBanMessage' ]
+            'labelRole', 'divBanMessage', 'spanId' ]
       },
       {
         template : 'staffCell',
@@ -316,7 +316,8 @@ function testTemplates(settings) {
         fields : [ 'volunteersDiv', 'boardLabel', 'ownerControlDiv',
             'addVolunteerBoardIdentifier', 'transferBoardIdentifier',
             'deletionIdentifier', 'reportDiv', 'closedReportsLink', 'bansLink',
-            'bannerManagementLink' ]
+            'bannerManagementLink', 'boardNameField', 'boardDescriptionField',
+            'boardSettingsIdentifier', 'disableIdsCheckbox' ]
       }, {
         template : 'closedReportsPage',
         content : closedReportsPageTemplate,

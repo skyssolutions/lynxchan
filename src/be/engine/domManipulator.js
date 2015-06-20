@@ -121,6 +121,25 @@ function setHeader(document, board, boardData) {
 }
 
 // Section 1.2: Thread content {
+function setThreadHiddeableElements(thread, threadCell) {
+
+  if (!thread.pinned) {
+    var pinIndicator = threadCell.getElementsByClassName('pinIndicator')[0];
+    pinIndicator.style.display = 'none';
+  }
+
+  if (!thread.locked) {
+    var lockIndicator = threadCell.getElementsByClassName('lockIndicator')[0];
+    lockIndicator.style.display = 'none';
+  }
+
+  if (thread.id) {
+    threadCell.getElementsByClassName('labelId')[0].innerHTML = thread.id;
+  } else {
+    threadCell.getElementsByClassName('spanId')[0].style.display = 'none';
+  }
+}
+
 function addThread(document, thread, posts, boardUri, innerPage) {
 
   var threadCell = document.createElement('div');
@@ -131,6 +150,8 @@ function addThread(document, thread, posts, boardUri, innerPage) {
   setThreaLinks(threadCell, thread, boardUri, innerPage);
 
   setThreadComplexElements(boardUri, thread, threadCell, innerPage);
+
+  setThreadHiddeableElements(thread, threadCell);
 
   setThreadSimpleElements(threadCell, thread);
 
@@ -216,6 +237,12 @@ function addPosts(document, posts, boardUri, threadId) {
 
     postCell.id = post.postId;
 
+    if (post.id) {
+      postCell.getElementsByClassName('labelId')[0].innerHTML = post.id;
+    } else {
+      postCell.getElementsByClassName('spanId')[0].style.display = 'none';
+    }
+
     setPostInnerElements(document, boardUri, threadId, post, postCell);
 
     divThreads.appendChild(postCell);
@@ -241,27 +268,6 @@ function setThreaLinks(threadCell, thread, boardUri, innerPage) {
 
 function setThreadComplexElements(boardUri, thread, threadCell) {
 
-  var banMessageLabel = threadCell.getElementsByClassName('divBanMessage')[0];
-
-  if (!thread.banMessage) {
-    banMessageLabel.style.display = 'none';
-  } else {
-    banMessageLabel.innerHTML = thread.banMessage;
-  }
-
-  if (!thread.pinned) {
-    var pinIndicator = threadCell.getElementsByClassName('pinIndicator')[0];
-    pinIndicator.style.display = 'none';
-  }
-
-  if (!thread.locked) {
-    var lockIndicator = threadCell.getElementsByClassName('lockIndicator')[0];
-    lockIndicator.style.display = 'none';
-  }
-
-  threadCell.getElementsByClassName('deletionCheckBox')[0].setAttribute('name',
-      boardUri + '-' + thread.threadId);
-
   var labelRole = threadCell.getElementsByClassName('labelRole')[0];
 
   if (thread.signedRole) {
@@ -270,13 +276,22 @@ function setThreadComplexElements(boardUri, thread, threadCell) {
     labelRole.style.display = 'none';
   }
 
+  var banMessageLabel = threadCell.getElementsByClassName('divBanMessage')[0];
+
+  if (!thread.banMessage) {
+    banMessageLabel.style.display = 'none';
+  } else {
+    banMessageLabel.innerHTML = thread.banMessage;
+  }
+
+  threadCell.getElementsByClassName('deletionCheckBox')[0].setAttribute('name',
+      boardUri + '-' + thread.threadId);
+
 }
 
 function setThreadSimpleElements(threadCell, thread) {
 
   thread.name = thread.name || 'Anonymous';
-
-  threadCell.getElementsByClassName('labelId')[0].innerHTML = thread.id;
 
   var linkName = threadCell.getElementsByClassName('linkName')[0];
 
@@ -594,15 +609,36 @@ function setBoardControlIdentifiers(document, boardData) {
 
   document.getElementById('transferBoardIdentifier').setAttribute('value',
       boardData.boardUri);
+
+  document.getElementById('boardSettingsIdentifier').setAttribute('value',
+      boardData.boardUri);
+}
+
+function setBoardControlCheckBoxes(document, boardData) {
+
+  var settings = boardData.settings;
+
+  if (settings.indexOf('disableIds') > -1) {
+    document.getElementById('disableIdsCheckbox').checked = true;
+  }
+
 }
 
 function setBoardOwnerControls(document, boardData) {
 
   setBoardControlIdentifiers(document, boardData);
 
+  setBoardControlCheckBoxes(document, boardData);
+
   var volunteersDiv = document.getElementById('volunteersDiv');
 
   var volunteers = boardData.volunteers || [];
+
+  document.getElementById('boardNameField').setAttribute('value',
+      boardData.boardName);
+
+  document.getElementById('boardDescriptionField').setAttribute('value',
+      boardData.boardDescription);
 
   for (var i = 0; i < volunteers.length; i++) {
 

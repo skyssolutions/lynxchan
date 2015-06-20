@@ -7,6 +7,8 @@ boards: stores boards.
     lastFileId: id of last file posted in this board.
     threadCount(Number): pre-aggregated number of threads in the board.
     volunteers(Array): array of logins of the users that are volunteers in the board.
+    settings(Array): list of settings of the board. May contain the following strings:
+        disableIds: disables recording of thread-wise ids.
 
 ----------------------------------------------------------------------------------------
 

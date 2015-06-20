@@ -201,9 +201,11 @@ function createThread(req, userData, parameters, board, threadId, callback) {
       threadId + parameters.toString() + Math.random() + new Date()).digest(
       'hex');
 
+  var hideId = board.settings.indexOf('disableIds') > -1;
+
   var ip = req.connection.remoteAddress;
 
-  var id = createId(salt, parameters.boardUri, ip);
+  var id = hideId ? null : createId(salt, parameters.boardUri, ip);
 
   var threadToAdd = {
     boardUri : parameters.boardUri,
@@ -258,6 +260,7 @@ exports.newThread = function(req, userData, parameters, callback) {
     _id : 0,
     owner : 1,
     volunteers : 1,
+    settings : 1,
     lastPostId : 1
   }, function gotBoard(error, board) {
     if (error) {
@@ -382,6 +385,10 @@ function createPost(req, parameters, userData, postId, thread, board, cb) {
 
   var ip = req.connection.remoteAddress;
 
+  var hideId = board.settings.indexOf('disableIds') > -1;
+
+  var id = hideId ? null : createId(thread.salt, parameters.boardUri, ip);
+
   var postToAdd = {
     boardUri : parameters.boardUri,
     postId : postId,
@@ -391,7 +398,7 @@ function createPost(req, parameters, userData, postId, thread, board, cb) {
     creation : new Date(),
     subject : parameters.subject,
     name : parameters.name,
-    id : createId(thread.salt, parameters.boardUri, ip),
+    id : id,
     message : parameters.message,
     email : parameters.email
   };
@@ -476,6 +483,7 @@ exports.newPost = function(req, userData, parameters, callback) {
     _id : 0,
     lastPostId : 1,
     owner : 1,
+    settings : 1,
     volunteers : 1
   }, function gotBoard(error, board) {
     if (error) {
