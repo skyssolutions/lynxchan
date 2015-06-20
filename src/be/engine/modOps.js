@@ -18,10 +18,12 @@ if (!defaultBanMessage) {
 
 var banArguments = [ {
   field : 'reason',
-  length : 256
+  length : 256,
+  removeHTML : true
 }, {
   field : 'banMessage',
-  length : 128
+  length : 128,
+  removeHTML : true
 } ];
 
 exports.isInBoardStaff = function(userData, board) {

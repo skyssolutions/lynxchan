@@ -297,7 +297,7 @@ function testTemplates(settings) {
         template : 'accountPage',
         content : accountTemplate,
         fields : [ 'labelLogin', 'boardsDiv', 'emailField',
-            'globalManagementLink' ]
+            'globalManagementLink', 'boardCreationDiv' ]
       },
       {
         template : 'banPage',

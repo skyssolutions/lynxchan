@@ -260,6 +260,10 @@ emailField:
     type: input
     description: field that holds the user e-mail.
 
+boardCreationDiv:
+    type: div
+    description: panel that holds the board creation form.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::08

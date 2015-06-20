@@ -11,6 +11,8 @@ var files = db.files();
 var reports = db.reports();
 var users = db.users();
 var boards = db.boards();
+var settings = require('../boot').getGeneralSettings();
+var restrictedBoardCreation = settings.restrictBoardCreation;
 
 var newBoardParameters = [ {
   field : 'boardUri',
@@ -247,7 +249,14 @@ exports.getBoardManagementData = function(login, role, board, callback) {
 
 };
 
-exports.createBoard = function(parameters, user, callback) {
+exports.createBoard = function(parameters, userData, callback) {
+
+  var role = userData.globalRole || 4;
+
+  if (role > 1 && restrictedBoardCreation) {
+    callback('Board creation is restricted to just root and admin users.');
+    return;
+  }
 
   miscOps.sanitizeStrings(parameters, newBoardParameters);
 
@@ -260,7 +269,7 @@ exports.createBoard = function(parameters, user, callback) {
     boardUri : parameters.boardUri,
     boardName : parameters.boardName,
     boardDescription : parameters.boardDescription,
-    owner : user
+    owner : userData.login
   }, function insertedBoard(error) {
     if (error && error.code !== 11000) {
       callback(error);
@@ -271,7 +280,7 @@ exports.createBoard = function(parameters, user, callback) {
       // style exception, too simple
 
       users.update({
-        login : user
+        login : userData.login
       }, {
         $push : {
           ownedBoards : parameters.boardUri

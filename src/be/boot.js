@@ -520,8 +520,6 @@ var createAccountFunction = function() {
 
 var setRoleFunction = function() {
 
-  console.log(informedRole);
-
   require('./engine/accountOps').setGlobalRole(null, {
     role : informedRole,
     login : informedLogin

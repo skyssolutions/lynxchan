@@ -10,16 +10,15 @@ function createBoard(userData, parameters, res) {
     return;
   }
 
-  boardOps.createBoard(parameters, userData.login,
-      function boardCreated(error) {
-        if (error) {
-          formOps.outputError(error, 500, res);
-        } else {
-          var redirectLink = '/' + parameters.boardUri + '/';
+  boardOps.createBoard(parameters, userData, function boardCreated(error) {
+    if (error) {
+      formOps.outputError(error, 500, res);
+    } else {
+      var redirectLink = '/' + parameters.boardUri + '/';
 
-          formOps.outputResponse('Board created.', redirectLink, res);
-        }
-      });
+      formOps.outputResponse('Board created.', redirectLink, res);
+    }
+  });
 
 }
 

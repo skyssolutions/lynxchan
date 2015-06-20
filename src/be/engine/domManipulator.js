@@ -18,6 +18,7 @@ var siteTitle = settings.siteTitle || 'Undefined site title';
 var debug = boot.debug();
 var verbose = settings.verbose;
 var accountCreationDisabled = settings.disableAccountCreation;
+var boardCreationRestricted = settings.restrictBoardCreation;
 var templateHandler = require('./templateHandler');
 
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
@@ -880,6 +881,15 @@ function fillOwnedBoardsDiv(document, boardList) {
 
 }
 
+function setBoardCreationForm(userData, document) {
+
+  var allowed = userData.globalRole < 2;
+
+  if (boardCreationRestricted && !allowed) {
+    document.getElementById('boardCreationDiv').style.display = 'none';
+  }
+}
+
 exports.account = function(userData) {
 
   try {
@@ -895,6 +905,8 @@ exports.account = function(userData) {
     var gManagementLink = document.getElementById('globalManagementLink');
 
     var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+
+    setBoardCreationForm(userData, document);
 
     if (!globalStaff) {
       gManagementLink.style.display = 'none';

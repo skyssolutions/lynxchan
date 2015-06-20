@@ -91,6 +91,7 @@ Settings files that goes into the settings directory:
 * `maxFiles`(Number): maximum amount of files on each post. Defaults to 3.
 * `defaultBanMessage`: default ban message to be used for banned content when the person applying the ban does not submit a message. Defaults to `(USER WAS BANNED FOR THIS POST)`;
 * `disableAccountCreation`(Boolean): disables account creation for users.
+* `restrictBoardCreation`(Boolean): disables board creation for users with global role greater than 1.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

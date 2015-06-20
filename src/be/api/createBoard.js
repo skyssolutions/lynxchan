@@ -10,14 +10,13 @@ function createBoard(auth, userData, parameters, res) {
     return;
   }
 
-  boardOps.createBoard(parameters, userData.login,
-      function boardCreated(error) {
-        if (error) {
-          apiOps.outputError(error, res);
-        } else {
-          apiOps.outputResponse(auth, {}, 'ok', res);
-        }
-      });
+  boardOps.createBoard(parameters, userData, function boardCreated(error) {
+    if (error) {
+      apiOps.outputError(error, res);
+    } else {
+      apiOps.outputResponse(auth, {}, 'ok', res);
+    }
+  });
 
 }
 

@@ -2,7 +2,7 @@
   "port": 8080,
   "address": "127.0.0.1",
   "ssl": false,
-  "verbose": true,
+  "verbose": false,
   "disable304": false,
   "pageSize": 10,
   "previewPostCount": 5,
@@ -16,5 +16,6 @@
   "maxFileSizeMB": 1,
   "maxFiles": 3,
   "defaultBanMessage":"(USER WAS BANNED FOR THIS POST)",
-  "disableAccountCreation":false
+  "disableAccountCreation":false,
+  "restrictBoardCreation":false
 }
