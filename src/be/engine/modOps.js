@@ -16,6 +16,12 @@ if (!defaultBanMessage) {
   defaultBanMessage = '(USER WAS BANNED FOR THIS POST)';
 }
 
+var reportArguments = [ {
+  field : 'reason',
+  length : 256,
+  removeHTML : true
+} ];
+
 var banArguments = [ {
   field : 'reason',
   length : 256,
@@ -216,6 +222,8 @@ function createReport(req, report, reportedContent, parameters, callback) {
 }
 
 exports.report = function(req, reportedContent, parameters, callback) {
+
+  miscOps.sanitizeStrings(parameters, reportArguments);
 
   if (!reportedContent.length) {
     callback();

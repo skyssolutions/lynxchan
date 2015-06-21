@@ -13,8 +13,7 @@
     "jsdom": "latest",
     "nodemailer": "latest",
     "multiparty": "latest",
-    "bcrypt": "latest",
-    "markdown": "latest"
+    "bcrypt": "latest"
   },
   "author": "Stephen Lynx",
   "license": "MIT"

@@ -126,6 +126,11 @@ var MIMETYPES = {
   zip : 'application/zip'
 };
 
+var replaceTable = {
+  '<' : '&lt;',
+  '>' : '&gt;'
+};
+
 exports.getRandomInt = function(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
@@ -171,7 +176,10 @@ function sanitizeParameter(object, parameter) {
           parameter.length);
 
       if (parameter.removeHTML) {
-        object[parameter.field] = object[parameter.field].replace(/[<>]/g, '');
+        object[parameter.field] = object[parameter.field].replace(/[<>]/g,
+            function replace(match) {
+              return replaceTable[match];
+            });
       }
 
     }

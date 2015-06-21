@@ -229,7 +229,7 @@ function setPostInnerElements(document, boardUri, threadId, post, postCell) {
   var labelCreated = postCell.getElementsByClassName('labelCreated')[0];
   labelCreated.innerHTML = formatDateToDisplay(post.creation);
 
-  postCell.getElementsByClassName('divMessage')[0].innerHTML = post.message;
+  postCell.getElementsByClassName('divMessage')[0].innerHTML = post.markdown;
 
   setPostComplexElements(postCell, post, boardUri, threadId, document);
 
@@ -324,7 +324,7 @@ function setThreadSimpleElements(threadCell, thread) {
   labelCreation.innerHTML = formatDateToDisplay(thread.creation);
 
   var divMessage = threadCell.getElementsByClassName('divMessage')[0];
-  divMessage.innerHTML = thread.message;
+  divMessage.innerHTML = thread.markdown;
 }
 
 // Section 1.2.2: Uploads {
@@ -1350,7 +1350,7 @@ function setCell(boardUri, document, cell, thread) {
     lockIndicator.parentNode.removeChild(lockIndicator);
   }
 
-  cell.getElementsByClassName('divMessage')[0].innerHTML = thread.message;
+  cell.getElementsByClassName('divMessage')[0].innerHTML = thread.markdown;
 
 }
 

@@ -1,17 +1,9 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var miscOps = require('../engine/miscOps');
 var modOps = require('../engine/modOps');
 
-var reportFields = [ {
-  field : 'reason',
-  length : 256
-} ];
-
 function reportContent(req, parameters, res) {
-
-  miscOps.sanitizeStrings(parameters, reportFields);
 
   parameters.global = parameters.global ? true : false;
 

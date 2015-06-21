@@ -6,7 +6,7 @@ Required modules:
 * multiparty: used when parsing requests to the form api.
 * bcrypt: used for encrypting passwords.
 * nodemailer: used to send e-mails for people resetting account passwords.
-* markdown: used for basic markdown translation from text to html.
+
 Latest version of all them.
 
 A package.json file is included, so you can install all of them by just running `npm install` on this directory.

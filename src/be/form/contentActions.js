@@ -3,13 +3,7 @@
 var formOps = require('../engine/formOps');
 var accountOps = require('../engine/accountOps');
 var modOps = require('../engine/modOps');
-var miscOps = require('../engine/miscOps');
 var deleteOps = require('../engine/deletionOps');
-
-var reportFields = [ {
-  field : 'reason',
-  length : 256
-} ];
 
 function processPostForDeletion(board, thread, splitKey, threadsToDelete,
     postsToDelete) {
@@ -98,8 +92,6 @@ function processParameters(req, userData, parameters, res) {
   parameters.global = parameters.hasOwnProperty('global');
 
   if (parameters.action.toLowerCase() === 'report') {
-
-    miscOps.sanitizeStrings(parameters, reportFields);
 
     modOps.report(req, reportedObjects, parameters, function createdReports(
         error) {

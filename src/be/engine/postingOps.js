@@ -31,12 +31,118 @@ var postingParameters = [ {
   removeHTML : true
 }, {
   field : 'message',
-  length : 2048,
-  removeHTML : true
+  length : 2048
 }, {
   field : 'password',
   length : 8
 } ];
+
+function replaceQuotes(message, posts, board, callback) {
+
+  var postObject = {};
+
+  for (var i = 0; i < posts.length; i++) {
+    var post = posts[i];
+
+    postObject[post.postId] = post.threadId;
+  }
+
+  message = message.replace(/>>\d+/g, function replacer(match) {
+
+    var postId = +match.substring(2);
+
+    var threadId = postObject[postId];
+
+    var link;
+
+    if (threadId) {
+
+      link = '/' + board + '/res/' + threadId + '.html#' + postId;
+
+    } else {
+
+      link = '/' + board + '/res/' + postId + '.html#' + postId;
+
+    }
+
+    return '<a href=\"' + link + '\">' + match + '</a>';
+
+  });
+
+  callback(null, message);
+
+}
+
+function markdownText(message, board, callback) {
+
+  message = message.replace(/</g, '&lt');
+
+  message = message.replace(/>.+/g, function greenText(match) {
+
+    return '<font color="green">' + match + '</font>';
+
+  });
+
+  var postsToFind = [];
+
+  message = message.replace(/>>>\/\w+\//g, function linkBoard(match) {
+
+    var board = match.substring(3);
+
+    return '<a href=\"' + board + '\">' + match + '</a>';
+
+  });
+
+  message = message.replace(/>>\d+/g, function countQuotes(match) {
+
+    var postId = match.substring(2);
+
+    if (postsToFind.indexOf(postId) === -1) {
+      postsToFind.push(+postId);
+    }
+
+    return match;
+
+  });
+
+  message = message.replace(/\n/g, '<br>');
+
+  if (!postsToFind.length) {
+    callback(null, message);
+  } else {
+
+    posts.aggregate([ {
+      $match : {
+        boardUri : board,
+        postId : {
+          $in : postsToFind
+        }
+      }
+    }, {
+      $group : {
+        _id : 0,
+        posts : {
+          $push : {
+            postId : '$postId',
+            threadId : '$threadId'
+          }
+        }
+
+      }
+    } ], function gotPosts(error, result) {
+
+      if (error) {
+        callback(error);
+      } else if (!result.length) {
+        replaceQuotes(message, [], board, callback);
+      } else {
+        replaceQuotes(message, result[0].posts, board, callback);
+      }
+
+    });
+  }
+
+}
 
 function generateSecureTripcode(name, password, parameters, callback) {
 
@@ -214,6 +320,7 @@ function createThread(req, userData, parameters, board, threadId, callback) {
     salt : salt,
     ip : ip,
     id : id,
+    markdown : parameters.markdown,
     lastBump : new Date(),
     creation : new Date(),
     subject : parameters.subject,
@@ -301,8 +408,21 @@ exports.newThread = function(req, userData, parameters, captchaId, callback) {
 
       miscOps.sanitizeStrings(parameters, postingParameters);
 
-      checkCaptchaForThread(req, userData, parameters, board,
-          (board.lastPostId || 0) + 1, callback, captchaId);
+      // style exception, too simple
+      markdownText(parameters.message, parameters.boardUri,
+          function gotMarkdown(error, markdown) {
+            if (error) {
+              callback(error);
+            } else {
+              parameters.markdown = markdown;
+
+              checkCaptchaForThread(req, userData, parameters, board,
+                  (board.lastPostId || 0) + 1, callback, captchaId);
+            }
+
+          });
+
+      // style exception, too simple
 
     }
   });
@@ -414,6 +534,7 @@ function createPost(req, parameters, userData, postId, thread, board, cb) {
   var postToAdd = {
     boardUri : parameters.boardUri,
     postId : postId,
+    markdown : parameters.markdown,
     ip : ip,
     threadId : parameters.threadId,
     signedRole : getSignedRole(userData, board),
@@ -499,6 +620,23 @@ function getThread(req, parameters, userData, postId, board, callback) {
 
 }
 
+function getPostMarkdown(req, parameters, userData, postId, board, callback) {
+
+  markdownText(parameters.message, parameters.boardUri, function gotMarkdown(
+      error, markdown) {
+
+    if (error) {
+      callback(error);
+    } else {
+      parameters.markdown = markdown;
+
+      getThread(req, parameters, userData, postId, board, callback);
+    }
+
+  });
+
+}
+
 exports.newPost = function(req, userData, parameters, captchaId, callback) {
 
   parameters.threadId = +parameters.threadId;
@@ -526,8 +664,8 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
             if (error) {
               callback(error);
             } else {
-              getThread(req, parameters, userData, (board.lastPostId || 0) + 1,
-                  board, callback);
+              getPostMarkdown(req, parameters, userData,
+                  (board.lastPostId || 0) + 1, board, callback);
             }
 
           });

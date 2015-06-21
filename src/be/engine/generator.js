@@ -28,7 +28,7 @@ var postProjection = {
   email : 1,
   id : 1,
   signedRole : 1,
-  message : 1
+  markdown : 1
 };
 
 var threadProjection = {
@@ -45,7 +45,7 @@ var threadProjection = {
   locked : 1,
   pinned : 1,
   email : 1,
-  message : 1,
+  markdown : 1,
   lastBump : 1,
   latestPosts : 1,
   postCount : 1,
@@ -367,6 +367,7 @@ function getPreviewPosts(boardUri, page, threadsArray, pageCount, boardData,
 
   posts.aggregate([ {
     $match : {
+      boardUri : boardUri,
       postId : {
         $in : postsToFetch
       }
@@ -380,7 +381,7 @@ function getPreviewPosts(boardUri, page, threadsArray, pageCount, boardData,
         $push : {
           postId : '$postId',
           banMessage : '$banMessage',
-          message : '$message',
+          markdown : '$markdown',
           files : '$files',
           name : '$name',
           id : '$id',
