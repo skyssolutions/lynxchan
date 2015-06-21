@@ -13,6 +13,7 @@ var users = db.users();
 var boards = db.boards();
 var settings = require('../boot').getGeneralSettings();
 var restrictedBoardCreation = settings.restrictBoardCreation;
+var validSettings = [ 'disableIds', 'disableCaptcha', 'forceAnonymity' ];
 
 var boardParameters = [ {
   field : 'boardUri',
@@ -24,6 +25,10 @@ var boardParameters = [ {
   field : 'boardDescription',
   length : 128
 } ];
+
+exports.getValidSettings = function() {
+  return validSettings;
+};
 
 function checkBoardRebuild(board, params) {
 
@@ -39,7 +44,12 @@ function checkBoardRebuild(board, params) {
 
   var captchaChanged = hadCaptcha !== hasCaptcha;
 
-  if (nameChanged || descriptionChanged || captchaChanged) {
+  var hadAnon = oldSettings.indexOf('forceAnonymity') === -1;
+  var hasAnon = newSettings.indexOf('forceAnonymity') === -1;
+
+  var anonChanged = hadAnon !== hasAnon;
+
+  if (nameChanged || descriptionChanged || captchaChanged || anonChanged) {
 
     process.send({
       board : params.boardUri,

@@ -295,6 +295,10 @@ exports.newThread = function(req, userData, parameters, captchaId, callback) {
       callback('Board not found');
     } else {
 
+      if (board.settings.indexOf('forceAnonymity') > -1) {
+        parameters.name = null;
+      }
+
       miscOps.sanitizeStrings(parameters, postingParameters);
 
       checkCaptchaForThread(req, userData, parameters, board,
@@ -471,6 +475,10 @@ function getThread(req, parameters, userData, postId, board, callback) {
     } else if (thread.locked) {
       callback('You cannot reply to a locked thread');
     } else {
+
+      if (board.settings.indexOf('forceAnonymity') > -1) {
+        parameters.name = null;
+      }
 
       miscOps.sanitizeStrings(parameters, postingParameters);
 

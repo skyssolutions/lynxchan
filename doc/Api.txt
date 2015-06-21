@@ -322,6 +322,23 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::25
+
+Name: setBoardSettings
+
+Description: changes board settings. Requires authentication. Rescricted to the board owner.
+
+Parameters:
+    boardUri*: board uri.
+    boardName*: new name of the board. 32 characters.
+    boardDescription*: new description of the board. 128 characters.
+    settings(Array): new settings of the board. May contain the following values:
+        disableIds: ids on threads and posts will be disabled.
+        disableCaptcha: captchas will be disabled.
+        forceAnonymity: the name input is disabled on posting.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters
 **: exclusive funcionality to the json api.
 

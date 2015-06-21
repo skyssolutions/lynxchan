@@ -276,7 +276,8 @@ function testTemplates(settings) {
         template : 'boardPage',
         content : boardTemplate,
         fields : [ 'labelName', 'labelDescription', 'divPostings', 'divPages',
-            'boardIdentifier', 'linkManagement', 'bannerImage', 'captchaDiv' ]
+            'boardIdentifier', 'linkManagement', 'bannerImage', 'captchaDiv',
+            'divName' ]
       },
       {
         template : 'threadPage',
@@ -285,7 +286,7 @@ function testTemplates(settings) {
             'boardIdentifier', 'linkManagement', 'threadIdentifier', 'linkMod',
             'inputBan', 'divBanInput', 'divControls', 'controlBoardIdentifier',
             'controlThreadIdentifier', 'checkboxLock', 'checkboxPin',
-            'bannerImage', 'captchaDiv' ]
+            'bannerImage', 'captchaDiv', 'divName' ]
       },
       {
         template : 'messagePage',
@@ -318,7 +319,7 @@ function testTemplates(settings) {
             'deletionIdentifier', 'reportDiv', 'closedReportsLink', 'bansLink',
             'bannerManagementLink', 'boardNameField', 'boardDescriptionField',
             'boardSettingsIdentifier', 'disableIdsCheckbox',
-            'disableCaptchaCheckbox' ]
+            'disableCaptchaCheckbox', 'forceAnonymityCheckbox' ]
       }, {
         template : 'closedReportsPage',
         content : closedReportsPageTemplate,

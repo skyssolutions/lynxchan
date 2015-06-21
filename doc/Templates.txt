@@ -49,6 +49,10 @@ captchaDiv:
     type: div
     description: holds the captcha elements.
 
+divName:
+    type: div
+    description: holds the name input elements.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::03
@@ -119,6 +123,10 @@ bannerImage:
 captchaDiv:
     type: div
     description: holds the captcha elements.
+
+divName:
+    type: div
+    description: holds the name input elements.
 
 ------------------------------------------------------------------------------------------
 
@@ -411,6 +419,10 @@ disableIdsCheckbox:
 disableCaptchaCheckbox:
     type: input
     description: checkbox that indicates if the option to disable captchas is turned on. 
+
+forceAnonymityCheckbox:
+    type: input
+    description: checkbox that indicates if the option to force anonymity is turned on. 
 
 ------------------------------------------------------------------------------------------
 

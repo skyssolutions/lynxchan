@@ -156,7 +156,9 @@ exports.getMime = function getHeader(pathName) {
 // with its maximum length
 function sanitizeParameter(object, parameter) {
 
-  if (object.hasOwnProperty(parameter.field)) {
+  var hasProperty = object.hasOwnProperty(parameter.field);
+
+  if (hasProperty && object[parameter.field] != null) {
 
     object[parameter.field] = object[parameter.field].toString().trim();
 

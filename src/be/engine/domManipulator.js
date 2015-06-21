@@ -121,7 +121,13 @@ function setHeader(document, board, boardData) {
   var settings = boardData.settings;
 
   if (settings.indexOf('disableCaptcha') > -1) {
-    document.getElementById('captchaDiv').style.display = 'none';
+    var captchaDiv = document.getElementById('captchaDiv');
+    captchaDiv.parentNode.removeChild(captchaDiv);
+  }
+
+  if (settings.indexOf('forceAnonymity') > -1) {
+    var nameDiv = document.getElementById('divName');
+    nameDiv.parentNode.removeChild(nameDiv);
   }
 
 }
@@ -131,18 +137,19 @@ function setThreadHiddeableElements(thread, threadCell) {
 
   if (!thread.pinned) {
     var pinIndicator = threadCell.getElementsByClassName('pinIndicator')[0];
-    pinIndicator.style.display = 'none';
+    pinIndicator.parentNode.removeChild(pinIndicator);
   }
 
   if (!thread.locked) {
     var lockIndicator = threadCell.getElementsByClassName('lockIndicator')[0];
-    lockIndicator.style.display = 'none';
+    lockIndicator.parentNode.removeChild(lockIndicator);
   }
 
   if (thread.id) {
     threadCell.getElementsByClassName('labelId')[0].innerHTML = thread.id;
   } else {
-    threadCell.getElementsByClassName('spanId')[0].style.display = 'none';
+    var spanId = threadCell.getElementsByClassName('spanId')[0];
+    spanId.parentNode.removeChild(spanId);
   }
 }
 
@@ -185,13 +192,13 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document) {
   if (post.signedRole) {
     labelRole.innerHTML = post.signedRole;
   } else {
-    labelRole.style.display = 'none';
+    labelRole.parentNode.removeChild(labelRole);
   }
 
   var banMessageLabel = postCell.getElementsByClassName('divBanMessage')[0];
 
   if (!post.banMessage) {
-    banMessageLabel.style.display = 'none';
+    banMessageLabel.parentNode.removeChild(banMessageLabel);
   } else {
     banMessageLabel.innerHTML = post.banMessage;
   }
@@ -201,8 +208,6 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document) {
 }
 
 function setPostInnerElements(document, boardUri, threadId, post, postCell) {
-
-  postCell.getElementsByClassName('labelId')[0].innerHTML = post.id;
 
   post.name = post.name || 'Anonymous';
 
@@ -218,7 +223,7 @@ function setPostInnerElements(document, boardUri, threadId, post, postCell) {
   if (post.subject) {
     subjectLabel.innerHTML = post.subject;
   } else {
-    subjectLabel.style.display = 'none';
+    subjectLabel.parentNode.removeChild(subjectLabel);
   }
 
   var labelCreated = postCell.getElementsByClassName('labelCreated')[0];
@@ -246,7 +251,8 @@ function addPosts(document, posts, boardUri, threadId) {
     if (post.id) {
       postCell.getElementsByClassName('labelId')[0].innerHTML = post.id;
     } else {
-      postCell.getElementsByClassName('spanId')[0].style.display = 'none';
+      var spanId = postCell.getElementsByClassName('spanId')[0];
+      spanId.parentNode.removeChild(spanId);
     }
 
     setPostInnerElements(document, boardUri, threadId, post, postCell);
@@ -260,7 +266,7 @@ function addPosts(document, posts, boardUri, threadId) {
 function setThreaLinks(threadCell, thread, boardUri, innerPage) {
   var linkReply = threadCell.getElementsByClassName('linkReply')[0];
   if (innerPage) {
-    linkReply.style.display = 'none';
+    linkReply.parentNode.removeChild(linkReply);
   } else {
     linkReply.href = 'res/' + thread.threadId + '.html';
   }
@@ -279,13 +285,13 @@ function setThreadComplexElements(boardUri, thread, threadCell) {
   if (thread.signedRole) {
     labelRole.innerHTML = thread.signedRole;
   } else {
-    labelRole.style.display = 'none';
+    labelRole.parentNode.removeChild(labelRole);
   }
 
   var banMessageLabel = threadCell.getElementsByClassName('divBanMessage')[0];
 
   if (!thread.banMessage) {
-    banMessageLabel.style.display = 'none';
+    banMessageLabel.parentNode.removeChild(banMessageLabel);
   } else {
     banMessageLabel.innerHTML = thread.banMessage;
   }
@@ -311,7 +317,7 @@ function setThreadSimpleElements(threadCell, thread) {
   if (thread.subject) {
     subjectLabel.innerHTML = thread.subject;
   } else {
-    subjectLabel.style.display = 'none';
+    subjectLabel.parentNode.removeChild(subjectLabel);
   }
 
   var labelCreation = threadCell.getElementsByClassName('labelCreated')[0];
@@ -633,6 +639,11 @@ function setBoardControlCheckBoxes(document, boardData) {
         true);
   }
 
+  if (settings.indexOf('forceAnonymity') > -1) {
+    document.getElementById('forceAnonymityCheckbox').setAttribute('checked',
+        true);
+  }
+
 }
 
 function setBoardOwnerControls(document, boardData) {
@@ -707,7 +718,8 @@ exports.boardManagement = function(login, boardData, reports) {
     if (login === boardData.owner) {
       setBoardOwnerControls(document, boardData);
     } else {
-      document.getElementById('ownerControlDiv').style.display = 'none';
+      var controlDiv = document.getElementById('ownerControlDiv');
+      controlDiv.parentNode.removeChild(controlDiv);
 
     }
 
@@ -812,7 +824,7 @@ function setGlobalBansLink(userRole, document) {
   var displayBans = userRole < miscOps.getMaxStaffRole();
 
   if (!displayBans) {
-    bansLink.style.display = 'none';
+    bansLink.parentNode.removeChild(bansLink);
   }
 }
 
@@ -832,7 +844,7 @@ exports.globalManagement = function(userRole, userLogin, staff, reports) {
     if (userRole < 2) {
       setNewStaffComboBox(document, userRole);
     } else {
-      newStaffForm.style.display = 'none';
+      newStaffForm.parentNode.removeChild(newStaffForm);
     }
 
     var userLabel = document.getElementById('userLabel');
@@ -933,7 +945,8 @@ function setBoardCreationForm(userData, document) {
   var allowed = userData.globalRole < 2;
 
   if (boardCreationRestricted && !allowed) {
-    document.getElementById('boardCreationDiv').style.display = 'none';
+    var boardCreationForm = document.getElementById('boardCreationDiv');
+    boardCreationForm.parentNode.removeChild(boardCreationForm);
   }
 }
 
@@ -956,7 +969,7 @@ exports.account = function(userData) {
     setBoardCreationForm(userData, document);
 
     if (!globalStaff) {
-      gManagementLink.style.display = 'none';
+      gManagementLink.parentNode.removeChild(gManagementLink);
     }
 
     if (userData.email && userData.email.length) {
@@ -1045,7 +1058,8 @@ exports.login = function(callback) {
     document.title = 'Login, register or reset passsword';
 
     if (accountCreationDisabled) {
-      document.getElementById('divCreation').style.display = 'none';
+      var divCreation = document.getElementById('divCreation');
+      divCreation.parentNode.removeChild(divCreation);
     }
 
     gridFs.writeData(serializer(document), '/login.html', 'text/html', {},
@@ -1147,9 +1161,16 @@ function setModdingInformation(document, boardUri, boardData, threadData,
 }
 
 function hideModElements(document) {
-  document.getElementById('inputBan').style.display = 'none';
-  document.getElementById('divBanInput').style.display = 'none';
-  document.getElementById('divControls').style.display = 'none';
+
+  var inputBan = document.getElementById('inputBan');
+  inputBan.parentNode.removeChild(inputBan);
+
+  var divBanInput = document.getElementById('divBanInput');
+  divBanInput.parentNode.removeChild(divBanInput);
+
+  var divControls = document.getElementById('divControls');
+  divControls.parentNode.removeChild(divControls);
+
 }
 
 function setThreadTitle(document, boardUri, threadData) {
@@ -1320,11 +1341,13 @@ function setCell(boardUri, document, cell, thread) {
   }
 
   if (!thread.pinned) {
-    cell.getElementsByClassName('pinIndicator')[0].style.display = 'none';
+    var pinIndicator = cell.getElementsByClassName('pinIndicator')[0];
+    pinIndicator.parentNode.removeChild(pinIndicator);
   }
 
   if (!thread.locked) {
-    cell.getElementsByClassName('lockIndicator')[0].style.display = 'none';
+    var lockIndicator = cell.getElementsByClassName('lockIndicator')[0];
+    lockIndicator.parentNode.removeChild(lockIndicator);
   }
 
   cell.getElementsByClassName('divMessage')[0].innerHTML = thread.message;

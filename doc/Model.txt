@@ -10,6 +10,7 @@ boards: stores boards.
     settings(Array): list of settings of the board. May contain the following strings:
         disableIds: disables recording of thread-wise ids.
         disableCaptcha: disable captchas for posting in the board.
+        forceAnonymity: disables the name input.
 
 ----------------------------------------------------------------------------------------
 
