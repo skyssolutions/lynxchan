@@ -37,39 +37,154 @@ var postingParameters = [ {
   length : 8
 } ];
 
-function replaceQuotes(message, posts, board, callback) {
+function replaceStyleMarkdown(message) {
+
+  var split = message.split('\n');
+
+  var greenTextFunction = function(match) {
+    return '<span class="greenText">' + match + '</span>';
+  };
+
+  var spoilerFunction = function(match) {
+
+    var content = match.substring(9, match.length - 10);
+
+    return '<span class="spoiler">' + content + '</span>';
+  };
+
+  for (var i = 0; i < split.length; i++) {
+
+    split[i] = split[i].replace(/^>[^\&\s].+/g, greenTextFunction);
+
+    split[i] = split[i].replace(/\[spoiler\].+\[\/spoiler\]/g, spoilerFunction);
+
+  }
+
+  message = split.join('<br>');
+  return message;
+
+}
+
+function replaceMarkdown(message, posts, board, callback) {
 
   var postObject = {};
 
   for (var i = 0; i < posts.length; i++) {
     var post = posts[i];
 
-    postObject[post.postId] = post.threadId;
+    var boardPosts = postObject[post.boardUri] || {};
+
+    boardPosts[post.postId] = post.threadId;
+
+    postObject[post.boardUri] = boardPosts;
   }
 
-  message = message.replace(/>>\d+/g, function replacer(match) {
+  message = message.replace(/>>>\/\w+\/\d+/g, function crossQuote(match) {
 
-    var postId = +match.substring(2);
+    var quoteParts = match.match(/(\w+|\d+)/g);
 
-    var threadId = postObject[postId];
+    var quotedBoard = quoteParts[0];
+    var quotedPost = +quoteParts[1];
 
-    var link;
+    var boardPosts = postObject[quotedBoard] || {};
 
-    if (threadId) {
+    var quotedThread = boardPosts[quotedPost] || quotedPost;
 
-      link = '/' + board + '/res/' + threadId + '.html#' + postId;
+    var link = '/' + quotedBoard + '/res/';
 
-    } else {
+    link += quotedThread + '.html#' + quotedPost;
 
-      link = '/' + board + '/res/' + postId + '.html#' + postId;
+    var toReturn = '<a class="quoteLink" href="' + link + '">&gt&gt&gt';
+    toReturn += match.substring(3) + '</a>';
 
-    }
-
-    return '<a href=\"' + link + '\">' + match + '</a>';
+    return toReturn;
 
   });
 
+  message = message.replace(/>>>\/\w+\//g, function board(match) {
+
+    var quotedBoard = match.substring(3);
+
+    return '<a href="' + quotedBoard + '">&gt&gt&gt' + quotedBoard + '</a>';
+
+  });
+
+  message = message.replace(/>>\d+/g, function quote(match) {
+
+    var quotedPost = match.substring(2);
+
+    var boardPosts = postObject[board] || {};
+
+    var quotedThread = boardPosts[quotedPost] || quotedPost;
+
+    var link = '/' + board + '/res/';
+
+    link += quotedThread + '.html#' + quotedPost;
+
+    var toReturn = '<a class="quoteLink" href="' + link + '">&gt&gt';
+
+    toReturn += quotedPost + '</a>';
+
+    return toReturn;
+
+  });
+
+  message = message.replace(/(http|https)\:\/\/\S+/g, function links(match) {
+
+    return '<a target="blank" href="' + match + '">' + match + '</a>';
+
+  });
+
+  message = replaceStyleMarkdown(message);
+
   callback(null, message);
+
+}
+
+function getCrossQuotes(message, postsToFindObject) {
+
+  var crossQuotes = message.match(/>>>\/\w+\/\d+/g) || [];
+
+  for (var i = 0; i < crossQuotes.length; i++) {
+
+    var crossQuote = crossQuotes[i];
+
+    var quoteParts = crossQuote.match(/(\w+|\d+)/g);
+
+    var quotedBoard = quoteParts[0];
+    var quotedPost = +quoteParts[1];
+
+    var boardPosts = postsToFindObject[quotedBoard] || [];
+
+    if (boardPosts.indexOf(quotedPost) === -1) {
+      boardPosts.push(quotedPost);
+    }
+
+    postsToFindObject[quotedBoard] = boardPosts;
+
+  }
+
+}
+
+function getQuotes(message, board, postsToFindObject) {
+
+  var quotes = message.match(/>>\d+/g) || [];
+
+  for (var i = 0; i < quotes.length; i++) {
+
+    var quote = quotes[i];
+
+    var quotedPost = +quote.substring(2);
+
+    var boardPosts = postsToFindObject[board] || [];
+
+    if (boardPosts.indexOf(quotedPost) === -1) {
+      boardPosts.push(quotedPost);
+    }
+
+    postsToFindObject[board] = boardPosts;
+
+  }
 
 }
 
@@ -77,52 +192,46 @@ function markdownText(message, board, callback) {
 
   message = message.replace(/</g, '&lt');
 
-  message = message.replace(/>.+/g, function greenText(match) {
+  var postsToFindObject = {};
 
-    return '<font color="green">' + match + '</font>';
+  getCrossQuotes(message, postsToFindObject);
 
-  });
+  getQuotes(message, board, postsToFindObject);
 
-  var postsToFind = [];
+  var orBlock = [];
 
-  message = message.replace(/>>>\/\w+\//g, function linkBoard(match) {
+  for ( var quotedBoardKey in postsToFindObject) {
 
-    var board = match.substring(3);
+    orBlock.push({
+      boardUri : quotedBoardKey,
+      postId : {
+        $in : postsToFindObject[quotedBoardKey]
+      }
+    });
 
-    return '<a href=\"' + board + '\">' + match + '</a>';
+  }
 
-  });
-
-  message = message.replace(/>>\d+/g, function countQuotes(match) {
-
-    var postId = match.substring(2);
-
-    if (postsToFind.indexOf(postId) === -1) {
-      postsToFind.push(+postId);
-    }
-
-    return match;
-
-  });
-
-  message = message.replace(/\n/g, '<br>');
-
-  if (!postsToFind.length) {
-    callback(null, message);
+  if (!orBlock.length) {
+    replaceMarkdown(message, [], board, callback);
   } else {
 
     posts.aggregate([ {
       $match : {
-        boardUri : board,
-        postId : {
-          $in : postsToFind
-        }
+        $or : orBlock
+      }
+    }, {
+      $project : {
+        _id : 0,
+        postId : 1,
+        threadId : 1,
+        boardUri : 1
       }
     }, {
       $group : {
         _id : 0,
         posts : {
           $push : {
+            boardUri : '$boardUri',
             postId : '$postId',
             threadId : '$threadId'
           }
@@ -134,14 +243,13 @@ function markdownText(message, board, callback) {
       if (error) {
         callback(error);
       } else if (!result.length) {
-        replaceQuotes(message, [], board, callback);
+        replaceMarkdown(message, [], board, callback);
       } else {
-        replaceQuotes(message, result[0].posts, board, callback);
+        replaceMarkdown(message, result[0].posts, board, callback);
       }
 
     });
   }
-
 }
 
 function generateSecureTripcode(name, password, parameters, callback) {

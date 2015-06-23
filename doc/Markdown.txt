@@ -1,0 +1,31 @@
+/^>[^\&\s].+/g: green text
+Class: greenText
+Example: 
+>text
+
+/\[spoiler\].+\[\/spoiler\]/g: spoiler
+Class: spoiler
+Example:
+[spoiler]text[/spoiler]
+
+/>>>\/\w+\/\d+/g: cross-quote
+Class: quoteLink
+Example:
+>>>/board/1
+
+/>>>\/\w+\//g: board link
+Example:
+>>>/board/
+
+/>>\d+/g: quote
+Class: quoteLink
+Example:
+>>1
+
+/(http|https)\:\/\/\S+/g: links
+Example:
+http://url.com
+
+
+
+

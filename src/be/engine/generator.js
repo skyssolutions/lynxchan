@@ -49,6 +49,7 @@ var threadProjection = {
   lastBump : 1,
   latestPosts : 1,
   postCount : 1,
+  message : 1,
   fileCount : 1
 };
 
