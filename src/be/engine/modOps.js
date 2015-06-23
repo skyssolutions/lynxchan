@@ -6,6 +6,7 @@ var db = require('../db');
 var boards = db.boards();
 var bans = db.bans();
 var threads = db.threads();
+var logs = db.logs();
 var posts = db.posts();
 var reports = db.reports();
 var miscOps = require('./miscOps');
@@ -288,6 +289,93 @@ exports.report = function(req, reportedContent, parameters, callback) {
 
 // end of ban process
 // start of ban process
+function appendThreadsToBanLog(informedThreads) {
+
+  var logMessage = '';
+
+  if (informedThreads.length) {
+    logMessage += ' threads :';
+
+    for (var i = 0; i < informedThreads.length; i++) {
+
+      if (i) {
+        logMessage += ',';
+      }
+
+      logMessage += ' ' + informedThreads[i];
+
+    }
+
+  }
+
+  return logMessage;
+
+}
+
+function appendPostsToBanLog(informedPosts, informedThreads) {
+
+  var logMessage = '';
+
+  if (informedPosts.length) {
+    if (informedThreads.length) {
+      logMessage += ' and the following posts:';
+    } else {
+      logMessage += ' posts:';
+    }
+
+    for (var i = 0; i < informedPosts.length; i++) {
+      if (i) {
+        logMessage += ',';
+      }
+
+      logMessage += ' ' + informedPosts[i];
+    }
+
+  }
+
+  return logMessage;
+
+}
+
+function logBans(foundBoards, userData, board, informedPosts, informedThreads,
+    reportedObjects, parameters, callback) {
+
+  var logMessage = 'User ' + userData.login;
+
+  if (parameters.global) {
+    logMessage += ' globally';
+  }
+
+  logMessage += ' banned the following';
+
+  logMessage += appendThreadsToBanLog(informedThreads);
+  logMessage += appendPostsToBanLog(informedPosts, informedThreads);
+
+  logMessage += ' from /' + board + '/ until ' + parameters.expiration;
+  logMessage += ' with the reason "' + parameters.reason + '".';
+
+  logs.insert({
+    user : userData.login,
+    type : 'ban',
+    time : new Date(),
+    global : parameters.global,
+    board : board,
+    description : logMessage
+  },
+      function insertedLog(error) {
+        if (error) {
+          var outputMsg = 'Failed to log ' + logMessage + ' due to error ';
+          outputMsg += error.toString();
+          console.log(outputMsg);
+        }
+
+        iterateBoards(foundBoards, userData, reportedObjects, parameters,
+            callback);
+
+      });
+
+}
+
 function updateThreadsBanMessage(foundBoards, userData, reportedObjects,
     parameters, callback, informedThreads, informedPosts, board) {
 
@@ -321,8 +409,10 @@ function updateThreadsBanMessage(foundBoards, userData, reportedObjects,
         if (error) {
           callback(error);
         } else {
-          iterateBoards(foundBoards, userData, reportedObjects, parameters,
-              callback);
+
+          logBans(foundBoards, userData, board, informedPosts, informedThreads,
+              reportedObjects, parameters, callback);
+
         }
 
       });

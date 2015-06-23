@@ -61,7 +61,7 @@ function formatDateToDisplay(d) {
 
   var month = padDateField(d.getMonth() + 1);
 
-  var year = d.getFullYear() + 1;
+  var year = d.getFullYear();
 
   var weekDay = weekDays[d.getDay()];
 

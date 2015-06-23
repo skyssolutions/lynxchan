@@ -42,7 +42,8 @@ function getPostingData(boardData, parameters, res) {
     name : 1,
     files : 1,
     email : 1,
-    message : 1
+    message : 1,
+    markdown : 1
   }, function gotThread(error, thread) {
     if (error) {
       formOps.outputError(thread);
@@ -65,7 +66,7 @@ function getPostingData(boardData, parameters, res) {
         files : 1,
         email : 1,
         banMessage : 1,
-        message : 1
+        markdown : 1
       }).sort({
         creation : 1
       }).toArray(function gotPosts(error, posts) {

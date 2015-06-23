@@ -1,9 +1,11 @@
 /^>[^\&\s].+/g: green text
+Observation: it will be run against individual lines of the message, not against the whole message at once.
 Class: greenText
 Example: 
 >text
 
 /\[spoiler\].+\[\/spoiler\]/g: spoiler
+Observation: it will be run against individual lines of the message, not against the whole message at once.
 Class: spoiler
 Example:
 [spoiler]text[/spoiler]

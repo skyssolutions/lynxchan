@@ -8,6 +8,7 @@ var users = db.users();
 var reports = db.reports();
 var posts = db.posts();
 var threads = db.threads();
+var logs = db.logs();
 var miscOps = require('./miscOps');
 var gridFs = require('./gridFsHandler');
 var boards = db.boards();
@@ -295,6 +296,83 @@ function removeContentFiles(userData, board, threadsToDelete, postsToDelete,
 
 }
 
+function appendThreadDeletionLog(foundThreads) {
+
+  var logMessage = '';
+
+  if (foundThreads.length) {
+    logMessage += ' threads :';
+
+    for (var i = 0; i < foundThreads.length; i++) {
+
+      if (i) {
+        logMessage += ',';
+      }
+
+      logMessage += ' ' + foundThreads[i];
+
+    }
+
+  }
+
+  return logMessage;
+}
+
+function appendPostDeletionLog(foundThreads, foundPosts) {
+
+  var logMessage = '';
+
+  if (foundPosts.length) {
+    if (foundThreads.length) {
+      logMessage += ' and the following posts:';
+    } else {
+      logMessage += ' posts:';
+    }
+
+    for (var i = 0; i < foundPosts.length; i++) {
+      if (i) {
+        logMessage += ',';
+      }
+
+      logMessage += ' ' + foundPosts[i];
+    }
+
+  }
+
+  return logMessage;
+
+}
+
+function logRemoval(userData, board, threadsToDelete, postsToDelete,
+    parameters, foundBoards, cb, foundThreads, foundPosts, parentThreads) {
+
+  var logMessage = 'User ' + userData.login + ' deleted the following';
+
+  logMessage += appendThreadDeletionLog(foundThreads);
+  logMessage += appendPostDeletionLog(foundThreads, foundPosts);
+
+  logMessage += ' from board /' + board.boardUri + '/.';
+
+  logs.insert({
+    user : userData.login,
+    type : 'deletion',
+    time : new Date(),
+    board : board.boardUri,
+    description : logMessage,
+    global : userData.globalRole <= miscOps.getMaxStaffRole()
+  }, function insertedLog(error) {
+
+    if (error) {
+      var outputMsg = 'Failed to log ' + logMessage + ' due to error ';
+      outputMsg += error.toString();
+      console.log(outputMsg);
+    }
+
+    removeContentFiles(userData, board, threadsToDelete, postsToDelete,
+        parameters, foundBoards, cb, foundThreads, foundPosts, parentThreads);
+  });
+}
+
 function removeFoundContent(userData, board, threadsToDelete, postsToDelete,
     parameters, foundBoards, cb, foundThreads, foundPosts, parentThreads) {
 
@@ -318,9 +396,18 @@ function removeFoundContent(userData, board, threadsToDelete, postsToDelete,
         if (error) {
           cb(error);
         } else {
-          removeContentFiles(userData, board, threadsToDelete, postsToDelete,
-              parameters, foundBoards, cb, foundThreads, foundPosts,
-              parentThreads);
+          if (userData) {
+
+            logRemoval(userData, board, threadsToDelete, postsToDelete,
+                parameters, foundBoards, cb, foundThreads, foundPosts,
+                parentThreads, userData);
+
+          } else {
+
+            removeContentFiles(userData, board, threadsToDelete, postsToDelete,
+                parameters, foundBoards, cb, foundThreads, foundPosts,
+                parentThreads);
+          }
         }
 
       });

@@ -28,6 +28,7 @@ var cachedUsers;
 var cachedCaptchas;
 var cachedFiles;
 var cachedTripcodes;
+var cachedLog;
 var cachedRecoveryRequests;
 
 var loading;
@@ -482,6 +483,12 @@ exports.tripcodes = function() {
   return cachedTripcodes;
 };
 
+exports.logs = function() {
+
+  return cachedLog;
+
+};
+
 // end of getters
 
 function checkCollections(db, callback) {
@@ -507,6 +514,8 @@ function checkCollections(db, callback) {
   initTripcodes(callback);
 
   cachedFiles = db.collection('fs.files');
+
+  cachedLog = db.collection('staffLogs');
 
 }
 
