@@ -92,6 +92,7 @@ Settings files that goes into the settings directory:
 * `defaultBanMessage`: default ban message to be used for banned content when the person applying the ban does not submit a message. Defaults to `(USER WAS BANNED FOR THIS POST)`;
 * `disableAccountCreation`(Boolean): disables account creation for users.
 * `restrictBoardCreation`(Boolean): disables board creation for users with global role greater than 1.
+* `logPageSize`(Number): amount of log entries to be displayed at once. Defaults to 50.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

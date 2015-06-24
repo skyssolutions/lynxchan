@@ -22,6 +22,15 @@ var boardCreationRestricted = settings.restrictBoardCreation;
 var templateHandler = require('./templateHandler');
 
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
+var availableLogTypes = {
+  '' : 'All types',
+  ban : 'Bans',
+  deletion : 'Deletions',
+  banLift : 'Ban lifts',
+  reportClosure : 'Reports closure',
+  globalRoleChange : 'Global role changes'
+};
+var optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
 
 // Section 1: Shared functions {
 
@@ -998,6 +1007,161 @@ exports.account = function(userData) {
   }
 };
 // } Section 2.5: Account
+
+// Section 2.6: Logs {
+function fillComboBox(document, parameters) {
+
+  var combobox = document.getElementById('comboboxType');
+
+  for ( var type in availableLogTypes) {
+
+    var option = document.createElement('option');
+
+    option.innerHTML = availableLogTypes[type];
+    option.value = type;
+
+    if (parameters.type === type) {
+      option.setAttribute('selected', 'selected');
+    }
+
+    combobox.appendChild(option);
+
+  }
+
+}
+
+function fillSearchForm(parameters, document) {
+
+  if (parameters.user) {
+    document.getElementById('fieldUser').setAttribute('value', parameters.user);
+  }
+
+  if (parameters.excludeGlobals) {
+    document.getElementById('checkboxExcludeGlobals').setAttribute('checked',
+        true);
+  }
+
+  if (parameters.after) {
+    document.getElementById('fieldAfter').setAttribute('value',
+        parameters.after);
+  }
+
+  if (parameters.before) {
+    document.getElementById('fieldBefore').setAttribute('value',
+        parameters.before);
+  }
+
+  if (parameters.boardUri) {
+    document.getElementById('fieldBoard').setAttribute('value',
+        parameters.boardUri);
+  }
+}
+
+function setLogEntry(logCell, log) {
+
+  if (!log.global) {
+    var globalIndicator = logCell.getElementsByClassName('indicatorGlobal')[0];
+    globalIndicator.parentNode.removeChild(globalIndicator);
+  }
+
+  var labelType = logCell.getElementsByClassName('labelType')[0];
+  labelType.innerHTML = availableLogTypes[log.type];
+
+  var labelTime = logCell.getElementsByClassName('labelTime')[0];
+  labelTime.innerHTML = formatDateToDisplay(log.time);
+
+  var labelBoard = logCell.getElementsByClassName('labelBoard')[0];
+  labelBoard.innerHTML = log.boardUri || '';
+
+  var labelUser = logCell.getElementsByClassName('labelUser')[0];
+  labelUser.innerHTML = log.user;
+
+  var labelDescription = logCell.getElementsByClassName('labelDescription')[0];
+  labelDescription.innerHTML = log.description;
+
+}
+
+function setLogPages(document, parameters, pageCount) {
+
+  var pagesDiv = document.getElementById('divPages');
+
+  for (var i = 1; i <= pageCount; i++) {
+
+    var pageLink = document.createElement('a');
+
+    pageLink.innerHTML = i;
+
+    var url = '/logs.js?page=' + i;
+
+    if (parameters.excludeGlobals) {
+      url += '&excludeGlobals=on';
+    }
+
+    if (parameters.type && parameters.type.length) {
+      url += '&type=' + parameters.type;
+    }
+
+    for (var j = 0; j < optionalStringLogParameters.length; j++) {
+
+      var parameter = optionalStringLogParameters[j];
+
+      if (parameters[parameter]) {
+        url += '&' + parameter + '=' + parameters[parameter];
+      }
+
+    }
+
+    pageLink.href = url;
+
+    pagesDiv.appendChild(pageLink);
+
+  }
+
+}
+
+exports.logs = function(logs, pageCount, parameters) {
+  try {
+
+    var document = jsdom(templateHandler.logsPageTemplate());
+
+    document.title = 'Logs';
+
+    fillSearchForm(parameters, document);
+
+    fillComboBox(document, parameters);
+
+    var divLogs = document.getElementById('divLogs');
+
+    for (var i = 0; i < logs.length; i++) {
+      var log = logs[i];
+
+      var logCell = document.createElement('div');
+      logCell.setAttribute('class', 'logCell');
+      logCell.innerHTML = templateHandler.logCellTemplate();
+
+      setLogEntry(logCell, log);
+
+      divLogs.appendChild(logCell);
+    }
+
+    setLogPages(document, parameters, pageCount);
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+
+};
+// } Section 2.6: Logs
 
 exports.message = function(message, link) {
 

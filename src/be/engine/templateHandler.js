@@ -42,6 +42,8 @@ var bannerManagementTemplate;
 var bannerCellTemplate;
 var catalogPageTemplate;
 var catalogCellTemplate;
+var logsPageTemplate;
+var logCellTemplate;
 
 function loadEmailTemplates(fePath, templateSettings) {
 
@@ -70,6 +72,8 @@ function loadCellTemplates(fePath, templateSettings) {
   bannerCellTemplate = fs.readFileSync(fePath + templateSettings.bannerCell);
 
   catalogCellTemplate = fs.readFileSync(fePath + templateSettings.catalogCell);
+
+  logCellTemplate = fs.readFileSync(fePath + templateSettings.logCell);
 }
 
 function loadDynamicTemplates(fePath, templateSettings) {
@@ -82,6 +86,7 @@ function loadDynamicTemplates(fePath, templateSettings) {
   gManagementTemplate = fs.readFileSync(fePath + templateSettings.gManagement);
   errorTemplate = fs.readFileSync(fePath + templateSettings.errorPage);
   banPageTemplate = fs.readFileSync(fePath + templateSettings.banPage);
+  logsPageTemplate = fs.readFileSync(fePath + templateSettings.logsPage);
 
   var bannerManagementPath = fePath + templateSettings.bannerManagementPage;
   bannerManagementTemplate = fs.readFileSync(bannerManagementPath);
@@ -230,10 +235,17 @@ function testTemplates(settings) {
         content : banCellTemplate,
         fields : [ 'reasonLabel', 'expirationLabel', 'appliedByLabel',
             'boardLabel' ]
-      }, {
+      },
+      {
         template : 'uploadCell',
         content : uploadCellTemplate,
         fields : [ 'infoLabel', 'imageLink', 'nameLink' ]
+      },
+      {
+        template : 'logCell',
+        content : logCellTemplate,
+        fields : [ 'indicatorGlobal', 'labelUser', 'labelTime',
+            'labelDescription', 'labelBoard', 'labelType' ]
       } ];
 
   var pageTests = [
@@ -293,7 +305,6 @@ function testTemplates(settings) {
         content : messageTemplate,
         fields : [ 'labelMessage', 'linkRedirect' ]
       },
-
       {
         template : 'accountPage',
         content : accountTemplate,
@@ -320,14 +331,23 @@ function testTemplates(settings) {
             'bannerManagementLink', 'boardNameField', 'boardDescriptionField',
             'boardSettingsIdentifier', 'disableIdsCheckbox',
             'disableCaptchaCheckbox', 'forceAnonymityCheckbox' ]
-      }, {
+      },
+      {
         template : 'closedReportsPage',
         content : closedReportsPageTemplate,
         fields : [ 'reportDiv' ]
-      }, {
+      },
+      {
         template : 'bansPage',
         content : bansPageTemplate,
         fields : [ 'bansDiv' ]
+      },
+      {
+        template : 'logsPage',
+        content : logsPageTemplate,
+        fields : [ 'divLogs', 'divPages', 'checkboxExcludeGlobals',
+            'fieldBoard', 'comboboxType', 'fieldBefore', 'fieldAfter',
+            'fieldUser' ]
       } ];
 
   var errors = [];
@@ -480,4 +500,12 @@ exports.catalogPageTemplate = function() {
 
 exports.catalogCellTemplate = function() {
   return catalogCellTemplate;
+};
+
+exports.logsPageTemplate = function() {
+  return logsPageTemplate;
+};
+
+exports.logCellTemplate = function() {
+  return logCellTemplate;
 };

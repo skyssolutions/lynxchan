@@ -667,11 +667,11 @@ divMessage:
     description: holds the message posted by the OP.
 
 lockIndicator:
-    type: any
+    type: any.
     description: element that indicates the thread is locked.
 
 pinIndicator: 
-    type: any
+    type: any.
     description: element that indicates the thread is pinned.
 
 
@@ -686,6 +686,77 @@ Elements:
 divCreation:
     type: div.
     description: holds the form used for account creation.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::27
+
+logsPage:
+
+Elements:
+divLogs:
+    type: div.
+    description: holds the logs.
+
+divPages:
+    type: div.
+    description: holds the available pages.
+
+checkboxExcludeGlobals:
+    type: input.
+    description: checkbox that indicates if global logs are to be excluded.
+
+fieldUser:
+    type: input.
+    description: field that indicated which user is to have its logs shown.
+
+fieldBoard:
+    type: input.
+    description: text field that indicates the board that is to have its logs shown.
+
+comboboxType:
+    type: input.
+    description: combobox that indicates what type of logs are to be shown.
+
+fieldBefore:
+    type: input.
+    description: field that indicates what date is to be used to retrieve logs only before the specified date.
+
+fieldAfter:
+    type: input.
+    description: field that indicates what date is to be used to retrieve logs only after the specified date.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::28
+
+logCell*:
+Root element: div
+
+Elements:
+    indicatorGlobal:
+        type: any.
+        description: indicates of the log is global.
+
+    labelUser:
+        type: span.
+        description: holds the login of the user related to this log.
+
+    labelTime:
+        type: span.
+        description: holds the time of when this entry was logged.
+
+    labelDescription:
+        type: span.
+        description: holds the text describing what happened on this entry.
+
+    labelBoard:
+        type: span.
+        description: holds the board related to this log entry.
+
+    labelType:
+        type: span.
+        description: holds the type of this entry.
 
 ------------------------------------------------------------------------------------------
 

@@ -11,11 +11,12 @@
   "captchaExpiration": 5,
   "tempDirectory": "/tmp",
   "emailSender": "no-reply@mychan.com",
-  "siteTitle": "My chan, with blacjack and hookers",
+  "siteTitle": "My chan, with blackjack and hookers",
   "maxRequestSizeMB": 3,
   "maxFileSizeMB": 1,
   "maxFiles": 3,
   "defaultBanMessage":"(USER WAS BANNED FOR THIS POST)",
   "disableAccountCreation":false,
-  "restrictBoardCreation":false
+  "restrictBoardCreation":false,
+  "logPageSize": 50
 }

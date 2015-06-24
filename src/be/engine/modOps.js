@@ -329,7 +329,7 @@ exports.report = function(req, reportedContent, parameters, callback) {
 
 };
 
-// end of ban process
+// end of report process
 // start of ban process
 function appendThreadsToBanLog(informedThreads) {
 

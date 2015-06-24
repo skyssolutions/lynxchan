@@ -1,4 +1,4 @@
-This document describes the form api. The files will be stored in src/be/form and will be acessed by using domain/functionName.js.
+This document describes the form api. The files will be stored in src/be/form and will be accessed by using domain/functionName.js.
 
 Pages will use the request body for parameters and cookies for authentication.
 The parameters should be passed using the request body as usual on posts.
@@ -344,7 +344,7 @@ PAG_ID::29
 
 Name: randomBanner
 
-Description: displays a random barner for the specified board. Displays the default banner if no banners are found for the board. Uses get parameters.
+Description: displays a random banner for the specified board. Displays the default banner if no banners are found for the board. Uses get parameters.
 
 Parameters:
     boardUri: board uri.
@@ -355,7 +355,7 @@ PAG_ID::30
 
 Name: setBoardSettings
 
-Description: changes board settings. Requires authentication. Rescricted to the board owner.
+Description: changes board settings. Requires authentication. Restricted to the board owner.
 
 Parameters:
     boardUri*: board uri.
@@ -367,4 +367,24 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::31
+
+Name: logs
+
+Description: displays recorded logs. Uses get parameters.
+
+Parameters:
+    page: page to be displayed. Defaults to 1.
+    excludeGlobals: if any value is passed, global logs will be omitted. 
+    boardUri: if informed, only logs for the board will be shown.
+    type: if informed with a non-empty string, only logs of the specified type will be shown. Possible values:
+        ban
+        deletion
+        banLift
+        reportClosure
+        globalRoleChange
+    before: parseable date that if informed, will display only logs before the specified date.
+    after: parseable date that if informed, will display only logs after the specified date.
+    user: if informed, only logs for the user will be shown.
+    
 *: mandatory parameters.
