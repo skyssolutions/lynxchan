@@ -11,6 +11,7 @@ var threads = db.threads();
 var logs = db.logs();
 var miscOps = require('./miscOps');
 var gridFs = require('./gridFsHandler');
+var logger = require('../logger');
 var boards = db.boards();
 var boot = require('../boot');
 var previewPosts = boot.previewPostCount();
@@ -357,15 +358,14 @@ function logRemoval(userData, board, threadsToDelete, postsToDelete,
     user : userData.login,
     type : 'deletion',
     time : new Date(),
-    board : board.boardUri,
+    boardUri : board.boardUri,
     description : logMessage,
     global : userData.globalRole <= miscOps.getMaxStaffRole()
   }, function insertedLog(error) {
 
     if (error) {
-      var outputMsg = 'Failed to log ' + logMessage + ' due to error ';
-      outputMsg += error.toString();
-      console.log(outputMsg);
+
+      logger.printLogError(logMessage, error);
     }
 
     removeContentFiles(userData, board, threadsToDelete, postsToDelete,

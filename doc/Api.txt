@@ -26,7 +26,7 @@ The global status are:
     tooLarge: request body is too large.
     construction: page is under construction and unavailable.
     denied: user is not allowed to perform the requested operation.
-    ok: operation sucessful.
+    ok: operation successful.
     banned: user is banned. In this case, data will contain and object with the following fields: reason, board, expiration.
 
 The back-end will truncate strings longer than the maximum length.
@@ -326,7 +326,7 @@ PAG_ID::25
 
 Name: setBoardSettings
 
-Description: changes board settings. Requires authentication. Rescricted to the board owner.
+Description: changes board settings. Requires authentication. Restricted to the board owner.
 
 Parameters:
     boardUri*: board uri.

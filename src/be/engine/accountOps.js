@@ -7,6 +7,7 @@ var miscOps = require('./miscOps');
 var bcrypt = require('bcrypt');
 var domManipulator = require('./domManipulator');
 var logger = require('../logger');
+var logs = db.logs();
 var crypto = require('crypto');
 var mailer = require('nodemailer').createTransport();
 var settings = require('../boot').getGeneralSettings();
@@ -25,6 +26,36 @@ var changeSettingsParameters = [ {
   field : 'email',
   length : 64
 } ];
+
+// start of global role change
+function logRoleChange(operatorData, parameters, callback) {
+
+  var logMessage = '';
+
+  if (operatorData) {
+    logMessage += 'User ' + operatorData.login;
+  } else {
+    logMessage += 'A sysadmin using the server\'s terminal';
+  }
+
+  logMessage += ' changed the global role of user ' + parameters.login;
+  logMessage += ' to ' + miscOps.getGlobalRoleLabel(parameters.role) + '.';
+
+  logs.insert({
+    user : operatorData ? operatorData.login : null,
+    type : 'globalRoleChange',
+    time : new Date(),
+    description : logMessage,
+    global : true
+  }, function insertedLog(error) {
+    if (error) {
+      logger.printLogError(logMessage, error);
+    }
+
+    callback();
+  });
+
+}
 
 exports.setGlobalRole = function(operatorData, parameters, callback, override) {
 
@@ -60,7 +91,12 @@ exports.setGlobalRole = function(operatorData, parameters, callback, override) {
           globalRole : +parameters.role
         }
       }, function roleSet(error) {
-        callback(error);
+        if (error) {
+          callback(error);
+        } else {
+          logRoleChange(operatorData, parameters, callback);
+
+        }
       });
       // style exception, too simple
 
@@ -68,6 +104,7 @@ exports.setGlobalRole = function(operatorData, parameters, callback, override) {
   });
 
 };
+// end of global role change
 
 exports.registerUser = function(parameters, callback, role, override) {
 

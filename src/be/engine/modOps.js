@@ -11,6 +11,7 @@ var posts = db.posts();
 var reports = db.reports();
 var miscOps = require('./miscOps');
 var settings = require('../boot').getGeneralSettings();
+var logger = require('../logger');
 var defaultBanMessage = settings.defaultBanMessage;
 
 if (!defaultBanMessage) {
@@ -146,7 +147,48 @@ function closeReport(report, userData, callback) {
       closing : new Date()
     }
   }, function closedReport(error) {
-    callback(error, report.global, report.boardUri);
+    if (error) {
+      callback(error);
+    } else
+
+    {
+      // style exception, too simple
+
+      var logMessage = 'User ' + userData.login + ' closed a ';
+
+      if (report.global) {
+        logMessage += ' global';
+      }
+
+      logMessage += ' report for';
+
+      if (report.postId) {
+        logMessage += ' post ' + report.postId + ' on';
+      }
+
+      logMessage += ' thread ' + report.threadId + ' on board /';
+      logMessage += report.boardUri + '/ created under';
+      logMessage += ' the reason of ' + report.reason + '.';
+
+      logs.insert({
+        user : userData.login,
+        global : report.global,
+        description : logMessage,
+        time : new Date(),
+        boardUri : report.boardUri,
+        type : 'reportClosure'
+      }, function insertedLog(error) {
+        if (error) {
+
+          logger.printLogError(logMessage, error);
+        }
+
+        callback(null, report.global, report.boardUri);
+      });
+
+      // style exception, too simple
+    }
+
   });
 }
 
@@ -359,14 +401,13 @@ function logBans(foundBoards, userData, board, informedPosts, informedThreads,
     type : 'ban',
     time : new Date(),
     global : parameters.global,
-    board : board,
+    boardUri : board,
     description : logMessage
   },
       function insertedLog(error) {
         if (error) {
-          var outputMsg = 'Failed to log ' + logMessage + ' due to error ';
-          outputMsg += error.toString();
-          console.log(outputMsg);
+
+          logger.printLogError(logMessage, error);
         }
 
         iterateBoards(foundBoards, userData, reportedObjects, parameters,
@@ -623,17 +664,52 @@ exports.ban = function(userData, reportedObjects, parameters, callback) {
 
 // start of ban lift
 
-function liftBan(ban, callback) {
+function liftBan(ban, userData, callback) {
 
   bans.remove({
     _id : new ObjectID(ban._id)
   }, function banRemoved(error) {
-    callback(error);
+
+    if (error) {
+      callback(error);
+    } else {
+      // style exception, too simple
+
+      var logMessage = 'User ' + userData.login + ' lifted a';
+
+      if (!ban.boardUri) {
+        logMessage += ' global ban';
+      } else {
+        logMessage += ' ban on board ' + ban.boardUri;
+      }
+
+      logMessage += ' with id ' + ban._id + ' set to expire at ';
+      logMessage += ban.expiration + '.';
+
+      logs.insert({
+        user : userData.login,
+        global : ban.boardUri ? false : true,
+        time : new Date(),
+        description : logMessage,
+        type : 'banLift',
+        boardUri : ban.boardUri
+      }, function insertedLog(error) {
+        if (error) {
+
+          logger.printLogError(logMessage, error);
+        }
+
+        callback();
+      });
+
+      // style exception, too simple
+    }
+
   });
 
 }
 
-function checkForBoardPermission(ban, login, callback) {
+function checkForBoardPermission(ban, userData, callback) {
 
   boards.findOne({
     boardUri : ban.boardUri
@@ -645,8 +721,10 @@ function checkForBoardPermission(ban, login, callback) {
     } else {
       board.volunteers = board.volunteers || [];
 
-      if (board.owner === login || board.volunteers.indexOf(login) > -1) {
-        liftBan(ban, callback);
+      var owner = board.owner === userData.login;
+
+      if (owner || board.volunteers.indexOf(userData.login) > -1) {
+        liftBan(ban, userData, callback);
       } else {
         callback('You are not allowed to lift bans from this board.');
       }
@@ -669,12 +747,12 @@ exports.liftBan = function(userData, parameters, callback) {
       callback();
     } else if (ban.boardUri) {
 
-      checkForBoardPermission(ban, userData.login, callback);
+      checkForBoardPermission(ban, userData, callback);
 
     } else if (userData.globalRole >= miscOps.getMaxStaffRole()) {
       callback('You are not allowed to lift global bans.');
     } else {
-      liftBan(ban, callback);
+      liftBan(ban, userData, callback);
     }
   });
 

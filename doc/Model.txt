@@ -143,8 +143,11 @@ staffLogs: stores log activity from staff.
     type: type of action performed. Can hold one of the following values:
         ban
         deletion
+        banLift
+        reportClosure
+        globalRoleChange
     time(Date): date and time of when the event occurred.
-    board: board related to the event.
+    boardUri: board related to the event.
     description: string describing the event.
     global(Boolean): indicates if the even was global. 
 
