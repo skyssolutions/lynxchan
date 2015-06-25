@@ -26,6 +26,15 @@ var boardParameters = [ {
   length : 128
 } ];
 
+var filterParameters = [ {
+  field : 'originalTerm',
+  length : 32
+}, {
+  field : 'replacementTerm',
+  length : 32,
+  removeHTML : true
+} ];
+
 exports.getValidSettings = function() {
   return validSettings;
 };
@@ -496,3 +505,124 @@ exports.deleteBanner = function(login, parameters, callback) {
 
 };
 // end of banner deletion
+
+exports.getFilterData = function(user, boardUri, callback) {
+
+  boards.findOne({
+    boardUri : boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback('Board not found.');
+    } else if (user !== board.owner) {
+      callback('You are not allowed to manage this board\'s filters.');
+    } else {
+      callback(null, board.filters || []);
+    }
+  });
+
+};
+
+exports.createFilter = function(user, parameters, callback) {
+
+  miscOps.sanitizeStrings(parameters, filterParameters);
+
+  boards.findOne({
+    boardUri : parameters.boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback('Board not found.');
+    } else if (board.owner !== user) {
+      callback('You are not allowed to manage filters of this board.');
+    } else {
+
+      var existingFilters = board.filters || [];
+
+      var found = false;
+
+      for (var i = 0; i < existingFilters.length; i++) {
+        var filter = existingFilters[i];
+
+        if (filter.originalTerm === parameters.originalTerm) {
+          found = true;
+
+          filter.replacementTerm = parameters.replacementTerm;
+
+          break;
+        }
+      }
+
+      if (!found) {
+
+        existingFilters.push({
+          originalTerm : parameters.originalTerm,
+          replacementTerm : parameters.replacementTerm
+        });
+
+      }
+
+      // style exception, too simple
+      boards.updateOne({
+        boardUri : parameters.boardUri
+      }, {
+        $set : {
+          filters : existingFilters
+        }
+      }, function updatedFilters(error) {
+        callback(error);
+      });
+
+      // style exception, too simple
+
+    }
+  });
+
+};
+
+exports.deleteFilter = function(login, parameters, callback) {
+
+  boards.findOne({
+    boardUri : parameters.boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback('Board not found');
+    } else if (board.owner !== login) {
+      callback('You are not allowed to remove filters from this board.');
+    } else {
+
+      var existingFilters = board.filters || [];
+
+      for (var i = 0; i < existingFilters.length; i++) {
+        var filter = existingFilters[i];
+        if (filter.originalTerm === parameters.filterIdentifier) {
+
+          existingFilters.splice(i, 1);
+
+          break;
+        }
+
+      }
+
+      // style exception, too simple
+
+      boards.updateOne({
+        boardUri : parameters.boardUri
+      }, {
+        $set : {
+          filters : existingFilters
+        }
+      }, function updatedFilters(error) {
+        callback(error);
+      });
+
+      // style exception, too simple
+
+    }
+  });
+
+};

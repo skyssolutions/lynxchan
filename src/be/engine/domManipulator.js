@@ -707,18 +707,18 @@ function setBoardOwnerControls(document, boardData) {
 }
 
 function setBoardManagementLinks(document, boardData) {
-  var closedReportsLink = document.getElementById('closedReportsLink');
 
   var closedReportsUrl = '/closedReports.js?boardUri=' + boardData.boardUri;
-  closedReportsLink.setAttribute('href', closedReportsUrl);
+  document.getElementById('closedReportsLink').href = closedReportsUrl;
 
   var bansUrl = '/bans.js?boardUri=' + boardData.boardUri;
-
   document.getElementById('bansLink').href = bansUrl;
 
   var bannersUrl = '/bannerManagement.js?boardUri=' + boardData.boardUri;
-
   document.getElementById('bannerManagementLink').href = bannersUrl;
+
+  var filtersUrl = '/filterManagement.js?boardUri=' + boardData.boardUri;
+  document.getElementById('filterManagementLink').href = filtersUrl;
 }
 
 exports.boardManagement = function(login, boardData, reports) {
@@ -1214,6 +1214,66 @@ exports.message = function(message, link) {
   }
 
 };
+
+// Section 2.7: Filter management {
+
+function setFilterCell(cell, boardUri, filter) {
+
+  var labelOriginal = cell.getElementsByClassName('labelOriginal')[0];
+  labelOriginal.innerHTML = filter.originalTerm;
+
+  var labelReplacement = cell.getElementsByClassName('labelReplacement')[0];
+  labelReplacement.innerHTML = filter.replacementTerm;
+
+  var filterIdentifier = cell.getElementsByClassName('filterIdentifier')[0];
+  filterIdentifier.setAttribute('value', filter.originalTerm);
+
+  var boardIdentifier = cell.getElementsByClassName('boardIdentifier')[0];
+  boardIdentifier.setAttribute('value', boardUri);
+}
+
+exports.filterManagement = function(boardUri, filters) {
+
+  try {
+
+    var document = jsdom(templateHandler.filterManagementPage());
+
+    document.title = 'Filter management';
+
+    document.getElementById('boardIdentifier').setAttribute('value', boardUri);
+
+    var filtersDiv = document.getElementById('divFilters');
+
+    for (var i = 0; i < filters.length; i++) {
+
+      var filter = filters[i];
+
+      var filterCell = document.createElement('form');
+      filterCell.innerHTML = templateHandler.filterCellTemplate();
+
+      setFormCellBoilerPlate(filterCell, '/deleteFilter.js', 'filterCell');
+
+      setFilterCell(filterCell, boardUri, filter);
+
+      filtersDiv.appendChild(filterCell);
+    }
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+
+};
+// } Section 2.7: Filter management
 
 // Section 2: Dynamic pages
 

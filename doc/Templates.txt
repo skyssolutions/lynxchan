@@ -424,6 +424,10 @@ forceAnonymityCheckbox:
     type: input
     description: checkbox that indicates if the option to force anonymity is turned on. 
 
+filterManagementLink:
+    type: a
+    description: link to the filter management page of the board.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::13
@@ -596,11 +600,11 @@ bannerManagementPage:
 
 Elements:
 bannersDiv:
-    type: div.
+    type: div
     description: holds the existing banners.
 
 boardIdentifier:
-    type: input.
+    type: input
     description: hidden input used to identify the board when creating banners.
 
 ------------------------------------------------------------------------------------------
@@ -612,11 +616,11 @@ Root element: form
 
 Elements:
 bannerImage:
-    type: img.
+    type: img
     description: holds the link to the banner.
 
 bannerIdentifier:
-    type: input.
+    type: input
     description: hidden input that holds the identifier of the banner.
 
 ------------------------------------------------------------------------------------------
@@ -627,11 +631,11 @@ catalogPage:
 
 Elements:
 divThreads:
-    type: div.
+    type: div
     description: holds the threads in the board.
 
 labelBoard:
-    type: span.
+    type: span
     description: holds the board title.
 
 ------------------------------------------------------------------------------------------
@@ -643,38 +647,36 @@ Root element: div
 
 Elements:
 linkThumb:
-    type: a.
+    type: a
     description: holds a link to the thread.
 
 labelReplies:
-    type: span.
+    type: span
     description: holds the number of replies in the thread.
 
 labelImages:
-    type: span.
+    type: span
     description: holds the number of images in the thread.
 
 labelPage:
-    type: span.
+    type: span
     description: holds the page where the thread currently is.
 
 labelSubject:
-    type: span.
+    type: span
     description: holds the thread subject.
 
 divMessage:
-    type: div.
+    type: div
     description: holds the message posted by the OP.
 
 lockIndicator:
-    type: any.
+    type: any
     description: element that indicates the thread is locked.
 
 pinIndicator: 
-    type: any.
+    type: any
     description: element that indicates the thread is pinned.
-
-
 
 ------------------------------------------------------------------------------------------
 
@@ -684,7 +686,7 @@ loginPage:
 
 Elements:
 divCreation:
-    type: div.
+    type: div
     description: holds the form used for account creation.
 
 ------------------------------------------------------------------------------------------
@@ -695,35 +697,35 @@ logsPage:
 
 Elements:
 divLogs:
-    type: div.
+    type: div
     description: holds the logs.
 
 divPages:
-    type: div.
+    type: div
     description: holds the available pages.
 
 checkboxExcludeGlobals:
-    type: input.
+    type: input
     description: checkbox that indicates if global logs are to be excluded.
 
 fieldUser:
-    type: input.
+    type: input
     description: field that indicated which user is to have its logs shown.
 
 fieldBoard:
-    type: input.
+    type: input
     description: text field that indicates the board that is to have its logs shown.
 
 comboboxType:
-    type: input.
+    type: input
     description: combobox that indicates what type of logs are to be shown.
 
 fieldBefore:
-    type: input.
+    type: input
     description: field that indicates what date is to be used to retrieve logs only before the specified date.
 
 fieldAfter:
-    type: input.
+    type: input
     description: field that indicates what date is to be used to retrieve logs only after the specified date.
 
 ------------------------------------------------------------------------------------------
@@ -734,29 +736,29 @@ logCell*:
 Root element: div
 
 Elements:
-    indicatorGlobal:
-        type: any.
-        description: indicates of the log is global.
+indicatorGlobal:
+    type: any
+    description: indicates of the log is global.
 
-    labelUser:
-        type: span.
-        description: holds the login of the user related to this log.
+labelUser:
+    type: span
+    description: holds the login of the user related to this log.
 
-    labelTime:
-        type: span.
-        description: holds the time of when this entry was logged.
+labelTime:
+    type: span
+    description: holds the time of when this entry was logged.
 
-    labelDescription:
-        type: span.
-        description: holds the text describing what happened on this entry.
+labelDescription:
+    type: span
+    description: holds the text describing what happened on this entry.
 
-    labelBoard:
-        type: span.
-        description: holds the board related to this log entry.
+labelBoard:
+    type: span
+    description: holds the board related to this log entry.
 
-    labelType:
-        type: span.
-        description: holds the type of this entry.
+labelType:
+    type: span
+    description: holds the type of this entry.
 
 ------------------------------------------------------------------------------------------
 
@@ -766,8 +768,49 @@ previewPage:
 
 Elements:
 panelContent:
-    type: body.
+    type: body
     description: element that will hold the content of the page.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::30
+
+filterManagement:
+
+Elements:
+divFilters:
+    type: div
+    description: holds the list of current filters.
+
+boardIdentifier:
+    type: input
+    description: hidden input that identifies the board for filter creation.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::31
+
+filterCell*:
+Root element: form
+
+Elements:
+labelOriginal:
+    type: span
+    description: holds the term to be replaced by this filter.
+
+labelReplacement:
+    type: span
+    description: holds what the original term will be replaced with.
+
+boardIdentifier:
+    type: input
+    description: hidden input that identifies the board for filter deletion.
+
+filterIdentifier:
+    type: input
+    description: hidden input that identifiers the filter for deletion.
+
+------------------------------------------------------------------------------------------
 
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.
 

@@ -38,6 +38,24 @@ var postingParameters = [ {
   length : 8
 } ];
 
+function applyFilters(filters, message) {
+
+  if (!filters || !filters.length) {
+    return message;
+  }
+
+  for (var i = 0; i < filters.length; i++) {
+
+    var filter = filters[i];
+
+    message = message.replace(filter.originalTerm, filter.replacementTerm);
+
+  }
+
+  return message;
+
+}
+
 // start of markdown functions
 function replaceStyleMarkdown(message) {
 
@@ -511,6 +529,7 @@ exports.newThread = function(req, userData, parameters, captchaId, callback) {
     _id : 0,
     owner : 1,
     volunteers : 1,
+    filters : 1,
     settings : 1,
     lastPostId : 1
   }, function gotBoard(error, board) {
@@ -525,6 +544,8 @@ exports.newThread = function(req, userData, parameters, captchaId, callback) {
       }
 
       miscOps.sanitizeStrings(parameters, postingParameters);
+
+      parameters.message = applyFilters(board.filters, parameters.message);
 
       // style exception, too simple
       markdownText(parameters.message, parameters.boardUri,
@@ -750,6 +771,8 @@ function getThread(req, parameters, userData, postId, board, callback) {
 
 function getPostMarkdown(req, parameters, userData, postId, board, callback) {
 
+  parameters.message = applyFilters(board.filters, parameters.message);
+
   markdownText(parameters.message, parameters.boardUri, function gotMarkdown(
       error, markdown) {
 
@@ -774,6 +797,7 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
   }, {
     _id : 0,
     lastPostId : 1,
+    filters : 1,
     owner : 1,
     settings : 1,
     volunteers : 1

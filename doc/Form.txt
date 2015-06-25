@@ -387,4 +387,42 @@ Parameters:
     after: parseable date that if informed, will display only logs after the specified date.
     user: if informed, only logs for the user will be shown.
     
+------------------------------------------------------------------------------------------
+
+PAG_ID::32
+
+Name: filterManagement
+
+Description: page used to manage filters of a board. Uses get parameters. Reserved to board owners. Requires authentication.
+
+Parameters:
+    boardUri: uri of the board to have its filters managed.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::33
+
+Name: createFilter
+
+Description: page used to create filters . Uses get parameters. Reserved to board owners. Requires authentication.
+
+Parameters:
+    boardUri: uri of the board to have its filters managed.
+    originalTerm: word to be filtered. 32 characters.
+    replacementTerm: world to be filtered to. 32 characters.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::34
+
+Name: deleteFilter
+
+Description: page used to delete filters of a board. Uses get parameters. Reserved to board owners. Requires authentication.
+
+Parameters:
+    boardUri: uri of the board to have its filter deleted.
+    filterIdentifier: identification of the filter to be deleted.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

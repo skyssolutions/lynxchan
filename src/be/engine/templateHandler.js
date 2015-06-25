@@ -45,6 +45,8 @@ var catalogCellTemplate;
 var logsPageTemplate;
 var logCellTemplate;
 var previewPageTemplate;
+var filterMagementPage;
+var filterCellTemplate;
 
 function loadEmailTemplates(fePath, templateSettings) {
 
@@ -75,6 +77,8 @@ function loadCellTemplates(fePath, templateSettings) {
   catalogCellTemplate = fs.readFileSync(fePath + templateSettings.catalogCell);
 
   logCellTemplate = fs.readFileSync(fePath + templateSettings.logCell);
+
+  filterCellTemplate = fs.readFileSync(fePath + templateSettings.filterCell);
 }
 
 function loadDynamicTemplates(fePath, templateSettings) {
@@ -94,6 +98,9 @@ function loadDynamicTemplates(fePath, templateSettings) {
 
   var closedReportsPath = fePath + templateSettings.closedReportsPage;
   closedReportsPageTemplate = fs.readFileSync(closedReportsPath);
+
+  var filterManagementPath = fePath + templateSettings.filterManagement;
+  filterMagementPage = fs.readFileSync(filterManagementPath);
 }
 
 function loadMainTemplates(fePath, templateSettings) {
@@ -248,6 +255,12 @@ function testTemplates(settings) {
         content : logCellTemplate,
         fields : [ 'indicatorGlobal', 'labelUser', 'labelTime',
             'labelDescription', 'labelBoard', 'labelType' ]
+      },
+      {
+        template : 'filterCell',
+        content : filterCellTemplate,
+        fields : [ 'labelOriginal', 'labelReplacement', 'boardIdentifier',
+            'filterIdentifier' ]
       } ];
 
   var pageTests = [
@@ -332,7 +345,8 @@ function testTemplates(settings) {
             'deletionIdentifier', 'reportDiv', 'closedReportsLink', 'bansLink',
             'bannerManagementLink', 'boardNameField', 'boardDescriptionField',
             'boardSettingsIdentifier', 'disableIdsCheckbox',
-            'disableCaptchaCheckbox', 'forceAnonymityCheckbox' ]
+            'disableCaptchaCheckbox', 'forceAnonymityCheckbox',
+            'filterManagementLink' ]
       },
       {
         template : 'closedReportsPage',
@@ -354,6 +368,10 @@ function testTemplates(settings) {
         template : 'previewPage',
         content : previewPageTemplate,
         fields : [ 'panelContent' ]
+      }, {
+        template : 'filterManagement',
+        content : filterMagementPage,
+        fields : [ 'divFilters', 'boardIdentifier' ]
       } ];
 
   var errors = [];
@@ -518,4 +536,12 @@ exports.logCellTemplate = function() {
 
 exports.previewPageTemplate = function() {
   return previewPageTemplate;
+};
+
+exports.filterManagementPage = function() {
+  return filterMagementPage;
+};
+
+exports.filterCellTemplate = function() {
+  return filterCellTemplate;
 };

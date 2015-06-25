@@ -339,6 +339,31 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::26
+
+Name: createFilter
+
+Description: page used to create filters . Uses get parameters. Reserved to board owners. Requires authentication.
+
+Parameters:
+    boardUri: uri of the board to have its filters managed.
+    originalTerm: word to be filtered. 32 characters.
+    replacementTerm: world to be filtered to. 32 characters.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::27
+
+Name: deleteFilter
+
+Description: page used to delete filters of a board. Uses get parameters. Reserved to board owners. Requires authentication.
+
+Parameters:
+    boardUri: uri of the board to have its filter deleted.
+    filterIdentifier: identification of the filter to be deleted.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters
 **: exclusive funcionality to the json api.
 
