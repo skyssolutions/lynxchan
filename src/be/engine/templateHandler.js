@@ -44,6 +44,7 @@ var catalogPageTemplate;
 var catalogCellTemplate;
 var logsPageTemplate;
 var logCellTemplate;
+var previewPageTemplate;
 
 function loadEmailTemplates(fePath, templateSettings) {
 
@@ -102,6 +103,7 @@ function loadMainTemplates(fePath, templateSettings) {
   boardTemplate = fs.readFileSync(fePath + templateSettings.boardPage);
   loginTemplate = fs.readFileSync(fePath + templateSettings.loginPage);
   catalogPageTemplate = fs.readFileSync(fePath + templateSettings.catalogPage);
+  previewPageTemplate = fs.readFileSync(fePath + templateSettings.previewPage);
 
 }
 
@@ -348,6 +350,10 @@ function testTemplates(settings) {
         fields : [ 'divLogs', 'divPages', 'checkboxExcludeGlobals',
             'fieldBoard', 'comboboxType', 'fieldBefore', 'fieldAfter',
             'fieldUser' ]
+      }, {
+        template : 'previewPage',
+        content : previewPageTemplate,
+        fields : [ 'panelContent' ]
       } ];
 
   var errors = [];
@@ -508,4 +514,8 @@ exports.logsPageTemplate = function() {
 
 exports.logCellTemplate = function() {
   return logCellTemplate;
+};
+
+exports.previewPageTemplate = function() {
+  return previewPageTemplate;
 };

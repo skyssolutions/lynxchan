@@ -181,9 +181,9 @@ exports.loadSettings = function() {
 
 };
 
-exports.previewPostCount = function() {
+exports.latestPostCount = function() {
 
-  return generalSettings.previewPostCount || 5;
+  return generalSettings.latestPostCount || 5;
 
 };
 

@@ -5,7 +5,7 @@
   "verbose": false,
   "disable304": false,
   "pageSize": 10,
-  "previewPostCount": 5,
+  "latestPostCount": 5,
   "maxThreadCount": 50,
   "autoSageLimit": 500,
   "captchaExpiration": 5,
@@ -15,8 +15,8 @@
   "maxRequestSizeMB": 3,
   "maxFileSizeMB": 1,
   "maxFiles": 3,
-  "defaultBanMessage":"(USER WAS BANNED FOR THIS POST)",
-  "disableAccountCreation":false,
-  "restrictBoardCreation":false,
+  "defaultBanMessage": "(USER WAS BANNED FOR THIS POST)",
+  "disableAccountCreation": false,
+  "restrictBoardCreation": false,
   "logPageSize": 50
 }

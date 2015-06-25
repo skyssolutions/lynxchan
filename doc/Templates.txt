@@ -760,5 +760,14 @@ Elements:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::29
+
+previewPage:
+
+Elements:
+panelContent:
+    type: body.
+    description: element that will hold the content of the page.
+
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.
 

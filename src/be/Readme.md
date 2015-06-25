@@ -37,35 +37,7 @@ The following directories will be expected on the front-end directory:
 * `templates`: will hold the templates, so only the files will have to be specified on the settings.
 
 # Templates
-A file called `templateSettings.json` should be located on the front-end directory pointing the correct templates to be used, located on the templates directory. Inform only the name of the file.
-* `index`: template for the site's main page.
-* `boardPage`: template for the pages of the board.
-* `threadPage`: template for the page of a thread.
-* `notFoundPage`: template for the 404 page.
-* `errorPage`: template used for the error page.
-* `messagePage`: template used for the general message page.
-* `opCell`: template for the OP's.
-* `postCell`: template for thread replies.
-* `thumb`: image to be used for generic thumbnails.
-* `loginPage`: template to be used for the login screen.
-* `accountPage`: template to be used for the account page.
-* `recoveryEmail`: template to be used for the e-mail sent after a recovery request is created.
-* `resetEmail`: template to be used for the e-mail sent after the account's password is reset.
-* `globalManagement`: template for the site management.
-* `staffCell`: template for the global staff members.
-* `bManagement`: template for board management.
-* `volunteerCell`: template used for the board volunteers.
-* `reportCell`: template used for reports.
-* `closedReportsPage`: template used for the page of closed reports.
-* `closedReportCell`: template used for the closed reports cell.
-* `bansPage`: template used for the bans page.
-* `banCell`: template used for the bans cell.
-* `uploadCell`: template used for uploads cell.
-* `banPage`: template used for the ban page.
-* `bannerManagementPage`: template used for the banner management page.
-* `bannerCell`: template used to list a board's banners.
-* `defaultBanner`: default banner used when a board have no banners.
-* `spoiler`: spoiler thumbnail.
+A file called `templateSettings.json` should be located on the front-end directory pointing the correct templates to be used, located on the templates directory. Inform only the name of the file. Refer to `doc/Templates.txt` for informations on how to structure the templates.
 
 # Back-end settings
 Settings files that goes into the settings directory:
@@ -77,7 +49,7 @@ Settings files that goes into the settings directory:
 * `ssl`(Boolean): if true, will listen to https on port 443.
 * `fePath`: absolute path to the directory containing the fe files. Defaults to the relative path to the src/fe directory.
 * `pageSize`(Number): amount of threads on each board page. Defaults to 10.
-* `previewPostCount`(Number): number of preview posts on a thread. Defaults to 5.
+* `latestPostCount`(Number): number of latest posts to be displayed on each thread in board pages. Defaults to 5.
 * `autoSageLimit`(Number): how many posts a thread must hit at once so it becomes impossible to bump. Defaults to 500.
 * `maxThreadCount`(Number): maximum amount of threads allowed per board. Defaults to 50.
 * `tempDirectory`: path for temporary files. Defaults to `/tmp`.
@@ -119,4 +91,4 @@ Meta-data of files on gridfs will have the following values:
   * `captcha` 
   * `banner`
   * `catalog`
-
+  * `preview`

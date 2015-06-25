@@ -187,21 +187,19 @@ function addThread(document, thread, posts, boardUri, innerPage) {
 }
 
 // Section 1.2.1: Post content {
-function setPostComplexElements(postCell, post, boardUri, threadId, document) {
-  var link = postCell.getElementsByClassName('linkSelf')[0];
-  link.innerHTML = post.postId;
-  link.href = '/' + boardUri + '/res/' + threadId + '.html#' + post.postId;
-
-  var checkboxName = boardUri + '-' + threadId + '-' + post.postId;
-  postCell.getElementsByClassName('deletionCheckBox')[0].setAttribute('name',
-      checkboxName);
-
-  var labelRole = postCell.getElementsByClassName('labelRole')[0];
-
-  if (post.signedRole) {
-    labelRole.innerHTML = post.signedRole;
+function setPostHideableElements(postCell, post) {
+  var subjectLabel = postCell.getElementsByClassName('labelSubject')[0];
+  if (post.subject) {
+    subjectLabel.innerHTML = post.subject;
   } else {
-    labelRole.parentNode.removeChild(labelRole);
+    subjectLabel.parentNode.removeChild(subjectLabel);
+  }
+
+  if (post.id) {
+    postCell.getElementsByClassName('labelId')[0].innerHTML = post.id;
+  } else {
+    var spanId = postCell.getElementsByClassName('spanId')[0];
+    spanId.parentNode.removeChild(spanId);
   }
 
   var banMessageLabel = postCell.getElementsByClassName('divBanMessage')[0];
@@ -212,11 +210,39 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document) {
     banMessageLabel.innerHTML = post.banMessage;
   }
 
+}
+
+function setPostComplexElements(postCell, post, boardUri, threadId, document,
+    preview) {
+
+  var labelRole = postCell.getElementsByClassName('labelRole')[0];
+
+  if (post.signedRole) {
+    labelRole.innerHTML = post.signedRole;
+  } else {
+    labelRole.parentNode.removeChild(labelRole);
+  }
+
+  var link = postCell.getElementsByClassName('linkSelf')[0];
+  link.innerHTML = post.postId;
+
+  var deletionCheckbox = postCell.getElementsByClassName('deletionCheckBox')[0];
+
+  if (!preview) {
+    link.href = '/' + boardUri + '/res/' + threadId + '.html#' + post.postId;
+
+    var checkboxName = boardUri + '-' + threadId + '-' + post.postId;
+    deletionCheckbox.setAttribute('name', checkboxName);
+  } else {
+    deletionCheckbox.parentNode.removeChild(deletionCheckbox);
+  }
+
   setUploadCell(document, postCell.getElementsByClassName('panelUploads')[0],
       post.files);
 }
 
-function setPostInnerElements(document, boardUri, threadId, post, postCell) {
+function setPostInnerElements(document, boardUri, threadId, post, postCell,
+    preview) {
 
   post.name = post.name || 'Anonymous';
 
@@ -228,19 +254,14 @@ function setPostInnerElements(document, boardUri, threadId, post, postCell) {
     linkName.href = 'mailto:' + post.email;
   }
 
-  var subjectLabel = postCell.getElementsByClassName('labelSubject')[0];
-  if (post.subject) {
-    subjectLabel.innerHTML = post.subject;
-  } else {
-    subjectLabel.parentNode.removeChild(subjectLabel);
-  }
-
   var labelCreated = postCell.getElementsByClassName('labelCreated')[0];
   labelCreated.innerHTML = formatDateToDisplay(post.creation);
 
   postCell.getElementsByClassName('divMessage')[0].innerHTML = post.markdown;
 
-  setPostComplexElements(postCell, post, boardUri, threadId, document);
+  setPostHideableElements(postCell, post);
+
+  setPostComplexElements(postCell, post, boardUri, threadId, document, preview);
 
 }
 
@@ -256,13 +277,6 @@ function addPosts(document, posts, boardUri, threadId) {
     var post = posts[i];
 
     postCell.id = post.postId;
-
-    if (post.id) {
-      postCell.getElementsByClassName('labelId')[0].innerHTML = post.id;
-    } else {
-      var spanId = postCell.getElementsByClassName('spanId')[0];
-      spanId.parentNode.removeChild(spanId);
-    }
 
     setPostInnerElements(document, boardUri, threadId, post, postCell);
 
@@ -1397,22 +1411,22 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
 // } Section 3.1: Thread
 
 // Section 3.2: Board {
-function generateThreadListing(document, boardUri, page, threads, preview,
+function generateThreadListing(document, boardUri, page, threads, latestPosts,
     callback) {
 
-  var tempPreview = {};
+  var tempLatest = {};
 
-  for (var i = 0; i < preview.length; i++) {
+  for (var i = 0; i < latestPosts.length; i++) {
 
-    tempPreview[preview[i]._id] = preview[i].preview;
+    tempLatest[latestPosts[i]._id] = latestPosts[i].latestPosts;
   }
 
-  preview = tempPreview;
+  latestPosts = tempLatest;
 
   for (i = 0; i < threads.length; i++) {
     var thread = threads[i];
 
-    addThread(document, thread, preview[thread.threadId], boardUri);
+    addThread(document, thread, latestPosts[thread.threadId], boardUri);
 
   }
 
@@ -1441,8 +1455,8 @@ function addPagesLinks(document, pageCount) {
   }
 }
 
-exports.page = function(board, page, threads, pageCount, boardData, preview,
-    callback) {
+exports.page = function(board, page, threads, pageCount, boardData,
+    latestPosts, cb) {
 
   try {
 
@@ -1461,9 +1475,9 @@ exports.page = function(board, page, threads, pageCount, boardData, preview,
 
     addPagesLinks(document, pageCount);
 
-    generateThreadListing(document, board, page, threads, preview, callback);
+    generateThreadListing(document, board, page, threads, latestPosts, cb);
   } catch (error) {
-    callback(error);
+    cb(error);
   }
 };
 // } Section 3.2: Board
@@ -1555,5 +1569,45 @@ exports.catalog = function(boardUri, threads, callback) {
 };
 
 // } Section 3.3: Catalog
+
+exports.preview = function(postingData, callback) {
+  try {
+
+    var document = jsdom(templateHandler.previewPageTemplate());
+
+    var path = '/' + postingData.boardUri + '/preview/';
+
+    var metadata = {
+      boardUri : postingData.boardUri,
+      threadId : postingData.threadId,
+      type : 'preview'
+    };
+
+    if (postingData.postId) {
+      metadata.postId = postingData.postId;
+
+      path += postingData.postId;
+    } else {
+      postingData.postId = postingData.threadId;
+      path += postingData.threadId;
+    }
+
+    path += '.html';
+
+    var innerCell = document.createElement('div');
+    innerCell.innerHTML = templateHandler.postTemplate();
+
+    setPostInnerElements(document, postingData.boardUri, postingData.threadId,
+        postingData, innerCell, true);
+
+    document.getElementById('panelContent').appendChild(innerCell);
+
+    gridFs.writeData(serializer(document), path, 'text/html', metadata,
+        callback);
+
+  } catch (error) {
+    callback(error);
+  }
+};
 
 // Section 3: Static pages

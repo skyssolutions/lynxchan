@@ -227,6 +227,41 @@ exports.defaultPages = function(callback) {
 
 };
 
+exports.preview = function(boardUri, threadId, postId, callback, postingData) {
+  // TODO add verbose output
+
+  if (!postingData) {
+
+    var queryBlock = {
+      boardUri : boardUri,
+      threadId : threadId
+    };
+
+    var collection = threads;
+
+    if (postId) {
+      collection = posts;
+      queryBlock.postId = postId;
+    }
+
+    collection.findOne(queryBlock, postProjection, function gotPosting(error,
+        posting) {
+      if (error) {
+        callback(error);
+      } else if (!posting) {
+        callback('Posting could not be found');
+      } else {
+        exports.preview(boardUri, threadId, postId, callback, posting);
+      }
+    });
+
+  } else {
+
+    domManipulator.preview(postingData, callback);
+
+  }
+};
+
 // board creation start
 // thread pages start
 
@@ -355,7 +390,7 @@ exports.allThreads = function(boardUri, callback, boardData) {
 
 // page creation start
 
-function getPreviewPosts(boardUri, page, threadsArray, pageCount, boardData,
+function getLatestPosts(boardUri, page, threadsArray, pageCount, boardData,
     callback) {
 
   var postsToFetch = [];
@@ -378,7 +413,7 @@ function getPreviewPosts(boardUri, page, threadsArray, pageCount, boardData,
   }, {
     $group : {
       _id : '$threadId',
-      preview : {
+      latestPosts : {
         $push : {
           postId : '$postId',
           banMessage : '$banMessage',
@@ -392,13 +427,13 @@ function getPreviewPosts(boardUri, page, threadsArray, pageCount, boardData,
         }
       }
     }
-  } ], function gotPosts(error, postsToPreview) {
+  } ], function gotPosts(error, latestPosts) {
     if (error) {
       callback(error);
     } else {
 
       domManipulator.page(boardUri, page, threadsArray, pageCount, boardData,
-          postsToPreview, callback);
+          latestPosts, callback);
     }
   });
 
@@ -430,7 +465,7 @@ function updateThreadsPage(boardUri, page, threadsArray, pageCount, boardData,
       callback(error);
     } else {
 
-      getPreviewPosts(boardUri, page, threadsArray, pageCount, boardData,
+      getLatestPosts(boardUri, page, threadsArray, pageCount, boardData,
           callback);
 
     }

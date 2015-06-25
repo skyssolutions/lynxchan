@@ -14,7 +14,7 @@ var gridFs = require('./gridFsHandler');
 var logger = require('../logger');
 var boards = db.boards();
 var boot = require('../boot');
-var previewPosts = boot.previewPostCount();
+var latestPosts = boot.latestPostCount();
 var settings = boot.getGeneralSettings();
 var verbose = settings.verbose;
 var threadLimit = boot.maxThreads();
@@ -156,7 +156,7 @@ function reaggregateLatestPosts(board, parentThreads, callback, index) {
       creation : -1
     }
   }, {
-    $limit : previewPosts
+    $limit : latestPosts
   }, {
     $group : {
       _id : 0,

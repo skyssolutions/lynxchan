@@ -8,12 +8,13 @@ var tripcodes = db.tripcodes();
 var posts = db.posts();
 var captchaOps = require('./captchaOps');
 var miscOps = require('./miscOps');
+var generator = require('./generator');
 var uploadHandler = require('./uploadHandler');
 var delOps = require('./deletionOps');
 var crypto = require('crypto');
 var boot = require('../boot');
 var settings = boot.getGeneralSettings();
-var previewPosts = boot.previewPostCount();
+var latestPostsCount = boot.latestPostCount();
 var threadLimit = boot.maxThreads();
 var bumpLimit = settings.autoSageLimit || 500;
 
@@ -37,6 +38,7 @@ var postingParameters = [ {
   length : 8
 } ];
 
+// start of markdown functions
 function replaceStyleMarkdown(message) {
 
   var split = message.split('\n');
@@ -251,7 +253,9 @@ function markdownText(message, board, callback) {
     });
   }
 }
+// end of markdown functions
 
+// start of tripcode functions
 function generateSecureTripcode(name, password, parameters, callback) {
 
   var tripcode = crypto.createHash('sha256').update(password + Math.random())
@@ -331,6 +335,7 @@ function checkForTripcode(parameters, callback) {
   }
 
 }
+// end of tripcode functions
 
 function getSignedRole(userData, board) {
 
@@ -357,7 +362,8 @@ function createId(salt, boardUri, ip) {
 }
 
 // start of thread creation
-function finishThreadCreation(boardUri, threadId, callback) {
+function finishThreadCreation(boardUri, threadId, callback, thread) {
+
   // signal rebuild of board pages
   process.send({
     board : boardUri
@@ -369,10 +375,14 @@ function finishThreadCreation(boardUri, threadId, callback) {
     thread : threadId
   });
 
-  callback(null, threadId);
+  generator.preview(null, null, null, function generatedPreview(error) {
+    callback(error, threadId);
+
+  }, thread);
+
 }
 
-function updateBoardForThreadCreation(boardUri, threadId, callback) {
+function updateBoardForThreadCreation(boardUri, threadId, callback, thread) {
 
   boards.findOneAndUpdate({
     boardUri : boardUri
@@ -397,13 +407,13 @@ function updateBoardForThreadCreation(boardUri, threadId, callback) {
           if (error) {
             callback(error);
           } else {
-            finishThreadCreation(boardUri, threadId, callback);
+            finishThreadCreation(boardUri, threadId, callback, thread);
           }
         });
         // style exception, too simple
 
       } else {
-        finishThreadCreation(boardUri, threadId, callback);
+        finishThreadCreation(boardUri, threadId, callback, thread);
       }
 
     }
@@ -458,7 +468,7 @@ function createThread(req, userData, parameters, board, threadId, callback) {
               callback(error);
             } else {
               updateBoardForThreadCreation(parameters.boardUri, threadId,
-                  callback);
+                  callback, threadToAdd);
             }
           });
       // style exception, too simple
@@ -587,13 +597,14 @@ function updateBoardForPostCreation(parameters, postId, thread, callback) {
 
 }
 
-function updateThread(parameters, postId, thread, callback) {
+function updateThread(parameters, postId, thread, callback, post) {
 
   var latestPosts = thread.latestPosts || [];
 
   latestPosts.push(postId);
 
-  while (latestPosts.length > previewPosts) {
+  // TODO remove the while, cut all exceeding elements at once
+  while (latestPosts.length > latestPostsCount) {
     latestPosts.shift();
   }
 
@@ -624,7 +635,16 @@ function updateThread(parameters, postId, thread, callback) {
     if (error) {
       callback(error);
     } else {
-      updateBoardForPostCreation(parameters, postId, thread, callback);
+      // style exception, too simple
+      generator.preview(null, null, null, function generatedPreview(error) {
+        if (error) {
+          callback(error);
+        } else {
+          updateBoardForPostCreation(parameters, postId, thread, callback);
+        }
+      }, post);
+
+      // style exception, too simple
     }
 
   });
@@ -672,7 +692,7 @@ function createPost(req, parameters, userData, postId, thread, board, cb) {
             if (error) {
               cb(error);
             } else {
-              updateThread(parameters, postId, thread, cb);
+              updateThread(parameters, postId, thread, cb, postToAdd);
             }
 
           });
