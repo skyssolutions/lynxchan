@@ -1,5 +1,5 @@
 # Status:
-Alpha
+Beta
 
 # About
 **LynxChan** is a chan engine designed with the following goals in mind:

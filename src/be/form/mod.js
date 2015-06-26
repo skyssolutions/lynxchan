@@ -40,6 +40,7 @@ function getPostingData(boardData, parameters, res) {
     id : 1,
     banMessage : 1,
     name : 1,
+    signedRole : 1,
     files : 1,
     email : 1,
     message : 1,
@@ -57,6 +58,7 @@ function getPostingData(boardData, parameters, res) {
         boardUri : boardData.boardUri
       }, {
         _id : 0,
+        signedRole : 1,
         subject : 1,
         creation : 1,
         threadId : 1,

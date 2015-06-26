@@ -159,11 +159,11 @@ panelUploads:
 
 linkName:
     type: a
-    description: contains contain the poster's name and links to the poster e-mail.
+    description: contains the poster's name and links to the poster e-mail. Will have the class "noEmailName" added if it doesn't have an e-mail to be added to href.
 
 labelSubject:
     type: span
-    description: contains contain the thread's subject.
+    description: contains the thread's subject.
 
 labelCreated:
     type: span
@@ -227,11 +227,11 @@ labelRole:
 
 linkName:
     type: a
-    description: contains contain the poster's name and links to the poster e-mail.
+    description: contains the poster's name and links to the poster e-mail. Will have the class "noEmailName" added if it doesn't have an e-mail to be added to href.
 
 labelSubject:
     type: span
-    description: contains contain the thread's subject.
+    description: contains the thread's subject.
 
 labelCreated:
     type: span

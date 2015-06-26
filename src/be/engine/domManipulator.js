@@ -252,6 +252,8 @@ function setPostInnerElements(document, boardUri, threadId, post, postCell,
 
   if (post.email) {
     linkName.href = 'mailto:' + post.email;
+  } else {
+    linkName.className += ' noEmailName';
   }
 
   var labelCreated = postCell.getElementsByClassName('labelCreated')[0];
@@ -332,6 +334,8 @@ function setThreadSimpleElements(threadCell, thread) {
 
   if (thread.email) {
     linkName.href = 'mailto:' + thread.email;
+  } else {
+    linkName.className += ' noEmailName';
   }
 
   var subjectLabel = threadCell.getElementsByClassName('labelSubject')[0];
