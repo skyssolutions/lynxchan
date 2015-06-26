@@ -18,5 +18,6 @@
   "defaultBanMessage": "(USER WAS BANNED FOR THIS POST)",
   "disableAccountCreation": false,
   "restrictBoardCreation": false,
-  "logPageSize": 50
+  "logPageSize": 50,
+  "defaultAnonymousName": "Anonymous"
 }

@@ -332,6 +332,7 @@ Parameters:
     boardUri*: board uri.
     boardName*: new name of the board. 32 characters.
     boardDescription*: new description of the board. 128 characters.
+    anonymousName: name to be used when the user is anonymous. 32 character.
     settings(Array): new settings of the board. May contain the following values:
         disableIds: ids on threads and posts will be disabled.
         disableCaptcha: captchas will be disabled.

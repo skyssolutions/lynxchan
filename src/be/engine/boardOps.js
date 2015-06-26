@@ -22,6 +22,9 @@ var boardParameters = [ {
   field : 'boardName',
   length : 32
 }, {
+  field : 'anonymousName',
+  length : 32
+}, {
   field : 'boardDescription',
   length : 128
 } ];
@@ -83,7 +86,8 @@ function saveNewSettings(board, parameters, callback) {
     $set : {
       boardName : parameters.boardName,
       boardDescription : parameters.boardDescription,
-      settings : parameters.settings
+      settings : parameters.settings,
+      anonymousName : parameters.anonymousName
     }
   }, function updatedBoard(error) {
 
@@ -327,6 +331,7 @@ exports.getBoardManagementData = function(login, role, board, callback) {
     owner : 1,
     boardUri : 1,
     boardName : 1,
+    anonymousName : 1,
     settings : 1,
     boardDescription : 1,
     volunteers : 1

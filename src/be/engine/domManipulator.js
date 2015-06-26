@@ -326,8 +326,6 @@ function setThreadComplexElements(boardUri, thread, threadCell) {
 
 function setThreadSimpleElements(threadCell, thread) {
 
-  thread.name = thread.name || 'Anonymous';
-
   var linkName = threadCell.getElementsByClassName('linkName')[0];
 
   linkName.innerHTML = thread.name;
@@ -684,6 +682,9 @@ function setBoardOwnerControls(document, boardData) {
 
   document.getElementById('boardDescriptionField').setAttribute('value',
       boardData.boardDescription);
+
+  document.getElementById('anonymousNameField').setAttribute('value',
+      boardData.anonymousName || '');
 
   for (var i = 0; i < volunteers.length; i++) {
 

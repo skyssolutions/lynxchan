@@ -428,6 +428,10 @@ filterManagementLink:
     type: a
     description: link to the filter management page of the board.
 
+anonymousNameField:
+    type: input
+    description: field that holds the anonymous name for the board.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::13

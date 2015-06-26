@@ -17,6 +17,7 @@ var settings = boot.getGeneralSettings();
 var latestPostsCount = boot.latestPostCount();
 var threadLimit = boot.maxThreads();
 var bumpLimit = settings.autoSageLimit || 500;
+var defaultAnonymousName = settings.defaultAnonymousName || 'Anonymous';
 
 var postingParameters = [ {
   field : 'subject',
@@ -463,7 +464,7 @@ function createThread(req, userData, parameters, board, threadId, callback) {
     pinned : false,
     locked : false,
     signedRole : getSignedRole(userData, board),
-    name : parameters.name,
+    name : parameters.name || board.anonymousName || defaultAnonymousName,
     message : parameters.message,
     email : parameters.email
   };
@@ -530,6 +531,7 @@ exports.newThread = function(req, userData, parameters, captchaId, callback) {
     owner : 1,
     volunteers : 1,
     filters : 1,
+    anonymousName : 1,
     settings : 1,
     lastPostId : 1
   }, function gotBoard(error, board) {
@@ -689,7 +691,7 @@ function createPost(req, parameters, userData, postId, thread, board, cb) {
     signedRole : getSignedRole(userData, board),
     creation : new Date(),
     subject : parameters.subject,
-    name : parameters.name,
+    name : parameters.name || board.anonymousName || defaultAnonymousName,
     id : id,
     message : parameters.message,
     email : parameters.email
@@ -799,6 +801,7 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
     lastPostId : 1,
     filters : 1,
     owner : 1,
+    anonymousName : 1,
     settings : 1,
     volunteers : 1
   }, function gotBoard(error, board) {

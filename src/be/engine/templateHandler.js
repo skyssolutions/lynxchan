@@ -346,7 +346,7 @@ function testTemplates(settings) {
             'bannerManagementLink', 'boardNameField', 'boardDescriptionField',
             'boardSettingsIdentifier', 'disableIdsCheckbox',
             'disableCaptchaCheckbox', 'forceAnonymityCheckbox',
-            'filterManagementLink' ]
+            'filterManagementLink', 'anonymousNameField' ]
       },
       {
         template : 'closedReportsPage',

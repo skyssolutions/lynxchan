@@ -14,6 +14,7 @@ boards: stores boards.
     filters(Array): array of filters of the board. Each object contains the following fields:
         originalTerm: original term to be replaced. 32 characters.
         replacementTerm: term that will replace the original term. 32 characters.
+    anonymousName: name to be used when the user is poster is anonymous. 32 characters.
 
 ----------------------------------------------------------------------------------------
 
