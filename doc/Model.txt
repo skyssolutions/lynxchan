@@ -150,6 +150,8 @@ staffLogs: stores log activity from staff.
         banLift
         reportClosure
         globalRoleChange
+        boardDeletion
+        boardTransfer
     time(Date): date and time of when the event occurred.
     boardUri: board related to the event.
     description: string describing the event.

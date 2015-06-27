@@ -170,7 +170,7 @@ PAG_ID::14
 
 Name: transferBoardOwnership
 
-Description: transfers the board to another user. Requires validation. Allowed only for board owners.
+Description: transfers the board to another user. Requires validation. Allowed only for board owners and users with global role lower than 2.
 
 Parameters:
     boardUri: board to be transfered.
@@ -423,6 +423,17 @@ Description: page used to delete filters of a board. Uses get parameters. Reserv
 Parameters:
     boardUri: uri of the board to have its filter deleted.
     filterIdentifier: identification of the filter to be deleted.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::34
+
+Name: boardModeration
+
+Description: page used by global admins to moderate boards. It provides tools like board transfer and board deletion to the global staff. Restricted to users with global role lower than 2. Requires authentication. Uses get parameters.
+
+Parameters:
+    boardUri: uri of the board be moderated.
 
 ------------------------------------------------------------------------------------------
 

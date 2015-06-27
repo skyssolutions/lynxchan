@@ -150,7 +150,7 @@ exports.saveUploads = function(boardUri, threadId, postId, files, spoiler,
 
     if (file.mime.indexOf('image/') !== -1 && !spoiler) {
 
-      im(file.pathInDisk).resize(256, 256).noProfile().write(
+      im(file.pathInDisk).resize(128, 128).noProfile().write(
           file.pathInDisk + '_t',
           function(error) {
             if (error) {

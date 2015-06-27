@@ -703,21 +703,38 @@ function deleteBoardFiles(board, callback) {
 
 }
 
-function deleteBoardReports(board, callback) {
+function deleteBoardReports(board, user, callback) {
 
-  reports.remove({
-    boardUri : board.boardUri
-  }, function reportsDeleted(error) {
+  var message = 'User ' + user + ' deleted board /' + board.boardUri + '/.';
+
+  logs.insert({
+    type : 'boardDeletion',
+    user : user,
+    time : new Date(),
+    boardUri : board.boardUri,
+    description : message,
+    global : true
+  }, function insertedLog(error) {
+
     if (error) {
-      callback(error);
-    } else {
-      deleteBoardFiles(board, callback);
+      logger.printLogError(message, error);
     }
-  });
 
+    // style exception, too simple
+    reports.remove({
+      boardUri : board.boardUri
+    }, function reportsDeleted(error) {
+      if (error) {
+        callback(error);
+      } else {
+        deleteBoardFiles(board, callback);
+      }
+    });
+    // style exception, too simple
+  });
 }
 
-function deleteBoard(board, callback) {
+function deleteBoard(board, user, callback) {
 
   boards.remove({
     boardUri : board.boardUri
@@ -737,7 +754,7 @@ function deleteBoard(board, callback) {
         if (error) {
           callback(error);
         } else {
-          deleteBoardReports(board, callback);
+          deleteBoardReports(board, user, callback);
         }
       });
 
@@ -750,7 +767,7 @@ function deleteBoard(board, callback) {
 
 exports.board = function(userData, boardUri, callback) {
 
-  var isUser = userData.globalRole >= miscOps.getMaxStaffRole();
+  var admin = userData.globalRole < 2;
 
   boards.findOne({
     boardUri : boardUri
@@ -763,10 +780,10 @@ exports.board = function(userData, boardUri, callback) {
       callback(error);
     } else if (!board) {
       callback('Board not found');
-    } else if (board.owner !== userData.login && isUser) {
+    } else if (board.owner !== userData.login && !admin) {
       callback('You are not allowed to perform this operation');
     } else {
-      deleteBoard(board, callback);
+      deleteBoard(board, userData.login, callback);
     }
   });
 

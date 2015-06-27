@@ -6,17 +6,16 @@ var miscOps = require('../engine/miscOps');
 var domManipulator = require('../engine/domManipulator');
 var formOps = require('../engine/formOps');
 
-function getBoardManagementData(board, userData, res) {
+function getBoardModerationData(board, userData, res) {
 
-  boardOps.getBoardManagementData(userData.login, board,
-      function gotManagementData(error, boardData, reports) {
+  boardOps.getBoardModerationData(userData, board,
+      function gotBoardModerationData(error, boardData, ownerData) {
         if (error) {
           formOps.outputError(error, 500, res);
         } else {
           res.writeHead(200, miscOps.corsHeader('text/html'));
 
-          res.end(domManipulator.boardManagement(userData.login, boardData,
-              reports));
+          res.end(domManipulator.boardModeration(boardData, ownerData));
         }
       });
 
@@ -29,7 +28,7 @@ exports.process = function(req, res) {
 
         var parameters = url.parse(req.url, true).query;
 
-        getBoardManagementData(parameters.boardUri, userData, res);
+        getBoardModerationData(parameters.boardUri, userData, res);
 
       });
 

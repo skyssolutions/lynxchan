@@ -41,6 +41,10 @@ linkManagement:
     type: a
     description: link to the board management page.
 
+linkModeration:
+    type: a
+    description: link to the board moderation page.
+
 bannerImage:
     type: img
     description: holds the link that displays a banner to the board.
@@ -813,6 +817,29 @@ boardIdentifier:
 filterIdentifier:
     type: input
     description: hidden input that identifiers the filter for deletion.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::32
+
+boardModerationPage:
+
+Elements:
+boardTransferIdentifier:
+	type: input
+	description: hidden input that identifies the board for the transfer operation.
+
+boardDeletionIdentifier:
+	type: input
+	description: hidden input that identifies the board for the deletion operation.
+
+labelTitle:
+	type: h2
+	description: header that displays basic board information.
+
+labelOwner:
+	type: span
+	description: displays the login of the board owner.
 
 ------------------------------------------------------------------------------------------
 

@@ -98,7 +98,7 @@ function addLines(path, id, callback) {
     } else {
 
       // style exception, too simple
-      gridFsHandler.writeFile(path, id + '.png', 'image/png', {
+      gridFsHandler.writeFile(path, id + '.jpg', 'image/jpeg', {
         type : 'captcha',
         expiration : logger.addMinutes(new Date(), captchaExpiration)
       }, function wroteToGfs(error) {
@@ -231,7 +231,7 @@ function getDistorts() {
 
 function generateImage(text, id, callback) {
 
-  var path = tempDirectory + '/' + id + '.png';
+  var path = tempDirectory + '/' + id + '.jpg';
 
   var image = im(width, height, bgColor).stroke('black').fill('transparent');
 

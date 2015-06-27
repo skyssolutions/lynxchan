@@ -28,7 +28,9 @@ var availableLogTypes = {
   deletion : 'Deletions',
   banLift : 'Ban lifts',
   reportClosure : 'Reports closure',
-  globalRoleChange : 'Global role changes'
+  globalRoleChange : 'Global role changes',
+  boardDeletion : 'Board deletion',
+  boardTransfer : 'Board ownership transfer'
 };
 var optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
 
@@ -1280,6 +1282,41 @@ exports.filterManagement = function(boardUri, filters) {
 };
 // } Section 2.7: Filter management
 
+exports.boardModeration = function(boardData, ownerData) {
+
+  try {
+
+    var document = jsdom(templateHandler.boardModerationTemplate());
+
+    document.title = 'Board moderation';
+
+    document.getElementById('boardTransferIdentifier').setAttribute('value',
+        boardData.boardUri);
+
+    document.getElementById('boardDeletionIdentifier').setAttribute('value',
+        boardData.boardUri);
+
+    document.getElementById('labelOwner').innerHTML = ownerData.login;
+
+    var title = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
+    document.getElementById('labelTitle').innerHTML = title;
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+
+};
+
 // Section 2: Dynamic pages
 
 // Section 3: Static pages {
@@ -1531,6 +1568,9 @@ exports.page = function(board, page, threads, pageCount, boardData,
 
     var linkManagement = document.getElementById('linkManagement');
     linkManagement.href = '/boardManagement.js?boardUri=' + board;
+
+    var linkModeration = document.getElementById('linkModeration');
+    linkModeration.href = '/boardModeration.js?boardUri=' + board;
 
     var boardIdentifyInput = document.getElementById('boardIdentifier');
 

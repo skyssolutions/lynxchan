@@ -7,10 +7,12 @@ var ObjectID = mongo.ObjectID;
 var db = require('../db');
 var miscOps = require('./miscOps');
 var gridFsHandler = require('./gridFsHandler');
+var logger = require('../logger');
 var files = db.files();
 var reports = db.reports();
 var users = db.users();
 var boards = db.boards();
+var logs = db.logs();
 var settings = require('../boot').getGeneralSettings();
 var restrictedBoardCreation = settings.restrictBoardCreation;
 var validSettings = [ 'disableIds', 'disableCaptcha', 'forceAnonymity' ];
@@ -122,10 +124,10 @@ exports.setSettings = function(userData, parameters, callback) {
 
 };
 
-function updateUsersOwnedBoards(userData, parameters, callback) {
+function updateUsersOwnedBoards(oldOwner, parameters, callback) {
 
   users.update({
-    login : userData.login
+    login : oldOwner
   }, {
     $pull : {
       ownedBoards : parameters.boardUri
@@ -153,35 +155,49 @@ function updateUsersOwnedBoards(userData, parameters, callback) {
 
 }
 
-function performTransfer(userData, parameters, callback) {
+function performTransfer(oldOwner, userData, parameters, callback) {
 
-  boards.update({
-    boardUri : parameters.boardUri
-  }, {
-    $set : {
-      owner : parameters.login
-    },
-    $pull : {
-      volunteers : parameters.login
-    }
-  }, function transferedBoard(error) {
+  var message = 'User ' + userData.login + ' transferred board /';
+  message += parameters.boardUri + '/ to ' + parameters.login + '.';
+
+  logs.insert({
+    user : userData.login,
+    time : new Date(),
+    global : true,
+    boardUri : parameters.boardUri,
+    type : 'boardTransfer',
+    description : message
+  }, function createdLog(error) {
     if (error) {
-      callback(error);
-    } else {
-      updateUsersOwnedBoards(userData, parameters, callback);
+      logger.printLogError(message, error);
     }
 
+    // style exception, too simple
+    boards.update({
+      boardUri : parameters.boardUri
+    }, {
+      $set : {
+        owner : parameters.login
+      },
+      $pull : {
+        volunteers : parameters.login
+      }
+    }, function transferedBoard(error) {
+      if (error) {
+        callback(error);
+      } else {
+        updateUsersOwnedBoards(oldOwner, parameters, callback);
+      }
+
+    });
+    // style exception, too simple
   });
 
 }
 
 exports.transfer = function(userData, parameters, callback) {
 
-  if (userData.login === parameters.login) {
-    callback();
-    return;
-
-  }
+  var admin = userData.globalRole < 2;
 
   boards.findOne({
     boardUri : parameters.boardUri
@@ -193,8 +209,10 @@ exports.transfer = function(userData, parameters, callback) {
       callback(error);
     } else if (!board) {
       callback('Board not found');
-    } else if (userData.login !== board.owner) {
+    } else if (userData.login !== board.owner && !admin) {
       callback('You are not allowed to perform this operation');
+    } else if (board.owner === parameters.login) {
+      callback();
     } else {
 
       // style exception, too simple
@@ -206,7 +224,7 @@ exports.transfer = function(userData, parameters, callback) {
         } else if (!count) {
           callback('User not found');
         } else {
-          performTransfer(userData, parameters, callback);
+          performTransfer(board.owner, userData, parameters, callback);
         }
       });
       // style exception, too simple
@@ -290,7 +308,7 @@ exports.setVolunteer = function(userData, parameters, callback) {
 
 };
 
-function isAllowedToManageBoard(login, role, boardData) {
+function isAllowedToManageBoard(login, boardData) {
 
   var owner = login === boardData.owner;
 
@@ -322,7 +340,7 @@ function getBoardReports(boardData, callback) {
 
 }
 
-exports.getBoardManagementData = function(login, role, board, callback) {
+exports.getBoardManagementData = function(login, board, callback) {
 
   boards.findOne({
     boardUri : board
@@ -340,7 +358,7 @@ exports.getBoardManagementData = function(login, role, board, callback) {
       callback(error);
     } else if (!boardData) {
       callback('Board not found');
-    } else if (isAllowedToManageBoard(login, role, boardData)) {
+    } else if (isAllowedToManageBoard(login, boardData)) {
       getBoardReports(boardData, callback);
     } else {
       callback('You are not allowed to manage this board.');
@@ -383,7 +401,7 @@ exports.createBoard = function(parameters, userData, callback) {
       users.update({
         login : userData.login
       }, {
-        $push : {
+        $addToSet : {
           ownedBoards : parameters.boardUri
         }
       }, function updatedUser(error) {
@@ -630,4 +648,33 @@ exports.deleteFilter = function(login, parameters, callback) {
     }
   });
 
+};
+
+exports.getBoardModerationData = function(userData, boardUri, callback) {
+
+  var admin = userData.globalRole < 2;
+
+  if (!admin) {
+    callback('You are not allowed to moderate boards.');
+    return;
+  }
+
+  boards.findOne({
+    boardUri : boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback('Board not found');
+    } else {
+
+      // style exception, too simple
+      users.findOne({
+        login : board.owner
+      }, function gotOwner(error, user) {
+        callback(error, board, user);
+      });
+      // style exception, too simple
+    }
+  });
 };

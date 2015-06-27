@@ -19,13 +19,13 @@ var spoilerPath = boot.spoilerImage();
 // start of writing data
 function writeDataOnOpenFile(gs, data, callback) {
 
-  gs.write(data, function wroteData(error) {
+  if (typeof (data) === 'string') {
+    data = new Buffer(data, 'utf-8');
+  }
 
-    // style exception, the parent callback is too simple
-    gs.close(function closed(closeError, result) {
-      callback(error || closeError);
-    });
-    // style exception, the parent callback is too simple
+  gs.write(data, true, function wroteData(error) {
+
+    callback(error);
 
   });
 

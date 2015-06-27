@@ -47,6 +47,7 @@ var logCellTemplate;
 var previewPageTemplate;
 var filterMagementPage;
 var filterCellTemplate;
+var boardModerationTemplate;
 
 function loadEmailTemplates(fePath, templateSettings) {
 
@@ -81,6 +82,20 @@ function loadCellTemplates(fePath, templateSettings) {
   filterCellTemplate = fs.readFileSync(fePath + templateSettings.filterCell);
 }
 
+function loadLongPathDynamicTemplates(fePath, templateSettings) {
+  var boardModerationPath = fePath + templateSettings.boardModerationPage;
+  boardModerationTemplate = fs.readFileSync(boardModerationPath);
+
+  var bannerManagementPath = fePath + templateSettings.bannerManagementPage;
+  bannerManagementTemplate = fs.readFileSync(bannerManagementPath);
+
+  var closedReportsPath = fePath + templateSettings.closedReportsPage;
+  closedReportsPageTemplate = fs.readFileSync(closedReportsPath);
+
+  var filterManagementPath = fePath + templateSettings.filterManagement;
+  filterMagementPage = fs.readFileSync(filterManagementPath);
+}
+
 function loadDynamicTemplates(fePath, templateSettings) {
 
   bManagementTemplate = fs.readFileSync(fePath + templateSettings.bManagement);
@@ -93,14 +108,6 @@ function loadDynamicTemplates(fePath, templateSettings) {
   banPageTemplate = fs.readFileSync(fePath + templateSettings.banPage);
   logsPageTemplate = fs.readFileSync(fePath + templateSettings.logsPage);
 
-  var bannerManagementPath = fePath + templateSettings.bannerManagementPage;
-  bannerManagementTemplate = fs.readFileSync(bannerManagementPath);
-
-  var closedReportsPath = fePath + templateSettings.closedReportsPage;
-  closedReportsPageTemplate = fs.readFileSync(closedReportsPath);
-
-  var filterManagementPath = fePath + templateSettings.filterManagement;
-  filterMagementPage = fs.readFileSync(filterManagementPath);
 }
 
 function loadMainTemplates(fePath, templateSettings) {
@@ -304,7 +311,7 @@ function testTemplates(settings) {
         content : boardTemplate,
         fields : [ 'labelName', 'labelDescription', 'divPostings', 'divPages',
             'boardIdentifier', 'linkManagement', 'bannerImage', 'captchaDiv',
-            'divName' ]
+            'divName', 'linkModeration' ]
       },
       {
         template : 'threadPage',
@@ -364,14 +371,22 @@ function testTemplates(settings) {
         fields : [ 'divLogs', 'divPages', 'checkboxExcludeGlobals',
             'fieldBoard', 'comboboxType', 'fieldBefore', 'fieldAfter',
             'fieldUser' ]
-      }, {
+      },
+      {
         template : 'previewPage',
         content : previewPageTemplate,
         fields : [ 'panelContent' ]
-      }, {
+      },
+      {
         template : 'filterManagement',
         content : filterMagementPage,
         fields : [ 'divFilters', 'boardIdentifier' ]
+      },
+      {
+        template : 'boardModeration',
+        content : boardModerationTemplate,
+        fields : [ 'boardTransferIdentifier', 'boardDeletionIdentifier',
+            'labelTitle', 'labelOwner' ]
       } ];
 
   var errors = [];
@@ -412,6 +427,7 @@ exports.loadTemplates = function() {
   loadMainTemplates(fePath, templateSettings);
   loadEmailTemplates(fePath, templateSettings);
   loadDynamicTemplates(fePath, templateSettings);
+  loadLongPathDynamicTemplates(fePath, templateSettings);
   loadCellTemplates(fePath, templateSettings);
 
   testTemplates(templateSettings);
@@ -544,4 +560,8 @@ exports.filterManagementPage = function() {
 
 exports.filterCellTemplate = function() {
   return filterCellTemplate;
+};
+
+exports.boardModerationTemplate = function() {
+  return boardModerationTemplate;
 };

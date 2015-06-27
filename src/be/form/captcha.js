@@ -10,7 +10,7 @@ var formOps = require('../engine/formOps');
 var gridFsHandler = require('../engine/gridFsHandler');
 
 function showCaptch(req, id, res, cookies) {
-  gridFsHandler.outputFile(id + '.png', req, res, function streamedFile(error) {
+  gridFsHandler.outputFile(id + '.jpg', req, res, function streamedFile(error) {
     if (error) {
 
       if (verbose) {
