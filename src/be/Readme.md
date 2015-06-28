@@ -66,6 +66,7 @@ Settings files that goes into the settings directory:
 * `restrictBoardCreation`(Boolean): disables board creation for users with global role greater than 1.
 * `logPageSize`(Number): amount of log entries to be displayed at once. Defaults to 50.
 * `defaultAnonymousName`: Default anonymous name if none is set for the board. Defaults to `Anonymous`.
+* `topBoardsCount`(Number): amount of boards to be listed in the top boards. Defaults to 25. 
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

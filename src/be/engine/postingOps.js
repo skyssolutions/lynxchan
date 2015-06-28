@@ -5,6 +5,7 @@ var db = require('../db');
 var threads = db.threads();
 var boards = db.boards();
 var tripcodes = db.tripcodes();
+var stats = db.stats();
 var posts = db.posts();
 var captchaOps = require('./captchaOps');
 var miscOps = require('./miscOps');
@@ -38,6 +39,33 @@ var postingParameters = [ {
   field : 'password',
   length : 8
 } ];
+
+function addPostToStats(boardUri, callback) {
+
+  var statHour = new Date();
+
+  statHour.setMilliseconds(0);
+  statHour.setSeconds(0);
+  statHour.setMinutes(0);
+
+  stats.updateOne({
+    boardUri : boardUri,
+    startingTime : statHour
+  }, {
+    $set : {
+      boardUri : boardUri,
+      startingTime : statHour
+    },
+    $inc : {
+      posts : 1
+    }
+  }, {
+    upsert : true
+  }, function updatedStats(error) {
+    callback(error);
+  });
+
+}
 
 function applyFilters(filters, message) {
 
@@ -394,10 +422,19 @@ function finishThreadCreation(boardUri, threadId, callback, thread) {
     thread : threadId
   });
 
-  generator.preview(null, null, null, function generatedPreview(error) {
-    callback(error, threadId);
+  addPostToStats(boardUri, function updatedStats(error) {
+    if (error) {
+      console.log(error.toString());
+    }
 
-  }, thread);
+    // style exception, too simple
+    generator.preview(null, null, null, function generatedPreview(error) {
+      callback(error, threadId);
+
+    }, thread);
+    // style exception, too simple
+
+  });
 
 }
 
@@ -604,18 +641,24 @@ function updateBoardForPostCreation(parameters, postId, thread, callback) {
     catalog : true
   });
 
-  boards.update({
-    boardUri : parameters.boardUri
-  }, {
-    $set : {
-      lastPostId : postId
-    }
-  }, function updatedBoard(error, result) {
+  addPostToStats(parameters.boardUri, function updatedStats(error) {
     if (error) {
-      callback(error);
-    } else {
-      callback(null, postId);
+      console.log(error.toString());
     }
+
+    // style exception, too simple
+    boards.update({
+      boardUri : parameters.boardUri
+    }, {
+      $set : {
+        lastPostId : postId
+      }
+    }, function updatedBoard(error, result) {
+
+      callback(error, postId);
+
+    });
+    // style exception, too simple
   });
 
 }
@@ -625,6 +668,10 @@ function updateThread(parameters, postId, thread, callback, post) {
   var latestPosts = thread.latestPosts || [];
 
   latestPosts.push(postId);
+
+  latestPosts = latestPosts.sort(function compareNumbers(a, b) {
+    return a - b;
+  });
 
   // TODO remove the while, cut all exceeding elements at once
   while (latestPosts.length > latestPostsCount) {

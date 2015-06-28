@@ -9,7 +9,9 @@ var threads = db.threads();
 var boards = db.boards();
 var domManipulator = require('./domManipulator');
 var boot = require('../boot');
+var stats = db.stats();
 var settings = boot.getGeneralSettings();
+var topBoardsCount = settings.topBoardsCount || 25;
 var miscOps = require('./miscOps');
 var templateSettings = boot.getTemplateSettings();
 var gfsHandler = require('./gridFsHandler');
@@ -195,23 +197,93 @@ exports.notFound = function(callback) {
 
 };
 
+// start of front page generation
+function getPaddingBoards(missingBoardsCount, topBoards, callback) {
+
+  boards.aggregate([ {
+    $match : {
+      boardUri : {
+        $nin : topBoards
+      }
+    }
+  }, {
+    $sort : {
+      lastPostId : -1
+    }
+  }, {
+    $limit : missingBoardsCount
+  }, {
+    $group : {
+      _id : 0,
+      boards : {
+        $push : '$boardUri'
+      }
+    }
+  } ], function gotBoards(error, result) {
+    if (error) {
+      console.log(error.toString());
+    } else {
+      var paddingBoards = result.length ? result[0].boards : [];
+
+      topBoards = topBoards.concat(paddingBoards);
+
+      domManipulator.frontPage(topBoards, callback);
+    }
+  });
+
+}
+
 exports.frontPage = function(callback) {
 
   if (verbose) {
     console.log('Generating front-page');
   }
 
-  boards.find({}, boardProjection).sort({
-    boardUri : 1
-  }).toArray(function gotResults(error, results) {
+  var logHour = new Date();
+  logHour.setMilliseconds(0);
+  logHour.setMinutes(0);
+  logHour.setSeconds(0);
+  logHour.setHours(logHour.getHours() - 1);
+
+  stats.aggregate([ {
+    $match : {
+      startingTime : logHour
+    }
+  }, {
+    $sort : {
+      posts : -1
+    }
+  }, {
+    $limit : topBoardsCount
+  }, {
+    $group : {
+      _id : 0,
+      boards : {
+        $push : '$boardUri'
+      }
+    }
+  } ], function gotTopBoards(error, result) {
     if (error) {
       callback(error);
     } else {
-      domManipulator.frontPage(results, callback);
+
+      var topBoards = result.length ? result[0].boards : [];
+
+      var missingBoardsCount = topBoardsCount - topBoards.length;
+
+      if (missingBoardsCount) {
+
+        getPaddingBoards(missingBoardsCount, topBoards, callback);
+
+      } else {
+        domManipulator.frontPage(topBoards, callback);
+      }
+
     }
   });
 
 };
+// end of front page generation
 
 exports.defaultPages = function(callback) {
 
@@ -516,6 +588,7 @@ exports.page = function(boardUri, page, callback, boardData) {
   threads.find({
     boardUri : boardUri
   }, threadProjection).sort({
+    locked : -1,
     pinned : -1,
     lastBump : -1
   }).skip(toSkip).limit(pageSize).toArray(
@@ -542,6 +615,7 @@ exports.catalog = function(boardUri, callback) {
   threads.find({
     boardUri : boardUri
   }, threadProjection).sort({
+    locked : -1,
     pinned : -1,
     lastBump : -1
   }).toArray(function gotThreads(error, threads) {

@@ -159,6 +159,12 @@ staffLogs: stores log activity from staff.
 
 ----------------------------------------------------------------------------------------
 
+boardStats: stores hourly posting stats for boards.
+    startingTime(Date): start time for the stat counting.
+    boardUri: uri of the board.
+    posts: amount of posts for the board.
+
+----------------------------------------------------------------------------------------
 
 *: duplicated data, foreign key.
 **: unique key

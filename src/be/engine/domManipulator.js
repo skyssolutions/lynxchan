@@ -1380,8 +1380,8 @@ exports.frontPage = function(boards, callback) {
 
       var link = document.createElement('a');
 
-      link.href = '/' + board.boardUri + '/';
-      link.innerHTML = '/' + board.boardUri + '/ - ' + board.boardName;
+      link.href = '/' + board + '/';
+      link.innerHTML = '/' + board + '/';
 
       if (i) {
         boardsDiv.appendChild(document.createElement('br'));

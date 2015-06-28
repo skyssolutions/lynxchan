@@ -19,5 +19,6 @@
   "disableAccountCreation": false,
   "restrictBoardCreation": false,
   "logPageSize": 50,
-  "defaultAnonymousName": "Anonymous"
+  "defaultAnonymousName": "Anonymous",
+  "topBoardsCount": 25
 }

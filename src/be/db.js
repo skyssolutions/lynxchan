@@ -30,6 +30,7 @@ var cachedFiles;
 var cachedTripcodes;
 var cachedLog;
 var cachedRecoveryRequests;
+var cachedStats;
 
 var loading;
 
@@ -483,6 +484,10 @@ exports.tripcodes = function() {
   return cachedTripcodes;
 };
 
+exports.stats = function() {
+  return cachedStats;
+};
+
 exports.logs = function() {
 
   return cachedLog;
@@ -516,6 +521,8 @@ function checkCollections(db, callback) {
   cachedFiles = db.collection('fs.files');
 
   cachedLog = db.collection('staffLogs');
+
+  cachedStats = db.collection('boardStats');
 
 }
 
