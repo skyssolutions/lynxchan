@@ -13,6 +13,10 @@ var boards = db.boards();
 var stats = db.stats();
 var files = db.files();
 
+// handles schedules in general.
+// currently it handles the removal of expired captcha's images, applies board
+// hourly stats and removes invalid temporary files.
+
 exports.start = function() {
 
   expiredCaptcha(true);

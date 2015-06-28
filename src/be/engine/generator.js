@@ -17,6 +17,7 @@ var templateSettings = boot.getTemplateSettings();
 var gfsHandler = require('./gridFsHandler');
 var pageSize = settings.pageSize || 10;
 var verbose = settings.verbose;
+var jsonBuilder = require('./jsonBuilder');
 
 var postProjection = {
   _id : 0,
@@ -27,6 +28,7 @@ var postProjection = {
   name : 1,
   files : 1,
   banMessage : 1,
+  message : 1,
   email : 1,
   id : 1,
   signedRole : 1,
@@ -215,7 +217,16 @@ exports.frontPage = function(callback) {
     if (error) {
       callback(error);
     } else {
-      domManipulator.frontPage(foundBoards, callback);
+      // style exception, too simple
+      domManipulator.frontPage(foundBoards, function savedHtml(error) {
+        if (error) {
+          callback(error);
+        } else {
+          jsonBuilder.frontPage(foundBoards, callback);
+        }
+
+      });
+      // style exception, too simple
     }
   });
 
@@ -272,7 +283,14 @@ exports.preview = function(boardUri, threadId, postId, callback, postingData) {
 
   } else {
 
-    domManipulator.preview(postingData, callback);
+    domManipulator.preview(postingData, function savedHtml(error) {
+      if (error) {
+        callback(error);
+      } else {
+        jsonBuilder.preview(postingData, callback);
+      }
+
+    });
 
   }
 };
@@ -329,13 +347,24 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData) {
     threadId : threadId
   }, postProjection).sort({
     creation : 1
-  }).toArray(function(error, posts) {
-    if (error) {
-      callback(error);
-    } else {
-      domManipulator.thread(boardUri, boardData, threadData, posts, callback);
-    }
-  });
+  }).toArray(
+      function(error, posts) {
+        if (error) {
+          callback(error);
+        } else {
+          // style exception, too simple
+          domManipulator.thread(boardUri, boardData, threadData, posts,
+              function savedHtml(error) {
+                if (error) {
+                  callback(error);
+                } else {
+                  jsonBuilder.thread(boardUri, boardData, threadData, posts,
+                      callback);
+                }
+              });
+          // style exception, too simple
+        }
+      });
 
 };
 

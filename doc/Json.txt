@@ -1,0 +1,77 @@
+Some data is also stored as static json files.
+Items inside '<>' are dynamic.
+These are as follows:
+
+------------------------------------------------------------------------------------------
+
+JSO_ID::01
+
+Path: /index.json
+
+Root(Object):
+    topBoards(Array): Array with the chan top boards. Each element is a document with the following fields:
+        boardUri: uri of the board.
+        boardName: name of the board.
+
+------------------------------------------------------------------------------------------
+
+JSO_ID::02
+
+Path:/<board>/res/<thread>.json
+
+Root(Object):
+    signedRole: role of the user that posted the thread.
+    banMessage: message to be displayed indicating this message was a cause to a ban.
+    id: thread-wise id of the poster.
+    email: email of the poster.
+    threadId(Number): unique id of the thread inside the board.
+    subject: subject of the thread.
+    message: text of the post.
+    name: name of the poster.
+    creation(Date): time when the post was created.
+    locked(Boolean: indicates if the thread is locked and cannot be replied to.
+    pinned(Boolean): indicates if the thread is pinned and will be listed on top of unpinned threads.
+    files(Array): files uploaded with the thread. Each object contains the following fields:
+        originalName: original name of the upload.
+        path: path for the file.
+        thumb: path for the file's thumbnail.
+        size(Number) size in bytes of the file.
+        width(Number): width of the file, if image.
+        height(Number): size of the file, if image.
+    posts(Array): array of the posts in this thread. Each object contains the following fields:
+        name: name of the poster.
+        signedRole: role of the user that posted the thread.
+        email: email of the poster.
+        postId(Number): unique id of the post inside the board.
+        id: thread-wise id of the poster.
+        subject: subject of the thread.
+        message: text of the post.
+        banMessage: message to be displayed indicating this message was a cause to a ban.
+        creation(Date): time when the post was created.
+        files(Array): pre-aggregated array of files uploaded with the post. Each object contains the following fields:
+            originalName: original name of the upload.
+            path: path for the file.
+            thumb: path for the file's thumbnail.
+            size(Number) size in bytes of the file.
+            width(Number): width of the file, if image.
+            height(Number): size of the file, if image. 
+
+------------------------------------------------------------------------------------------
+
+JSO_ID::03
+
+Path:/<board>/preview/<posting>.json
+
+Root(Object):
+    signedRole: role of the user that posted the thread.
+    banMessage: message to be displayed indicating this message was a cause to a ban.
+    id: thread-wise id of the poster.
+    email: email of the poster.
+    subject: subject of the thread.
+    name: name of the poster.
+    message: text of the post.
+    creation(Date): time when the post was created.
+    
+------------------------------------------------------------------------------------------
+
+

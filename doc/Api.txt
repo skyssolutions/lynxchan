@@ -78,7 +78,7 @@ Output(Number): id of the new post.
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::03**
+PAG_ID::03**(Removed)
 
 Name: listBoards
 

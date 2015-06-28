@@ -33,7 +33,7 @@ threads: stores board's threads.
     markdown: text of the post after markdown.
     creation(Date): time when the post was created.
     boardUri*/***: url of the board the thread belongs to.
-    postId(Number)***: unique id of the thread inside the board.
+    threadId(Number)***: unique id of the thread inside the board.
     locked(Number)****: indicates if the thread is locked and cannot be replied to.
     pinned(Number)****: indicates if the thread is pinned and will be listed on top of unpinned threads.
     lastBump(Date): time of when the thread was last bumped.
