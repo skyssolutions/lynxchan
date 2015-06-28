@@ -210,7 +210,7 @@ exports.frontPage = function(callback) {
   }).sort({
     postsPerHour : -1,
     lastPostId : -1,
-    boardUri : -1
+    boardUri : 1
   }).limit(topBoardsCount).toArray(function(error, foundBoards) {
     if (error) {
       callback(error);

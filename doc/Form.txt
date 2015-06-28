@@ -437,4 +437,15 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::35
+
+Name: boards
+
+Description: displays all existing boards. Uses get parameters.
+
+Parameters:
+    page: page to be viewed.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

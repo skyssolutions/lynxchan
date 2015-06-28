@@ -48,6 +48,8 @@ var previewPageTemplate;
 var filterMagementPage;
 var filterCellTemplate;
 var boardModerationTemplate;
+var boardsTemplate;
+var boardsCellTemplate;
 
 function loadEmailTemplates(fePath, templateSettings) {
 
@@ -62,24 +64,19 @@ function loadCellTemplates(fePath, templateSettings) {
   staffCellTemplate = fs.readFileSync(fePath + templateSettings.staffCell);
   postTemplate = fs.readFileSync(fePath + templateSettings.postCell);
   reportCellTemplate = fs.readFileSync(fePath + templateSettings.reportCell);
-
   uploadCellTemplate = fs.readFileSync(fePath + templateSettings.uploadCell);
+  banCellTemplate = fs.readFileSync(fePath + templateSettings.banCell);
+  bannerCellTemplate = fs.readFileSync(fePath + templateSettings.bannerCell);
+  catalogCellTemplate = fs.readFileSync(fePath + templateSettings.catalogCell);
+  logCellTemplate = fs.readFileSync(fePath + templateSettings.logCell);
+  filterCellTemplate = fs.readFileSync(fePath + templateSettings.filterCell);
+  boardsCellTemplate = fs.readFileSync(fePath + templateSettings.boardsCell);
 
   var closedReportPath = fePath + templateSettings.closedReportCell;
   closedReportCellTemplate = fs.readFileSync(closedReportPath);
 
   var volunteerPath = fePath + templateSettings.volunteerCell;
   volunteerCellTemplate = fs.readFileSync(volunteerPath);
-
-  banCellTemplate = fs.readFileSync(fePath + templateSettings.banCell);
-
-  bannerCellTemplate = fs.readFileSync(fePath + templateSettings.bannerCell);
-
-  catalogCellTemplate = fs.readFileSync(fePath + templateSettings.catalogCell);
-
-  logCellTemplate = fs.readFileSync(fePath + templateSettings.logCell);
-
-  filterCellTemplate = fs.readFileSync(fePath + templateSettings.filterCell);
 }
 
 function loadLongPathDynamicTemplates(fePath, templateSettings) {
@@ -107,6 +104,7 @@ function loadDynamicTemplates(fePath, templateSettings) {
   errorTemplate = fs.readFileSync(fePath + templateSettings.errorPage);
   banPageTemplate = fs.readFileSync(fePath + templateSettings.banPage);
   logsPageTemplate = fs.readFileSync(fePath + templateSettings.logsPage);
+  boardsTemplate = fs.readFileSync(fePath + templateSettings.boardsPage);
 
 }
 
@@ -268,6 +266,12 @@ function testTemplates(settings) {
         content : filterCellTemplate,
         fields : [ 'labelOriginal', 'labelReplacement', 'boardIdentifier',
             'filterIdentifier' ]
+      },
+      {
+        template : 'boardsCell',
+        content : boardsCellTemplate,
+        fields : [ 'linkBoard', 'labelPostsPerHour', 'labelPostCount',
+            'divDescription' ]
       } ];
 
   var pageTests = [
@@ -387,6 +391,10 @@ function testTemplates(settings) {
         content : boardModerationTemplate,
         fields : [ 'boardTransferIdentifier', 'boardDeletionIdentifier',
             'labelTitle', 'labelOwner' ]
+      }, {
+        template : 'boardsPage',
+        content : boardsTemplate,
+        fields : [ 'divBoards', 'divPages' ]
       } ];
 
   var errors = [];
@@ -564,4 +572,12 @@ exports.filterCellTemplate = function() {
 
 exports.boardModerationTemplate = function() {
   return boardModerationTemplate;
+};
+
+exports.boardsTemplate = function() {
+  return boardsTemplate;
+};
+
+exports.boardsCellTemplate = function() {
+  return boardsCellTemplate;
 };

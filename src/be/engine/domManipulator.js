@@ -24,11 +24,11 @@ var templateHandler = require('./templateHandler');
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 var availableLogTypes = {
   '' : 'All types',
-  ban : 'Bans',
-  deletion : 'Deletions',
-  banLift : 'Ban lifts',
+  ban : 'Ban',
+  deletion : 'Deletion',
+  banLift : 'Ban lift',
   reportClosure : 'Reports closure',
-  globalRoleChange : 'Global role changes',
+  globalRoleChange : 'Global role change',
   boardDeletion : 'Board deletion',
   boardTransfer : 'Board ownership transfer'
 };
@@ -1316,6 +1316,77 @@ exports.boardModeration = function(boardData, ownerData) {
   }
 
 };
+
+// Section 2.8: Board listing {
+function setBoardCell(board, boardCell) {
+
+  var linkContent = '/' + board.boardUri + '/ - ' + board.boardName;
+  var boardLink = boardCell.getElementsByClassName('linkBoard')[0];
+  boardLink.href = '/' + board.boardUri + '/';
+  boardLink.innerHTML = linkContent;
+
+  var labelPPH = boardCell.getElementsByClassName('labelPostsPerHour')[0];
+  labelPPH.innerHTML = board.postsPerHour || 0;
+
+  var labelCount = boardCell.getElementsByClassName('labelPostCount')[0];
+  labelCount.innerHTML = board.lastPostId || 0;
+
+  var labelDescription = boardCell.getElementsByClassName('divDescription')[0];
+  labelDescription.innerHTML = board.boardDescription;
+}
+
+function setPages(document, pageCount) {
+  var pagesDiv = document.getElementById('divPages');
+
+  for (var j = 1; j <= pageCount; j++) {
+
+    var link = document.createElement('a');
+    link.innerHTML = j;
+    link.href = '/boards.js?page=' + j;
+
+    pagesDiv.appendChild(link);
+  }
+}
+
+exports.boards = function(boards, pageCount) {
+  try {
+    var document = jsdom(templateHandler.boardsTemplate());
+
+    document.title = 'Boards';
+
+    var divBoards = document.getElementById('divBoards');
+
+    for (var i = 0; i < boards.length; i++) {
+      var board = boards[i];
+
+      var boardCell = document.createElement('div');
+      boardCell.innerHTML = templateHandler.boardsCellTemplate();
+      boardCell.setAttribute('class', 'boardsCell');
+
+      setBoardCell(board, boardCell);
+
+      divBoards.appendChild(boardCell);
+    }
+
+    setPages(document, pageCount);
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+
+};
+
+// } Section 2.8: Board listing
 
 // Section 2: Dynamic pages
 

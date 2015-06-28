@@ -826,20 +826,59 @@ boardModerationPage:
 
 Elements:
 boardTransferIdentifier:
-	type: input
-	description: hidden input that identifies the board for the transfer operation.
+    type: input
+    description: hidden input that identifies the board for the transfer operation.
 
 boardDeletionIdentifier:
-	type: input
-	description: hidden input that identifies the board for the deletion operation.
+    type: input
+    description: hidden input that identifies the board for the deletion operation.
 
 labelTitle:
-	type: h2
-	description: header that displays basic board information.
+    type: h2
+    description: header that displays basic board information.
 
 labelOwner:
-	type: span
-	description: displays the login of the board owner.
+    type: span
+    description: displays the login of the board owner.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::33
+
+boardsPage:
+
+Elements:
+divBoards:
+    type: div
+    description: div that holds the boards.
+
+divPages:
+    type: div
+    description: div that holds the available pages.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::34
+
+boardsCell*:
+Root element: div
+
+Elements:
+linkBoard:
+    type: a
+    description: link to the board.
+
+labelPostsPerHour:
+    type: span
+    description: label that holds the latest posts per hour count of the board.
+
+labelPostCount:
+    type: span
+    description: label that holds the total post count of the board.
+
+divDescription:
+    type: div
+    description: div that holds the board description.
 
 ------------------------------------------------------------------------------------------
 
