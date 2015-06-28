@@ -410,10 +410,6 @@ exports.createBoard = function(parameters, userData, callback) {
           board : parameters.boardUri
         });
 
-        process.send({
-          frontPage : true
-        });
-
         callback(error);
       });
 

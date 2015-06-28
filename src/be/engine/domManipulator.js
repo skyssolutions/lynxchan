@@ -1362,10 +1362,6 @@ exports.login = function(callback) {
 
 exports.frontPage = function(boards, callback) {
 
-  if (verbose) {
-    console.log('Got boards\n' + JSON.stringify(boards));
-  }
-
   try {
 
     var document = jsdom(templateHandler.frontPageTemplate());
@@ -1380,8 +1376,8 @@ exports.frontPage = function(boards, callback) {
 
       var link = document.createElement('a');
 
-      link.href = '/' + board + '/';
-      link.innerHTML = '/' + board + '/';
+      link.href = '/' + board.boardUri + '/';
+      link.innerHTML = '/' + board.boardUri + '/ - ' + board.boardName;
 
       if (i) {
         boardsDiv.appendChild(document.createElement('br'));

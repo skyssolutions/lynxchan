@@ -5,12 +5,10 @@ var dbVersion = 1;
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
 
-var gridFsHandler;
 var boot = require('./boot');
 var settings = boot.getGeneralSettings();
 var verbose = settings.verbose;
 var debug = boot.debug();
-var captchaExpiration = boot.captchaExpiration();
 
 var indexesSet;
 
@@ -34,84 +32,7 @@ var cachedStats;
 
 var loading;
 
-// start of captcha cleanup
-exports.scheduleExpiredCaptchaCheck = function(immediate) {
-  if (immediate) {
-    gridFsHandler = require('./engine/gridFsHandler');
-    checkExpiredCaptchas();
-  } else {
-
-    setTimeout(function() {
-
-      checkExpiredCaptchas();
-    }, captchaExpiration * 1000 * 60);
-
-  }
-};
-
-function checkExpiredCaptchas() {
-  cachedFiles.aggregate([ {
-    $match : {
-      'metadata.type' : 'captcha',
-      'metadata.expiration' : {
-        $lte : new Date()
-      }
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function gotExpiredFiles(error, results) {
-    if (error) {
-
-      if (verbose) {
-        console.log(error);
-      }
-
-      if (debug) {
-        throw error;
-      }
-
-    } else if (results.length) {
-
-      var expiredFiles = results[0].files;
-
-      if (verbose) {
-        var message = 'deleting expired captchas: ';
-        message += JSON.stringify(expiredFiles);
-        console.log(message);
-      }
-
-      // style exception, too simple
-      gridFsHandler.removeFiles(expiredFiles, function deletedFiles(error) {
-        if (error) {
-          if (verbose) {
-            console.log(error);
-          }
-
-          if (debug) {
-            throw error;
-          }
-        } else {
-          exports.scheduleExpiredCaptchaCheck();
-        }
-      });
-
-      // style exception, too simple
-
-    } else {
-      exports.scheduleExpiredCaptchaCheck();
-    }
-  });
-
-}
-// end of captcha cleanup
-
 // start of version check
-
 function registerLatestVersion(callback) {
 
   if (verbose) {

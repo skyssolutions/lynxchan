@@ -197,93 +197,29 @@ exports.notFound = function(callback) {
 
 };
 
-// start of front page generation
-function getPaddingBoards(missingBoardsCount, topBoards, callback) {
-
-  boards.aggregate([ {
-    $match : {
-      boardUri : {
-        $nin : topBoards
-      }
-    }
-  }, {
-    $sort : {
-      lastPostId : -1
-    }
-  }, {
-    $limit : missingBoardsCount
-  }, {
-    $group : {
-      _id : 0,
-      boards : {
-        $push : '$boardUri'
-      }
-    }
-  } ], function gotBoards(error, result) {
-    if (error) {
-      console.log(error.toString());
-    } else {
-      var paddingBoards = result.length ? result[0].boards : [];
-
-      topBoards = topBoards.concat(paddingBoards);
-
-      domManipulator.frontPage(topBoards, callback);
-    }
-  });
-
-}
-
 exports.frontPage = function(callback) {
 
   if (verbose) {
     console.log('Generating front-page');
   }
 
-  var logHour = new Date();
-  logHour.setMilliseconds(0);
-  logHour.setMinutes(0);
-  logHour.setSeconds(0);
-  logHour.setHours(logHour.getHours() - 1);
-
-  stats.aggregate([ {
-    $match : {
-      startingTime : logHour
-    }
-  }, {
-    $sort : {
-      posts : -1
-    }
-  }, {
-    $limit : topBoardsCount
-  }, {
-    $group : {
-      _id : 0,
-      boards : {
-        $push : '$boardUri'
-      }
-    }
-  } ], function gotTopBoards(error, result) {
+  boards.find({}, {
+    boardUri : 1,
+    _id : 0,
+    boardName : 1
+  }).sort({
+    postsPerHour : -1,
+    lastPostId : -1,
+    boardUri : -1
+  }).limit(topBoardsCount).toArray(function(error, foundBoards) {
     if (error) {
       callback(error);
     } else {
-
-      var topBoards = result.length ? result[0].boards : [];
-
-      var missingBoardsCount = topBoardsCount - topBoards.length;
-
-      if (missingBoardsCount) {
-
-        getPaddingBoards(missingBoardsCount, topBoards, callback);
-
-      } else {
-        domManipulator.frontPage(topBoards, callback);
-      }
-
+      domManipulator.frontPage(foundBoards, callback);
     }
   });
 
 };
-// end of front page generation
 
 exports.defaultPages = function(callback) {
 
@@ -300,7 +236,14 @@ exports.defaultPages = function(callback) {
 };
 
 exports.preview = function(boardUri, threadId, postId, callback, postingData) {
-  // TODO add verbose output
+
+  if (verbose) {
+
+    var message = 'Generating preview for ' + boardUri + '/';
+    message += (postId || threadId);
+
+    console.log(message);
+  }
 
   if (!postingData) {
 

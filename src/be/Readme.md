@@ -17,6 +17,11 @@ It accepts the following arguments:
 * `--debug`, `-d`: for development. Will not cache static files and will reload any module besides the ones directly under the be directory. It will also cause errors to crash and will clean any file in the temporary directory older than one minute every minute.
 * `--reload`, `-r`: will rebuild all pages on boot.
 * `--reload-login`, `-rl`: will rebuild login page on boot.
+* `--reload-banner`, `-rb`: will rebuild default banner on boot.
+* `--reload-front`, `-rf`: will rebuild front-page on boot.
+* `--reload-notfound`, `-rn`: will rebuild 404 page on boot.
+* `--reload-thumb`, `-rt`: will rebuild generic thumbnail on boot.
+* `--rebuild-spoiler`, `-rs`: will rebuild spoiler image on boot.
 * `--no-daemon`, `-nd`: will not start listening. For rebuilding pages while having a server running.
 * `--create-account`, `-ca`: will create a new account. Require the use of the login, role and password parameters.
 * `--login`, `-l`: informs a login.

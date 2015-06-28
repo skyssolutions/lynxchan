@@ -31,12 +31,6 @@ var args = process.argv;
 var debug = args.indexOf('-d') > -1;
 debug = debug || args.indexOf('--debug') > -1;
 
-var reload = args.indexOf('-r') > -1;
-reload = reload || args.indexOf('--reload') > -1;
-
-var reloadLogin = args.indexOf('-rl') > -1;
-var reloadLogin = reloadLogin || args.indexOf('--reload-login') > -1;
-
 var noDaemon = args.indexOf('-nd') > -1;
 noDaemon = noDaemon || args.indexOf('--no-daemon') > -1;
 
@@ -45,6 +39,27 @@ setRole = setRole || args.indexOf('--set-role') > -1;
 
 var createAccount = args.indexOf('-ca') > -1;
 createAccount = createAccount || args.indexOf('--create-account') > -1;
+
+var reload = args.indexOf('-r') > -1;
+reload = reload || args.indexOf('--reload') > -1;
+
+var reloadLogin = args.indexOf('-rl') > -1;
+reloadLogin = reloadLogin || args.indexOf('--reload-login') > -1;
+
+var reloadBanner = args.indexOf('-rb') > -1;
+reloadBanner = reloadBanner || args.indexOf('--reload-banner') > -1;
+
+var reloadFront = args.indexOf('-rf') > -1;
+reloadFront = reloadFront || args.indexOf('--reload-front') > -1;
+
+var reload404 = args.indexOf('-rn') > -1;
+reload404 = reload404 || args.indexOf('--reload-notfound') > -1;
+
+var reloadThumb = args.indexOf('-rt') > -1;
+reloadThumb = reloadThumb || args.indexOf('--reload-thumb') > -1;
+
+var reloadSpoiler = args.indexOf('-rs') > -1;
+reloadSpoiler = reloadSpoiler || args.indexOf('--rebuild-spoiler') > -1;
 
 var informedLogin;
 var informedPassword;
@@ -269,30 +284,8 @@ function regenerateAll() {
 
 }
 
-function regenerateLoginPage() {
-  if (reloadLogin) {
-    generator.login(function generatedLogin(error) {
-      if (error) {
-        if (generalSettings.verbose) {
-          console.log(error);
-        }
-
-        if (debug) {
-          throw error;
-        }
-      } else {
-        bootWorkers();
-      }
-
-    });
-  } else {
-    bootWorkers();
-  }
-
-}
-
 function checkThumb(files) {
-  if (files.indexOf(genericThumb) === -1) {
+  if (files.indexOf(genericThumb) === -1 || reloadThumb) {
     generator.defaultBanner(function generated(error) {
       if (error) {
         if (generalSettings.verbose) {
@@ -304,16 +297,16 @@ function checkThumb(files) {
         }
 
       } else {
-        regenerateLoginPage();
+        bootWorkers();
       }
     });
   } else {
-    regenerateLoginPage();
+    bootWorkers();
   }
 }
 
 function checkBanner(files) {
-  if (files.indexOf(defaultBanner) === -1) {
+  if (files.indexOf(defaultBanner) === -1 || reloadBanner) {
     generator.defaultBanner(function generated(error) {
       if (error) {
         if (generalSettings.verbose) {
@@ -334,7 +327,7 @@ function checkBanner(files) {
 }
 
 function checkSpoilerImage(files) {
-  if (files.indexOf(spoilerImage) === -1) {
+  if (files.indexOf(spoilerImage) === -1 || reloadSpoiler) {
     generator.spoiler(function generated(error) {
       if (error) {
         if (generalSettings.verbose) {
@@ -355,7 +348,7 @@ function checkSpoilerImage(files) {
 }
 
 function checkLoginPage(files) {
-  if (files.indexOf('/login.html') === -1) {
+  if (files.indexOf('/login.html') === -1 || reloadLogin) {
 
     generator.login(function generated(error) {
       if (error) {
@@ -380,7 +373,7 @@ function checkLoginPage(files) {
 
 function checkNotFound(files) {
 
-  if (files.indexOf('/404.html') === -1) {
+  if (files.indexOf('/404.html') === -1 || reload404) {
 
     generator.notFound(function generated(error) {
       if (error) {
@@ -406,7 +399,7 @@ function checkNotFound(files) {
 
 function checkFrontPage(files) {
 
-  if (files.indexOf('/') === -1) {
+  if (files.indexOf('/') === -1 || reloadFront) {
     generator.frontPage(function generated(error) {
       if (error) {
         if (generalSettings.verbose) {
@@ -493,27 +486,6 @@ try {
 
 db = require('./db');
 
-function scheduleTempFilesCleaning() {
-
-  setTimeout(function() {
-
-    removeExpiredTempFiles(function removedExpiredFiles(error) {
-      if (error) {
-        if (generalSettings.verbose) {
-          console.log(error);
-        }
-        if (debug) {
-          throw error;
-        }
-      } else {
-        scheduleTempFilesCleaning();
-      }
-
-    });
-  }, 1000 * 60);
-
-}
-
 var createAccountFunction = function() {
   require('./engine/accountOps').registerUser({
     login : informedLogin,
@@ -586,7 +558,7 @@ function checkDbVersions() {
     } else {
 
       if (!noDaemon) {
-        db.scheduleExpiredCaptchaCheck(true);
+        require('./scheduleHandler').start();
       }
 
       if (createAccount) {
@@ -607,22 +579,6 @@ function checkDbVersions() {
 }
 
 if (cluster.isMaster) {
-
-  if (debug && !noDaemon) {
-
-    removeExpiredTempFiles(function removedExpiredFiles(error) {
-      if (error) {
-        if (generalSettings.verbose) {
-          console.log(error);
-        }
-        if (debug) {
-          throw error;
-        }
-      } else {
-        scheduleTempFilesCleaning();
-      }
-    });
-  }
 
   db.init(function bootedDb(error) {
 
@@ -645,48 +601,4 @@ if (cluster.isMaster) {
 } else {
 
   require('./workerBoot').boot();
-}
-
-function iterateFiles(files, callback) {
-
-  if (files.length) {
-    var file = tempDirectory + '/' + files.shift();
-
-    fs.stat(file, function gotStats(error, stats) {
-
-      if (error) {
-        callback(error);
-      } else {
-
-        var deleteFile = stats.isFile() && !stats.size;
-
-        if (deleteFile && new Date() > logger.addMinutes(stats.ctime, 1)) {
-
-          if (generalSettings.verbose) {
-            console.log('Removing expired tmp file ' + file);
-          }
-
-          fs.unlink(file);
-        }
-
-        iterateFiles(files, callback);
-      }
-
-    });
-  } else {
-    callback();
-
-  }
-
-}
-
-function removeExpiredTempFiles(callback) {
-  fs.readdir(tempDirectory, function gotFiles(error, files) {
-    if (error) {
-      callback(error);
-    } else {
-      iterateFiles(files, callback);
-    }
-
-  });
 }

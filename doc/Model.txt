@@ -15,6 +15,7 @@ boards: stores boards.
         originalTerm: original term to be replaced. 32 characters.
         replacementTerm: term that will replace the original term. 32 characters.
     anonymousName: name to be used when the user is poster is anonymous. 32 characters.
+    postsPerHour(Number): latest PPM stats for this  board.
 
 ----------------------------------------------------------------------------------------
 
@@ -33,8 +34,8 @@ threads: stores board's threads.
     creation(Date): time when the post was created.
     boardUri*/***: url of the board the thread belongs to.
     postId(Number)***: unique id of the thread inside the board.
-    locked(Boolean): indicates if the thread is locked and cannot be replied to.
-    pinned(Boolean): indicates if the thread is pinned and will be listed on top of unpinned threads.
+    locked(Number)****: indicates if the thread is locked and cannot be replied to.
+    pinned(Number)****: indicates if the thread is pinned and will be listed on top of unpinned threads.
     lastBump(Date): time of when the thread was last bumped.
     autoSage(Boolean): indicates the thread cannot be bumped anymore.
     postCount(Number): pre-aggregated number of posts in the thread.
@@ -169,3 +170,4 @@ boardStats: stores hourly posting stats for boards.
 *: duplicated data, foreign key.
 **: unique key
 ***:part of a unique key combination.
+****: boolean integer. 0 for false, 1 for true.
