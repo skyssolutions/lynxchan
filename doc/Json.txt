@@ -37,6 +37,7 @@ Root(Object):
         path: path for the file.
         thumb: path for the file's thumbnail.
         size(Number) size in bytes of the file.
+        name: name of the file.
         width(Number): width of the file, if image.
         height(Number): size of the file, if image.
     posts(Array): array of the posts in this thread. Each object contains the following fields:
@@ -57,6 +58,7 @@ Root(Object):
             size(Number) size in bytes of the file.
             width(Number): width of the file, if image.
             height(Number): size of the file, if image. 
+            name: name of the file.
 
 ------------------------------------------------------------------------------------------
 
@@ -103,6 +105,7 @@ Root(Object):
             originalName: original name of the upload.
             path: path for the file.
             thumb: path for the file's thumbnail.
+            name: name of the file.
             size(Number) size in bytes of the file.
             width(Number): width of the file, if image.
             height(Number): size of the file, if image.
@@ -121,6 +124,7 @@ Root(Object):
                 originalName: original name of the upload.
                 path: path for the file.
                 thumb: path for the file's thumbnail.
+                name: name of the file.
                 size(Number) size in bytes of the file.
                 width(Number): width of the file, if image.
                 height(Number): size of the file, if image. 

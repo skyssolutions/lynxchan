@@ -312,8 +312,13 @@ exports.checkForCaptcha = function(req, callback) {
 
   var cookies = formOps.getCookies(req);
 
+  if (!cookies.captchaid || !cookies.captchaid.length) {
+    callback();
+    return;
+  }
+
   captchas.findOne({
-    _id : new ObjectID(cookies.captchaId),
+    _id : new ObjectID(cookies.captchaid),
     expiration : {
       $gt : new Date()
     }

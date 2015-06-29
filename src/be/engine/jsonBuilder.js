@@ -18,6 +18,7 @@ function getFilesArray(fileArray) {
         originalName : file.originalName,
         path : file.path,
         thumb : file.thumb,
+        name : file.name,
         size : file.size,
         width : file.width,
         height : file.height

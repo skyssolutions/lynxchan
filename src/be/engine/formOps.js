@@ -216,6 +216,26 @@ exports.getPostData = function(req, res, callback) {
 
 };
 
+function setCookies(header, cookies) {
+
+  for (var i = 0; i < cookies.length; i++) {
+    var cookie = cookies[i];
+
+    var toPush = [ 'Set-Cookie', cookie.field + '=' + cookie.value ];
+
+    if (cookie.expiration) {
+      toPush[1] += '; expires=' + cookie.expiration.toString();
+    }
+
+    if (cookie.path) {
+      toPush[1] += '; path=' + cookie.path;
+    }
+
+    header.push(toPush);
+
+  }
+}
+
 exports.outputResponse = function(message, redirect, res, cookies, authBlock) {
 
   if (verbose) {
@@ -230,18 +250,7 @@ exports.outputResponse = function(message, redirect, res, cookies, authBlock) {
 
   if (cookies) {
 
-    for (var i = 0; i < cookies.length; i++) {
-      var cookie = cookies[i];
-
-      var toPush = [ 'Set-Cookie', cookie.field + '=' + cookie.value ];
-
-      if (cookie.expiration) {
-        toPush[1] += '; expires=' + cookie.expiration.toString();
-      }
-
-      header.push(toPush);
-
-    }
+    setCookies(header, cookies);
 
   }
 

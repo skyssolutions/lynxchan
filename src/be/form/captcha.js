@@ -62,8 +62,9 @@ exports.process = function(req, res) {
           formOps.outputError(error, 500, res);
         } else {
           showCaptch(req, id, res, [ {
-            field : 'captchaId',
-            value : id
+            field : 'captchaid',
+            value : id,
+            path : '/captcha.js'
           } ]);
         }
 

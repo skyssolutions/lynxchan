@@ -246,8 +246,6 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document,
 function setPostInnerElements(document, boardUri, threadId, post, postCell,
     preview) {
 
-  post.name = post.name || 'Anonymous';
-
   var linkName = postCell.getElementsByClassName('linkName')[0];
 
   linkName.innerHTML = post.name;

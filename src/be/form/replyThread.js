@@ -45,7 +45,7 @@ exports.process = function(req, res) {
       parameters) {
 
     var cookies = formOps.getCookies(req);
-    createPost(req, res, parameters, userData, cookies.captchaId);
+    createPost(req, res, parameters, userData, cookies.captchaid);
   }, true);
 
 };

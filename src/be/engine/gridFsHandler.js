@@ -225,6 +225,10 @@ function streamFile(stats, callback, cookies, res) {
         toPush[1] += '; expires=' + cookie.expiration.toString();
       }
 
+      if (cookie.path) {
+        toPush[1] += '; path=' + cookie.path;
+      }
+
       header.push(toPush);
 
     }
