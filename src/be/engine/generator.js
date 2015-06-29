@@ -476,9 +476,17 @@ function getLatestPosts(boardUri, page, threadsArray, pageCount, boardData,
     if (error) {
       callback(error);
     } else {
-
+      // style exception, too simple
       domManipulator.page(boardUri, page, threadsArray, pageCount, boardData,
-          latestPosts, callback);
+          latestPosts, function savedHTML(error) {
+            if (error) {
+              callback(error);
+            } else {
+              jsonBuilder.page(boardUri, page, threadsArray, pageCount,
+                  boardData, latestPosts, callback);
+            }
+          });
+      // style exception, too simple
     }
   });
 
@@ -594,7 +602,13 @@ exports.catalog = function(boardUri, callback) {
     if (error) {
       callback(error);
     } else {
-      domManipulator.catalog(boardUri, threads, callback);
+
+      // style exception, too simple
+      domManipulator.catalog(boardUri, threads, function savedHTML(error) {
+        jsonBuilder.catalog(boardUri, threads, callback);
+      });
+
+      // style exception, too simple
     }
   });
 

@@ -5,34 +5,72 @@
 
 var gridFsHandler = require('./gridFsHandler');
 
-function getFileObject(file) {
+// start of shared functions
+function getFilesArray(fileArray) {
 
-  return {
-    originalName : file.originalName,
-    path : file.path,
-    thumb : file.thumb,
-    size : file.size,
-    width : file.width,
-    height : file.height
-  };
+  var toReturn = [];
+
+  if (fileArray) {
+    for (var i = 0; i < fileArray.length; i++) {
+      var file = fileArray[i];
+
+      toReturn.push({
+        originalName : file.originalName,
+        path : file.path,
+        thumb : file.thumb,
+        size : file.size,
+        width : file.width,
+        height : file.height
+      });
+
+    }
+  }
+
+  return toReturn;
 
 }
 
-function getPostObject(post) {
-  return {
+function getPostObject(post, preview) {
+  var toReturn = {
     name : post.name,
     signedRole : post.signedRole,
     email : post.email,
-    postId : post.postId,
     id : post.id,
     subject : post.subject,
+    markdown : post.markdown,
     message : post.message,
     banMessage : post.banMessage,
-    creation : post.creation
+    creation : post.creation,
+    files : getFilesArray(post.files)
   };
+
+  if (!preview) {
+    toReturn.postId = post.postId;
+  }
+
+  return toReturn;
 }
 
-function getThreadObject(thread) {
+function buildThreadPosts(posts) {
+  var threadPosts = [];
+
+  if (posts) {
+
+    for (var i = 0; i < posts.length; i++) {
+
+      var post = posts[i];
+
+      var postToAdd = getPostObject(post);
+
+      threadPosts.push(postToAdd);
+
+    }
+  }
+
+  return threadPosts;
+}
+
+function getThreadObject(thread, posts) {
 
   return {
     signedRole : thread.signedRole,
@@ -42,70 +80,28 @@ function getThreadObject(thread) {
     email : thread.email,
     threadId : thread.threadId,
     subject : thread.subject,
+    markdown : thread.markdown,
     message : thread.message,
     creation : thread.creation,
     locked : thread.locked ? true : false,
-    pinned : thread.pinned ? true : false
+    pinned : thread.pinned ? true : false,
+    files : getFilesArray(thread.files),
+    posts : buildThreadPosts(posts)
   };
 }
-
-// start of thread creation
-function buildThreadPosts(posts) {
-  var threadPosts = [];
-
-  for (var i = 0; i < posts.length; i++) {
-
-    var post = posts[i];
-
-    var postToAdd = getPostObject(post);
-
-    if (post.files) {
-
-      var postFiles = [];
-
-      for (var j = 0; j < post.files.length; j++) {
-
-        postFiles.push(getFileObject(post.files[j]));
-
-      }
-
-      postToAdd.files = postFiles;
-
-    }
-
-    threadPosts.push(postToAdd);
-
-  }
-
-  return threadPosts;
-}
+// end of shared functions
 
 exports.thread = function(boardUri, boardData, threadData, posts, callback) {
 
-  var finalJson = getThreadObject(threadData);
-
-  var threadFiles = [];
-
-  if (threadData.files) {
-
-    for (var i = 0; i < threadData.files.length; i++) {
-      threadFiles.push(getFileObject(threadData.files[i]));
-    }
-  }
-
-  finalJson.posts = buildThreadPosts(posts || []);
-  finalJson.files = threadFiles;
-
   var path = '/' + boardUri + '/res/' + threadData.threadId + '.json';
 
-  gridFsHandler.writeData(JSON.stringify(finalJson), path, 'application/json',
-      {
+  gridFsHandler.writeData(JSON.stringify(getThreadObject(threadData, posts)),
+      path, 'application/json', {
         boardUri : boardUri,
         threadId : threadData.threadId,
         type : 'thread'
       }, callback);
 };
-// end of thread creation
 
 exports.frontPage = function(boards, callback) {
 
@@ -122,27 +118,13 @@ exports.frontPage = function(boards, callback) {
 
   }
 
-  var finalJson = {
+  gridFsHandler.writeData(JSON.stringify({
     topBoards : topBoards
-  };
-
-  gridFsHandler.writeData(JSON.stringify(finalJson), '/index.json',
-      'application/json', {}, callback);
+  }), '/index.json', 'application/json', {}, callback);
 
 };
 
 exports.preview = function(postingData, callback) {
-
-  var finalJson = {
-    name : postingData.name,
-    signedRole : postingData.signedRole,
-    email : postingData.email,
-    id : postingData.id,
-    subject : postingData.subject,
-    message : postingData.message,
-    banMessage : postingData.banMessage,
-    creation : postingData.creation
-  };
 
   var path = '/' + postingData.boardUri + '/preview/';
 
@@ -161,7 +143,81 @@ exports.preview = function(postingData, callback) {
 
   path += '.json';
 
-  gridFsHandler.writeData(JSON.stringify(finalJson), path, 'application/json',
-      metadata, callback);
+  gridFsHandler.writeData(JSON.stringify(getPostObject(postingData, true)),
+      path, 'application/json', metadata, callback);
+
+};
+
+exports.page = function(boardUri, page, threads, pageCount, boardData,
+    latestPosts, callback) {
+
+  var threadsToAdd = [];
+
+  if (threads) {
+
+    var tempLatest = {};
+
+    for (var i = 0; i < latestPosts.length; i++) {
+
+      tempLatest[latestPosts[i]._id] = latestPosts[i].latestPosts;
+    }
+
+    latestPosts = tempLatest;
+
+    for (i = 0; i < threads.length; i++) {
+      var thread = threads[i];
+
+      threadsToAdd.push(getThreadObject(thread, latestPosts[thread.threadId]));
+
+    }
+  }
+
+  var ownName = '/' + boardUri + '/' + page + '.json';
+
+  gridFsHandler.writeData(JSON.stringify({
+    pageCount : pageCount,
+    boardName : boardData.boardName,
+    boardDescription : boardData.boardDescription,
+    settings : boardData.settings,
+    threads : threadsToAdd
+  }), ownName, 'application/json', {
+    boardUri : boardUri,
+    type : 'board'
+  }, callback);
+
+};
+
+exports.catalog = function(boardUri, threads, callback) {
+
+  var threadsArray = [];
+
+  for (var i = 0; i < threads.length; i++) {
+    var thread = threads[i];
+
+    var threadToPush = {
+      message : thread.message,
+      threadId : thread.threadId,
+      postCount : thread.postCount,
+      fileCount : thread.fileCount,
+      page : thread.page,
+      subject : thread.subject,
+      locked : thread.locked ? true : false,
+      pinned : thread.pinned ? true : false,
+    };
+
+    if (thread.files && thread.files.length) {
+      threadToPush.thumb = thread.files[0].thumb;
+    }
+
+    threadsArray.push(threadToPush);
+  }
+
+  var path = '/' + boardUri + '/catalog.json';
+
+  gridFsHandler.writeData(JSON.stringify(threadsArray), path,
+      'application/json', {
+        boardUri : boardUri,
+        type : 'catalog'
+      }, callback);
 
 };
