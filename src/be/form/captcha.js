@@ -64,7 +64,7 @@ exports.process = function(req, res) {
           showCaptch(req, id, res, [ {
             field : 'captchaid',
             value : id,
-            path : '/captcha.js'
+            path : '/'
           } ]);
         }
 
