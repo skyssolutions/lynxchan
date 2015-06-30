@@ -195,44 +195,46 @@ function closeReport(report, userData, callback) {
 exports.closeReport = function(userData, parameters, callback) {
 
   var isOnGlobalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+  try {
+    reports.findOne({
+      _id : new ObjectID(parameters.reportId)
+    }, function gotReport(error, report) {
+      if (error) {
+        callback(error);
+      } else if (!report) {
+        callback('Report not found');
+      } else if (report.closedBy) {
+        callback('Report is already closed');
+      } else if (report.global && !isOnGlobalStaff) {
+        callback('You are not allowed to close global reports');
+      } else if (!report.global) {
 
-  reports.findOne({
-    _id : new ObjectID(parameters.reportId)
-  }, function gotReport(error, report) {
-    if (error) {
-      callback(error);
-    } else if (!report) {
-      callback('Report not found');
-    } else if (report.closedBy) {
-      callback('Report is already closed');
-    } else if (report.global && !isOnGlobalStaff) {
-      callback('You are not allowed to close global reports');
-    } else if (!report.global) {
+        // style exception, too simple
+        boards.findOne({
+          boardUri : report.boardUri
+        }, function gotBoard(error, board) {
+          if (error) {
+            callback(error);
+          } else if (!board) {
+            callback('Board not found');
+          } else if (!exports.isInBoardStaff(userData, board)) {
+            callback('You are not allowed to close reports for this board.');
+          } else {
+            closeReport(report, userData, callback);
+          }
 
-      // style exception, too simple
-      boards.findOne({
-        boardUri : report.boardUri
-      }, function gotBoard(error, board) {
-        if (error) {
-          callback(error);
-        } else if (!board) {
-          callback('Board not found');
-        } else if (!exports.isInBoardStaff(userData, board)) {
-          callback('You are not allowed to close reports for this board.');
-        } else {
-          closeReport(report, userData, callback);
-        }
+        });
 
-      });
+        // style exception, too simple
 
-      // style exception, too simple
+      } else {
+        closeReport(report, userData, callback);
+      }
 
-    } else {
-      closeReport(report, userData, callback);
-    }
-
-  });
-
+    });
+  } catch (error) {
+    callback(error);
+  }
 };
 // end of closing reports
 
@@ -735,26 +737,30 @@ function checkForBoardPermission(ban, userData, callback) {
 
 exports.liftBan = function(userData, parameters, callback) {
 
-  bans.findOne({
-    _id : new ObjectID(parameters.banId),
-    expiration : {
-      $gt : new Date()
-    }
-  }, function gotBan(error, ban) {
-    if (error) {
-      callback(error);
-    } else if (!ban) {
-      callback();
-    } else if (ban.boardUri) {
+  try {
+    bans.findOne({
+      _id : new ObjectID(parameters.banId),
+      expiration : {
+        $gt : new Date()
+      }
+    }, function gotBan(error, ban) {
+      if (error) {
+        callback(error);
+      } else if (!ban) {
+        callback();
+      } else if (ban.boardUri) {
 
-      checkForBoardPermission(ban, userData, callback);
+        checkForBoardPermission(ban, userData, callback);
 
-    } else if (userData.globalRole >= miscOps.getMaxStaffRole()) {
-      callback('You are not allowed to lift global bans.');
-    } else {
-      liftBan(ban, userData, callback);
-    }
-  });
+      } else if (userData.globalRole >= miscOps.getMaxStaffRole()) {
+        callback('You are not allowed to lift global bans.');
+      } else {
+        liftBan(ban, userData, callback);
+      }
+    });
+  } catch (error) {
+    callback(error);
+  }
 
 };
 

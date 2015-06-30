@@ -493,35 +493,39 @@ function removeBanner(banner, callback) {
 
 exports.deleteBanner = function(login, parameters, callback) {
 
-  files.findOne({
-    _id : new ObjectID(parameters.bannerId)
-  }, function gotBanner(error, banner) {
-    if (error) {
-      callback(error);
-    } else if (!banner) {
-      callback('Banner not found');
-    } else {
-      // style exception, too simple
+  try {
 
-      boards.findOne({
-        boardUri : banner.metadata.boardUri
-      }, function gotBoard(error, board) {
-        if (error) {
-          callback(error);
-        } else if (!board) {
-          callback('Board not found');
-        } else if (board.owner !== login) {
-          callback('You are not allowed to delete banners from this board');
-        } else {
-          removeBanner(banner, callback);
-        }
-      });
-      // style exception, too simple
+    files.findOne({
+      _id : new ObjectID(parameters.bannerId)
+    }, function gotBanner(error, banner) {
+      if (error) {
+        callback(error);
+      } else if (!banner) {
+        callback('Banner not found');
+      } else {
+        // style exception, too simple
 
-    }
+        boards.findOne({
+          boardUri : banner.metadata.boardUri
+        }, function gotBoard(error, board) {
+          if (error) {
+            callback(error);
+          } else if (!board) {
+            callback('Board not found');
+          } else if (board.owner !== login) {
+            callback('You are not allowed to delete banners from this board');
+          } else {
+            removeBanner(banner, callback);
+          }
+        });
+        // style exception, too simple
 
-  });
+      }
 
+    });
+  } catch (error) {
+    callback(error);
+  }
 };
 // end of banner deletion
 

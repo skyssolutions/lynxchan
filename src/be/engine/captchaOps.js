@@ -324,15 +324,19 @@ exports.checkForCaptcha = function(req, callback) {
     return;
   }
 
-  captchas.findOne({
-    _id : new ObjectID(cookies.captchaid),
-    expiration : {
-      $gt : new Date()
-    }
-  }, function foundCaptcha(error, captcha) {
-    callback(error, captcha ? captcha._id : null);
-  });
+  try {
 
+    captchas.findOne({
+      _id : new ObjectID(cookies.captchaid),
+      expiration : {
+        $gt : new Date()
+      }
+    }, function foundCaptcha(error, captcha) {
+      callback(error, captcha ? captcha._id : null);
+    });
+  } catch (error) {
+    callback(error);
+  }
 };
 
 // solves and invalidates a captcha
@@ -370,24 +374,28 @@ exports.attemptCaptcha = function(id, input, board, callback) {
     }
   }
 
-  captchas.findOneAndDelete({
-    _id : new ObjectID(id),
-    expiration : {
-      $gt : new Date()
-    }
-  }, function gotCaptcha(error, captcha) {
+  try {
+    captchas.findOneAndDelete({
+      _id : new ObjectID(id),
+      expiration : {
+        $gt : new Date()
+      }
+    }, function gotCaptcha(error, captcha) {
 
-    if (error) {
-      callback(error);
-    } else if (isCaptchaSolved(captcha, input)) {
-      callback();
-    } else if (!captcha.value) {
-      callback('Expired captcha.');
-    } else {
-      callback('Incorrect captcha');
-    }
+      if (error) {
+        callback(error);
+      } else if (isCaptchaSolved(captcha, input)) {
+        callback();
+      } else if (!captcha.value) {
+        callback('Expired captcha.');
+      } else {
+        callback('Incorrect captcha');
+      }
 
-  });
+    });
+  } catch (error) {
+    callback(error);
+  }
 
 };
 // end of captcha attempt
@@ -395,26 +403,31 @@ exports.attemptCaptcha = function(id, input, board, callback) {
 // solves a captcha without invalidating it
 exports.solveCaptcha = function(parameters, callback) {
 
-  captchas.findOneAndUpdate({
-    _id : new ObjectID(parameters.captchaId),
-    answer : parameters.answer,
-    expiration : {
-      $gt : new Date()
-    }
-  }, {
-    $unset : {
-      answer : true
-    }
-  }, function gotCaptcha(error, captcha) {
+  try {
 
-    if (error) {
-      callback(error);
-    } else if (!captcha.value) {
-      callback('Wrong answer or expired captcha.');
-    } else {
-      callback();
-    }
+    captchas.findOneAndUpdate({
+      _id : new ObjectID(parameters.captchaId),
+      answer : parameters.answer,
+      expiration : {
+        $gt : new Date()
+      }
+    }, {
+      $unset : {
+        answer : true
+      }
+    }, function gotCaptcha(error, captcha) {
 
-  });
+      if (error) {
+        callback(error);
+      } else if (!captcha.value) {
+        callback('Wrong answer or expired captcha.');
+      } else {
+        callback();
+      }
+
+    });
+  } catch (error) {
+    callback(error);
+  }
 
 };
