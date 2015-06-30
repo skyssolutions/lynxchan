@@ -124,7 +124,7 @@ bans: stores bans.
 
 captchas: stores captchas.
     _id**: unique id of the captcha.
-    answer: answer to the captcha.
+    answer: answer to the captcha. If null, captcha has been already answered.
     expiration(Date): date of when the captcha will expire.
 
 ----------------------------------------------------------------------------------------

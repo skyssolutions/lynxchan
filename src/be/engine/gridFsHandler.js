@@ -15,6 +15,7 @@ var miscOps = require('./miscOps');
 var boot = require('../boot');
 var genericThumb = boot.genericThumb();
 var spoilerPath = boot.spoilerImage();
+var permanentTypes = [ 'media', 'preview' ];
 
 // start of writing data
 function writeDataOnOpenFile(gs, data, callback) {
@@ -209,10 +210,22 @@ exports.removeFiles = function(name, callback) {
   });
 };
 
+function setExpiration(header, stats) {
+  var expiration = new Date();
+
+  if (permanentTypes.indexOf(stats.metadata.type) > -1) {
+    expiration.setFullYear(expiration.getFullYear() + 1);
+  }
+
+  header.push([ 'expires', expiration.toString() ]);
+}
+
 function streamFile(stats, callback, cookies, res) {
 
   var header = miscOps.corsHeader(stats.contentType);
   header.push([ 'last-modified', stats.uploadDate.toString() ]);
+
+  setExpiration(header, stats);
 
   if (cookies) {
 
@@ -273,6 +286,7 @@ exports.outputFile = function(file, req, res, callback, cookies, retry) {
   }, {
     uploadDate : 1,
     'metadata.status' : 1,
+    'metadata.type' : 1,
     contentType : 1,
     filename : 1,
     _id : 0

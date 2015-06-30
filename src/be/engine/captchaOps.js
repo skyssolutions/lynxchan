@@ -20,6 +20,7 @@ var formOps = require('./formOps');
 var gridFsHandler = require('./gridFsHandler');
 var tempDirectory = boot.tempDir();
 var miscOps = require('./miscOps');
+var url = require('url');
 
 // captcha settings
 var fonts = settings.captchaFonts || [];
@@ -312,6 +313,12 @@ exports.checkForCaptcha = function(req, callback) {
 
   var cookies = formOps.getCookies(req);
 
+  var parameters = url.parse(req.url, true).query;
+
+  if (parameters.captchaId) {
+    cookies.captchaid = parameters.captchaId;
+  }
+
   if (!cookies.captchaid || !cookies.captchaid.length) {
     callback();
     return;
@@ -328,6 +335,16 @@ exports.checkForCaptcha = function(req, callback) {
 
 };
 
+// solves and invalidates a captcha
+// start of captcha attempt
+function isCaptchaSolved(captcha, input) {
+
+  if (captcha.value) {
+    return !captcha.value.answer || captcha.value.answer === input;
+  }
+
+}
+
 exports.attemptCaptcha = function(id, input, board, callback) {
 
   if (board.settings.indexOf('disableCaptcha') > -1) {
@@ -339,8 +356,18 @@ exports.attemptCaptcha = function(id, input, board, callback) {
     return;
   }
 
-  if (verbose) {
-    console.log('Attempting to solve captcha ' + id + ' with answer ' + input);
+  input = input.trim();
+
+  if (input.length === 24) {
+    id = input;
+    if (verbose) {
+      console.log('Using pre-solved captcha ' + id);
+    }
+  } else {
+    if (verbose) {
+      console
+          .log('Attempting to solve captcha ' + id + ' with answer ' + input);
+    }
   }
 
   captchas.findOneAndDelete({
@@ -352,12 +379,40 @@ exports.attemptCaptcha = function(id, input, board, callback) {
 
     if (error) {
       callback(error);
-    } else if (captcha.value && captcha.value.answer === input) {
+    } else if (isCaptchaSolved(captcha, input)) {
       callback();
     } else if (!captcha.value) {
       callback('Expired captcha.');
     } else {
       callback('Incorrect captcha');
+    }
+
+  });
+
+};
+// end of captcha attempt
+
+// solves a captcha without invalidating it
+exports.solveCaptcha = function(parameters, callback) {
+
+  captchas.findOneAndUpdate({
+    _id : new ObjectID(parameters.captchaId),
+    answer : parameters.answer,
+    expiration : {
+      $gt : new Date()
+    }
+  }, {
+    $unset : {
+      answer : true
+    }
+  }, function gotCaptcha(error, captcha) {
+
+    if (error) {
+      callback(error);
+    } else if (!captcha.value) {
+      callback('Wrong answer or expired captcha.');
+    } else {
+      callback();
     }
 
   });

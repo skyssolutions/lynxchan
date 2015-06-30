@@ -64,7 +64,7 @@ Settings files that goes into the settings directory:
 * `siteTitle`: name to be used as the title of the front-page. Defaults to `My chan`.
 * `maxRequestSizeMB`: maximum size in megabytes of incoming requests. Defaults to 2MB.
 * `maxFileSizeMB`: maximum size in megabytes of individual uploaded files. Defaults to infinity.
-* `acceptedMimes`(Array): accepted mimes on uploads. Defaults to `[ 'image/png', 'image/jpeg', 'image/gif' ]`.
+* `acceptedMimes`(Array): accepted mimes on uploads. Defaults to `[ 'image/png', 'image/jpeg', 'image/gif', 'image/bmp' ]`.
 * `maxFiles`(Number): maximum amount of files on each post. Defaults to 3.
 * `defaultBanMessage`: default ban message to be used for banned content when the person applying the ban does not submit a message. Defaults to `(USER WAS BANNED FOR THIS POST)`;
 * `disableAccountCreation`(Boolean): disables account creation for users.

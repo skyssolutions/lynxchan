@@ -50,6 +50,7 @@ var filterCellTemplate;
 var boardModerationTemplate;
 var boardsTemplate;
 var boardsCellTemplate;
+var noCookieCaptcha;
 
 function loadEmailTemplates(fePath, templateSettings) {
 
@@ -91,6 +92,9 @@ function loadLongPathDynamicTemplates(fePath, templateSettings) {
 
   var filterManagementPath = fePath + templateSettings.filterManagement;
   filterMagementPage = fs.readFileSync(filterManagementPath);
+
+  var noCookieCaptchaPath = fePath + templateSettings.noCookieCaptchaPage;
+  noCookieCaptcha = fs.readFileSync(noCookieCaptchaPath);
 }
 
 function loadDynamicTemplates(fePath, templateSettings) {
@@ -315,7 +319,7 @@ function testTemplates(settings) {
         content : boardTemplate,
         fields : [ 'labelName', 'labelDescription', 'divPostings', 'divPages',
             'boardIdentifier', 'linkManagement', 'bannerImage', 'captchaDiv',
-            'divName', 'linkModeration' ]
+            'divName', 'linkModeration', 'labelMaxFileSize' ]
       },
       {
         template : 'threadPage',
@@ -324,7 +328,7 @@ function testTemplates(settings) {
             'boardIdentifier', 'linkManagement', 'threadIdentifier', 'linkMod',
             'inputBan', 'divBanInput', 'divControls', 'controlBoardIdentifier',
             'controlThreadIdentifier', 'checkboxLock', 'checkboxPin',
-            'bannerImage', 'captchaDiv', 'divName' ]
+            'bannerImage', 'captchaDiv', 'divName', 'labelMaxFileSize' ]
       },
       {
         template : 'messagePage',
@@ -391,10 +395,17 @@ function testTemplates(settings) {
         content : boardModerationTemplate,
         fields : [ 'boardTransferIdentifier', 'boardDeletionIdentifier',
             'labelTitle', 'labelOwner' ]
-      }, {
+      },
+      {
         template : 'boardsPage',
         content : boardsTemplate,
         fields : [ 'divBoards', 'divPages' ]
+      },
+      {
+        template : 'noCookieCaptchaPage',
+        content : noCookieCaptcha,
+        fields : [ 'divSolvedCaptcha', 'labelCaptchaId', 'inputCaptchaId',
+            'imageCaptcha' ]
       } ];
 
   var errors = [];
@@ -580,4 +591,8 @@ exports.boardsTemplate = function() {
 
 exports.boardsCellTemplate = function() {
   return boardsCellTemplate;
+};
+
+exports.noCookieCaptcha = function() {
+  return noCookieCaptcha;
 };

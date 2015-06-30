@@ -20,6 +20,7 @@ var verbose = settings.verbose;
 var accountCreationDisabled = settings.disableAccountCreation;
 var boardCreationRestricted = settings.restrictBoardCreation;
 var templateHandler = require('./templateHandler');
+var displayMaxSize = (boot.maxFileSize() / 1024 / 1024).toFixed(2);
 
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 var availableLogTypes = {
@@ -140,6 +141,8 @@ function setHeader(document, board, boardData) {
     var nameDiv = document.getElementById('divName');
     nameDiv.parentNode.removeChild(nameDiv);
   }
+
+  document.getElementById('labelMaxFileSize').innerHTML = displayMaxSize;
 
 }
 
@@ -1385,6 +1388,43 @@ exports.boards = function(boards, pageCount) {
 };
 
 // } Section 2.8: Board listing
+
+exports.noCookieCaptcha = function(parameters, captchaId) {
+
+  try {
+
+    var document = jsdom(templateHandler.noCookieCaptcha());
+
+    document.title = 'No cookie captcha';
+
+    if (!parameters.solvedCaptcha) {
+      var solvedCaptchaDiv = document.getElementById('divSolvedCaptcha');
+      solvedCaptchaDiv.parentNode.removeChild(solvedCaptchaDiv);
+    } else {
+      var labelSolved = document.getElementById('labelCaptchaId');
+      labelSolved.innerHTML = parameters.solvedCaptcha;
+    }
+
+    var captchaPath = '/captcha.js?captchaId=' + captchaId;
+    document.getElementById('imageCaptcha').src = captchaPath;
+
+    document.getElementById('inputCaptchaId').setAttribute('value', captchaId);
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+
+};
 
 // Section 2: Dynamic pages
 

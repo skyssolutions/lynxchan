@@ -57,6 +57,10 @@ divName:
     type: div
     description: holds the name input elements.
 
+labelMaxFileSize:
+    type:span
+    description: holds the maximum allowed file size for uploads.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::03
@@ -131,6 +135,10 @@ captchaDiv:
 divName:
     type: div
     description: holds the name input elements.
+
+labelMaxFileSize:
+    type:span
+    description: holds the maximum allowed file size for uploads.
 
 ------------------------------------------------------------------------------------------
 
@@ -879,6 +887,29 @@ labelPostCount:
 divDescription:
     type: div
     description: div that holds the board description.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::35
+
+noCookieCaptchaPage:
+
+Elements:
+divSolvedCaptcha:
+    type: div
+    description: displays the information about a previously solved captcha.
+
+labelCaptchaId:
+    type: span
+    description: displays the solved captcha id. 
+
+inputCaptchaId:
+    type: input
+    description: hidden input used to inform the captcha being solved.
+
+imageCaptcha:
+    type: img
+    description: image that will display a captcha with a specific id
 
 ------------------------------------------------------------------------------------------
 

@@ -279,7 +279,10 @@ PAG_ID::23
 
 Name: captcha
 
-Description: returns a captcha image in png format.
+Description: returns a captcha image in png format. Uses get parameters.
+
+Parameters:
+    captchaId: optional parameter used to specify the id of the captcha image to be displayed instead of using the id provided by the cookie.
 
 ------------------------------------------------------------------------------------------
 
@@ -445,6 +448,29 @@ Description: displays all existing boards. Uses get parameters.
 
 Parameters:
     page: page to be viewed.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::36
+
+Name: noCookieCaptcha
+
+Description: page used for solving captchas with cookies disabled. Uses get parameters.
+
+Parameters:
+    solvedCaptcha: id of a solved captcha to be displayed.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::37
+
+Name: solveCaptcha
+
+Description: solves a captcha without invalidating it.
+
+Parameters:
+    captchaId: id of the captcha to be solved.
+    answer: answer to the captcha.    
 
 ------------------------------------------------------------------------------------------
 
