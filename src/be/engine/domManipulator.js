@@ -37,6 +37,13 @@ var optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
 
 // Section 1: Shared functions {
 
+function getRange(ip) {
+
+  var matches = ip.match(/(\d+.\d+).\d+.\d+/);
+
+  return matches[1] + '.XXX.XXX';
+}
+
 function setFormCellBoilerPlate(cell, action, cssClass) {
   cell.method = 'post';
   cell.enctype = 'multipart/form-data';
@@ -147,7 +154,7 @@ function setHeader(document, board, boardData) {
 }
 
 // Section 1.2: Thread content {
-function setThreadHiddeableElements(thread, threadCell) {
+function setThreadHiddeableElements(thread, threadCell, modding) {
 
   if (!thread.pinned) {
     var pinIndicator = threadCell.getElementsByClassName('pinIndicator')[0];
@@ -165,9 +172,18 @@ function setThreadHiddeableElements(thread, threadCell) {
     var spanId = threadCell.getElementsByClassName('spanId')[0];
     spanId.parentNode.removeChild(spanId);
   }
+
+  if (modding) {
+    var labelRange = threadCell.getElementsByClassName('labelRange')[0];
+    labelRange.innerHTML = getRange(thread.ip);
+  } else {
+    var panelRange = threadCell.getElementsByClassName('panelRange')[0];
+
+    panelRange.parentNode.removeChild(panelRange);
+  }
 }
 
-function addThread(document, thread, posts, boardUri, innerPage) {
+function addThread(document, thread, posts, boardUri, innerPage, modding) {
 
   var threadCell = document.createElement('div');
   threadCell.innerHTML = templateHandler.opTemplate();
@@ -178,7 +194,7 @@ function addThread(document, thread, posts, boardUri, innerPage) {
 
   setThreadComplexElements(boardUri, thread, threadCell, innerPage);
 
-  setThreadHiddeableElements(thread, threadCell);
+  setThreadHiddeableElements(thread, threadCell, modding);
 
   setThreadSimpleElements(threadCell, thread);
 
@@ -187,7 +203,7 @@ function addThread(document, thread, posts, boardUri, innerPage) {
 
   document.getElementById('divPostings').appendChild(threadCell);
 
-  addPosts(document, posts || [], boardUri, thread.threadId, innerPage);
+  addPosts(document, posts || [], boardUri, thread.threadId, modding);
 
 }
 
@@ -247,7 +263,7 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document,
 }
 
 function setPostInnerElements(document, boardUri, threadId, post, postCell,
-    preview) {
+    preview, modding) {
 
   var linkName = postCell.getElementsByClassName('linkName')[0];
 
@@ -266,11 +282,20 @@ function setPostInnerElements(document, boardUri, threadId, post, postCell,
 
   setPostHideableElements(postCell, post);
 
+  if (modding) {
+    var labelRange = postCell.getElementsByClassName('labelRange')[0];
+    labelRange.innerHTML = getRange(post.ip);
+  } else {
+    var panelRange = postCell.getElementsByClassName('panelRange')[0];
+
+    panelRange.parentNode.removeChild(panelRange);
+  }
+
   setPostComplexElements(postCell, post, boardUri, threadId, document, preview);
 
 }
 
-function addPosts(document, posts, boardUri, threadId) {
+function addPosts(document, posts, boardUri, threadId, modding) {
 
   var divThreads = document.getElementById('divPostings');
 
@@ -283,7 +308,8 @@ function addPosts(document, posts, boardUri, threadId) {
 
     postCell.id = post.postId;
 
-    setPostInnerElements(document, boardUri, threadId, post, postCell);
+    setPostInnerElements(document, boardUri, threadId, post, postCell, false,
+        modding);
 
     divThreads.appendChild(postCell);
 
@@ -727,6 +753,9 @@ function setBoardManagementLinks(document, boardData) {
 
   var filtersUrl = '/filterManagement.js?boardUri=' + boardData.boardUri;
   document.getElementById('filterManagementLink').href = filtersUrl;
+
+  var rangeBansUrl = '/rangeBans.js?boardUri=' + boardData.boardUri;
+  document.getElementById('rangeBansLink').href = rangeBansUrl;
 }
 
 exports.boardManagement = function(login, boardData, reports) {
@@ -851,10 +880,12 @@ function setNewStaffComboBox(document, userRole) {
 
 function setGlobalBansLink(userRole, document) {
   var bansLink = document.getElementById('bansLink');
+  var rangeBansLink = document.getElementById('rangeBansLink');
 
   var displayBans = userRole < miscOps.getMaxStaffRole();
 
   if (!displayBans) {
+    rangeBansLink.parentNode.removeChild(rangeBansLink);
     bansLink.parentNode.removeChild(bansLink);
   }
 }
@@ -1426,6 +1457,63 @@ exports.noCookieCaptcha = function(parameters, captchaId) {
 
 };
 
+// Section 2.9: Range bans {
+function setRangeBanCells(document, bans) {
+
+  var bansDiv = document.getElementById('rangeBansDiv');
+
+  for (var i = 0; i < bans.length; i++) {
+    var ban = bans[i];
+
+    var banCell = document.createElement('form');
+    banCell.innerHTML = templateHandler.rangeBanCellTemplate();
+    setFormCellBoilerPlate(banCell, '/liftBan.js', 'rangeBanCell');
+
+    banCell.getElementsByClassName('rangeLabel')[0].innerHTML = ban.range;
+    banCell.getElementsByClassName('idIdentifier')[0].setAttribute('value',
+        ban._id);
+
+    bansDiv.appendChild(banCell);
+
+  }
+
+}
+
+exports.rangeBans = function(bans, boardUri) {
+
+  try {
+
+    var document = jsdom(templateHandler.rangeBansTemplate());
+
+    document.title = 'Range bans';
+
+    var boardIdentifier = document.getElementById('boardIdentifier');
+
+    if (boardUri) {
+      boardIdentifier.setAttribute('value', boardUri);
+    } else {
+      boardIdentifier.parentNode.removeChild(boardIdentifier);
+    }
+
+    setRangeBanCells(document, bans);
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+
+};
+// } Section 2.9: Range bans
+
 // Section 2: Dynamic pages
 
 // Section 3: Static pages {
@@ -1605,7 +1693,7 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
 
     setThreadHiddenIdentifiers(document, boardUri, threadData);
 
-    addThread(document, threadData, posts, boardUri, true);
+    addThread(document, threadData, posts, boardUri, true, modding);
 
     setModElements(modding, document, boardUri, boardData, threadData, posts,
         callback);

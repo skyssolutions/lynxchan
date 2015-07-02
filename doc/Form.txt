@@ -474,4 +474,28 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::38
+
+Name: rangeBans
+
+Description: displays the page for management of range bans.
+
+Parameters: 
+    boardUri: if informed, will display only range bans for the board.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::39
+
+Name: placeRangeBan
+
+Description: creates a range ban. Requires authentication. Global range bans are restricted to users with global role lower than 3.
+
+Parameters:
+    boardUri: if not informed, the range ban will be global.
+    expiration: parseable date for when the ban should expire.
+    range: range to be banned.    
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

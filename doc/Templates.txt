@@ -173,6 +173,14 @@ linkName:
     type: a
     description: contains the poster's name and links to the poster e-mail. Will have the class "noEmailName" added if it doesn't have an e-mail to be added to href.
 
+panelRange:
+    type: span
+    description: object to be removed if the range is not going to be informed.
+
+labelRange:
+    type: span
+    description: contains the poster's first two parts of his ip.
+
 labelSubject:
     type: span
     description: contains the thread's subject.
@@ -224,11 +232,19 @@ TEM_ID::06
 postCell*:
 Root element: form
 
+Elements:
 divBanMessage:
     type: div
     description: holds the ban message, if the content was used for a ban.
 
-Elements:
+panelRange:
+    type: span
+    description: object to be removed if the range is not going to be informed.
+
+labelRange:
+    type: span
+    description: contains the poster's first two parts of his ip.
+
 panelUploads:
     type: div
     description: contains the uploads for the post.
@@ -345,6 +361,10 @@ bansLink:
     type: a
     description: link to the bans page.
 
+rangeBansLink:
+    type: a
+    description: link to the range bans management page.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::11
@@ -443,6 +463,10 @@ filterManagementLink:
 anonymousNameField:
     type: input
     description: field that holds the anonymous name for the board.
+
+rangeBansLink:
+    type: a
+    description: link to the range bans management page.
 
 ------------------------------------------------------------------------------------------
 
@@ -910,6 +934,37 @@ inputCaptchaId:
 imageCaptcha:
     type: img
     description: image that will display a captcha with a specific id
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::36
+
+rangeBansPage:
+
+Elements:
+rangeBansDiv:
+    type: div
+    description: div that holds the range bans.
+
+boardIdentifier:
+    type: input
+    description: hidden input that holds the board identification.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::37
+
+rangeBanCell*:
+Root element: form
+
+Elements:
+rangeLabel:
+    type: span
+    description: label that holds the range of this ban.
+
+idIdentifier:
+    type: input
+    description: hidden input that identifies the ban.
 
 ------------------------------------------------------------------------------------------
 

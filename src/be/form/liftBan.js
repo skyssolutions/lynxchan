@@ -5,11 +5,25 @@ var modOps = require('../engine/modOps');
 
 function liftBan(userData, parameters, res) {
 
-  modOps.liftBan(userData, parameters, function banLifted(error) {
+  modOps.liftBan(userData, parameters, function banLifted(error, rangeBan,
+      boardUri) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
-      formOps.outputResponse('Ban lifted', '/', res);
+
+      var redirect = '/';
+
+      if (rangeBan) {
+        redirect += '/rangeBans.js';
+      } else {
+        redirect += 'bans.js';
+      }
+
+      if (boardUri) {
+        redirect += '?boardUri=' + boardUri;
+      }
+
+      formOps.outputResponse('Ban lifted', redirect, res);
     }
   });
 

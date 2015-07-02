@@ -116,6 +116,7 @@ bans: stores bans.
     _id**: unique id of the ban.
     appliedBy*: login of the user that applied the ban.
     expiration(Date): date of when the ban will expire.
+    range: range of the ban. Only includes the two first parts of the ip.
     reason: reason of the ban. 256 characters.
     ip: banned ip.
     boardUri*: board of the ban. If not set, the ban is global.

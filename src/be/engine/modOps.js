@@ -50,6 +50,9 @@ exports.isInBoardStaff = function(userData, board) {
 
 function getBans(parameters, callback) {
   var queryBlock = {
+    ip : {
+      $exists : true
+    },
     expiration : {
       $gt : new Date()
     },
@@ -67,7 +70,7 @@ function getBans(parameters, callback) {
 
 exports.getBans = function(userData, parameters, callback) {
 
-  var isOnGlobalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+  var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 
   if (parameters.boardUri) {
     boards.findOne({
@@ -701,7 +704,7 @@ function liftBan(ban, userData, callback) {
           logger.printLogError(logMessage, error);
         }
 
-        callback();
+        callback(null, ban.range ? true : false, ban.boardUri);
       });
 
       // style exception, too simple
@@ -739,10 +742,7 @@ exports.liftBan = function(userData, parameters, callback) {
 
   try {
     bans.findOne({
-      _id : new ObjectID(parameters.banId),
-      expiration : {
-        $gt : new Date()
-      }
+      _id : new ObjectID(parameters.banId)
     }, function gotBan(error, ban) {
       if (error) {
         callback(error);
@@ -855,3 +855,95 @@ exports.setThreadSettings = function(userData, parameters, callback) {
 };
 
 // start of thread settings process
+
+// start of reading range bans
+
+function getRangeBans(parameters, callback) {
+  var queryBlock = {
+    range : {
+      $exists : true
+    },
+    boardUri : parameters.boardUri ? parameters.boardUri : {
+      $exists : false
+    }
+  };
+
+  bans.find(queryBlock).sort({
+    creation : -1
+  }).toArray(function gotBans(error, rangeBans) {
+    callback(error, rangeBans);
+  });
+}
+
+exports.getRangeBans = function(userData, parameters, callback) {
+
+  var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
+
+  if (parameters.boardUri) {
+    boards.findOne({
+      boardUri : parameters.boardUri
+    }, function gotBoard(error, board) {
+      if (error) {
+        callback(error);
+      } else if (!board) {
+        callback('Board not found');
+      } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
+        callback('You are not allowed to view range bans for this board.');
+      } else {
+        getRangeBans(parameters, callback);
+      }
+    });
+  } else if (!isOnGlobalStaff) {
+    callback('You are not allowed to view global range bans.');
+  } else {
+    getRangeBans(parameters, callback);
+  }
+
+};
+// end of reading bans
+
+// start of range ban placement
+
+function placeRangeBan(userData, parameters, callback) {
+
+  var rangeBan = {
+    range : parameters.range,
+    appliedBy : userData.login,
+  };
+
+  if (parameters.boardUri) {
+    rangeBan.boardUri = parameters.boardUri;
+  }
+
+  bans.insert(rangeBan, function insertedBan(error) {
+    callback(error);
+  });
+}
+
+exports.placeRangeBan = function(userData, parameters, callback) {
+
+  var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
+
+  if (parameters.boardUri) {
+    boards.findOne({
+      boardUri : parameters.boardUri
+    }, function gotBoard(error, board) {
+      if (error) {
+        callback(error);
+      } else if (!board) {
+        callback('Board not found');
+      } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
+        callback('You are not allowed to place range bans on this board.');
+      } else {
+        placeRangeBan(userData, parameters, callback);
+      }
+    });
+  } else if (!isOnGlobalStaff) {
+    callback('You are not allowed to place global range bans.');
+  } else {
+    placeRangeBan(userData, parameters, callback);
+  }
+
+};
+
+// end of range ban placement

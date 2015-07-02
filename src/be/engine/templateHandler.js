@@ -51,12 +51,26 @@ var boardModerationTemplate;
 var boardsTemplate;
 var boardsCellTemplate;
 var noCookieCaptcha;
+var rangeBansTemplate;
+var rangeBanCellTemplate;
 
 function loadEmailTemplates(fePath, templateSettings) {
 
   var recoveryEmailPath = fePath + templateSettings.recoveryEmail;
   recoveryEmailTemplate = fs.readFileSync(recoveryEmailPath);
   resetEmailTemplate = fs.readFileSync(fePath + templateSettings.resetEmail);
+
+}
+
+function loadLongPathCellTemplates(fePath, templateSettings) {
+  var closedReportPath = fePath + templateSettings.closedReportCell;
+  closedReportCellTemplate = fs.readFileSync(closedReportPath);
+
+  var volunteerPath = fePath + templateSettings.volunteerCell;
+  volunteerCellTemplate = fs.readFileSync(volunteerPath);
+
+  var rangeBanPath = fePath + templateSettings.rangeBanCell;
+  rangeBanCellTemplate = fs.readFileSync(rangeBanPath);
 
 }
 
@@ -73,11 +87,6 @@ function loadCellTemplates(fePath, templateSettings) {
   filterCellTemplate = fs.readFileSync(fePath + templateSettings.filterCell);
   boardsCellTemplate = fs.readFileSync(fePath + templateSettings.boardsCell);
 
-  var closedReportPath = fePath + templateSettings.closedReportCell;
-  closedReportCellTemplate = fs.readFileSync(closedReportPath);
-
-  var volunteerPath = fePath + templateSettings.volunteerCell;
-  volunteerCellTemplate = fs.readFileSync(volunteerPath);
 }
 
 function loadLongPathDynamicTemplates(fePath, templateSettings) {
@@ -109,6 +118,7 @@ function loadDynamicTemplates(fePath, templateSettings) {
   banPageTemplate = fs.readFileSync(fePath + templateSettings.banPage);
   logsPageTemplate = fs.readFileSync(fePath + templateSettings.logsPage);
   boardsTemplate = fs.readFileSync(fePath + templateSettings.boardsPage);
+  rangeBansTemplate = fs.readFileSync(fePath + templateSettings.rangeBansPage);
 
 }
 
@@ -219,14 +229,14 @@ function testTemplates(settings) {
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkReply', 'linkSelf', 'deletionCheckBox',
             'lockIndicator', 'pinIndicator', 'labelId', 'labelRole',
-            'divBanMessage', 'spanId' ]
+            'divBanMessage', 'spanId', 'panelRange', 'labelRange' ]
       },
       {
         template : 'postCell',
         content : postTemplate,
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkSelf', 'deletionCheckBox', 'labelId',
-            'labelRole', 'divBanMessage', 'spanId' ]
+            'labelRole', 'divBanMessage', 'spanId', 'panelRange', 'labelRange' ]
       },
       {
         template : 'staffCell',
@@ -276,6 +286,10 @@ function testTemplates(settings) {
         content : boardsCellTemplate,
         fields : [ 'linkBoard', 'labelPostsPerHour', 'labelPostCount',
             'divDescription' ]
+      }, {
+        template : 'rangeBanCell',
+        content : rangeBanCellTemplate,
+        fields : [ 'rangeLabel', 'idIdentifier' ]
       } ];
 
   var pageTests = [
@@ -350,7 +364,7 @@ function testTemplates(settings) {
         template : 'gManagement',
         content : gManagementTemplate,
         fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
-            'reportDiv', 'bansLink' ]
+            'reportDiv', 'bansLink', 'rangeBansLink' ]
       },
       {
         template : 'bManagement',
@@ -361,7 +375,7 @@ function testTemplates(settings) {
             'bannerManagementLink', 'boardNameField', 'boardDescriptionField',
             'boardSettingsIdentifier', 'disableIdsCheckbox',
             'disableCaptchaCheckbox', 'forceAnonymityCheckbox',
-            'filterManagementLink', 'anonymousNameField' ]
+            'filterManagementLink', 'anonymousNameField', 'rangeBansLink' ]
       },
       {
         template : 'closedReportsPage',
@@ -406,6 +420,10 @@ function testTemplates(settings) {
         content : noCookieCaptcha,
         fields : [ 'divSolvedCaptcha', 'labelCaptchaId', 'inputCaptchaId',
             'imageCaptcha' ]
+      }, {
+        template : 'rangeBansPage',
+        content : rangeBansTemplate,
+        fields : [ 'rangeBansDiv', 'boardIdentifier' ]
       } ];
 
   var errors = [];
@@ -448,6 +466,7 @@ exports.loadTemplates = function() {
   loadDynamicTemplates(fePath, templateSettings);
   loadLongPathDynamicTemplates(fePath, templateSettings);
   loadCellTemplates(fePath, templateSettings);
+  loadLongPathCellTemplates(fePath, templateSettings);
 
   testTemplates(templateSettings);
 
@@ -595,4 +614,12 @@ exports.boardsCellTemplate = function() {
 
 exports.noCookieCaptcha = function() {
   return noCookieCaptcha;
+};
+
+exports.rangeBansTemplate = function() {
+  return rangeBansTemplate;
+};
+
+exports.rangeBanCellTemplate = function() {
+  return rangeBanCellTemplate;
 };
