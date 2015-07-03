@@ -14,7 +14,7 @@ function liftBan(userData, parameters, res) {
       var redirect = '/';
 
       if (rangeBan) {
-        redirect += '/rangeBans.js';
+        redirect += 'rangeBans.js';
       } else {
         redirect += 'bans.js';
       }

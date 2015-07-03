@@ -53,6 +53,7 @@ var boardsCellTemplate;
 var noCookieCaptcha;
 var rangeBansTemplate;
 var rangeBanCellTemplate;
+var rangeBanPageTemplate;
 
 function loadEmailTemplates(fePath, templateSettings) {
 
@@ -104,6 +105,9 @@ function loadLongPathDynamicTemplates(fePath, templateSettings) {
 
   var noCookieCaptchaPath = fePath + templateSettings.noCookieCaptchaPage;
   noCookieCaptcha = fs.readFileSync(noCookieCaptchaPath);
+
+  var rangeBanPath = fePath + templateSettings.rangeBanPage;
+  rangeBanPageTemplate = fs.readFileSync(rangeBanPath);
 }
 
 function loadDynamicTemplates(fePath, templateSettings) {
@@ -262,7 +266,7 @@ function testTemplates(settings) {
         template : 'banCell',
         content : banCellTemplate,
         fields : [ 'reasonLabel', 'expirationLabel', 'appliedByLabel',
-            'boardLabel' ]
+            'boardLabel', 'idLabel' ]
       },
       {
         template : 'uploadCell',
@@ -358,7 +362,7 @@ function testTemplates(settings) {
       {
         template : 'banPage',
         content : banPageTemplate,
-        fields : [ 'boardLabel', 'reasonLabel', 'expirationLabel' ]
+        fields : [ 'boardLabel', 'reasonLabel', 'expirationLabel', 'idLabel' ]
       },
       {
         template : 'gManagement',
@@ -424,6 +428,10 @@ function testTemplates(settings) {
         template : 'rangeBansPage',
         content : rangeBansTemplate,
         fields : [ 'rangeBansDiv', 'boardIdentifier' ]
+      }, {
+        template : 'rangeBanPage',
+        content : rangeBanPageTemplate,
+        fields : [ 'boardLabel', 'rangeLabel' ]
       } ];
 
   var errors = [];
@@ -622,4 +630,8 @@ exports.rangeBansTemplate = function() {
 
 exports.rangeBanCellTemplate = function() {
   return rangeBanCellTemplate;
+};
+
+exports.rangeBanPageTemplate = function() {
+  return rangeBanPageTemplate;
 };

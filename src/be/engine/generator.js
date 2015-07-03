@@ -248,14 +248,6 @@ exports.defaultPages = function(callback) {
 
 exports.preview = function(boardUri, threadId, postId, callback, postingData) {
 
-  if (verbose) {
-
-    var message = 'Generating preview for ' + boardUri + '/';
-    message += (postId || threadId);
-
-    console.log(message);
-  }
-
   if (!postingData) {
 
     var queryBlock = {
@@ -282,6 +274,14 @@ exports.preview = function(boardUri, threadId, postId, callback, postingData) {
     });
 
   } else {
+
+    if (verbose) {
+
+      var message = 'Generating preview for ' + postingData.boardUri + '/';
+      message += (postingData.postId || postingData.postId);
+
+      console.log(message);
+    }
 
     domManipulator.preview(postingData, function savedHtml(error) {
       if (error) {

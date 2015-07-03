@@ -31,18 +31,12 @@ var availableLogTypes = {
   reportClosure : 'Reports closure',
   globalRoleChange : 'Global role change',
   boardDeletion : 'Board deletion',
-  boardTransfer : 'Board ownership transfer'
+  boardTransfer : 'Board ownership transfer',
+  rangeBan : 'Range ban'
 };
 var optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
 
 // Section 1: Shared functions {
-
-function getRange(ip) {
-
-  var matches = ip.match(/(\d+.\d+).\d+.\d+/);
-
-  return matches[1] + '.XXX.XXX';
-}
 
 function setFormCellBoilerPlate(cell, action, cssClass) {
   cell.method = 'post';
@@ -175,7 +169,7 @@ function setThreadHiddeableElements(thread, threadCell, modding) {
 
   if (modding) {
     var labelRange = threadCell.getElementsByClassName('labelRange')[0];
-    labelRange.innerHTML = getRange(thread.ip);
+    labelRange.innerHTML = miscOps.getRange(thread.ip);
   } else {
     var panelRange = threadCell.getElementsByClassName('panelRange')[0];
 
@@ -284,7 +278,7 @@ function setPostInnerElements(document, boardUri, threadId, post, postCell,
 
   if (modding) {
     var labelRange = postCell.getElementsByClassName('labelRange')[0];
-    labelRange.innerHTML = getRange(post.ip);
+    labelRange.innerHTML = miscOps.getRange(post.ip);
   } else {
     var panelRange = postCell.getElementsByClassName('panelRange')[0];
 
@@ -489,21 +483,27 @@ exports.bannerManagement = function(boardUri, banners) {
 
 };
 
-exports.ban = function(reason, expiration, board) {
+exports.ban = function(ban, board) {
 
   try {
 
-    var document = jsdom(templateHandler.banPageTemplate());
+    var document = jsdom(ban.range ? templateHandler.rangeBanPageTemplate()
+        : templateHandler.banPageTemplate());
 
     document.title = 'b& :^)';
 
-    document.getElementById('reasonLabel').innerHTML = reason;
-
     document.getElementById('boardLabel').innerHTML = board;
 
-    expiration = formatDateToDisplay(expiration);
+    if (ban.range) {
+      document.getElementById('rangeLabel').innerHTML = ban.range;
+    } else {
+      document.getElementById('reasonLabel').innerHTML = ban.reason;
 
-    document.getElementById('expirationLabel').innerHTML = expiration;
+      document.getElementById('idLabel').innerHTML = ban._id;
+
+      ban.expiration = formatDateToDisplay(ban.expiration);
+      document.getElementById('expirationLabel').innerHTML = ban.expiration;
+    }
 
     return serializer(document);
 
@@ -553,6 +553,8 @@ exports.error = function(code, message) {
 
 // Section 2.1: Bans {
 function setBanCell(ban, cell) {
+
+  cell.getElementsByClassName('idLabel')[0].innerHTML = ban._id;
 
   cell.getElementsByClassName('reasonLabel')[0].innerHTML = ban.reason;
 

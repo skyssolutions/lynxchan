@@ -562,6 +562,10 @@ banCell*:
 Root element: form
 
 Elements:
+idLabel:
+    type: span
+    description: holds the id of the ban.
+
 reasonLabel:
     type: span
     description: holds the reason of the ban.
@@ -631,6 +635,10 @@ reasonLabel:
 expirationLabel:     
     type: span
     description: holds the expiration of the ban.
+
+idLabel:
+    type: label
+    description: holds the id of the ban.
 
 ------------------------------------------------------------------------------------------
 
@@ -967,6 +975,19 @@ idIdentifier:
     description: hidden input that identifies the ban.
 
 ------------------------------------------------------------------------------------------
+
+TEM_ID::38
+
+rangeBanPage:
+
+Elements:
+boardLabel:
+    type: span
+    description: label that holds the ban of the range ban where the user got caught.
+
+rangeLabel:
+    type: span
+    description: label that holds the banned range.
 
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.
 

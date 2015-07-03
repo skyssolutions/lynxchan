@@ -493,7 +493,6 @@ Description: creates a range ban. Requires authentication. Global range bans are
 
 Parameters:
     boardUri: if not informed, the range ban will be global.
-    expiration: parseable date for when the ban should expire.
     range: range to be banned.    
 
 ------------------------------------------------------------------------------------------

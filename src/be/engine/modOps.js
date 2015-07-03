@@ -669,6 +669,38 @@ exports.ban = function(userData, reportedObjects, parameters, callback) {
 
 // start of ban lift
 
+function getLiftedBanLogMessage(ban, userData) {
+
+  var logMessage = 'User ' + userData.login + ' lifted a';
+
+  if (ban.ip) {
+
+    if (!ban.boardUri) {
+      logMessage += ' global ban';
+    } else {
+      logMessage += ' ban on board ' + ban.boardUri;
+    }
+
+    logMessage += ' with id ' + ban._id + ' set to expire at ';
+    logMessage += ban.expiration + '.';
+  } else if (ban.range) {
+
+    if (!ban.boardUri) {
+      logMessage += ' global range ban';
+    } else {
+      logMessage += ' range ban on board ' + ban.boardUri;
+    }
+
+    logMessage += ' on range ';
+    logMessage += ban.range + '.';
+
+  } else {
+    logMessage += ' unknown type of ban with id ' + ban._id + '.';
+  }
+
+  return logMessage;
+}
+
 function liftBan(ban, userData, callback) {
 
   bans.remove({
@@ -680,16 +712,7 @@ function liftBan(ban, userData, callback) {
     } else {
       // style exception, too simple
 
-      var logMessage = 'User ' + userData.login + ' lifted a';
-
-      if (!ban.boardUri) {
-        logMessage += ' global ban';
-      } else {
-        logMessage += ' ban on board ' + ban.boardUri;
-      }
-
-      logMessage += ' with id ' + ban._id + ' set to expire at ';
-      logMessage += ban.expiration + '.';
+      var logMessage = getLiftedBanLogMessage(ban, userData);
 
       logs.insert({
         user : userData.login,
@@ -916,6 +939,37 @@ function placeRangeBan(userData, parameters, callback) {
   }
 
   bans.insert(rangeBan, function insertedBan(error) {
+    if (error) {
+      callback(error);
+    } else {
+      var logMessage = 'User ' + userData.login + ' placed a';
+
+      if (parameters.boardUri) {
+        logMessage += ' range ban on board ' + parameters.boardUri;
+      } else {
+        logMessage += ' global range ban';
+      }
+
+      logMessage += ' on range ' + parameters.range + '.';
+
+      // style exception,too simple
+      logs.insert({
+        user : userData.login,
+        global : parameters.boardUri ? false : true,
+        time : new Date(),
+        description : logMessage,
+        type : 'rangeBan',
+        boardUri : parameters.boardUri
+      }, function insertedLog(error) {
+        if (error) {
+
+          logger.printLogError(logMessage, error);
+        }
+
+        callback(null);
+      });
+      // style exception,too simple
+    }
     callback(error);
   });
 }
@@ -947,3 +1001,43 @@ exports.placeRangeBan = function(userData, parameters, callback) {
 };
 
 // end of range ban placement
+
+exports.checkForBan = function(req, boardUri, callback) {
+
+  var ip = req.connection.remoteAddress;
+
+  var range = miscOps.getRange(ip);
+
+  var singleBanAnd = {
+    $and : [ {
+      expiration : {
+        $gt : new Date()
+      }
+    }, {
+      ip : ip
+    } ]
+  };
+
+  var rangeBanCondition = {
+    range : range
+  };
+
+  var globalOrLocalOr = {
+    $or : [ {
+      boardUri : boardUri
+    }, {
+      boardUri : {
+        $exists : false
+      }
+    } ]
+  };
+
+  var finalCondition = {
+    $and : [ globalOrLocalOr, {
+      $or : [ rangeBanCondition, singleBanAnd ]
+    } ]
+  };
+
+  bans.findOne(finalCondition, callback);
+
+};

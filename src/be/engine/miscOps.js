@@ -269,3 +269,9 @@ exports.getManagementData = function(userRole, userLogin, callback) {
     });
   }
 };
+
+exports.getRange = function(ip) {
+
+  return ip.match(/(\d+.\d+).\d+.\d+/)[1];
+
+};

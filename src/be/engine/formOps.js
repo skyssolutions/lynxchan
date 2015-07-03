@@ -8,6 +8,7 @@ var accountOps = require('./accountOps');
 var uploadHandler = require('./uploadHandler');
 var debug = boot.debug();
 var verbose = settings.verbose;
+var modOps = require('./modOps');
 var multiParty = require('multiparty');
 var miscOps = require('./miscOps');
 var jsdom = require('jsdom').jsdom;
@@ -328,21 +329,7 @@ exports.checkBlankParameters = function(object, parameters, res) {
 
 exports.checkForBan = function(req, boardUri, res, callback) {
 
-  var ip = req.connection.remoteAddress;
-
-  bans.findOne({
-    ip : ip,
-    expiration : {
-      $gt : new Date()
-    },
-    $or : [ {
-      boardUri : boardUri
-    }, {
-      boardUri : {
-        $exists : false
-      }
-    } ]
-  }, function gotBan(error, ban) {
+  modOps.checkForBan(req, boardUri, function gotBan(error, ban) {
     if (error) {
       callback(error);
     } else if (ban) {
@@ -350,7 +337,7 @@ exports.checkForBan = function(req, boardUri, res, callback) {
 
       var board = ban.boardUri ? '/' + ban.boardUri + '/' : 'all boards';
 
-      res.end(domManipulator.ban(ban.reason, ban.expiration, board));
+      res.end(domManipulator.ban(ban, board));
     } else {
       callback();
     }

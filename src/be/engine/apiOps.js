@@ -10,6 +10,7 @@ var miscOps = require('./miscOps');
 var bans = require('../db').bans();
 var fs = require('fs');
 var crypto = require('crypto');
+var modOps = require('./modOps');
 var path = require('path');
 var tempDir = boot.tempDir();
 var uploadHandler = require('./uploadHandler');
@@ -289,26 +290,14 @@ exports.outputResponse = function(auth, data, status, res) {
 
 exports.checkForBan = function(req, boardUri, res, callback) {
 
-  var ip = req.connection.remoteAddress;
-
-  bans.findOne({
-    ip : ip,
-    expiration : {
-      $gt : new Date()
-    },
-    $or : [ {
-      boardUri : boardUri
-    }, {
-      boardUri : {
-        $exists : false
-      }
-    } ]
-  }, function gotBan(error, ban) {
+  modOps.checkForBan(req, boardUri, function gotBan(error, ban) {
     if (error) {
       callback(error);
     } else if (ban) {
       exports.outputResponse(null, {
         reason : ban.reason,
+        range : ban.range,
+        banId : ban._id,
         expiration : ban.expiration,
         board : ban.boardUri ? '/' + ban.boardUri + '/' : 'all boards'
       }, 'banned', res);
