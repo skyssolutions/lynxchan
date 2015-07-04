@@ -602,6 +602,14 @@ nameLink:
     type: a
     description: alternative link to the image using the name of the file instead of a thumbnail.
 
+divHash:
+    type: div
+    description: div that contains the label of the file md5 to be removed in case the page is not being displayed for moderation purposes.
+
+labelHash:
+    type: span
+    description: label that contains the md5 of the file.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::20
@@ -988,6 +996,39 @@ boardLabel:
 rangeLabel:
     type: span
     description: label that holds the banned range.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::37
+
+hashBansPage:
+
+Elements:
+hashBansDiv:
+    type: div
+    description: div that holds the hash bans.
+
+boardIdentifier:
+    type: input
+    description: hidden input that holds the board identification.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::38
+
+hashBanCell*:
+Root element: form
+
+Elements:
+hashLabel:
+    type: span
+    description: label that holds banned hash.
+
+idIdentifier:
+    type: input
+    description: hidden input that identifies the ban.
+
+------------------------------------------------------------------------------------------
 
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.
 

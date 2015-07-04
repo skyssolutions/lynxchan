@@ -478,7 +478,7 @@ PAG_ID::38
 
 Name: rangeBans
 
-Description: displays the page for management of range bans.
+Description: displays the page for management of range bans. Requires authentication. Uses get parameters.
 
 Parameters: 
     boardUri: if informed, will display only range bans for the board.
@@ -494,6 +494,40 @@ Description: creates a range ban. Requires authentication. Global range bans are
 Parameters:
     boardUri: if not informed, the range ban will be global.
     range: range to be banned.    
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::40
+
+Name: hashBans
+
+Description: displays the page for management of hash bans. Requires authentication. Uses get parameters.
+
+Parameters: 
+    boardUri: if informed, will display only hash bans for the board.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::41
+
+Name: placeHashBan
+
+Description: creates a hash ban that will keep files with this hash to be posted. Requires authentication. Global hash bans require global role lower than 3.
+
+Parameters:
+    boardUri: if not informed, the hash ban will be global.
+    hash: banned md5 hash. 32 characters.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::42
+
+Name: liftHashBan
+
+Description: Lifts a hash ban. Requires authentication.
+
+Parameters:
+    hashBanId: id of the hash ban to be removed.
 
 ------------------------------------------------------------------------------------------
 

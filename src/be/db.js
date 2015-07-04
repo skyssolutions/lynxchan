@@ -14,7 +14,7 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 9;
+var maxIndexesSet = 10;
 
 var cachedVersions;
 var cachedPosts;
@@ -29,6 +29,7 @@ var cachedTripcodes;
 var cachedLog;
 var cachedRecoveryRequests;
 var cachedStats;
+var cachedHashBans;
 
 var loading;
 
@@ -189,6 +190,28 @@ function initTripcodes(callback) {
 
   cachedTripcodes.ensureIndex({
     tripcode : 1
+  }, {
+    unique : 1
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+}
+
+function initHashBans(callback) {
+
+  cachedHashBans = cachedDb.collection('hashBans');
+
+  cachedHashBans.ensureIndex({
+    boardUri : 1,
+    md5 : 1
   }, {
     unique : 1
   }, function setIndex(error, index) {
@@ -410,9 +433,11 @@ exports.stats = function() {
 };
 
 exports.logs = function() {
-
   return cachedLog;
+};
 
+exports.hashBans = function() {
+  return cachedHashBans;
 };
 
 // end of getters
@@ -438,6 +463,8 @@ function checkCollections(db, callback) {
   initRecoveryRequests(callback);
 
   initTripcodes(callback);
+
+  initHashBans(callback);
 
   cachedFiles = db.collection('fs.files');
 

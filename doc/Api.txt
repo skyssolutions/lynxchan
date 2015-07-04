@@ -365,7 +365,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::39
+PAG_ID::28
 
 Name: placeRangeBan
 
@@ -374,6 +374,29 @@ Description: creates a range ban. Requires authentication. Global range bans are
 Parameters:
     boardUri: if not informed, the range ban will be global.
     range: range to be banned.    
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::29
+
+Name: placeHashBan
+
+Description: creates a hash ban that will keep files with this hash to be posted. Requires authentication. Global hash bans require global role lower than 3.
+
+Parameters:
+    boardUri: if not informed, the hash ban will be global.
+    hash: banned md5 hash. 32 characters.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::30
+
+Name: liftHashBan
+
+Description: Lifts a hash ban. Requires authentication.
+
+Parameters:
+    hashBanId: id of the hash ban to be removed.
 
 ------------------------------------------------------------------------------------------
 

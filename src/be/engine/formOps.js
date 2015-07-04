@@ -6,6 +6,8 @@ var settings = boot.getGeneralSettings();
 var bans = require('../db').bans();
 var accountOps = require('./accountOps');
 var uploadHandler = require('./uploadHandler');
+var fs = require('fs');
+var crypto = require('crypto');
 var debug = boot.debug();
 var verbose = settings.verbose;
 var modOps = require('./modOps');
@@ -57,37 +59,55 @@ function getUploadDimensions(toPush, files, fields, parsedCookies, callback) {
 
 }
 
+function getCheckSum(path, callback) {
+
+  var stream = fs.createReadStream(path);
+  var hash = crypto.createHash('md5');
+
+  stream.on('data', function(data) {
+    hash.update(data, 'utf8');
+  });
+
+  stream.on('end', function() {
+    callback(hash.digest('hex'));
+  });
+
+}
+
 function transferFileInformation(files, fields, parsedCookies, callback) {
 
   if (files.files.length && fields.files.length < maxFiles) {
 
     var file = files.files.shift();
 
-    var mime = file.headers['content-type'];
+    getCheckSum(file.path, function gotCheckSum(checkSum) {
+      var mime = file.headers['content-type'];
 
-    var acceptableSize = file.size && file.size < maxFileSize;
+      var acceptableSize = file.size && file.size < maxFileSize;
 
-    if (acceptableSize && acceptedMimes.indexOf(mime) > -1) {
-      var toPush = {
-        size : file.size,
-        title : file.originalFilename,
-        pathInDisk : file.path,
-        mime : mime
-      };
+      if (acceptableSize && acceptedMimes.indexOf(mime) > -1) {
+        var toPush = {
+          size : file.size,
+          md5 : checkSum,
+          title : file.originalFilename,
+          pathInDisk : file.path,
+          mime : mime
+        };
 
-      if (toPush.mime.indexOf('image/') > -1) {
+        if (toPush.mime.indexOf('image/') > -1) {
 
-        getUploadDimensions(toPush, files, fields, parsedCookies, callback);
+          getUploadDimensions(toPush, files, fields, parsedCookies, callback);
+
+        } else {
+          fields.files.push(toPush);
+
+          transferFileInformation(files, fields, parsedCookies, callback);
+        }
 
       } else {
-        fields.files.push(toPush);
-
         transferFileInformation(files, fields, parsedCookies, callback);
       }
-
-    } else {
-      transferFileInformation(files, fields, parsedCookies, callback);
-    }
+    });
 
   } else {
     if (verbose) {

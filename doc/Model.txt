@@ -47,6 +47,7 @@ threads: stores board's threads.
         path: path for the file.
         thumb: path for the file's thumbnail.
         size(Number) size in bytes of the file.
+        md5: file hash.
         width(Number): width of the file, if image.
         height(Number): size of the file, if image.
 
@@ -70,6 +71,7 @@ posts: stores posts.
     files(Array): pre-aggregated array of files uploaded with the post. Each object contains the following fields:
         originalName: original name of the upload.
         path: path for the file.
+        md5: file hash.
         thumb: path for the file's thumbnail.
         size(Number) size in bytes of the file.
         width(Number): width of the file, if image.
@@ -116,7 +118,7 @@ bans: stores bans.
     _id**: unique id of the ban.
     appliedBy*: login of the user that applied the ban.
     expiration(Date): date of when the ban will expire.
-    range: range of the ban. Only includes the two first parts of the ip.
+    range: range of the ban. Only includes the two first parts of the ip. 7 characters.
     reason: reason of the ban. 256 characters.
     ip: banned ip.
     boardUri*: board of the ban. If not set, the ban is global.
@@ -145,7 +147,7 @@ secureTripcodes: stores the secure tripcodes data.
 ----------------------------------------------------------------------------------------
 
 staffLogs: stores log activity from staff.
-    user: login of the user that performed the action.
+    user*: login of the user that performed the action.
     type: type of action performed. Can hold one of the following values:
         ban
         deletion
@@ -155,8 +157,10 @@ staffLogs: stores log activity from staff.
         boardDeletion
         boardTransfer
         rangeBan
+        hashBan
+        hashBanLift
     time(Date): date and time of when the event occurred.
-    boardUri: board related to the event.
+    boardUri*: board related to the event.
     description: string describing the event.
     global(Boolean): indicates if the even was global. 
 
@@ -164,8 +168,15 @@ staffLogs: stores log activity from staff.
 
 boardStats: stores hourly posting stats for boards.
     startingTime(Date): start time for the stat counting.
-    boardUri: uri of the board.
+    boardUri*: uri of the board.
     posts: amount of posts for the board.
+
+----------------------------------------------------------------------------------------
+
+hashBans: stores bans on files.
+    _id**: unique identifier of the hash ban.
+    boardUri*/***: board of hash ban. If not indicated, the hash ban is global.
+    md5***: hash of the file to be banned. 32 characters.
 
 ----------------------------------------------------------------------------------------
 

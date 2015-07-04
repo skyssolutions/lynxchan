@@ -4,6 +4,7 @@ var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var db = require('../db');
 var boards = db.boards();
+var hashBans = db.hashBans();
 var bans = db.bans();
 var threads = db.threads();
 var logs = db.logs();
@@ -31,6 +32,18 @@ var banArguments = [ {
 }, {
   field : 'banMessage',
   length : 128,
+  removeHTML : true
+} ];
+
+var rangeBanArguments = [ {
+  field : 'range',
+  length : 7,
+  removeHTML : true
+} ];
+
+var hashBanArguments = [ {
+  field : 'hash',
+  length : 32,
   removeHTML : true
 } ];
 
@@ -737,7 +750,7 @@ function liftBan(ban, userData, callback) {
 
 }
 
-function checkForBoardPermission(ban, userData, callback) {
+function checkForBoardBanLiftPermission(ban, userData, callback) {
 
   boards.findOne({
     boardUri : ban.boardUri
@@ -773,7 +786,7 @@ exports.liftBan = function(userData, parameters, callback) {
         callback();
       } else if (ban.boardUri) {
 
-        checkForBoardPermission(ban, userData, callback);
+        checkForBoardBanLiftPermission(ban, userData, callback);
 
       } else if (userData.globalRole >= miscOps.getMaxStaffRole()) {
         callback('You are not allowed to lift global bans.');
@@ -880,7 +893,6 @@ exports.setThreadSettings = function(userData, parameters, callback) {
 // start of thread settings process
 
 // start of reading range bans
-
 function getRangeBans(parameters, callback) {
   var queryBlock = {
     range : {
@@ -923,7 +935,7 @@ exports.getRangeBans = function(userData, parameters, callback) {
   }
 
 };
-// end of reading bans
+// end of reading range bans
 
 // start of range ban placement
 
@@ -966,15 +978,16 @@ function placeRangeBan(userData, parameters, callback) {
           logger.printLogError(logMessage, error);
         }
 
-        callback(null);
+        callback();
       });
       // style exception,too simple
     }
-    callback(error);
   });
 }
 
 exports.placeRangeBan = function(userData, parameters, callback) {
+
+  miscOps.sanitizeStrings(parameters, rangeBanArguments);
 
   var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 
@@ -1001,7 +1014,6 @@ exports.placeRangeBan = function(userData, parameters, callback) {
 };
 
 // end of range ban placement
-
 exports.checkForBan = function(req, boardUri, callback) {
 
   var ip = req.connection.remoteAddress;
@@ -1041,3 +1053,211 @@ exports.checkForBan = function(req, boardUri, callback) {
   bans.findOne(finalCondition, callback);
 
 };
+
+// start of retrieving hash bans
+function getHashBans(parameters, callback) {
+
+  hashBans.find({
+    boardUri : parameters.boardUri ? parameters.boardUri : {
+      $exists : false
+    }
+  }).sort({
+    md5 : 1
+  }).toArray(function gotBans(error, hashBans) {
+    callback(error, hashBans);
+  });
+}
+
+exports.getHashBans = function(userData, parameters, callback) {
+
+  var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
+
+  if (parameters.boardUri) {
+    boards.findOne({
+      boardUri : parameters.boardUri
+    }, function gotBoard(error, board) {
+      if (error) {
+        callback(error);
+      } else if (!board) {
+        callback('Board not found');
+      } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
+        callback('You are not allowed to view hash bans for this board.');
+      } else {
+        getHashBans(parameters, callback);
+      }
+    });
+  } else if (!isOnGlobalStaff) {
+    callback('You are not allowed to view global hash bans.');
+  } else {
+    getHashBans(parameters, callback);
+  }
+};
+
+// end of retrieving hash bans
+
+// start of placing hash ban
+function placeHashBan(userData, parameters, callback) {
+  var hashBan = {
+    md5 : parameters.hash
+  };
+
+  if (parameters.boardUri) {
+    hashBan.boardUri = parameters.boardUri;
+  }
+
+  hashBans.insert(hashBan, function insertedBan(error) {
+    if (error && error.code !== 11000) {
+      callback(error);
+    } else if (error) {
+      callback();
+    } else {
+      var logMessage = 'User ' + userData.login + ' placed a';
+
+      if (parameters.boardUri) {
+        logMessage += ' hash ban on board ' + parameters.boardUri;
+      } else {
+        logMessage += ' global hash ban';
+      }
+
+      logMessage += ' for hash ' + parameters.hash + '.';
+
+      // style exception,too simple
+      logs.insert({
+        user : userData.login,
+        global : parameters.boardUri ? false : true,
+        time : new Date(),
+        description : logMessage,
+        type : 'hashBan',
+        boardUri : parameters.boardUri
+      }, function insertedLog(error) {
+        if (error) {
+
+          logger.printLogError(logMessage, error);
+        }
+
+        callback();
+      });
+      // style exception,too simple
+
+    }
+  });
+}
+
+exports.placeHashBan = function(userData, parameters, callback) {
+
+  miscOps.sanitizeStrings(parameters, hashBanArguments);
+
+  var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
+
+  if (parameters.boardUri) {
+    boards.findOne({
+      boardUri : parameters.boardUri
+    }, function gotBoard(error, board) {
+      if (error) {
+        callback(error);
+      } else if (!board) {
+        callback('Board not found');
+      } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
+        callback('You are not allowed to hash range bans on this board.');
+      } else {
+        placeHashBan(userData, parameters, callback);
+      }
+    });
+  } else if (!isOnGlobalStaff) {
+    callback('You are not allowed to place global hash bans.');
+  } else {
+    placeHashBan(userData, parameters, callback);
+  }
+
+};
+// end of placing hash ban
+
+// start of lifting hash ban
+function liftHashBan(hashBan, userData, callback) {
+  hashBans.remove({
+    _id : new ObjectID(hashBan._id)
+  }, function hashBanRemoved(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      // style exception, too simple
+
+      var logMessage = 'User ' + userData.login + ' lifted ';
+
+      if (hashBan.boardUri) {
+        logMessage += 'a hash ban on board ' + hashBan.boardUri;
+      } else {
+        logMessage += 'a global hash ban';
+      }
+
+      logMessage += ' for hash ' + hashBan.md5 + '.';
+
+      logs.insert({
+        user : userData.login,
+        global : hashBan.boardUri ? false : true,
+        time : new Date(),
+        description : logMessage,
+        type : 'hashBanLift',
+        boardUri : hashBan.boardUri
+      }, function insertedLog(error) {
+        if (error) {
+
+          logger.printLogError(logMessage, error);
+        }
+
+        callback(null, hashBan.boardUri);
+      });
+
+      // style exception, too simple
+    }
+
+  });
+}
+
+function checkForBoardHashBanLiftPermission(hashBan, userData, callback) {
+  boards.findOne({
+    boardUri : hashBan.boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback();
+    } else {
+      board.volunteers = board.volunteers || [];
+
+      var owner = board.owner === userData.login;
+
+      if (owner || board.volunteers.indexOf(userData.login) > -1) {
+        liftHashBan(hashBan, userData, callback);
+      } else {
+        callback('You are not allowed to lift hash bans from this board.');
+      }
+    }
+  });
+}
+
+exports.liftHashBan = function(userData, parameters, callback) {
+  try {
+    hashBans.findOne({
+      _id : new ObjectID(parameters.hashBanId)
+    }, function gotHashBan(error, hashBan) {
+      if (error) {
+        callback(error);
+      } else if (!hashBan) {
+        callback();
+      } else if (hashBan.boardUri) {
+
+        checkForBoardHashBanLiftPermission(hashBan, userData, callback);
+
+      } else if (userData.globalRole >= miscOps.getMaxStaffRole()) {
+        callback('You are not allowed to lift global bans.');
+      } else {
+        liftHashBan(hashBan, userData, callback);
+      }
+    });
+  } catch (error) {
+    callback(error);
+  }
+};
+// end of lifting hash ban

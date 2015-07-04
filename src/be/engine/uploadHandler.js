@@ -7,6 +7,7 @@ var im = require('gm').subClass({
 });
 var gsHandler = require('./gridFsHandler');
 var db = require('../db');
+var hashBans = db.hashBans();
 var threads = db.threads();
 var posts = db.posts();
 var settings = require('../boot').getGeneralSettings();
@@ -86,6 +87,7 @@ function updatePostingFiles(boardUri, threadId, postId, files, file, callback,
         thumb : file.thumbPath,
         name : file.gfsName,
         size : file.size,
+        md5 : file.md5,
         width : file.width,
         height : file.height
       }
@@ -139,6 +141,46 @@ function transferFilesToGS(boardUri, threadId, postId, files, file, callback,
       }, spoiler);
 }
 
+function checkForHashBan(boardUri, md5, callback) {
+
+  hashBans.count({
+    md5 : md5,
+    $or : [ {
+      boardUri : {
+        $exists : false
+      }
+    }, {
+      boardUri : boardUri
+    } ]
+  }, callback);
+
+}
+
+function processFile(boardUri, threadId, postId, files, file, spoiler,
+    callback, index) {
+
+  if (file.mime.indexOf('image/') !== -1 && !spoiler) {
+
+    im(file.pathInDisk).resize(128, 128).noProfile().write(
+        file.pathInDisk + '_t',
+        function(error) {
+          if (error) {
+            callback(error);
+          } else {
+            // style exception, too simple
+            transferFilesToGS(boardUri, threadId, postId, files, file,
+                callback, index, spoiler);
+            // style exception, too simple
+
+          }
+        });
+  } else {
+    transferFilesToGS(boardUri, threadId, postId, files, file, callback, index,
+        spoiler);
+  }
+
+}
+
 exports.saveUploads = function(boardUri, threadId, postId, files, spoiler,
     callback, index) {
 
@@ -148,22 +190,17 @@ exports.saveUploads = function(boardUri, threadId, postId, files, spoiler,
 
     var file = files[index];
 
-    if (file.mime.indexOf('image/') !== -1 && !spoiler) {
-
-      im(file.pathInDisk).resize(128, 128).noProfile().write(
-          file.pathInDisk + '_t',
-          function(error) {
-            if (error) {
-              callback(error);
-            } else {
-              transferFilesToGS(boardUri, threadId, postId, files, file,
-                  callback, index, spoiler);
-            }
-          });
-    } else {
-      transferFilesToGS(boardUri, threadId, postId, files, file, callback,
-          index, spoiler);
-    }
+    checkForHashBan(boardUri, file.md5, function isBanned(error, banned) {
+      if (error) {
+        callback(error);
+      } else if (banned) {
+        exports.saveUploads(boardUri, threadId, postId, files, spoiler,
+            callback, index + 1);
+      } else {
+        processFile(boardUri, threadId, postId, files, file, spoiler, callback,
+            index);
+      }
+    });
 
   } else {
     callback();

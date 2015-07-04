@@ -54,6 +54,8 @@ var noCookieCaptcha;
 var rangeBansTemplate;
 var rangeBanCellTemplate;
 var rangeBanPageTemplate;
+var hashBansTemplate;
+var hashBanCellTemplate;
 
 function loadEmailTemplates(fePath, templateSettings) {
 
@@ -87,6 +89,7 @@ function loadCellTemplates(fePath, templateSettings) {
   logCellTemplate = fs.readFileSync(fePath + templateSettings.logCell);
   filterCellTemplate = fs.readFileSync(fePath + templateSettings.filterCell);
   boardsCellTemplate = fs.readFileSync(fePath + templateSettings.boardsCell);
+  hashBanCellTemplate = fs.readFileSync(fePath + templateSettings.hashBanCell);
 
 }
 
@@ -123,6 +126,7 @@ function loadDynamicTemplates(fePath, templateSettings) {
   logsPageTemplate = fs.readFileSync(fePath + templateSettings.logsPage);
   boardsTemplate = fs.readFileSync(fePath + templateSettings.boardsPage);
   rangeBansTemplate = fs.readFileSync(fePath + templateSettings.rangeBansPage);
+  hashBansTemplate = fs.readFileSync(fePath + templateSettings.hashBansPage);
 
 }
 
@@ -269,11 +273,6 @@ function testTemplates(settings) {
             'boardLabel', 'idLabel' ]
       },
       {
-        template : 'uploadCell',
-        content : uploadCellTemplate,
-        fields : [ 'infoLabel', 'imageLink', 'nameLink' ]
-      },
-      {
         template : 'logCell',
         content : logCellTemplate,
         fields : [ 'indicatorGlobal', 'labelUser', 'labelTime',
@@ -294,7 +293,17 @@ function testTemplates(settings) {
         template : 'rangeBanCell',
         content : rangeBanCellTemplate,
         fields : [ 'rangeLabel', 'idIdentifier' ]
+      }, {
+        template : 'hashBanCell',
+        content : hashBanCellTemplate,
+        fields : [ 'hashLabel', 'idIdentifier' ]
       } ];
+
+  cellTests.push({
+    template : 'uploadCell',
+    content : uploadCellTemplate,
+    fields : [ 'infoLabel', 'imageLink', 'nameLink', 'divHash', 'labelHash' ]
+  });
 
   var pageTests = [
       {
@@ -432,6 +441,10 @@ function testTemplates(settings) {
         template : 'rangeBanPage',
         content : rangeBanPageTemplate,
         fields : [ 'boardLabel', 'rangeLabel' ]
+      }, {
+        template : 'hashBansPage',
+        content : hashBansTemplate,
+        fields : [ 'hashBansDiv', 'boardIdentifier' ]
       } ];
 
   var errors = [];
@@ -634,4 +647,12 @@ exports.rangeBanCellTemplate = function() {
 
 exports.rangeBanPageTemplate = function() {
   return rangeBanPageTemplate;
+};
+
+exports.hashBansTemplate = function() {
+  return hashBansTemplate;
+};
+
+exports.hashBanCellTemplate = function() {
+  return hashBanCellTemplate;
 };

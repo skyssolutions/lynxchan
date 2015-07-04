@@ -1,16 +1,16 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var mandatoryParameters = [ 'range' ];
+var mandatoryParameters = [ 'hash' ];
 var modOps = require('../engine/modOps');
 
-function placeRangeBan(userData, parameters, res) {
+function placeHashBan(userData, parameters, res) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
   }
 
-  modOps.placeRangeBan(userData, parameters, function rangeBanPlaced(error) {
+  modOps.placeHashBan(userData, parameters, function hashBanPlaced(error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
@@ -25,7 +25,7 @@ exports.process = function(req, res) {
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    placeRangeBan(userData, parameters, res);
+    placeHashBan(userData, parameters, res);
 
   });
 

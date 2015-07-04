@@ -138,6 +138,8 @@ function processFile(parsedData, res, finalArray, toRemove, callback) {
 
             var toPush = {
               title : file.name,
+              md5 : crypto.createHash('md5').update(content, 'base64').digest(
+                  'hex'),
               size : stats.size,
               mime : mime,
               pathInDisk : location

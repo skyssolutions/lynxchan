@@ -125,7 +125,30 @@ function transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb,
   file.path = fileName;
   file.gfsName = fileId + '.' + extension;
 
-  exports.writeFile(file.pathInDisk, fileName, file.mime, meta, cb);
+  exports.writeFile(file.pathInDisk, fileName, file.mime, meta,
+      function wroteFile(error) {
+        if (error) {
+          cb(error);
+        } else {
+
+          // style exception, too simple
+
+          files.findOne({
+            filename : fileName
+          }, function gotFile(error, foundFile) {
+            if (error) {
+              cb(error);
+            } else {
+              file.md5 = foundFile.md5;
+              cb();
+            }
+          });
+
+          // style exception, too simple
+
+        }
+
+      });
 
 }
 

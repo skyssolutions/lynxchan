@@ -26,13 +26,15 @@ var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 var availableLogTypes = {
   '' : 'All types',
   ban : 'Ban',
-  deletion : 'Deletion',
+  rangeBan : 'Range ban',
   banLift : 'Ban lift',
+  deletion : 'Deletion',
   reportClosure : 'Reports closure',
   globalRoleChange : 'Global role change',
   boardDeletion : 'Board deletion',
   boardTransfer : 'Board ownership transfer',
-  rangeBan : 'Range ban'
+  hashBan : 'Hash ban',
+  hashBanLift : 'Hash ban lift'
 };
 var optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
 
@@ -193,7 +195,7 @@ function addThread(document, thread, posts, boardUri, innerPage, modding) {
   setThreadSimpleElements(threadCell, thread);
 
   setUploadCell(document, threadCell.getElementsByClassName('panelUploads')[0],
-      thread.files);
+      thread.files, modding);
 
   document.getElementById('divPostings').appendChild(threadCell);
 
@@ -228,7 +230,7 @@ function setPostHideableElements(postCell, post) {
 }
 
 function setPostComplexElements(postCell, post, boardUri, threadId, document,
-    preview) {
+    preview, modding) {
 
   var labelRole = postCell.getElementsByClassName('labelRole')[0];
 
@@ -253,7 +255,7 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document,
   }
 
   setUploadCell(document, postCell.getElementsByClassName('panelUploads')[0],
-      post.files);
+      post.files, modding);
 }
 
 function setPostInnerElements(document, boardUri, threadId, post, postCell,
@@ -285,7 +287,8 @@ function setPostInnerElements(document, boardUri, threadId, post, postCell,
     panelRange.parentNode.removeChild(panelRange);
   }
 
-  setPostComplexElements(postCell, post, boardUri, threadId, document, preview);
+  setPostComplexElements(postCell, post, boardUri, threadId, document, preview,
+      modding);
 
 }
 
@@ -405,7 +408,16 @@ function setUploadLinks(document, cell, file) {
   nameLink.innerHTML = file.name;
 }
 
-function setUploadCell(document, node, files) {
+function setUploadModElements(modding, cell, file) {
+  if (!modding) {
+    var hashDiv = cell.getElementsByClassName('divHash')[0];
+    hashDiv.parentNode.removeChild(hashDiv);
+  } else {
+    cell.getElementsByClassName('labelHash')[0].innerHTML = file.md5;
+  }
+}
+
+function setUploadCell(document, node, files, modding) {
 
   if (!files) {
     return;
@@ -418,6 +430,8 @@ function setUploadCell(document, node, files) {
     cell.setAttribute('class', 'uploadCell');
 
     setUploadLinks(document, cell, file);
+
+    setUploadModElements(modding, cell, file);
 
     var infoString = formatFileSize(file.size);
 
@@ -1460,20 +1474,20 @@ exports.noCookieCaptcha = function(parameters, captchaId) {
 };
 
 // Section 2.9: Range bans {
-function setRangeBanCells(document, bans) {
+function setRangeBanCells(document, rangeBans) {
 
   var bansDiv = document.getElementById('rangeBansDiv');
 
-  for (var i = 0; i < bans.length; i++) {
-    var ban = bans[i];
+  for (var i = 0; i < rangeBans.length; i++) {
+    var rangeBan = rangeBans[i];
 
     var banCell = document.createElement('form');
     banCell.innerHTML = templateHandler.rangeBanCellTemplate();
     setFormCellBoilerPlate(banCell, '/liftBan.js', 'rangeBanCell');
 
-    banCell.getElementsByClassName('rangeLabel')[0].innerHTML = ban.range;
+    banCell.getElementsByClassName('rangeLabel')[0].innerHTML = rangeBan.range;
     banCell.getElementsByClassName('idIdentifier')[0].setAttribute('value',
-        ban._id);
+        rangeBan._id);
 
     bansDiv.appendChild(banCell);
 
@@ -1481,7 +1495,7 @@ function setRangeBanCells(document, bans) {
 
 }
 
-exports.rangeBans = function(bans, boardUri) {
+exports.rangeBans = function(rangeBans, boardUri) {
 
   try {
 
@@ -1497,7 +1511,7 @@ exports.rangeBans = function(bans, boardUri) {
       boardIdentifier.parentNode.removeChild(boardIdentifier);
     }
 
-    setRangeBanCells(document, bans);
+    setRangeBanCells(document, rangeBans);
 
     return serializer(document);
 
@@ -1515,6 +1529,63 @@ exports.rangeBans = function(bans, boardUri) {
 
 };
 // } Section 2.9: Range bans
+
+// Section 2.10: Hash bans {
+function setHashBanCells(document, hashBans) {
+
+  var bansDiv = document.getElementById('hashBansDiv');
+
+  for (var i = 0; i < hashBans.length; i++) {
+    var hashBan = hashBans[i];
+
+    var banCell = document.createElement('form');
+    banCell.innerHTML = templateHandler.hashBanCellTemplate();
+    setFormCellBoilerPlate(banCell, '/liftHashBan.js', 'hashBanCell');
+
+    banCell.getElementsByClassName('hashLabel')[0].innerHTML = hashBan.md5;
+    banCell.getElementsByClassName('idIdentifier')[0].setAttribute('value',
+        hashBan._id);
+
+    bansDiv.appendChild(banCell);
+
+  }
+
+}
+
+exports.hashBans = function(hashBans, boardUri) {
+
+  try {
+
+    var document = jsdom(templateHandler.hashBansTemplate());
+
+    document.title = 'Hash bans';
+
+    var boardIdentifier = document.getElementById('boardIdentifier');
+
+    if (boardUri) {
+      boardIdentifier.setAttribute('value', boardUri);
+    } else {
+      boardIdentifier.parentNode.removeChild(boardIdentifier);
+    }
+
+    setHashBanCells(document, hashBans);
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+};
+
+// } Section 2.10: Hash bans
 
 // Section 2: Dynamic pages
 
