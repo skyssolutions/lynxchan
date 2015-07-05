@@ -772,6 +772,9 @@ function setBoardManagementLinks(document, boardData) {
 
   var rangeBansUrl = '/rangeBans.js?boardUri=' + boardData.boardUri;
   document.getElementById('rangeBansLink').href = rangeBansUrl;
+
+  var hashBansUrl = '/hashBans.js?boardUri=' + boardData.boardUri;
+  document.getElementById('hashBansLink').href = hashBansUrl;
 }
 
 exports.boardManagement = function(login, boardData, reports) {
@@ -895,14 +898,17 @@ function setNewStaffComboBox(document, userRole) {
 }
 
 function setGlobalBansLink(userRole, document) {
-  var bansLink = document.getElementById('bansLink');
-  var rangeBansLink = document.getElementById('rangeBansLink');
 
   var displayBans = userRole < miscOps.getMaxStaffRole();
 
   if (!displayBans) {
+    var bansLink = document.getElementById('bansLink');
+    var rangeBansLink = document.getElementById('rangeBansLink');
+    var hashBansLink = document.getElementById('hashBansLink');
+
     rangeBansLink.parentNode.removeChild(rangeBansLink);
     bansLink.parentNode.removeChild(bansLink);
+    hashBansLink.parentNode.removeChild(hashBansLink);
   }
 }
 

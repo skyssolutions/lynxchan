@@ -159,7 +159,7 @@ function checkPageErrors(errors, tests) {
 
       if (!document.getElementById(field)) {
         errorFound = true;
-        error += '\nError, missing element ' + field;
+        error += '\nError, missing element with id ' + field;
       }
 
     }
@@ -201,7 +201,7 @@ function checkCellErrors(errors, tests) {
 
       if (!cell.getElementsByClassName(field).length) {
         errorFound = true;
-        error += '\nError, missing element ' + field;
+        error += '\nError, missing element with class ' + field;
       } else if (cell.getElementsByClassName(field).length > 1) {
         errorFound = true;
         error += '\nWarning, more than one element with class ' + field;
@@ -377,7 +377,7 @@ function testTemplates(settings) {
         template : 'gManagement',
         content : gManagementTemplate,
         fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
-            'reportDiv', 'bansLink', 'rangeBansLink' ]
+            'reportDiv', 'bansLink', 'rangeBansLink', 'hashBansLink' ]
       },
       {
         template : 'bManagement',
@@ -388,7 +388,8 @@ function testTemplates(settings) {
             'bannerManagementLink', 'boardNameField', 'boardDescriptionField',
             'boardSettingsIdentifier', 'disableIdsCheckbox',
             'disableCaptchaCheckbox', 'forceAnonymityCheckbox',
-            'filterManagementLink', 'anonymousNameField', 'rangeBansLink' ]
+            'filterManagementLink', 'anonymousNameField', 'rangeBansLink',
+            'hashBansLink' ]
       },
       {
         template : 'closedReportsPage',

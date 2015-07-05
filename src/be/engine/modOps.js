@@ -47,6 +47,8 @@ var hashBanArguments = [ {
   removeHTML : true
 } ];
 
+// Section 1: Shared functions {
+
 exports.isInBoardStaff = function(userData, board) {
 
   var isOwner = board.owner === userData.login;
@@ -59,8 +61,11 @@ exports.isInBoardStaff = function(userData, board) {
 
 };
 
-// start of reading bans
+// } Section 1: Shared functions
 
+// Section 2: Read operations {
+
+// Section 2.1: Bans {
 function getBans(parameters, callback) {
   var queryBlock = {
     ip : {
@@ -106,9 +111,94 @@ exports.getBans = function(userData, parameters, callback) {
   }
 
 };
-// end of reading bans
+// } Section 2.1: Bans
 
-// start of reading of closed reports
+// Section 2.2: Range bans {
+function getRangeBans(parameters, callback) {
+  var queryBlock = {
+    range : {
+      $exists : true
+    },
+    boardUri : parameters.boardUri ? parameters.boardUri : {
+      $exists : false
+    }
+  };
+
+  bans.find(queryBlock).sort({
+    creation : -1
+  }).toArray(function gotBans(error, rangeBans) {
+    callback(error, rangeBans);
+  });
+}
+
+exports.getRangeBans = function(userData, parameters, callback) {
+
+  var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
+
+  if (parameters.boardUri) {
+    boards.findOne({
+      boardUri : parameters.boardUri
+    }, function gotBoard(error, board) {
+      if (error) {
+        callback(error);
+      } else if (!board) {
+        callback('Board not found');
+      } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
+        callback('You are not allowed to view range bans for this board.');
+      } else {
+        getRangeBans(parameters, callback);
+      }
+    });
+  } else if (!isOnGlobalStaff) {
+    callback('You are not allowed to view global range bans.');
+  } else {
+    getRangeBans(parameters, callback);
+  }
+
+};
+// } Section 2.2: Range bans
+
+// Section 2.3: Hash bans {
+function getHashBans(parameters, callback) {
+
+  hashBans.find({
+    boardUri : parameters.boardUri ? parameters.boardUri : {
+      $exists : false
+    }
+  }).sort({
+    md5 : 1
+  }).toArray(function gotBans(error, hashBans) {
+    callback(error, hashBans);
+  });
+}
+
+exports.getHashBans = function(userData, parameters, callback) {
+
+  var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
+
+  if (parameters.boardUri) {
+    boards.findOne({
+      boardUri : parameters.boardUri
+    }, function gotBoard(error, board) {
+      if (error) {
+        callback(error);
+      } else if (!board) {
+        callback('Board not found');
+      } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
+        callback('You are not allowed to view hash bans for this board.');
+      } else {
+        getHashBans(parameters, callback);
+      }
+    });
+  } else if (!isOnGlobalStaff) {
+    callback('You are not allowed to view global hash bans.');
+  } else {
+    getHashBans(parameters, callback);
+  }
+};
+// } Section 2.3: Hash bans
+
+// Section 2.4: Closed reports {
 function getClosedReports(parameters, callback) {
 
   var queryBlock = {
@@ -151,9 +241,147 @@ exports.getClosedReports = function(userData, parameters, callback) {
   }
 
 };
-// end of reading of closed reports
+// } Section 2.4: Closed reports
 
-// start of closing reports
+exports.checkForBan = function(req, boardUri, callback) {
+
+  var ip = req.connection.remoteAddress;
+
+  var range = miscOps.getRange(ip);
+
+  var singleBanAnd = {
+    $and : [ {
+      expiration : {
+        $gt : new Date()
+      }
+    }, {
+      ip : ip
+    } ]
+  };
+
+  var rangeBanCondition = {
+    range : range
+  };
+
+  var globalOrLocalOr = {
+    $or : [ {
+      boardUri : boardUri
+    }, {
+      boardUri : {
+        $exists : false
+      }
+    } ]
+  };
+
+  var finalCondition = {
+    $and : [ globalOrLocalOr, {
+      $or : [ rangeBanCondition, singleBanAnd ]
+    } ]
+  };
+
+  bans.findOne(finalCondition, callback);
+
+};
+
+// } Section 2: Read Operations
+
+// Section 3: Write Operations {
+
+// Section 3.1: Create report {
+function createReport(req, report, reportedContent, parameters, callback) {
+
+  var toAdd = {
+    global : parameters.global,
+    boardUri : report.board,
+    threadId : +report.thread,
+    creation : new Date()
+  };
+
+  if (parameters.reason) {
+    toAdd.reason = parameters.reason;
+  }
+
+  if (report.post) {
+    toAdd.postId = +report.post;
+  }
+
+  reports.insert(toAdd, function createdReport(error) {
+    if (error && error.code !== 11000) {
+      callback(error);
+    } else {
+      exports.report(req, reportedContent, parameters, callback);
+    }
+  });
+
+}
+
+exports.report = function(req, reportedContent, parameters, callback) {
+
+  miscOps.sanitizeStrings(parameters, reportArguments);
+
+  if (!reportedContent.length) {
+    callback();
+  } else {
+
+    var report = reportedContent.shift();
+
+    bans.count({
+      ip : req.connection.remoteAddress,
+      expiration : {
+        $gt : new Date()
+      },
+      $or : [ {
+        boardUri : report.board
+      }, {
+        boardUri : {
+          $exists : false
+        }
+      } ]
+    }, function gotCount(error, count) {
+      if (error) {
+        callback(error);
+      } else if (count) {
+        exports.report(req, reportedContent, parameters, callback);
+      } else {
+
+        // style exception, too simple
+        var queryBlock = {
+          boardUri : report.board,
+          threadId : +report.thread
+        };
+
+        var countCb = function(error, count) {
+          if (error) {
+            callback(error);
+          } else if (!count) {
+            exports.report(req, reportedContent, parameters, callback);
+          } else {
+            createReport(req, report, reportedContent, parameters, callback);
+          }
+
+        };
+
+        if (report.post) {
+
+          queryBlock.postId = +report.post;
+
+          posts.count(queryBlock, countCb);
+
+        } else {
+          threads.count(queryBlock, countCb);
+        }
+
+        // style exception, too simple
+      }
+
+    });
+
+  }
+
+};
+// } Section 3.1: Create report
+
+// Section 3.2: Close report {
 function closeReport(report, userData, callback) {
   reports.updateOne({
     _id : new ObjectID(report._id)
@@ -252,103 +480,9 @@ exports.closeReport = function(userData, parameters, callback) {
     callback(error);
   }
 };
-// end of closing reports
+// } Section 3.2: Close report
 
-// start of report process
-function createReport(req, report, reportedContent, parameters, callback) {
-
-  var toAdd = {
-    global : parameters.global,
-    boardUri : report.board,
-    threadId : +report.thread,
-    creation : new Date()
-  };
-
-  if (parameters.reason) {
-    toAdd.reason = parameters.reason;
-  }
-
-  if (report.post) {
-    toAdd.postId = +report.post;
-  }
-
-  reports.insert(toAdd, function createdReport(error) {
-    if (error && error.code !== 11000) {
-      callback(error);
-    } else {
-      exports.report(req, reportedContent, parameters, callback);
-    }
-  });
-
-}
-
-exports.report = function(req, reportedContent, parameters, callback) {
-
-  miscOps.sanitizeStrings(parameters, reportArguments);
-
-  if (!reportedContent.length) {
-    callback();
-  } else {
-
-    var report = reportedContent.shift();
-
-    bans.count({
-      ip : req.connection.remoteAddress,
-      expiration : {
-        $gt : new Date()
-      },
-      $or : [ {
-        boardUri : report.board
-      }, {
-        boardUri : {
-          $exists : false
-        }
-      } ]
-    }, function gotCount(error, count) {
-      if (error) {
-        callback(error);
-      } else if (count) {
-        exports.report(req, reportedContent, parameters, callback);
-      } else {
-
-        // style exception, too simple
-        var queryBlock = {
-          boardUri : report.board,
-          threadId : +report.thread
-        };
-
-        var countCb = function(error, count) {
-          if (error) {
-            callback(error);
-          } else if (!count) {
-            exports.report(req, reportedContent, parameters, callback);
-          } else {
-            createReport(req, report, reportedContent, parameters, callback);
-          }
-
-        };
-
-        if (report.post) {
-
-          queryBlock.postId = +report.post;
-
-          posts.count(queryBlock, countCb);
-
-        } else {
-          threads.count(queryBlock, countCb);
-        }
-
-        // style exception, too simple
-      }
-
-    });
-
-  }
-
-};
-
-// end of report process
-// start of ban process
+// Section 3.3: Ban {
 function appendThreadsToBanLog(informedThreads) {
 
   var logMessage = '';
@@ -678,10 +812,9 @@ exports.ban = function(userData, reportedObjects, parameters, callback) {
   }
 
 };
-// end of ban process
+// } Section 3.3: Ban
 
-// start of ban lift
-
+// Section 3.4: Lift ban {
 function getLiftedBanLogMessage(ban, userData) {
 
   var logMessage = 'User ' + userData.login + ' lifted a';
@@ -799,10 +932,9 @@ exports.liftBan = function(userData, parameters, callback) {
   }
 
 };
+// } Section 3.4: Lift ban
 
-// end of ban lift
-
-// start of thread settings process
+// Section 3.5: Thread settings {
 function setNewThreadSettings(parameters, thread, callback) {
 
   parameters.lock = parameters.lock ? true : false;
@@ -889,56 +1021,9 @@ exports.setThreadSettings = function(userData, parameters, callback) {
   });
 
 };
+// } Section 3.5: Thread settings
 
-// start of thread settings process
-
-// start of reading range bans
-function getRangeBans(parameters, callback) {
-  var queryBlock = {
-    range : {
-      $exists : true
-    },
-    boardUri : parameters.boardUri ? parameters.boardUri : {
-      $exists : false
-    }
-  };
-
-  bans.find(queryBlock).sort({
-    creation : -1
-  }).toArray(function gotBans(error, rangeBans) {
-    callback(error, rangeBans);
-  });
-}
-
-exports.getRangeBans = function(userData, parameters, callback) {
-
-  var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
-
-  if (parameters.boardUri) {
-    boards.findOne({
-      boardUri : parameters.boardUri
-    }, function gotBoard(error, board) {
-      if (error) {
-        callback(error);
-      } else if (!board) {
-        callback('Board not found');
-      } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
-        callback('You are not allowed to view range bans for this board.');
-      } else {
-        getRangeBans(parameters, callback);
-      }
-    });
-  } else if (!isOnGlobalStaff) {
-    callback('You are not allowed to view global range bans.');
-  } else {
-    getRangeBans(parameters, callback);
-  }
-
-};
-// end of reading range bans
-
-// start of range ban placement
-
+// Section 3.6: Range ban{
 function placeRangeBan(userData, parameters, callback) {
 
   var rangeBan = {
@@ -1012,90 +1097,9 @@ exports.placeRangeBan = function(userData, parameters, callback) {
   }
 
 };
+// } Section 3.6: Range ban
 
-// end of range ban placement
-exports.checkForBan = function(req, boardUri, callback) {
-
-  var ip = req.connection.remoteAddress;
-
-  var range = miscOps.getRange(ip);
-
-  var singleBanAnd = {
-    $and : [ {
-      expiration : {
-        $gt : new Date()
-      }
-    }, {
-      ip : ip
-    } ]
-  };
-
-  var rangeBanCondition = {
-    range : range
-  };
-
-  var globalOrLocalOr = {
-    $or : [ {
-      boardUri : boardUri
-    }, {
-      boardUri : {
-        $exists : false
-      }
-    } ]
-  };
-
-  var finalCondition = {
-    $and : [ globalOrLocalOr, {
-      $or : [ rangeBanCondition, singleBanAnd ]
-    } ]
-  };
-
-  bans.findOne(finalCondition, callback);
-
-};
-
-// start of retrieving hash bans
-function getHashBans(parameters, callback) {
-
-  hashBans.find({
-    boardUri : parameters.boardUri ? parameters.boardUri : {
-      $exists : false
-    }
-  }).sort({
-    md5 : 1
-  }).toArray(function gotBans(error, hashBans) {
-    callback(error, hashBans);
-  });
-}
-
-exports.getHashBans = function(userData, parameters, callback) {
-
-  var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
-
-  if (parameters.boardUri) {
-    boards.findOne({
-      boardUri : parameters.boardUri
-    }, function gotBoard(error, board) {
-      if (error) {
-        callback(error);
-      } else if (!board) {
-        callback('Board not found');
-      } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
-        callback('You are not allowed to view hash bans for this board.');
-      } else {
-        getHashBans(parameters, callback);
-      }
-    });
-  } else if (!isOnGlobalStaff) {
-    callback('You are not allowed to view global hash bans.');
-  } else {
-    getHashBans(parameters, callback);
-  }
-};
-
-// end of retrieving hash bans
-
-// start of placing hash ban
+// Section 3.7: Hash ban {
 function placeHashBan(userData, parameters, callback) {
   var hashBan = {
     md5 : parameters.hash
@@ -1170,9 +1174,9 @@ exports.placeHashBan = function(userData, parameters, callback) {
   }
 
 };
-// end of placing hash ban
+// } Section 3.7: Hash ban
 
-// start of lifting hash ban
+// Section 3.8: Lift hash ban {
 function liftHashBan(hashBan, userData, callback) {
   hashBans.remove({
     _id : new ObjectID(hashBan._id)
@@ -1260,4 +1264,7 @@ exports.liftHashBan = function(userData, parameters, callback) {
     callback(error);
   }
 };
-// end of lifting hash ban
+// } Section 3.8: Lift hash ban
+
+// } Section 3: Write Operations
+

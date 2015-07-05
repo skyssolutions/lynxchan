@@ -365,6 +365,10 @@ rangeBansLink:
     type: a
     description: link to the range bans management page.
 
+hashBansLink:
+    type: a
+    description: link to the hash bans management page.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::11
@@ -467,6 +471,10 @@ anonymousNameField:
 rangeBansLink:
     type: a
     description: link to the range bans management page.
+
+hashBansLink:
+    type: a
+    description: link to the hash bans management page.
 
 ------------------------------------------------------------------------------------------
 
