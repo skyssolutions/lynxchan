@@ -41,6 +41,7 @@ var threadProjection = {
   subject : 1,
   signedRole : 1,
   banMessage : 1,
+  cyclic : 1,
   threadId : 1,
   creation : 1,
   name : 1,

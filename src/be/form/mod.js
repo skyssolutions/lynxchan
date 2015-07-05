@@ -35,6 +35,7 @@ function getPostingData(boardData, parameters, res) {
     subject : 1,
     threadId : 1,
     locked : 1,
+    cyclic : 1,
     pinned : 1,
     creation : 1,
     id : 1,

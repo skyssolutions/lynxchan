@@ -272,6 +272,7 @@ Parameters:
     threadId: id of the thread to be managed.
     lock: indicates if the thread must be locked. Any value sent will lock, if not sent, will unlock.
     pin: indicates if the thread must be pinned. Any value will pin, if not sent, will unpin.
+    cyclic: indicates if the thread must be set on cyclic mode. Any value will put in cyclic mode. If not sent, will remove cyclic mode.
 
 ------------------------------------------------------------------------------------------
 
@@ -294,8 +295,7 @@ Description: changes general account settings.
 
 Parameters:
     email: new e-mail of the account. 64 characters.
-    settings(Array): new settings for the account. May hold the following values:
-        alwaysSignRole: indicates the user wishes to always use his role signature on posts.
+    alwaysSignRole: any value indicates the user wishes to always use his role signature on posts.
 
 ------------------------------------------------------------------------------------------
 

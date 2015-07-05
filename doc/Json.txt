@@ -31,6 +31,7 @@ Root(Object):
     name: name of the poster.
     creation(Date): time when the post was created.
     locked(Boolean: indicates if the thread is locked and cannot be replied to.
+    cyclic(Boolean): indicates if the thread is cyclic.
     pinned(Boolean): indicates if the thread is pinned and will be listed on top of unpinned threads.
     files(Array): files uploaded with the thread. Each object contains the following fields:
         originalName: original name of the upload.
@@ -98,6 +99,7 @@ Root(Object):
         subject: subject of the thread.
         message: text of the post.
         name: name of the poster.
+        cyclic(Boolean): indicates if the thread is cyclic.
         creation(Date): time when the post was created.
         locked(Boolean: indicates if the thread is locked and cannot be replied to.
         pinned(Boolean): indicates if the thread is pinned and will be listed on top of unpinned threads.
@@ -144,6 +146,7 @@ Root(Array): array of objects representing threads. Each element contains the fo
     subject: subject of the thread.
     locked(Boolean): indicates of the thread is locked.
     pinned: indicates if the thread is pinned.
+    cyclic(Boolean): indicates if the thread is cyclic.
     thumb: path to the thumbnail of the first image posted in this thread, if any.
 
 ------------------------------------------------------------------------------------------

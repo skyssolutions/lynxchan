@@ -86,6 +86,7 @@ function getThreadObject(thread, posts) {
     creation : thread.creation,
     locked : thread.locked ? true : false,
     pinned : thread.pinned ? true : false,
+    cyclic : thread.cyclic ? true : false,
     files : getFilesArray(thread.files),
     posts : buildThreadPosts(posts)
   };
@@ -204,6 +205,7 @@ exports.catalog = function(boardUri, threads, callback) {
       subject : thread.subject,
       locked : thread.locked ? true : false,
       pinned : thread.pinned ? true : false,
+      cyclic : thread.cyclic ? true : false
     };
 
     if (thread.files && thread.files.length) {

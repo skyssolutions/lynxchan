@@ -22,8 +22,18 @@ var boardCreationRestricted = settings.restrictBoardCreation;
 var templateHandler = require('./templateHandler');
 var displayMaxSize = (boot.maxFileSize() / 1024 / 1024).toFixed(2);
 
+var indicatorsRelation = {
+  pinned : 'pinIndicator',
+  locked : 'lockIndicator',
+  cyclic : 'cyclicIndicator'
+};
 var accountSettingsRelation = {
   alwaysSignRole : 'checkboxAlwaysSign'
+};
+var boardSettingsRelation = {
+  disableIds : 'disableIdsCheckbox',
+  disableCaptcha : 'disableCaptchaCheckbox',
+  forceAnonymity : 'forceAnonymityCheckbox'
 };
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 var availableLogTypes = {
@@ -155,14 +165,12 @@ function setHeader(document, board, boardData) {
 // Section 1.2: Thread content {
 function setThreadHiddeableElements(thread, threadCell, modding) {
 
-  if (!thread.pinned) {
-    var pinIndicator = threadCell.getElementsByClassName('pinIndicator')[0];
-    pinIndicator.parentNode.removeChild(pinIndicator);
-  }
-
-  if (!thread.locked) {
-    var lockIndicator = threadCell.getElementsByClassName('lockIndicator')[0];
-    lockIndicator.parentNode.removeChild(lockIndicator);
+  for ( var key in indicatorsRelation) {
+    if (!thread[key]) {
+      var indicator = threadCell
+          .getElementsByClassName(indicatorsRelation[key])[0];
+      indicator.parentNode.removeChild(indicator);
+    }
   }
 
   if (thread.id) {
@@ -703,18 +711,10 @@ function setBoardControlCheckBoxes(document, boardData) {
 
   var settings = boardData.settings;
 
-  if (settings.indexOf('disableIds') > -1) {
-    document.getElementById('disableIdsCheckbox').setAttribute('checked', true);
-  }
-
-  if (settings.indexOf('disableCaptcha') > -1) {
-    document.getElementById('disableCaptchaCheckbox').setAttribute('checked',
-        true);
-  }
-
-  if (settings.indexOf('forceAnonymity') > -1) {
-    document.getElementById('forceAnonymityCheckbox').setAttribute('checked',
-        true);
+  for (var i = 0; i < settings.length; i++) {
+    var setting = settings[i];
+    document.getElementById(boardSettingsRelation[setting]).setAttribute(
+        'checked', true);
   }
 
 }
@@ -1723,6 +1723,10 @@ function setModdingInformation(document, boardUri, boardData, threadData,
     document.getElementById('checkboxPin').setAttribute('checked', true);
   }
 
+  if (threadData.cyclic) {
+    document.getElementById('checkboxCyclic').setAttribute('checked', true);
+  }
+
   document.getElementById('controlBoardIdentifier').setAttribute('value',
       boardUri);
   document.getElementById('controlThreadIdentifier').setAttribute('value',
@@ -1915,14 +1919,11 @@ function setCell(boardUri, document, cell, thread) {
     cell.getElementsByClassName('labelSubject')[0].innerHTML = thread.subject;
   }
 
-  if (!thread.pinned) {
-    var pinIndicator = cell.getElementsByClassName('pinIndicator')[0];
-    pinIndicator.parentNode.removeChild(pinIndicator);
-  }
-
-  if (!thread.locked) {
-    var lockIndicator = cell.getElementsByClassName('lockIndicator')[0];
-    lockIndicator.parentNode.removeChild(lockIndicator);
+  for ( var key in indicatorsRelation) {
+    if (!thread[key]) {
+      var indicator = cell.getElementsByClassName(indicatorsRelation[key])[0];
+      indicator.parentNode.removeChild(indicator);
+    }
   }
 
   cell.getElementsByClassName('divMessage')[0].innerHTML = thread.markdown;

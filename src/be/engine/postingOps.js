@@ -9,10 +9,12 @@ var stats = db.stats();
 var posts = db.posts();
 var captchaOps = require('./captchaOps');
 var miscOps = require('./miscOps');
+var files = db.files();
 var generator = require('./generator');
 var uploadHandler = require('./uploadHandler');
 var delOps = require('./deletionOps');
 var crypto = require('crypto');
+var gsHandler = require('./gridFsHandler');
 var boot = require('../boot');
 var settings = boot.getGeneralSettings();
 var latestPostsCount = boot.latestPostCount();
@@ -642,8 +644,115 @@ exports.newThread = function(req, userData, parameters, captchaId, callback) {
 // end of thread creation
 
 // start of post creation
+function cleanPostFiles(files, postId, callback) {
 
-function updateBoardForPostCreation(parameters, postId, thread, callback) {
+  gsHandler.removeFiles(files, function removedFiles(error) {
+    callback(error, postId);
+  });
+
+}
+
+function updateThreadAfterCleanUp(boardUri, threadId, removedPosts, postId,
+    callback) {
+
+  threads.updateOne({
+    boardUri : boardUri,
+    threadId : threadId
+  }, {
+    $inc : {
+      postCount : -removedPosts.length
+    }
+  }, function updatedThread(error) {
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+
+      files.aggregate([ {
+        $match : {
+          'metadata.boardUri' : boardUri,
+          'metadata.postId' : {
+            $in : removedPosts
+          }
+        }
+      }, {
+        $group : {
+          _id : 0,
+          files : {
+            $push : '$filename'
+          }
+        }
+      } ], function gotFileNames(error, results) {
+        if (error) {
+          callback(error);
+        } else if (!results.length) {
+          callback(null, postId);
+        } else {
+          cleanPostFiles(results[0].files, postId, callback);
+        }
+
+      });
+
+      // style exception, too simple
+
+    }
+
+  });
+
+}
+
+function cleanThreadPosts(boardUri, threadId, postId, callback) {
+
+  posts.aggregate([ {
+    $match : {
+      boardUri : boardUri,
+      threadId : threadId
+    }
+  }, {
+    $sort : {
+      creation : -1
+    }
+  }, {
+    $skip : bumpLimit
+  }, {
+    $group : {
+      _id : 0,
+      posts : {
+        $push : '$postId'
+      }
+    }
+  } ], function gotPosts(error, results) {
+    if (error) {
+      callback(error);
+    } else if (!results.length) {
+      callback(null, postId);
+    } else {
+      var postsToDelete = results[0].posts;
+
+      // style exception, too simple
+      posts.deleteMany({
+        boardUri : boardUri,
+        postId : {
+          $in : postsToDelete
+        }
+      }, function postsRemoved(error) {
+        if (error) {
+          callback(error);
+        } else {
+          updateThreadAfterCleanUp(boardUri, threadId, postsToDelete, postId,
+              callback);
+        }
+      });
+      // style exception, too simple
+    }
+
+  });
+
+}
+
+function updateBoardForPostCreation(parameters, postId, thread, cleanPosts,
+    callback) {
 
   if (parameters.email !== 'sage') {
 
@@ -688,7 +797,12 @@ function updateBoardForPostCreation(parameters, postId, thread, callback) {
       }
     }, function updatedBoard(error, result) {
 
-      callback(error, postId);
+      if (cleanPosts) {
+        cleanThreadPosts(parameters.boardUri, parameters.threadId, postId,
+            callback);
+      } else {
+        callback(error, postId);
+      }
 
     });
     // style exception, too simple
@@ -696,8 +810,7 @@ function updateBoardForPostCreation(parameters, postId, thread, callback) {
 
 }
 
-function updateThread(parameters, postId, thread, callback, post) {
-
+function getLatestPosts(thread, postId) {
   var latestPosts = thread.latestPosts || [];
 
   latestPosts.push(postId);
@@ -711,24 +824,44 @@ function updateThread(parameters, postId, thread, callback, post) {
     latestPosts.shift();
   }
 
+  return latestPosts;
+
+}
+
+function updateThread(parameters, postId, thread, callback, post) {
+
   var updateBlock = {
     $set : {
-      latestPosts : latestPosts
+      latestPosts : getLatestPosts(thread, postId)
     },
     $inc : {
       postCount : 1
     }
   };
 
+  var cleanPosts = false;
+  var saged = parameters.email === 'sage';
+  var bump = false;
+
   if (!thread.autoSage) {
 
     if (thread.postCount >= bumpLimit) {
-      updateBlock.$set.autoSage = true;
+
+      if (thread.cyclic) {
+        cleanPosts = true;
+        bump = true;
+      } else {
+        updateBlock.$set.autoSage = true;
+      }
+
+    } else {
+      bump = true;
     }
 
-    if (parameters.email !== 'sage') {
-      updateBlock.$set.lastBump = new Date();
-    }
+  }
+
+  if (!saged && bump) {
+    updateBlock.$set.lastBump = new Date();
   }
 
   threads.update({
@@ -743,7 +876,8 @@ function updateThread(parameters, postId, thread, callback, post) {
         if (error) {
           callback(error);
         } else {
-          updateBoardForPostCreation(parameters, postId, thread, callback);
+          updateBoardForPostCreation(parameters, postId, thread, cleanPosts,
+              callback);
         }
       }, post);
 
@@ -818,6 +952,7 @@ function getThread(req, parameters, userData, postId, board, callback) {
     autoSage : 1,
     locked : 1,
     salt : 1,
+    cyclic : 1,
     postCount : 1,
     page : 1,
     _id : 1

@@ -34,8 +34,9 @@ threads: stores board's threads.
     creation(Date): time when the post was created.
     boardUri*/***: url of the board the thread belongs to.
     threadId(Number)***: unique id of the thread inside the board.
-    locked(Number)****: indicates if the thread is locked and cannot be replied to.
-    pinned(Number)****: indicates if the thread is pinned and will be listed on top of unpinned threads.
+    locked(Boolean): indicates if the thread is locked and cannot be replied to.
+    cyclic(Boolean): indicates the thread is cyclic and will prune old posts instead of entering auto-sage.
+    pinned(Boolean): indicates if the thread is pinned and will be listed on top of unpinned threads.
     lastBump(Date): time of when the thread was last bumped.
     autoSage(Boolean): indicates the thread cannot be bumped anymore.
     postCount(Number): pre-aggregated number of posts in the thread.
@@ -185,4 +186,3 @@ hashBans: stores bans on files.
 *: duplicated data, foreign key.
 **: unique key
 ***:part of a unique key combination.
-****: boolean integer. 0 for false, 1 for true.

@@ -244,6 +244,7 @@ Parameters:
     threadId: id of the thread.
     lock(Boolean): indicates if the thread must be locked.
     pin(Boolean): indicates if the thread must be pinned.
+    cyclic(Boolean): indicates if the thread must be on cyclic mode.
     
 ------------------------------------------------------------------------------------------
 

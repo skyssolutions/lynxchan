@@ -10,10 +10,10 @@ function setAccountSettings(userData, parameters, res) {
 
   var newSettings = [];
 
-  for (var i = 0; i < desiredSettings.length; i++) {
-    var setting = desiredSettings[i];
+  for (var i = 0; i < validSettings.length; i++) {
+    var setting = validSettings[i];
 
-    if (validSettings.indexOf(setting) > -1) {
+    if (desiredSettings.indexOf(setting) > -1) {
       newSettings.push(setting);
     }
 

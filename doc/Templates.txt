@@ -124,6 +124,10 @@ checkboxPin:
     type: input
     description: checkbox indicating if the thread is pinned.
 
+checkboxCyclic:    
+    type: input
+    description: checkbox indicating if the thread is cyclic.
+
 bannerImage:
     type: img
     description: holds the link that displays a banner to the board.
@@ -208,6 +212,10 @@ deletionCheckBox:
 lockIndicator:
     type: any
     description: element that indicates the thread is locked.
+
+cyclicIndicator:
+    type: any
+    description: element that indicates the thread is cyclic.
 
 pinIndicator: 
     type: any
@@ -729,6 +737,10 @@ labelImages:
 labelPage:
     type: span
     description: holds the page where the thread currently is.
+
+cyclicIndicator:
+    type: any
+    description: element that indicates the thread is cyclic.
 
 labelSubject:
     type: span

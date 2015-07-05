@@ -224,7 +224,8 @@ function testTemplates(settings) {
         template : 'catalogCell',
         content : catalogCellTemplate,
         fields : [ 'linkThumb', 'labelReplies', 'labelImages', 'labelPage',
-            'labelSubject', 'divMessage', 'lockIndicator', 'pinIndicator' ]
+            'labelSubject', 'divMessage', 'lockIndicator', 'pinIndicator',
+            'cyclicIndicator' ]
       },
       {
         template : 'bannerCell',
@@ -237,7 +238,8 @@ function testTemplates(settings) {
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkReply', 'linkSelf', 'deletionCheckBox',
             'lockIndicator', 'pinIndicator', 'labelId', 'labelRole',
-            'divBanMessage', 'spanId', 'panelRange', 'labelRange' ]
+            'divBanMessage', 'spanId', 'panelRange', 'labelRange',
+            'cyclicIndicator' ]
       },
       {
         template : 'postCell',
@@ -355,7 +357,8 @@ function testTemplates(settings) {
             'boardIdentifier', 'linkManagement', 'threadIdentifier', 'linkMod',
             'inputBan', 'divBanInput', 'divControls', 'controlBoardIdentifier',
             'controlThreadIdentifier', 'checkboxLock', 'checkboxPin',
-            'bannerImage', 'captchaDiv', 'divName', 'labelMaxFileSize' ]
+            'bannerImage', 'captchaDiv', 'divName', 'labelMaxFileSize',
+            'checkboxCyclic' ]
       },
       {
         template : 'messagePage',
