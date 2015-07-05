@@ -22,6 +22,9 @@ var boardCreationRestricted = settings.restrictBoardCreation;
 var templateHandler = require('./templateHandler');
 var displayMaxSize = (boot.maxFileSize() / 1024 / 1024).toFixed(2);
 
+var accountSettingsRelation = {
+  alwaysSignRole : 'checkboxAlwaysSign'
+};
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 var availableLogTypes = {
   '' : 'All types',
@@ -1006,6 +1009,10 @@ exports.recoveryEmail = function(recoveryLink) {
 
 // Section 2.5: Account {
 function fillOwnedBoardsDiv(document, boardList) {
+  if (!boardList || !boardList.length) {
+    return;
+  }
+
   var boardDiv = document.getElementById('boardsDiv');
 
   for (var i = 0; i < boardList.length; i++) {
@@ -1034,10 +1041,25 @@ function setBoardCreationForm(userData, document) {
   }
 }
 
+function setAccountSettingsCheckbox(settings, document) {
+
+  if (!settings || !settings.length) {
+    return;
+  }
+
+  for (var i = 0; i < settings.length; i++) {
+    var setting = settings[i];
+
+    var checkbox = document.getElementById(accountSettingsRelation[setting]);
+
+    checkbox.setAttribute('checked', true);
+  }
+
+}
+
 exports.account = function(userData) {
 
   try {
-
     var document = jsdom(templateHandler.accountTemplate());
 
     document.title = 'Welcome, ' + userData.login;
@@ -1056,16 +1078,14 @@ exports.account = function(userData) {
       gManagementLink.parentNode.removeChild(gManagementLink);
     }
 
+    setAccountSettingsCheckbox(userData.settings, document);
+
     if (userData.email && userData.email.length) {
       document.getElementById('emailField').setAttribute('value',
           userData.email);
     }
 
-    if (userData.ownedBoards && userData.ownedBoards.length) {
-
-      fillOwnedBoardsDiv(document, userData.ownedBoards);
-
-    }
+    fillOwnedBoardsDiv(document, userData.ownedBoards);
 
     return serializer(document);
   } catch (error) {

@@ -2,8 +2,23 @@
 
 var formOps = require('../engine/formOps');
 var accountOps = require('../engine/accountOps');
+var validSettings = accountOps.validAccountSettings();
 
 function changeSettings(userData, parameters, res) {
+
+  var newSettings = [];
+
+  for (var i = 0; i < validSettings.length; i++) {
+
+    var validSetting = validSettings[i];
+
+    if (parameters[validSetting]) {
+      newSettings.push(validSetting);
+    }
+
+  }
+
+  parameters.settings = newSettings;
 
   accountOps.changeSettings(userData, parameters, function changedSettings(
       error) {

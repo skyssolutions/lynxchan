@@ -40,6 +40,136 @@ var postingParameters = [ {
   length : 8
 } ];
 
+function getSignedRole(userData, wishesToSign, board) {
+
+  board.volunteers = board.volunteers || [];
+
+  if (!userData || !wishesToSign) {
+    return null;
+  } else if (board.owner === userData.login) {
+    return 'Board owner';
+  } else if (board.volunteers.indexOf(userData.login) > -1) {
+    return 'Board volunteer';
+  } else if (userData.globalRole <= miscOps.getMaxStaffRole()) {
+    return miscOps.getGlobalRoleLabel(userData.globalRole);
+  } else {
+    return null;
+  }
+
+}
+
+// start of tripcode functions
+function generateSecureTripcode(name, password, parameters, callback) {
+
+  var tripcode = crypto.createHash('sha256').update(password + Math.random())
+      .digest('base64').substring(0, 6);
+
+  tripcodes.insert({
+    password : password,
+    tripcode : tripcode
+  }, function createdTripcode(error) {
+    if (error && error.code === 11000) {
+      generateSecureTripcode(name, password, parameters, callback);
+    } else {
+
+      parameters.name = name + '##' + tripcode;
+      callback(error, parameters);
+    }
+  });
+
+}
+
+function checkForSecureTripcode(name, parameters, callback) {
+
+  var password = name.substring(name.indexOf('##') + 2);
+
+  name = name.substring(0, name.indexOf('##'));
+
+  tripcodes.findOne({
+    password : password
+  }, function gotTripcode(error, tripcode) {
+    if (error) {
+      callback(error);
+    } else if (!tripcode) {
+
+      generateSecureTripcode(name, password, parameters, callback);
+
+    } else {
+
+      parameters.name = name + '##' + tripcode.tripcode;
+
+      callback(null, parameters);
+    }
+
+  });
+
+}
+
+function processRegularTripcode(name, parameters, callback) {
+  var roleSignatureRequestIndex = name.toLowerCase().indexOf('#rs');
+  if (roleSignatureRequestIndex > -1) {
+
+    parameters.name = name.substring(0, roleSignatureRequestIndex);
+    callback(null, parameters);
+    return;
+
+  }
+
+  var password = name.substring(name.indexOf('#') + 1);
+  name = name.substring(0, name.indexOf('#'));
+
+  if (!password.length) {
+    callback(null, parameters);
+    return;
+  }
+
+  password = crypto.createHash('sha256').update(password).digest('base64')
+      .substring(0, 6);
+
+  parameters.name = name + '#' + password;
+
+  callback(null, parameters);
+}
+
+function checkForTripcode(parameters, callback) {
+
+  var name = parameters.name;
+
+  if (!name || name.indexOf('#') === -1) {
+
+    callback(null, parameters);
+    return;
+  }
+
+  var secure = name.indexOf('##') > -1;
+
+  if (!secure) {
+
+    processRegularTripcode(name, parameters, callback);
+
+  } else {
+    checkForSecureTripcode(name, parameters, callback);
+  }
+
+}
+// end of tripcode functions
+
+function doesUserWishesToSign(userData, parameters) {
+
+  var alwaysSigns = false;
+
+  if (userData && userData.settings) {
+    alwaysSigns = userData.settings.indexOf('alwaysSignRole') > -1;
+  }
+
+  var informedName = parameters.name || '';
+
+  var askedToSign = informedName.toLowerCase().indexOf('#rs') > -1;
+
+  return alwaysSigns || askedToSign;
+
+}
+
 function addPostToStats(boardUri, callback) {
 
   var statHour = new Date();
@@ -302,106 +432,6 @@ function markdownText(message, board, callback) {
 }
 // end of markdown functions
 
-// start of tripcode functions
-function generateSecureTripcode(name, password, parameters, callback) {
-
-  var tripcode = crypto.createHash('sha256').update(password + Math.random())
-      .digest('base64').substring(0, 6);
-
-  tripcodes.insert({
-    password : password,
-    tripcode : tripcode
-  }, function createdTripcode(error) {
-    if (error && error.code === 11000) {
-      generateSecureTripcode(name, password, parameters, callback);
-    } else {
-
-      parameters.name = name + '##' + tripcode;
-      callback(error, parameters);
-    }
-  });
-
-}
-
-function checkForSecureTripcode(name, parameters, callback) {
-
-  var password = name.substring(name.indexOf('##') + 2);
-
-  name = name.substring(0, name.indexOf('##'));
-
-  tripcodes.findOne({
-    password : password
-  }, function gotTripcode(error, tripcode) {
-    if (error) {
-      callback(error);
-    } else if (!tripcode) {
-
-      generateSecureTripcode(name, password, parameters, callback);
-
-    } else {
-
-      parameters.name = name + '##' + tripcode.tripcode;
-
-      callback(null, parameters);
-    }
-
-  });
-
-}
-
-function checkForTripcode(parameters, callback) {
-
-  var name = parameters.name;
-
-  if (!name || name.indexOf('#') === -1) {
-
-    callback(null, parameters);
-    return;
-  }
-
-  var secure = name.indexOf('##') > -1;
-
-  if (!secure) {
-
-    var password = name.substring(name.indexOf('#') + 1);
-    name = name.substring(0, name.indexOf('#'));
-
-    if (!password.length) {
-      callback(null, parameters);
-      return;
-    }
-
-    password = crypto.createHash('sha256').update(password).digest('base64')
-        .substring(0, 6);
-
-    parameters.name = name + '#' + password;
-
-    callback(null, parameters);
-  } else {
-    checkForSecureTripcode(name, parameters, callback);
-  }
-
-}
-// end of tripcode functions
-
-function getSignedRole(userData, board) {
-
-  board.volunteers = board.volunteers || [];
-
-  if (!userData) {
-    return null;
-  } else if (board.owner === userData.login) {
-    return 'Board owner';
-  } else if (board.volunteers.indexOf(userData.login) > -1) {
-    return 'Board volunteer';
-  } else if (userData.globalRole > miscOps.getMaxStaffRole) {
-    return null;
-  } else {
-    return miscOps.getGlobalRoleLabel(userData.globalRole);
-  }
-
-}
-
 function createId(salt, boardUri, ip) {
   return crypto.createHash('sha256').update(salt + ip + boardUri).digest('hex')
       .substring(0, 6);
@@ -476,7 +506,8 @@ function updateBoardForThreadCreation(boardUri, threadId, callback, thread) {
   });
 }
 
-function createThread(req, userData, parameters, board, threadId, callback) {
+function createThread(req, userData, parameters, board, threadId, wishesToSign,
+    callback) {
 
   var salt = crypto.createHash('sha256').update(
       threadId + parameters.toString() + Math.random() + new Date()).digest(
@@ -500,7 +531,7 @@ function createThread(req, userData, parameters, board, threadId, callback) {
     subject : parameters.subject,
     pinned : false,
     locked : false,
-    signedRole : getSignedRole(userData, board),
+    signedRole : getSignedRole(userData, wishesToSign, board),
     name : parameters.name || board.anonymousName || defaultAnonymousName,
     message : parameters.message,
     email : parameters.email
@@ -512,7 +543,8 @@ function createThread(req, userData, parameters, board, threadId, callback) {
 
   threads.insert(threadToAdd, function createdThread(error) {
     if (error && error.code === 11000) {
-      createThread(req, userData, parameters, board, threadId + 1, callback);
+      createThread(req, userData, parameters, board, threadId + 1,
+          wishesToSign, callback);
     } else if (error) {
       callback(error);
     } else {
@@ -535,23 +567,24 @@ function createThread(req, userData, parameters, board, threadId, callback) {
 }
 
 function checkCaptchaForThread(req, userData, parameters, board, threadId,
-    callback, captchaId) {
+    captchaId, callback) {
 
   captchaOps.attemptCaptcha(captchaId, parameters.captcha, board,
       function solvedCaptcha(error) {
         if (error) {
           callback(error);
         } else {
+          var wishesToSign = doesUserWishesToSign(userData, parameters);
+
           // style exception, too simple
-          checkForTripcode(parameters,
-              function setTripCode(error, parameters) {
-                if (error) {
-                  callback(error);
-                } else {
-                  createThread(req, userData, parameters, board, threadId,
-                      callback);
-                }
-              });
+          checkForTripcode(parameters, function setTripCode(error, parameters) {
+            if (error) {
+              callback(error);
+            } else {
+              createThread(req, userData, parameters, board, threadId,
+                  wishesToSign, callback);
+            }
+          });
           // style exception, too simple
         }
 
@@ -595,7 +628,7 @@ exports.newThread = function(req, userData, parameters, captchaId, callback) {
               parameters.markdown = markdown;
 
               checkCaptchaForThread(req, userData, parameters, board,
-                  (board.lastPostId || 0) + 1, callback, captchaId);
+                  (board.lastPostId || 0) + 1, captchaId, callback);
             }
 
           });
@@ -721,7 +754,8 @@ function updateThread(parameters, postId, thread, callback, post) {
 
 }
 
-function createPost(req, parameters, userData, postId, thread, board, cb) {
+function createPost(req, parameters, userData, postId, thread, board,
+    wishesToSign, cb) {
 
   var ip = req.connection.remoteAddress;
 
@@ -735,7 +769,7 @@ function createPost(req, parameters, userData, postId, thread, board, cb) {
     markdown : parameters.markdown,
     ip : ip,
     threadId : parameters.threadId,
-    signedRole : getSignedRole(userData, board),
+    signedRole : getSignedRole(userData, wishesToSign, board),
     creation : new Date(),
     subject : parameters.subject,
     name : parameters.name || board.anonymousName || defaultAnonymousName,
@@ -750,7 +784,8 @@ function createPost(req, parameters, userData, postId, thread, board, cb) {
 
   posts.insert(postToAdd, function createdPost(error) {
     if (error && error.code === 11000) {
-      createPost(req, parameters, userData, postId + 1, thread, board, cb);
+      createPost(req, parameters, userData, postId + 1, thread, board,
+          wishesToSign, cb);
     } else if (error) {
       cb(error);
     } else {
@@ -801,16 +836,17 @@ function getThread(req, parameters, userData, postId, board, callback) {
 
       miscOps.sanitizeStrings(parameters, postingParameters);
 
+      var wishesToSign = doesUserWishesToSign(userData, parameters);
+
       // style exception, too simple
-      checkForTripcode(parameters,
-          function setTripCode(error, parameters) {
-            if (error) {
-              callback(error);
-            } else {
-              createPost(req, parameters, userData, postId, thread, board,
-                  callback);
-            }
-          });
+      checkForTripcode(parameters, function setTripCode(error, parameters) {
+        if (error) {
+          callback(error);
+        } else {
+          createPost(req, parameters, userData, postId, thread, board,
+              wishesToSign, callback);
+        }
+      });
       // style exception, too simple
 
     }

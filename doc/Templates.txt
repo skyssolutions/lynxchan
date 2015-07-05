@@ -292,6 +292,10 @@ labelLogin:
     type: p
     description: contains the user's login.
 
+checkboxAlwaysSign:
+    type: input
+    description: checkbox that indicates the user wishes to always sign posts with his role.
+
 boardsDiv:
     type:div
     description: contains the list of boards owned by the user.

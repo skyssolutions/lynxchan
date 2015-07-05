@@ -366,7 +366,7 @@ function testTemplates(settings) {
         template : 'accountPage',
         content : accountTemplate,
         fields : [ 'labelLogin', 'boardsDiv', 'emailField',
-            'globalManagementLink', 'boardCreationDiv' ]
+            'globalManagementLink', 'boardCreationDiv', 'checkboxAlwaysSign' ]
       },
       {
         template : 'banPage',

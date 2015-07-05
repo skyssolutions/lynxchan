@@ -13,6 +13,7 @@ var mailer = require('nodemailer').createTransport();
 var settings = require('../boot').getGeneralSettings();
 var sender = settings.emailSender || 'noreply@mychan.com';
 var creationDisabled = settings.disableAccountCreation;
+var validAccountSettings = [ 'alwaysSignRole' ];
 
 var newAccountParameters = [ {
   field : 'login',
@@ -26,6 +27,10 @@ var changeSettingsParameters = [ {
   field : 'email',
   length : 64
 } ];
+
+exports.validAccountSettings = function() {
+  return validAccountSettings;
+};
 
 // start of global role change
 function logRoleChange(operatorData, parameters, callback) {
@@ -220,6 +225,7 @@ exports.validate = function(auth, callback) {
     login : 1,
     hash : 1,
     ownedBoards : 1,
+    settings : 1,
     globalRole : 1,
     email : 1
   }, function foundUser(error, user) {
@@ -402,7 +408,8 @@ exports.changeSettings = function(userData, parameters, callback) {
     login : userData.login
   }, {
     $set : {
-      email : parameters.email
+      email : parameters.email,
+      settings : parameters.settings
     }
   }, function updatedSettings(error) {
     callback(error);
