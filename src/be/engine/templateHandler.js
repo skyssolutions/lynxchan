@@ -14,227 +14,129 @@ require('jsdom').defaultDocumentFeatures = {
   MutationEvents : false
 };
 
-// templates
-var frontPageTemplate;
-var threadTemplate;
-var boardTemplate;
-var notFoundTemplate;
-var messageTemplate;
-var loginTemplate;
-var opTemplate;
-var postTemplate;
-var recoveryEmailTemplate;
-var resetEmailTemplate;
-var accountTemplate;
-var gManagementTemplate;
-var staffCellTemplate;
-var bManagementTemplate;
-var volunteerCellTemplate;
-var reportCellTemplate;
-var closedReportCellTemplate;
-var closedReportsPageTemplate;
-var bansPageTemplate;
-var banCellTemplate;
-var uploadCellTemplate;
-var errorTemplate;
-var banPageTemplate;
-var bannerManagementTemplate;
-var bannerCellTemplate;
-var catalogPageTemplate;
-var catalogCellTemplate;
-var logsPageTemplate;
-var logCellTemplate;
-var previewPageTemplate;
-var filterMagementPage;
-var filterCellTemplate;
-var boardModerationTemplate;
-var boardsTemplate;
-var boardsCellTemplate;
-var noCookieCaptcha;
-var rangeBansTemplate;
-var rangeBanCellTemplate;
-var rangeBanPageTemplate;
-var hashBansTemplate;
-var hashBanCellTemplate;
+function testPageFields(document, page, errors) {
 
-function loadEmailTemplates(fePath, templateSettings) {
+  var error = '';
 
-  var recoveryEmailPath = fePath + templateSettings.recoveryEmail;
-  recoveryEmailTemplate = fs.readFileSync(recoveryEmailPath);
-  resetEmailTemplate = fs.readFileSync(fePath + templateSettings.resetEmail);
+  for (var j = 0; j < page.fields.length; j++) {
 
-}
+    var field = page.fields[j];
 
-function loadLongPathCellTemplates(fePath, templateSettings) {
-  var closedReportPath = fePath + templateSettings.closedReportCell;
-  closedReportCellTemplate = fs.readFileSync(closedReportPath);
-
-  var volunteerPath = fePath + templateSettings.volunteerCell;
-  volunteerCellTemplate = fs.readFileSync(volunteerPath);
-
-  var rangeBanPath = fePath + templateSettings.rangeBanCell;
-  rangeBanCellTemplate = fs.readFileSync(rangeBanPath);
-
-}
-
-function loadCellTemplates(fePath, templateSettings) {
-  opTemplate = fs.readFileSync(fePath + templateSettings.opCell);
-  staffCellTemplate = fs.readFileSync(fePath + templateSettings.staffCell);
-  postTemplate = fs.readFileSync(fePath + templateSettings.postCell);
-  reportCellTemplate = fs.readFileSync(fePath + templateSettings.reportCell);
-  uploadCellTemplate = fs.readFileSync(fePath + templateSettings.uploadCell);
-  banCellTemplate = fs.readFileSync(fePath + templateSettings.banCell);
-  bannerCellTemplate = fs.readFileSync(fePath + templateSettings.bannerCell);
-  catalogCellTemplate = fs.readFileSync(fePath + templateSettings.catalogCell);
-  logCellTemplate = fs.readFileSync(fePath + templateSettings.logCell);
-  filterCellTemplate = fs.readFileSync(fePath + templateSettings.filterCell);
-  boardsCellTemplate = fs.readFileSync(fePath + templateSettings.boardsCell);
-  hashBanCellTemplate = fs.readFileSync(fePath + templateSettings.hashBanCell);
-
-}
-
-function loadLongPathDynamicTemplates(fePath, templateSettings) {
-  var boardModerationPath = fePath + templateSettings.boardModerationPage;
-  boardModerationTemplate = fs.readFileSync(boardModerationPath);
-
-  var bannerManagementPath = fePath + templateSettings.bannerManagementPage;
-  bannerManagementTemplate = fs.readFileSync(bannerManagementPath);
-
-  var closedReportsPath = fePath + templateSettings.closedReportsPage;
-  closedReportsPageTemplate = fs.readFileSync(closedReportsPath);
-
-  var filterManagementPath = fePath + templateSettings.filterManagement;
-  filterMagementPage = fs.readFileSync(filterManagementPath);
-
-  var noCookieCaptchaPath = fePath + templateSettings.noCookieCaptchaPage;
-  noCookieCaptcha = fs.readFileSync(noCookieCaptchaPath);
-
-  var rangeBanPath = fePath + templateSettings.rangeBanPage;
-  rangeBanPageTemplate = fs.readFileSync(rangeBanPath);
-}
-
-function loadDynamicTemplates(fePath, templateSettings) {
-
-  bManagementTemplate = fs.readFileSync(fePath + templateSettings.bManagement);
-  bansPageTemplate = fs.readFileSync(fePath + templateSettings.bansPage);
-  notFoundTemplate = fs.readFileSync(fePath + templateSettings.notFoundPage);
-  messageTemplate = fs.readFileSync(fePath + templateSettings.messagePage);
-  accountTemplate = fs.readFileSync(fePath + templateSettings.accountPage);
-  gManagementTemplate = fs.readFileSync(fePath + templateSettings.gManagement);
-  errorTemplate = fs.readFileSync(fePath + templateSettings.errorPage);
-  banPageTemplate = fs.readFileSync(fePath + templateSettings.banPage);
-  logsPageTemplate = fs.readFileSync(fePath + templateSettings.logsPage);
-  boardsTemplate = fs.readFileSync(fePath + templateSettings.boardsPage);
-  rangeBansTemplate = fs.readFileSync(fePath + templateSettings.rangeBansPage);
-  hashBansTemplate = fs.readFileSync(fePath + templateSettings.hashBansPage);
-
-}
-
-function loadMainTemplates(fePath, templateSettings) {
-
-  threadTemplate = fs.readFileSync(fePath + templateSettings.threadPage);
-  frontPageTemplate = fs.readFileSync(fePath + templateSettings.index);
-  boardTemplate = fs.readFileSync(fePath + templateSettings.boardPage);
-  loginTemplate = fs.readFileSync(fePath + templateSettings.loginPage);
-  catalogPageTemplate = fs.readFileSync(fePath + templateSettings.catalogPage);
-  previewPageTemplate = fs.readFileSync(fePath + templateSettings.previewPage);
-
-}
-
-function checkPageErrors(errors, tests) {
-
-  for (var i = 0; i < tests.length; i++) {
-
-    var test = tests[i];
-
-    var document = jsdom(test.content);
-
-    var errorFound = false;
-
-    var error = '\nPage ' + test.template;
-
-    for (var j = 0; j < test.fields.length; j++) {
-
-      var field = test.fields[j];
-
-      if (!document.getElementById(field)) {
-        errorFound = true;
-        error += '\nError, missing element with id ' + field;
-      }
-
+    if (!document.getElementById(field)) {
+      error += '\nError, missing element with id ' + field;
     }
 
-    if (errorFound) {
-      errors.push(error);
+  }
+
+  return error;
+}
+
+function loadPages(errors, templatesPath, templateSettings, pages) {
+
+  for (var i = 0; i < pages.length; i++) {
+
+    var page = pages[i];
+
+    var fullPath = templatesPath + templateSettings[page.template];
+
+    try {
+      var template = fs.readFileSync(fullPath);
+    } catch (error) {
+      console.log('Error loading ' + page.template + '.');
+      throw error;
+    }
+
+    exports[page.template] = template;
+
+    var document = jsdom(template);
+
+    var error = testPageFields(document, page, errors);
+
+    if (error.length) {
+
+      errors.push('\nPage ' + page.template + error);
     }
 
   }
 
 }
 
-function getTestCell(document, content) {
+function getTestCell(document, templateName, fePath, templateSettings) {
 
   var toReturn = document.createElement('div');
 
-  toReturn.innerHTML = content;
+  var fullPath = fePath + templateSettings[templateName];
+
+  try {
+    var template = fs.readFileSync(fullPath);
+  } catch (error) {
+    console.log('Error loading ' + templateName + '.');
+    throw error;
+  }
+
+  exports[templateName] = template;
+
+  toReturn.innerHTML = template;
 
   return toReturn;
 }
 
-function checkCellErrors(errors, tests) {
+function testCell(document, templatesPath, templateSettings, cell) {
+  var error = '';
+
+  var cellElement = getTestCell(document, cell.template, templatesPath,
+      templateSettings);
+
+  for (var j = 0; j < cell.fields.length; j++) {
+
+    var field = cell.fields[j];
+
+    if (!cellElement.getElementsByClassName(field).length) {
+      error += '\nError, missing element with class ' + field;
+    } else if (cellElement.getElementsByClassName(field).length > 1) {
+      error += '\nWarning, more than one element with class ' + field;
+    }
+
+  }
+
+  return error;
+}
+
+function loadCells(errors, templatesPath, templateSettings, cells) {
 
   var document = jsdom('<html></html>');
 
-  for (var i = 0; i < tests.length; i++) {
+  for (var i = 0; i < cells.length; i++) {
 
-    var test = tests[i];
-
-    var cell = getTestCell(document, test.content);
+    var cell = cells[i];
 
     var errorFound = false;
 
-    var error = '\nCell ' + test.template;
+    var error = testCell(document, templatesPath, templateSettings, cell);
 
-    for (var j = 0; j < test.fields.length; j++) {
-
-      var field = test.fields[j];
-
-      if (!cell.getElementsByClassName(field).length) {
-        errorFound = true;
-        error += '\nError, missing element with class ' + field;
-      } else if (cell.getElementsByClassName(field).length > 1) {
-        errorFound = true;
-        error += '\nWarning, more than one element with class ' + field;
-      }
-
-    }
-
-    if (errorFound) {
-      errors.push(error);
+    if (error.length) {
+      errors.push('\nCell ' + cell.template + error);
     }
 
   }
 
 }
 
-function testTemplates(settings) {
+function loadAndTestTemplates(path, templateSettings) {
 
   var cellTests = [
       {
         template : 'catalogCell',
-        content : catalogCellTemplate,
         fields : [ 'linkThumb', 'labelReplies', 'labelImages', 'labelPage',
             'labelSubject', 'divMessage', 'lockIndicator', 'pinIndicator',
             'cyclicIndicator' ]
       },
       {
         template : 'bannerCell',
-        content : bannerCellTemplate,
         fields : [ 'bannerImage', 'bannerIdentifier' ]
       },
       {
         template : 'opCell',
-        content : opTemplate,
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkReply', 'linkSelf', 'deletionCheckBox',
             'lockIndicator', 'pinIndicator', 'labelId', 'labelRole',
@@ -243,116 +145,93 @@ function testTemplates(settings) {
       },
       {
         template : 'postCell',
-        content : postTemplate,
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkSelf', 'deletionCheckBox', 'labelId',
             'labelRole', 'divBanMessage', 'spanId', 'panelRange', 'labelRange' ]
       },
       {
         template : 'staffCell',
-        content : staffCellTemplate,
         fields : [ 'userIdentifier', 'userLabel', 'roleCombo' ]
       },
       {
         template : 'volunteerCell',
-        content : volunteerCellTemplate,
         fields : [ 'boardIdentifier', 'userIdentifier', 'userLabel' ]
       },
       {
         template : 'reportCell',
-        content : reportCellTemplate,
         fields : [ 'reasonLabel', 'link', 'idIdentifier' ]
       },
       {
         template : 'closedReportCell',
-        content : closedReportCellTemplate,
         fields : [ 'reasonLabel', 'link', 'closedByLabel', 'closedDateLabel' ]
       },
       {
         template : 'banCell',
-        content : banCellTemplate,
         fields : [ 'reasonLabel', 'expirationLabel', 'appliedByLabel',
             'boardLabel', 'idLabel' ]
       },
       {
         template : 'logCell',
-        content : logCellTemplate,
         fields : [ 'indicatorGlobal', 'labelUser', 'labelTime',
             'labelDescription', 'labelBoard', 'labelType' ]
       },
       {
         template : 'filterCell',
-        content : filterCellTemplate,
         fields : [ 'labelOriginal', 'labelReplacement', 'boardIdentifier',
             'filterIdentifier' ]
       },
       {
         template : 'boardsCell',
-        content : boardsCellTemplate,
         fields : [ 'linkBoard', 'labelPostsPerHour', 'labelPostCount',
             'divDescription' ]
       }, {
         template : 'rangeBanCell',
-        content : rangeBanCellTemplate,
         fields : [ 'rangeLabel', 'idIdentifier' ]
       }, {
         template : 'hashBanCell',
-        content : hashBanCellTemplate,
         fields : [ 'hashLabel', 'idIdentifier' ]
+      }, {
+        template : 'uploadCell',
+        fields : [ 'infoLabel', 'imgLink', 'nameLink', 'divHash', 'labelHash' ]
       } ];
-
-  cellTests.push({
-    template : 'uploadCell',
-    content : uploadCellTemplate,
-    fields : [ 'infoLabel', 'imageLink', 'nameLink', 'divHash', 'labelHash' ]
-  });
 
   var pageTests = [
       {
         template : 'loginPage',
-        content : loginTemplate,
         fields : [ 'divCreation' ]
       },
       {
         template : 'catalogPage',
-        content : catalogPageTemplate,
         fields : [ 'divThreads', 'labelBoard' ]
       },
       {
         template : 'resetEmail',
-        content : resetEmailTemplate,
         fields : [ 'labelNewPass' ]
       },
       {
         template : 'bannerManagementPage',
-        content : bannerManagementTemplate,
         fields : [ 'bannersDiv', 'boardIdentifier' ]
       },
       {
         template : 'errorPage',
-        content : errorTemplate,
         fields : [ 'codeLabel', 'errorLabel' ]
       },
       {
         template : 'recoveryEmail',
-        content : recoveryEmailTemplate,
         fields : [ 'linkRecovery' ]
       },
       {
         template : 'index',
-        content : frontPageTemplate,
         fields : [ 'divBoards' ]
       },
       {
         template : 'boardPage',
-        content : boardTemplate,
         fields : [ 'labelName', 'labelDescription', 'divPostings', 'divPages',
             'boardIdentifier', 'linkManagement', 'bannerImage', 'captchaDiv',
             'divName', 'linkModeration', 'labelMaxFileSize' ]
       },
       {
         template : 'threadPage',
-        content : threadTemplate,
         fields : [ 'labelName', 'labelDescription', 'divPostings',
             'boardIdentifier', 'linkManagement', 'threadIdentifier', 'linkMod',
             'inputBan', 'divBanInput', 'divControls', 'controlBoardIdentifier',
@@ -362,29 +241,24 @@ function testTemplates(settings) {
       },
       {
         template : 'messagePage',
-        content : messageTemplate,
         fields : [ 'labelMessage', 'linkRedirect' ]
       },
       {
         template : 'accountPage',
-        content : accountTemplate,
         fields : [ 'labelLogin', 'boardsDiv', 'emailField',
             'globalManagementLink', 'boardCreationDiv', 'checkboxAlwaysSign' ]
       },
       {
         template : 'banPage',
-        content : banPageTemplate,
         fields : [ 'boardLabel', 'reasonLabel', 'expirationLabel', 'idLabel' ]
       },
       {
         template : 'gManagement',
-        content : gManagementTemplate,
         fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
             'reportDiv', 'bansLink', 'rangeBansLink', 'hashBansLink' ]
       },
       {
         template : 'bManagement',
-        content : bManagementTemplate,
         fields : [ 'volunteersDiv', 'boardLabel', 'ownerControlDiv',
             'addVolunteerBoardIdentifier', 'transferBoardIdentifier',
             'deletionIdentifier', 'reportDiv', 'closedReportsLink', 'bansLink',
@@ -396,66 +270,55 @@ function testTemplates(settings) {
       },
       {
         template : 'closedReportsPage',
-        content : closedReportsPageTemplate,
         fields : [ 'reportDiv' ]
       },
       {
         template : 'bansPage',
-        content : bansPageTemplate,
         fields : [ 'bansDiv' ]
       },
       {
         template : 'logsPage',
-        content : logsPageTemplate,
         fields : [ 'divLogs', 'divPages', 'checkboxExcludeGlobals',
             'fieldBoard', 'comboboxType', 'fieldBefore', 'fieldAfter',
             'fieldUser' ]
       },
       {
         template : 'previewPage',
-        content : previewPageTemplate,
         fields : [ 'panelContent' ]
       },
       {
         template : 'filterManagement',
-        content : filterMagementPage,
         fields : [ 'divFilters', 'boardIdentifier' ]
       },
       {
-        template : 'boardModeration',
-        content : boardModerationTemplate,
+        template : 'boardModerationPage',
         fields : [ 'boardTransferIdentifier', 'boardDeletionIdentifier',
             'labelTitle', 'labelOwner' ]
       },
       {
         template : 'boardsPage',
-        content : boardsTemplate,
         fields : [ 'divBoards', 'divPages' ]
       },
       {
         template : 'noCookieCaptchaPage',
-        content : noCookieCaptcha,
         fields : [ 'divSolvedCaptcha', 'labelCaptchaId', 'inputCaptchaId',
             'imageCaptcha' ]
       }, {
         template : 'rangeBansPage',
-        content : rangeBansTemplate,
         fields : [ 'rangeBansDiv', 'boardIdentifier' ]
       }, {
         template : 'rangeBanPage',
-        content : rangeBanPageTemplate,
         fields : [ 'boardLabel', 'rangeLabel' ]
       }, {
         template : 'hashBansPage',
-        content : hashBansTemplate,
         fields : [ 'hashBansDiv', 'boardIdentifier' ]
       } ];
 
   var errors = [];
 
-  checkCellErrors(errors, cellTests);
+  loadCells(errors, path, templateSettings, cellTests);
 
-  checkPageErrors(errors, pageTests);
+  loadPages(errors, path, templateSettings, pageTests);
 
   if (errors.length) {
 
@@ -486,177 +349,5 @@ exports.loadTemplates = function() {
   var fePath = boot.getFePath() + '/templates/';
   var templateSettings = boot.getTemplateSettings();
 
-  loadMainTemplates(fePath, templateSettings);
-  loadEmailTemplates(fePath, templateSettings);
-  loadDynamicTemplates(fePath, templateSettings);
-  loadLongPathDynamicTemplates(fePath, templateSettings);
-  loadCellTemplates(fePath, templateSettings);
-  loadLongPathCellTemplates(fePath, templateSettings);
-
-  testTemplates(templateSettings);
-
-};
-
-exports.frontPageTemplate = function() {
-  return frontPageTemplate;
-};
-
-exports.threadTemplate = function() {
-  return threadTemplate;
-};
-
-exports.boardTemplate = function() {
-  return boardTemplate;
-};
-
-exports.notFoundTemplate = function() {
-  return notFoundTemplate;
-};
-
-exports.messageTemplate = function() {
-  return messageTemplate;
-};
-
-exports.loginTemplate = function() {
-  return loginTemplate;
-};
-
-exports.opTemplate = function() {
-  return opTemplate;
-};
-
-exports.postTemplate = function() {
-  return postTemplate;
-};
-
-exports.recoveryEmailTemplate = function() {
-  return recoveryEmailTemplate;
-};
-
-exports.resetEmailTemplate = function() {
-  return resetEmailTemplate;
-};
-
-exports.accountTemplate = function() {
-  return accountTemplate;
-};
-
-exports.gManagementTemplate = function() {
-  return gManagementTemplate;
-};
-
-exports.staffCellTemplate = function() {
-  return staffCellTemplate;
-};
-
-exports.bManagementTemplate = function() {
-  return bManagementTemplate;
-};
-
-exports.volunteerCellTemplate = function() {
-  return volunteerCellTemplate;
-};
-
-exports.reportCellTemplate = function() {
-  return reportCellTemplate;
-};
-
-exports.closedReportCellTemplate = function() {
-  return closedReportCellTemplate;
-};
-
-exports.closedReportsPageTemplate = function() {
-  return closedReportsPageTemplate;
-};
-
-exports.bansPageTemplate = function() {
-  return bansPageTemplate;
-};
-
-exports.banCellTemplate = function() {
-  return banCellTemplate;
-};
-
-exports.uploadCellTemplate = function() {
-  return uploadCellTemplate;
-};
-
-exports.errorTemplate = function() {
-  return errorTemplate;
-};
-
-exports.banPageTemplate = function() {
-  return banPageTemplate;
-};
-
-exports.bannerManagementTemplate = function() {
-  return bannerManagementTemplate;
-};
-
-exports.bannerCellTemplate = function() {
-  return bannerCellTemplate;
-};
-
-exports.catalogPageTemplate = function() {
-  return catalogPageTemplate;
-};
-
-exports.catalogCellTemplate = function() {
-  return catalogCellTemplate;
-};
-
-exports.logsPageTemplate = function() {
-  return logsPageTemplate;
-};
-
-exports.logCellTemplate = function() {
-  return logCellTemplate;
-};
-
-exports.previewPageTemplate = function() {
-  return previewPageTemplate;
-};
-
-exports.filterManagementPage = function() {
-  return filterMagementPage;
-};
-
-exports.filterCellTemplate = function() {
-  return filterCellTemplate;
-};
-
-exports.boardModerationTemplate = function() {
-  return boardModerationTemplate;
-};
-
-exports.boardsTemplate = function() {
-  return boardsTemplate;
-};
-
-exports.boardsCellTemplate = function() {
-  return boardsCellTemplate;
-};
-
-exports.noCookieCaptcha = function() {
-  return noCookieCaptcha;
-};
-
-exports.rangeBansTemplate = function() {
-  return rangeBansTemplate;
-};
-
-exports.rangeBanCellTemplate = function() {
-  return rangeBanCellTemplate;
-};
-
-exports.rangeBanPageTemplate = function() {
-  return rangeBanPageTemplate;
-};
-
-exports.hashBansTemplate = function() {
-  return hashBansTemplate;
-};
-
-exports.hashBanCellTemplate = function() {
-  return hashBanCellTemplate;
+  loadAndTestTemplates(fePath, templateSettings);
 };

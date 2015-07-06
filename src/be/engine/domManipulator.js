@@ -82,6 +82,10 @@ function padDateField(value) {
   return value;
 }
 
+function removeElement(element) {
+  element.parentNode.removeChild(element);
+}
+
 function formatDateToDisplay(d) {
   var day = padDateField(d.getDate());
 
@@ -114,7 +118,7 @@ function setReportList(document, reports) {
 
     var cell = document.createElement('form');
 
-    cell.innerHTML = templateHandler.reportCellTemplate();
+    cell.innerHTML = templateHandler.reportCell;
 
     setFormCellBoilerPlate(cell, '/closeReport.js', 'reportCell');
 
@@ -149,13 +153,11 @@ function setHeader(document, board, boardData) {
   var settings = boardData.settings;
 
   if (settings.indexOf('disableCaptcha') > -1) {
-    var captchaDiv = document.getElementById('captchaDiv');
-    captchaDiv.parentNode.removeChild(captchaDiv);
+    removeElement(document.getElementById('captchaDiv'));
   }
 
   if (settings.indexOf('forceAnonymity') > -1) {
-    var nameDiv = document.getElementById('divName');
-    nameDiv.parentNode.removeChild(nameDiv);
+    removeElement(document.getElementById('divName'));
   }
 
   document.getElementById('labelMaxFileSize').innerHTML = displayMaxSize;
@@ -163,37 +165,32 @@ function setHeader(document, board, boardData) {
 }
 
 // Section 1.2: Thread content {
-function setThreadHiddeableElements(thread, threadCell, modding) {
+function setThreadHiddeableElements(thread, cell, modding) {
 
   for ( var key in indicatorsRelation) {
     if (!thread[key]) {
-      var indicator = threadCell
-          .getElementsByClassName(indicatorsRelation[key])[0];
-      indicator.parentNode.removeChild(indicator);
+      removeElement(cell.getElementsByClassName(indicatorsRelation[key])[0]);
     }
   }
 
   if (thread.id) {
-    threadCell.getElementsByClassName('labelId')[0].innerHTML = thread.id;
+    cell.getElementsByClassName('labelId')[0].innerHTML = thread.id;
   } else {
-    var spanId = threadCell.getElementsByClassName('spanId')[0];
-    spanId.parentNode.removeChild(spanId);
+    removeElement(cell.getElementsByClassName('spanId')[0]);
   }
 
   if (modding) {
-    var labelRange = threadCell.getElementsByClassName('labelRange')[0];
+    var labelRange = cell.getElementsByClassName('labelRange')[0];
     labelRange.innerHTML = miscOps.getRange(thread.ip);
   } else {
-    var panelRange = threadCell.getElementsByClassName('panelRange')[0];
-
-    panelRange.parentNode.removeChild(panelRange);
+    removeElement(cell.getElementsByClassName('panelRange')[0]);
   }
 }
 
 function addThread(document, thread, posts, boardUri, innerPage, modding) {
 
   var threadCell = document.createElement('div');
-  threadCell.innerHTML = templateHandler.opTemplate();
+  threadCell.innerHTML = templateHandler.opCell;
   threadCell.setAttribute('class', 'opCell');
   threadCell.id = thread.threadId;
 
@@ -220,20 +217,19 @@ function setPostHideableElements(postCell, post) {
   if (post.subject) {
     subjectLabel.innerHTML = post.subject;
   } else {
-    subjectLabel.parentNode.removeChild(subjectLabel);
+    removeElement(subjectLabel);
   }
 
   if (post.id) {
     postCell.getElementsByClassName('labelId')[0].innerHTML = post.id;
   } else {
-    var spanId = postCell.getElementsByClassName('spanId')[0];
-    spanId.parentNode.removeChild(spanId);
+    removeElement(postCell.getElementsByClassName('spanId')[0]);
   }
 
   var banMessageLabel = postCell.getElementsByClassName('divBanMessage')[0];
 
   if (!post.banMessage) {
-    banMessageLabel.parentNode.removeChild(banMessageLabel);
+    removeElement(banMessageLabel);
   } else {
     banMessageLabel.innerHTML = post.banMessage;
   }
@@ -248,7 +244,7 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document,
   if (post.signedRole) {
     labelRole.innerHTML = post.signedRole;
   } else {
-    labelRole.parentNode.removeChild(labelRole);
+    removeElement(labelRole);
   }
 
   var link = postCell.getElementsByClassName('linkSelf')[0];
@@ -262,7 +258,7 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document,
     var checkboxName = boardUri + '-' + threadId + '-' + post.postId;
     deletionCheckbox.setAttribute('name', checkboxName);
   } else {
-    deletionCheckbox.parentNode.removeChild(deletionCheckbox);
+    removeElement(deletionCheckbox);
   }
 
   setUploadCell(document, postCell.getElementsByClassName('panelUploads')[0],
@@ -293,9 +289,7 @@ function setPostInnerElements(document, boardUri, threadId, post, postCell,
     var labelRange = postCell.getElementsByClassName('labelRange')[0];
     labelRange.innerHTML = miscOps.getRange(post.ip);
   } else {
-    var panelRange = postCell.getElementsByClassName('panelRange')[0];
-
-    panelRange.parentNode.removeChild(panelRange);
+    removeElement(postCell.getElementsByClassName('panelRange')[0]);
   }
 
   setPostComplexElements(postCell, post, boardUri, threadId, document, preview,
@@ -309,7 +303,7 @@ function addPosts(document, posts, boardUri, threadId, modding) {
 
   for (var i = 0; i < posts.length; i++) {
     var postCell = document.createElement('div');
-    postCell.innerHTML = templateHandler.postTemplate();
+    postCell.innerHTML = templateHandler.postCell;
     postCell.setAttribute('class', 'postCell');
 
     var post = posts[i];
@@ -328,7 +322,7 @@ function addPosts(document, posts, boardUri, threadId, modding) {
 function setThreaLinks(threadCell, thread, boardUri, innerPage) {
   var linkReply = threadCell.getElementsByClassName('linkReply')[0];
   if (innerPage) {
-    linkReply.parentNode.removeChild(linkReply);
+    removeElement(linkReply);
   } else {
     linkReply.href = 'res/' + thread.threadId + '.html';
   }
@@ -347,13 +341,13 @@ function setThreadComplexElements(boardUri, thread, threadCell) {
   if (thread.signedRole) {
     labelRole.innerHTML = thread.signedRole;
   } else {
-    labelRole.parentNode.removeChild(labelRole);
+    removeElement(labelRole);
   }
 
   var banMessageLabel = threadCell.getElementsByClassName('divBanMessage')[0];
 
   if (!thread.banMessage) {
-    banMessageLabel.parentNode.removeChild(banMessageLabel);
+    removeElement(banMessageLabel);
   } else {
     banMessageLabel.innerHTML = thread.banMessage;
   }
@@ -379,7 +373,7 @@ function setThreadSimpleElements(threadCell, thread) {
   if (thread.subject) {
     subjectLabel.innerHTML = thread.subject;
   } else {
-    subjectLabel.parentNode.removeChild(subjectLabel);
+    removeElement(subjectLabel);
   }
 
   var labelCreation = threadCell.getElementsByClassName('labelCreated')[0];
@@ -406,7 +400,7 @@ function formatFileSize(size) {
 }
 
 function setUploadLinks(document, cell, file) {
-  var thumbLink = cell.getElementsByClassName('imageLink')[0];
+  var thumbLink = cell.getElementsByClassName('imgLink')[0];
   thumbLink.href = file.path;
 
   var img = document.createElement('img');
@@ -421,8 +415,7 @@ function setUploadLinks(document, cell, file) {
 
 function setUploadModElements(modding, cell, file) {
   if (!modding) {
-    var hashDiv = cell.getElementsByClassName('divHash')[0];
-    hashDiv.parentNode.removeChild(hashDiv);
+    removeElement(cell.getElementsByClassName('divHash')[0]);
   } else {
     cell.getElementsByClassName('labelHash')[0].innerHTML = file.md5;
   }
@@ -437,7 +430,7 @@ function setUploadCell(document, node, files, modding) {
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
     var cell = document.createElement('div');
-    cell.innerHTML = templateHandler.uploadCellTemplate();
+    cell.innerHTML = templateHandler.uploadCell;
     cell.setAttribute('class', 'uploadCell');
 
     setUploadLinks(document, cell, file);
@@ -467,7 +460,7 @@ exports.bannerManagement = function(boardUri, banners) {
 
   try {
 
-    var document = jsdom(templateHandler.bannerManagementTemplate());
+    var document = jsdom(templateHandler.bannerManagementPage);
 
     document.title = 'Banners of /' + boardUri + '/';
 
@@ -479,7 +472,7 @@ exports.bannerManagement = function(boardUri, banners) {
       var banner = banners[i];
 
       var cell = document.createElement('form');
-      cell.innerHTML = templateHandler.bannerCellTemplate();
+      cell.innerHTML = templateHandler.bannerCell;
 
       setFormCellBoilerPlate(cell, '/deleteBanner.js', 'bannerCell');
 
@@ -512,8 +505,8 @@ exports.ban = function(ban, board) {
 
   try {
 
-    var document = jsdom(ban.range ? templateHandler.rangeBanPageTemplate()
-        : templateHandler.banPageTemplate());
+    var document = jsdom(ban.range ? templateHandler.rangeBanPage
+        : templateHandler.banPage);
 
     document.title = 'b& :^)';
 
@@ -551,7 +544,7 @@ exports.error = function(code, message) {
 
   try {
 
-    var document = jsdom(templateHandler.errorTemplate());
+    var document = jsdom(templateHandler.errorPage);
 
     document.title = 'Error';
 
@@ -600,7 +593,7 @@ exports.bans = function(bans) {
 
   try {
 
-    var document = jsdom(templateHandler.bansPageTemplate());
+    var document = jsdom(templateHandler.bansPage);
 
     document.title = 'Bans';
 
@@ -610,7 +603,7 @@ exports.bans = function(bans) {
 
       var ban = bans[i];
       var cell = document.createElement('form');
-      cell.innerHTML = templateHandler.banCellTemplate();
+      cell.innerHTML = templateHandler.banCell;
 
       setFormCellBoilerPlate(cell, '/liftBan.js', 'banCell');
 
@@ -656,7 +649,7 @@ function setClosedReportCell(cell, report) {
 exports.closedReports = function(reports, callback) {
   try {
 
-    var document = jsdom(templateHandler.closedReportsPageTemplate());
+    var document = jsdom(templateHandler.closedReportsPage);
 
     document.title = 'Closed reports';
 
@@ -667,7 +660,7 @@ exports.closedReports = function(reports, callback) {
       var report = reports[i];
       var cell = document.createElement('div');
 
-      cell.innerHTML = templateHandler.closedReportCellTemplate();
+      cell.innerHTML = templateHandler.closedReportCell;
       cell.setAttribute('class', 'closedReportCell');
 
       setClosedReportCell(cell, report);
@@ -741,7 +734,7 @@ function setBoardOwnerControls(document, boardData) {
   for (var i = 0; i < volunteers.length; i++) {
 
     var cell = document.createElement('form');
-    cell.innerHTML = templateHandler.volunteerCellTemplate();
+    cell.innerHTML = templateHandler.volunteerCell;
 
     setFormCellBoilerPlate(cell, '/setVolunteer.js', 'volunteerCell');
 
@@ -784,7 +777,7 @@ exports.boardManagement = function(login, boardData, reports) {
 
   try {
 
-    var document = jsdom(templateHandler.bManagementTemplate());
+    var document = jsdom(templateHandler.bManagement);
 
     document.title = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
 
@@ -800,9 +793,7 @@ exports.boardManagement = function(login, boardData, reports) {
     if (login === boardData.owner) {
       setBoardOwnerControls(document, boardData);
     } else {
-      var controlDiv = document.getElementById('ownerControlDiv');
-      controlDiv.parentNode.removeChild(controlDiv);
-
+      removeElement(document.getElementById('ownerControlDiv'));
     }
 
     return serializer(document);
@@ -850,7 +841,7 @@ function fillStaffDiv(document, possibleRoles, staff) {
     var user = staff[i];
 
     var cell = document.createElement('form');
-    cell.innerHTML = templateHandler.staffCellTemplate();
+    cell.innerHTML = templateHandler.staffCell;
 
     setFormCellBoilerPlate(cell, '/setGlobalRole.js', 'staffCell');
 
@@ -905,33 +896,27 @@ function setGlobalBansLink(userRole, document) {
   var displayBans = userRole < miscOps.getMaxStaffRole();
 
   if (!displayBans) {
-    var bansLink = document.getElementById('bansLink');
-    var rangeBansLink = document.getElementById('rangeBansLink');
-    var hashBansLink = document.getElementById('hashBansLink');
-
-    rangeBansLink.parentNode.removeChild(rangeBansLink);
-    bansLink.parentNode.removeChild(bansLink);
-    hashBansLink.parentNode.removeChild(hashBansLink);
+    removeElement(document.getElementById('hashBansLink'));
+    removeElement(document.getElementById('rangeBansLink'));
+    removeElement(document.getElementById('bansLink'));
   }
 }
 
 exports.globalManagement = function(userRole, userLogin, staff, reports) {
 
   try {
-    var document = jsdom(templateHandler.gManagementTemplate());
+    var document = jsdom(templateHandler.gManagement);
 
     document.title = 'Global management';
 
     setReportList(document, reports);
-
-    var newStaffForm = document.getElementById('addStaffForm');
 
     setGlobalBansLink(userRole, document);
 
     if (userRole < 2) {
       setNewStaffComboBox(document, userRole);
     } else {
-      newStaffForm.parentNode.removeChild(newStaffForm);
+      removeElement(document.getElementById('addStaffForm'));
     }
 
     var userLabel = document.getElementById('userLabel');
@@ -963,7 +948,7 @@ exports.resetEmail = function(password) {
 
   try {
 
-    var document = jsdom(templateHandler.resetEmailTemplate());
+    var document = jsdom(templateHandler.resetEmail);
 
     var link = document.getElementById('labelNewPass');
     link.innerHTML = password;
@@ -987,7 +972,7 @@ exports.recoveryEmail = function(recoveryLink) {
 
   try {
 
-    var document = jsdom(templateHandler.recoveryEmailTemplate());
+    var document = jsdom(templateHandler.recoveryEmail);
 
     var link = document.getElementById('linkRecovery');
     link.href = recoveryLink;
@@ -1036,8 +1021,7 @@ function setBoardCreationForm(userData, document) {
   var allowed = userData.globalRole < 2;
 
   if (boardCreationRestricted && !allowed) {
-    var boardCreationForm = document.getElementById('boardCreationDiv');
-    boardCreationForm.parentNode.removeChild(boardCreationForm);
+    removeElement(document.getElementById('boardCreationDiv'));
   }
 }
 
@@ -1060,7 +1044,7 @@ function setAccountSettingsCheckbox(settings, document) {
 exports.account = function(userData) {
 
   try {
-    var document = jsdom(templateHandler.accountTemplate());
+    var document = jsdom(templateHandler.accountPage);
 
     document.title = 'Welcome, ' + userData.login;
 
@@ -1068,14 +1052,12 @@ exports.account = function(userData) {
 
     loginLabel.innerHTML = userData.login;
 
-    var gManagementLink = document.getElementById('globalManagementLink');
-
     var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
     setBoardCreationForm(userData, document);
 
     if (!globalStaff) {
-      gManagementLink.parentNode.removeChild(gManagementLink);
+      removeElement(document.getElementById('globalManagementLink'));
     }
 
     setAccountSettingsCheckbox(userData.settings, document);
@@ -1155,8 +1137,7 @@ function fillSearchForm(parameters, document) {
 function setLogEntry(logCell, log) {
 
   if (!log.global) {
-    var globalIndicator = logCell.getElementsByClassName('indicatorGlobal')[0];
-    globalIndicator.parentNode.removeChild(globalIndicator);
+    removeElement(logCell.getElementsByClassName('indicatorGlobal')[0]);
   }
 
   var labelType = logCell.getElementsByClassName('labelType')[0];
@@ -1217,7 +1198,7 @@ function setLogPages(document, parameters, pageCount) {
 exports.logs = function(logs, pageCount, parameters) {
   try {
 
-    var document = jsdom(templateHandler.logsPageTemplate());
+    var document = jsdom(templateHandler.logsPage);
 
     document.title = 'Logs';
 
@@ -1232,7 +1213,7 @@ exports.logs = function(logs, pageCount, parameters) {
 
       var logCell = document.createElement('div');
       logCell.setAttribute('class', 'logCell');
-      logCell.innerHTML = templateHandler.logCellTemplate();
+      logCell.innerHTML = templateHandler.logCell;
 
       setLogEntry(logCell, log);
 
@@ -1262,7 +1243,7 @@ exports.message = function(message, link) {
 
   try {
 
-    var document = jsdom(templateHandler.messageTemplate());
+    var document = jsdom(templateHandler.messagePage);
 
     document.title = message;
 
@@ -1317,7 +1298,7 @@ exports.filterManagement = function(boardUri, filters) {
 
   try {
 
-    var document = jsdom(templateHandler.filterManagementPage());
+    var document = jsdom(templateHandler.filterManagement);
 
     document.title = 'Filter management';
 
@@ -1330,7 +1311,7 @@ exports.filterManagement = function(boardUri, filters) {
       var filter = filters[i];
 
       var filterCell = document.createElement('form');
-      filterCell.innerHTML = templateHandler.filterCellTemplate();
+      filterCell.innerHTML = templateHandler.filterCell;
 
       setFormCellBoilerPlate(filterCell, '/deleteFilter.js', 'filterCell');
 
@@ -1360,7 +1341,7 @@ exports.boardModeration = function(boardData, ownerData) {
 
   try {
 
-    var document = jsdom(templateHandler.boardModerationTemplate());
+    var document = jsdom(templateHandler.boardModerationPage);
 
     document.title = 'Board moderation';
 
@@ -1424,7 +1405,7 @@ function setPages(document, pageCount) {
 
 exports.boards = function(boards, pageCount) {
   try {
-    var document = jsdom(templateHandler.boardsTemplate());
+    var document = jsdom(templateHandler.boardsPage);
 
     document.title = 'Boards';
 
@@ -1434,7 +1415,7 @@ exports.boards = function(boards, pageCount) {
       var board = boards[i];
 
       var boardCell = document.createElement('div');
-      boardCell.innerHTML = templateHandler.boardsCellTemplate();
+      boardCell.innerHTML = templateHandler.boardsCell;
       boardCell.setAttribute('class', 'boardsCell');
 
       setBoardCell(board, boardCell);
@@ -1466,13 +1447,12 @@ exports.noCookieCaptcha = function(parameters, captchaId) {
 
   try {
 
-    var document = jsdom(templateHandler.noCookieCaptcha());
+    var document = jsdom(templateHandler.noCookieCaptchaPage);
 
     document.title = 'No cookie captcha';
 
     if (!parameters.solvedCaptcha) {
-      var solvedCaptchaDiv = document.getElementById('divSolvedCaptcha');
-      solvedCaptchaDiv.parentNode.removeChild(solvedCaptchaDiv);
+      removeElement(document.getElementById('divSolvedCaptcha'));
     } else {
       var labelSolved = document.getElementById('labelCaptchaId');
       labelSolved.innerHTML = parameters.solvedCaptcha;
@@ -1508,7 +1488,7 @@ function setRangeBanCells(document, rangeBans) {
     var rangeBan = rangeBans[i];
 
     var banCell = document.createElement('form');
-    banCell.innerHTML = templateHandler.rangeBanCellTemplate();
+    banCell.innerHTML = templateHandler.rangeBanCell;
     setFormCellBoilerPlate(banCell, '/liftBan.js', 'rangeBanCell');
 
     banCell.getElementsByClassName('rangeLabel')[0].innerHTML = rangeBan.range;
@@ -1525,7 +1505,7 @@ exports.rangeBans = function(rangeBans, boardUri) {
 
   try {
 
-    var document = jsdom(templateHandler.rangeBansTemplate());
+    var document = jsdom(templateHandler.rangeBansPage);
 
     document.title = 'Range bans';
 
@@ -1534,7 +1514,7 @@ exports.rangeBans = function(rangeBans, boardUri) {
     if (boardUri) {
       boardIdentifier.setAttribute('value', boardUri);
     } else {
-      boardIdentifier.parentNode.removeChild(boardIdentifier);
+      removeElement(boardIdentifier);
     }
 
     setRangeBanCells(document, rangeBans);
@@ -1565,7 +1545,7 @@ function setHashBanCells(document, hashBans) {
     var hashBan = hashBans[i];
 
     var banCell = document.createElement('form');
-    banCell.innerHTML = templateHandler.hashBanCellTemplate();
+    banCell.innerHTML = templateHandler.hashBanCell;
     setFormCellBoilerPlate(banCell, '/liftHashBan.js', 'hashBanCell');
 
     banCell.getElementsByClassName('hashLabel')[0].innerHTML = hashBan.md5;
@@ -1582,7 +1562,7 @@ exports.hashBans = function(hashBans, boardUri) {
 
   try {
 
-    var document = jsdom(templateHandler.hashBansTemplate());
+    var document = jsdom(templateHandler.hashBansPage);
 
     document.title = 'Hash bans';
 
@@ -1591,7 +1571,7 @@ exports.hashBans = function(hashBans, boardUri) {
     if (boardUri) {
       boardIdentifier.setAttribute('value', boardUri);
     } else {
-      boardIdentifier.parentNode.removeChild(boardIdentifier);
+      removeElement(boardIdentifier);
     }
 
     setHashBanCells(document, hashBans);
@@ -1618,7 +1598,7 @@ exports.hashBans = function(hashBans, boardUri) {
 // Section 3: Static pages {
 exports.notFound = function(callback) {
 
-  var document = jsdom(templateHandler.notFoundTemplate());
+  var document = jsdom(templateHandler.notFoundPage);
 
   document.title = 'File not found';
 
@@ -1629,13 +1609,12 @@ exports.notFound = function(callback) {
 
 exports.login = function(callback) {
   try {
-    var document = jsdom(templateHandler.loginTemplate());
+    var document = jsdom(templateHandler.loginPage);
 
     document.title = 'Login, register or reset passsword';
 
     if (accountCreationDisabled) {
-      var divCreation = document.getElementById('divCreation');
-      divCreation.parentNode.removeChild(divCreation);
+      removeElement(document.getElementById('divCreation'));
     }
 
     gridFs.writeData(serializer(document), '/login.html', 'text/html', {},
@@ -1660,7 +1639,7 @@ exports.frontPage = function(boards, callback) {
 
   try {
 
-    var document = jsdom(templateHandler.frontPageTemplate());
+    var document = jsdom(templateHandler.index);
 
     document.title = siteTitle;
 
@@ -1738,14 +1717,9 @@ function setModdingInformation(document, boardUri, boardData, threadData,
 
 function hideModElements(document) {
 
-  var inputBan = document.getElementById('inputBan');
-  inputBan.parentNode.removeChild(inputBan);
-
-  var divBanInput = document.getElementById('divBanInput');
-  divBanInput.parentNode.removeChild(divBanInput);
-
-  var divControls = document.getElementById('divControls');
-  divControls.parentNode.removeChild(divControls);
+  removeElement(document.getElementById('inputBan'));
+  removeElement(document.getElementById('divBanInput'));
+  removeElement(document.getElementById('divControls'));
 
 }
 
@@ -1786,7 +1760,7 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
     modding) {
 
   try {
-    var document = jsdom(templateHandler.threadTemplate());
+    var document = jsdom(templateHandler.threadPage);
 
     setThreadTitle(document, boardUri, threadData);
 
@@ -1858,7 +1832,7 @@ exports.page = function(board, page, threads, pageCount, boardData,
 
   try {
 
-    var document = jsdom(templateHandler.boardTemplate());
+    var document = jsdom(templateHandler.boardPage);
 
     document.title = '/' + board + '/' + ' - ' + boardData.boardName;
 
@@ -1921,8 +1895,7 @@ function setCell(boardUri, document, cell, thread) {
 
   for ( var key in indicatorsRelation) {
     if (!thread[key]) {
-      var indicator = cell.getElementsByClassName(indicatorsRelation[key])[0];
-      indicator.parentNode.removeChild(indicator);
+      removeElement(cell.getElementsByClassName(indicatorsRelation[key])[0]);
     }
   }
 
@@ -1934,7 +1907,7 @@ exports.catalog = function(boardUri, threads, callback) {
 
   try {
 
-    var document = jsdom(templateHandler.catalogPageTemplate());
+    var document = jsdom(templateHandler.catalogPage);
 
     document.title = '/' + boardUri + '/ - Catalog';
 
@@ -1946,7 +1919,7 @@ exports.catalog = function(boardUri, threads, callback) {
       var thread = threads[i];
 
       var cell = document.createElement('div');
-      cell.innerHTML = templateHandler.catalogCellTemplate();
+      cell.innerHTML = templateHandler.catalogCell;
       cell.setAttribute('class', 'catalogCell');
 
       setCell(boardUri, document, cell, thread);
@@ -1971,7 +1944,7 @@ exports.catalog = function(boardUri, threads, callback) {
 exports.preview = function(postingData, callback) {
   try {
 
-    var document = jsdom(templateHandler.previewPageTemplate());
+    var document = jsdom(templateHandler.previewPage);
 
     var path = '/' + postingData.boardUri + '/preview/';
 
@@ -1993,7 +1966,7 @@ exports.preview = function(postingData, callback) {
     path += '.html';
 
     var innerCell = document.createElement('div');
-    innerCell.innerHTML = templateHandler.postTemplate();
+    innerCell.innerHTML = templateHandler.postCell;
 
     setPostInnerElements(document, postingData.boardUri, postingData.threadId,
         postingData, innerCell, true);

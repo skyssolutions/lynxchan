@@ -614,7 +614,7 @@ infoLabel:
     type: span
     description: holds general information about the file.
 
-imageLink:
+imgLink:
     type: a
     description: holds the thumbnail of the image and links to the file.
 
