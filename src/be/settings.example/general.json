@@ -21,5 +21,7 @@
   "logPageSize": 50,
   "defaultAnonymousName": "Anonymous",
   "topBoardsCount": 25,
-  "boardsPerPage": 50
+  "boardsPerPage": 50,
+  "torSource": "https://check.torproject.org/exit-addresses",
+  "blockTor": false
 }

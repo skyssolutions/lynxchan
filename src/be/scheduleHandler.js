@@ -12,6 +12,7 @@ var generator = require('./engine/generator');
 var boards = db.boards();
 var stats = db.stats();
 var files = db.files();
+var torHandler = require('./engine/torOps');
 
 // handles schedules in general.
 // currently it handles the removal of expired captcha's images, applies board
@@ -26,7 +27,46 @@ exports.start = function() {
   }
 
   boardsStats();
+
+  torRefresh();
 };
+
+// start of tor refresh
+function refreshTorEntries() {
+
+  torHandler.updateIps(function updatedTorIps(error) {
+    if (error) {
+
+      if (verbose) {
+        console.log(error);
+      }
+
+      if (debug) {
+        throw error;
+      }
+    }
+
+    torRefresh();
+
+  });
+
+}
+
+function torRefresh() {
+
+  var nextRefresh = new Date();
+
+  nextRefresh.setSeconds(5);
+  nextRefresh.setMinutes(0);
+  nextRefresh.setHours(0);
+  nextRefresh.setDate(nextRefresh.getDate() + 1);
+
+  setTimeout(function() {
+    refreshTorEntries();
+  }, nextRefresh.getTime() - new Date().getTime());
+
+}
+// end of tor refresh
 
 // start of board stats recording
 

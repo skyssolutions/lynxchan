@@ -9,9 +9,11 @@ var bans = db.bans();
 var threads = db.threads();
 var logs = db.logs();
 var posts = db.posts();
+var torOps = require('./torOps');
 var reports = db.reports();
 var miscOps = require('./miscOps');
 var settings = require('../boot').getGeneralSettings();
+var blockTor = settings.blockTor;
 var logger = require('../logger');
 var defaultBanMessage = settings.defaultBanMessage;
 
@@ -245,41 +247,51 @@ exports.getClosedReports = function(userData, parameters, callback) {
 
 exports.checkForBan = function(req, boardUri, callback) {
 
-  var ip = req.connection.remoteAddress;
+  torOps.markAsTor(req, function markedAsTor(error) {
+    if (error) {
+      callback(error);
+    } else if (req.isTor) {
+      callback(blockTor ? 'TOR users are blocked.' : null);
+    } else {
 
-  var range = miscOps.getRange(ip);
+      var ip = logger.ip(req);
 
-  var singleBanAnd = {
-    $and : [ {
-      expiration : {
-        $gt : new Date()
-      }
-    }, {
-      ip : ip
-    } ]
-  };
+      var range = miscOps.getRange(ip);
 
-  var rangeBanCondition = {
-    range : range
-  };
+      var singleBanAnd = {
+        $and : [ {
+          expiration : {
+            $gt : new Date()
+          }
+        }, {
+          ip : ip
+        } ]
+      };
 
-  var globalOrLocalOr = {
-    $or : [ {
-      boardUri : boardUri
-    }, {
-      boardUri : {
-        $exists : false
-      }
-    } ]
-  };
+      var rangeBanCondition = {
+        range : range
+      };
 
-  var finalCondition = {
-    $and : [ globalOrLocalOr, {
-      $or : [ rangeBanCondition, singleBanAnd ]
-    } ]
-  };
+      var globalOrLocalOr = {
+        $or : [ {
+          boardUri : boardUri
+        }, {
+          boardUri : {
+            $exists : false
+          }
+        } ]
+      };
 
-  bans.findOne(finalCondition, callback);
+      var finalCondition = {
+        $and : [ globalOrLocalOr, {
+          $or : [ rangeBanCondition, singleBanAnd ]
+        } ]
+      };
+
+      bans.findOne(finalCondition, callback);
+    }
+
+  });
 
 };
 
@@ -666,7 +678,8 @@ function getPostIps(foundIps, foundBoards, informedPosts, board, userData,
     $match : {
       boardUri : board,
       ip : {
-        $nin : foundIps
+        $nin : foundIps,
+        $ne : null
       },
       postId : {
         $in : informedPosts
@@ -723,6 +736,9 @@ function getThreadIps(board, foundBoards, userData, reportedObjects,
   threads.aggregate([ {
     $match : {
       boardUri : board,
+      ip : {
+        $ne : null
+      },
       threadId : {
         $in : informedThreads
       }

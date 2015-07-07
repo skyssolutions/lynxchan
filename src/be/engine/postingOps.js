@@ -9,6 +9,7 @@ var stats = db.stats();
 var posts = db.posts();
 var captchaOps = require('./captchaOps');
 var miscOps = require('./miscOps');
+var logger = require('../logger');
 var files = db.files();
 var generator = require('./generator');
 var uploadHandler = require('./uploadHandler');
@@ -435,9 +436,13 @@ function markdownText(message, board, callback) {
 // end of markdown functions
 
 function createId(salt, boardUri, ip) {
-  return crypto.createHash('sha256').update(salt + ip + boardUri).digest('hex')
-      .substring(0, 6);
 
+  if (ip) {
+    return crypto.createHash('sha256').update(salt + ip + boardUri).digest(
+        'hex').substring(0, 6);
+  } else {
+    return null;
+  }
 }
 
 // start of thread creation
@@ -517,7 +522,7 @@ function createThread(req, userData, parameters, board, threadId, wishesToSign,
 
   var hideId = board.settings.indexOf('disableIds') > -1;
 
-  var ip = req.connection.remoteAddress;
+  var ip = logger.ip(req);
 
   var id = hideId ? null : createId(salt, parameters.boardUri, ip);
 
@@ -891,7 +896,7 @@ function updateThread(parameters, postId, thread, callback, post) {
 function createPost(req, parameters, userData, postId, thread, board,
     wishesToSign, cb) {
 
-  var ip = req.connection.remoteAddress;
+  var ip = logger.ip(req);
 
   var hideId = board.settings.indexOf('disableIds') > -1;
 

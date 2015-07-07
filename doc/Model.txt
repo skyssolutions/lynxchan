@@ -23,7 +23,7 @@ threads: stores board's threads.
     name: name of the poster. 32 characters.
     signedRole: role of the user that posted the thread.
     password: password used to delete the thread. 8 characters.
-    ip: ip of the poster.
+    ip: ip of the poster. Null if poster used TOR.
     banMessage: message to be displayed indicating this message was a cause to a ban. 128 characters.
     salt: thread's salt used for id generation.
     id: thread-wise id of the poster.
@@ -61,7 +61,7 @@ posts: stores posts.
     email: email of the poster. 64 characters.
     id: thread-wise id of the poster.
     subject: subject of the thread. 128 characters.
-    ip: ip of the poster.
+    ip: ip of the poster. Null if poster used TOR.
     message: text of the post. 2048 characters.
     markdown: text of the post after markdown.
     banMessage: message to be displayed indicating this message was a cause to a ban. 128 characters.
@@ -180,6 +180,11 @@ hashBans: stores bans on files.
     _id**: unique identifier of the hash ban.
     boardUri*/***: board of hash ban. If not indicated, the hash ban is global.
     md5***: hash of the file to be banned. 32 characters.
+
+----------------------------------------------------------------------------------------
+
+torIps: stores known TOR ips.
+    ip**: ip of the exit node.
 
 ----------------------------------------------------------------------------------------
 

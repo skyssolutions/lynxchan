@@ -31,6 +31,9 @@ var args = process.argv;
 var debug = args.indexOf('-d') > -1;
 debug = debug || args.indexOf('--debug') > -1;
 
+var torDebug = args.indexOf('-td') > -1;
+torDebug = torDebug || args.indexOf('--tor-debug') > -1;
+
 var noDaemon = args.indexOf('-nd') > -1;
 noDaemon = noDaemon || args.indexOf('--no-daemon') > -1;
 
@@ -113,6 +116,10 @@ exports.defaultBanner = function() {
 
 exports.debug = function() {
   return debug;
+};
+
+exports.torDebug = function() {
+  return torDebug;
 };
 
 exports.getDbSettings = function() {
@@ -543,6 +550,35 @@ var setRoleFunction = function() {
 
 };
 
+function initTorControl() {
+
+  require('./engine/torOps').init(function initializedTorControl(error) {
+    if (error) {
+      if (generalSettings.verbose) {
+        console.log(error);
+      }
+
+      if (debug) {
+        throw error;
+      }
+    } else {
+      if (!noDaemon) {
+        require('./scheduleHandler').start();
+      }
+
+      if (createAccount) {
+        createAccountFunction();
+      } else if (setRole) {
+        setRoleFunction();
+      } else {
+        checkForDefaultPages();
+      }
+    }
+
+  });
+
+}
+
 function checkDbVersions() {
 
   db.checkVersion(function checkedVersion(error) {
@@ -556,22 +592,7 @@ function checkDbVersions() {
         throw error;
       }
     } else {
-
-      if (!noDaemon) {
-        require('./scheduleHandler').start();
-      }
-
-      if (createAccount) {
-
-        createAccountFunction();
-
-      } else if (setRole) {
-
-        setRoleFunction();
-
-      } else {
-        checkForDefaultPages();
-      }
+      initTorControl();
     }
 
   });

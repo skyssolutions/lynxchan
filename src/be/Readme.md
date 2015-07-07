@@ -15,6 +15,7 @@ A package.json file is included, so you can install all of them by just running 
 `boot.js` is the main file, run it using Io.js to start the system. Keep in mind that if you ran `aux/setup.sh`, you can just run the `lynxchan` command or start the `lynxchan` service.
 It accepts the following arguments:
 * `--debug`, `-d`: for development. Will not cache static files and will reload any module besides the ones directly under the be directory. It will also cause errors to crash and will clean any file in the temporary directory older than one minute every minute.
+* `--tor-debug`, `-tr`: tor debug. Will cause any request to be marked as a if it were coming from a TOR exit node. 
 * `--reload`, `-r`: will rebuild all pages on boot.
 * `--reload-login`, `-rl`: will rebuild login page on boot.
 * `--reload-banner`, `-rb`: will rebuild default banner on boot.
@@ -73,6 +74,8 @@ Settings files that goes into the settings directory:
 * `defaultAnonymousName`: Default anonymous name if none is set for the board. Defaults to `Anonymous`.
 * `topBoardsCount`(Number): amount of boards to be listed in the top boards. Defaults to 25. 
 * `boardsPerPage`(Number): amount of boards to be listed in boards.js. Defaults to 50.
+* `torSource`: url to the list of TOR exit nodes ips. Defaults to `https://check.torproject.org/exit-addresses`.
+* `blockTor`(Boolean): if true, TOR users will be blocked.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

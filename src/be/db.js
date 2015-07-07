@@ -14,7 +14,7 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 10;
+var maxIndexesSet = 11;
 
 var cachedVersions;
 var cachedPosts;
@@ -30,6 +30,7 @@ var cachedLog;
 var cachedRecoveryRequests;
 var cachedStats;
 var cachedHashBans;
+var cachedTorIps;
 
 var loading;
 
@@ -171,6 +172,27 @@ function initCaptchas(callback) {
     expiration : 1
   }, {
     expireAfterSeconds : 0
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+}
+
+function initTorIps(callback) {
+
+  cachedTorIps = cachedDb.collection('torIps');
+
+  cachedTorIps.ensureIndex({
+    ip : 1
+  }, {
+    unique : true
   }, function setIndex(error, index) {
     if (error) {
       if (loading) {
@@ -440,6 +462,10 @@ exports.hashBans = function() {
   return cachedHashBans;
 };
 
+exports.torIps = function() {
+  return cachedTorIps;
+};
+
 // end of getters
 
 function checkCollections(db, callback) {
@@ -465,6 +491,8 @@ function checkCollections(db, callback) {
   initTripcodes(callback);
 
   initHashBans(callback);
+
+  initTorIps(callback);
 
   cachedFiles = db.collection('fs.files');
 

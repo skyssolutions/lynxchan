@@ -60,6 +60,10 @@ function setFormCellBoilerPlate(cell, action, cssClass) {
   cell.setAttribute('class', cssClass);
 }
 
+function removeElement(element) {
+  element.parentNode.removeChild(element);
+}
+
 function getReportLink(report) {
   var link = '/' + report.boardUri + '/res/';
   link += report.threadId + '.html#';
@@ -80,10 +84,6 @@ function padDateField(value) {
   }
 
   return value;
-}
-
-function removeElement(element) {
-  element.parentNode.removeChild(element);
 }
 
 function formatDateToDisplay(d) {
@@ -179,7 +179,7 @@ function setThreadHiddeableElements(thread, cell, modding) {
     removeElement(cell.getElementsByClassName('spanId')[0]);
   }
 
-  if (modding) {
+  if (modding && thread.ip) {
     var labelRange = cell.getElementsByClassName('labelRange')[0];
     labelRange.innerHTML = miscOps.getRange(thread.ip);
   } else {
@@ -285,7 +285,7 @@ function setPostInnerElements(document, boardUri, threadId, post, postCell,
 
   setPostHideableElements(postCell, post);
 
-  if (modding) {
+  if (modding && post.ip) {
     var labelRange = postCell.getElementsByClassName('labelRange')[0];
     labelRange.innerHTML = miscOps.getRange(post.ip);
   } else {
