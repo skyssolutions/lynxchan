@@ -201,6 +201,8 @@ exports.loadSettings = function() {
 
   setDefaultImages();
 
+  require('./engine/langOps').init();
+
 };
 
 exports.latestPostCount = function() {

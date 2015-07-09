@@ -14,6 +14,7 @@ var settings = require('../boot').getGeneralSettings();
 var sender = settings.emailSender || 'noreply@mychan.com';
 var creationDisabled = settings.disableAccountCreation;
 var validAccountSettings = [ 'alwaysSignRole' ];
+var lang = require('./langOps').languagePack();
 
 var newAccountParameters = [ {
   field : 'login',
@@ -38,13 +39,15 @@ function logRoleChange(operatorData, parameters, callback) {
   var logMessage = '';
 
   if (operatorData) {
-    logMessage += 'User ' + operatorData.login;
+    logMessage += lang.logGlobalRoleChange.userPiece.replace('{$login}',
+        operatorData.login);
   } else {
-    logMessage += 'A sysadmin using the server\'s terminal';
+    logMessage += lang.logGlobalRoleChange.adminPiece;
   }
 
-  logMessage += ' changed the global role of user ' + parameters.login;
-  logMessage += ' to ' + miscOps.getGlobalRoleLabel(parameters.role) + '.';
+  logMessage += lang.logGlobalRoleChange.mainPiece.replace('{$login}',
+      parameters.login).replace('{$role}',
+      miscOps.getGlobalRoleLabel(parameters.role));
 
   logs.insert({
     user : operatorData ? operatorData.login : null,
@@ -65,13 +68,13 @@ function logRoleChange(operatorData, parameters, callback) {
 exports.setGlobalRole = function(operatorData, parameters, callback, override) {
 
   if (isNaN(parameters.role)) {
-    callback('Invalid role');
+    callback(lang.errInvalidRole);
     return;
   } else if (!override && operatorData.globalRole >= parameters.role) {
-    callback('You are not allowed to grant this level of permission to users');
+    callback(lang.errDeniedPermissionLevel);
     return;
   } else if (!override && operatorData.login === parameters.login) {
-    callback('You cannot change your own role.');
+    callback(lang.errSelfRoleChange);
   }
 
   users.findOne({
@@ -83,9 +86,9 @@ exports.setGlobalRole = function(operatorData, parameters, callback, override) {
     if (error) {
       callback(error);
     } else if (!user) {
-      callback('User not found');
+      callback(lang.errUserNotFound);
     } else if (!override && user.globalRole <= operatorData.globalRole) {
-      callback('You are not allowed to change this user\'s permission');
+      callback(lang.errDeniedChangeUser);
     } else {
 
       // style exception, too simple
@@ -114,14 +117,14 @@ exports.setGlobalRole = function(operatorData, parameters, callback, override) {
 exports.registerUser = function(parameters, callback, role, override) {
 
   if (!override && creationDisabled) {
-    callback('Account creation is disabled.');
+    callback(lang.errNoNewAccounts);
     return;
   }
 
   miscOps.sanitizeStrings(parameters, newAccountParameters);
 
   if (/\W/.test(parameters.login)) {
-    callback('Invalid login');
+    callback('Invalid login');// TODO continue from here
     return;
   } else if (role !== undefined && isNaN(role)) {
     callback('Invalid role');

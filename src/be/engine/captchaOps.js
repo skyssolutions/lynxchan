@@ -21,6 +21,7 @@ var gridFsHandler = require('./gridFsHandler');
 var tempDirectory = boot.tempDir();
 var miscOps = require('./miscOps');
 var url = require('url');
+var lang = require('./langOps').languagePack();
 
 // captcha settings
 var fonts = settings.captchaFonts || [];
@@ -387,9 +388,9 @@ exports.attemptCaptcha = function(id, input, board, callback) {
       } else if (isCaptchaSolved(captcha, input)) {
         callback();
       } else if (!captcha.value) {
-        callback('Expired captcha.');
+        callback(lang.errExpiredCaptcha);
       } else {
-        callback('Incorrect captcha');
+        callback(lang.errWrongCaptcha);
       }
 
     });
@@ -420,7 +421,7 @@ exports.solveCaptcha = function(parameters, callback) {
       if (error) {
         callback(error);
       } else if (!captcha.value) {
-        callback('Wrong answer or expired captcha.');
+        callback(lang.errExpiredOrWrongCaptcha);
       } else {
         callback();
       }

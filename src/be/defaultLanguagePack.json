@@ -1,0 +1,16 @@
+{
+  "errExpiredCaptcha": "Expired captcha.",
+  "errWrongCaptcha": "Wrong captcha.",
+  "errExpiredOrWrongCaptcha": "Wrong answer or expired captcha.",
+  "logGlobalRoleChange": {
+    "userPiece": "User {$login}",
+    "adminPiece": "A sysadmin using the server's terminal",
+    "mainPiece": " changed the global role of user {$login} to {$role}."
+  },
+  "errInvalidRole": "Invalid role.",
+  "errDeniedPermissionLevel": "You are not allowed to grant this level of permission to users.",
+  "errSelfRoleChange": "You cannot change your own role.",
+  "errUserNotFound": "User not found.",
+  "errDeniedChangeUser": "You are not allowed to change this user's role.",
+  "errNoNewAccounts": "Account creation is disabled."
+}

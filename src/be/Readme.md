@@ -76,6 +76,7 @@ Settings files that goes into the settings directory:
 * `boardsPerPage`(Number): amount of boards to be listed in boards.js. Defaults to 50.
 * `torSource`: url to the list of TOR exit nodes ips. Defaults to `https://check.torproject.org/exit-addresses`.
 * `blockTor`(Boolean): if true, TOR users will be blocked.
+* `languagePackPath`: absolute path to an optional language pack.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

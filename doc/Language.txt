@@ -1,0 +1,17 @@
+Optional language packs are a single file with a json object. 
+Replaces are strings that will be replaced by some other value in the system.
+The structure of this json is as follows:
+
+errExpiredCaptcha: error thrown when the attempted captcha is expired.
+errWrongCaptcha: error thrown when the attemted captcha is wrong.
+errExpiredOrWrongCaptcha: error thrown when the attempted captcha might be expired or wrong.
+logGlobalRoleChange: pieces used to compose the message added to the log on a global role change. Contains the following fields:
+	userPiece: piece used for the start of the message indicating which user changed the global role of the subject. Replaces: {$login}.
+	adminPiece: piece used for the start indicating the role was changed from the terminal.
+	mainPiece: rest of the message saying which user has its role changed and what role is it. Replaces: {$login}, {$role}.
+errInvalidRole: error thrown when an invalid value is provided as a global role for a global role change.
+errDeniedPermissionLevel: error throw when the user tries to give another user a level of permission that isn't lower than his own.
+errSelfRoleChange: error thrown when the user tries to change his own global role.
+errUserNotFound: error thrown when the specified user can't be found.
+errDeniedChangeUser: error thrown when the user tries to change the global role of someone which global role isn't lower than his own.
+errNoNewAccounts: error thrown when an user tries to create an account but it is blocked in the system settings.
