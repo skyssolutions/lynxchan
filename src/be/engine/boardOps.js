@@ -10,6 +10,7 @@ var gridFsHandler = require('./gridFsHandler');
 var logger = require('../logger');
 var files = db.files();
 var reports = db.reports();
+var lang = require('./langOps').languagePack();
 var users = db.users();
 var boards = db.boards();
 var logs = db.logs();
@@ -110,9 +111,9 @@ exports.setSettings = function(userData, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback('Board not found');
+      callback(lang.errBoardNotFound);
     } else if (board.owner !== userData.login) {
-      callback('You are not allowed to change this board settings.');
+      callback(lang.errDeniedChangeBoardSettings);
     } else {
       miscOps.sanitizeStrings(parameters, boardParameters);
 
@@ -157,8 +158,9 @@ function updateUsersOwnedBoards(oldOwner, parameters, callback) {
 
 function performTransfer(oldOwner, userData, parameters, callback) {
 
-  var message = 'User ' + userData.login + ' transferred board /';
-  message += parameters.boardUri + '/ to ' + parameters.login + '.';
+  var message = lang.logTransferBoard.replace('{$actor}', userData.login)
+      .replace('{$board}', parameters.boardUri).replace('{$login}',
+          parameters.login);
 
   logs.insert({
     user : userData.login,
@@ -208,9 +210,9 @@ exports.transfer = function(userData, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback('Board not found');
+      callback(lang.errBoardNotFound);
     } else if (userData.login !== board.owner && !admin) {
-      callback('You are not allowed to perform this operation');
+      callback(lang.errDeniedBoardTransfer);
     } else if (board.owner === parameters.login) {
       callback();
     } else {
@@ -222,7 +224,7 @@ exports.transfer = function(userData, parameters, callback) {
         if (error) {
           callback(error);
         } else if (!count) {
-          callback('User not found');
+          callback(lang.errUserNotFound);
         } else {
           performTransfer(board.owner, userData, parameters, callback);
         }
@@ -265,7 +267,7 @@ function manageVolunteer(currentVolunteers, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!count && !isAVolunteer) {
-        callback('User not found');
+        callback(lang.errUserNotFound);
       } else {
         // style exception, too simple
         boards.update({
@@ -284,7 +286,7 @@ function manageVolunteer(currentVolunteers, parameters, callback) {
 exports.setVolunteer = function(userData, parameters, callback) {
 
   if (userData.login === parameters.login) {
-    callback('You cannot set yourself as a volunteer.');
+    callback(lang.errSelfVolunteer);
     return;
   }
 
@@ -298,9 +300,9 @@ exports.setVolunteer = function(userData, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback('Board not found');
+      callback(lang.errBoardNotFound);
     } else if (board.owner !== userData.login) {
-      callback('You are not allowed to set volunteers on this board');
+      callback(lang.errDeniedSetVolunteer);
     } else {
       manageVolunteer(board.volunteers || [], parameters, callback);
     }
@@ -357,11 +359,11 @@ exports.getBoardManagementData = function(login, board, callback) {
     if (error) {
       callback(error);
     } else if (!boardData) {
-      callback('Board not found');
+      callback(lang.errBoardNotFound);
     } else if (isAllowedToManageBoard(login, boardData)) {
       getBoardReports(boardData, callback);
     } else {
-      callback('You are not allowed to manage this board.');
+      callback(lang.errDeniedManageBoard);
     }
   });
 
@@ -372,14 +374,14 @@ exports.createBoard = function(parameters, userData, callback) {
   var role = userData.globalRole || 4;
 
   if (role > 1 && restrictedBoardCreation) {
-    callback('Board creation is restricted to just root and admin users.');
+    callback(lang.errDeniedBoardCreation);
     return;
   }
 
   miscOps.sanitizeStrings(parameters, boardParameters);
 
   if (/\W/.test(parameters.boardUri)) {
-    callback('Invalid uri');
+    callback(lang.errInvalidUri);
     return;
   }
 
@@ -393,7 +395,7 @@ exports.createBoard = function(parameters, userData, callback) {
     if (error && error.code !== 11000) {
       callback(error);
     } else if (error) {
-      callback('Uri already in use.');
+      callback(lang.errUriInUse);
     } else {
 
       // style exception, too simple
@@ -428,9 +430,9 @@ exports.getBannerData = function(user, boardUri, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback('Board not found.');
+      callback(lang.errBoardNotFound);
     } else if (board.owner !== user) {
-      callback('You are not allowed to manage this board\'s banners.');
+      callback(lang.errDeniedChangeBoardSettings);
     } else {
 
       // style exception, too simple
@@ -451,10 +453,10 @@ exports.getBannerData = function(user, boardUri, callback) {
 exports.addBanner = function(user, parameters, callback) {
 
   if (!parameters.files.length) {
-    callback('No files sent.');
+    callback(lang.errNoFiles);
     return;
   } else if (parameters.files[0].mime.indexOf('image/') === -1) {
-    callback('File is not an image');
+    callback(lang.errNotAnImage);
     return;
   }
 
@@ -464,9 +466,9 @@ exports.addBanner = function(user, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback('Board not found.');
+      callback(lang.errBoardNotFound);
     } else if (board.owner !== user) {
-      callback('You are not allowed to create banners for this board.');
+      callback(lang.errDeniedChangeBoardSettings);
     } else {
       var bannerPath = '/' + parameters.boardUri + '/banners/';
       bannerPath += new Date().getTime();
@@ -501,7 +503,7 @@ exports.deleteBanner = function(login, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!banner) {
-        callback('Banner not found');
+        callback(lang.errBannerNotFound);
       } else {
         // style exception, too simple
 
@@ -511,9 +513,9 @@ exports.deleteBanner = function(login, parameters, callback) {
           if (error) {
             callback(error);
           } else if (!board) {
-            callback('Board not found');
+            callback(lang.errBoardNotFound);
           } else if (board.owner !== login) {
-            callback('You are not allowed to delete banners from this board');
+            callback(lang.errDeniedChangeBoardSettings);
           } else {
             removeBanner(banner, callback);
           }
@@ -537,9 +539,9 @@ exports.getFilterData = function(user, boardUri, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback('Board not found.');
+      callback(lang.errBoardNotFound);
     } else if (user !== board.owner) {
-      callback('You are not allowed to manage this board\'s filters.');
+      callback(lang.errDeniedChangeBoardSettings);
     } else {
       callback(null, board.filters || []);
     }
@@ -557,9 +559,9 @@ exports.createFilter = function(user, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback('Board not found.');
+      callback(lang.errBoardNotFound);
     } else if (board.owner !== user) {
-      callback('You are not allowed to manage filters of this board.');
+      callback(lang.errDeniedChangeBoardSettings);
     } else {
 
       var existingFilters = board.filters || [];
@@ -613,9 +615,9 @@ exports.deleteFilter = function(login, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback('Board not found');
+      callback(lang.errBoardNotFound);
     } else if (board.owner !== login) {
-      callback('You are not allowed to remove filters from this board.');
+      callback(lang.errDeniedChangeBoardSettings);
     } else {
 
       var existingFilters = board.filters || [];
@@ -655,7 +657,7 @@ exports.getBoardModerationData = function(userData, boardUri, callback) {
   var admin = userData.globalRole < 2;
 
   if (!admin) {
-    callback('You are not allowed to moderate boards.');
+    callback(lang.errDeniedBoardMod);
     return;
   }
 
@@ -665,7 +667,7 @@ exports.getBoardModerationData = function(userData, boardUri, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback('Board not found');
+      callback(lang.errBoardNotFound);
     } else {
 
       // style exception, too simple

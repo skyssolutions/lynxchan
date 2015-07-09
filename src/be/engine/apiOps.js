@@ -18,6 +18,7 @@ var maxRequestSize = boot.maxRequestSize();
 var maxFileSize = boot.maxFileSize();
 var acceptedMimes = uploadHandler.supportedMimes();
 var maxFiles = boot.maxFiles();
+var lang = require('./langOps').languagePack();
 
 var FILE_EXT_RE = /(\.[_\-a-zA-Z0-9]{0,16}).*/;
 // replace base64 characters with safe-for-filename characters
@@ -301,7 +302,7 @@ exports.checkForBan = function(req, boardUri, res, callback) {
         range : ban.range,
         banId : ban._id,
         expiration : ban.expiration,
-        board : ban.boardUri ? '/' + ban.boardUri + '/' : 'all boards'
+        board : ban.boardUri ? '/' + ban.boardUri + '/' : lang.miscAllBoards
       }, 'banned', res);
     } else {
       callback();

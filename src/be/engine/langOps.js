@@ -18,18 +18,24 @@ exports.languagePack = function() {
   return languagePack;
 };
 
+function processObject(defaultObject, chosenObject, missingKeys) {
+  for ( var key in defaultObject) {
+    if (!chosenObject[key]) {
+      missingKeys.push(key);
+      chosenObject[key] = defaultObject[key];
+    } else if (typeof (defaultObject[key]) === 'object') {
+      processObject(defaultObject[key], chosenObject[key], missingKeys);
+    }
+  }
+}
+
 function loadLanguagePack(defaultPack) {
 
   var chosenPack = JSON.parse(fs.readFileSync(settings.languagePackPath));
 
   var missingKeys = [];
 
-  for ( var key in defaultPack) {
-    if (!chosenPack[key]) {
-      missingKeys.push(key);
-      chosenPack[key] = defaultPack[key];
-    }
-  }
+  processObject(defaultPack, chosenPack, missingKeys);
 
   if (missingKeys.length) {
     console.log('There are missing keys from the chosen language pack.');

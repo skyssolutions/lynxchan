@@ -1,11 +1,17 @@
 Optional language packs are a single file with a json object. 
 Replaces are strings that will be replaced by some other value in the system.
+Prefixes of the keys are as follows:
+err: error.
+log: log entry.
+sub: e-mail subject.
+misc: miscellaneous
+
 The structure of this json is as follows:
 
 errExpiredCaptcha: error thrown when the attempted captcha is expired.
-errWrongCaptcha: error thrown when the attemted captcha is wrong.
+errWrongCaptcha: error thrown when the attempted captcha is wrong.
 errExpiredOrWrongCaptcha: error thrown when the attempted captcha might be expired or wrong.
-logGlobalRoleChange: pieces used to compose the message added to the log on a global role change. Contains the following fields:
+logGlobalRoleChange: object containing pieces used to compose the message added to the log on a global role change. Contains the following fields:
 	userPiece: piece used for the start of the message indicating which user changed the global role of the subject. Replaces: {$login}.
 	adminPiece: piece used for the start indicating the role was changed from the terminal.
 	mainPiece: rest of the message saying which user has its role changed and what role is it. Replaces: {$login}, {$role}.
@@ -15,3 +21,32 @@ errSelfRoleChange: error thrown when the user tries to change his own global rol
 errUserNotFound: error thrown when the specified user can't be found.
 errDeniedChangeUser: error thrown when the user tries to change the global role of someone which global role isn't lower than his own.
 errNoNewAccounts: error thrown when an user tries to create an account but it is blocked in the system settings.
+errInvalidLogin: error throw when the provided login for an operation is invalid.
+errInvalidRole: error thrown when the provided global role for an operation is invalid.
+errLoginInUse: error thrown when the provided login for a new account is already being used.
+errLoginFailed: error thrown when the user fails to login.
+errInvalidAccount: error thrown when the user tries to perform an operation but the credentials fail to validate.
+subPasswordRequest: subject of the e-mail of a password reset request.
+errAccountNotFound: error thrown when the account of the password reset request can't be found.
+errNoEmailForAccount: error thrown when the account doesn't have an e-mail and the user tries to request a password reset for it.
+errPendingRequest: error thrown when the user tries to request a password reset with another one still pending. Replaces: {$expiration}.
+subPasswordReset: subject of the e-mail informing the new password of the user's account.
+errInvalidRequest: error thrown when the user tries to reset his password with an invalid password reset request.
+errPasswordMismatch: error thrown when the user tries to change his password but the new password doesn't match with its confirmation.
+errIncorrectPassword: error thrown when the user tries to change his password but the current password is incorrect.
+miscAllBoards: string meaning "all boards" to be used when something refers to all boards.
+errBoardNotFound: error thrown when the board for an operation can't be found.
+errDeniedChangeBoardSettings: error thrown when the user is not allowed to change a board's settings.
+logTransferBoard: log entry for board ownership transfer. Replaces: {$actor}, {$board}, {$login}.
+errDeniedBoardTransfer: error thrown when the user is not allowed to transfer ownership of a board.
+errSelfVolunteer: error thrown when the user tries to assign himself as a volunteer of a board he owns.
+errDeniedSetVolunteer: error thrown when the user is not allowed to assign volunteers on a board.
+errDeniedManageBoard: error thrown when the user is not allowed to view the management page of a board.
+errDeniedBoardCreation: error thrown when board creation is restricted to admins and root users and the user is neither of these.
+errInvalidUri: error thrown when the informed board URI for a new board is invalid.
+errUriInUse: error thrown when the desired board URI is already in use.
+errNoFiles: error thrown when the operation requires at least a file but none are sent.
+errNotAnImage: error thrown when the operation requires an image but the file is not an image.
+errBannerNotFound: error thrown when the specified banner could not be found.
+errDeniedBoardMod: error thrown when the user is not allowed to moderate boards.
+

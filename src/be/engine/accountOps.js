@@ -124,10 +124,10 @@ exports.registerUser = function(parameters, callback, role, override) {
   miscOps.sanitizeStrings(parameters, newAccountParameters);
 
   if (/\W/.test(parameters.login)) {
-    callback('Invalid login');// TODO continue from here
+    callback(lang.errInvalidLogin);
     return;
   } else if (role !== undefined && isNaN(role)) {
-    callback('Invalid role');
+    callback(lang.errInvalidRole);
     return;
   }
 
@@ -153,7 +153,7 @@ exports.registerUser = function(parameters, callback, role, override) {
         if (error && error.code !== 11000) {
           callback(error);
         } else if (error) {
-          callback('Login is already in use');
+          callback(lang.errLoginInUse);
         } else {
           exports.createSession(parameters.login, callback);
         }
@@ -194,7 +194,7 @@ exports.login = function(parameters, callback) {
     if (error) {
       callback(error);
     } else if (!user) {
-      callback('Login failed');
+      callback(lang.errLoginFailed);
     } else {
 
       // style exception, too simple
@@ -205,14 +205,13 @@ exports.login = function(parameters, callback) {
         if (error) {
           callback(error);
         } else if (!matches) {
-          callback('Login failed');
+          callback(lang.errLoginFailed);
         } else {
           exports.createSession(parameters.login, callback);
         }
       });
 
       // style exception, too simple
-
     }
   });
 
@@ -235,7 +234,7 @@ exports.validate = function(auth, callback) {
     if (error) {
       callback(error);
     } else if (!user) {
-      callback('Invalid account');
+      callback(lang.errInvalidAccount);
     } else {
       callback(null, {
         authStatus : 'ok'
@@ -254,7 +253,7 @@ function emailUserOfRequest(login, email, hash, callback) {
   mailer.sendMail({
     from : sender,
     to : email,
-    subject : 'Password reset request',
+    subject : lang.subPasswordRequest,
     text : content
   }, function emailSent(error) {
     callback(error);
@@ -275,9 +274,7 @@ function generateRequest(login, email, callback) {
     if (error) {
       callback(error);
     } else {
-
       emailUserOfRequest(login, email, requestHash, callback);
-
     }
 
   });
@@ -295,9 +292,9 @@ function lookForUserEmailOfRequest(login, callback) {
     if (error) {
       callback(error);
     } else if (!user) {
-      callback('Account not found');
+      callback(lang.errAccountNotFound);
     } else if (!user.email || !user.email.length) {
-      callback('Account doesn\'t have an email associated to it.');
+      callback(lang.errNoEmailForAccount);
     } else {
       generateRequest(login, user.email, callback);
     }
@@ -320,9 +317,8 @@ exports.requestRecovery = function(login, callback) {
       callback(error);
     } else if (request) {
 
-      var message = 'Pending request to be expired at ';
-      message += request.expiration.toString();
-      callback(message);
+      callback(lang.errPendingRequest.replace('{$expiration}',
+          request.expiration.toString()));
     } else {
       lookForUserEmailOfRequest(login, callback);
     }
@@ -339,7 +335,7 @@ function emailUserNewPassword(email, newPass, callback) {
   mailer.sendMail({
     from : sender,
     to : email,
-    subject : 'Password reseted',
+    subject : lang.subPasswordReset,
     text : content
   }, function emailSent(error) {
     callback(error);
@@ -394,7 +390,7 @@ exports.recoverAccount = function(parameters, callback) {
     if (error) {
       callback(error);
     } else if (!request.value) {
-      callback('Invalid recovery request.');
+      callback(lang.errInvalidRequest);
     } else {
       generateNewPassword(parameters.login, callback);
     }
@@ -453,7 +449,7 @@ exports.changePassword = function(userData, parameters, callback) {
 
   if (parameters.newPassword !== parameters.confirmation) {
 
-    callback('Confirmation does not match');
+    callback(lang.errPasswordMismatch);
     return;
   }
 
@@ -462,8 +458,6 @@ exports.changePassword = function(userData, parameters, callback) {
   }, function gotUser(error, user) {
     if (error) {
       callback(error);
-    } else if (!user) {
-      callback('User not found');
     } else {
 
       // style exception, too simple
@@ -474,7 +468,7 @@ exports.changePassword = function(userData, parameters, callback) {
         if (error) {
           callback(error);
         } else if (!matches) {
-          callback('Incorrect current password');
+          callback(lang.errIncorrectPassword);
         } else {
           changePassword(userData, parameters, callback);
         }
