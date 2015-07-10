@@ -13,6 +13,7 @@ var miscOps = require('./miscOps');
 var gridFs = require('./gridFsHandler');
 var logger = require('../logger');
 var boards = db.boards();
+var lang = require('./langOps').languagePack();
 var boot = require('../boot');
 var latestPosts = boot.latestPostCount();
 var settings = boot.getGeneralSettings();
@@ -302,7 +303,6 @@ function appendThreadDeletionLog(foundThreads) {
   var logMessage = '';
 
   if (foundThreads.length) {
-    logMessage += ' threads :';
 
     for (var i = 0; i < foundThreads.length; i++) {
 
@@ -324,11 +324,6 @@ function appendPostDeletionLog(foundThreads, foundPosts) {
   var logMessage = '';
 
   if (foundPosts.length) {
-    if (foundThreads.length) {
-      logMessage += ' and the following posts:';
-    } else {
-      logMessage += ' posts:';
-    }
 
     for (var i = 0; i < foundPosts.length; i++) {
       if (i) {
@@ -347,12 +342,31 @@ function appendPostDeletionLog(foundThreads, foundPosts) {
 function logRemoval(userData, board, threadsToDelete, postsToDelete,
     parameters, foundBoards, cb, foundThreads, foundPosts, parentThreads) {
 
-  var logMessage = 'User ' + userData.login + ' deleted the following';
+  var pieces = lang.logPostingDeletion;
 
-  logMessage += appendThreadDeletionLog(foundThreads);
-  logMessage += appendPostDeletionLog(foundThreads, foundPosts);
+  var logMessage = pieces.startPiece.replace('{$login}', userData.login);
 
-  logMessage += ' from board /' + board.boardUri + '/.';
+  var threadList = appendThreadDeletionLog(foundThreads);
+
+  if (threadList.length) {
+    logMessage += pieces.threadPiece + threadList;
+  }
+
+  var postList = appendPostDeletionLog(foundThreads, foundPosts);
+
+  if (postList.length) {
+
+    if (threadList.length) {
+      logMessage += pieces.threadAndPostPiece;
+    }
+
+    logMessage += pieces.postPiece;
+
+    logMessage += postList;
+
+  }
+
+  logMessage += pieces.endPiece.replace('{$board}', board.boardUri);
 
   logs.insert({
     user : userData.login,
@@ -579,7 +593,7 @@ function iterateBoardsToDelete(userData, parameters, threadsToDelete,
     if (error) {
       callback(error);
     } else if (!board) {
-      callback('Board not found');
+      callback(lang.errBoardNotFound);
     } else {
       getThreadsToDelete(userData, board, threadsToDelete, postsToDelete,
           parameters, foundBoards, callback);
@@ -705,7 +719,8 @@ function deleteBoardFiles(board, callback) {
 
 function deleteBoardReports(board, user, callback) {
 
-  var message = 'User ' + user + ' deleted board /' + board.boardUri + '/.';
+  var message = lang.logBoardDeletion.replace('{$board}', board.boardUri)
+      .replace('{$login}', user);
 
   logs.insert({
     type : 'boardDeletion',
@@ -779,9 +794,9 @@ exports.board = function(userData, boardUri, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback('Board not found');
+      callback(lang.errBoardNotFound);
     } else if (board.owner !== userData.login && !admin) {
-      callback('You are not allowed to perform this operation');
+      callback(lang.errDeniedBoardDeletion);
     } else {
       deleteBoard(board, userData.login, callback);
     }

@@ -20,6 +20,7 @@ var verbose = settings.verbose;
 var accountCreationDisabled = settings.disableAccountCreation;
 var boardCreationRestricted = settings.restrictBoardCreation;
 var templateHandler = require('./templateHandler');
+var lang = require('./langOps').languagePack();
 var displayMaxSize = (boot.maxFileSize() / 1024 / 1024).toFixed(2);
 
 var indicatorsRelation = {
@@ -37,17 +38,17 @@ var boardSettingsRelation = {
 };
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 var availableLogTypes = {
-  '' : 'All types',
-  ban : 'Ban',
-  rangeBan : 'Range ban',
-  banLift : 'Ban lift',
-  deletion : 'Deletion',
-  reportClosure : 'Reports closure',
-  globalRoleChange : 'Global role change',
-  boardDeletion : 'Board deletion',
-  boardTransfer : 'Board ownership transfer',
-  hashBan : 'Hash ban',
-  hashBanLift : 'Hash ban lift'
+  '' : lang.guiAllTypes,
+  ban : lang.guiTypeBan,
+  rangeBan : lang.guiTypeRange,
+  banLift : lang.guiTypeBanLift,
+  deletion : lang.guiTypeDeletion,
+  reportClosure : lang.guiTypeReportClosure,
+  globalRoleChange : lang.guiTypeGlobalRoleChange,
+  boardDeletion : lang.guiTypeBoardDeletion,
+  boardTransfer : lang.guiTypeBoardTransfer,
+  hashBan : lang.guiTypeHashBan,
+  hashBanLift : lang.guiTypeHashBanLift
 };
 var optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
 
@@ -89,7 +90,7 @@ function padDateField(value) {
 function formatDateToDisplay(d) {
   var day = padDateField(d.getDate());
 
-  var weekDays = [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ];
+  var weekDays = [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ];// TODO
 
   var month = padDateField(d.getMonth() + 1);
 

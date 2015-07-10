@@ -40,5 +40,25 @@
   "errNoFiles": "No files sent.",
   "errNotAnImage": "File is not an image.",
   "errBannerNotFound": "Banner not found.",
-  "errDeniedBoardMod": "You are not allowed to moderate boards."
+  "errDeniedBoardMod": "You are not allowed to moderate boards.",
+  "logPostingDeletion": {
+    "startPiece": "User {$login} deleted the following",
+    "threadPiece": " threads:",
+    "threadAndPostPiece": " and the following",
+    "postPiece": " posts:",
+    "endPiece": " from board /{$board}/."
+  },
+  "logBoardDeletion": "User {$login} deleted board /{$board}/.",
+  "errDeniedBoardDeletion": "You are not allowed to delete this board.",
+  "guiAllTypes": "All types",
+  "guiTypeBan": "Ban",
+  "guiTypeRange": "Range ban",
+  "guiTypeBanLift": "Ban lift",
+  "guiTypeDeletion": "Deletion",
+  "guiTypeReportClosure": "Reports closure",
+  "guiTypeGlobalRoleChange": "Global role change",
+  "guiTypeBoardDeletion": "Board deletion",
+  "guiTypeBoardTransfer": "Board ownership transfer",
+  "guiTypeHashBan": "Hash ban",
+  "guiTypeHashBanLift": "Hash ban lift"
 }
