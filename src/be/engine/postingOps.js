@@ -17,11 +17,16 @@ var delOps = require('./deletionOps');
 var crypto = require('crypto');
 var gsHandler = require('./gridFsHandler');
 var boot = require('../boot');
+var lang = require('./langOps').languagePack();
 var settings = boot.getGeneralSettings();
 var latestPostsCount = boot.latestPostCount();
 var threadLimit = boot.maxThreads();
 var bumpLimit = settings.autoSageLimit || 500;
-var defaultAnonymousName = settings.defaultAnonymousName || 'Anonymous';
+var defaultAnonymousName = settings.defaultAnonymousName;
+
+if (!defaultAnonymousName) {
+  defaultAnonymousName = lang.miscDefaultAnonymous;
+}
 
 var postingParameters = [ {
   field : 'subject',
@@ -50,9 +55,9 @@ function getSignedRole(userData, wishesToSign, board) {
   if (!userData || !wishesToSign) {
     return null;
   } else if (board.owner === userData.login) {
-    return 'Board owner';
+    return lang.miscBoardOwner;
   } else if (board.volunteers.indexOf(userData.login) > -1) {
-    return 'Board volunteer';
+    return lang.miscBoardVolunteer;
   } else if (userData.globalRole <= miscOps.getMaxStaffRole()) {
     return miscOps.getGlobalRoleLabel(userData.globalRole);
   } else {
@@ -615,7 +620,7 @@ exports.newThread = function(req, userData, parameters, captchaId, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback('Board not found');
+      callback(lang.errBoardNotFound);
     } else {
 
       if (board.settings.indexOf('forceAnonymity') > -1) {
@@ -965,9 +970,9 @@ function getThread(req, parameters, userData, postId, board, callback) {
     if (error) {
       callback(error);
     } else if (!thread) {
-      callback('Thread not found');
+      callback(lang.errThreadNotFound);
     } else if (thread.locked) {
-      callback('You cannot reply to a locked thread');
+      callback(lang.errThreadLocked);
     } else {
 
       if (board.settings.indexOf('forceAnonymity') > -1) {
@@ -1031,7 +1036,7 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback('Board not found');
+      callback(lang.errBoardNotFound);
     } else {
 
       // style exception, too simple

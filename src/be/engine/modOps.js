@@ -14,11 +14,12 @@ var reports = db.reports();
 var miscOps = require('./miscOps');
 var settings = require('../boot').getGeneralSettings();
 var blockTor = settings.blockTor;
+var lang = require('./langOps').languagePack();
 var logger = require('../logger');
 var defaultBanMessage = settings.defaultBanMessage;
 
 if (!defaultBanMessage) {
-  defaultBanMessage = '(USER WAS BANNED FOR THIS POST)';
+  defaultBanMessage = lang.miscDefaultBanMessage;
 }
 
 var reportArguments = [ {

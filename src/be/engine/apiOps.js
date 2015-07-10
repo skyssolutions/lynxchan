@@ -303,6 +303,7 @@ exports.checkForBan = function(req, boardUri, res, callback) {
         banId : ban._id,
         expiration : ban.expiration,
         board : ban.boardUri ? '/' + ban.boardUri + '/' : lang.miscAllBoards
+            .toLowerCase()
       }, 'banned', res);
     } else {
       callback();

@@ -15,6 +15,7 @@ var miscOps = require('./miscOps');
 var boot = require('../boot');
 var genericThumb = boot.genericThumb();
 var spoilerPath = boot.spoilerImage();
+var lang = require('./langOps').languagePack();
 var permanentTypes = [ 'media', 'preview' ];
 
 // start of writing data
@@ -167,7 +168,7 @@ function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb,
     meta.postId = postId;
   }
 
-  if (parts.length) {
+  if (parts.length > 1) {
 
     var ext = parts[parts.length - 1].toLowerCase();
 
@@ -195,7 +196,7 @@ function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb,
     }
 
   } else {
-    cb('Unknown extension');
+    cb(lang.errUnknownExtension);
   }
 
 }

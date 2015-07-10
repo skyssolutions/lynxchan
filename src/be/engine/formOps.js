@@ -16,6 +16,7 @@ var miscOps = require('./miscOps');
 var jsdom = require('jsdom').jsdom;
 var domManipulator = require('./domManipulator');
 var uploadHandler = require('./uploadHandler');
+var lang = require('./langOps').languagePack();
 var uploadDir = boot.tempDir();
 var maxRequestSize = boot.maxRequestSize();
 var maxFileSize = boot.maxFileSize();
@@ -306,8 +307,9 @@ exports.checkBlankParameters = function(object, parameters, res) {
     }
 
     if (res) {
-      var message = 'Blank parameter: ' + parameter;
-      message += ', ' + reason;
+      var message = lang.errBlankParameter.replace('{$parameter}', parameter)
+          .replace('{$reason}', reason);
+
       exports.outputError(message, 400, res);
     }
 
@@ -326,20 +328,20 @@ exports.checkBlankParameters = function(object, parameters, res) {
     var parameter = parameters[i];
 
     if (!object.hasOwnProperty(parameter)) {
-      return failCheck(parameter, 'no parameter');
+      return failCheck(parameter, lang.miscReasonNotPresent);
 
     }
 
     if (object[parameter] === null) {
-      return failCheck(parameter, 'null');
+      return failCheck(parameter, lang.miscReasonNnull);
     }
 
     if (object[parameter] === undefined) {
-      return failCheck(parameter, 'undefined');
+      return failCheck(parameter, lang.miscReasonUndefined);
     }
 
     if (!object[parameter].toString().trim().length) {
-      return failCheck(parameter, 'length');
+      return failCheck(parameter, lang.miscReasonNoLength);
     }
   }
 
@@ -355,7 +357,8 @@ exports.checkForBan = function(req, boardUri, res, callback) {
     } else if (ban) {
       res.writeHead(200, miscOps.corsHeader('text/html'));
 
-      var board = ban.boardUri ? '/' + ban.boardUri + '/' : 'all boards';
+      var board = ban.boardUri ? '/' + ban.boardUri + '/' : lang.miscAllBoards
+          .toLowerCase();
 
       res.end(domManipulator.ban(ban, board));
     } else {

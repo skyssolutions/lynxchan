@@ -89,3 +89,21 @@ titHashBans: title for hash bans page.
 titNotFound: title for the 404 page.
 titLogin: title for the login page.
 titCatalog: title for the board's catalog. Replaces: {$board}.
+errBlankParameter: error sent to the user if a mandatory parameter is not sent on a form operation. Replaces: {$parameter}, {$reason}.
+miscReasonNotPresent: reason for blank parameter error when it is not informed.
+miscReasonNnull: reason for blank parameter when it is null.
+miscReasonUndefined: reason for blank parameter when it is undefined.
+miscReasonNoLength: reason for blank parameter when it has no length.
+errUnknownExtension: error thrown when the extension of the file being saved to mongo cannot be understood.
+miscRoleRoot: role label for root.
+miscRoleAdmin: role label for admin.
+miscRoleGlobalVolunteer: role label for global volunteer.
+miscRoleGlobalJanitor: role label for global janitor.
+miscRoleUser: role label for regular user.
+errDeniedGlobalManagement: error throw when the user is not allowed to view global management data.
+miscDefaultBanMessage: default ban message.
+miscDefaultAnonymous: default name to be used for anonymous posts.
+miscBoardOwner: label for board owner.
+miscBoardVolunteer: label for board volunteer.
+errThreadNotFound: error thrown when the specified thread of an operation cannot be found.
+errThreadLocked: error thrown when the user tries to reply to a locked thread.

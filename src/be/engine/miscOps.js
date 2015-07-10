@@ -5,6 +5,7 @@ var verbose = require('../boot').getGeneralSettings().verbose;
 var formOps = require('./formOps');
 var db = require('../db');
 var users = db.users();
+var lang = require('./langOps').languagePack();
 var reports = db.reports();
 
 var MAX_STAFF_ROLE = 3;
@@ -209,15 +210,15 @@ exports.getGlobalRoleLabel = function(role) {
 
   switch (role) {
   case 0:
-    return 'Root';
+    return lang.miscRoleRoot;
   case 1:
-    return 'Admin';
+    return lang.miscRoleAdmin;
   case 2:
-    return 'Global volunteer';
+    return lang.miscRoleGlobalVolunteer;
   case 3:
-    return 'Global janitor';
+    return lang.miscRoleGlobalJanitor;
   default:
-    return 'User';
+    return lang.miscRoleUser;
   }
 
 };
@@ -226,9 +227,7 @@ exports.getManagementData = function(userRole, userLogin, callback) {
 
   if (userRole > MAX_STAFF_ROLE) {
 
-    var error = 'Your global role does not allow you';
-
-    callback(error + ' to retrieve this information.');
+    callback(lang.errDeniedGlobalManagement);
 
   } else {
 
