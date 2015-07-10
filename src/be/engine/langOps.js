@@ -18,13 +18,51 @@ exports.languagePack = function() {
   return languagePack;
 };
 
-function processObject(defaultObject, chosenObject, missingKeys) {
+function processArray(defaultObject, chosenObject, missingKeys, currentKey) {
+
+  var missingElementsCount = defaultObject.length - chosenObject.length;
+
+  if (missingElementsCount) {
+    missingKeys.push(missingElementsCount + ' elements on ' + currentKey);
+
+    for (var i = chosenObject.length; i < defaultObject.length; i++) {
+      chosenObject.push(defaultObject.length[i]);
+    }
+  }
+
+  for (i = 0; i < defaultObject.length; i++) {
+
+    var isArray = Object.prototype.toString.call(defaultObject[i]);
+    isArray = isArray === '[object Array]';
+    // Because fuck people being able to tell an object from an array, right?
+
+    var nextKey = currentKey + '.' + i;
+
+    if (isArray) {
+      processArray(defaultObject[i], chosenObject[i], missingKeys, nextKey);
+    } else if (typeof (defaultObject[i]) === 'object') {
+      processObject(defaultObject[i], chosenObject[i], missingKeys, nextKey);
+    }
+  }
+
+}
+
+function processObject(defaultObject, chosenObject, missingKeys, currentKey) {
   for ( var key in defaultObject) {
+
+    var isArray = Object.prototype.toString.call(defaultObject[key]);
+    isArray = isArray === '[object Array]';
+    // Because fuck people being able to tell an object from an array, right?
+
+    var next = (currentKey ? currentKey + '.' : '') + key;
+
     if (!chosenObject[key]) {
-      missingKeys.push(key);
+      missingKeys.push(next);
       chosenObject[key] = defaultObject[key];
+    } else if (isArray) {
+      processArray(defaultObject[key], chosenObject[key], missingKeys, next);
     } else if (typeof (defaultObject[key]) === 'object') {
-      processObject(defaultObject[key], chosenObject[key], missingKeys);
+      processObject(defaultObject[key], chosenObject[key], missingKeys, next);
     }
   }
 }

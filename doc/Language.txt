@@ -6,6 +6,7 @@ log: log entry.
 sub: e-mail subject.
 misc: miscellaneous
 gui: used in the GUI.
+tit: page titles.
 
 The structure of this json is as follows:
 
@@ -58,6 +59,7 @@ logPostingDeletion: object containing pieces used to compose the message added t
     endPiece: piece used at the end of the message. Replaces: {$board}.
 logBoardDeletion: log entry for board deletion. Replaces: {$login}, {$board}.
 errDeniedBoardDeletion: error thrown when the user is not allowed to delete a board.
+titDefaultChanTitle: title of the front-page.
 guiAllTypes: option to select all types of logs.
 guiTypeBan: option to select logs of bans.
 guiTypeRange: option to select logs of range bans.
@@ -68,3 +70,22 @@ guiGlobalRoleChange: option to select logs of global role changes.
 guiTypeBoardDeletion: option to select logs of board deletions.
 guiTypeBoardTransfer: option to select logs of board ownership transfers.
 guiTypeHashBan: option to select logs of hash bans.
+guiWeekDays: array containing labels of weekdays starting on sunday.
+guiDateFormat: format of dates. Replaces: {$day}, {$month}, {$year}.
+titBanners: title for the banner management page. Replaces: {$board}.
+titBan: title for the page displaying the user ban.
+titError: title for the error page.
+titBansManagement: title for the bans management page.
+titClosedReports: title for the closed reports page.
+titGlobalManagement: title for global management page.
+titAccount: title for account page. Replaces: {$login}.
+titLogs: title for logs page.
+titFilters: title for filter management page. Replaces: {$board}.
+titBoardModeration: title for board moderation page. Replaces: {$board}.
+titBoards: title for the boards page.
+titNoCookieCaptcha: title for the no cookie captcha page.
+titRangeBans: title for the range bans page.
+titHashBans: title for hash bans page.
+titNotFound: title for the 404 page.
+titLogin: title for the login page.
+titCatalog: title for the board's catalog. Replaces: {$board}.

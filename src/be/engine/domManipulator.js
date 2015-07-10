@@ -14,13 +14,13 @@ var gridFs = require('./gridFsHandler');
 var serializer = require('jsdom').serializeDocument;
 var miscOps = require('./miscOps');
 var jsdom = require('jsdom').jsdom;
-var siteTitle = settings.siteTitle || 'My chan';
+var lang = require('./langOps').languagePack();
+var siteTitle = settings.siteTitle || lang.titDefaultChanTitle;
 var debug = boot.debug();
 var verbose = settings.verbose;
 var accountCreationDisabled = settings.disableAccountCreation;
 var boardCreationRestricted = settings.restrictBoardCreation;
 var templateHandler = require('./templateHandler');
-var lang = require('./langOps').languagePack();
 var displayMaxSize = (boot.maxFileSize() / 1024 / 1024).toFixed(2);
 
 var indicatorsRelation = {
@@ -90,13 +90,11 @@ function padDateField(value) {
 function formatDateToDisplay(d) {
   var day = padDateField(d.getDate());
 
-  var weekDays = [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ];// TODO
-
   var month = padDateField(d.getMonth() + 1);
 
   var year = d.getFullYear();
 
-  var weekDay = weekDays[d.getDay()];
+  var weekDay = lang.guiWeekDays[d.getDay()];
 
   var hour = padDateField(d.getHours());
 
@@ -104,7 +102,8 @@ function formatDateToDisplay(d) {
 
   var second = padDateField(d.getSeconds());
 
-  var toReturn = month + '/' + day + '/' + year;
+  var toReturn = lang.guiDateFormat.replace('{$month}', month).replace(
+      '{$day}', day).replace('{$year}', year);
 
   return toReturn + ' (' + weekDay + ') ' + hour + ':' + minute + ':' + second;
 }
@@ -463,7 +462,7 @@ exports.bannerManagement = function(boardUri, banners) {
 
     var document = jsdom(templateHandler.bannerManagementPage);
 
-    document.title = 'Banners of /' + boardUri + '/';
+    document.title = lang.titBanners.replace('{$board}', boardUri);
 
     document.getElementById('boardIdentifier').setAttribute('value', boardUri);
 
@@ -509,7 +508,7 @@ exports.ban = function(ban, board) {
     var document = jsdom(ban.range ? templateHandler.rangeBanPage
         : templateHandler.banPage);
 
-    document.title = 'b& :^)';
+    document.title = lang.titBan;
 
     document.getElementById('boardLabel').innerHTML = board;
 
@@ -547,7 +546,7 @@ exports.error = function(code, message) {
 
     var document = jsdom(templateHandler.errorPage);
 
-    document.title = 'Error';
+    document.title = lang.titError;
 
     document.getElementById('codeLabel').innerHTML = code;
 
@@ -584,7 +583,7 @@ function setBanCell(ban, cell) {
   appliedByLabel.innerHTML = ban.appliedBy;
 
   var boardLabel = cell.getElementsByClassName('boardLabel')[0];
-  boardLabel.innerHTML = ban.boardUri ? ban.boardUri : 'All boards';
+  boardLabel.innerHTML = ban.boardUri ? ban.boardUri : lang.miscAllBoards;
 
   cell.getElementsByClassName('idIdentifier')[0].setAttribute('value', ban._id);
 
@@ -596,7 +595,7 @@ exports.bans = function(bans) {
 
     var document = jsdom(templateHandler.bansPage);
 
-    document.title = 'Bans';
+    document.title = lang.titBansManagement;
 
     var bansDiv = document.getElementById('bansDiv');
 
@@ -652,7 +651,7 @@ exports.closedReports = function(reports, callback) {
 
     var document = jsdom(templateHandler.closedReportsPage);
 
-    document.title = 'Closed reports';
+    document.title = lang.titClosedReports;
 
     var reportsDiv = document.getElementById('reportDiv');
 
@@ -780,7 +779,8 @@ exports.boardManagement = function(login, boardData, reports) {
 
     var document = jsdom(templateHandler.bManagement);
 
-    document.title = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
+    document.title = lang.titBoardManagement.replace('{$board}',
+        boardData.boardUri);
 
     setBoardManagementLinks(document, boardData);
 
@@ -887,7 +887,6 @@ function setNewStaffComboBox(document, userRole) {
     option.innerHTML = miscOps.getGlobalRoleLabel(i);
 
     comboBox.add(option);
-
   }
 
 }
@@ -908,7 +907,7 @@ exports.globalManagement = function(userRole, userLogin, staff, reports) {
   try {
     var document = jsdom(templateHandler.gManagement);
 
-    document.title = 'Global management';
+    document.title = lang.titGlobalManagement;
 
     setReportList(document, reports);
 
@@ -1047,7 +1046,7 @@ exports.account = function(userData) {
   try {
     var document = jsdom(templateHandler.accountPage);
 
-    document.title = 'Welcome, ' + userData.login;
+    document.title = lang.titAccount.replace('{$login}', userData.login);
 
     var loginLabel = document.getElementById('labelLogin');
 
@@ -1099,7 +1098,7 @@ function fillComboBox(document, parameters) {
     option.value = type;
 
     if (parameters.type === type) {
-      option.setAttribute('selected', 'selected');
+      option.setAttribute('selected', true);
     }
 
     combobox.appendChild(option);
@@ -1201,7 +1200,7 @@ exports.logs = function(logs, pageCount, parameters) {
 
     var document = jsdom(templateHandler.logsPage);
 
-    document.title = 'Logs';
+    document.title = lang.titLogs;
 
     fillSearchForm(parameters, document);
 
@@ -1301,7 +1300,7 @@ exports.filterManagement = function(boardUri, filters) {
 
     var document = jsdom(templateHandler.filterManagement);
 
-    document.title = 'Filter management';
+    document.title = lang.titFilters.replace('{$board}', boardUri);
 
     document.getElementById('boardIdentifier').setAttribute('value', boardUri);
 
@@ -1344,7 +1343,8 @@ exports.boardModeration = function(boardData, ownerData) {
 
     var document = jsdom(templateHandler.boardModerationPage);
 
-    document.title = 'Board moderation';
+    document.title = lang.titBoardModeration.replace('{$board}',
+        boardData.boardUri);
 
     document.getElementById('boardTransferIdentifier').setAttribute('value',
         boardData.boardUri);
@@ -1408,7 +1408,7 @@ exports.boards = function(boards, pageCount) {
   try {
     var document = jsdom(templateHandler.boardsPage);
 
-    document.title = 'Boards';
+    document.title = lang.titBoards;
 
     var divBoards = document.getElementById('divBoards');
 
@@ -1450,7 +1450,7 @@ exports.noCookieCaptcha = function(parameters, captchaId) {
 
     var document = jsdom(templateHandler.noCookieCaptchaPage);
 
-    document.title = 'No cookie captcha';
+    document.title = lang.titNoCookieCaptcha;
 
     if (!parameters.solvedCaptcha) {
       removeElement(document.getElementById('divSolvedCaptcha'));
@@ -1508,7 +1508,7 @@ exports.rangeBans = function(rangeBans, boardUri) {
 
     var document = jsdom(templateHandler.rangeBansPage);
 
-    document.title = 'Range bans';
+    document.title = lang.titRangeBans;
 
     var boardIdentifier = document.getElementById('boardIdentifier');
 
@@ -1554,7 +1554,6 @@ function setHashBanCells(document, hashBans) {
         hashBan._id);
 
     bansDiv.appendChild(banCell);
-
   }
 
 }
@@ -1565,7 +1564,7 @@ exports.hashBans = function(hashBans, boardUri) {
 
     var document = jsdom(templateHandler.hashBansPage);
 
-    document.title = 'Hash bans';
+    document.title = lang.titHashBans;
 
     var boardIdentifier = document.getElementById('boardIdentifier');
 
@@ -1601,7 +1600,7 @@ exports.notFound = function(callback) {
 
   var document = jsdom(templateHandler.notFoundPage);
 
-  document.title = 'File not found';
+  document.title = lang.titNotFound;
 
   gridFs.writeData(serializer(document), '/404.html', 'text/html', {
     status : 404
@@ -1612,7 +1611,7 @@ exports.login = function(callback) {
   try {
     var document = jsdom(templateHandler.loginPage);
 
-    document.title = 'Login, register or reset passsword';
+    document.title = lang.titLogin;
 
     if (accountCreationDisabled) {
       removeElement(document.getElementById('divCreation'));
@@ -1910,7 +1909,7 @@ exports.catalog = function(boardUri, threads, callback) {
 
     var document = jsdom(templateHandler.catalogPage);
 
-    document.title = '/' + boardUri + '/ - Catalog';
+    document.title = lang.titCatalog.replace('{$board}', boardUri);
 
     document.getElementById('labelBoard').innerHTML = '/' + boardUri + '/';
 

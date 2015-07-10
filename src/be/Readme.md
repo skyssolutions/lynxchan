@@ -62,7 +62,7 @@ Settings files that goes into the settings directory:
 * `emailSender`: e-mail to be used as sender on automated e-mails. Defaults to `noreply@mychan.com`.
 * `captchaExpiration`: expiration in minutes of captchas. Defaults to 5 minutes.
 * `captchaFonts`(Array): array of absolute paths to font files in the system to be randomly used in the captcha. Optional.
-* `siteTitle`: name to be used as the title of the front-page. Defaults to `My chan`.
+* `siteTitle`: name to be used as the title of the front-page. Defaults to the `titDefaultChanTitle` entry on the language pack.
 * `maxRequestSizeMB`: maximum size in megabytes of incoming requests. Defaults to 2MB.
 * `maxFileSizeMB`: maximum size in megabytes of individual uploaded files. Defaults to infinity.
 * `acceptedMimes`(Array): accepted mimes on uploads. Defaults to `[ 'image/png', 'image/jpeg', 'image/gif', 'image/bmp' ]`.
