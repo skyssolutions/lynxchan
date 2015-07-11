@@ -23,7 +23,7 @@ Browse to `src/be` and run `npm install`.
 There are about a half-dozen. They are defined in the `package.json` file, so you don't have to worry with details.
 
 # Running
-You can either run the `lynxchan` command or start the `lynxchan` service. You could just run the `src/be/boot.js` file. Install is optional. Run ``sudo setcap 'cap_net_bind_service=+ep' `which iojs`` to be able to run it on port 80 without root access.
+You can either run the `lynxchan` command or start the `lynxchan` service. You could just run the `src/be/boot.js` file. Install is optional. Run ``` sudo setcap 'cap_net_bind_service=+ep' `which iojs` ``` to be able to run it on port 80 without root access.
 
 # Documentation
 As in many things, I am very anal about documentation.

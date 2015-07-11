@@ -106,6 +106,63 @@
   "miscDefaultAnonymous": "Anonymous",
   "miscBoardOwner": "Board owner",
   "miscBoardVolunteer": "Board volunteer",
-  "errThreadNotFound": "Thread not found",
-  "errThreadLocked": "You cannot reply to a locked thread"
+  "errThreadNotFound": "Thread not found.",
+  "errThreadLocked": "You cannot reply to a locked thread",
+  "errDeniedBoardBanManagement": "You are not allowed to manage bans for this board.",
+  "errDeniedGlobalBanManagement": "You are not allowed to manage global bans.",
+  "errDeniedBoardRangeBanManagement": "You are not allowed to manage range bans for this board.",
+  "errDeniedGlobalRangeBanManagement": "You are not allowed to manage global range bans.",
+  "errDeniedBoardHashBansManagement": "You are not allowed to manage hash bans for this board.",
+  "errDeniedGlobalHashBansManagement": "You are not allowed to manage global hash bans.",
+  "errDeniedBoardReportManagement": "You are not allowed to manage reports for this board.",
+  "errDeniedGlobalReportManagement": "You are not allowed to manage global reports.",
+  "errBlockedTor": "TOR users are blocked.",
+  "logReportClosure": {
+    "startPiece": "User {$login} closed a ",
+    "globalPiece": "global ",
+    "midPiece": "report for ",
+    "postPiece": "post {$post} on ",
+    "finalPiece": "thread {$thread} on board /{$board}/ with the reason \"{$reason}\""
+  },
+  "errReportNotFound": "Report not found",
+  "errReportAlreadyClosed": "Report is already closed",
+  "logPostingBan": {
+    "startPiece": "User {$login} ",
+    "globalPiece": "globally ",
+    "midPiece": "banned the posters of the following ",
+    "threadPiece": "threads: ",
+    "threadAndPostPiece": "and the following ",
+    "postPiece": "posts: ",
+    "endPiece": " from board /{$board}/ until {$expiration} with reason \"{$reason}\"."
+  },
+  "errInvalidExpiration": "Invalid expiration.",
+  "logBanLift": {
+    "startPiece": "User {$login} lifted a ",
+    "globalBanPiece": "global ban ",
+    "boardBanPiece": "ban on board {$board} ",
+    "finalBanPiece": "with id {$ban} set to expire at {$expiration}.",
+    "globalRangeBanPiece": "global range ban ",
+    "boardRangeBanPiece": "range ban on board {$board} ",
+    "finalRangeBanPIece": "on range {$range}.",
+    "unknownPiece": "unknown type of ban with id {$ban}."
+  },
+  "errDeniedThreadManagement": "You are not allowed to change thread settingso in this board.",
+  "logRangeBan": {
+    "startPiece": "User {$login} placed a ",
+    "globalPiece": "global range ban ",
+    "boardPiece": "range ban on board {$board} ",
+    "finalPiece": "on range {$range}."
+  },
+  "logHashBan": {
+    "startPiece": "User {$login} placed a ",
+    "globalPiece": "global hash ban ",
+    "boardPiece": "hash ban on board {$board} ",
+    "finalPiece": "for hash {$hash}."
+  },
+  "logLiftHashBan": {
+    "startPiece": "User {$login} lifted ",
+    "globalPiece": "a global hash ban ",
+    "boardPiece": "a hash ban on board {$board} ",
+    "finalPiece": "for hash {$hash}."
+  }
 }

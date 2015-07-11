@@ -107,3 +107,54 @@ miscBoardOwner: label for board owner.
 miscBoardVolunteer: label for board volunteer.
 errThreadNotFound: error thrown when the specified thread of an operation cannot be found.
 errThreadLocked: error thrown when the user tries to reply to a locked thread.
+errDeniedBoardBanManagement: error thrown when the user is not allowed to manage bans for a board.
+errDeniedGlobalBanManagement: error thrown when the user is not allowed to manage global bans.
+errDeniedBoardRangeBanManagement: error thrown when the user is not allowed to manage range bans for a board.
+errDeniedGlobalRangeBanManagement: error thrown when the user is not allowed to manage global range bans.
+errDeniedBoardHashBansManagement: error thrown when the user is not allowed to manage hash bans for a board.
+errDeniedGlobalHashBansManagement: error thrown when the user is not allowed to manage global hash bans.
+errDeniedBoardReportManagement: error thrown when the user is not allowed to manage reports for a board.
+errDeniedGlobalReportManagement: error thrown when the user is not allowed to manage global reports.
+errBlockedTor: error thrown to TOR users when TOR is blocked on the chan.
+logReportClosure: object containing the pieces for the log used when someone closes a report. It contains the following fields:
+    startPiece: starting piece of the message. Replaces: {$login}.
+    globalPiece: piece containing the part that indicates the report was global.
+    midPiece: piece that comes after either the start or global piece.
+    postPiece: piece that might be used if the report was for a post. Replaces: {$post}.
+    finalPiece: final piece of the log. Replaces: {$thread}, {$board}, {$reason}.
+errReportNotFound: error thrown when the specified report can't be found.
+errReportAlreadyClosed: error thrown when the user is trying to close a report that has been already closed.
+logPostingBan: object containing the pieces for the log used when an user bans posters. Contains the following fields:
+    startPiece: piece used in the beggining of the message. Replaces: {$login}.
+    globalPiece: piece used to indicate the bans were global.
+    midPiece: piece used after either the start of the global piece.
+    threadPiece: piece used to indicate the banned threads.
+    threadAndPostPiece: piece used to indicate the banned posts if any thred were banned.
+    postPiece: piece used to indicate the banned posts.
+    endPiece: finishing piece. Replaces: {$board}, {$expiration}, {$reason}.
+errInvalidExpiration: erro thrown when the informed expiration of a date is invalid.
+logBanLift: object with the pieces used on the log of ban lift. Contains the following fields:
+    startPiece: piece used at the beggining. Replaces: {$login}.
+    globalBanPiece: piece used to indicate it is a global ban.
+    boardBanPiece: piece used to indicate the board of the ban. Replaces: {$board}.
+    finalBanPiece: final piece used for regular bans. Replaces: {$ban}, {$expiration}.
+    globalRangeBanPiece: piece used to indicate it is a global range ban.
+    boardRangeBanPiece: piece used to indicate the board of the range ban. Replaces: {$board}.
+    finalRangeBanPIece: final piece used for range bans. Replaces: {$range}.
+    unknownPiece: piece used for bans which type could not be identififed. Replaces: {$ban}.
+errDeniedThreadManagement: error thrown when the user is not allowed to manage a thread.
+logRangeBan: object containing the pieces used for logs of range bans. Contains the following fields:
+    startPiece: piece used at the beggining. Replaces: {$login}.
+    globalPiece: piece used to indicate it is a global range ban.
+    boardPiece: piece used to indicate the board of the ban. Replaces: {$board}.
+    finalPiece: final piece. Replaces: {$range}.
+logHashBan: object containing the pieces used for logs of hash bans. Contains the following fields:
+    startPiece: piece used at the beggining. Replaces: {$login}.
+    globalPiece: piece used to indicate it is a hash ban.
+    boardPiece: piece used to indicate the board of the hash ban. Replaces: {$board}.
+    finalPiece: piece used at the end. Replaces: {$hash}.
+logLiftHashBan: object containing the pieces used for logs of hash ban lifts. Contains the following fields:
+    startPiece: piece used at the begginging. Replaces: {$login}.
+    globalPiece: piece used to indicate it is a global hash ban.
+    boardPiece: piece used to indicate the board of the hash ban. Replaces: {$board}.
+    finalPiece: final piece. Replaces: {$hash}.

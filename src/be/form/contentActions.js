@@ -3,6 +3,9 @@
 var formOps = require('../engine/formOps');
 var accountOps = require('../engine/accountOps');
 var modOps = require('../engine/modOps');
+var domManipulator = require('../engine/domManipulator');
+var lang = require('../engine/langOps').languagePack();
+var miscOps = require('../engine/miscOps');
 var deleteOps = require('../engine/deletionOps');
 
 function processPostForDeletion(board, thread, splitKey, threadsToDelete,
@@ -94,9 +97,16 @@ function processParameters(req, userData, parameters, res) {
   if (parameters.action.toLowerCase() === 'report') {
 
     modOps.report(req, reportedObjects, parameters, function createdReports(
-        error) {
+        error, ban) {
       if (error) {
         formOps.outputError(error, 500, res);
+      } else if (ban) {
+        res.writeHead(200, miscOps.corsHeader('text/html'));
+
+        var board = ban.boardUri ? '/' + ban.boardUri + '/'
+            : lang.miscAllBoards.toLowerCase();
+
+        res.end(domManipulator.ban(ban, board));
       } else {
         formOps.outputResponse('Content reported', '/', res);
       }

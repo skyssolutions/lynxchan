@@ -100,15 +100,15 @@ exports.getBans = function(userData, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!board) {
-        callback('Board not found');
+        callback(lang.errBoardNotFound);
       } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
-        callback('You are not allowed to view bans for this board.');
+        callback(lang.errDeniedBoardBanManagement);
       } else {
         getBans(parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
-    callback('You are not allowed to view global bans');
+    callback(lang.errDeniedGlobalBanManagement);
   } else {
     getBans(parameters, callback);
   }
@@ -145,15 +145,15 @@ exports.getRangeBans = function(userData, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!board) {
-        callback('Board not found');
+        callback(lang.errBoardNotFound);
       } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
-        callback('You are not allowed to view range bans for this board.');
+        callback(lang.errDeniedBoardRangeBanManagement);
       } else {
         getRangeBans(parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
-    callback('You are not allowed to view global range bans.');
+    callback(lang.errDeniedGlobalRangeBanManagement);
   } else {
     getRangeBans(parameters, callback);
   }
@@ -186,15 +186,15 @@ exports.getHashBans = function(userData, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!board) {
-        callback('Board not found');
+        callback(lang.errBoardNotFound);
       } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
-        callback('You are not allowed to view hash bans for this board.');
+        callback(lang.errDeniedBoardHashBansManagement);
       } else {
         getHashBans(parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
-    callback('You are not allowed to view global hash bans.');
+    callback(lang.errDeniedGlobalHashBansManagement);
   } else {
     getHashBans(parameters, callback);
   }
@@ -230,15 +230,15 @@ exports.getClosedReports = function(userData, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!board) {
-        callback('Board not found');
+        callback(lang.errBoardNotFound);
       } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
-        callback('You are not allowed to view reports for this board.');
+        callback(lang.errDeniedBoardReportManagement);
       } else {
         getClosedReports(parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
-    callback('You are not allowed to view global reports');
+    callback(lang.errDeniedGlobalReportManagement);
   } else {
     getClosedReports(parameters, callback);
   }
@@ -252,7 +252,7 @@ exports.checkForBan = function(req, boardUri, callback) {
     if (error) {
       callback(error);
     } else if (req.isTor) {
-      callback(blockTor ? 'TOR users are blocked.' : null);
+      callback(blockTor ? lang.errBlockedTor : null);
     } else {
 
       var ip = logger.ip(req);
@@ -338,25 +338,12 @@ exports.report = function(req, reportedContent, parameters, callback) {
 
     var report = reportedContent.shift();
 
-    bans.count({
-      ip : req.connection.remoteAddress,
-      expiration : {
-        $gt : new Date()
-      },
-      $or : [ {
-        boardUri : report.board
-      }, {
-        boardUri : {
-          $exists : false
-        }
-      } ]
-    }, function gotCount(error, count) {
-      if (error) {
-        callback(error);
-      } else if (count) {
-        exports.report(req, reportedContent, parameters, callback);
-      } else {
+    var uriToCheck = parameters.global ? null : report.board;
 
+    exports.checkForBan(req, uriToCheck, function checkedForBan(error, ban) {
+      if (error || ban) {
+        callback(error, ban);
+      } else {
         // style exception, too simple
         var queryBlock = {
           boardUri : report.board,
@@ -411,21 +398,23 @@ function closeReport(report, userData, callback) {
     {
       // style exception, too simple
 
-      var logMessage = 'User ' + userData.login + ' closed a ';
+      var pieces = lang.logReportClosure;
+
+      var logMessage = pieces.startPiece.replace('{$login}', userData.login);
 
       if (report.global) {
-        logMessage += ' global';
+        logMessage += pieces.globalPiece;
       }
 
-      logMessage += ' report for';
+      logMessage += pieces.midPiece;
 
       if (report.postId) {
-        logMessage += ' post ' + report.postId + ' on';
+        logMessage += pieces.postPiece.replace('{$post}', report.postId);
       }
 
-      logMessage += ' thread ' + report.threadId + ' on board /';
-      logMessage += report.boardUri + '/ created under';
-      logMessage += ' the reason of ' + report.reason + '.';
+      logMessage += pieces.finalPiece.replace('{$thread}', report.threadId)
+          .replace('{$board}', report.boardUri).replace('{$reason}',
+              report.reason);
 
       logs.insert({
         user : userData.login,
@@ -459,11 +448,11 @@ exports.closeReport = function(userData, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!report) {
-        callback('Report not found');
+        callback(lang.errReportNotFound);
       } else if (report.closedBy) {
-        callback('Report is already closed');
+        callback(lang.errReportAlreadyClosed);
       } else if (report.global && !isOnGlobalStaff) {
-        callback('You are not allowed to close global reports');
+        callback(lang.errDeniedGlobalReportManagement);
       } else if (!report.global) {
 
         // style exception, too simple
@@ -473,9 +462,9 @@ exports.closeReport = function(userData, parameters, callback) {
           if (error) {
             callback(error);
           } else if (!board) {
-            callback('Board not found');
+            callback(lang.errBoardNotFound);
           } else if (!exports.isInBoardStaff(userData, board)) {
-            callback('You are not allowed to close reports for this board.');
+            callback(lang.errDeniedBoardReportManagement);
           } else {
             closeReport(report, userData, callback);
           }
@@ -496,12 +485,12 @@ exports.closeReport = function(userData, parameters, callback) {
 // } Section 3.2: Close report
 
 // Section 3.3: Ban {
-function appendThreadsToBanLog(informedThreads) {
+function appendThreadsToBanLog(informedThreads, pieces) {
 
   var logMessage = '';
 
   if (informedThreads.length) {
-    logMessage += ' threads :';
+    logMessage += pieces.threadPiece;
 
     for (var i = 0; i < informedThreads.length; i++) {
 
@@ -519,15 +508,15 @@ function appendThreadsToBanLog(informedThreads) {
 
 }
 
-function appendPostsToBanLog(informedPosts, informedThreads) {
+function appendPostsToBanLog(informedPosts, informedThreads, pieces) {
 
   var logMessage = '';
 
   if (informedPosts.length) {
     if (informedThreads.length) {
-      logMessage += ' and the following posts:';
+      logMessage += pieces.threadAndPostPiece;
     } else {
-      logMessage += ' posts:';
+      logMessage += pieces.postPiece;
     }
 
     for (var i = 0; i < informedPosts.length; i++) {
@@ -547,19 +536,22 @@ function appendPostsToBanLog(informedPosts, informedThreads) {
 function logBans(foundBoards, userData, board, informedPosts, informedThreads,
     reportedObjects, parameters, callback) {
 
-  var logMessage = 'User ' + userData.login;
+  var pieces = lang.logPostingBan;
+
+  var logMessage = pieces.startPiece.replace('{$login}', userData.login);
 
   if (parameters.global) {
-    logMessage += ' globally';
+    logMessage += pieces.globalPiece;
   }
 
-  logMessage += ' banned the following';
+  logMessage += pieces.midPiece;
 
-  logMessage += appendThreadsToBanLog(informedThreads);
-  logMessage += appendPostsToBanLog(informedPosts, informedThreads);
+  logMessage += appendThreadsToBanLog(informedThreads, pieces);
+  logMessage += appendPostsToBanLog(informedPosts, informedThreads, pieces);
 
-  logMessage += ' from /' + board + '/ until ' + parameters.expiration;
-  logMessage += ' with the reason "' + parameters.reason + '".';
+  logMessage += pieces.endPiece.replace('{$board}', board).replace(
+      '{$expiration}', parameters.expiration).replace('{$reason}',
+      parameters.reason);
 
   logs.insert({
     user : userData.login,
@@ -803,7 +795,7 @@ exports.ban = function(userData, reportedObjects, parameters, callback) {
   var expiration = Date.parse(parameters.expiration || '');
 
   if (isNaN(expiration)) {
-    callback('Invalid expiration');
+    callback(lang.errInvalidExpiration);
 
     return;
   } else {
@@ -813,7 +805,7 @@ exports.ban = function(userData, reportedObjects, parameters, callback) {
   var allowedToGlobalBan = userData.globalRole < miscOps.getMaxStaffRole();
 
   if (parameters.global && !allowedToGlobalBan) {
-    callback('You are not allowed to issue global bans');
+    callback(lang.errDeniedGlobalBanManagement);
   } else {
     var foundBoards = [];
 
@@ -834,31 +826,32 @@ exports.ban = function(userData, reportedObjects, parameters, callback) {
 // Section 3.4: Lift ban {
 function getLiftedBanLogMessage(ban, userData) {
 
-  var logMessage = 'User ' + userData.login + ' lifted a';
+  var pieces = lang.logBanLift;
+
+  var logMessage = pieces.startPiece.replace('{$login}', userData.login);
 
   if (ban.ip) {
 
     if (!ban.boardUri) {
-      logMessage += ' global ban';
+      logMessage += pieces.globalBanPiece;
     } else {
-      logMessage += ' ban on board ' + ban.boardUri;
+      logMessage += pieces.boardBanPiece.replace('{$board}', ban.boardUri);
     }
 
-    logMessage += ' with id ' + ban._id + ' set to expire at ';
-    logMessage += ban.expiration + '.';
+    logMessage += pieces.finalBanPiece.replace('{$ban}', ban._id).replace(
+        '{$expiration}', ban.expiration);
   } else if (ban.range) {
 
     if (!ban.boardUri) {
-      logMessage += ' global range ban';
+      logMessage += pieces.globalRangeBanPiece;
     } else {
-      logMessage += ' range ban on board ' + ban.boardUri;
+      logMessage += pieces.boardRangeBanPiece.replace('{$board}', ban.boardUri);
     }
 
-    logMessage += ' on range ';
-    logMessage += ban.range + '.';
+    logMessage += pieces.finalRangeBanPIece.replace('{$range}', ban.range);
 
   } else {
-    logMessage += ' unknown type of ban with id ' + ban._id + '.';
+    logMessage += pieces.unknownPiece.replace('{$ban}', ban._id);
   }
 
   return logMessage;
@@ -917,7 +910,7 @@ function checkForBoardBanLiftPermission(ban, userData, callback) {
       if (owner || board.volunteers.indexOf(userData.login) > -1) {
         liftBan(ban, userData, callback);
       } else {
-        callback('You are not allowed to lift bans from this board.');
+        callback(lang.errDeniedBoardBanManagement);
       }
     }
   });
@@ -939,7 +932,7 @@ exports.liftBan = function(userData, parameters, callback) {
         checkForBoardBanLiftPermission(ban, userData, callback);
 
       } else if (userData.globalRole >= miscOps.getMaxStaffRole()) {
-        callback('You are not allowed to lift global bans.');
+        callback(lang.errDeniedGlobalBanManagement);
       } else {
         liftBan(ban, userData, callback);
       }
@@ -1015,7 +1008,7 @@ function getThreadToChangeSettings(parameters, callback) {
     if (error) {
       callback(error);
     } else if (!thread) {
-      callback('Thread not found');
+      callback(lang.errThreadNotFound);
     } else {
 
       setNewThreadSettings(parameters, thread, callback);
@@ -1032,10 +1025,9 @@ exports.setThreadSettings = function(userData, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback('Board not found');
+      callback(lang.errBoardNotFound);
     } else if (!exports.isInBoardStaff(userData, board)) {
-      error = 'You are not allowed to change thread settingso in this board.';
-      callback(error);
+      callback(lang.errDeniedThreadManagement);
     } else {
       getThreadToChangeSettings(parameters, callback);
     }
@@ -1060,15 +1052,18 @@ function placeRangeBan(userData, parameters, callback) {
     if (error) {
       callback(error);
     } else {
-      var logMessage = 'User ' + userData.login + ' placed a';
+      var pieces = lang.logRangeBan;
+
+      var logMessage = pieces.startPiece.replace('{$login}', userData.login);
 
       if (parameters.boardUri) {
-        logMessage += ' range ban on board ' + parameters.boardUri;
+        logMessage += pieces.boardPiece
+            .replace('{$board}', parameters.boardUri);
       } else {
-        logMessage += ' global range ban';
+        logMessage += pieces.globalPiece;
       }
 
-      logMessage += ' on range ' + parameters.range + '.';
+      logMessage += pieces.finalPiece.replace('{$range}', parameters.range);
 
       // style exception,too simple
       logs.insert({
@@ -1104,15 +1099,15 @@ exports.placeRangeBan = function(userData, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!board) {
-        callback('Board not found');
+        callback(lang.errBoardNotFound);
       } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
-        callback('You are not allowed to place range bans on this board.');
+        callback(lang.errDeniedBoardRangeBanManagement);
       } else {
         placeRangeBan(userData, parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
-    callback('You are not allowed to place global range bans.');
+    callback(lang.errDeniedGlobalRangeBanManagement);
   } else {
     placeRangeBan(userData, parameters, callback);
   }
@@ -1136,15 +1131,18 @@ function placeHashBan(userData, parameters, callback) {
     } else if (error) {
       callback();
     } else {
-      var logMessage = 'User ' + userData.login + ' placed a';
+      var pieces = lang.logHashBan;
+
+      var logMessage = pieces.startPiece.replace('{$login}', userData.login);
 
       if (parameters.boardUri) {
-        logMessage += ' hash ban on board ' + parameters.boardUri;
+        logMessage += pieces.boardPiece
+            .replace('{$board}', parameters.boardUri);
       } else {
-        logMessage += ' global hash ban';
+        logMessage += pieces.globalPiece;
       }
 
-      logMessage += ' for hash ' + parameters.hash + '.';
+      logMessage += pieces.finalPiece.replace('{$hash}', parameters.hash);
 
       // style exception,too simple
       logs.insert({
@@ -1181,15 +1179,15 @@ exports.placeHashBan = function(userData, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!board) {
-        callback('Board not found');
+        callback(lang.errBoardNotFound);
       } else if (!exports.isInBoardStaff(userData, board) && !isOnGlobalStaff) {
-        callback('You are not allowed to hash range bans on this board.');
+        callback(lang.errDeniedBoardHashBansManagement);
       } else {
         placeHashBan(userData, parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
-    callback('You are not allowed to place global hash bans.');
+    callback(lang.errDeniedGlobalHashBansManagement);
   } else {
     placeHashBan(userData, parameters, callback);
   }
@@ -1208,15 +1206,17 @@ function liftHashBan(hashBan, userData, callback) {
     } else {
       // style exception, too simple
 
-      var logMessage = 'User ' + userData.login + ' lifted ';
+      var pieces = lang.logLiftHashBan;
+
+      var logMessage = pieces.startPiece.replace('{$login}', userData.login);
 
       if (hashBan.boardUri) {
-        logMessage += 'a hash ban on board ' + hashBan.boardUri;
+        logMessage += pieces.boardPiece.replace('{$board}', hashBan.boardUri);
       } else {
-        logMessage += 'a global hash ban';
+        logMessage += pieces.globalPiece;
       }
 
-      logMessage += ' for hash ' + hashBan.md5 + '.';
+      logMessage += pieces.finalPiece.replace('{$hash}', hashBan.md5);
 
       logs.insert({
         user : userData.login,
@@ -1256,7 +1256,7 @@ function checkForBoardHashBanLiftPermission(hashBan, userData, callback) {
       if (owner || board.volunteers.indexOf(userData.login) > -1) {
         liftHashBan(hashBan, userData, callback);
       } else {
-        callback('You are not allowed to lift hash bans from this board.');
+        callback(lang.errDeniedBoardHashBansManagement);
       }
     }
   });
@@ -1276,7 +1276,7 @@ exports.liftHashBan = function(userData, parameters, callback) {
         checkForBoardHashBanLiftPermission(hashBan, userData, callback);
 
       } else if (userData.globalRole >= miscOps.getMaxStaffRole()) {
-        callback('You are not allowed to lift global bans.');
+        callback(lang.errDeniedGlobalHashBansManagement);
       } else {
         liftHashBan(hashBan, userData, callback);
       }
