@@ -90,7 +90,7 @@ users: stores users.
         Anything above 3 means regular user. No powers.
         3 means global janitor. Is able to delete any content.
         2 means global mod. Janitor powers plus apply global bans. 
-        1 means global admin. Has all powers of global mods plus board deletion and global mod assignment. 
+        1 means global admin. Has all powers of global mods plus board deletion, board creation no matter the settings, board transfer and global mod assignment. 
         0 means root. All power of admins plus is able to assign global admins.
     settings(Array): array with the account settings. May hold the following values:
         alwaysSignRole: indicates the user wishes to always use his role signature on posts.

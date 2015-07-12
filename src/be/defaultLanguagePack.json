@@ -56,7 +56,7 @@
   "guiTypeRange": "Range ban",
   "guiTypeBanLift": "Ban lift",
   "guiTypeDeletion": "Deletion",
-  "guiTypeReportClosure": "Reports closure",
+  "guiTypeReportClosure": "Report closures",
   "guiTypeGlobalRoleChange": "Global role change",
   "guiTypeBoardDeletion": "Board deletion",
   "guiTypeBoardTransfer": "Board ownership transfer",
@@ -146,7 +146,7 @@
     "finalRangeBanPIece": "on range {$range}.",
     "unknownPiece": "unknown type of ban with id {$ban}."
   },
-  "errDeniedThreadManagement": "You are not allowed to change thread settingso in this board.",
+  "errDeniedThreadManagement": "You are not allowed to change thread settings in this board.",
   "logRangeBan": {
     "startPiece": "User {$login} placed a ",
     "globalPiece": "global range ban ",

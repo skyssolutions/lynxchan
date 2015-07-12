@@ -7,7 +7,7 @@ TEM_ID::01
 index:
 Elements:
 divBoards:
-    type: div
+    use: have children appended to it.
     description: contains the listing of boards.
 
 ------------------------------------------------------------------------------------------
@@ -18,47 +18,47 @@ boardPage:
 
 Elements:
 labelName:
-    type: h1
+    use: have it's innerHTML manipulated.
     description: contains the URI and name of the board.
 
 labelDescription:
-    type: h3
+    use: have it's innerHTML manipulated.
     description: contains the description of the bord.
 
 divPostings:
-    type: div
+    use: have children appended to it.
     description: contains the list list of threads in the page.
     
 divPages:
-    type: div
+    use: have children appended to it.
     description: contains the listing of available pages in the board.
 
 boardIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input used to identify the board the page belongs to.
 
 linkManagement:
-    type: a
+    use: have it's href manipulated.
     description: link to the board management page.
 
 linkModeration:
-    type: a
+    use: have it's href manipulated.
     description: link to the board moderation page.
 
 bannerImage:
-    type: img
+    use: have it's src manipulated.
     description: holds the link that displays a banner to the board.
 
 captchaDiv:
-    type: div
+    use: might be removed.
     description: holds the captcha elements.
 
 divName:
-    type: div
+    use: might be removed.
     description: holds the name input elements.
 
 labelMaxFileSize:
-    type:span
+    use: have it's innerHTML manipulated.
     description: holds the maximum allowed file size for uploads.
 
 ------------------------------------------------------------------------------------------
@@ -69,79 +69,79 @@ threadPage:
 
 Elements:
 labelName:
-    type: h1
+    use: have it's innerHTML manipulated.
     description: contains the URI and name of the board.
 
 labelDescription:
-    type: h3
+    use: have it's innerHTML manipulated.
     description: contains the description of the bord.
 
 divPostings:
-    type: div
+    use: have children appended to it.
     description: contains the listing of posts in the thread, including the OP.
 
 boardIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input used to identify the board the page belongs to.
 
 threadIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input used to identify the thread the page belongs to.
 
 linkManagement:
-    type: a
+    use: have it's href manipulated.
     description: link to the board management page.
 
 linkMod:
-    type: a
+    use: have it's href manipulated.
     description: link to the moderation page of the thread.
 
 inputBan:
-    type: input
+    use: might be removed.
     description: submit input used to ban users.
 
 divBanInput:
-    type: div
+    use: might be removed.
     description: area to input information specific to bans.
 
 divControls:
-    type: div
+    use: might be removed.
     description: div with general controls, like lock and pin.
 
 controlBoardIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input to identify the board for the controls page.
 
 controlThreadIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input to identify the thread for the controls page.
 
 checkboxLock:    
-    type: input
+    use: might be turned on.
     description: checkbox indicating if the thread is locked.
 
 checkboxPin:    
-    type: input
+    use: might be turned on.
     description: checkbox indicating if the thread is pinned.
 
 checkboxCyclic:    
-    type: input
+    use: might be turned on.
     description: checkbox indicating if the thread is cyclic.
 
 bannerImage:
-    type: img
+    use: have it's src manipulated.
     description: holds the link that displays a banner to the board.
 
 captchaDiv:
-    type: div
+    use: might be removed.
     description: holds the captcha elements.
 
 divName:
-    type: div
+    use: might be removed.
     description: holds the name input elements.
 
 labelMaxFileSize:
-    type:span
+    use: have it's innerHTML manipulated.
     description: holds the maximum allowed file size for uploads.
 
 ------------------------------------------------------------------------------------------
@@ -152,11 +152,11 @@ messagePage:
 
 Elements:
 labelMessage:
-    type: h3
+    use: have it's innerHTML manipulated.
     description: displays the message itself.
 
 linkRedirect:
-    type: a
+    use: have it's href manipulated.
     description: link to the redirection of the page.
 
 Required tags:
@@ -170,67 +170,71 @@ Root element: form
 
 Elements:
 panelUploads:
-    type: div
+    use: have children appended to it.
     description: contains the uploads for the post.
 
 linkName:
-    type: a
+    use: have it's innerHTML manipulated and might have its href manipulated.
     description: contains the poster's name and links to the poster e-mail. Will have the class "noEmailName" added if it doesn't have an e-mail to be added to href.
 
 panelRange:
-    type: span
+    use: might be removed.
     description: object to be removed if the range is not going to be informed.
 
 labelRange:
-    type: span
+    use: have it's innerHTML manipulated.
     description: contains the poster's first two parts of his ip.
 
 labelSubject:
-    type: span
+    use: have it's innerHTML manipulated or might be removed.
     description: contains the thread's subject.
 
 labelCreated:
-    type: span
+    use: have it's innerHTML manipulated.
     description: contains the when the thread was created.
 
 divMessage:
-    type: div
+    use: have it's innerHTML manipulated.
     description: contains the thread's message.
 
 linkReply:
-    type: a
+    use: have it's href manipulated.
     description: contains the link to reply the thread.
 
 linkSelf:
-    type: a
+    use: have it's href manipulated and it's innerHTML manipulated.
     description: contains the link for the post itself.
 
 deletionCheckBox:
-    type: input
+    use: have it's value manipulated.
     description: checkbox used for deletion or reporting.
 
 lockIndicator:
-    type: any
+    use: might be removed.
     description: element that indicates the thread is locked.
 
 cyclicIndicator:
-    type: any
+    use: might be removed.
     description: element that indicates the thread is cyclic.
 
 pinIndicator: 
-    type: any
+    use: might be removed.
     description: element that indicates the thread is pinned.
 
+spanId: 
+    use: might be removed.
+    description: object that contains the label with the poster id.
+
 labelId:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the poster's thread-wise id.
 
 labelRole:
-    type: span
+    use: have it's innerHTML manipulated or might be removed.
     description: holds the role of the user in the board. If the user doesn't have a role in the board, it will display its global role, if the user is not a regular user.
 
 divBanMessage:
-    type: div
+    use: have it's innerHTML manipulated or might be removed.
     description: holds the ban message, if the content was used for a ban.
 
 ------------------------------------------------------------------------------------------
@@ -242,51 +246,55 @@ Root element: form
 
 Elements:
 divBanMessage:
-    type: div
+    use: have it's innerHTML manipulated or might be removed. 
     description: holds the ban message, if the content was used for a ban.
 
 panelRange:
-    type: span
+    use: might be removed. 
     description: object to be removed if the range is not going to be informed.
 
 labelRange:
-    type: span
+    use: have it's innerHTML manipulated. 
     description: contains the poster's first two parts of his ip.
 
 panelUploads:
-    type: div
+    use: have children appended to it.
     description: contains the uploads for the post.
 
 labelRole:
-    type: span
+    use: have it's innerHTML manipulated or might be removed. 
     description: holds the role of the user in the board. If the user doesn't have a role in the board, it will display its global role, if the user is not a regular user.
 
 linkName:
-    type: a
+    use: have it's innerHTML manipulated and might have its href manipulated.
     description: contains the poster's name and links to the poster e-mail. Will have the class "noEmailName" added if it doesn't have an e-mail to be added to href.
 
 labelSubject:
-    type: span
+    use: have it's innerHTML manipulated or might be removed.
     description: contains the thread's subject.
 
 labelCreated:
-    type: span
+    use: have it's innerHTML manipulated.
     description: contains the when the thread was created.
 
 divMessage:
-    type: div
+    use: have it's innerHTML manipulated.
     description: contains the thread's message.
 
 linkSelf:
-    type: a
+    use: have it's innerHTML manipulated and its href manipulated.
     description: contains the link for the post itself.
 
 deletionCheckBox:
-    type: input
+    use: have it's value manipulated.
     description: checkbox used for deletion or reporting.
 
+spanId: 
+    use: might be removed.
+    description: object that contains the label with the poster id.
+
 labelId:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the poster's thread-wise id.
 
 ------------------------------------------------------------------------------------------
@@ -297,27 +305,27 @@ accountPage:
 
 Elements:
 labelLogin:
-    type: p
+    use: have it's innerHTML manipulated.
     description: contains the user's login.
 
 checkboxAlwaysSign:
-    type: input
+    use: might be turned on.
     description: checkbox that indicates the user wishes to always sign posts with his role.
 
 boardsDiv:
-    type:div
+    use: have children appended to it.
     description: contains the list of boards owned by the user.
 
 globalManagementLink:
-    type: a
+    use: might be removed.
     description: link that leads to the global management page.
 
 emailField:
-    type: input
+    use: have it's value manipulated.
     description: field that holds the user e-mail.
 
 boardCreationDiv:
-    type: div
+    use: might be removed.
     description: panel that holds the board creation form.
 
 ------------------------------------------------------------------------------------------
@@ -328,7 +336,7 @@ recoveryEmail:
 
 Elements:
 linkRecovery:
-    type: a
+    use: have it's innerHTML manipulated and its href manipulated.
     description: contains the link to be used to reset the account's password.
 
 ------------------------------------------------------------------------------------------
@@ -339,7 +347,7 @@ resetEmail:
 
 Elements:
 labelNewPass:
-    type: p
+    use: have it's innerHTML manipulated.
     description: contains the new password of the account.
 
 ------------------------------------------------------------------------------------------
@@ -350,35 +358,35 @@ gManagement:
 
 Elements:
 divStaff:
-    type: div
+    use: have children appended to it.
     description: contains the list of the staff of the site.
 
 userLabel:
-    type: h5
+    use: have it's innerHTML manipulated.
     description: contains general indentification of the logged user.
 
 addStaffForm:
-    type: form
+    use: might be removed.
     description: form used to add a new user to the global staff. 
 
 newStaffCombo:
-    type: select
+    use: will have option elements appended to it.
     description: combobox used in the addStaffForm to define the role of the new staff member.
 
 reportDiv:
-    type: div
+    use: have children appended to it.
     description: div containing global reports.
 
 bansLink:
-    type: a
+    use: might be removed.
     description: link to the bans page.
 
 rangeBansLink:
-    type: a
+    use: might be removed.
     description: link to the range bans management page.
 
 hashBansLink:
-    type: a
+    use: might be removed.
     description: link to the hash bans management page.
 
 ------------------------------------------------------------------------------------------
@@ -390,15 +398,15 @@ Root element: form
 
 Elements:
 userIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input used to identify the user of the cell.
 
 userLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: contains general identification of the user of the cell.
 
 roleCombo:
-    type: select
+    use: will have option elements appended to it.
     description: combobox with the possible roles for the user.
 
 ------------------------------------------------------------------------------------------
@@ -409,83 +417,83 @@ bManagement:
 
 Elements:
 boardLabel:
-    type: h4
+    use: have it's innerHTML manipulated.
     description: used to display the board identification.
 
 volunteersDiv:
-    type: div
+    use: have children appended to it.
     description: holds the list of volunteers of the board.
 
 ownerControlDiv:
-    type: div
+    use: might be removed.
     description: div containing the actions exclusive to the board owner.
 
 addVolunteerBoardIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input used to identify the board to add a new volunteer.
 
 transferBoardIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input used to identify the board to transfer it to a new owner.
 
 deletionIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input used to identify the board to delete it.
 
 reportDiv:
-    type: div
+    use: have children appended to it.
     description: div containing the reports of the board.
 
 closedReportsLink:
-    type: a
+    use: have it's href manipulated.
     description: link to the page that will display closed reports.
 
 bansLink:
-    type: a
+    use: have it's href manipulated.
     description: link to the bans page.
 
 bannerManagementLink:
-    type: a
+    use: have it's href manipulated and might be removed.
     description: link to the banner management page.
 
 boardNameField:
-    type: input
+    use: have it's value manipulated.
     description: field that holds the board name.
 
 boardDescriptionField:
-    type: input
+    use: have it's value manipulated.
     description: field that holds the board name.
 
 boardSettingsIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input that holds the board identifier to change its settings.
 
 disableIdsCheckbox:
-    type: input
+    use: might be turned on.
     description: checkbox that indicates if the option to disable ids is turned on. 
 
 disableCaptchaCheckbox:
-    type: input
+    use: might be turned on.
     description: checkbox that indicates if the option to disable captchas is turned on. 
 
 forceAnonymityCheckbox:
-    type: input
+    use: might be turned on.
     description: checkbox that indicates if the option to force anonymity is turned on. 
 
 filterManagementLink:
-    type: a
+    use: have it's href manipulated.
     description: link to the filter management page of the board.
 
 anonymousNameField:
-    type: input
+    use: have it's value manipulated.
     description: field that holds the anonymous name for the board.
 
 rangeBansLink:
-    type: a
+    use: have it's href manipulated.
     description: link to the range bans management page.
 
 hashBansLink:
-    type: a
+    use: have it's href manipulated.
     description: link to the hash bans management page.
 
 ------------------------------------------------------------------------------------------
@@ -497,15 +505,15 @@ Root element: form
 
 Elements:
 boardIdentifier:
-    type: input.
+    use: have it's value manipulated.
     description: hidden input used to identify the board to remove the volunteer from.
 
 userIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input used to identify the user of the cell.
 
 userLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: label used to identify the user. 
 
 ------------------------------------------------------------------------------------------
@@ -517,15 +525,15 @@ Root element: form
 
 Elements:
 reasonLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the reason of the report.
 
 link:
-    type: a
+    use: have it's href manipulated.
     description: link to the reported content.
 
 idIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input holding the identification of the report.
 
 ------------------------------------------------------------------------------------------
@@ -536,7 +544,7 @@ closedReportsPage:
 
 Elements:
 reportDiv:
-    type: div
+    use: have children appended to it.
     description: div containing the reports.
 
 ------------------------------------------------------------------------------------------
@@ -548,19 +556,19 @@ Root element: div
 
 Elements:
 reasonLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the reason of the report.
 
 link:
-    type: a
+    use: have it's href manipulated.
     description: link to the reported content.
 
 closedByLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the login of the user that closed the report.
 
 closedDateLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the date of when the report was closed.
 
 ------------------------------------------------------------------------------------------
@@ -571,7 +579,7 @@ bansPage:
 
 Elements:
 bansDiv:
-    type: div
+    use: have children appended to it.
     description: holds the ban list.
 
 ------------------------------------------------------------------------------------------
@@ -583,23 +591,23 @@ Root element: form
 
 Elements:
 idLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the id of the ban.
 
 reasonLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the reason of the ban.
 
 expirationLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the expiration of the ban.
     
 appliedByLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the login of the user that applied the ban.
 
 boardLabel: 
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the board in which the ban relates to.
 
 ------------------------------------------------------------------------------------------
@@ -611,23 +619,23 @@ Root element: div
 
 Elements:
 infoLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds general information about the file.
 
 imgLink:
-    type: a
+    use: have it's href manipulated and a child appended to it.
     description: holds the thumbnail of the image and links to the file.
 
 nameLink:
-    type: a
+    use: have it's href and it's innerHTML manipulated.
     description: alternative link to the image using the name of the file instead of a thumbnail.
 
 divHash:
-    type: div
+    use: have it's innerHTML manipulated or might be removed.
     description: div that contains the label of the file md5 to be removed in case the page is not being displayed for moderation purposes.
 
 labelHash:
-    type: span
+    use: have it's innerHTML manipulated.
     description: label that contains the md5 of the file.
 
 ------------------------------------------------------------------------------------------
@@ -638,11 +646,11 @@ errorPage:
 
 Elements:
 codeLabel:
-    type:h2
+    use: have it's innerHTML manipulated.
     description: holds the error code.
 
 errorLabel:
-    type: h4
+    use: have it's innerHTML manipulated.
     description: holds the error message.
 
 ------------------------------------------------------------------------------------------
@@ -653,19 +661,19 @@ banPage:
 
 Elements:
 boardLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the board where the ban took place.
 
 reasonLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the reason of the ban.
 
 expirationLabel:     
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the expiration of the ban.
 
 idLabel:
-    type: label
+    use: have it's innerHTML manipulated.
     description: holds the id of the ban.
 
 ------------------------------------------------------------------------------------------
@@ -676,11 +684,11 @@ bannerManagementPage:
 
 Elements:
 bannersDiv:
-    type: div
+    use: have children appended to it.
     description: holds the existing banners.
 
 boardIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input used to identify the board when creating banners.
 
 ------------------------------------------------------------------------------------------
@@ -692,11 +700,11 @@ Root element: form
 
 Elements:
 bannerImage:
-    type: img
+    use: have it's src manipulated.
     description: holds the link to the banner.
 
 bannerIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input that holds the identifier of the banner.
 
 ------------------------------------------------------------------------------------------
@@ -707,11 +715,11 @@ catalogPage:
 
 Elements:
 divThreads:
-    type: div
+    use: have children appended to it.
     description: holds the threads in the board.
 
 labelBoard:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the board title.
 
 ------------------------------------------------------------------------------------------
@@ -723,39 +731,39 @@ Root element: div
 
 Elements:
 linkThumb:
-    type: a
+    use: have it's href manipulated.
     description: holds a link to the thread.
 
 labelReplies:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the number of replies in the thread.
 
 labelImages:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the number of images in the thread.
 
 labelPage:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the page where the thread currently is.
 
 cyclicIndicator:
-    type: any
+    use: might be removed.
     description: element that indicates the thread is cyclic.
 
 labelSubject:
-    type: span
+    use: have it's innerHTML manipulated or might be removed.
     description: holds the thread subject.
 
 divMessage:
-    type: div
+    use: have it's innerHTML manipulated.
     description: holds the message posted by the OP.
 
 lockIndicator:
-    type: any
+    use: might be removed.
     description: element that indicates the thread is locked.
 
 pinIndicator: 
-    type: any
+    use: might be removed.
     description: element that indicates the thread is pinned.
 
 ------------------------------------------------------------------------------------------
@@ -766,7 +774,7 @@ loginPage:
 
 Elements:
 divCreation:
-    type: div
+    use: might be removed.
     description: holds the form used for account creation.
 
 ------------------------------------------------------------------------------------------
@@ -777,35 +785,35 @@ logsPage:
 
 Elements:
 divLogs:
-    type: div
+    use: have children appended to it.
     description: holds the logs.
 
 divPages:
-    type: div
+    use: have children appended to it.
     description: holds the available pages.
 
 checkboxExcludeGlobals:
-    type: input
+    use: might be turned on.
     description: checkbox that indicates if global logs are to be excluded.
 
 fieldUser:
-    type: input
+    use: have it's value manipulated.
     description: field that indicated which user is to have its logs shown.
 
 fieldBoard:
-    type: input
+    use: have it's value manipulated.
     description: text field that indicates the board that is to have its logs shown.
 
 comboboxType:
-    type: input
+    use: might be turned on.
     description: combobox that indicates what type of logs are to be shown.
 
 fieldBefore:
-    type: input
+    use: have it's value manipulated.
     description: field that indicates what date is to be used to retrieve logs only before the specified date.
 
 fieldAfter:
-    type: input
+    use: have it's value manipulated.
     description: field that indicates what date is to be used to retrieve logs only after the specified date.
 
 ------------------------------------------------------------------------------------------
@@ -817,27 +825,27 @@ Root element: div
 
 Elements:
 indicatorGlobal:
-    type: any
+    use: might be removed.
     description: indicates of the log is global.
 
 labelUser:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the login of the user related to this log.
 
 labelTime:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the time of when this entry was logged.
 
 labelDescription:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the text describing what happened on this entry.
 
 labelBoard:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the board related to this log entry.
 
 labelType:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the type of this entry.
 
 ------------------------------------------------------------------------------------------
@@ -848,7 +856,7 @@ previewPage:
 
 Elements:
 panelContent:
-    type: body
+    use: have a child appended to it.
     description: element that will hold the content of the page.
 
 ------------------------------------------------------------------------------------------
@@ -859,11 +867,11 @@ filterManagement:
 
 Elements:
 divFilters:
-    type: div
+    use: have children appended to it.
     description: holds the list of current filters.
 
 boardIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input that identifies the board for filter creation.
 
 ------------------------------------------------------------------------------------------
@@ -875,19 +883,19 @@ Root element: form
 
 Elements:
 labelOriginal:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds the term to be replaced by this filter.
 
 labelReplacement:
-    type: span
+    use: have it's innerHTML manipulated.
     description: holds what the original term will be replaced with.
 
 boardIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input that identifies the board for filter deletion.
 
 filterIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input that identifiers the filter for deletion.
 
 ------------------------------------------------------------------------------------------
@@ -898,19 +906,19 @@ boardModerationPage:
 
 Elements:
 boardTransferIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input that identifies the board for the transfer operation.
 
 boardDeletionIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input that identifies the board for the deletion operation.
 
 labelTitle:
-    type: h2
+    use: have it's innerHTML manipulated.
     description: header that displays basic board information.
 
 labelOwner:
-    type: span
+    use: have it's innerHTML manipulated.
     description: displays the login of the board owner.
 
 ------------------------------------------------------------------------------------------
@@ -921,11 +929,11 @@ boardsPage:
 
 Elements:
 divBoards:
-    type: div
+    use: have children appended to it.
     description: div that holds the boards.
 
 divPages:
-    type: div
+    use: have children appended to it.
     description: div that holds the available pages.
 
 ------------------------------------------------------------------------------------------
@@ -937,19 +945,19 @@ Root element: div
 
 Elements:
 linkBoard:
-    type: a
+    use: have it's href manipulated and innerHTML.
     description: link to the board.
 
 labelPostsPerHour:
-    type: span
+    use: have it's innerHTML manipulated.
     description: label that holds the latest posts per hour count of the board.
 
 labelPostCount:
-    type: span
+    use: have it's innerHTML manipulated.
     description: label that holds the total post count of the board.
 
 divDescription:
-    type: div
+    use: have it's innerHTML manipulated.
     description: div that holds the board description.
 
 ------------------------------------------------------------------------------------------
@@ -960,19 +968,19 @@ noCookieCaptchaPage:
 
 Elements:
 divSolvedCaptcha:
-    type: div
+    use: might be removed.
     description: displays the information about a previously solved captcha.
 
 labelCaptchaId:
-    type: span
+    use: have it's innerHTML manipulated.
     description: displays the solved captcha id. 
 
 inputCaptchaId:
-    type: input
+    use: have it's value manipulated.
     description: hidden input used to inform the captcha being solved.
 
 imageCaptcha:
-    type: img
+    use: have it's src manipulated.
     description: image that will display a captcha with a specific id
 
 ------------------------------------------------------------------------------------------
@@ -983,11 +991,11 @@ rangeBansPage:
 
 Elements:
 rangeBansDiv:
-    type: div
+    use: have children appended to it.
     description: div that holds the range bans.
 
 boardIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input that holds the board identification.
 
 ------------------------------------------------------------------------------------------
@@ -999,11 +1007,11 @@ Root element: form
 
 Elements:
 rangeLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: label that holds the range of this ban.
 
 idIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input that identifies the ban.
 
 ------------------------------------------------------------------------------------------
@@ -1014,11 +1022,11 @@ rangeBanPage:
 
 Elements:
 boardLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: label that holds the ban of the range ban where the user got caught.
 
 rangeLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: label that holds the banned range.
 
 ------------------------------------------------------------------------------------------
@@ -1029,11 +1037,11 @@ hashBansPage:
 
 Elements:
 hashBansDiv:
-    type: div
+    use: have children appended to it.
     description: div that holds the hash bans.
 
 boardIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input that holds the board identification.
 
 ------------------------------------------------------------------------------------------
@@ -1045,11 +1053,11 @@ Root element: form
 
 Elements:
 hashLabel:
-    type: span
+    use: have it's innerHTML manipulated.
     description: label that holds banned hash.
 
 idIdentifier:
-    type: input
+    use: have it's value manipulated.
     description: hidden input that identifies the ban.
 
 ------------------------------------------------------------------------------------------
