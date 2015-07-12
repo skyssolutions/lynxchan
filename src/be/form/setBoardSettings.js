@@ -2,6 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var boardOps = require('../engine/boardOps');
+var lang = require('../engine/langOps').languagePack();
 var mandatoryParameters = [ 'boardUri', 'boardName', 'boardDescription' ];
 var possibleSettings = boardOps.getValidSettings();
 
@@ -31,7 +32,7 @@ function setBoardSettings(userData, parameters, res) {
     } else {
       var redirect = '/boardManagement.js?boardUri=' + parameters.boardUri;
 
-      formOps.outputResponse('Settings saved', redirect, res);
+      formOps.outputResponse(lang.msgBoardSettingsSaved, redirect, res);
     }
 
   });

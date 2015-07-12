@@ -2,6 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var modOps = require('../engine/modOps');
+var lang = require('../engine/langOps').languagePack();
 var mandatoryParameters = [ 'range' ];
 
 function placeRangeBan(userData, parameters, res) {
@@ -20,7 +21,7 @@ function placeRangeBan(userData, parameters, res) {
         redirectLink += '?boardUri=' + parameters.boardUri;
       }
 
-      formOps.outputResponse('Range ban created', redirectLink, res);
+      formOps.outputResponse(lang.msgRangeBanCreated, redirectLink, res);
     }
   });
 

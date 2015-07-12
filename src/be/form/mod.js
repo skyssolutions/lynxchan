@@ -5,6 +5,7 @@ var db = require('../db');
 var boards = db.boards();
 var url = require('url');
 var threads = db.threads();
+var lang = require('../engine/langOps').languagePack();
 var posts = db.posts();
 var miscOps = require('../engine/miscOps');
 var modOps = require('../engine/modOps');
@@ -51,7 +52,7 @@ function getPostingData(boardData, parameters, res) {
     if (error) {
       formOps.outputError(thread);
     } else if (!thread) {
-      formOps.outputError('Thread not found', 500, res);
+      formOps.outputError(lang.errThreadNotFound, 500, res);
     } else {
 
       // style exception, too simple
@@ -119,10 +120,9 @@ exports.process = function(req, res) {
           if (error) {
             formOps.outputError(error, 500, res);
           } else if (!board) {
-            formOps.outputError('Board not found', 500, res);
+            formOps.outputError(lang.errBoardNotFound, 500, res);
           } else if (!modOps.isInBoardStaff(userData, board) && globalStaff) {
-            formOps.outputError('You are not allowed to moderate this board.',
-                500, res);
+            formOps.outputError(lang.errDeniedManageBoard, 500, res);
           } else {
             getPostingData(board, parameters, res);
           }

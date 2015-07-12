@@ -2,6 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var modOps = require('../engine/modOps');
+var lang = require('../engine/langOps').languagePack();
 
 function liftBan(userData, parameters, res) {
 
@@ -23,7 +24,7 @@ function liftBan(userData, parameters, res) {
         redirect += '?boardUri=' + boardUri;
       }
 
-      formOps.outputResponse('Ban lifted', redirect, res);
+      formOps.outputResponse(lang.msgBanLifted, redirect, res);
     }
   });
 

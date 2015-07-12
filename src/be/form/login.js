@@ -3,6 +3,7 @@
 var formOps = require('../engine/formOps');
 var accountOps = require('../engine/accountOps');
 var mandatoryParameters = [ 'login' ];
+var lang = require('../engine/langOps').languagePack();
 
 function login(res, parameters) {
 
@@ -14,7 +15,7 @@ function login(res, parameters) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
-      formOps.outputResponse('Login sucessful.', '/account.js', res, [ {
+      formOps.outputResponse(lang.msgLoginSuccessful, '/account.js', res, [ {
         field : 'login',
         value : parameters.login
       }, {

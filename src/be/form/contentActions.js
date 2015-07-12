@@ -5,6 +5,7 @@ var accountOps = require('../engine/accountOps');
 var modOps = require('../engine/modOps');
 var domManipulator = require('../engine/domManipulator');
 var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack();
 var miscOps = require('../engine/miscOps');
 var deleteOps = require('../engine/deletionOps');
 
@@ -108,7 +109,7 @@ function processParameters(req, userData, parameters, res) {
 
         res.end(domManipulator.ban(ban, board));
       } else {
-        formOps.outputResponse('Content reported', '/', res);
+        formOps.outputResponse(lang.msgContentReported, '/', res);
       }
 
     });
@@ -118,7 +119,7 @@ function processParameters(req, userData, parameters, res) {
       if (error) {
         formOps.outputError(error, 500, res);
       } else {
-        formOps.outputResponse('Users banned', '/', res);
+        formOps.outputResponse(lang.msgUsersBanned, '/', res);
       }
     });
 
@@ -130,7 +131,7 @@ function processParameters(req, userData, parameters, res) {
           if (error) {
             formOps.outputError(error, res);
           } else {
-            formOps.outputResponse('Content deleted', '/', res);
+            formOps.outputResponse(lang.msgContentDeleted, '/', res);
           }
 
         });

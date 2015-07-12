@@ -1,6 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
+var lang = require('../engine/langOps').languagePack();
 var captchaOps = require('../engine/captchaOps');
 
 exports.process = function(req, res) {
@@ -15,7 +16,7 @@ exports.process = function(req, res) {
         var redirectLink = '/noCookieCaptcha.js?solvedCaptcha=';
         redirectLink += parameters.captchaId;
 
-        formOps.outputResponse('Captcha solved', redirectLink, res);
+        formOps.outputResponse(lang.msgCaptchaSolved, redirectLink, res);
       }
 
     });

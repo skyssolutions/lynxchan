@@ -6,6 +6,7 @@ log: log entry.
 sub: e-mail subject.
 misc: miscellaneous
 gui: used in the GUI.
+msg: messages used in the form api.
 tit: page titles.
 
 The structure of this json is as follows:
@@ -125,7 +126,7 @@ logReportClosure: object containing the pieces for the log used when someone clo
 errReportNotFound: error thrown when the specified report can't be found.
 errReportAlreadyClosed: error thrown when the user is trying to close a report that has been already closed.
 logPostingBan: object containing the pieces for the log used when an user bans posters. Contains the following fields:
-    startPiece: piece used in the beggining of the message. Replaces: {$login}.
+    startPiece: piece used in the beginning of the message. Replaces: {$login}.
     globalPiece: piece used to indicate the bans were global.
     midPiece: piece used after either the start of the global piece.
     threadPiece: piece used to indicate the banned threads.
@@ -134,7 +135,7 @@ logPostingBan: object containing the pieces for the log used when an user bans p
     endPiece: finishing piece. Replaces: {$board}, {$expiration}, {$reason}.
 errInvalidExpiration: erro thrown when the informed expiration of a date is invalid.
 logBanLift: object with the pieces used on the log of ban lift. Contains the following fields:
-    startPiece: piece used at the beggining. Replaces: {$login}.
+    startPiece: piece used at the beginning. Replaces: {$login}.
     globalBanPiece: piece used to indicate it is a global ban.
     boardBanPiece: piece used to indicate the board of the ban. Replaces: {$board}.
     finalBanPiece: final piece used for regular bans. Replaces: {$ban}, {$expiration}.
@@ -144,17 +145,47 @@ logBanLift: object with the pieces used on the log of ban lift. Contains the fol
     unknownPiece: piece used for bans which type could not be identififed. Replaces: {$ban}.
 errDeniedThreadManagement: error thrown when the user is not allowed to manage a thread.
 logRangeBan: object containing the pieces used for logs of range bans. Contains the following fields:
-    startPiece: piece used at the beggining. Replaces: {$login}.
+    startPiece: piece used at the beginning. Replaces: {$login}.
     globalPiece: piece used to indicate it is a global range ban.
     boardPiece: piece used to indicate the board of the ban. Replaces: {$board}.
     finalPiece: final piece. Replaces: {$range}.
 logHashBan: object containing the pieces used for logs of hash bans. Contains the following fields:
-    startPiece: piece used at the beggining. Replaces: {$login}.
+    startPiece: piece used at the beginning. Replaces: {$login}.
     globalPiece: piece used to indicate it is a hash ban.
     boardPiece: piece used to indicate the board of the hash ban. Replaces: {$board}.
     finalPiece: piece used at the end. Replaces: {$hash}.
 logLiftHashBan: object containing the pieces used for logs of hash ban lifts. Contains the following fields:
-    startPiece: piece used at the begginging. Replaces: {$login}.
+    startPiece: piece used at the beginning. Replaces: {$login}.
     globalPiece: piece used to indicate it is a global hash ban.
     boardPiece: piece used to indicate the board of the hash ban. Replaces: {$board}.
     finalPiece: final piece. Replaces: {$hash}.
+msgChangedPassword: message used after a password change.
+msgAccountSettingsSaved: message used after saving the account settings.
+msgThreadSettingsSaved: message used after saving a thread's settings.
+msgReportClosed: message used after closing a report.
+msgContentReported: message used after reporting content.
+msgUsersBanned: message used after banning users.
+msgContentDeleted: message used after deleting content.
+msgBannerCreated: message used after creating a board banner.
+msgBoardCreated: message used after creating a board.
+msgFilterCreated: message used after creating a filter.
+msgBannerDeleted: message used after deleting a banner.
+msgBoardDeleted: message used after deleting a board.
+msgFilterDeleted: message used after deleting a filter.
+msgBanLifted: message used after lifting a ban.
+msgHashBanLifted: message used after lifting a hash ban.
+msgLoginSuccessful: message used after logging in.
+msgLogout: message used after logging out.
+msgThreadCreated: message used after creating a thread.
+msgHashBanCreated: message used after creating a hash ban.
+msgRangeBanCreated: message used after creating a range ban.
+msgPasswordReset: message used after resetting the user's password.
+msgAccountCreated: message used after creating an account.
+msgPostCreated: message used after replying to a thread.
+msgRequestCreated: message used after requesting a password reset.
+msgBoardSettingsSaved: message used after saving the settings of a board.
+msgUserRoleChanged: message used after changing the global role of an user.
+msgVolunteerAdded: message used after adding a new volunteer to a board.
+msgVolunteerRemoved: message used after removing a volunteer from a board.
+msgCaptchaSolved: message used after solving a captcha.
+msgBoardTransferred: message used after transferring a board to another used.

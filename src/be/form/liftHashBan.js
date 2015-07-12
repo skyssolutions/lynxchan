@@ -2,6 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var modOps = require('../engine/modOps');
+var lang = require('../engine/langOps').languagePack();
 
 function liftHashBan(userData, parameters, res) {
 
@@ -17,7 +18,7 @@ function liftHashBan(userData, parameters, res) {
         redirect += '?boardUri=' + boardUri;
       }
 
-      formOps.outputResponse('Hash ban lifted', redirect, res);
+      formOps.outputResponse(lang.msgHashBanLifted, redirect, res);
     }
   });
 

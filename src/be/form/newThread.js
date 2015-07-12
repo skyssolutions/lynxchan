@@ -3,6 +3,7 @@
 var formOps = require('../engine/formOps');
 var postingOps = require('../engine/postingOps');
 var captchaOps = require('../engine/captchaOps');
+var lang = require('../engine/langOps').languagePack();
 var mandatoryParameters = [ 'message', 'boardUri' ];
 
 function createThread(req, res, parameters, userData, captchaId) {
@@ -26,7 +27,8 @@ function createThread(req, res, parameters, userData, captchaId) {
                 } else {
                   var redirectLink = '../' + parameters.boardUri;
                   redirectLink += '/res/' + id + '.html';
-                  formOps.outputResponse('Thread created', redirectLink, res);
+                  formOps.outputResponse(lang.msgThreadCreated, redirectLink,
+                      res);
                 }
               });
           // style exception, too simple

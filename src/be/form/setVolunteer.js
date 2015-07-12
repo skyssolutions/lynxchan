@@ -1,6 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
+var lang = require('../engine/langOps').languagePack();
 var boardOps = require('../engine/boardOps');
 
 function setVolunteer(userData, parameters, res) {
@@ -13,8 +14,8 @@ function setVolunteer(userData, parameters, res) {
       formOps.outputError(error, 500, res);
     } else {
       var redirect = '/boardManagement.js?boardUri=' + parameters.boardUri;
-      formOps.outputResponse(parameters.add ? 'Volunteer added'
-          : 'Volunteer removed', redirect, res);
+      formOps.outputResponse(parameters.add ? lang.msgVolunteerAdded
+          : lang.msgVolunteerRemoved, redirect, res);
     }
 
   });

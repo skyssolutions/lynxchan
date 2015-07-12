@@ -1,6 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
+var lang = require('../engine/langOps').languagePack();
 var boardOps = require('../engine/boardOps');
 
 function createBanner(parameters, userData, res) {
@@ -9,7 +10,7 @@ function createBanner(parameters, userData, res) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
-      formOps.outputResponse('Banner created.',
+      formOps.outputResponse(lang.msgBannerCreated,
           '/bannerManagement.js?boardUri=' + parameters.boardUri, res);
     }
   });

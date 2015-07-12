@@ -1,6 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
+var lang = require('../engine/langOps').languagePack();
 var boardOps = require('../engine/boardOps');
 
 function transferBoard(userData, parameters, res) {
@@ -11,7 +12,7 @@ function transferBoard(userData, parameters, res) {
     } else {
       var redirect = '/' + parameters.boardUri + '/';
 
-      formOps.outputResponse('Board ownership transfered', redirect, res);
+      formOps.outputResponse(lang.msgBoardTransferred, redirect, res);
     }
 
   });

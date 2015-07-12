@@ -1,6 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
+var lang = require('../engine/langOps').languagePack();
 var modOps = require('../engine/modOps');
 var mandatoryParameters = [ 'hash' ];
 
@@ -20,7 +21,7 @@ function placeHashBan(userData, parameters, res) {
         redirectLink += '?boardUri=' + parameters.boardUri;
       }
 
-      formOps.outputResponse('Hash ban created', redirectLink, res);
+      formOps.outputResponse(lang.msgHashBanCreated, redirectLink, res);
     }
   });
 

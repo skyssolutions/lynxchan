@@ -2,6 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var boardOps = require('../engine/boardOps');
+var lang = require('../engine/langOps').languagePack();
 
 function deleteBanner(parameters, userData, res) {
 
@@ -10,7 +11,7 @@ function deleteBanner(parameters, userData, res) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
-      formOps.outputResponse('Banner deleted.',
+      formOps.outputResponse(lang.msgBannerDeleted,
           '/bannerManagement.js?boardUri=' + board, res);
     }
   });

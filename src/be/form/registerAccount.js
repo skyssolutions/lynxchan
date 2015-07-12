@@ -2,7 +2,8 @@
 
 var formOps = require('../engine/formOps');
 var accountOps = require('../engine/accountOps');
-var mandatoryParameters = [ 'login'];
+var lang = require('../engine/langOps').languagePack();
+var mandatoryParameters = [ 'login' ];
 
 function createAccount(parameters, res) {
 
@@ -14,7 +15,7 @@ function createAccount(parameters, res) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
-      formOps.outputResponse('Account created.', '/account.js', res, [ {
+      formOps.outputResponse(lang.msgAccountCreated, '/account.js', res, [ {
         field : 'login',
         value : parameters.login
       }, {

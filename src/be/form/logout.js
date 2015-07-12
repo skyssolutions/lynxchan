@@ -1,10 +1,11 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
+var lang = require('../engine/langOps').languagePack();
 
 exports.process = function(req, res) {
 
-  formOps.outputResponse('You have been logged out.', '/login.html', res, [ {
+  formOps.outputResponse(lang.msgLogout, '/login.html', res, [ {
     field : 'login',
     value : 'invadlid login'
   }, {

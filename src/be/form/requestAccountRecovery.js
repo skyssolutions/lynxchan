@@ -1,6 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
+var lang = require('../engine/langOps').languagePack();
 var accountOps = require('../engine/accountOps');
 
 function requestRecovery(parameters, res) {
@@ -13,8 +14,7 @@ function requestRecovery(parameters, res) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
-      formOps.outputResponse('Request created, check your e-mail.',
-          '/login.html', res);
+      formOps.outputResponse(lang.msgRequestCreated, '/login.html', res);
     }
   });
 
