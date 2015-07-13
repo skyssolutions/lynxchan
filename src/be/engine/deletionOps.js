@@ -616,7 +616,6 @@ function printAuth(userData, parameters, threadsToDelete, postsToDelete) {
   console.log('Deleting posts: ' + JSON.stringify(postsToDelete));
 }
 
-// TODO document this thing before anything else
 exports.posting = function(userData, parameters, threadsToDelete,
     postsToDelete, callback) {
 

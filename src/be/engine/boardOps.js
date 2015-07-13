@@ -23,13 +23,16 @@ var boardParameters = [ {
   length : 32
 }, {
   field : 'boardName',
-  length : 32
+  length : 32,
+  removeHTML : true
 }, {
   field : 'anonymousName',
-  length : 32
+  length : 32,
+  removeHTML : true
 }, {
   field : 'boardDescription',
-  length : 128
+  length : 128,
+  removeHTML : true
 } ];
 
 var filterParameters = [ {

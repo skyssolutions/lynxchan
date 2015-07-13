@@ -167,10 +167,8 @@ function processFile(boardUri, threadId, postId, files, file, spoiler,
           if (error) {
             callback(error);
           } else {
-            // style exception, too simple
             transferFilesToGS(boardUri, threadId, postId, files, file,
                 callback, index, spoiler);
-            // style exception, too simple
 
           }
         });

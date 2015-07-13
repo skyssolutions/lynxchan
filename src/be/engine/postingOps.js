@@ -48,6 +48,7 @@ var postingParameters = [ {
   length : 8
 } ];
 
+// Section 1: Shared functions {
 function getSignedRole(userData, wishesToSign, board) {
 
   board.volunteers = board.volunteers || [];
@@ -66,7 +67,7 @@ function getSignedRole(userData, wishesToSign, board) {
 
 }
 
-// start of tripcode functions
+// Section 1.1: Tripcode {
 function generateSecureTripcode(name, password, parameters, callback) {
 
   var tripcode = crypto.createHash('sha256').update(password + Math.random())
@@ -160,7 +161,7 @@ function checkForTripcode(parameters, callback) {
   }
 
 }
-// end of tripcode functions
+// } Section 1.1: Tripcode
 
 function doesUserWishesToSign(userData, parameters) {
 
@@ -223,7 +224,7 @@ function applyFilters(filters, message) {
 
 }
 
-// start of markdown functions
+// Section 1.2: Markdown {
 function replaceStyleMarkdown(message) {
 
   var split = message.split('\n');
@@ -438,7 +439,7 @@ function markdownText(message, board, callback) {
     });
   }
 }
-// end of markdown functions
+// } Section 1.2: Markdown
 
 function createId(salt, boardUri, ip) {
 
@@ -450,7 +451,9 @@ function createId(salt, boardUri, ip) {
   }
 }
 
-// start of thread creation
+// } Section 1: Shared functions
+
+// Section 2: Thread
 function finishThreadCreation(boardUri, threadId, callback, thread) {
 
   // signal rebuild of board pages
@@ -651,9 +654,9 @@ exports.newThread = function(req, userData, parameters, captchaId, callback) {
   });
 
 };
-// end of thread creation
+// } Section 2: Thread
 
-// start of post creation
+// Section 3: Post {
 function cleanPostFiles(files, postId, callback) {
 
   gsHandler.removeFiles(files, function removedFiles(error) {
@@ -678,7 +681,6 @@ function updateThreadAfterCleanUp(boardUri, threadId, removedPosts, postId,
     } else {
 
       // style exception, too simple
-
       files.aggregate([ {
         $match : {
           'metadata.boardUri' : boardUri,
@@ -703,7 +705,6 @@ function updateThreadAfterCleanUp(boardUri, threadId, removedPosts, postId,
         }
 
       });
-
       // style exception, too simple
 
     }
@@ -829,9 +830,8 @@ function getLatestPosts(thread, postId) {
     return a - b;
   });
 
-  // TODO remove the while, cut all exceeding elements at once
-  while (latestPosts.length > latestPostsCount) {
-    latestPosts.shift();
+  if (latestPosts.length > latestPostsCount) {
+    latestPosts.splice(0, latestPosts.length - latestPostsCount);
   }
 
   return latestPosts;
@@ -1059,4 +1059,4 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
   });
 
 };
-// end of post creation
+// } Section 3: Post
