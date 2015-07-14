@@ -312,6 +312,9 @@ function loadAndTestTemplates(path, templateSettings) {
       }, {
         template : 'hashBansPage',
         fields : [ 'hashBansDiv', 'boardIdentifier' ]
+      }, {
+        template : 'notFoundPage',
+        fields : []
       } ];
 
   var errors = [];

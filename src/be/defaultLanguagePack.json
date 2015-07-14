@@ -14,7 +14,6 @@
   "errDeniedChangeUser": "You are not allowed to change this user's role.",
   "errNoNewAccounts": "Account creation is disabled.",
   "errInvalidLogin": "Invalid login.",
-  "errInvalidRole": "Invalid role.",
   "errLoginInUse": "Login is already in use.",
   "errLoginFailed": "Login failed.",
   "errInvalidAccount": "Invalid account.",
@@ -107,7 +106,7 @@
   "miscBoardOwner": "Board owner",
   "miscBoardVolunteer": "Board volunteer",
   "errThreadNotFound": "Thread not found.",
-  "errThreadLocked": "You cannot reply to a locked thread",
+  "errThreadLocked": "You cannot reply to a locked thread.",
   "errDeniedBoardBanManagement": "You are not allowed to manage bans for this board.",
   "errDeniedGlobalBanManagement": "You are not allowed to manage global bans.",
   "errDeniedBoardRangeBanManagement": "You are not allowed to manage range bans for this board.",
@@ -124,8 +123,8 @@
     "postPiece": "post {$post} on ",
     "finalPiece": "thread {$thread} on board /{$board}/ with the reason \"{$reason}\""
   },
-  "errReportNotFound": "Report not found",
-  "errReportAlreadyClosed": "Report is already closed",
+  "errReportNotFound": "Report not found.",
+  "errReportAlreadyClosed": "Report is already closed.",
   "logPostingBan": {
     "startPiece": "User {$login} ",
     "globalPiece": "globally ",
