@@ -109,6 +109,26 @@ function getImageBounds(toPush, parsedData, res, finalArray, toRemove, cb) {
 
 }
 
+function getWebmBounds(toPush, parsedData, res, finalArray, toRemove, cb) {
+
+  uploadHandler.getWebmBounds(toPush.pathInDisk, function gotBounds(error,
+      width, height) {
+
+    if (!error) {
+
+      toPush.width = width;
+      toPush.height = height;
+
+      finalArray.push(toPush);
+    } else if (verbose) {
+      console.log(error);
+    }
+
+    storeImages(parsedData, res, finalArray, toRemove, cb);
+  });
+
+}
+
 function processFile(parsedData, res, finalArray, toRemove, callback) {
   var file = parsedData.parameters.files.shift();
 
@@ -151,6 +171,10 @@ function processFile(parsedData, res, finalArray, toRemove, callback) {
               getImageBounds(toPush, parsedData, res, finalArray, toRemove,
                   callback);
 
+            } else if (toPush.mime === 'video/webm' && settings.webmThumb) {
+
+              getWebmBounds(toPush, parsedData, res, finalArray, toRemove,
+                  callback);
             } else {
 
               finalArray.push(toPush);

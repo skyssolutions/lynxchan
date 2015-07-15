@@ -9,8 +9,12 @@ var gsHandler = require('./gridFsHandler');
 var db = require('../db');
 var hashBans = db.hashBans();
 var threads = db.threads();
+var exec = require('child_process').exec;
 var posts = db.posts();
 var settings = require('../boot').getGeneralSettings();
+
+var webmLengthCommand = 'ffprobe -v error -show_entries stream=width,height ';
+var webmThumbCommand = 'ffmpeg -i {$path} -vframes 1 -vf scale=';
 
 var supportedMimes = settings.acceptedMimes;
 
@@ -33,6 +37,22 @@ exports.getImageBounds = function(path, callback) {
       callback(error);
     }
 
+  });
+
+};
+
+exports.getWebmBounds = function(path, callback) {
+
+  exec(webmLengthCommand + path, function gotDimensions(error, output) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      var matches = output.match(/width\=(\d+)\nheight\=(\d+)/);
+      callback(null, matches[1], matches[2]);
+
+    }
   });
 
 };
@@ -108,18 +128,21 @@ function updatePostingFiles(boardUri, threadId, postId, files, file, callback,
 function cleanThumbNail(boardUri, threadId, postId, files, file, callback,
     index, saveError, spoiler) {
 
-  if (file.mime.indexOf('image/') !== -1 && !spoiler) {
+  var image = file.mime.indexOf('image/') !== -1;
+  var webm = file.mime === 'video/webm' && settings.webmThumb;
 
-    exports.removeFromDisk(file.pathInDisk + '_t', function removed(
-        deletionError) {
-      if (saveError || deletionError) {
-        callback(saveError || deletionError);
-      } else {
-        updatePostingFiles(boardUri, threadId, postId, files, file, callback,
-            index, spoiler);
-      }
+  if ((image || webm) && !spoiler) {
 
-    });
+    exports.removeFromDisk(file.pathInDisk + (webm ? '_.png' : '_t'),
+        function removed(deletionError) {
+          if (saveError || deletionError) {
+            callback(saveError || deletionError);
+          } else {
+            updatePostingFiles(boardUri, threadId, postId, files, file,
+                callback, index, spoiler);
+          }
+
+        });
   } else {
 
     if (saveError) {
@@ -173,6 +196,27 @@ function processFile(boardUri, threadId, postId, files, file, spoiler,
 
           }
         });
+  } else if (file.mime === 'video/webm' && settings.webmThumb) {
+
+    var command = webmThumbCommand.replace('{$path}', file.pathInDisk);
+
+    if (file.width > file.height) {
+      command += '128:-1';
+    } else {
+      command += '-1:128';
+    }
+
+    command += ' ' + file.pathInDisk + '_.png';
+
+    exec(command, function createdThumb(error) {
+      if (error) {
+        callback(error);
+      } else {
+        transferFilesToGS(boardUri, threadId, postId, files, file, callback,
+            index, spoiler);
+      }
+    });
+
   } else {
     transferFilesToGS(boardUri, threadId, postId, files, file, callback, index,
         spoiler);

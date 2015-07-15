@@ -44,9 +44,25 @@ exports.getCookies = function(req) {
   return parsedCookies;
 };
 
-function getUploadDimensions(toPush, files, fields, parsedCookies, callback) {
+function getImageDimensions(toPush, files, fields, parsedCookies, callback) {
 
   uploadHandler.getImageBounds(toPush.pathInDisk, function gotBounds(error,
+      width, height) {
+    if (!error) {
+      toPush.width = width;
+      toPush.height = height;
+
+      fields.files.push(toPush);
+    }
+
+    transferFileInformation(files, fields, parsedCookies, callback);
+  });
+
+}
+
+function getWebmDimentions(toPush, files, fields, parsedCookies, callback) {
+
+  uploadHandler.getWebmBounds(toPush.pathInDisk, function gotBounds(error,
       width, height) {
     if (!error) {
       toPush.width = width;
@@ -97,8 +113,10 @@ function transferFileInformation(files, fields, parsedCookies, callback) {
 
         if (toPush.mime.indexOf('image/') > -1) {
 
-          getUploadDimensions(toPush, files, fields, parsedCookies, callback);
+          getImageDimensions(toPush, files, fields, parsedCookies, callback);
 
+        } else if (toPush.mime === 'video/webm' && settings.webmThumb) {
+          getWebmDimentions(toPush, files, fields, parsedCookies, callback);
         } else {
           fields.files.push(toPush);
 

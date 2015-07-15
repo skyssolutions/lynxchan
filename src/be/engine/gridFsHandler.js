@@ -174,13 +174,16 @@ function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb,
 
     var ext = parts[parts.length - 1].toLowerCase();
 
-    if (file.mime.indexOf('image/') !== -1 && !spoiler) {
+    var image = file.mime.indexOf('image/') !== -1;
+    var webm = file.mime === 'video/webm' && settings.webmThumb;
+
+    if ((image || webm) && !spoiler) {
       var thumbName = '/' + boardUri + '/media/' + 't_' + fileId + '.' + ext;
 
       file.thumbPath = thumbName;
 
-      exports.writeFile(file.pathInDisk + '_t', thumbName, file.mime, meta,
-          function wroteTbToGfs(error) {
+      exports.writeFile(file.pathInDisk + (webm ? '_.png' : '_t'), thumbName,
+          file.mime, meta, function wroteTbToGfs(error) {
             if (error) {
               cb(error);
             } else {

@@ -141,7 +141,7 @@ exports.getMaxStaffRole = function() {
   return MAX_STAFF_ROLE;
 };
 
-exports.getMime = function getHeader(pathName) {
+exports.getMime = function(pathName) {
 
   var pathParts = pathName.split('.');
 

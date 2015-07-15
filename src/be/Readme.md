@@ -77,6 +77,7 @@ Settings files that goes into the settings directory:
 * `torSource`: url to the list of TOR exit nodes ips. Defaults to `https://check.torproject.org/exit-addresses`.
 * `blockTor`(Boolean): if true, TOR users will be blocked.
 * `languagePackPath`: absolute path to an optional language pack.
+* `webmThumb`(Boolean: if true, webms will use their first frame as a thumbnail. Requires ffmpeg installed.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

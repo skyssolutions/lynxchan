@@ -399,43 +399,18 @@ function formatFileSize(size) {
 
 }
 
-function setWebm(thumbLink, document, file, mime, cell, img) {
-  removeElement(thumbLink);
-
-  var src = document.createElement('source');
-  src.setAttribute('src', file.path);
-  src.setAttribute('type', mime);
-
-  var video = document.createElement('video');
-  video.setAttribute('controls', true);
-
-  video.appendChild(src);
-  video.appendChild(img);
-
-  cell.appendChild(video);
-}
-
 function setUploadLinks(document, cell, file) {
-  var mime = miscOps.getMime(file.path);
-
-  var nameLink = cell.getElementsByClassName('nameLink')[0];
-  nameLink.href = file.path;
-  nameLink.innerHTML = file.name;
-
   var thumbLink = cell.getElementsByClassName('imgLink')[0];
+  thumbLink.href = file.path;
 
   var img = document.createElement('img');
   img.src = file.thumb;
 
-  if (mime === 'video/webm') {
+  thumbLink.appendChild(img);
 
-    setWebm(thumbLink, document, file, mime, cell, img);
-
-  } else {
-    thumbLink.href = file.path;
-    thumbLink.appendChild(img);
-
-  }
+  var nameLink = cell.getElementsByClassName('nameLink')[0];
+  nameLink.href = file.path;
+  nameLink.innerHTML = file.name;
 }
 
 function setUploadModElements(modding, cell, file) {
