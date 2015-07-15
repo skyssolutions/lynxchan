@@ -15,7 +15,8 @@ var settings = require('../boot').getGeneralSettings();
 var supportedMimes = settings.acceptedMimes;
 
 if (!supportedMimes) {
-  supportedMimes = [ 'image/png', 'image/jpeg', 'image/gif', 'image/bmp' ];
+  supportedMimes = [ 'image/png', 'image/jpeg', 'image/gif', 'image/bmp',
+      'video/webm' ];
 }
 
 exports.supportedMimes = function() {

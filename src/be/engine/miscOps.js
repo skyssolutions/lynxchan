@@ -113,6 +113,7 @@ var MIMETYPES = {
   ustar : 'application/x-ustar',
   vcf : 'text/x-vcard',
   wav : 'audio/x-wav',
+  webm : 'video/webm',
   wiz : 'application/msword',
   wsdl : 'application/xml',
   xbm : 'image/x-xbitmap',

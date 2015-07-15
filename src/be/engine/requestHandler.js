@@ -117,6 +117,7 @@ function outputGfsFile(req, res) {
     return;
   } else
 
+  // redirects after cutting the index.html
   if (gotSecondString && !/\W/.test(splitArray[1])) {
 
     res.writeHead(302, {

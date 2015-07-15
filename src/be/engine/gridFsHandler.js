@@ -17,6 +17,8 @@ var genericThumb = boot.genericThumb();
 var spoilerPath = boot.spoilerImage();
 var lang = require('./langOps').languagePack();
 var permanentTypes = [ 'media', 'preview' ];
+var streamableMimes = [ 'video/webm' ];
+var chunkSize = 1024 * 255;
 
 // start of writing data
 function writeDataOnOpenFile(gs, data, callback) {
@@ -244,13 +246,7 @@ function setExpiration(header, stats) {
   header.push([ 'expires', expiration.toString() ]);
 }
 
-function streamFile(stats, callback, cookies, res) {
-
-  var header = miscOps.corsHeader(stats.contentType);
-  header.push([ 'last-modified', stats.uploadDate.toString() ]);
-
-  setExpiration(header, stats);
-
+function setCookies(header, cookies) {
   if (cookies) {
 
     for (var i = 0; i < cookies.length; i++) {
@@ -270,16 +266,150 @@ function streamFile(stats, callback, cookies, res) {
 
     }
   }
+}
 
-  res.writeHead(stats.metadata.status || 200, header);
+function readRangeHeader(range, totalLength) {
+
+  if (!range || range.length === 0) {
+    return null;
+  }
+
+  var array = range.split(/bytes=([0-9]*)-([0-9]*)/);
+  var start = parseInt(array[1]);
+  var end = parseInt(array[2]);
+  var result = {
+    start : isNaN(start) ? 0 : start,
+    end : isNaN(end) ? (totalLength - 1) : end
+  };
+
+  if (!isNaN(start) && isNaN(end)) {
+    result.start = start;
+    result.end = totalLength - 1;
+  }
+
+  if (isNaN(start) && !isNaN(end)) {
+    result.start = totalLength - end;
+    result.end = totalLength - 1;
+  }
+
+  return result;
+}
+
+function readParts(currentPosition, res, range, gs, callback) {
+
+  var toRead = chunkSize;
+
+  if (range.end - currentPosition < chunkSize) {
+    toRead = range.end - currentPosition + 1;
+  }
+
+  if (verbose) {
+    var message = 'About to read ' + toRead + ' bytes from position ';
+    message += currentPosition;
+
+    console.log(message);
+
+  }
+
+  gs.read(toRead, function readChunk(error, chunk) {
+    if (error) {
+      console.log(error);
+      callback(error);
+    } else {
+      if (verbose) {
+        console.log('Read ' + chunk.length + ' bytes.');
+      }
+
+      currentPosition += chunk.length;
+
+      res.write(chunk);
+
+      if (currentPosition >= range.end || gs.eof()) {
+
+        if (verbose) {
+          console.log('Finished reading.');
+        }
+
+        res.end();
+        gs.close();
+      } else {
+        if (verbose) {
+          console.log(range.end - currentPosition + ' bytes left to read.');
+        }
+
+        readParts(currentPosition, res, range, gs, callback);
+      }
+
+    }
+  });
+
+}
+
+function streamRange(range, gs, header, res, stats, callback) {
+
+  if (verbose) {
+    console.log('Outputting range ' + JSON.stringify(range));
+  }
+
+  // If the range can't be fulfilled.
+  if (range.start >= stats.length || range.end >= stats.length) {
+
+    if (verbose) {
+      console.log('416');
+    }
+
+    header.push([ 'Content-Range', 'bytes */' + stats.length ]);
+    res.writeHead(416, header);
+
+    res.end();
+    return;
+  }
+
+  header.push([ 'Content-Range',
+      'bytes ' + range.start + '-' + range.end + '/' + stats.length ]);
+
+  res.writeHead(206, header);
+
+  gs.seek(range.start, function skipped(error) {
+    if (error) {
+      callback(error);
+    } else {
+      readParts(range.start, res, range, gs, callback);
+
+    }
+  });
+
+}
+
+function streamFile(stats, req, callback, cookies, res) {
+
+  var header = miscOps.corsHeader(stats.contentType);
+  header.push([ 'last-modified', stats.uploadDate.toString() ]);
+
+  var range;
+
+  if (streamableMimes.indexOf(stats.contentType) > -1) {
+    range = readRangeHeader(req.headers.range, stats.length);
+    header.push([ 'Accept-Ranges', 'bytes' ]);
+  }
+
+  setExpiration(header, stats);
+
+  setCookies(header, cookies);
 
   var gs = mongo.GridStore(conn, stats.filename, 'r');
-
   gs.open(function openedGs(error, gs) {
 
     if (!error) {
-      gs.stream(true).pipe(res);
+      if (!range) {
 
+        header.push([ 'Content-Length', stats.length ]);
+        res.writeHead(stats.metadata.status || 200, header);
+        gs.stream(true).pipe(res);
+
+      } else {
+        streamRange(range, gs, header, res, stats, callback);
+      }
     }
 
     callback(error);
@@ -311,6 +441,7 @@ exports.outputFile = function(file, req, res, callback, cookies, retry) {
     uploadDate : 1,
     'metadata.status' : 1,
     'metadata.type' : 1,
+    length : 1,
     contentType : 1,
     filename : 1,
     _id : 0
@@ -334,7 +465,7 @@ exports.outputFile = function(file, req, res, callback, cookies, retry) {
       res.writeHead(304);
       res.end();
     } else {
-      streamFile(fileStats, callback, cookies, res);
+      streamFile(fileStats, req, callback, cookies, res);
     }
   });
 
