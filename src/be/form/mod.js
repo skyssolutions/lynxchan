@@ -114,6 +114,7 @@ exports.process = function(req, res) {
           boardUri : 1,
           boardName : 1,
           settings : 1,
+          usesCustomCss : 1,
           boardDescription : 1,
           volunteers : 1
         }, function gotBoard(error, board) {

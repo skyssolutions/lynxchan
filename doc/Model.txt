@@ -16,6 +16,7 @@ boards: stores boards.
         replacementTerm: term that will replace the original term. 32 characters.
     anonymousName: name to be used when the user is poster is anonymous. 32 characters.
     postsPerHour(Number): latest PPM stats for this  board.
+    usesCustomCss(Boolean): pre-aggregated boolean indicating the board has a custom css file set.
 
 ----------------------------------------------------------------------------------------
 

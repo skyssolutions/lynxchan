@@ -683,3 +683,124 @@ exports.getBoardModerationData = function(userData, boardUri, callback) {
     }
   });
 };
+
+// start of custom css upload
+function updateBoardAfterNewCss(board, callback) {
+
+  if (!boards.usesCustomCss) {
+    boards.updateOne({
+      boardUri : board.boardUri
+    }, {
+      $set : {
+        usesCustomCss : true
+      }
+    }, function updatedBoard(error) {
+      if (error) {
+        callback(error);
+      } else {
+        process.send({
+          board : board.boardUri,
+          buildAll : true
+        });
+
+        callback();
+      }
+
+    });
+  } else {
+    callback();
+  }
+
+}
+
+exports.setCustomCss = function(userData, boardUri, file, callback) {
+
+  boards.findOne({
+    boardUri : boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errBoardNotFound);
+    } else if (board.owner !== userData.login) {
+      callback(lang.errDeniedCssManagement);
+    } else if (file.mime !== 'text/css') {
+      callback(lang.errOnlyCssAllowed);
+    } else {
+
+      // style exception, too simple
+      gridFsHandler.writeFile(file.pathInDisk, '/' + boardUri + '/custom.css',
+          file.mime, {
+            boardUri : boardUri
+          }, function savedFile(error) {
+            if (error) {
+              callback(error);
+            } else {
+              updateBoardAfterNewCss(board, callback);
+            }
+          });
+      // style exception, too simple
+
+    }
+  });
+
+};
+// end of custom css upload
+
+// start of css deletion
+function updateBoardAfterDeleteCss(board, callback) {
+
+  if (board.usesCustomCss) {
+    boards.updateOne({
+      boardUri : board.boardUri
+    }, {
+      $set : {
+        usesCustomCss : false
+      }
+    }, function updatedBoard(error) {
+      if (error) {
+        callback(error);
+      } else {
+        process.send({
+          board : board.boardUri,
+          buildAll : true
+        });
+        callback();
+      }
+
+    });
+  } else {
+    callback();
+  }
+
+}
+
+exports.deleteCustomCss = function(userData, boardUri, callback) {
+
+  boards.findOne({
+    boardUri : boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errBoardNotFound);
+    } else if (board.owner !== userData.login) {
+      callback(lang.errDeniedCssManagement);
+    } else {
+
+      // style exception, too simple
+      gridFsHandler.removeFiles('/' + boardUri + '/custom.css',
+          function removedFile(error) {
+            if (error) {
+              callback(error);
+            } else {
+              updateBoardAfterDeleteCss(board, callback);
+            }
+          });
+      // style exception, too simple
+
+    }
+  });
+
+};
+// start of css deletion

@@ -189,3 +189,7 @@ msgVolunteerAdded: message used after adding a new volunteer to a board.
 msgVolunteerRemoved: message used after removing a volunteer from a board.
 msgCaptchaSolved: message used after solving a captcha.
 msgBoardTransferred: message used after transferring a board to another used.
+errOnlyCssAllowed: error thrown on custom CSS selection when the user tries to upload something that is not a css.
+errDeniedCssManagement: error thrown when the user is not allowed to manage css for a board.
+msgCssSet: message used after a new custom CSS is uploaded.
+msgCssDeleted: message used after a custom css is deleted.

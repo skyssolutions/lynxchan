@@ -16,7 +16,6 @@ var tempDir = boot.tempDir();
 var uploadHandler = require('./uploadHandler');
 var maxRequestSize = boot.maxRequestSize();
 var maxFileSize = boot.maxFileSize();
-var acceptedMimes = uploadHandler.supportedMimes();
 var maxFiles = boot.maxFiles();
 var lang = require('./langOps').languagePack();
 
@@ -153,7 +152,7 @@ function processFile(parsedData, res, finalArray, toRemove, callback) {
 
           var mime = matches[1];
 
-          if (stats.size > maxFileSize || acceptedMimes.indexOf(mime) === -1) {
+          if (stats.size > maxFileSize) {
             storeImages(parsedData, res, finalArray, toRemove, callback);
           } else {
 

@@ -424,6 +424,10 @@ TEM_ID::12
 bManagement:
 
 Elements:
+customCssIdentifier:
+    use: have it's value manipulated.
+    description: hidden input used to inform the board when managing the custom css for the board.
+
 boardLabel:
     use: have it's innerHTML manipulated.
     description: used to display the board identification.

@@ -193,5 +193,9 @@
   "msgVolunteerAdded": "Volunteer added.",
   "msgVolunteerRemoved": "Volunteer removed.",
   "msgCaptchaSolved": "Captcha solved.",
-  "msgBoardTransferred": "Board ownership transferred."
+  "msgBoardTransferred": "Board ownership transferred.",
+  "errOnlyCssAllowed": "Only css files are allowed.",
+  "errDeniedCssManagement": "You are not allowed to set a custom css for this board.",
+  "msgCssSet": "CSS uploaded.",
+  "msgCssDeleted": "CSS deleted."
 }

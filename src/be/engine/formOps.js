@@ -20,7 +20,6 @@ var lang = require('./langOps').languagePack();
 var uploadDir = boot.tempDir();
 var maxRequestSize = boot.maxRequestSize();
 var maxFileSize = boot.maxFileSize();
-var acceptedMimes = uploadHandler.supportedMimes();
 var maxFiles = boot.maxFiles();
 
 exports.getCookies = function(req) {
@@ -102,7 +101,7 @@ function transferFileInformation(files, fields, parsedCookies, callback) {
 
       var acceptableSize = file.size && file.size < maxFileSize;
 
-      if (acceptableSize && acceptedMimes.indexOf(mime) > -1) {
+      if (acceptableSize) {
         var toPush = {
           size : file.size,
           md5 : checkSum,

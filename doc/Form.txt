@@ -533,4 +533,15 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::43
+
+Name: setCustomCss
+
+Description: Uploads a custom css for a board. Requires authentication. Allowed only for board owners. If no file is sent, any set file will be removed.
+
+Parameters:
+    boardUri: uri of the board to have it's custom css managed.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

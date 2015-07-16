@@ -149,6 +149,14 @@ function setReportList(document, reports) {
 
 }
 
+function setCustomCss(board, document) {
+  var link = document.createElement('link');
+  link.setAttribute('rel', 'stylesheet');
+  link.setAttribute('type', 'text/css');
+  link.setAttribute('href', '/' + board + '/custom.css');
+  document.getElementsByTagName('head')[0].appendChild(link);
+}
+
 function setHeader(document, board, boardData) {
 
   var titleHeader = document.getElementById('labelName');
@@ -168,6 +176,10 @@ function setHeader(document, board, boardData) {
 
   if (settings.indexOf('forceAnonymity') > -1) {
     removeElement(document.getElementById('divName'));
+  }
+
+  if (boardData.usesCustomCss) {
+    setCustomCss(board, document);
   }
 
   document.getElementById('labelMaxFileSize').innerHTML = displayMaxSize;
@@ -702,6 +714,9 @@ function setBoardControlIdentifiers(document, boardData) {
       boardData.boardUri);
 
   document.getElementById('boardSettingsIdentifier').setAttribute('value',
+      boardData.boardUri);
+
+  document.getElementById('customCssIdentifier').setAttribute('value',
       boardData.boardUri);
 }
 
