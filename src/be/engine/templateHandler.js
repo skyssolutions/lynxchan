@@ -141,13 +141,14 @@ function loadAndTestTemplates(path, templateSettings) {
             'divMessage', 'linkReply', 'linkSelf', 'deletionCheckBox',
             'lockIndicator', 'pinIndicator', 'labelId', 'labelRole',
             'divBanMessage', 'spanId', 'panelRange', 'labelRange',
-            'cyclicIndicator' ]
+            'cyclicIndicator', 'linkQuote' ]
       },
       {
         template : 'postCell',
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkSelf', 'deletionCheckBox', 'labelId',
-            'labelRole', 'divBanMessage', 'spanId', 'panelRange', 'labelRange' ]
+            'labelRole', 'divBanMessage', 'spanId', 'panelRange', 'labelRange',
+            'linkQuote' ]
       },
       {
         template : 'staffCell',

@@ -12,7 +12,7 @@ Beta
 * [Io.js](http://iojs.org)
 * [MongoDB](https://www.mongodb.org/)
 * [ImageMagick](http://www.imagemagick.org/script/index.php)
-* [ffmpeg](https://www.ffmpeg.org/) if webmThumb setting is enabled.
+* [ffmpeg](https://www.ffmpeg.org/) if webmThumb setting is enabled. Requires zlib-devel on centOS.
 
 # Install
 1. Create the required settings file in the `src/be/settings` directory. Instructions can be found at `src/be/readme.md`. There is also a directory called settings.example with a set of functional settings.

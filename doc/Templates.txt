@@ -202,8 +202,12 @@ linkReply:
     description: contains the link to reply the thread.
 
 linkSelf:
-    use: have it's href manipulated and it's innerHTML manipulated.
-    description: contains the link for the post itself.
+    use: have it's href manipulated.
+    description: contains the link for the thread itself.
+
+linkQuote:
+    use: have it's href and innerHTML manipulated.
+    description: contains the link for the thread itself to be used for quoting.
 
 deletionCheckBox:
     use: have it's value manipulated.
@@ -282,8 +286,12 @@ divMessage:
     description: contains the thread's message.
 
 linkSelf:
-    use: have it's innerHTML manipulated and its href manipulated.
+    use: have it's href manipulated.
     description: contains the link for the post itself.
+
+linkQuote:
+    use: have it's href and innerHTML manipulated.
+    description: contains the link for the post used for quoting.
 
 deletionCheckBox:
     use: have it's value manipulated.

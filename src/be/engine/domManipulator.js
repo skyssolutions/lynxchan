@@ -65,6 +65,16 @@ function removeElement(element) {
   element.parentNode.removeChild(element);
 }
 
+function setRoleSignature(postingCell, posting) {
+  var labelRole = postingCell.getElementsByClassName('labelRole')[0];
+
+  if (posting.signedRole) {
+    labelRole.innerHTML = posting.signedRole;
+  } else {
+    removeElement(labelRole);
+  }
+}
+
 function getReportLink(report) {
   var link = '/' + report.boardUri + '/res/';
   link += report.threadId + '.html#';
@@ -239,21 +249,19 @@ function setPostHideableElements(postCell, post) {
 function setPostComplexElements(postCell, post, boardUri, threadId, document,
     preview, modding) {
 
-  var labelRole = postCell.getElementsByClassName('labelRole')[0];
-
-  if (post.signedRole) {
-    labelRole.innerHTML = post.signedRole;
-  } else {
-    removeElement(labelRole);
-  }
+  setRoleSignature(postCell, post);
 
   var link = postCell.getElementsByClassName('linkSelf')[0];
-  link.innerHTML = post.postId;
+
+  var linkQuote = postCell.getElementsByClassName('linkQuote')[0];
+  linkQuote.innerHTML = post.postId;
 
   var deletionCheckbox = postCell.getElementsByClassName('deletionCheckBox')[0];
 
   if (!preview) {
-    link.href = '/' + boardUri + '/res/' + threadId + '.html#' + post.postId;
+    var linkStart = '/' + boardUri + '/res/' + threadId + '.html#';
+    link.href = linkStart + post.postId;
+    linkQuote.href = linkStart + 'q' + post.postId;
 
     var checkboxName = boardUri + '-' + threadId + '-' + post.postId;
     deletionCheckbox.setAttribute('name', checkboxName);
@@ -328,21 +336,18 @@ function setThreaLinks(threadCell, thread, boardUri, innerPage) {
   }
 
   var linkSelf = threadCell.getElementsByClassName('linkSelf')[0];
-  linkSelf.innerHTML = thread.threadId;
 
-  var link = '/' + boardUri + '/res/' + thread.threadId + '.html#';
-  linkSelf.href = link + thread.threadId;
+  var linkQuote = threadCell.getElementsByClassName('linkQuote')[0];
+  linkQuote.innerHTML = thread.threadId;
+
+  var linkStart = '/' + boardUri + '/res/' + thread.threadId + '.html#';
+  linkSelf.href = linkStart + thread.threadId;
+  linkQuote.href = linkStart + 'q' + thread.threadId;
 }
 
 function setThreadComplexElements(boardUri, thread, threadCell) {
 
-  var labelRole = threadCell.getElementsByClassName('labelRole')[0];
-
-  if (thread.signedRole) {
-    labelRole.innerHTML = thread.signedRole;
-  } else {
-    removeElement(labelRole);
-  }
+  setRoleSignature(threadCell, thread);
 
   var banMessageLabel = threadCell.getElementsByClassName('divBanMessage')[0];
 
