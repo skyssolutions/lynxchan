@@ -244,9 +244,10 @@ exports.validate = function(auth, callback) {
 };
 
 // start of reset request
-function emailUserOfRequest(login, email, hash, callback) {
+function emailUserOfRequest(domain, login, email, hash, callback) {
 
-  var recoveryLink = '/recoverAccount.js?hash=' + hash + '&login=' + login;
+  var recoveryLink = domain + '/recoverAccount.js?hash=' + hash + '&login=';
+  recoveryLink += login;
 
   var content = domManipulator.recoveryEmail(recoveryLink);
 
@@ -261,7 +262,7 @@ function emailUserOfRequest(login, email, hash, callback) {
 
 }
 
-function generateRequest(login, email, callback) {
+function generateRequest(domain, login, email, callback) {
 
   var requestHash = crypto.createHash('sha256').update(
       login + Math.random() + logger.timestamp()).digest('hex');
@@ -274,14 +275,14 @@ function generateRequest(login, email, callback) {
     if (error) {
       callback(error);
     } else {
-      emailUserOfRequest(login, email, requestHash, callback);
+      emailUserOfRequest(domain, login, email, requestHash, callback);
     }
 
   });
 
 }
 
-function lookForUserEmailOfRequest(login, callback) {
+function lookForUserEmailOfRequest(domain, login, callback) {
 
   users.findOne({
     login : login
@@ -296,13 +297,13 @@ function lookForUserEmailOfRequest(login, callback) {
     } else if (!user.email || !user.email.length) {
       callback(lang.errNoEmailForAccount);
     } else {
-      generateRequest(login, user.email, callback);
+      generateRequest(domain, login, user.email, callback);
     }
   });
 
 }
 
-exports.requestRecovery = function(login, callback) {
+exports.requestRecovery = function(domain, login, callback) {
 
   requests.findOne({
     login : login,
@@ -320,7 +321,7 @@ exports.requestRecovery = function(login, callback) {
       callback(lang.errPendingRequest.replace('{$expiration}',
           request.expiration.toString()));
     } else {
-      lookForUserEmailOfRequest(login, callback);
+      lookForUserEmailOfRequest(domain, login, callback);
     }
   });
 

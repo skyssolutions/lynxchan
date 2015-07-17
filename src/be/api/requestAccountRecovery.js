@@ -3,13 +3,14 @@
 var apiOps = require('../engine/apiOps');
 var accountOps = require('../engine/accountOps');
 
-function recoverAccount(parameters, res) {
+function recoverAccount(domain, parameters, res) {
 
   if (apiOps.checkBlankParameters(parameters, [ 'login' ], res)) {
     return;
   }
 
-  accountOps.requestRecovery(parameters.login, function createdRequest(error) {
+  accountOps.requestRecovery(domain, parameters.login, function createdRequest(
+      error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
@@ -23,7 +24,7 @@ exports.process = function(req, res) {
 
   apiOps.getAnonJsonData(req, res, function gotData(auth, parameters) {
 
-    recoverAccount(parameters, res);
+    recoverAccount('http://' + req.headers.host.substring(4), parameters, res);
 
   });
 

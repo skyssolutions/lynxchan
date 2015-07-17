@@ -4,13 +4,14 @@ var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var accountOps = require('../engine/accountOps');
 
-function requestRecovery(parameters, res) {
+function requestRecovery(domain, parameters, res) {
 
   if (formOps.checkBlankParameters(parameters, [ 'login' ], res)) {
     return;
   }
 
-  accountOps.requestRecovery(parameters.login, function requestCreated(error) {
+  accountOps.requestRecovery(domain, parameters.login, function requestCreated(
+      error) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
@@ -24,7 +25,7 @@ exports.process = function(req, res) {
 
   formOps.getPostData(req, res, function gotData(auth, parameters) {
 
-    requestRecovery(parameters, res);
+    requestRecovery('http://' + req.headers.host, parameters, res);
 
   });
 };
