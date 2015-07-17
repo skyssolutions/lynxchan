@@ -23,9 +23,9 @@ labelName:
 
 labelDescription:
     use: have it's innerHTML manipulated.
-    description: contains the description of the bord.
+    description: contains the description of the board.
 
-divPostings:
+divThreads:
     use: have children appended to it.
     description: contains the list list of threads in the page.
     
@@ -74,11 +74,11 @@ labelName:
 
 labelDescription:
     use: have it's innerHTML manipulated.
-    description: contains the description of the bord.
+    description: contains the description of the board.
 
-divPostings:
+divThreads:
     use: have children appended to it.
-    description: contains the listing of posts in the thread, including the OP.
+    description: contains the OP. I decided to keep the same structure of the board page to keep uniformity.
 
 boardIdentifier:
     use: have it's value manipulated.
@@ -118,15 +118,15 @@ controlThreadIdentifier:
 
 checkboxLock:    
     use: might be turned on.
-    description: checkbox indicating if the thread is locked.
+    description: check-box indicating if the thread is locked.
 
 checkboxPin:    
     use: might be turned on.
-    description: checkbox indicating if the thread is pinned.
+    description: check-box indicating if the thread is pinned.
 
 checkboxCyclic:    
     use: might be turned on.
-    description: checkbox indicating if the thread is cyclic.
+    description: check-box indicating if the thread is cyclic.
 
 bannerImage:
     use: have it's src manipulated.
@@ -197,6 +197,10 @@ divMessage:
     use: have it's innerHTML manipulated.
     description: contains the thread's message.
 
+divPosts:
+    use: have children appended to it.
+    description: contains the thread's posts. 
+
 linkReply:
     use: have it's href manipulated.
     description: contains the link to reply the thread.
@@ -211,7 +215,7 @@ linkQuote:
 
 deletionCheckBox:
     use: have it's value manipulated.
-    description: checkbox used for deletion or reporting.
+    description: check-box used for deletion or reporting.
 
 lockIndicator:
     use: might be removed.
@@ -295,7 +299,7 @@ linkQuote:
 
 deletionCheckBox:
     use: have it's value manipulated.
-    description: checkbox used for deletion or reporting.
+    description: check-box used for deletion or reporting.
 
 spanId: 
     use: might be removed.
@@ -318,7 +322,7 @@ labelLogin:
 
 checkboxAlwaysSign:
     use: might be turned on.
-    description: checkbox that indicates the user wishes to always sign posts with his role.
+    description: check-box that indicates the user wishes to always sign posts with his role.
 
 boardsDiv:
     use: have children appended to it.
@@ -371,7 +375,7 @@ divStaff:
 
 userLabel:
     use: have it's innerHTML manipulated.
-    description: contains general indentification of the logged user.
+    description: contains general identification of the logged user.
 
 addStaffForm:
     use: might be removed.
@@ -379,7 +383,7 @@ addStaffForm:
 
 newStaffCombo:
     use: will have option elements appended to it.
-    description: combobox used in the addStaffForm to define the role of the new staff member.
+    description: combo-box used in the addStaffForm to define the role of the new staff member.
 
 reportDiv:
     use: have children appended to it.
@@ -415,7 +419,7 @@ userLabel:
 
 roleCombo:
     use: will have option elements appended to it.
-    description: combobox with the possible roles for the user.
+    description: combo-box with the possible roles for the user.
 
 ------------------------------------------------------------------------------------------
 
@@ -482,15 +486,15 @@ boardSettingsIdentifier:
 
 disableIdsCheckbox:
     use: might be turned on.
-    description: checkbox that indicates if the option to disable ids is turned on. 
+    description: check-box that indicates if the option to disable ids is turned on. 
 
 disableCaptchaCheckbox:
     use: might be turned on.
-    description: checkbox that indicates if the option to disable captchas is turned on. 
+    description: check-box that indicates if the option to disable captchas is turned on. 
 
 forceAnonymityCheckbox:
     use: might be turned on.
-    description: checkbox that indicates if the option to force anonymity is turned on. 
+    description: check-box that indicates if the option to force anonymity is turned on. 
 
 filterManagementLink:
     use: have it's href manipulated.
@@ -806,7 +810,7 @@ divPages:
 
 checkboxExcludeGlobals:
     use: might be turned on.
-    description: checkbox that indicates if global logs are to be excluded.
+    description: check-box that indicates if global logs are to be excluded.
 
 fieldUser:
     use: have it's value manipulated.
@@ -818,7 +822,7 @@ fieldBoard:
 
 comboboxType:
     use: might be turned on.
-    description: combobox that indicates what type of logs are to be shown.
+    description: combo-box that indicates what type of logs are to be shown.
 
 fieldBefore:
     use: have it's value manipulated.

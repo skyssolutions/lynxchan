@@ -227,9 +227,10 @@ function addThread(document, thread, posts, boardUri, innerPage, modding) {
   setUploadCell(document, threadCell.getElementsByClassName('panelUploads')[0],
       thread.files, modding);
 
-  document.getElementById('divPostings').appendChild(threadCell);
+  document.getElementById('divThreads').appendChild(threadCell);
 
-  addPosts(document, posts || [], boardUri, thread.threadId, modding);
+  addPosts(document, posts || [], boardUri, thread.threadId, modding,
+      threadCell.getElementsByClassName('divPosts')[0]);
 
 }
 
@@ -317,9 +318,7 @@ function setPostInnerElements(document, boardUri, threadId, post, postCell,
 
 }
 
-function addPosts(document, posts, boardUri, threadId, modding) {
-
-  var divThreads = document.getElementById('divPostings');
+function addPosts(document, posts, boardUri, threadId, modding, divPosts) {
 
   for (var i = 0; i < posts.length; i++) {
     var postCell = document.createElement('div');
@@ -333,7 +332,7 @@ function addPosts(document, posts, boardUri, threadId, modding) {
     setPostInnerElements(document, boardUri, threadId, post, postCell, false,
         modding);
 
-    divThreads.appendChild(postCell);
+    divPosts.appendChild(postCell);
 
   }
 

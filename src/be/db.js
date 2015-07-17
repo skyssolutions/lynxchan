@@ -298,7 +298,6 @@ function initPosts(callback) {
 
   cachedPosts.ensureIndex({
     postId : 1,
-    threadId : 1,
     boardUri : 1
   }, {
     unique : true

@@ -68,7 +68,7 @@ posts: stores posts.
     banMessage: message to be displayed indicating this message was a cause to a ban. 128 characters.
     creation(Date): time when the post was created.
     boardUri*/***: url of the board the post belongs to.
-    threadId(Number)*/***: id of the thread the post belongs to.
+    threadId(Number)*: id of the thread the post belongs to.
     postId(Number)***: unique id of the post inside the board.
     files(Array): pre-aggregated array of files uploaded with the post. Each object contains the following fields:
         originalName: original name of the upload.
