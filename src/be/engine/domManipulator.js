@@ -215,6 +215,9 @@ function addThread(document, thread, posts, boardUri, innerPage, modding) {
   threadCell.innerHTML = templateHandler.opCell;
   threadCell.setAttribute('class', 'opCell');
   threadCell.id = thread.threadId;
+  if (thread.files && thread.files.length > 1) {
+    threadCell.className += ' multipleUploads';
+  }
 
   setThreaLinks(threadCell, thread, boardUri, innerPage);
 
@@ -326,6 +329,9 @@ function addPosts(document, posts, boardUri, threadId, modding, divPosts) {
     postCell.setAttribute('class', 'postCell');
 
     var post = posts[i];
+    if (post.files && post.files.length > 1) {
+      postCell.className += ' multipleUploads';
+    }
 
     postCell.id = post.postId;
 

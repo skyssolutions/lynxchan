@@ -255,7 +255,7 @@ function emailUserOfRequest(domain, login, email, hash, callback) {
     from : sender,
     to : email,
     subject : lang.subPasswordRequest,
-    text : content
+    html : content
   }, function emailSent(error) {
     callback(error);
   });
@@ -337,7 +337,7 @@ function emailUserNewPassword(email, newPass, callback) {
     from : sender,
     to : email,
     subject : lang.subPasswordReset,
-    text : content
+    html : content
   }, function emailSent(error) {
     callback(error);
   });

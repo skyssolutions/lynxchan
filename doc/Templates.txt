@@ -167,6 +167,7 @@ TEM_ID::05
 
 opCell*:
 Root element: form
+Observation: will have the class "multipleUploads" added to it if contains more than one upload.
 
 Elements:
 panelUploads:
@@ -251,6 +252,7 @@ TEM_ID::06
 
 postCell*:
 Root element: form
+Observation: will have the class "multipleUploads" added to it if contains more than one upload.
 
 Elements:
 divBanMessage:
