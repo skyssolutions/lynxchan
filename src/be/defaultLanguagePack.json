@@ -197,5 +197,6 @@
   "errOnlyCssAllowed": "Only css files are allowed.",
   "errDeniedCssManagement": "You are not allowed to set a custom css for this board.",
   "msgCssSet": "CSS uploaded.",
-  "msgCssDeleted": "CSS deleted."
+  "msgCssDeleted": "CSS deleted.",
+  "errFileTooLarge": "A file sent was too large."
 }

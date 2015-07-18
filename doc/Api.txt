@@ -25,6 +25,7 @@ The global status are:
     blank: parameter was sent in blank. The parameter will be on the data field.
     tooLarge: request body is too large.
     construction: page is under construction and unavailable.
+    fileTooLarge: sent file is too large.
     denied: user is not allowed to perform the requested operation.
     ok: operation successful.
     banned: user is banned. In this case, data will contain and object with the following fields: reason, board, expiration.

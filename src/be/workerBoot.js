@@ -55,8 +55,8 @@ function startListening() {
       try {
 
         var options = {
-          key : fs.readFileSync('server.key'),
-          cert : fs.readFileSync('server.pem')
+          key : fs.readFileSync(__dirname + '/server.key'),
+          cert : fs.readFileSync(__dirname + '/server.pem')
         };
 
         require('https').createServer(options, function(req, res) {

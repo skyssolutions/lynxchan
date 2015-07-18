@@ -43,7 +43,7 @@ exports.getCookies = function(req) {
   return parsedCookies;
 };
 
-function getImageDimensions(toPush, files, fields, parsedCookies, callback) {
+function getImageDimensions(toPush, files, fields, cookies, callback, res) {
 
   uploadHandler.getImageBounds(toPush.pathInDisk, function gotBounds(error,
       width, height) {
@@ -54,12 +54,12 @@ function getImageDimensions(toPush, files, fields, parsedCookies, callback) {
       fields.files.push(toPush);
     }
 
-    transferFileInformation(files, fields, parsedCookies, callback);
+    transferFileInformation(files, fields, cookies, callback, res);
   });
 
 }
 
-function getWebmDimentions(toPush, files, fields, parsedCookies, callback) {
+function getWebmDimentions(toPush, files, fields, cookies, callback, res) {
 
   uploadHandler.getWebmBounds(toPush.pathInDisk, function gotBounds(error,
       width, height) {
@@ -70,7 +70,7 @@ function getWebmDimentions(toPush, files, fields, parsedCookies, callback) {
       fields.files.push(toPush);
     }
 
-    transferFileInformation(files, fields, parsedCookies, callback);
+    transferFileInformation(files, fields, cookies, callback, res);
   });
 
 }
@@ -90,42 +90,46 @@ function getCheckSum(path, callback) {
 
 }
 
-function transferFileInformation(files, fields, parsedCookies, callback) {
+function transferFileInformation(files, fields, parsedCookies, callback, res) {
 
   if (files.files.length && fields.files.length < maxFiles) {
 
     var file = files.files.shift();
 
-    getCheckSum(file.path, function gotCheckSum(checkSum) {
-      var mime = file.headers['content-type'];
+    getCheckSum(file.path,
+        function gotCheckSum(checkSum) {
+          var mime = file.headers['content-type'];
 
-      var acceptableSize = file.size && file.size < maxFileSize;
+          var acceptableSize = file.size && file.size < maxFileSize;
 
-      if (acceptableSize) {
-        var toPush = {
-          size : file.size,
-          md5 : checkSum,
-          title : file.originalFilename,
-          pathInDisk : file.path,
-          mime : mime
-        };
+          if (acceptableSize) {
+            var toPush = {
+              size : file.size,
+              md5 : checkSum,
+              title : file.originalFilename,
+              pathInDisk : file.path,
+              mime : mime
+            };
 
-        if (toPush.mime.indexOf('image/') > -1) {
+            if (toPush.mime.indexOf('image/') > -1) {
 
-          getImageDimensions(toPush, files, fields, parsedCookies, callback);
+              getImageDimensions(toPush, files, fields, parsedCookies,
+                  callback, res);
 
-        } else if (toPush.mime === 'video/webm' && settings.webmThumb) {
-          getWebmDimentions(toPush, files, fields, parsedCookies, callback);
-        } else {
-          fields.files.push(toPush);
+            } else if (toPush.mime === 'video/webm' && settings.webmThumb) {
+              getWebmDimentions(toPush, files, fields, parsedCookies, callback,
+                  res);
+            } else {
+              fields.files.push(toPush);
 
-          transferFileInformation(files, fields, parsedCookies, callback);
-        }
+              transferFileInformation(files, fields, parsedCookies, callback,
+                  res);
+            }
 
-      } else {
-        transferFileInformation(files, fields, parsedCookies, callback);
-      }
-    });
+          } else {
+            exports.outputError(lang.errFileTooLarge, 500, res);
+          }
+        });
 
   } else {
     if (verbose) {
@@ -149,7 +153,7 @@ function processParsedRequest(res, fields, files, callback, parsedCookies) {
 
   if (files.files) {
 
-    transferFileInformation(files, fields, parsedCookies, callback);
+    transferFileInformation(files, fields, parsedCookies, callback, res);
 
   } else {
     if (verbose) {

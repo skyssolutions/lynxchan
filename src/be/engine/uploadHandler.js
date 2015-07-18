@@ -50,7 +50,7 @@ exports.getWebmBounds = function(path, callback) {
     } else {
 
       var matches = output.match(/width\=(\d+)\nheight\=(\d+)/);
-      callback(null, matches[1], matches[2]);
+      callback(null, +matches[1], +matches[2]);
 
     }
   });

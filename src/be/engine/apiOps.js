@@ -153,7 +153,7 @@ function processFile(parsedData, res, finalArray, toRemove, callback) {
           var mime = matches[1];
 
           if (stats.size > maxFileSize) {
-            storeImages(parsedData, res, finalArray, toRemove, callback);
+            exports.outputResponse(null, null, 'fileTooLarge', res);
           } else {
 
             var toPush = {
