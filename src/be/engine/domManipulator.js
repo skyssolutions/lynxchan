@@ -869,6 +869,9 @@ function setBoardManagementLinks(document, boardData) {
 
   var hashBansUrl = '/hashBans.js?boardUri=' + boardData.boardUri;
   document.getElementById('hashBansLink').href = hashBansUrl;
+
+  var rulesUrl = '/rules.js?boardUri=' + boardData.boardUri;
+  document.getElementById('ruleManagementLink').href = rulesUrl;
 }
 
 exports.boardManagement = function(login, boardData, reports) {
@@ -1690,6 +1693,57 @@ exports.hashBans = function(hashBans, boardUri) {
 };
 
 // } Section 2.10: Hash bans
+
+// Section 2.11: Rule management {
+function setRuleManagementCells(document, boardUri, rules) {
+  var rulesDiv = document.getElementById('divRules');
+
+  for (var i = 0; i < rules.length; i++) {
+    var rule = rules[i];
+
+    var cell = document.createElement('form');
+    setFormCellBoilerPlate(cell, '/deleteRule.js', 'ruleManagementCell');
+    cell.innerHTML = templateHandler.ruleManagementCell;
+    cell.getElementsByClassName('textLabel')[0].innerHTML = rule;
+
+    cell.getElementsByClassName('boardIdentifier')[0].setAttribute('value',
+        boardUri);
+    cell.getElementsByClassName('indexIdentifier')[0].setAttribute('value', i);
+
+    rulesDiv.appendChild(cell);
+  }
+}
+
+exports.ruleManagement = function(boardUri, rules) {
+
+  try {
+
+    var document = jsdom(templateHandler.ruleManagementPage);
+
+    document.title = lang.titRuleManagement;
+
+    var boardIdentifier = document.getElementById('boardIdentifier');
+
+    boardIdentifier.setAttribute('value', boardUri);
+
+    setRuleManagementCells(document, boardUri, rules);
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+
+};
+// } Section 2.11: Rule management
 
 // Section 2: Dynamic pages
 

@@ -19,7 +19,7 @@ Parameters:
     email: e-mail of the poster. 64 characters.
     message*: message to be posted. 2048 characters.
     subject: subject of the thread. 128 characters.
-    boardUri*: uri of the board. Will be included in the posting form at the generation stage.
+    boardUri*: URI of the board. Will be included in the posting form at the generation stage.
     password: password to be used for deletion. 8 characters.
     captcha: captcha input.
     spoiler: if anything is sent, indicates the images should be spoilered.
@@ -38,7 +38,7 @@ Parameters:
     message*: message to be posted. 2048 characters.
     subject: subject of the thread. 128 characters.
     password: password to be used for deletion. 8 characters.
-    boardUri*: uri of the board.
+    boardUri*: URI of the board.
     threadId*: id of the thread. Will be included in the posting form at the generation stage.
     captcha: captcha input.
     spoiler: if anything is sent, indicates the images should be spoilered.
@@ -101,7 +101,7 @@ PAG_ID::08
 
 Name: recoverAccount
 
-Description: creates a new random password and e-mails it to the user. It uses get parameters in the url instead of post parameters.
+Description: creates a new random password and e-mails it to the user. It uses get parameters in the URL instead of post parameters.
 
 Parameters:
     login: login of the account.
@@ -116,7 +116,7 @@ Name: createBoard
 Description: creates a new board. Requires validation.
 
 Parameters:
-    boardUri: uri of the new board. 32 characters, lower case and numbers only.
+    boardUri: URI of the new board. 32 characters, lower case and numbers only.
     boardName: name of the new board. 32 characters.
     boardDescription: description of the new board. 128 characters.
 
@@ -173,7 +173,7 @@ Name: transferBoardOwnership
 Description: transfers the board to another user. Requires validation. Allowed only for board owners and users with global role lower than 2.
 
 Parameters:
-    boardUri: board to be transfered.
+    boardUri: board to be transferred.
     login: login of the new owner.
 
 ------------------------------------------------------------------------------------------
@@ -201,7 +201,7 @@ Name: deleteBoard
 Description: deletes a board. Requires validation. Allowed for board owners and users with global role lower than 2.
 
 Parameters:
-    boardUri: uri of the board to be deleted.
+    boardUri: URI of the board to be deleted.
 
 ------------------------------------------------------------------------------------------
 
@@ -319,7 +319,7 @@ Name: bannerManagement
 Description: displays screen to manage board banners. It uses get parameters. Restricted to owner of the board. Requires authentication.
 
 Parameters:
-    boardUri: uri of the board to be managed.
+    boardUri: URI of the board to be managed.
 
 ------------------------------------------------------------------------------------------
 
@@ -352,7 +352,7 @@ Name: randomBanner
 Description: displays a random banner for the specified board. Displays the default banner if no banners are found for the board. Uses get parameters.
 
 Parameters:
-    boardUri: board uri.
+    boardUri: board URI.
 
 ------------------------------------------------------------------------------------------
 
@@ -363,7 +363,7 @@ Name: setBoardSettings
 Description: changes board settings. Requires authentication. Restricted to the board owner.
 
 Parameters:
-    boardUri*: board uri.
+    boardUri*: board URI.
     boardName*: new name of the board. 32 characters.
     boardDescription*: new description of the board. 128 characters.
     disableIds: if any value is passed, ids on threads and posts will be disabled.
@@ -402,7 +402,7 @@ Name: filterManagement
 Description: page used to manage filters of a board. Uses get parameters. Reserved to board owners. Requires authentication.
 
 Parameters:
-    boardUri: uri of the board to have its filters managed.
+    boardUri: URI of the board to have its filters managed.
 
 ------------------------------------------------------------------------------------------
 
@@ -413,7 +413,7 @@ Name: createFilter
 Description: page used to create filters . Uses get parameters. Reserved to board owners. Requires authentication.
 
 Parameters:
-    boardUri: uri of the board to have its filters managed.
+    boardUri: URI of the board to have its filters managed.
     originalTerm: word to be filtered. 32 characters.
     replacementTerm: world to be filtered to. 32 characters.
 
@@ -438,7 +438,7 @@ Name: boardModeration
 Description: page used by global admins to moderate boards. It provides tools like board transfer and board deletion to the global staff. Restricted to users with global role lower than 2. Requires authentication. Uses get parameters.
 
 Parameters:
-    boardUri: uri of the board be moderated.
+    boardUri: URI of the board be moderated.
 
 ------------------------------------------------------------------------------------------
 
@@ -518,7 +518,7 @@ Description: creates a hash ban that will keep files with this hash to be posted
 
 Parameters:
     boardUri: if not informed, the hash ban will be global.
-    hash: banned md5 hash. 32 characters.
+    hash: banned MD5 hash. 32 characters.
 
 ------------------------------------------------------------------------------------------
 
@@ -526,7 +526,7 @@ PAG_ID::42
 
 Name: liftHashBan
 
-Description: Lifts a hash ban. Requires authentication.
+Description: lifts a hash ban. Requires authentication.
 
 Parameters:
     hashBanId: id of the hash ban to be removed.
@@ -537,10 +537,45 @@ PAG_ID::43
 
 Name: setCustomCss
 
-Description: Uploads a custom css for a board. Requires authentication. Allowed only for board owners. If no file is sent, any set file will be removed.
+Description: uploads a custom CSS for a board. Requires authentication. Allowed only for board owners. If no file is sent, any set file will be removed.
 
 Parameters:
-    boardUri: uri of the board to have it's custom css managed.
+    boardUri: URI of the board to have it's custom CSS managed.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::44
+
+Name: rules
+
+Description: displays the page used to manage a board rule's. Requires authentication. Restricted to the board owner. Uses get parameters.
+
+Parameters: 
+    boardUri: URI of the board the user wishes to manage it's rules.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::45
+
+Name: createRule
+
+Description: adds a new rule to a board. Requires authentication. Restricted to the board owner.
+
+Parameters:
+    boardUri: URI of the board the user wishes to add a new rule to.
+    rule: text of the rule. 512 characters.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::46
+
+Name: deleteRule
+
+Description: deletes a rule from a board. Requires authentication. Restricted to the board owner.
+
+Parameters:
+    boardUri: URI of the board to have a rule deleted.
+    ruleIndex: index of the rule to be deleted.
 
 ------------------------------------------------------------------------------------------
 

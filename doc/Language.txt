@@ -200,3 +200,9 @@ guiOmmitedInfo: object containing the pieces used to inform how much stuff has b
     filesPiece: piece used when a file is omitted. Replaces: {$imageAmount}.
     filesPiecePlural: piece used when multiple files are omitted. Replaces: {$imageAmount}.
     finalPiece: piece appended at the end of the text.
+errDeniedRuleManagement: error thrown when the user is not allowed to manage rules for a board.
+titRuleManagement: title for the board rule management page.
+errRuleLimitReached: error thrown when the user tries to add a rule to a board that has already reached the maximum amount of rules allowed.
+msgRuleCreated: message used after adding a new rule to a board.
+msgRuleDeleted: message used after deleting a rule from a board.
+errInvalidIndex: error thrown when the index of a specified rule is invalid.

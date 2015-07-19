@@ -17,6 +17,11 @@ var logs = db.logs();
 var settings = require('../boot').getGeneralSettings();
 var restrictedBoardCreation = settings.restrictBoardCreation;
 var validSettings = [ 'disableIds', 'disableCaptcha', 'forceAnonymity' ];
+var maxRulesCount = settings.maxBoardRules || 20;
+var replaceTable = {
+  '<' : '&lt;',
+  '>' : '&gt;'
+};
 
 var boardParameters = [ {
   field : 'boardUri',
@@ -804,3 +809,104 @@ exports.deleteCustomCss = function(userData, boardUri, callback) {
 
 };
 // start of css deletion
+
+exports.boardRules = function(boardUri, userData, callback) {
+
+  boards.findOne({
+    boardUri : boardUri
+  }, {
+    rules : 1,
+    owner : 1,
+    _id : 0
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errBoardNotFound);
+    } else if (userData && userData.login !== board.owner) {
+      callback(lang.errDeniedRuleManagement);
+    } else {
+      callback(null, board.rules || []);
+    }
+  });
+};
+
+exports.addBoardRule = function(parameters, userData, callback) {
+
+  boards.findOne({
+    boardUri : parameters.boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errBoardNotFound);
+    } else if (userData.login !== board.owner) {
+      callback(!lang.errDeniedRuleManagement);
+    } else {
+      if (board.rules && board.rules.length >= maxRulesCount) {
+        callback(lang.errRuleLimitReached);
+
+        return;
+      }
+
+      var rule = parameters.rule.substring(0, 512).replace(/[<>]/g,
+          function replace(match) {
+            return replaceTable[match];
+          });
+
+      // style exception, too simple
+      boards.updateOne({
+        boardUri : parameters.boardUri
+      }, {
+        $push : {
+          rules : rule
+        }
+      }, function updatedRules(error) {
+        callback(error);
+      });
+      // style exception, too simple
+
+    }
+  });
+};
+
+exports.deleteRule = function(parameters, userData, callback) {
+
+  boards.findOne({
+    boardUri : parameters.boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errNoBoardFound);
+    } else if (board.owner !== userData.login) {
+      callback(lang.errDeniedRuleManagement);
+    } else {
+
+      if (isNaN(parameters.ruleIndex)) {
+        callback(lang.errInvalidIndex);
+        return;
+      }
+
+      var index = +parameters.ruleIndex;
+
+      if (!board.rules || board.rules.length <= index) {
+        callback();
+        return;
+      }
+
+      board.rules.splice(index, 1);
+
+      boards.updateOne({
+        boardUri : parameters.boardUri
+      }, {
+        $set : {
+          rules : board.rules
+        }
+      }, function updatedRules(error) {
+        callback(error);
+      });
+
+    }
+  });
+};

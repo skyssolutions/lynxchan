@@ -93,7 +93,7 @@
   "miscReasonNotPresent": "not present",
   "miscReasonNnull": "null",
   "miscReasonUndefined": "undefined",
-  "miscReasonNoLength": "length",
+  "miscReasonNoLength": "empty",
   "errUnknownExtension": "Unknown extension.",
   "miscRoleRoot": "Root",
   "miscRoleAdmin": "Admin",
@@ -205,5 +205,11 @@
     "filesPiece": "and {$imageAmount} image ",
     "filesPiecePlural": "and {$imageAmount} images ",
     "finalPiece": "ommited."
-  }
+  },
+  "errDeniedRuleManagement": "You are not allowed to manage rules for this board.",
+  "titRuleManagement": "Rule management",
+  "errRuleLimitReached": "This board has already reached the maximum amount of rules allowed.",
+  "msgRuleCreated": "Rule added.",
+  "msgRuleDeleted": "Rule deleted.",
+  "errInvalidIndex": "Invalid index."
 }

@@ -24,5 +24,6 @@
   "boardsPerPage": 50,
   "torSource": "https://check.torproject.org/exit-addresses",
   "blockTor": false,
-  "webmThumb": false
+  "webmThumb": false,
+  "maxBoardRules": 20
 }

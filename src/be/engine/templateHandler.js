@@ -195,6 +195,9 @@ function loadAndTestTemplates(path, templateSettings) {
       }, {
         template : 'uploadCell',
         fields : [ 'infoLabel', 'imgLink', 'nameLink', 'divHash', 'labelHash' ]
+      }, {
+        template : 'ruleManagementCell',
+        fields : [ 'indexIdentifier', 'boardIdentifier' ]
       } ];
 
   var pageTests = [
@@ -268,7 +271,7 @@ function loadAndTestTemplates(path, templateSettings) {
             'boardSettingsIdentifier', 'disableIdsCheckbox',
             'disableCaptchaCheckbox', 'forceAnonymityCheckbox',
             'filterManagementLink', 'anonymousNameField', 'rangeBansLink',
-            'hashBansLink', 'customCssIdentifier' ]
+            'hashBansLink', 'customCssIdentifier', 'ruleManagementLink' ]
       },
       {
         template : 'closedReportsPage',
@@ -317,6 +320,9 @@ function loadAndTestTemplates(path, templateSettings) {
       }, {
         template : 'notFoundPage',
         fields : []
+      }, {
+        template : 'ruleManagementPage',
+        fields : [ 'divRules', 'boardIdentifier' ]
       } ];
 
   var errors = [];
