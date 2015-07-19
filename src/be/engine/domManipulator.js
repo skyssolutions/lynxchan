@@ -277,7 +277,7 @@ function addThread(document, thread, posts, boardUri, innerPage, modding) {
     setOmittedInformation(thread, threadCell, posts, innerPage);
   }
 
-  setThreaLinks(threadCell, thread, boardUri, innerPage);
+  setThreadLinks(threadCell, thread, boardUri, innerPage);
 
   setThreadComplexElements(boardUri, thread, threadCell, innerPage);
 
@@ -320,6 +320,20 @@ function setPostHideableElements(postCell, post) {
 
 }
 
+function setPostLinks(postCell, post, boardUri, link, threadId, linkQuote,
+    deletionCheckbox) {
+  var linkStart = '/' + boardUri + '/res/' + threadId + '.html#';
+  link.href = linkStart + post.postId;
+  linkQuote.href = linkStart + 'q' + post.postId;
+
+  var checkboxName = boardUri + '-' + threadId + '-' + post.postId;
+  deletionCheckbox.setAttribute('name', checkboxName);
+
+  var linkPreview = '/' + boardUri + '/preview/' + post.postId + '.html';
+
+  postCell.getElementsByClassName('linkPreview')[0].href = linkPreview;
+}
+
 function setPostComplexElements(postCell, post, boardUri, threadId, document,
     preview, modding) {
 
@@ -333,14 +347,11 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document,
   var deletionCheckbox = postCell.getElementsByClassName('deletionCheckBox')[0];
 
   if (!preview) {
-    var linkStart = '/' + boardUri + '/res/' + threadId + '.html#';
-    link.href = linkStart + post.postId;
-    linkQuote.href = linkStart + 'q' + post.postId;
-
-    var checkboxName = boardUri + '-' + threadId + '-' + post.postId;
-    deletionCheckbox.setAttribute('name', checkboxName);
+    setPostLinks(postCell, post, boardUri, link, threadId, linkQuote,
+        deletionCheckbox);
   } else {
     removeElement(deletionCheckbox);
+    removeElement(postCell.getElementsByClassName('linkPreview')[0]);
   }
 
   setUploadCell(document, postCell.getElementsByClassName('panelUploads')[0],
@@ -402,13 +413,17 @@ function addPosts(document, posts, boardUri, threadId, modding, divPosts) {
 
 }
 // } Section 1.2.1: Post content
-function setThreaLinks(threadCell, thread, boardUri, innerPage) {
+function setThreadLinks(threadCell, thread, boardUri, innerPage) {
   var linkReply = threadCell.getElementsByClassName('linkReply')[0];
   if (innerPage) {
     removeElement(linkReply);
   } else {
     linkReply.href = 'res/' + thread.threadId + '.html';
   }
+
+  var linkPreview = '/' + boardUri + '/preview/' + thread.threadId + '.html';
+
+  threadCell.getElementsByClassName('linkPreview')[0].href = linkPreview;
 
   var linkSelf = threadCell.getElementsByClassName('linkSelf')[0];
 
@@ -1762,18 +1777,6 @@ function setThreadHiddenIdentifiers(document, boardUri, threadData) {
   threadIdentifyInput.setAttribute('value', threadData.threadId);
 }
 
-function setThreadLinks(document, boardData, threadData) {
-
-  var linkModeration = '/mod.js?boardUri=' + boardData.boardUri;
-  linkModeration += '&threadId=' + threadData.threadId;
-
-  var moderationElement = document.getElementById('linkMod');
-  moderationElement.href = linkModeration;
-
-  var linkManagement = document.getElementById('linkManagement');
-  linkManagement.href = '/boardManagement.js?boardUri=' + boardData.boardUri;
-}
-
 function setModdingInformation(document, boardUri, boardData, threadData,
     posts, callback) {
 
@@ -1847,7 +1850,14 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
 
     setThreadTitle(document, boardUri, threadData);
 
-    setThreadLinks(document, boardData, threadData);
+    var linkModeration = '/mod.js?boardUri=' + boardData.boardUri;
+    linkModeration += '&threadId=' + threadData.threadId;
+
+    var moderationElement = document.getElementById('linkMod');
+    moderationElement.href = linkModeration;
+
+    var linkManagement = document.getElementById('linkManagement');
+    linkManagement.href = '/boardManagement.js?boardUri=' + boardData.boardUri;
 
     setHeader(document, boardUri, boardData);
 
