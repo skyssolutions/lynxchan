@@ -141,7 +141,7 @@ function loadAndTestTemplates(path, templateSettings) {
             'divMessage', 'linkReply', 'linkSelf', 'deletionCheckBox',
             'lockIndicator', 'pinIndicator', 'labelId', 'labelRole',
             'divBanMessage', 'spanId', 'panelRange', 'labelRange',
-            'cyclicIndicator', 'linkQuote', 'divPosts' ]
+            'cyclicIndicator', 'linkQuote', 'divPosts', 'labelOmission' ]
       },
       {
         template : 'postCell',

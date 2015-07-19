@@ -169,6 +169,10 @@ opCell*:
 Root element: form
 Observation: will have the class "multipleUploads" added to it if contains more than one upload.
 
+labelOmission:
+    use: have it's innerHTML manipulated.
+    description: label indicating how many files and posts are being omitted when the thread is listed on a board page.
+
 Elements:
 panelUploads:
     use: have children appended to it.

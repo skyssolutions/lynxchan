@@ -666,14 +666,15 @@ function cleanPostFiles(files, postId, callback) {
 }
 
 function updateThreadAfterCleanUp(boardUri, threadId, removedPosts, postId,
-    callback) {
+    removedFileCount, callback) {
 
   threads.updateOne({
     boardUri : boardUri,
     threadId : threadId
   }, {
     $inc : {
-      postCount : -removedPosts.length
+      postCount : -removedPosts.length,
+      fileCount : -removedFileCount
     }
   }, function updatedThread(error) {
     if (error) {
@@ -731,6 +732,13 @@ function cleanThreadPosts(boardUri, threadId, postId, callback) {
       _id : 0,
       posts : {
         $push : '$postId'
+      },
+      removedFileCount : {
+        $sum : {
+          $size : {
+            $ifNull : [ '$files', [] ]
+          }
+        }
       }
     }
   } ], function gotPosts(error, results) {
@@ -752,7 +760,7 @@ function cleanThreadPosts(boardUri, threadId, postId, callback) {
           callback(error);
         } else {
           updateThreadAfterCleanUp(boardUri, threadId, postsToDelete, postId,
-              callback);
+              results[0].removedFileCount, callback);
         }
       });
       // style exception, too simple

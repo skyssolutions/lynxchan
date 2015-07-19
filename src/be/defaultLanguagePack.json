@@ -198,5 +198,12 @@
   "errDeniedCssManagement": "You are not allowed to set a custom css for this board.",
   "msgCssSet": "CSS uploaded.",
   "msgCssDeleted": "CSS deleted.",
-  "errFileTooLarge": "A file sent was too large."
+  "errFileTooLarge": "A file sent was too large.",
+  "guiOmmitedInfo": {
+    "startPiece": "{$postAmount} post ",
+    "startPiecePlural": "{$postAmount} posts ",
+    "filesPiece": "and {$imageAmount} image ",
+    "filesPiecePlural": "and {$imageAmount} images ",
+    "finalPiece": "ommited."
+  }
 }

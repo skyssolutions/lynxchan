@@ -209,7 +209,49 @@ function setThreadHiddeableElements(thread, cell, modding) {
   }
 }
 
-function addThread(document, thread, posts, boardUri, innerPage, modding) {
+function assembleOmissionContent(thread, displayedImages, displayedPosts) {
+  var pieces = lang.guiOmmitedInfo;
+  var postDifference = thread.postCount - displayedPosts;
+  var startPiece = postDifference > 1 ? pieces.startPiecePlural
+      : pieces.startPiece;
+  var content = startPiece.replace('{$postAmount}', postDifference);
+
+  if (thread.fileCount > displayedImages) {
+    var fileDifference = thread.fileCount - displayedImages;
+
+    var filePiece = fileDifference > 1 ? pieces.filesPiecePlural
+        : pieces.filesPiece;
+
+    content += filePiece.replace('{$imageAmount}', fileDifference);
+  }
+
+  content += pieces.finalPiece;
+
+  return content;
+}
+
+function setOmittedInformation(thread, threadCell, posts, innerPage) {
+
+  var omissionLabel = threadCell.getElementsByClassName('labelOmission')[0];
+
+  var displayedPosts = posts.length;
+  var displayedImages = 0;
+
+  for (var i = 0; i < posts.length; i++) {
+    var post = posts[i];
+
+    if (post.files) {
+
+      displayedImages += post.files.length;
+    }
+  }
+
+  omissionLabel.innerHTML = assembleOmissionContent(thread, displayedImages,
+      displayedPosts);
+
+}
+
+function getThreadCellBase(document, thread) {
 
   var threadCell = document.createElement('div');
   threadCell.innerHTML = templateHandler.opCell;
@@ -217,6 +259,22 @@ function addThread(document, thread, posts, boardUri, innerPage, modding) {
   threadCell.id = thread.threadId;
   if (thread.files && thread.files.length > 1) {
     threadCell.className += ' multipleUploads';
+  }
+
+  return threadCell;
+}
+
+function addThread(document, thread, posts, boardUri, innerPage, modding) {
+
+  var threadCell = getThreadCellBase(document, thread);
+
+  var notEnougPosts = !thread.postCount;
+  notEnougPosts = notEnougPosts || thread.postCount <= boot.latestPostCount();
+
+  if (innerPage || notEnougPosts) {
+    removeElement(threadCell.getElementsByClassName('labelOmission')[0]);
+  } else {
+    setOmittedInformation(thread, threadCell, posts, innerPage);
   }
 
   setThreaLinks(threadCell, thread, boardUri, innerPage);

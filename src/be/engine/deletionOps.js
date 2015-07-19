@@ -132,15 +132,8 @@ exports.cleanThreads = function(boardUri, callback) {
 };
 
 // start of content deletion process (wild ride ahead)
-function reaggregateLatestPosts(board, parentThreads, callback, index) {
-
-  index = index || 0;
-
-  if (index >= parentThreads.length) {
-    callback();
-    return;
-  }
-
+function reaggregateLatestPosts(countData, board, parentThreads, callback,
+    index) {
   posts.aggregate([ {
     $match : {
       boardUri : board.boardUri,
@@ -179,19 +172,71 @@ function reaggregateLatestPosts(board, parentThreads, callback, index) {
         threadId : parentThreads[index]
       }, {
         $set : {
+          fileCount : countData.fileCount,
+          postCount : countData.postCount,
           latestPosts : foundPosts
         }
       }, function setPosts(error) {
         if (error) {
           callback(error);
         } else {
-          reaggregateLatestPosts(board, parentThreads, callback, index + 1);
+          reaggregateThread(board, parentThreads, callback, index + 1);
         }
 
       });
 
       // style exception, too simple
 
+    }
+
+  });
+}
+
+function reaggregateThread(board, parentThreads, callback, index) {
+
+  index = index || 0;
+
+  if (index >= parentThreads.length) {
+    callback();
+    return;
+  }
+
+  posts.aggregate([ {
+    $match : {
+      boardUri : board.boardUri,
+      threadId : parentThreads[index]
+    }
+  }, {
+    $project : {
+      _id : 0,
+      fileCount : {
+        $size : {
+          $ifNull : [ '$files', [] ]
+        }
+      }
+    }
+  }, {
+    $group : {
+      _id : 0,
+      postCount : {
+        $sum : 1
+      },
+      fileCount : {
+        $sum : '$fileCount'
+      }
+    }
+  } ], function gotResults(error, results) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      var data = results.length ? results[0] : {
+        postCount : 0,
+        fileCount : 0
+      };
+
+      reaggregateLatestPosts(data, board, parentThreads, callback, index);
     }
 
   });
@@ -232,16 +277,15 @@ function updateBoardAndThreads(userData, board, threadsToDelete, postsToDelete,
       callback(error);
     } else {
       // style exception, too simple
-      reaggregateLatestPosts(board, parentThreads,
-          function reaggregated(error) {
-            if (error) {
-              callback(error);
-            } else {
-              signalAndLoop(parentThreads, board, userData, parameters,
-                  threadsToDelete, postsToDelete, foundBoards, callback);
+      reaggregateThread(board, parentThreads, function reaggregated(error) {
+        if (error) {
+          callback(error);
+        } else {
+          signalAndLoop(parentThreads, board, userData, parameters,
+              threadsToDelete, postsToDelete, foundBoards, callback);
 
-            }
-          });
+        }
+      });
       // style exception, too simple
     }
 

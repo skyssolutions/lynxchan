@@ -194,3 +194,9 @@ errDeniedCssManagement: error thrown when the user is not allowed to manage CSS 
 msgCssSet: message used after a new custom CSS is uploaded.
 msgCssDeleted: message used after a custom CSS is deleted.
 errFileTooLarge: error thrown when a file sent is too large.
+guiOmmitedInfo: object containing the pieces used to inform how much stuff has been omitted from a thread when showing it on a board page. Contains the following fields:
+    startPiece: first piece used when a post is omitted. Replaces: {$postAmount}.
+    startPiecePlural: first piece used when multiple posts are omitted. Replaces: {$postAmount}.
+    filesPiece: piece used when a file is omitted. Replaces: {$imageAmount}.
+    filesPiecePlural: piece used when multiple files are omitted. Replaces: {$imageAmount}.
+    finalPiece: piece appended at the end of the text.
