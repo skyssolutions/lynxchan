@@ -25,5 +25,6 @@
   "torSource": "https://check.torproject.org/exit-addresses",
   "blockTor": false,
   "webmThumb": false,
-  "maxBoardRules": 20
+  "maxBoardRules": 20,
+  "thumbSize": 128
 }

@@ -12,12 +12,10 @@ var threads = db.threads();
 var exec = require('child_process').exec;
 var posts = db.posts();
 var settings = require('../boot').getGeneralSettings();
-
 var webmLengthCommand = 'ffprobe -v error -show_entries stream=width,height ';
 var webmThumbCommand = 'ffmpeg -i {$path} -vframes 1 -vf scale=';
-
 var supportedMimes = settings.acceptedMimes;
-
+var thumbSize = settings.thumbSize || 128;
 if (!supportedMimes) {
   supportedMimes = [ 'image/png', 'image/jpeg', 'image/gif', 'image/bmp',
       'video/webm' ];
@@ -126,12 +124,12 @@ function updatePostingFiles(boardUri, threadId, postId, files, file, callback,
 }
 
 function cleanThumbNail(boardUri, threadId, postId, files, file, callback,
-    index, saveError, spoiler) {
+    index, saveError, spoiler, tooSmall) {
 
   var image = file.mime.indexOf('image/') !== -1;
   var webm = file.mime === 'video/webm' && settings.webmThumb;
 
-  if ((image || webm) && !spoiler) {
+  if ((image || webm) && !spoiler && !tooSmall) {
 
     exports.removeFromDisk(file.pathInDisk + (webm ? '_.png' : '_t'),
         function removed(deletionError) {
@@ -155,14 +153,14 @@ function cleanThumbNail(boardUri, threadId, postId, files, file, callback,
 }
 
 function transferFilesToGS(boardUri, threadId, postId, files, file, callback,
-    index, spoiler) {
+    index, spoiler, tooSmall) {
 
   gsHandler.saveUpload(boardUri, threadId, postId, file,
       function transferedFile(error) {
 
         cleanThumbNail(boardUri, threadId, postId, files, file, callback,
-            index, error, spoiler);
-      }, spoiler);
+            index, error, spoiler, tooSmall);
+      }, spoiler, tooSmall);
 }
 
 function checkForHashBan(boardUri, md5, callback) {
@@ -183,9 +181,11 @@ function checkForHashBan(boardUri, md5, callback) {
 function processFile(boardUri, threadId, postId, files, file, spoiler,
     callback, index) {
 
-  if (file.mime.indexOf('image/') !== -1 && !spoiler) {
+  var tooSmall = file.height <= thumbSize && file.width <= thumbSize;
 
-    im(file.pathInDisk).resize(128, 128).noProfile().write(
+  if (file.mime.indexOf('image/') !== -1 && !spoiler && !tooSmall) {
+
+    im(file.pathInDisk).resize(thumbSize, thumbSize).noProfile().write(
         file.pathInDisk + '_t',
         function(error) {
           if (error) {
@@ -200,10 +200,12 @@ function processFile(boardUri, threadId, postId, files, file, spoiler,
 
     var command = webmThumbCommand.replace('{$path}', file.pathInDisk);
 
-    if (file.width > file.height) {
-      command += '128:-1';
+    if (tooSmall) {
+      command += '-1:-1';
+    } else if (file.width > file.height) {
+      command += thumbSize + ':-1';
     } else {
-      command += '-1:128';
+      command += '-1:' + thumbSize;
     }
 
     command += ' ' + file.pathInDisk + '_.png';
@@ -219,7 +221,7 @@ function processFile(boardUri, threadId, postId, files, file, spoiler,
 
   } else {
     transferFilesToGS(boardUri, threadId, postId, files, file, callback, index,
-        spoiler);
+        spoiler, tooSmall);
   }
 
 }

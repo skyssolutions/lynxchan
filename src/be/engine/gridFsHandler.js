@@ -120,10 +120,14 @@ exports.writeFile = function(path, destination, mime, meta, callback) {
 // start of saving upload
 // TODO transfer the logic to upload handler
 function transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb,
-    extension, meta) {
+    extension, meta, tooSmall) {
 
   var fileName = fileId + '.' + extension;
   fileName = '/' + boardUri + '/media/' + fileName;
+
+  if (tooSmall) {
+    file.thumbPath = fileName;
+  }
 
   file.path = fileName;
   file.gfsName = fileId + '.' + extension;
@@ -155,8 +159,26 @@ function transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb,
 
 }
 
+function processThumb(boardUri, fileId, ext, file, webm, meta, cb, threadId,
+    postId) {
+  var thumbName = '/' + boardUri + '/media/' + 't_' + fileId + '.' + ext;
+
+  file.thumbPath = thumbName;
+
+  exports.writeFile(file.pathInDisk + (webm ? '_.png' : '_t'), thumbName,
+      file.mime, meta, function wroteTbToGfs(error) {
+        if (error) {
+          cb(error);
+        } else {
+          transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb, ext,
+              meta);
+        }
+
+      });
+}
+
 function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb,
-    spoiler) {
+    spoiler, tooSmall) {
 
   var parts = file.title.split('.');
 
@@ -178,20 +200,14 @@ function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb,
     var webm = file.mime === 'video/webm' && settings.webmThumb;
 
     if ((image || webm) && !spoiler) {
-      var thumbName = '/' + boardUri + '/media/' + 't_' + fileId + '.' + ext;
+      if (tooSmall) {
+        transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb, ext,
+            meta, tooSmall);
+      } else {
 
-      file.thumbPath = thumbName;
-
-      exports.writeFile(file.pathInDisk + (webm ? '_.png' : '_t'), thumbName,
-          file.mime, meta, function wroteTbToGfs(error) {
-            if (error) {
-              cb(error);
-            } else {
-              transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb,
-                  ext, meta);
-            }
-
-          });
+        processThumb(boardUri, fileId, ext, file, webm, meta, cb, threadId,
+            postId);
+      }
     } else {
 
       file.thumbPath = spoiler ? spoilerPath : genericThumb;
@@ -207,7 +223,7 @@ function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb,
 }
 
 exports.saveUpload = function(boardUri, threadId, postId, file, callback,
-    spoiler) {
+    spoiler, tooSmall) {
 
   boards.findOneAndUpdate({
     boardUri : boardUri
@@ -222,7 +238,7 @@ exports.saveUpload = function(boardUri, threadId, postId, file, callback,
       callback(error);
     } else {
       transferThumbToGfs(boardUri, threadId, postId, result.value.lastFileId,
-          file, callback, spoiler);
+          file, callback, spoiler, tooSmall);
     }
   });
 

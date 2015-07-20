@@ -79,6 +79,7 @@ Settings files that goes into the settings directory:
 * `languagePackPath`: absolute path to an optional language pack.
 * `webmThumb`(Boolean): if true, webms will use their first frame as a thumbnail. Requires ffmpeg installed.
 * `maxBoardRules`(Number): maximum amount of rules that board owners can set. Defaults to 20.
+* `thumbSize`(Number): maximum size for both width and height for generated thumbnails. Defaults to 128.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.
