@@ -1132,5 +1132,36 @@ boardIdentifier:
 
 ------------------------------------------------------------------------------------------
 
+TEM::40
+
+rulesPage:
+
+Elements:
+boardLabel:
+    use: have it's innerHTML manipulated.
+    description: label with the board uri.
+
+divRules:
+    use: have children appended to it.
+    description: div holding the board rules.
+
+------------------------------------------------------------------------------------------
+
+TEM::41
+
+ruleCell*:
+Root element: div
+
+Elements:
+indexLabel:
+    use: have it's innerHTML manipulated.
+    description: label with the index of the rule.
+
+textLabel:
+    use: have it's innerHTML manipulated.
+    description: label with the text of the rule.
+
+------------------------------------------------------------------------------------------
+
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.
 

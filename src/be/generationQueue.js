@@ -10,6 +10,7 @@
 // frontPage (Boolean): rebuilds the front-page.
 // board: boardUri that will be rebuilt.
 // catalog(Boolean): indicates to rebuild only the board catalog.
+// rules(Boolean): indicates to rebuild only the board rules page.
 // buildAll(Boolean): indicates to rebuild every page of the board, including
 // thread pages.
 // page(Number): page to be rebuilt.
@@ -29,6 +30,7 @@ var queueArray = [];
 // board, ignore anything incoming for the board.
 // buildingCatalog indicates we are already building the catalog without the
 // board pages.
+// buildingRules indicates we are already building the board rules page.
 // pages is an array with the numbers of pages to be rebuilt, indexed from 1.
 // [2,5] means we will rebuild pages 2 and 5
 // threads is an array with the ids of threads to be rebuilt.
@@ -74,10 +76,12 @@ function clearTree(error, message) {
 
     if (message.buildAll) {
       delete queueTree[message.board];
+    } else if (message.catalog) {
+      queueTree[message.board].buildingCatalog = false;
+    } else if (message.rules) {
+      queueTree[message.board].buildingRules = false;
     } else if (!message.page && !message.thread) {
       queueTree[message.board].buildingPages = false;
-      queueTree[message.board].buildingCatalog = false;
-    } else if (message.catalog) {
       queueTree[message.board].buildingCatalog = false;
     } else if (message.page) {
       queueTree[message.board].pages.splice(queueTree[message.board].pages
@@ -120,11 +124,13 @@ function processMessage(message) {
   } else if (message.frontPage) {
     generator.frontPage(generationCallback);
   } else if (message.buildAll) {
-    generator.board(message.board, true, generationCallback);
+    generator.board(message.board, true, true, generationCallback);
   } else if (message.catalog) {
     generator.catalog(message.board, generationCallback);
+  } else if (message.rules) {
+    generator.rules(message.board, generationCallback);
   } else if (!message.page && !message.thread) {
-    generator.board(message.board, false, generationCallback);
+    generator.board(message.board, false, false, generationCallback);
   } else if (message.page) {
     generator.page(message.board, message.page, generationCallback);
   } else {
@@ -181,13 +187,15 @@ function putInQueue(message, boardInformation) {
 
 function checkForPageAndThreadRebuild(message, boardInformation) {
 
-  if (boardInformation.buildingCatalog && message.catalog) {
+  if (!message.thread && !message.page && boardInformation.buildingPages) {
     return;
   }
 
-  if (message.catalog) {
-    boardInformation.buildingCatalog = true;
+  if (!message.thread && !message.page) {
+    boardInformation.buildingPages = true;
+
     putInQueue(message, boardInformation);
+
     return;
   }
 
@@ -202,14 +210,37 @@ function checkForPageAndThreadRebuild(message, boardInformation) {
   if (message.thread) {
 
     boardThreads.push(message.thread);
-
   } else {
-
     boardInformation.pages.push(message.page);
   }
 
   putInQueue(message, boardInformation);
 
+}
+
+function checkBoardSpecialPages(message, boardInformation) {
+
+  if (boardInformation.buildingRules && message.rules) {
+    return;
+  }
+
+  if (message.rules) {
+    boardInformation.buildingRules = true;
+    putInQueue(message, boardInformation);
+    return;
+  }
+
+  if (boardInformation.buildingCatalog && message.catalog) {
+    return;
+  }
+
+  if (message.catalog) {
+    boardInformation.buildingCatalog = true;
+    putInQueue(message, boardInformation);
+    return;
+  }
+
+  checkForPageAndThreadRebuild(message, boardInformation);
 }
 
 function checkForBoardRebuild(message) {
@@ -232,19 +263,7 @@ function checkForBoardRebuild(message) {
     return;
   }
 
-  if (!message.thread && !message.page && boardInformation.buildingPages) {
-    return;
-  }
-
-  if (!message.thread && !message.page) {
-    boardInformation.buildingPages = true;
-
-    putInQueue(message, boardInformation);
-
-    return;
-  }
-
-  checkForPageAndThreadRebuild(message, boardInformation);
+  checkBoardSpecialPages(message, boardInformation);
 }
 
 function checkForDefaultAndFrontPages(message) {

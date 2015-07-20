@@ -417,7 +417,8 @@ exports.createBoard = function(parameters, userData, callback) {
       }, function updatedUser(error) {
         // signal rebuild of board pages
         process.send({
-          board : parameters.boardUri
+          board : parameters.boardUri,
+          buildAll : true
         });
 
         callback(error);
@@ -862,7 +863,15 @@ exports.addBoardRule = function(parameters, userData, callback) {
           rules : rule
         }
       }, function updatedRules(error) {
-        callback(error);
+        if (error) {
+          callback(error);
+        } else {
+          process.send({
+            board : board.boardUri,
+            rules : true
+          });
+          callback();
+        }
       });
       // style exception, too simple
 
@@ -897,6 +906,7 @@ exports.deleteRule = function(parameters, userData, callback) {
 
       board.rules.splice(index, 1);
 
+      // style exception, too simple
       boards.updateOne({
         boardUri : parameters.boardUri
       }, {
@@ -904,9 +914,17 @@ exports.deleteRule = function(parameters, userData, callback) {
           rules : board.rules
         }
       }, function updatedRules(error) {
-        callback(error);
+        if (error) {
+          callback(error);
+        } else {
+          process.send({
+            board : board.boardUri,
+            rules : true
+          });
+          callback();
+        }
       });
-
+      // style exception, too simple
     }
   });
 };

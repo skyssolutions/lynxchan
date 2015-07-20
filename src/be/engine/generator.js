@@ -9,6 +9,7 @@ var threads = db.threads();
 var boards = db.boards();
 var domManipulator = require('./domManipulator');
 var boot = require('../boot');
+var boardOps = require('./boardOps');
 var stats = db.stats();
 var settings = boot.getGeneralSettings();
 var topBoardsCount = settings.topBoardsCount || 25;
@@ -244,6 +245,26 @@ exports.defaultPages = function(callback) {
       exports.notFound(callback);
     }
 
+  });
+
+};
+
+exports.rules = function(boardUri, callback) {
+
+  boardOps.boardRules(boardUri, null, function gotRules(error, rules) {
+    if (error) {
+      callback(error);
+    } else {
+
+      domManipulator.rules(boardUri, rules, function generatedHTML(error) {
+        if (error) {
+          callback(error);
+        } else {
+          jsonBuilder.rules(boardUri, rules, callback);
+        }
+      });
+
+    }
   });
 
 };
@@ -647,7 +668,8 @@ function pageIteration(boardUri, currentPage, boardData, callback,
 
 }
 
-exports.board = function(boardUri, reloadThreads, callback, boardData) {
+exports.board = function(boardUri, reloadThreads, reloadRules, callback,
+    boardData) {
 
   // we allow for the basic board data to be informed, but fetch if not sent.
   if (!boardData) {
@@ -664,7 +686,19 @@ exports.board = function(boardUri, reloadThreads, callback, boardData) {
       } else if (!board) {
         callback('Board not found');
       } else {
-        exports.board(boardUri, reloadThreads, callback, board);
+        exports.board(boardUri, reloadThreads, reloadRules, callback, board);
+      }
+    });
+
+    return;
+  }
+
+  if (reloadRules) {
+    exports.rules(boardUri, function reloadedRules(error) {
+      if (error) {
+        callback(error);
+      } else {
+        exports.board(boardUri, reloadThreads, false, callback, boardData);
       }
     });
 
@@ -707,7 +741,7 @@ function iterateBoards(cursor, callback) {
     } else {
 
       // style exception parent callback is too simple
-      exports.board(board.boardUri, true, function generatedBoard(error) {
+      exports.board(board.boardUri, true, true, function generatedBoard(error) {
 
         if (error) {
           callback(error);

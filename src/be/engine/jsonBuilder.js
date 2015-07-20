@@ -224,3 +224,11 @@ exports.catalog = function(boardUri, threads, callback) {
       }, callback);
 
 };
+
+exports.rules = function(boardUri, rules, callback) {
+  gridFsHandler.writeData(JSON.stringify(rules),
+      '/' + boardUri + '/rules.json', 'application/json', {
+        boardUri : boardUri,
+        type : 'rules'
+      }, callback);
+};

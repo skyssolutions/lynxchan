@@ -151,4 +151,12 @@ Root(Array): array of objects representing threads. Each element contains the fo
 
 ------------------------------------------------------------------------------------------
 
+JSO_ID::06
+
+Path:/<board>/rules.json
+
+Root(Array): array of strings, each one being a rule of the board.
+
+------------------------------------------------------------------------------------------
+
 

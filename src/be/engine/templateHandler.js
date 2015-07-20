@@ -197,7 +197,10 @@ function loadAndTestTemplates(path, templateSettings) {
         fields : [ 'infoLabel', 'imgLink', 'nameLink', 'divHash', 'labelHash' ]
       }, {
         template : 'ruleManagementCell',
-        fields : [ 'indexIdentifier', 'boardIdentifier' ]
+        fields : [ 'indexIdentifier', 'boardIdentifier', 'textLabel' ]
+      }, {
+        template : 'ruleCell',
+        fields : [ 'indexLabel', 'textLabel' ]
       } ];
 
   var pageTests = [
@@ -323,6 +326,9 @@ function loadAndTestTemplates(path, templateSettings) {
       }, {
         template : 'ruleManagementPage',
         fields : [ 'divRules', 'boardIdentifier' ]
+      }, {
+        template : 'rulesPage',
+        fields : [ 'boardLabel', 'divRules' ]
       } ];
 
   var errors = [];

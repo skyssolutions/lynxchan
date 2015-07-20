@@ -106,3 +106,4 @@ Meta-data of files on gridfs will have the following values:
   * `banner`
   * `catalog`
   * `preview`
+  * `rules`

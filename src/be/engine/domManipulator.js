@@ -2128,4 +2128,33 @@ exports.preview = function(postingData, callback) {
   }
 };
 
+exports.rules = function(boardUri, rules, callback) {
+  try {
+
+    var document = jsdom(templateHandler.rulesPage);
+
+    document.title = lang.titRules.replace('{$board}', boardUri);
+    document.getElementById('boardLabel').innerHTML = boardUri;
+    var rulesDiv = document.getElementById('divRules');
+
+    for (var i = 0; i < rules.length; i++) {
+      var cell = document.createElement('div');
+      cell.innerHTML = templateHandler.ruleCell;
+
+      cell.getElementsByClassName('textLabel')[0].innerHTML = rules[i];
+      cell.getElementsByClassName('indexLabel')[0].innerHTML = i + 1;
+
+      rulesDiv.appendChild(cell);
+    }
+
+    gridFs.writeData(serializer(document), '/' + boardUri + '/rules.html',
+        'text/html', {
+          boardUri : boardUri,
+          type : 'rules'
+        }, callback);
+
+  } catch (error) {
+    callback(error);
+  }
+};
 // Section 3: Static pages

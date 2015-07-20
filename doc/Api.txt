@@ -415,6 +415,30 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::32
+
+Name: createRule
+
+Description: adds a new rule to a board. Requires authentication. Restricted to the board owner.
+
+Parameters:
+    boardUri: URI of the board the user wishes to add a new rule to.
+    rule: text of the rule. 512 characters.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::33
+
+Name: deleteRule
+
+Description: deletes a rule from a board. Requires authentication. Restricted to the board owner.
+
+Parameters:
+    boardUri: URI of the board to have a rule deleted.
+    ruleIndex: index of the rule to be deleted.
+
+------------------------------------------------------------------------------------------
+
 
 *: mandatory parameters
 **: exclusive funcionality to the json api.
