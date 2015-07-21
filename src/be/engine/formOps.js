@@ -90,53 +90,51 @@ function getCheckSum(path, callback) {
 
 }
 
-function transferFileInformation(files, fields, parsedCookies, callback, res) {
+function transferFileInformation(files, fields, parsedCookies, cb, res) {
 
   if (files.files.length && fields.files.length < maxFiles) {
 
     var file = files.files.shift();
 
-    getCheckSum(file.path,
-        function gotCheckSum(checkSum) {
-          var mime = file.headers['content-type'];
+    getCheckSum(file.path, function gotCheckSum(checkSum) {
+      var mime = file.headers['content-type'];
 
-          var acceptableSize = file.size && file.size < maxFileSize;
+      var acceptableSize = file.size && file.size < maxFileSize;
 
-          if (acceptableSize) {
-            var toPush = {
-              size : file.size,
-              md5 : checkSum,
-              title : file.originalFilename,
-              pathInDisk : file.path,
-              mime : mime
-            };
+      if (acceptableSize) {
+        var toPush = {
+          size : file.size,
+          md5 : checkSum,
+          title : file.originalFilename,
+          pathInDisk : file.path,
+          mime : mime
+        };
 
-            if (toPush.mime.indexOf('image/') > -1) {
+        if (toPush.mime.indexOf('image/') > -1) {
 
-              getImageDimensions(toPush, files, fields, parsedCookies,
-                  callback, res);
+          getImageDimensions(toPush, files, fields, parsedCookies, cb, res);
 
-            } else if (toPush.mime === 'video/webm' && settings.webmThumb) {
-              getWebmDimentions(toPush, files, fields, parsedCookies, callback,
-                  res);
-            } else {
-              fields.files.push(toPush);
+        } else if (toPush.mime === 'video/webm' && settings.webmThumb) {
+          getWebmDimentions(toPush, files, fields, parsedCookies, cb, res);
+        } else {
+          fields.files.push(toPush);
 
-              transferFileInformation(files, fields, parsedCookies, callback,
-                  res);
-            }
+          transferFileInformation(files, fields, parsedCookies, cb, res);
+        }
 
-          } else {
-            exports.outputError(lang.errFileTooLarge, 500, res);
-          }
-        });
+      } else if (file.size) {
+        exports.outputError(lang.errFileTooLarge, 500, res);
+      } else {
+        transferFileInformation(files, fields, parsedCookies, cb, res);
+      }
+    });
 
   } else {
     if (verbose) {
       console.log('Form input: ' + JSON.stringify(fields));
     }
 
-    callback(parsedCookies, fields);
+    cb(parsedCookies, fields);
   }
 
 }

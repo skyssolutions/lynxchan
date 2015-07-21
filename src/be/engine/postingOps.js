@@ -17,12 +17,14 @@ var delOps = require('./deletionOps');
 var crypto = require('crypto');
 var gsHandler = require('./gridFsHandler');
 var boot = require('../boot');
+var debug = boot.debug();
 var lang = require('./langOps').languagePack();
 var settings = boot.getGeneralSettings();
 var latestPostsCount = boot.latestPostCount();
 var threadLimit = boot.maxThreads();
 var bumpLimit = settings.autoSageLimit || 500;
 var defaultAnonymousName = settings.defaultAnonymousName;
+var verbose = settings.verbose;
 
 if (!defaultAnonymousName) {
   defaultAnonymousName = lang.miscDefaultAnonymous;
@@ -488,9 +490,6 @@ function updateBoardForThreadCreation(boardUri, threadId, callback, thread) {
   boards.findOneAndUpdate({
     boardUri : boardUri
   }, {
-    $set : {
-      lastPostId : threadId
-    },
     $inc : {
       threadCount : 1
     }
@@ -581,33 +580,54 @@ function createThread(req, userData, parameters, board, threadId, wishesToSign,
 
 }
 
-function checkCaptchaForThread(req, userData, parameters, board, threadId,
-    captchaId, callback) {
+function getNewThreadId(req, userData, parameters, board, wishesToSign,
+    callback) {
 
-  captchaOps.attemptCaptcha(captchaId, parameters.captcha, board,
-      function solvedCaptcha(error) {
-        if (error) {
-          callback(error);
-        } else {
-          var wishesToSign = doesUserWishesToSign(userData, parameters);
-
-          // style exception, too simple
-          checkForTripcode(parameters, function setTripCode(error, parameters) {
-            if (error) {
-              callback(error);
-            } else {
-              createThread(req, userData, parameters, board, threadId,
-                  wishesToSign, callback);
-            }
-          });
-          // style exception, too simple
-        }
-
-      });
+  boards.findOneAndUpdate({
+    boardUri : parameters.boardUri
+  }, {
+    $inc : {
+      lastPostId : 1
+    }
+  }, {
+    returnOriginal : false
+  }, function gotLastIdInfo(error, lastIdData) {
+    if (error) {
+      callback(error);
+    } else {
+      createThread(req, userData, parameters, board,
+          lastIdData.value.lastPostId, wishesToSign, callback);
+    }
+  });
 
 }
 
-exports.newThread = function(req, userData, parameters, captchaId, callback) {
+function checkMarkdownForThread(req, userData, parameters, board, callback) {
+
+  markdownText(parameters.message, parameters.boardUri, function gotMarkdown(
+      error, markdown) {
+    if (error) {
+      callback(error);
+    } else {
+      parameters.markdown = markdown;
+      var wishesToSign = doesUserWishesToSign(userData, parameters);
+
+      // style exception, too simple
+      checkForTripcode(parameters, function setTripCode(error, parameters) {
+        if (error) {
+          callback(error);
+        } else {
+          getNewThreadId(req, userData, parameters, board, wishesToSign,
+              callback);
+        }
+      });
+      // style exception, too simple
+    }
+  });
+
+}
+
+exports.newThread = function(req, userData, parameters, captchaId, cb) {
 
   boards.findOne({
     boardUri : parameters.boardUri
@@ -617,13 +637,12 @@ exports.newThread = function(req, userData, parameters, captchaId, callback) {
     volunteers : 1,
     filters : 1,
     anonymousName : 1,
-    settings : 1,
-    lastPostId : 1
+    settings : 1
   }, function gotBoard(error, board) {
     if (error) {
-      callback(error);
+      cb(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      cb(lang.errBoardNotFound);
     } else {
 
       if (board.settings.indexOf('forceAnonymity') > -1) {
@@ -635,19 +654,14 @@ exports.newThread = function(req, userData, parameters, captchaId, callback) {
       parameters.message = applyFilters(board.filters, parameters.message);
 
       // style exception, too simple
-      markdownText(parameters.message, parameters.boardUri,
-          function gotMarkdown(error, markdown) {
+      captchaOps.attemptCaptcha(captchaId, parameters.captcha, board,
+          function solvedCaptcha(error) {
             if (error) {
-              callback(error);
+              cb(error);
             } else {
-              parameters.markdown = markdown;
-
-              checkCaptchaForThread(req, userData, parameters, board,
-                  (board.lastPostId || 0) + 1, captchaId, callback);
+              checkMarkdownForThread(req, userData, parameters, board, cb);
             }
-
           });
-
       // style exception, too simple
 
     }
@@ -807,24 +821,13 @@ function updateBoardForPostCreation(parameters, postId, thread, cleanPosts,
       console.log(error.toString());
     }
 
-    // style exception, too simple
-    boards.update({
-      boardUri : parameters.boardUri
-    }, {
-      $set : {
-        lastPostId : postId
-      }
-    }, function updatedBoard(error, result) {
+    if (cleanPosts) {
+      cleanThreadPosts(parameters.boardUri, parameters.threadId, postId,
+          callback);
+    } else {
+      callback(error, postId);
+    }
 
-      if (cleanPosts) {
-        cleanThreadPosts(parameters.boardUri, parameters.threadId, postId,
-            callback);
-      } else {
-        callback(error, postId);
-      }
-
-    });
-    // style exception, too simple
   });
 
 }
@@ -935,10 +938,7 @@ function createPost(req, parameters, userData, postId, thread, board,
   }
 
   posts.insert(postToAdd, function createdPost(error) {
-    if (error && error.code === 11000) {
-      createPost(req, parameters, userData, postId + 1, thread, board,
-          wishesToSign, cb);
-    } else if (error) {
+    if (error) {
       cb(error);
     } else {
 
@@ -947,10 +947,15 @@ function createPost(req, parameters, userData, postId, thread, board,
           postId, parameters.files, parameters.spoiler, function savedFiles(
               error) {
             if (error) {
-              cb(error);
-            } else {
-              updateThread(parameters, postId, thread, cb, postToAdd);
+              if (verbose) {
+                console.log(error);
+              }
+
+              if (debug) {
+                throw error;
+              }
             }
+            updateThread(parameters, postId, thread, cb, postToAdd);
 
           });
       // style exception, too simple
@@ -960,7 +965,46 @@ function createPost(req, parameters, userData, postId, thread, board,
 
 }
 
-function getThread(req, parameters, userData, postId, board, callback) {
+function getPostMarkdown(req, parameters, userData, thread, board, callback) {
+
+  var wishesToSign = doesUserWishesToSign(userData, parameters);
+
+  parameters.message = applyFilters(board.filters, parameters.message);
+
+  markdownText(parameters.message, parameters.boardUri, function gotMarkdown(
+      error, markdown) {
+
+    if (error) {
+      callback(error);
+    } else {
+      parameters.markdown = markdown;
+
+      // style exception, too simple
+      boards.findOneAndUpdate({
+        boardUri : parameters.boardUri
+      }, {
+        $inc : {
+          lastPostId : 1
+        }
+      }, {
+        returnOriginal : false
+      }, function gotNewId(error, lastIdData) {
+        if (error) {
+          callback(error);
+        } else {
+          createPost(req, parameters, userData, lastIdData.value.lastPostId,
+              thread, board, wishesToSign, callback);
+        }
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+}
+
+function getThread(req, parameters, userData, board, callback) {
 
   threads.findOne({
     boardUri : parameters.boardUri,
@@ -989,39 +1033,17 @@ function getThread(req, parameters, userData, postId, board, callback) {
 
       miscOps.sanitizeStrings(parameters, postingParameters);
 
-      var wishesToSign = doesUserWishesToSign(userData, parameters);
-
       // style exception, too simple
       checkForTripcode(parameters, function setTripCode(error, parameters) {
         if (error) {
           callback(error);
         } else {
-          createPost(req, parameters, userData, postId, thread, board,
-              wishesToSign, callback);
+          getPostMarkdown(req, parameters, userData, thread, board, callback);
         }
       });
       // style exception, too simple
 
     }
-  });
-
-}
-
-function getPostMarkdown(req, parameters, userData, postId, board, callback) {
-
-  parameters.message = applyFilters(board.filters, parameters.message);
-
-  markdownText(parameters.message, parameters.boardUri, function gotMarkdown(
-      error, markdown) {
-
-    if (error) {
-      callback(error);
-    } else {
-      parameters.markdown = markdown;
-
-      getThread(req, parameters, userData, postId, board, callback);
-    }
-
   });
 
 }
@@ -1034,7 +1056,6 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
     boardUri : parameters.boardUri
   }, {
     _id : 0,
-    lastPostId : 1,
     filters : 1,
     owner : 1,
     anonymousName : 1,
@@ -1055,8 +1076,7 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
             if (error) {
               callback(error);
             } else {
-              getPostMarkdown(req, parameters, userData,
-                  (board.lastPostId || 0) + 1, board, callback);
+              getThread(req, parameters, userData, board, callback);
             }
 
           });
