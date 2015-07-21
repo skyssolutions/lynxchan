@@ -61,6 +61,14 @@ labelMaxFileSize:
     use: have it's innerHTML manipulated.
     description: holds the maximum allowed file size for uploads.
 
+linkPrevious:
+    use: have it's href manipulated and might be removed.
+    description: link to the board previous page.
+
+linkNext:
+    use: have it's href manipulated and might be removed.
+    description: link to the board next page.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::03

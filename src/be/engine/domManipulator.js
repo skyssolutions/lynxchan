@@ -1972,7 +1972,22 @@ function generateThreadListing(document, boardUri, page, threads, latestPosts,
       }, callback);
 }
 
-function addPagesLinks(document, pageCount) {
+function addPagesLinks(document, pageCount, currentPage) {
+
+  var previous = document.getElementById('linkPrevious');
+  if (currentPage === 1) {
+    removeElement(previous);
+  } else {
+    previous.href = currentPage > 2 ? currentPage - 1 + '.html' : 'index.html';
+  }
+
+  var next = document.getElementById('linkNext');
+  if (pageCount === currentPage) {
+    removeElement(next);
+  } else {
+    next.href = (currentPage + 1) + '.html';
+  }
+
   var pagesDiv = document.getElementById('divPages');
 
   for (var i = 0; i < pageCount; i++) {
@@ -2009,7 +2024,7 @@ exports.page = function(board, page, threads, pageCount, boardData,
 
     setHeader(document, board, boardData);
 
-    addPagesLinks(document, pageCount);
+    addPagesLinks(document, pageCount, page);
 
     generateThreadListing(document, board, page, threads, latestPosts, cb);
   } catch (error) {

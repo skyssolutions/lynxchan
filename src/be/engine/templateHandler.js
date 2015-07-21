@@ -240,7 +240,8 @@ function loadAndTestTemplates(path, templateSettings) {
         template : 'boardPage',
         fields : [ 'labelName', 'labelDescription', 'divThreads', 'divPages',
             'boardIdentifier', 'linkManagement', 'bannerImage', 'captchaDiv',
-            'divName', 'linkModeration', 'labelMaxFileSize' ]
+            'divName', 'linkModeration', 'labelMaxFileSize', 'linkPrevious',
+            'linkNext' ]
       },
       {
         template : 'threadPage',
