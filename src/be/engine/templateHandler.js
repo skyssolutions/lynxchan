@@ -186,15 +186,19 @@ function loadAndTestTemplates(path, templateSettings) {
         template : 'boardsCell',
         fields : [ 'linkBoard', 'labelPostsPerHour', 'labelPostCount',
             'divDescription' ]
-      }, {
+      },
+      {
         template : 'rangeBanCell',
         fields : [ 'rangeLabel', 'idIdentifier' ]
-      }, {
+      },
+      {
         template : 'hashBanCell',
         fields : [ 'hashLabel', 'idIdentifier' ]
-      }, {
+      },
+      {
         template : 'uploadCell',
-        fields : [ 'infoLabel', 'imgLink', 'nameLink', 'divHash', 'labelHash' ]
+        fields : [ 'sizeLabel', 'imgLink', 'nameLink', 'divHash', 'labelHash',
+            'originalNameLink', 'dimensionLabel' ]
       }, {
         template : 'ruleManagementCell',
         fields : [ 'indexIdentifier', 'boardIdentifier', 'textLabel' ]

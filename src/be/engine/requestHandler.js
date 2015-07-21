@@ -89,9 +89,13 @@ function processFormRequest(req, res) {
 
 }
 
-function outputGfsFile(req, res) {
-
+function getPathNameForGfs(req) {
   var pathName = url.parse(req.url).pathname;
+
+  var aliasIndex = pathName.indexOf('/alias/');
+  if (aliasIndex > 0) {
+    pathName = pathName.substring(0, aliasIndex);
+  }
 
   // these rules are to conform with how the files are saved on gridfs
   if (pathName.length > 1) {
@@ -105,6 +109,13 @@ function outputGfsFile(req, res) {
 
     }
   }
+
+  return pathName;
+}
+
+function outputGfsFile(req, res) {
+
+  var pathName = getPathNameForGfs(req);
 
   var splitArray = pathName.split('/');
 

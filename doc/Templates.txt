@@ -652,9 +652,17 @@ uploadCell*:
 Root element: div
 
 Elements:
-infoLabel:
+sizeLabel:
     use: have it's innerHTML manipulated.
-    description: holds general information about the file.
+    description: holds the file size.
+
+dimensionLabel:
+    use: have it's innerHTML manipulated and might be removed.
+    description: holds the file dimensions, if any.
+
+originalNameLink:
+    use: have it's innerHTML and href manipulated.
+    description: link used to open the file with it's original name.
 
 imgLink:
     use: have it's href manipulated and a child appended to it.

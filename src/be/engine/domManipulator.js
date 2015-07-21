@@ -506,6 +506,10 @@ function setUploadLinks(document, cell, file) {
   var nameLink = cell.getElementsByClassName('nameLink')[0];
   nameLink.href = file.path;
   nameLink.innerHTML = file.name;
+
+  var originalLink = cell.getElementsByClassName('originalNameLink')[0];
+  originalLink.innerHTML = file.originalName;
+  originalLink.href = file.path + '/alias/' + file.originalName;
 }
 
 function setUploadModElements(modding, cell, file) {
@@ -516,6 +520,14 @@ function setUploadModElements(modding, cell, file) {
   }
 }
 
+function getUploadCellBase(document) {
+  var cell = document.createElement('div');
+  cell.innerHTML = templateHandler.uploadCell;
+  cell.setAttribute('class', 'uploadCell');
+
+  return cell;
+}
+
 function setUploadCell(document, node, files, modding) {
 
   if (!files) {
@@ -524,21 +536,23 @@ function setUploadCell(document, node, files, modding) {
 
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
-    var cell = document.createElement('div');
-    cell.innerHTML = templateHandler.uploadCell;
-    cell.setAttribute('class', 'uploadCell');
+
+    var cell = getUploadCellBase(document);
 
     setUploadLinks(document, cell, file);
 
     setUploadModElements(modding, cell, file);
 
-    var infoString = formatFileSize(file.size);
+    var sizeString = formatFileSize(file.size);
+    cell.getElementsByClassName('sizeLabel')[0].innerHTML = sizeString;
+
+    var dimensionLabel = cell.getElementsByClassName('dimensionLabel')[0];
 
     if (file.width) {
-      infoString += ', ' + file.width + 'x' + file.height;
+      dimensionLabel.innerHTML = file.width + 'x' + file.height;
+    } else {
+      removeElement(dimensionLabel);
     }
-
-    cell.getElementsByClassName('infoLabel')[0].innerHTML = infoString;
 
     node.appendChild(cell);
   }
