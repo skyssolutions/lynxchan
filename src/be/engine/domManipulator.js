@@ -34,7 +34,8 @@ var accountSettingsRelation = {
 var boardSettingsRelation = {
   disableIds : 'disableIdsCheckbox',
   disableCaptcha : 'disableCaptchaCheckbox',
-  forceAnonymity : 'forceAnonymityCheckbox'
+  forceAnonymity : 'forceAnonymityCheckbox',
+  allowCode : 'allowCodeCheckbox'
 };
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 var availableLogTypes = {

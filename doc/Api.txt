@@ -342,6 +342,7 @@ Parameters:
         disableIds: ids on threads and posts will be disabled.
         disableCaptcha: captchas will be disabled.
         forceAnonymity: the name input is disabled on posting.
+        allowCode: the use of [code] is allowed.
 
 ------------------------------------------------------------------------------------------
 

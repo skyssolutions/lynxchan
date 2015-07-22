@@ -279,7 +279,8 @@ function loadAndTestTemplates(path, templateSettings) {
             'boardSettingsIdentifier', 'disableIdsCheckbox',
             'disableCaptchaCheckbox', 'forceAnonymityCheckbox',
             'filterManagementLink', 'anonymousNameField', 'rangeBansLink',
-            'hashBansLink', 'customCssIdentifier', 'ruleManagementLink' ]
+            'hashBansLink', 'customCssIdentifier', 'ruleManagementLink',
+            'allowCodeCheckbox' ]
       },
       {
         template : 'closedReportsPage',

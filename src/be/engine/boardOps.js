@@ -16,7 +16,8 @@ var boards = db.boards();
 var logs = db.logs();
 var settings = require('../boot').getGeneralSettings();
 var restrictedBoardCreation = settings.restrictBoardCreation;
-var validSettings = [ 'disableIds', 'disableCaptcha', 'forceAnonymity' ];
+var validSettings = [ 'disableIds', 'disableCaptcha', 'forceAnonymity',
+    'allowCode' ];
 var maxRulesCount = settings.maxBoardRules || 20;
 var maxFiltersCount = settings.maxFilters || 20;
 var maxVolunteers = settings.maxBoardVolunteers || 20;

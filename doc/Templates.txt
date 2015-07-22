@@ -514,6 +514,10 @@ disableIdsCheckbox:
     use: might be turned on.
     description: check-box that indicates if the option to disable ids is turned on. 
 
+allowCodeCheckbox:
+    use: might be turned on.
+    description: check-box that indicates if the option to allow code tags is on. 
+
 disableCaptchaCheckbox:
     use: might be turned on.
     description: check-box that indicates if the option to disable captchas is turned on. 

@@ -51,6 +51,40 @@ var postingParameters = [ {
   length : 8
 } ];
 
+var greenTextFunction = function(match) {
+  return '<span class="greenText">' + match + '</span>';
+};
+
+var redTextFunction = function(match) {
+  var content = match.substring(2, match.length - 2);
+
+  return '<span class="redText">' + content + '</span>';
+};
+
+var italicFunction = function(match) {
+
+  return '<em>' + match.substring(2, match.length - 2) + '</em>';
+};
+
+var boldFunction = function(match) {
+  return '<strong>' + match.substring(3, match.length - 3) + '</strong>';
+};
+
+var underlineFunction = function(match) {
+  return '<u>' + match.substring(2, match.length - 2) + '</u>';
+};
+
+var strikeFunction = function(match) {
+  return '<s>' + match.substring(2, match.length - 2) + '</s>';
+};
+
+var spoilerFunction = function(match) {
+
+  var content = match.substring(9, match.length - 10);
+
+  return '<span class="spoiler">' + content + '</span>';
+};
+
 // Section 1: Shared functions {
 function getSignedRole(userData, wishesToSign, board) {
 
@@ -228,26 +262,24 @@ function applyFilters(filters, message) {
 }
 
 // Section 1.2: Markdown {
-function replaceStyleMarkdown(message) {
+function replaceStyleMarkdown(message, replaceCode) {
 
   var split = message.split('\n');
 
-  var greenTextFunction = function(match) {
-    return '<span class="greenText">' + match + '</span>';
-  };
-
-  var spoilerFunction = function(match) {
-
-    var content = match.substring(9, match.length - 10);
-
-    return '<span class="spoiler">' + content + '</span>';
-  };
-
   for (var i = 0; i < split.length; i++) {
 
-    split[i] = split[i].replace(/^>[^\&\s].+/g, greenTextFunction);
-
+    split[i] = split[i].replace(/^>[^\&].+/g, greenTextFunction);
+    split[i] = split[i].replace(/\=\=.+\=\=/g, redTextFunction);
+    split[i] = split[i].replace(/\'\'\'.+\'\'\'/g, boldFunction);
+    split[i] = split[i].replace(/\'\'.+\'\'/g, italicFunction);
+    split[i] = split[i].replace(/\_\_.+\_\_/g, underlineFunction);
+    split[i] = split[i].replace(/\~\~.+\~\~/g, strikeFunction);
     split[i] = split[i].replace(/\[spoiler\].+\[\/spoiler\]/g, spoilerFunction);
+
+    if (replaceCode) {
+      split[i] = split[i].replace(/\[code\]/g, '<code>');
+      split[i] = split[i].replace(/\[\/code\]/g, '</code>');
+    }
 
   }
 
@@ -256,7 +288,7 @@ function replaceStyleMarkdown(message) {
 
 }
 
-function replaceMarkdown(message, posts, board, callback) {
+function replaceMarkdown(message, posts, board, replaceCode, callback) {
 
   var postObject = {};
 
@@ -326,7 +358,7 @@ function replaceMarkdown(message, posts, board, callback) {
 
   });
 
-  message = replaceStyleMarkdown(message);
+  message = replaceStyleMarkdown(message, replaceCode);
 
   callback(null, message);
 
@@ -379,7 +411,7 @@ function getQuotes(message, board, postsToFindObject) {
 
 }
 
-function markdownText(message, board, callback) {
+function markdownText(message, board, replaceCode, callback) {
 
   message = message.replace(/</g, '&lt');
 
@@ -403,7 +435,7 @@ function markdownText(message, board, callback) {
   }
 
   if (!orBlock.length) {
-    replaceMarkdown(message, [], board, callback);
+    replaceMarkdown(message, [], board, replaceCode, callback);
   } else {
 
     posts.aggregate([ {
@@ -429,17 +461,19 @@ function markdownText(message, board, callback) {
         }
 
       }
-    } ], function gotPosts(error, result) {
+    } ],
+        function gotPosts(error, result) {
 
-      if (error) {
-        callback(error);
-      } else if (!result.length) {
-        replaceMarkdown(message, [], board, callback);
-      } else {
-        replaceMarkdown(message, result[0].posts, board, callback);
-      }
+          if (error) {
+            callback(error);
+          } else if (!result.length) {
+            replaceMarkdown(message, [], board, callback);
+          } else {
+            replaceMarkdown(message, result[0].posts, board, replaceCode,
+                callback);
+          }
 
-    });
+        });
   }
 }
 // } Section 1.2: Markdown
@@ -605,8 +639,8 @@ function getNewThreadId(req, userData, parameters, board, wishesToSign,
 
 function checkMarkdownForThread(req, userData, parameters, board, callback) {
 
-  markdownText(parameters.message, parameters.boardUri, function gotMarkdown(
-      error, markdown) {
+  markdownText(parameters.message, parameters.boardUri, board.settings
+      .indexOf('allowCode') > -1, function gotMarkdown(error, markdown) {
     if (error) {
       callback(error);
     } else {
@@ -972,8 +1006,8 @@ function getPostMarkdown(req, parameters, userData, thread, board, callback) {
 
   parameters.message = applyFilters(board.filters, parameters.message);
 
-  markdownText(parameters.message, parameters.boardUri, function gotMarkdown(
-      error, markdown) {
+  markdownText(parameters.message, parameters.boardUri, board.settings
+      .indexOf('allowCode') > -1, function gotMarkdown(error, markdown) {
 
     if (error) {
       callback(error);

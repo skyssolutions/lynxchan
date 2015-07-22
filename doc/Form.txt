@@ -370,6 +370,7 @@ Parameters:
     anonymousName: name to be used when the user is anonymous. 32 character.
     disableCaptcha: if any value is passed, captchas will be disabled.
     forceAnonymity: if any value is passed, the name input is disabled on posting.
+    allowCode: if any value is passed, use of code tag will be allowed on markdown.
 
 ------------------------------------------------------------------------------------------
 
