@@ -591,7 +591,6 @@ exports.page = function(boardUri, page, callback, boardData) {
   threads.find({
     boardUri : boardUri
   }, threadProjection).sort({
-    locked : -1,
     pinned : -1,
     lastBump : -1
   }).skip(toSkip).limit(pageSize).toArray(
@@ -618,7 +617,6 @@ exports.catalog = function(boardUri, callback) {
   threads.find({
     boardUri : boardUri
   }, threadProjection).sort({
-    locked : -1,
     pinned : -1,
     lastBump : -1
   }).toArray(function gotThreads(error, threads) {

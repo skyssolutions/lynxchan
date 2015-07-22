@@ -34,7 +34,7 @@ function outputError(error, res) {
 
     res.write('500\n' + error.toString());
 
-    if (!verbose) {
+    if (!verbose && error.code !== 'EISDIR') {
       console.log(error);
     }
 

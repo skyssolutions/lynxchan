@@ -107,10 +107,6 @@ exports.cleanThreads = function(boardUri, callback) {
       lastBump : -1
     }
   }, {
-    $sort : {
-      pinned : -1
-    }
-  }, {
     $skip : threadLimit
   }, {
     $group : {

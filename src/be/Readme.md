@@ -53,7 +53,7 @@ Settings files that goes into the settings directory:
 * `address`: ip to bind the server on. Defaults to `0.0.0.0`.
 * `port`(Number): port to listen for http. Defaults to 80.
 * `ssl`(Boolean): if true, will listen to https on port 443.
-* `fePath`: absolute path to the directory containing the fe files. Defaults to the relative path to the src/fe directory.
+* `fePath`: absolute path to the directory containing the fe files. Defaults to the relative path to the src/fe directory. The directory indicated must have the `templateSettings.json` file. If you are using the front-end at the default path, the template settings must be sitting directly inside the `src/fe` directory.
 * `pageSize`(Number): amount of threads on each board page. Defaults to 10.
 * `latestPostCount`(Number): number of latest posts to be displayed on each thread in board pages. Defaults to 5.
 * `autoSageLimit`(Number): how many posts a thread must hit at once so it becomes impossible to bump. Defaults to 500.
