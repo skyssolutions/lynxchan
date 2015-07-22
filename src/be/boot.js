@@ -64,6 +64,9 @@ reloadThumb = reloadThumb || args.indexOf('--reload-thumb') > -1;
 var reloadSpoiler = args.indexOf('-rs') > -1;
 reloadSpoiler = reloadSpoiler || args.indexOf('--rebuild-spoiler') > -1;
 
+var reloadMaintenance = args.indexOf('-rm') > -1;
+reloadSpoiler = reloadSpoiler || args.indexOf('--rebuild-maintenance') > -1;
+
 var informedLogin;
 var informedPassword;
 var informedRole;
@@ -430,6 +433,28 @@ function checkFrontPage(files) {
 
 }
 
+function checkMaintenance(files) {
+  if (files.indexOf('/maintenance.html') === -1 || reloadMaintenance) {
+    generator.maintenance(function generated(error) {
+      if (error) {
+        if (generalSettings.verbose) {
+          console.log(error);
+        }
+
+        if (debug) {
+          throw error;
+        }
+
+      } else {
+        checkFrontPage(files);
+      }
+
+    });
+  } else {
+    checkFrontPage(files);
+  }
+}
+
 // we need to check if the default pages can be found
 function checkForDefaultPages() {
 
@@ -447,7 +472,7 @@ function checkForDefaultPages() {
     $match : {
       filename : {
         $in : [ '/', '/404.html', genericThumb, '/login.html', defaultBanner,
-            spoilerImage ]
+            spoilerImage, '/maintenance.html' ]
       }
     }
   }, {
@@ -472,7 +497,7 @@ function checkForDefaultPages() {
         throw error;
       }
     } else if (files.length) {
-      checkFrontPage(files[0].pages);
+      checkMaintenance(files[0].pages);
     } else {
       regenerateAll();
     }

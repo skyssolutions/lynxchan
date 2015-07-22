@@ -207,3 +207,4 @@ msgRuleCreated: message used after adding a new rule to a board.
 msgRuleDeleted: message used after deleting a rule from a board.
 errInvalidIndex: error thrown when the index of a specified rule is invalid.
 titRules: title of the rules page of a board. Replaces: {$board}.
+titMaintenance: title of the maintenance page.

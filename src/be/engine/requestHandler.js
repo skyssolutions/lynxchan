@@ -8,7 +8,9 @@ var url = require('url');
 var formOps = require('./formOps');
 var apiOps = require('./apiOps');
 var miscOps = require('./miscOps');
-var verbose = require('../boot').getGeneralSettings().verbose;
+var settings = require('../boot').getGeneralSettings();
+var verbose = settings.verbose;
+var maintenance = settings.maintenance;
 var gridFs = require('./gridFsHandler');
 var staticHandler = require('./staticHandler');
 var debug = require('../boot').debug();
@@ -59,7 +61,11 @@ function processApiRequest(req, res) {
       delete require.cache[module];
     }
 
-    require('../api' + pathName).process(req, res);
+    if (maintenance) {
+      apiOps.outputResponse(null, null, 'maintenance', res);
+    } else {
+      require('../api' + pathName).process(req, res);
+    }
 
   } catch (error) {
     apiOps.outputError(error, res);
@@ -81,7 +87,17 @@ function processFormRequest(req, res) {
       delete require.cache[module];
     }
 
-    require('../form' + pathName).process(req, res);
+    if (maintenance) {
+      gridFs.outputFile('/maintenance.html', req, res, function streamedFile(
+          error) {
+        if (error) {
+          outputError(error, res);
+        }
+      });
+    } else {
+      require('../form' + pathName).process(req, res);
+
+    }
 
   } catch (error) {
     formOps.outputError(error, 500, res);

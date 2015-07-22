@@ -314,6 +314,12 @@ function readRangeHeader(range, totalLength) {
   return result;
 }
 
+function finishPartialStream(res, gs, callback) {
+  res.end();
+  gs.close();
+  callback();
+}
+
 function readParts(currentPosition, res, range, gs, callback) {
 
   var toRead = chunkSize;
@@ -348,9 +354,8 @@ function readParts(currentPosition, res, range, gs, callback) {
         if (verbose) {
           console.log('Finished reading.');
         }
+        finishPartialStream(res, gs, callback);
 
-        res.end();
-        gs.close();
       } else {
         if (verbose) {
           console.log(range.end - currentPosition + ' bytes left to read.');
@@ -425,13 +430,14 @@ function streamFile(stats, req, callback, cookies, res) {
         header.push([ 'Content-Length', stats.length ]);
         res.writeHead(stats.metadata.status || 200, header);
         gs.stream(true).pipe(res);
+        callback();
 
       } else {
         streamRange(range, gs, header, res, stats, callback);
       }
+    } else {
+      callback(error);
     }
-
-    callback(error);
   });
 
 }

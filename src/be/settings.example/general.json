@@ -26,5 +26,6 @@
   "blockTor": false,
   "webmThumb": false,
   "maxBoardRules": 20,
-  "thumbSize": 128
+  "thumbSize": 128, 
+  "maintenance": false
 }

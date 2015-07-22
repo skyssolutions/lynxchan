@@ -2186,4 +2186,20 @@ exports.rules = function(boardUri, rules, callback) {
     callback(error);
   }
 };
+
+exports.maintenance = function(callback) {
+  try {
+
+    var document = jsdom(templateHandler.maintenancePage);
+
+    document.title = lang.titMaintenance;
+
+    gridFs.writeData(serializer(document), '/maintenance.html', 'text/html', {
+      status : 200
+    }, callback);
+
+  } catch (error) {
+    callback(error);
+  }
+};
 // Section 3: Static pages

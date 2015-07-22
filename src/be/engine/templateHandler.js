@@ -334,6 +334,9 @@ function loadAndTestTemplates(path, templateSettings) {
       }, {
         template : 'rulesPage',
         fields : [ 'boardLabel', 'divRules' ]
+      }, {
+        template : 'maintenancePage',
+        fields : []
       } ];
 
   var errors = [];

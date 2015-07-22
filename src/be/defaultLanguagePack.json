@@ -212,5 +212,6 @@
   "msgRuleCreated": "Rule added.",
   "msgRuleDeleted": "Rule deleted.",
   "errInvalidIndex": "Invalid index.",
-  "titRules": "Rules of /{$board}/" 
+  "titRules": "Rules of /{$board}/",
+  "titMaintenance": "Maintenance"
 }

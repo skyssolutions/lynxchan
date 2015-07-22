@@ -23,6 +23,7 @@ It accepts the following arguments:
 * `--reload-notfound`, `-rn`: will rebuild 404 page on boot.
 * `--reload-thumb`, `-rt`: will rebuild generic thumbnail on boot.
 * `--rebuild-spoiler`, `-rs`: will rebuild spoiler image on boot.
+* `--rebuild-maintenance`, `-rm`: will rebuild maintenance page on boot.
 * `--no-daemon`, `-nd`: will not start listening. For rebuilding pages while having a server running.
 * `--create-account`, `-ca`: will create a new account. Require the use of the login, role and password parameters.
 * `--login`, `-l`: informs a login.
@@ -80,6 +81,7 @@ Settings files that goes into the settings directory:
 * `webmThumb`(Boolean): if true, webms will use their first frame as a thumbnail. Requires ffmpeg installed.
 * `maxBoardRules`(Number): maximum amount of rules that board owners can set. Defaults to 20.
 * `thumbSize`(Number): maximum size for both width and height for generated thumbnails. Defaults to 128.
+* `maintenance`(Boolean): if set to true, the site will refuse any request to dynamic pages or functions used to interact with the system. Only static files and files on gridfs will be output to the user.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

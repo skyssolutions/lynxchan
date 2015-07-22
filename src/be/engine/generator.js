@@ -70,7 +70,7 @@ var boardProjection = {
 };
 
 var toGenerate;
-var MAX_TO_GENERATE = 7;
+var MAX_TO_GENERATE = 8;
 var reloading;
 
 var fullReloadCallback = function(error, callback) {
@@ -133,6 +133,20 @@ exports.all = function(callback) {
   exports.login(function reloaded(error) {
     fullReloadCallback(error, callback);
   });
+
+  exports.maintenance(function reloaded(error) {
+    fullReloadCallback(error, callback);
+  });
+
+};
+
+exports.maintenance = function(callback) {
+
+  if (verbose) {
+    console.log('Generating maintenance page');
+  }
+
+  domManipulator.maintenance(callback);
 
 };
 
