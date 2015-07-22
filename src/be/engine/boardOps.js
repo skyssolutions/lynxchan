@@ -18,6 +18,8 @@ var settings = require('../boot').getGeneralSettings();
 var restrictedBoardCreation = settings.restrictBoardCreation;
 var validSettings = [ 'disableIds', 'disableCaptcha', 'forceAnonymity' ];
 var maxRulesCount = settings.maxBoardRules || 20;
+var maxFiltersCount = settings.maxFilters || 20;
+var maxVolunteers = settings.maxBoardVolunteers || 20;
 var replaceTable = {
   '<' : '&lt;',
   '>' : '&gt;'
@@ -251,6 +253,8 @@ function manageVolunteer(currentVolunteers, parameters, callback) {
 
   if (parameters.add === isAVolunteer) {
     callback();
+  } else if (!isAVolunteer && currentVolunteers.length >= maxVolunteers) {
+    callback(lang.errMaxBoardVolunteers);
   } else {
 
     var operation;
@@ -558,6 +562,45 @@ exports.getFilterData = function(user, boardUri, callback) {
 
 };
 
+// start of filter creation
+function setFilter(board, callback, parameters) {
+  var existingFilters = board.filters || [];
+
+  var found = false;
+
+  for (var i = 0; i < existingFilters.length; i++) {
+    var filter = existingFilters[i];
+
+    if (filter.originalTerm === parameters.originalTerm) {
+      found = true;
+
+      filter.replacementTerm = parameters.replacementTerm;
+
+      break;
+    }
+  }
+
+  if (!found) {
+
+    existingFilters.push({
+      originalTerm : parameters.originalTerm,
+      replacementTerm : parameters.replacementTerm
+    });
+
+  }
+
+  boards.updateOne({
+    boardUri : parameters.boardUri
+  }, {
+    $set : {
+      filters : existingFilters
+    }
+  }, function updatedFilters(error) {
+    callback(error);
+  });
+
+}
+
 exports.createFilter = function(user, parameters, callback) {
 
   miscOps.sanitizeStrings(parameters, filterParameters);
@@ -571,50 +614,15 @@ exports.createFilter = function(user, parameters, callback) {
       callback(lang.errBoardNotFound);
     } else if (board.owner !== user) {
       callback(lang.errDeniedChangeBoardSettings);
+    } else if (board.filters && board.filters.length >= maxFiltersCount) {
+      callback(lang.errMaxFiltersReached);
     } else {
-
-      var existingFilters = board.filters || [];
-
-      var found = false;
-
-      for (var i = 0; i < existingFilters.length; i++) {
-        var filter = existingFilters[i];
-
-        if (filter.originalTerm === parameters.originalTerm) {
-          found = true;
-
-          filter.replacementTerm = parameters.replacementTerm;
-
-          break;
-        }
-      }
-
-      if (!found) {
-
-        existingFilters.push({
-          originalTerm : parameters.originalTerm,
-          replacementTerm : parameters.replacementTerm
-        });
-
-      }
-
-      // style exception, too simple
-      boards.updateOne({
-        boardUri : parameters.boardUri
-      }, {
-        $set : {
-          filters : existingFilters
-        }
-      }, function updatedFilters(error) {
-        callback(error);
-      });
-
-      // style exception, too simple
-
+      setFilter(board, callback, parameters);
     }
   });
 
 };
+// end of filter creation
 
 exports.deleteFilter = function(login, parameters, callback) {
 

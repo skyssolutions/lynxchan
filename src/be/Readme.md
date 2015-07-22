@@ -82,6 +82,9 @@ Settings files that goes into the settings directory:
 * `maxBoardRules`(Number): maximum amount of rules that board owners can set. Defaults to 20.
 * `thumbSize`(Number): maximum size for both width and height for generated thumbnails. Defaults to 128.
 * `maintenance`(Boolean): if set to true, the site will refuse any request to dynamic pages or functions used to interact with the system. Only static files and files on gridfs will be output to the user.
+* `multipleReports`(Boolean): if true, allows for multiple postings to be reported at once.
+* `maxFilters`(Number): maximum amount of filters a board owner can set. Defaults to 20.
+* `maxBoardVolunteers`: maximum amount of volunteers a board can have. Defaults to 20.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

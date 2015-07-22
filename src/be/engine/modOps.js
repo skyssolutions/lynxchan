@@ -14,6 +14,7 @@ var reports = db.reports();
 var miscOps = require('./miscOps');
 var settings = require('../boot').getGeneralSettings();
 var blockTor = settings.blockTor;
+var multipleReports = settings.multipleReports;
 var lang = require('./langOps').languagePack();
 var logger = require('../logger');
 var defaultBanMessage = settings.defaultBanMessage;
@@ -334,6 +335,8 @@ exports.report = function(req, reportedContent, parameters, callback) {
 
   if (!reportedContent.length) {
     callback();
+  } else if (reportedContent.length > 1 && !multipleReports) {
+    callback(lang.errDeniedMultipleReports);
   } else {
 
     var report = reportedContent.shift();

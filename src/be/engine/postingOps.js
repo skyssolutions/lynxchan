@@ -23,6 +23,7 @@ var settings = boot.getGeneralSettings();
 var latestPostsCount = boot.latestPostCount();
 var threadLimit = boot.maxThreads();
 var bumpLimit = settings.autoSageLimit || 500;
+var autoLockLimit = bumpLimit * 2;
 var defaultAnonymousName = settings.defaultAnonymousName;
 var verbose = settings.verbose;
 
@@ -1010,14 +1011,14 @@ function getThread(req, parameters, userData, board, callback) {
     boardUri : parameters.boardUri,
     threadId : parameters.threadId
   }, {
-    latestPosts : 1,
-    autoSage : 1,
-    locked : 1,
+    _id : 1,
     salt : 1,
-    cyclic : 1,
-    postCount : 1,
     page : 1,
-    _id : 1
+    cyclic : 1,
+    locked : 1,
+    autoSage : 1,
+    postCount : 1,
+    latestPosts : 1
   }, function gotThread(error, thread) {
     if (error) {
       callback(error);
@@ -1025,6 +1026,8 @@ function getThread(req, parameters, userData, board, callback) {
       callback(lang.errThreadNotFound);
     } else if (thread.locked) {
       callback(lang.errThreadLocked);
+    } else if (thread.postCount >= autoLockLimit) {
+      callback(lang.errThreadAutoLocked);
     } else {
 
       if (board.settings.indexOf('forceAnonymity') > -1) {

@@ -27,5 +27,7 @@
   "webmThumb": false,
   "maxBoardRules": 20,
   "thumbSize": 128, 
-  "maintenance": false
+  "maintenance": false,
+  "maxFilters": 20,
+  "maxBoardVolunteers": 20
 }
