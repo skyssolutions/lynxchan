@@ -212,3 +212,8 @@ errDeniedMultipleReports: error thrown when the user is not allowed to report mu
 errThreadAutoLocked: error thrown when the user tries to post on an auto-locked thread.
 errMaxFiltersReached: error thrown when the board owner tries to add a filter after the board has already reached the maximum amount of filters allowed.
 errMaxBoardVolunteers: error thrown when the board owner tries to add a volunteer after the board has already reached the maximum amount of volunteers allowed.
+deniedEdit: error thrown when the user is not allowed to edit a posting.
+msgPostingEdited: message used after editing a posting.
+errPostingNotFound: error thrown when the specified posting can not be found.
+titEdit: title of the edit page.
+guiEditInfo: string used to inform the last time a posting was edited. Replaces: {$login}, {$date}.

@@ -17,6 +17,7 @@ var blockTor = settings.blockTor;
 var multipleReports = settings.multipleReports;
 var lang = require('./langOps').languagePack();
 var logger = require('../logger');
+var postOps = require('./postingOps');
 var defaultBanMessage = settings.defaultBanMessage;
 
 if (!defaultBanMessage) {
@@ -36,6 +37,12 @@ var banArguments = [ {
 }, {
   field : 'banMessage',
   length : 128,
+  removeHTML : true
+} ];
+
+var editArguments = [ {
+  field : 'message',
+  length : 2048,
   removeHTML : true
 } ];
 
@@ -291,6 +298,58 @@ exports.checkForBan = function(req, boardUri, callback) {
       };
 
       bans.findOne(finalCondition, callback);
+    }
+
+  });
+
+};
+
+exports.getPostingToEdit = function(userData, parameters, callback) {
+
+  var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+
+  boards.findOne({
+    boardUri : parameters.boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errBoardNotFound);
+    } else if (!globalStaff && !exports.isInBoardStaff(userData, board)) {
+      callback(callback(lang.deniedEdit));
+    } else {
+
+      var collectionToUse;
+      var query;
+
+      if (parameters.postId) {
+
+        query = {
+          postId : +parameters.postId
+        };
+        collectionToUse = parameters.postId ? posts : threads;
+      } else {
+        collectionToUse = threads;
+
+        query = {
+          threadId : +parameters.threadId
+        };
+
+      }
+
+      query.boardUri = parameters.boardUri;
+
+      // style exception, too simple
+      collectionToUse.findOne(query, function gotPosting(error, posting) {
+        if (error) {
+          callback(error);
+        } else if (!posting) {
+          callback(lang.errPostingNotFound);
+        } else {
+          callback(null, posting.message);
+        }
+      });
+      // style exception, too simple
     }
 
   });
@@ -922,6 +981,8 @@ function checkForBoardBanLiftPermission(ban, userData, callback) {
 
 exports.liftBan = function(userData, parameters, callback) {
 
+  var globalStaff = userData.globalRole < miscOps.getMaxStaffRole();
+
   try {
     bans.findOne({
       _id : new ObjectID(parameters.banId)
@@ -934,7 +995,7 @@ exports.liftBan = function(userData, parameters, callback) {
 
         checkForBoardBanLiftPermission(ban, userData, callback);
 
-      } else if (userData.globalRole >= miscOps.getMaxStaffRole()) {
+      } else if (!globalStaff) {
         callback(lang.errDeniedGlobalBanManagement);
       } else {
         liftBan(ban, userData, callback);
@@ -1267,6 +1328,8 @@ function checkForBoardHashBanLiftPermission(hashBan, userData, callback) {
 
 exports.liftHashBan = function(userData, parameters, callback) {
   try {
+    var globalStaff = userData.globalRole < miscOps.getMaxStaffRole();
+
     hashBans.findOne({
       _id : new ObjectID(parameters.hashBanId)
     }, function gotHashBan(error, hashBan) {
@@ -1278,7 +1341,7 @@ exports.liftHashBan = function(userData, parameters, callback) {
 
         checkForBoardHashBanLiftPermission(hashBan, userData, callback);
 
-      } else if (userData.globalRole >= miscOps.getMaxStaffRole()) {
+      } else if (!globalStaff) {
         callback(lang.errDeniedGlobalHashBansManagement);
       } else {
         liftHashBan(hashBan, userData, callback);
@@ -1289,6 +1352,115 @@ exports.liftHashBan = function(userData, parameters, callback) {
   }
 };
 // } Section 3.8: Lift hash ban
+
+// Section 3.9: Save edit {
+function queueRebuild(page, board, threadId, callback) {
+  process.send({
+    board : board,
+    thread : threadId
+  });
+
+  process.send({
+    board : board,
+    page : page
+  });
+
+  callback();
+}
+
+function saveEdit(parameters, login, callback) {
+
+  var collectionToUse;
+  var query;
+
+  if (parameters.postId) {
+
+    query = {
+      postId : +parameters.postId
+    };
+    collectionToUse = parameters.postId ? posts : threads;
+  } else {
+    collectionToUse = threads;
+
+    query = {
+      threadId : +parameters.threadId
+    };
+
+  }
+
+  query.boardUri = parameters.boardUri;
+
+  collectionToUse.findOneAndUpdate(query, {
+    $set : {
+      lastEditTime : new Date(),
+      lastEditLogin : login,
+      markdown : parameters.markdown,
+      message : parameters.message
+    }
+  }, function savedEdit(error, posting) {
+    if (error) {
+      callback(error);
+    } else if (!posting.value) {
+      callback(lang.errPostingNotFound);
+    } else if (posting.value.postId) {
+
+      // style exception, too simple
+      threads.findOne({
+        boardUri : parameters.boardUri,
+        threadId : posting.value.threadId
+      }, function gotThread(error, thread) {
+        if (error) {
+          callback(error);
+        } else {
+          queueRebuild(thread.page, parameters.boardUri,
+              posting.value.threadId, callback);
+        }
+      });
+      // style exception, too simple
+
+    } else {
+      queueRebuild(posting.value.page, parameters.boardUri,
+          posting.value.threadId, callback);
+    }
+
+  });
+
+}
+
+exports.saveEdit = function(userData, parameters, callback) {
+
+  miscOps.sanitizeStrings(parameters, editArguments);
+
+  var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+
+  boards.findOne({
+    boardUri : parameters.boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errBoardNotFound);
+    } else if (!globalStaff && !exports.isInBoardStaff(userData, board)) {
+      callback(callback(lang.deniedEdit));
+    } else {
+
+      // style exception, too simple
+      postOps.markdownText(parameters.message, parameters.boardUri,
+          board.settings.indexOf('allowCode') > -1, function gotMarkdown(error,
+              markdown) {
+            if (error) {
+              callback(error);
+            } else {
+              parameters.markdown = markdown;
+              saveEdit(parameters, userData.login, callback);
+            }
+          });
+      // style exception, too simple
+
+    }
+  });
+};
+// } Section 3.9: Save edit
 
 // } Section 3: Write Operations
 

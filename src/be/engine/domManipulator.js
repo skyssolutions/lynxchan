@@ -187,8 +187,25 @@ function setHeader(document, board, boardData) {
 
 }
 
+function setLastEditedLabel(posting, cell) {
+
+  var editedLabel = cell.getElementsByClassName('labelLastEdit')[0];
+
+  if (posting.lastEditTime) {
+
+    var formatedDate = formatDateToDisplay(posting.lastEditTime);
+
+    editedLabel.innerHTML = lang.guiEditInfo.replace('{$date}', formatedDate)
+        .replace('{$login}', posting.lastEditLogin);
+
+  } else {
+    removeElement(editedLabel);
+  }
+
+}
+
 // Section 1.2: Thread content {
-function setThreadHiddeableElements(thread, cell, modding) {
+function setThreadHiddeableElements(thread, cell, modding, boardUri) {
 
   for ( var key in indicatorsRelation) {
     if (!thread[key]) {
@@ -202,12 +219,22 @@ function setThreadHiddeableElements(thread, cell, modding) {
     removeElement(cell.getElementsByClassName('spanId')[0]);
   }
 
+  if (modding) {
+    var editLink = '/edit.js?boardUri=' + boardUri;
+    editLink += '&threadId=' + thread.threadId;
+
+    cell.getElementsByClassName('linkEdit')[0].href = editLink;
+  } else {
+    removeElement(cell.getElementsByClassName('linkEdit')[0]);
+  }
+
   if (modding && thread.ip) {
     var labelRange = cell.getElementsByClassName('labelRange')[0];
     labelRange.innerHTML = miscOps.getRange(thread.ip);
   } else {
     removeElement(cell.getElementsByClassName('panelRange')[0]);
   }
+
 }
 
 function assembleOmissionContent(thread, displayedImages, displayedPosts) {
@@ -278,11 +305,13 @@ function addThread(document, thread, posts, boardUri, innerPage, modding) {
     setOmittedInformation(thread, threadCell, posts, innerPage);
   }
 
+  setLastEditedLabel(thread, threadCell);
+
   setThreadLinks(threadCell, thread, boardUri, innerPage);
 
   setThreadComplexElements(boardUri, thread, threadCell, innerPage);
 
-  setThreadHiddeableElements(thread, threadCell, modding);
+  setThreadHiddeableElements(thread, threadCell, modding, boardUri);
 
   setThreadSimpleElements(threadCell, thread);
 
@@ -318,6 +347,8 @@ function setPostHideableElements(postCell, post) {
   } else {
     banMessageLabel.innerHTML = post.banMessage;
   }
+
+  setLastEditedLabel(post, postCell);
 
 }
 
@@ -359,6 +390,26 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document,
       post.files, modding);
 }
 
+function setPostModElements(post, modding, postCell, boardUri, threadId) {
+
+  if (modding && post.ip) {
+
+    var labelRange = postCell.getElementsByClassName('labelRange')[0];
+    labelRange.innerHTML = miscOps.getRange(post.ip);
+  } else {
+    removeElement(postCell.getElementsByClassName('panelRange')[0]);
+  }
+
+  if (modding) {
+    var editLink = '/edit.js?boardUri=' + boardUri + '&postId=' + post.postId;
+
+    postCell.getElementsByClassName('linkEdit')[0].href = editLink;
+  } else {
+    removeElement(postCell.getElementsByClassName('linkEdit')[0]);
+  }
+
+}
+
 function setPostInnerElements(document, boardUri, threadId, post, postCell,
     preview, modding) {
 
@@ -379,12 +430,7 @@ function setPostInnerElements(document, boardUri, threadId, post, postCell,
 
   setPostHideableElements(postCell, post);
 
-  if (modding && post.ip) {
-    var labelRange = postCell.getElementsByClassName('labelRange')[0];
-    labelRange.innerHTML = miscOps.getRange(post.ip);
-  } else {
-    removeElement(postCell.getElementsByClassName('panelRange')[0]);
-  }
+  setPostModElements(post, modding, postCell, boardUri, threadId);
 
   setPostComplexElements(postCell, post, boardUri, threadId, document, preview,
       modding);
@@ -1759,6 +1805,45 @@ exports.ruleManagement = function(boardUri, rules) {
 
 };
 // } Section 2.11: Rule management
+
+exports.edit = function(parameters, message) {
+  try {
+
+    var document = jsdom(templateHandler.editPage);
+
+    document.title = lang.titEdit;
+
+    document.getElementById('fieldMessage').defaultValue = message;
+
+    document.getElementById('boardIdentifier').setAttribute('value',
+        parameters.boardUri);
+
+    if (parameters.threadId) {
+      document.getElementById('threadIdentifier').setAttribute('value',
+          parameters.threadId);
+
+      removeElement(document.getElementById('postIdentifier'));
+
+    } else {
+      document.getElementById('postIdentifier').setAttribute('value',
+          parameters.postId);
+      removeElement(document.getElementById('threadIdentifier'));
+    }
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+};
 
 // Section 2: Dynamic pages
 

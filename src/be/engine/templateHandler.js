@@ -142,14 +142,14 @@ function loadAndTestTemplates(path, templateSettings) {
             'lockIndicator', 'pinIndicator', 'labelId', 'labelRole',
             'divBanMessage', 'spanId', 'panelRange', 'labelRange',
             'cyclicIndicator', 'linkQuote', 'divPosts', 'labelOmission',
-            'linkPreview' ]
+            'linkPreview', 'linkEdit', 'labelLastEdit' ]
       },
       {
         template : 'postCell',
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkSelf', 'deletionCheckBox', 'labelId',
             'labelRole', 'divBanMessage', 'spanId', 'panelRange', 'labelRange',
-            'linkQuote', 'linkPreview' ]
+            'linkQuote', 'linkPreview', 'linkEdit', 'labelLastEdit' ]
       },
       {
         template : 'staffCell',
@@ -317,27 +317,39 @@ function loadAndTestTemplates(path, templateSettings) {
         template : 'noCookieCaptchaPage',
         fields : [ 'divSolvedCaptcha', 'labelCaptchaId', 'inputCaptchaId',
             'imageCaptcha' ]
-      }, {
+      },
+      {
         template : 'rangeBansPage',
         fields : [ 'rangeBansDiv', 'boardIdentifier' ]
-      }, {
+      },
+      {
         template : 'rangeBanPage',
         fields : [ 'boardLabel', 'rangeLabel' ]
-      }, {
+      },
+      {
         template : 'hashBansPage',
         fields : [ 'hashBansDiv', 'boardIdentifier' ]
-      }, {
+      },
+      {
         template : 'notFoundPage',
         fields : []
-      }, {
+      },
+      {
         template : 'ruleManagementPage',
         fields : [ 'divRules', 'boardIdentifier' ]
-      }, {
+      },
+      {
         template : 'rulesPage',
         fields : [ 'boardLabel', 'divRules' ]
-      }, {
+      },
+      {
         template : 'maintenancePage',
         fields : []
+      },
+      {
+        template : 'editPage',
+        fields : [ 'fieldMessage', 'boardIdentifier', 'threadIdentifier',
+            'postIdentifier' ]
       } ];
 
   var errors = [];

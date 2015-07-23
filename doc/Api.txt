@@ -441,6 +441,20 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::34
+
+Name: saveEdit
+
+Description: saves a new message for a posting. Requires authentication. Restricted to global staff and board staff.
+
+Parameters:
+    boardUri: URI of the board to have a posting edited.
+    message*: new message of the posting. 2048 characters.
+    threadId: id of the thread to be edited.
+    postId: id of the post to be edited.
+    
+------------------------------------------------------------------------------------------
+
 
 *: mandatory parameters
 **: exclusive funcionality to the json api.

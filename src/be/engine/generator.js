@@ -31,6 +31,8 @@ var postProjection = {
   banMessage : 1,
   message : 1,
   email : 1,
+  lastEditTime : 1,
+  lastEditLogin : 1,
   id : 1,
   signedRole : 1,
   markdown : 1
@@ -43,6 +45,8 @@ var threadProjection = {
   signedRole : 1,
   banMessage : 1,
   cyclic : 1,
+  lastEditTime : 1,
+  lastEditLogin : 1,
   threadId : 1,
   creation : 1,
   name : 1,

@@ -411,7 +411,7 @@ function getQuotes(message, board, postsToFindObject) {
 
 }
 
-function markdownText(message, board, replaceCode, callback) {
+exports.markdownText = function(message, board, replaceCode, callback) {
 
   message = message.replace(/</g, '&lt');
 
@@ -475,7 +475,7 @@ function markdownText(message, board, replaceCode, callback) {
 
         });
   }
-}
+};
 // } Section 1.2: Markdown
 
 function createId(salt, boardUri, ip) {
@@ -639,7 +639,7 @@ function getNewThreadId(req, userData, parameters, board, wishesToSign,
 
 function checkMarkdownForThread(req, userData, parameters, board, callback) {
 
-  markdownText(parameters.message, parameters.boardUri, board.settings
+  exports.markdownText(parameters.message, parameters.boardUri, board.settings
       .indexOf('allowCode') > -1, function gotMarkdown(error, markdown) {
     if (error) {
       callback(error);
@@ -1006,7 +1006,7 @@ function getPostMarkdown(req, parameters, userData, thread, board, callback) {
 
   parameters.message = applyFilters(board.filters, parameters.message);
 
-  markdownText(parameters.message, parameters.boardUri, board.settings
+  exports.markdownText(parameters.message, parameters.boardUri, board.settings
       .indexOf('allowCode') > -1, function gotMarkdown(error, markdown) {
 
     if (error) {
