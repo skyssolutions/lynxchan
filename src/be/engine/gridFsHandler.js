@@ -5,17 +5,11 @@
 var db = require('../db');
 var files = db.files();
 var conn = db.conn();
-var boards = db.boards();
-var files = db.files();
 var mongo = require('mongodb');
 var settings = require('../boot').getGeneralSettings();
 var disable304 = settings.disable304;
 var verbose = settings.verbose;
 var miscOps = require('./miscOps');
-var boot = require('../boot');
-var genericThumb = boot.genericThumb();
-var spoilerPath = boot.spoilerImage();
-var lang = require('./langOps').languagePack();
 var permanentTypes = [ 'media', 'preview' ];
 var streamableMimes = [ 'video/webm' ];
 var chunkSize = 1024 * 255;
@@ -116,134 +110,6 @@ exports.writeFile = function(path, destination, mime, meta, callback) {
 
 };
 // end of transferring file to gridfs
-
-// start of saving upload
-// TODO transfer the logic to upload handler
-function transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb,
-    extension, meta, tooSmall) {
-
-  var fileName = fileId + '.' + extension;
-  fileName = '/' + boardUri + '/media/' + fileName;
-
-  if (tooSmall) {
-    file.thumbPath = fileName;
-  }
-
-  file.path = fileName;
-  file.gfsName = fileId + '.' + extension;
-
-  exports.writeFile(file.pathInDisk, fileName, file.mime, meta,
-      function wroteFile(error) {
-        if (error) {
-          cb(error);
-        } else {
-
-          // style exception, too simple
-
-          files.findOne({
-            filename : fileName
-          }, function gotFile(error, foundFile) {
-            if (error) {
-              cb(error);
-            } else {
-              file.md5 = foundFile.md5;
-              cb();
-            }
-          });
-
-          // style exception, too simple
-
-        }
-
-      });
-
-}
-
-function processThumb(boardUri, fileId, ext, file, webm, meta, cb, threadId,
-    postId) {
-  var thumbName = '/' + boardUri + '/media/' + 't_' + fileId + '.' + ext;
-
-  file.thumbPath = thumbName;
-
-  exports.writeFile(file.pathInDisk + (webm ? '_.png' : '_t'), thumbName,
-      file.mime, meta, function wroteTbToGfs(error) {
-        if (error) {
-          cb(error);
-        } else {
-          transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb, ext,
-              meta);
-        }
-
-      });
-}
-
-function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb,
-    spoiler, tooSmall) {
-
-  var parts = file.title.split('.');
-
-  var meta = {
-    boardUri : boardUri,
-    threadId : threadId,
-    type : 'media'
-  };
-
-  if (postId) {
-    meta.postId = postId;
-  }
-
-  if (parts.length > 1) {
-
-    var ext = parts[parts.length - 1].toLowerCase();
-
-    var image = file.mime.indexOf('image/') !== -1;
-    var webm = file.mime === 'video/webm' && settings.webmThumb;
-
-    if ((image || webm) && !spoiler) {
-      if (tooSmall) {
-        transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb, ext,
-            meta, tooSmall);
-      } else {
-
-        processThumb(boardUri, fileId, ext, file, webm, meta, cb, threadId,
-            postId);
-      }
-    } else {
-
-      file.thumbPath = spoiler ? spoilerPath : genericThumb;
-
-      transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb, ext,
-          meta);
-    }
-
-  } else {
-    cb(lang.errUnknownExtension);
-  }
-
-}
-
-exports.saveUpload = function(boardUri, threadId, postId, file, callback,
-    spoiler, tooSmall) {
-
-  boards.findOneAndUpdate({
-    boardUri : boardUri
-  }, {
-    $inc : {
-      lastFileId : 1
-    }
-  }, {
-    returnOriginal : false
-  }, function incrementedFileId(error, result) {
-    if (error) {
-      callback(error);
-    } else {
-      transferThumbToGfs(boardUri, threadId, postId, result.value.lastFileId,
-          file, callback, spoiler, tooSmall);
-    }
-  });
-
-};
-// end of saving upload
 
 exports.removeFiles = function(name, callback) {
 

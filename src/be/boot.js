@@ -15,6 +15,10 @@ var generator;
 var MINIMUM_WORKER_UPTIME = 1000;
 var forkTime = {};
 
+var defaultFilesArray;
+
+var defaultFilesRelation;
+
 var dbSettings;
 var generalSettings;
 var templateSettings;
@@ -179,6 +183,45 @@ function setDefaultImages() {
   spoilerImage = '/spoiler' + '.' + spoilerExt;
 }
 
+function composeDefaultFiles() {
+  defaultFilesArray = [ '/', '/404.html', genericThumb, '/login.html',
+      defaultBanner, spoilerImage, '/maintenance.html' ];
+
+  defaultFilesRelation = {
+    '/' : {
+      generatorFunction : 'frontPage',
+      command : reloadFront
+    },
+    '/404.html' : {
+      generatorFunction : 'notFound',
+      command : reload404
+    },
+    '/login.html' : {
+      generatorFunction : 'login',
+      command : reloadLogin
+    },
+    '/maintenance.html' : {
+      generatorFunction : 'maintenance',
+      command : reloadMaintenance
+    }
+  };
+
+  defaultFilesRelation[genericThumb] = {
+    generatorFunction : 'thumb',
+    command : reloadThumb
+  };
+
+  defaultFilesRelation[spoilerImage] = {
+    generatorFunction : 'spoiler',
+    command : reloadSpoiler
+  };
+
+  defaultFilesRelation[defaultBanner] = {
+    generatorFunction : 'defaultBanner',
+    command : reloadBanner
+  };
+}
+
 exports.loadSettings = function() {
 
   var dbSettingsPath = __dirname + '/settings/db.json';
@@ -203,6 +246,8 @@ exports.loadSettings = function() {
   templateSettings = JSON.parse(fs.readFileSync(templateSettingsPath));
 
   setDefaultImages();
+
+  composeDefaultFiles();
 
   require('./engine/langOps').init();
 
@@ -296,30 +341,22 @@ function regenerateAll() {
 
 }
 
-function checkThumb(files) {
-  if (files.indexOf(genericThumb) === -1 || reloadThumb) {
-    generator.defaultBanner(function generated(error) {
-      if (error) {
-        if (generalSettings.verbose) {
-          console.log(error);
-        }
+function iterateDefaultPages(foundFiles, index) {
 
-        if (debug) {
-          throw error;
-        }
+  index = index || 0;
 
-      } else {
-        bootWorkers();
-      }
-    });
-  } else {
+  if (index >= defaultFilesArray.length) {
     bootWorkers();
-  }
-}
+    return;
 
-function checkBanner(files) {
-  if (files.indexOf(defaultBanner) === -1 || reloadBanner) {
-    generator.defaultBanner(function generated(error) {
+  }
+
+  var fileToCheck = defaultFilesArray[index];
+
+  var fileData = defaultFilesRelation[fileToCheck];
+
+  if (foundFiles.indexOf(fileToCheck) === -1 || fileData.command) {
+    generator[fileData.generatorFunction](function generated(error) {
       if (error) {
         if (generalSettings.verbose) {
           console.log(error);
@@ -328,131 +365,14 @@ function checkBanner(files) {
         if (debug) {
           throw error;
         }
-
       } else {
-        checkThumb(files);
+        iterateDefaultPages(foundFiles, index + 1);
       }
     });
   } else {
-    checkThumb(files);
-  }
-}
-
-function checkSpoilerImage(files) {
-  if (files.indexOf(spoilerImage) === -1 || reloadSpoiler) {
-    generator.spoiler(function generated(error) {
-      if (error) {
-        if (generalSettings.verbose) {
-          console.log(error);
-        }
-
-        if (debug) {
-          throw error;
-        }
-
-      } else {
-        checkBanner(files);
-      }
-    });
-  } else {
-    checkBanner(files);
-  }
-}
-
-function checkLoginPage(files) {
-  if (files.indexOf('/login.html') === -1 || reloadLogin) {
-
-    generator.login(function generated(error) {
-      if (error) {
-        if (generalSettings.verbose) {
-          console.log(error);
-        }
-
-        if (debug) {
-          throw error;
-        }
-
-      } else {
-        checkSpoilerImage(files);
-      }
-
-    });
-
-  } else {
-    checkSpoilerImage(files);
-  }
-}
-
-function checkNotFound(files) {
-
-  if (files.indexOf('/404.html') === -1 || reload404) {
-
-    generator.notFound(function generated(error) {
-      if (error) {
-        if (generalSettings.verbose) {
-          console.log(error);
-        }
-
-        if (debug) {
-          throw error;
-        }
-
-      } else {
-        checkLoginPage(files);
-      }
-
-    });
-
-  } else {
-    checkLoginPage(files);
+    iterateDefaultPages(foundFiles, index + 1);
   }
 
-}
-
-function checkFrontPage(files) {
-
-  if (files.indexOf('/') === -1 || reloadFront) {
-    generator.frontPage(function generated(error) {
-      if (error) {
-        if (generalSettings.verbose) {
-          console.log(error);
-        }
-
-        if (debug) {
-          throw error;
-        }
-
-      } else {
-        checkNotFound(files);
-      }
-
-    });
-  } else {
-    checkNotFound(files);
-  }
-
-}
-
-function checkMaintenance(files) {
-  if (files.indexOf('/maintenance.html') === -1 || reloadMaintenance) {
-    generator.maintenance(function generated(error) {
-      if (error) {
-        if (generalSettings.verbose) {
-          console.log(error);
-        }
-
-        if (debug) {
-          throw error;
-        }
-
-      } else {
-        checkFrontPage(files);
-      }
-
-    });
-  } else {
-    checkFrontPage(files);
-  }
 }
 
 // we need to check if the default pages can be found
@@ -471,8 +391,7 @@ function checkForDefaultPages() {
   files.aggregate({
     $match : {
       filename : {
-        $in : [ '/', '/404.html', genericThumb, '/login.html', defaultBanner,
-            spoilerImage, '/maintenance.html' ]
+        $in : defaultFilesArray
       }
     }
   }, {
@@ -497,7 +416,7 @@ function checkForDefaultPages() {
         throw error;
       }
     } else if (files.length) {
-      checkMaintenance(files[0].pages);
+      iterateDefaultPages(files[0].pages);
     } else {
       regenerateAll();
     }
