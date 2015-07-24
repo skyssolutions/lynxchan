@@ -18,6 +18,7 @@ var maxRequestSize = boot.maxRequestSize();
 var maxFileSize = boot.maxFileSize();
 var maxFiles = boot.maxFiles();
 var lang = require('./langOps').languagePack();
+var videoMimes = uploadHandler.videoMimes();
 
 var FILE_EXT_RE = /(\.[_\-a-zA-Z0-9]{0,16}).*/;
 // replace base64 characters with safe-for-filename characters
@@ -108,9 +109,9 @@ function getImageBounds(toPush, parsedData, res, finalArray, toRemove, cb) {
 
 }
 
-function getWebmBounds(toPush, parsedData, res, finalArray, toRemove, cb) {
+function getVideoBounds(toPush, parsedData, res, finalArray, toRemove, cb) {
 
-  uploadHandler.getWebmBounds(toPush.pathInDisk, function gotBounds(error,
+  uploadHandler.getVideoBounds(toPush.pathInDisk, function gotBounds(error,
       width, height) {
 
     if (!error) {
@@ -131,7 +132,7 @@ function getWebmBounds(toPush, parsedData, res, finalArray, toRemove, cb) {
 function processFile(parsedData, res, finalArray, toRemove, callback) {
   var file = parsedData.parameters.files.shift();
 
-  var matches = file.content.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+  var matches = file.content.match(/^data:([0-9A-Za-z-+\/]+);base64,(.+)$/);
 
   var location = uploadPath(tempDir, file.name);
 
@@ -165,14 +166,16 @@ function processFile(parsedData, res, finalArray, toRemove, callback) {
               pathInDisk : location
             };
 
+            var video = videoMimes.indexOf(toPush.mime) > -1;
+
             if (toPush.mime.indexOf('image/') > -1) {
 
               getImageBounds(toPush, parsedData, res, finalArray, toRemove,
                   callback);
 
-            } else if (toPush.mime === 'video/webm' && settings.webmThumb) {
+            } else if (video && settings.videoThumb) {
 
-              getWebmBounds(toPush, parsedData, res, finalArray, toRemove,
+              getVideoBounds(toPush, parsedData, res, finalArray, toRemove,
                   callback);
             } else {
 

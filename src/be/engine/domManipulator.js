@@ -99,19 +99,19 @@ function padDateField(value) {
 }
 
 function formatDateToDisplay(d) {
-  var day = padDateField(d.getDate());
+  var day = padDateField(d.getUTCDate());
 
-  var month = padDateField(d.getMonth() + 1);
+  var month = padDateField(d.getUTCMonth() + 1);
 
-  var year = d.getFullYear();
+  var year = d.getUTCFullYear();
 
-  var weekDay = lang.guiWeekDays[d.getDay()];
+  var weekDay = lang.guiWeekDays[d.getUTCDay()];
 
-  var hour = padDateField(d.getHours());
+  var hour = padDateField(d.getUTCHours());
 
-  var minute = padDateField(d.getMinutes());
+  var minute = padDateField(d.getUTCMinutes());
 
-  var second = padDateField(d.getSeconds());
+  var second = padDateField(d.getUTCSeconds());
 
   var toReturn = lang.guiDateFormat.replace('{$month}', month).replace(
       '{$day}', day).replace('{$year}', year);
@@ -545,6 +545,11 @@ function setUploadLinks(document, cell, file) {
   var thumbLink = cell.getElementsByClassName('imgLink')[0];
   thumbLink.href = file.path;
 
+  if (file.width) {
+    thumbLink.setAttribute('data-filewidth', file.width);
+    thumbLink.setAttribute('data-fileheight', file.height);
+  }
+
   var img = document.createElement('img');
   img.src = file.thumb;
 
@@ -568,7 +573,7 @@ function setUploadModElements(modding, cell, file) {
 }
 
 function getUploadCellBase(document) {
-  var cell = document.createElement('div');
+  var cell = document.createElement('figure');
   cell.innerHTML = templateHandler.uploadCell;
   cell.setAttribute('class', 'uploadCell');
 

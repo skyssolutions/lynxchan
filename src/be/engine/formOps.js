@@ -21,6 +21,7 @@ var uploadDir = boot.tempDir();
 var maxRequestSize = boot.maxRequestSize();
 var maxFileSize = boot.maxFileSize();
 var maxFiles = boot.maxFiles();
+var videoMimes = uploadHandler.videoMimes();
 
 exports.getCookies = function(req) {
   var parsedCookies = {};
@@ -59,9 +60,9 @@ function getImageDimensions(toPush, files, fields, cookies, callback, res) {
 
 }
 
-function getWebmDimentions(toPush, files, fields, cookies, callback, res) {
+function getVideoDimensions(toPush, files, fields, cookies, callback, res) {
 
-  uploadHandler.getWebmBounds(toPush.pathInDisk, function gotBounds(error,
+  uploadHandler.getVideoBounds(toPush.pathInDisk, function gotBounds(error,
       width, height) {
     if (!error) {
       toPush.width = width;
@@ -114,8 +115,8 @@ function transferFileInformation(files, fields, parsedCookies, cb, res) {
 
           getImageDimensions(toPush, files, fields, parsedCookies, cb, res);
 
-        } else if (toPush.mime === 'video/webm' && settings.webmThumb) {
-          getWebmDimentions(toPush, files, fields, parsedCookies, cb, res);
+        } else if (videoMimes.indexOf(toPush.mime) > -1 && settings.webmThumb) {
+          getVideoDimensions(toPush, files, fields, parsedCookies, cb, res);
         } else {
           fields.files.push(toPush);
 

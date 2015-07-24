@@ -78,7 +78,7 @@ Settings files that goes into the settings directory:
 * `torSource`: url to the list of TOR exit nodes ips. Defaults to `https://check.torproject.org/exit-addresses`.
 * `blockTor`(Boolean): if true, TOR users will be blocked.
 * `languagePackPath`: absolute path to an optional language pack.
-* `webmThumb`(Boolean): if true, webms will use their first frame as a thumbnail. Requires ffmpeg installed.
+* `videoThumb`(Boolean): if true, videos will use their first frame as a thumbnail. Requires ffmpeg installed.
 * `maxBoardRules`(Number): maximum amount of rules that board owners can set. Defaults to 20.
 * `thumbSize`(Number): maximum size for both width and height for generated thumbnails. Defaults to 128.
 * `maintenance`(Boolean): if set to true, the site will refuse any request to dynamic pages or functions used to interact with the system. Only static files and files on gridfs will be output to the user.

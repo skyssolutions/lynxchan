@@ -24,8 +24,14 @@ var supportedMimes = settings.acceptedMimes;
 var thumbSize = settings.thumbSize || 128;
 if (!supportedMimes) {
   supportedMimes = [ 'image/png', 'image/jpeg', 'image/gif', 'image/bmp',
-      'video/webm' ];
+      'video/webm', 'audio/mpeg', 'video/mp4' ];
 }
+
+var videoMimes = [ 'video/webm', 'video/mp4' ];
+
+exports.videoMimes = function() {
+  return videoMimes;
+};
 
 exports.supportedMimes = function() {
   return supportedMimes;
@@ -45,7 +51,7 @@ exports.getImageBounds = function(path, callback) {
 
 };
 
-exports.getWebmBounds = function(path, callback) {
+exports.getVideoBounds = function(path, callback) {
 
   exec(webmLengthCommand + path, function gotDimensions(error, output) {
 
@@ -134,11 +140,11 @@ function cleanThumbNail(boardUri, threadId, postId, files, file, callback,
     index, saveError, spoiler, tooSmall) {
 
   var image = file.mime.indexOf('image/') !== -1;
-  var webm = file.mime === 'video/webm' && settings.webmThumb;
+  var video = videoMimes.indexOf(file.mime) > -1 && settings.videoThumb;
 
-  if ((image || webm) && !spoiler && !tooSmall) {
+  if ((image || video) && !spoiler && !tooSmall) {
 
-    exports.removeFromDisk(file.pathInDisk + (webm ? '_.png' : '_t'),
+    exports.removeFromDisk(file.pathInDisk + (video ? '_.png' : '_t'),
         function removed(deletionError) {
           if (saveError || deletionError) {
             callback(saveError || deletionError);
@@ -199,13 +205,13 @@ function transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb,
 
 }
 
-function processThumb(boardUri, fileId, ext, file, webm, meta, cb, threadId,
+function processThumb(boardUri, fileId, ext, file, video, meta, cb, threadId,
     postId) {
   var thumbName = '/' + boardUri + '/media/' + 't_' + fileId + '.' + ext;
 
   file.thumbPath = thumbName;
 
-  gsHandler.writeFile(file.pathInDisk + (webm ? '_.png' : '_t'), thumbName,
+  gsHandler.writeFile(file.pathInDisk + (video ? '_.png' : '_t'), thumbName,
       file.mime, meta, function wroteTbToGfs(error) {
         if (error) {
           cb(error);
@@ -237,15 +243,15 @@ function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb,
     var ext = parts[parts.length - 1].toLowerCase();
 
     var image = file.mime.indexOf('image/') !== -1;
-    var webm = file.mime === 'video/webm' && settings.webmThumb;
+    var video = videoMimes.indexOf(file.mime) > -1 && settings.videoThumb;
 
-    if ((image || webm) && !spoiler) {
+    if ((image || video) && !spoiler) {
       if (tooSmall) {
         transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb, ext,
             meta, tooSmall);
       } else {
 
-        processThumb(boardUri, fileId, ext, file, webm, meta, cb, threadId,
+        processThumb(boardUri, fileId, ext, file, video, meta, cb, threadId,
             postId);
       }
     } else {
@@ -327,7 +333,7 @@ function processFile(boardUri, threadId, postId, files, file, spoiler,
 
           }
         });
-  } else if (file.mime === 'video/webm' && settings.webmThumb) {
+  } else if (videoMimes.indexOf(file.mime) > -1 && settings.videoThumb) {
 
     var command = webmThumbCommand.replace('{$path}', file.pathInDisk);
 

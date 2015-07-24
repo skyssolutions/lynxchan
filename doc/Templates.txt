@@ -677,7 +677,7 @@ boardLabel:
 TEM_ID::19
 
 uploadCell*:
-Root element: div
+Root element: figure
 
 Elements:
 sizeLabel:
@@ -694,7 +694,7 @@ originalNameLink:
 
 imgLink:
     use: have it's href manipulated and a child appended to it.
-    description: holds the thumbnail of the image and links to the file.
+    description: holds the thumbnail of the image and links to the file. If the file has dimensions, will have the attributes "data-filewidth" and "data-fileheight" with the dimensions of the file.
 
 nameLink:
     use: have it's href and it's innerHTML manipulated.
