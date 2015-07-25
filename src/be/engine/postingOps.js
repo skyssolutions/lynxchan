@@ -243,6 +243,10 @@ function addPostToStats(boardUri, callback) {
 
 }
 
+function escapeRegExp(string) {
+  return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
+}
+
 function applyFilters(filters, message) {
 
   if (!filters || !filters.length) {
@@ -253,7 +257,9 @@ function applyFilters(filters, message) {
 
     var filter = filters[i];
 
-    message = message.replace(filter.originalTerm, filter.replacementTerm);
+    message = message.replace(
+        new RegExp(escapeRegExp(filter.originalTerm), 'g'),
+        filter.replacementTerm);
 
   }
 

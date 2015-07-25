@@ -2143,16 +2143,10 @@ function setCellThumb(thumbLink, boardUri, document, thread) {
   if (thread.files && thread.files.length) {
     var thumbImage = document.createElement('img');
 
-    if (thread.files[0].height > thread.files[0].width) {
-      thumbImage.style.height = '128px';
-    } else {
-      thumbImage.style.width = '128px';
-    }
-
     thumbImage.src = thread.files[0].thumb;
     thumbLink.appendChild(thumbImage);
   } else {
-    thumbLink.innerHTML = 'Open';
+    thumbLink.innerHTML = lang.guiOpen;
   }
 }
 

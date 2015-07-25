@@ -22,6 +22,7 @@ It accepts the following arguments:
 * `--reload-front`, `-rf`: will rebuild front-page on boot.
 * `--reload-notfound`, `-rn`: will rebuild 404 page on boot.
 * `--reload-thumb`, `-rt`: will rebuild generic thumbnail on boot.
+* `--reload-audio`, `-ra`: will rebuild generic audio thumb on boot.
 * `--rebuild-spoiler`, `-rs`: will rebuild spoiler image on boot.
 * `--rebuild-maintenance`, `-rm`: will rebuild maintenance page on boot.
 * `--no-daemon`, `-nd`: will not start listening. For rebuilding pages while having a server running.

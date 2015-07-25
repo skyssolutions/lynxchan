@@ -24,6 +24,7 @@ var generalSettings;
 var templateSettings;
 var genericThumb;
 var defaultBanner;
+var genericAudioThumb;
 var spoilerImage;
 var fePath;
 var tempDirectory;
@@ -61,6 +62,9 @@ reloadFront = reloadFront || args.indexOf('--reload-front') > -1;
 
 var reload404 = args.indexOf('-rn') > -1;
 reload404 = reload404 || args.indexOf('--reload-notfound') > -1;
+
+var reloadAudioThumb = args.indexOf('-ra') > -1;
+reloadAudioThumb = reloadAudioThumb || args.indexOf('--reload-audio') > -1;
 
 var reloadThumb = args.indexOf('-rt') > -1;
 reloadThumb = reloadThumb || args.indexOf('--reload-thumb') > -1;
@@ -111,6 +115,10 @@ if (createAccount || setRole) {
 
 exports.genericThumb = function() {
   return genericThumb;
+};
+
+exports.genericAudioThumb = function() {
+  return genericAudioThumb;
 };
 
 exports.spoilerImage = function() {
@@ -170,6 +178,12 @@ function setDefaultImages() {
 
   genericThumb = '/genericThumb' + '.' + thumbExt;
 
+  var audioThumbExt = templateSettings.audioThumb.split('.');
+
+  audioThumbExt = audioThumbExt[audioThumbExt.length - 1].toLowerCase();
+
+  genericAudioThumb = '/audioGenericThumb' + '.' + audioThumbExt;
+
   var bannerExt = templateSettings.defaultBanner.split('.');
 
   bannerExt = bannerExt[bannerExt.length - 1].toLowerCase();
@@ -185,7 +199,7 @@ function setDefaultImages() {
 
 function composeDefaultFiles() {
   defaultFilesArray = [ '/', '/404.html', genericThumb, '/login.html',
-      defaultBanner, spoilerImage, '/maintenance.html' ];
+      defaultBanner, spoilerImage, '/maintenance.html', genericAudioThumb ];
 
   defaultFilesRelation = {
     '/' : {
@@ -220,6 +234,12 @@ function composeDefaultFiles() {
     generatorFunction : 'defaultBanner',
     command : reloadBanner
   };
+
+  defaultFilesRelation[genericAudioThumb] = {
+    generatorFunction : 'audioThumb',
+    command : reloadAudioThumb
+  };
+
 }
 
 exports.loadSettings = function() {

@@ -15,11 +15,16 @@ var lang = require('./langOps').languagePack();
 var exec = require('child_process').exec;
 var boot = require('../boot');
 var genericThumb = boot.genericThumb();
+var genericAudioThumb = boot.genericAudioThumb();
 var spoilerPath = boot.spoilerImage();
 var posts = db.posts();
 var settings = require('../boot').getGeneralSettings();
-var webmLengthCommand = 'ffprobe -v error -show_entries stream=width,height ';
-var webmThumbCommand = 'ffmpeg -i {$path} -vframes 1 -vf scale=';
+var videoDimensionsCommand = 'ffprobe -v error -show_entries ';
+videoDimensionsCommand += 'stream=width,height ';
+var videoThumbCommand = 'ffmpeg -i {$path} -y -vframes 1 -vf scale=';
+var mp3ThumbCommand = 'ffmpeg -i {$path} -y -an -vcodec copy {$destination}';
+mp3ThumbCommand += ' && mogrify -resize {$dimension} {$destination}';
+
 var supportedMimes = settings.acceptedMimes;
 var thumbSize = settings.thumbSize || 128;
 if (!supportedMimes) {
@@ -32,6 +37,8 @@ var correctedMimesRelation = {
   'video/webm' : 'audio/webm',
   'video/ogg' : 'audio/ogg'
 };
+
+var thumbAudioMimes = [ 'audio/mpeg', 'audio/ogg' ];
 
 var videoMimes = [ 'video/webm', 'video/mp4', 'video/ogg' ];
 
@@ -57,11 +64,12 @@ exports.getImageBounds = function(path, callback) {
 
 };
 
+// side-effect: might change the file mime.
 exports.getVideoBounds = function(file, callback) {
 
   var path = file.pathInDisk;
 
-  exec(webmLengthCommand + path, function gotDimensions(error, output) {
+  exec(videoDimensionsCommand + path, function gotDimensions(error, output) {
 
     if (error) {
       callback(error);
@@ -158,14 +166,15 @@ function updatePostingFiles(boardUri, threadId, postId, files, file, callback,
 }
 
 function cleanThumbNail(boardUri, threadId, postId, files, file, callback,
-    index, saveError, spoiler, tooSmall) {
+    index, saveError, spoiler, tooSmall, audioThumbError) {
 
   var image = file.mime.indexOf('image/') !== -1;
   var video = videoMimes.indexOf(file.mime) > -1 && settings.videoThumb;
+  var audio = thumbAudioMimes.indexOf(file.mime) > -1 && !audioThumbError;
 
-  if ((image || video) && !spoiler && !tooSmall) {
+  if ((image || video || audio) && !spoiler && !tooSmall) {
 
-    exports.removeFromDisk(file.pathInDisk + (video ? '_.png' : '_t'),
+    exports.removeFromDisk(file.pathInDisk + (video || audio ? '_.png' : '_t'),
         function removed(deletionError) {
           if (saveError || deletionError) {
             callback(saveError || deletionError);
@@ -186,6 +195,7 @@ function cleanThumbNail(boardUri, threadId, postId, files, file, callback,
   }
 }
 
+// start of bad code
 function transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb,
     extension, meta, tooSmall) {
 
@@ -226,14 +236,16 @@ function transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb,
 
 }
 
-function processThumb(boardUri, fileId, ext, file, video, meta, cb, threadId,
-    postId) {
+function processThumb(boardUri, fileId, ext, file, video, audio, meta, cb,
+    threadId, postId) {
   var thumbName = '/' + boardUri + '/media/' + 't_' + fileId + '.' + ext;
 
   file.thumbPath = thumbName;
 
-  gsHandler.writeFile(file.pathInDisk + (video ? '_.png' : '_t'), thumbName,
-      file.mime, meta, function wroteTbToGfs(error) {
+  var thumbMime = (video || audio) ? 'image/png' : file.mime;
+
+  gsHandler.writeFile(file.pathInDisk + ((video || audio) ? '_.png' : '_t'),
+      thumbName, thumbMime, meta, function wroteTbToGfs(error) {
         if (error) {
           cb(error);
         } else {
@@ -244,11 +256,7 @@ function processThumb(boardUri, fileId, ext, file, video, meta, cb, threadId,
       });
 }
 
-function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb,
-    spoiler, tooSmall) {
-
-  var parts = file.title.split('.');
-
+function getFileMeta(boardUri, threadId, postId) {
   var meta = {
     boardUri : boardUri,
     threadId : threadId,
@@ -259,28 +267,49 @@ function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb,
     meta.postId = postId;
   }
 
+  return meta;
+}
+
+function useGenericThumb(audioMime, file, boardUri, threadId, postId, fileId,
+    cb, ext, meta, spoiler) {
+
+  var genericToUse = audioMime ? genericAudioThumb : genericThumb;
+
+  file.thumbPath = spoiler ? spoilerPath : genericToUse;
+
+  transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb, ext, meta);
+}
+
+function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb,
+    spoiler, tooSmall, audioThumbError) {
+
+  var parts = file.title.split('.');
+
+  var meta = getFileMeta(boardUri, threadId, postId);
+
+  var audioMime = thumbAudioMimes.indexOf(file.mime) > -1;
+
   if (parts.length > 1) {
 
     var ext = parts[parts.length - 1].toLowerCase();
 
     var image = file.mime.indexOf('image/') !== -1;
     var video = videoMimes.indexOf(file.mime) > -1 && settings.videoThumb;
+    var audio = audioMime && !audioThumbError;
+    audio = audio && settings.videoThumb;
 
-    if ((image || video) && !spoiler) {
+    if ((image || video || audio) && !spoiler) {
       if (tooSmall) {
         transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb, ext,
             meta, tooSmall);
       } else {
 
-        processThumb(boardUri, fileId, ext, file, video, meta, cb, threadId,
-            postId);
+        processThumb(boardUri, fileId, ext, file, video, audio, meta, cb,
+            threadId, postId);
       }
     } else {
-
-      file.thumbPath = spoiler ? spoilerPath : genericThumb;
-
-      transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb, ext,
-          meta);
+      useGenericThumb(audioMime, file, boardUri, threadId, postId, fileId, cb,
+          ext, meta, spoiler);
     }
 
   } else {
@@ -290,7 +319,7 @@ function transferThumbToGfs(boardUri, threadId, postId, fileId, file, cb,
 }
 
 function saveUpload(boardUri, threadId, postId, file, callback, spoiler,
-    tooSmall) {
+    tooSmall, audioThumbError) {
 
   boards.findOneAndUpdate({
     boardUri : boardUri
@@ -305,20 +334,21 @@ function saveUpload(boardUri, threadId, postId, file, callback, spoiler,
       callback(error);
     } else {
       transferThumbToGfs(boardUri, threadId, postId, result.value.lastFileId,
-          file, callback, spoiler, tooSmall);
+          file, callback, spoiler, tooSmall, audioThumbError);
     }
   });
 
 }
+// end of bad code
 
 function transferFilesToGS(boardUri, threadId, postId, files, file, callback,
-    index, spoiler, tooSmall) {
+    index, spoiler, tooSmall, audioThumbError) {
 
   saveUpload(boardUri, threadId, postId, file, function transferedFile(error) {
 
     cleanThumbNail(boardUri, threadId, postId, files, file, callback, index,
-        error, spoiler, tooSmall);
-  }, spoiler, tooSmall);
+        error, spoiler, tooSmall, audioThumbError);
+  }, spoiler, tooSmall, audioThumbError);
 }
 
 function checkForHashBan(boardUri, md5, callback) {
@@ -356,7 +386,7 @@ function processFile(boardUri, threadId, postId, files, file, spoiler,
         });
   } else if (videoMimes.indexOf(file.mime) > -1 && settings.videoThumb) {
 
-    var command = webmThumbCommand.replace('{$path}', file.pathInDisk);
+    var command = videoThumbCommand.replace('{$path}', file.pathInDisk);
 
     if (tooSmall) {
       command += '-1:-1';
@@ -375,6 +405,19 @@ function processFile(boardUri, threadId, postId, files, file, spoiler,
         transferFilesToGS(boardUri, threadId, postId, files, file, callback,
             index, spoiler);
       }
+    });
+
+  } else if (thumbAudioMimes.indexOf(file.mime) > -1 && settings.videoThumb) {
+
+    var mp3Command = mp3ThumbCommand.replace('{$path}', file.pathInDisk)
+        .replace(/\{\$destination\}/g, file.pathInDisk + '_.png').replace(
+            '{$dimension}', thumbSize + 'x' + thumbSize);
+
+    exec(mp3Command, function createdThumb(error) {
+
+      transferFilesToGS(boardUri, threadId, postId, files, file, callback,
+          index, spoiler, null, error);
+
     });
 
   } else {

@@ -222,5 +222,6 @@
   "msgPostingEdited": "Posting edited.",
   "errPostingNotFound": "Posting could not be found.",
   "titEdit": "Edit",
-  "guiEditInfo": "Edited last time by {$login} on {$date}."
+  "guiEditInfo": "Edited last time by {$login} on {$date}.",
+  "guiOpen": "Open"
 }

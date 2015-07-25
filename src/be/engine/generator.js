@@ -74,7 +74,7 @@ var boardProjection = {
 };
 
 var toGenerate;
-var MAX_TO_GENERATE = 8;
+var MAX_TO_GENERATE = 9;
 var reloading;
 
 var fullReloadCallback = function(error, callback) {
@@ -142,6 +142,10 @@ exports.all = function(callback) {
     fullReloadCallback(error, callback);
   });
 
+  exports.reloadAudioThumb(function reloaded(error) {
+    fullReloadCallback(error, callback);
+  });
+
 };
 
 exports.maintenance = function(callback) {
@@ -163,6 +167,20 @@ exports.login = function(callback) {
 
 };
 
+exports.reloadAudioThumb = function(callback) {
+
+  if (verbose) {
+    console.log('Saving audio thumb image');
+  }
+
+  var filePath = boot.getFePath() + '/templates/';
+  filePath += templateSettings.audioThumb;
+
+  gfsHandler.writeFile(filePath, boot.genericAudioThumb(), miscOps.getMime(boot
+      .genericAudioThumb()), {}, callback);
+
+};
+
 exports.spoiler = function(callback) {
 
   if (verbose) {
@@ -173,9 +191,7 @@ exports.spoiler = function(callback) {
   filePath += templateSettings.spoiler;
 
   gfsHandler.writeFile(filePath, boot.spoilerImage(), miscOps.getMime(boot
-      .spoilerImage()), {}, function wroteBanner(error) {
-    callback(error);
-  });
+      .spoilerImage()), {}, callback);
 
 };
 
@@ -191,9 +207,7 @@ exports.defaultBanner = function(callback) {
   gfsHandler.writeFile(filePath, boot.defaultBanner(), miscOps.getMime(boot
       .defaultBanner()), {
     status : 200
-  }, function wroteBanner(error) {
-    callback(error);
-  });
+  }, callback);
 };
 
 exports.thumb = function(callback) {
@@ -205,9 +219,7 @@ exports.thumb = function(callback) {
   var filePath = boot.getFePath() + '/templates/' + templateSettings.thumb;
 
   gfsHandler.writeFile(filePath, boot.genericThumb(), miscOps.getMime(boot
-      .genericThumb()), {}, function wroteThumb(error) {
-    callback(error);
-  });
+      .genericThumb()), {}, callback);
 };
 
 exports.notFound = function(callback) {
