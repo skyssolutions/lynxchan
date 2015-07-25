@@ -111,7 +111,7 @@ function getImageBounds(toPush, parsedData, res, finalArray, toRemove, cb) {
 
 function getVideoBounds(toPush, parsedData, res, finalArray, toRemove, cb) {
 
-  uploadHandler.getVideoBounds(toPush.pathInDisk, function gotBounds(error,
+  uploadHandler.getVideoBounds(toPush, function gotBounds(error,
       width, height) {
 
     if (!error) {

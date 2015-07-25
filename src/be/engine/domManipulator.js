@@ -541,14 +541,25 @@ function formatFileSize(size) {
 
 }
 
-function setUploadLinks(document, cell, file) {
-  var thumbLink = cell.getElementsByClassName('imgLink')[0];
-  thumbLink.href = file.path;
-
+function setUploadAttributes(file, thumbLink) {
   if (file.width) {
     thumbLink.setAttribute('data-filewidth', file.width);
     thumbLink.setAttribute('data-fileheight', file.height);
   }
+
+  var mime = file.mime || miscOps.getMime(file.path);
+  // TODO remove the attempt to use the file extension to find it's mmime.
+  // it is here because originally this information wouldn't be in the file
+  // pre-aggregated data.
+
+  thumbLink.setAttribute('data-filemime', mime);
+}
+
+function setUploadLinks(document, cell, file) {
+  var thumbLink = cell.getElementsByClassName('imgLink')[0];
+  thumbLink.href = file.path;
+
+  setUploadAttributes(file, thumbLink);
 
   var img = document.createElement('img');
   img.src = file.thumb;

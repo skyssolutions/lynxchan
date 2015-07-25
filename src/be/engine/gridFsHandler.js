@@ -11,7 +11,8 @@ var disable304 = settings.disable304;
 var verbose = settings.verbose;
 var miscOps = require('./miscOps');
 var permanentTypes = [ 'media', 'preview' ];
-var streamableMimes = [ 'video/webm', 'audio/mpeg', 'video/mp4' ];
+var streamableMimes = [ 'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg',
+    'audio/ogg', 'audio/webm' ];
 var chunkSize = 1024 * 255;
 
 // start of writing data

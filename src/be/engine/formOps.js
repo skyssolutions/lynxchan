@@ -62,7 +62,7 @@ function getImageDimensions(toPush, files, fields, cookies, callback, res) {
 
 function getVideoDimensions(toPush, files, fields, cookies, callback, res) {
 
-  uploadHandler.getVideoBounds(toPush.pathInDisk, function gotBounds(error,
+  uploadHandler.getVideoBounds(toPush, function gotBounds(error,
       width, height) {
     if (!error) {
       toPush.width = width;

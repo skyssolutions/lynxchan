@@ -66,6 +66,8 @@ var MIMETYPES = {
   o : 'application/octet-stream',
   obj : 'application/octet-stream',
   oda : 'application/oda',
+  ogg : 'audio/ogg',
+  ogv : 'video/ogg',
   pbm : 'image/x-portable-bitmap',
   pdf : 'application/pdf',
   pfx : 'application/x-pkcs12',

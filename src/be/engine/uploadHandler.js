@@ -24,10 +24,16 @@ var supportedMimes = settings.acceptedMimes;
 var thumbSize = settings.thumbSize || 128;
 if (!supportedMimes) {
   supportedMimes = [ 'image/png', 'image/jpeg', 'image/gif', 'image/bmp',
-      'video/webm', 'audio/mpeg', 'video/mp4' ];
+      'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg', 'audio/ogg',
+      'audio/webm' ];
 }
 
-var videoMimes = [ 'video/webm', 'video/mp4' ];
+var correctedMimesRelation = {
+  'video/webm' : 'audio/webm',
+  'video/ogg' : 'audio/ogg'
+};
+
+var videoMimes = [ 'video/webm', 'video/mp4', 'video/ogg' ];
 
 exports.videoMimes = function() {
   return videoMimes;
@@ -51,7 +57,9 @@ exports.getImageBounds = function(path, callback) {
 
 };
 
-exports.getVideoBounds = function(path, callback) {
+exports.getVideoBounds = function(file, callback) {
+
+  var path = file.pathInDisk;
 
   exec(webmLengthCommand + path, function gotDimensions(error, output) {
 
@@ -60,7 +68,19 @@ exports.getVideoBounds = function(path, callback) {
     } else {
 
       var matches = output.match(/width\=(\d+)\nheight\=(\d+)/);
-      callback(null, +matches[1], +matches[2]);
+
+      if (!matches) {
+        var correctedMime = correctedMimesRelation[file.mime];
+
+        if (!correctedMime) {
+          callback('Unable to get dimensions for file.');
+        } else {
+          file.mime = correctedMime;
+          callback(null, null, null);
+        }
+      } else {
+        callback(null, +matches[1], +matches[2]);
+      }
 
     }
   });
@@ -116,6 +136,7 @@ function updatePostingFiles(boardUri, threadId, postId, files, file, callback,
       files : {
         originalName : file.title,
         path : file.path,
+        mime : file.mime,
         thumb : file.thumbPath,
         name : file.gfsName,
         size : file.size,
