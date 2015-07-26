@@ -62,17 +62,17 @@ function getImageDimensions(toPush, files, fields, cookies, callback, res) {
 
 function getVideoDimensions(toPush, files, fields, cookies, callback, res) {
 
-  uploadHandler.getVideoBounds(toPush, function gotBounds(error,
-      width, height) {
-    if (!error) {
-      toPush.width = width;
-      toPush.height = height;
+  uploadHandler.getVideoBounds(toPush,
+      function gotBounds(error, width, height) {
+        if (!error) {
+          toPush.width = width;
+          toPush.height = height;
 
-      fields.files.push(toPush);
-    }
+          fields.files.push(toPush);
+        }
 
-    transferFileInformation(files, fields, cookies, callback, res);
-  });
+        transferFileInformation(files, fields, cookies, callback, res);
+      });
 
 }
 
@@ -111,12 +111,17 @@ function transferFileInformation(files, fields, parsedCookies, cb, res) {
           mime : mime
         };
 
+        var video = videoMimes.indexOf(toPush.mime) > -1;
+        video = video && settings.mediaThumb;
+
         if (toPush.mime.indexOf('image/') > -1) {
 
           getImageDimensions(toPush, files, fields, parsedCookies, cb, res);
 
-        } else if (videoMimes.indexOf(toPush.mime) > -1 && settings.webmThumb) {
+        } else if (video) {
+
           getVideoDimensions(toPush, files, fields, parsedCookies, cb, res);
+
         } else {
           fields.files.push(toPush);
 

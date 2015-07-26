@@ -173,7 +173,7 @@ function processFile(parsedData, res, finalArray, toRemove, callback) {
               getImageBounds(toPush, parsedData, res, finalArray, toRemove,
                   callback);
 
-            } else if (video && settings.videoThumb) {
+            } else if (video && settings.mediaThumb) {
 
               getVideoBounds(toPush, parsedData, res, finalArray, toRemove,
                   callback);

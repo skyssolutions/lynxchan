@@ -9,7 +9,7 @@ Beta
 4. Having a modular front-end so people can easily create and use different templates.
 
 # Required software
-* [Io.js](http://iojs.org)
+* [Io.js](http://iojs.org), I suggest installing from source code. Just remember to checkout the latest tag instead of using the latest commit.
 * [MongoDB](https://www.mongodb.org/)
 * [ImageMagick](http://www.imagemagick.org/script/index.php)
 * [ffmpeg](https://www.ffmpeg.org/) if videoThumb setting is enabled. Requires zlib-devel on centOS.
