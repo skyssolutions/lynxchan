@@ -7,7 +7,6 @@ var im = require('gm').subClass({
 });
 var gsHandler = require('./gridFsHandler');
 var db = require('../db');
-var files = db.files();
 var hashBans = db.hashBans();
 var threads = db.threads();
 var boards = db.boards();
@@ -312,8 +311,8 @@ function checkForHashBan(boardUri, md5, callback) {
 
 }
 
-function generateVideoThumb(file, tooSmall, index, threadId, boardUri, postId,
-    callback, spoiler) {
+function generateVideoThumb(file, files, tooSmall, index, threadId, boardUri,
+    postId, callback, spoiler) {
 
   var command = videoThumbCommand.replace('{$path}', file.pathInDisk);
 
@@ -343,8 +342,8 @@ function generateVideoThumb(file, tooSmall, index, threadId, boardUri, postId,
 
 }
 
-function generateAudioThumb(file, boardUri, threadId, postId, callback, index,
-    spoiler) {
+function generateAudioThumb(file, files, boardUri, threadId, postId, callback,
+    index, spoiler) {
 
   var thumbDestination = file.pathInDisk + '_.png';
 
@@ -401,13 +400,13 @@ function processFile(boardUri, threadId, postId, files, file, spoiler,
 
   } else if (videoMimes.indexOf(file.mime) > -1 && settings.mediaThumb) {
 
-    generateVideoThumb(file, tooSmall, index, threadId, boardUri, postId,
-        callback, spoiler);
+    generateVideoThumb(file, files, tooSmall, index, threadId, boardUri,
+        postId, callback, spoiler);
 
   } else if (thumbAudioMimes.indexOf(file.mime) > -1 && settings.mediaThumb) {
 
-    generateAudioThumb(file, boardUri, threadId, postId, callback, index,
-        spoiler);
+    generateAudioThumb(file, files, boardUri, threadId, postId, callback,
+        index, spoiler);
 
   } else {
 

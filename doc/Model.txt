@@ -53,8 +53,9 @@ threads: stores board's threads.
         thumb: path for the file's thumbnail.
         size(Number) size in bytes of the file.
         md5: file hash.
-        width(Number): width of the file, if image.
-        height(Number): size of the file, if image.
+        mime: mimetype of the file.
+        width(Number): width of the file, if image or video.
+        height(Number): size of the file, if image or video.
 
 ----------------------------------------------------------------------------------------
 
@@ -81,8 +82,9 @@ posts: stores posts.
         md5: file hash.
         thumb: path for the file's thumbnail.
         size(Number) size in bytes of the file.
-        width(Number): width of the file, if image.
-        height(Number): size of the file, if image.
+        mime: mimetype of the file.
+        width(Number): width of the file, if image or video.
+        height(Number): size of the file, if image or video.
  
 ----------------------------------------------------------------------------------------
 

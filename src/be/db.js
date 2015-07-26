@@ -1,10 +1,12 @@
 'use strict';
 
-var dbVersion = 1;
+var dbVersion = 2;
 
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
 
+var mongo = require('mongodb');
+var ObjectID = mongo.ObjectID;
 var boot = require('./boot');
 var settings = boot.getGeneralSettings();
 var verbose = settings.verbose;
@@ -73,9 +75,128 @@ function registerLatestVersion(callback) {
 }
 
 // Implement upgrades here. The version is the current version.
+function setPostingPreAggregatedFileMime(posting, collection, callback) {
+
+  var files = [];
+
+  for (var i = 0; i < posting.files.length; i++) {
+    files.push(posting.files[i].path);
+  }
+
+  cachedFiles.find({
+    filename : {
+      $in : files
+    }
+  }, {
+    filename : 1,
+    contentType : 1
+  }).toArray(function(error, foundFiles) {
+    if (error) {
+      callback(error);
+    } else {
+
+      var fileRelation = {};
+
+      for (i = 0; i < foundFiles.length; i++) {
+        var file = foundFiles[i];
+
+        fileRelation[file.filename] = file.contentType;
+      }
+
+      for (i = 0; i < posting.files.length; i++) {
+        posting.files[i].mime = fileRelation[posting.files[i].path];
+      }
+
+      collection.updateOne({
+        _id : new ObjectID(posting._id)
+      }, {
+        $set : {
+          files : posting.files
+        }
+      }, callback);
+
+    }
+  });
+
+}
+
+function setPostsPreAggreGatedFileMime(callback, cursor) {
+  if (!cursor) {
+    cursor = cachedPosts.find({
+      'files.0' : {
+        $exists : true
+      }
+    }, {
+      files : 1
+    });
+
+  }
+
+  cursor.next(function(error, post) {
+    if (error) {
+      callback(error);
+    } else if (!post) {
+      callback();
+    } else {
+
+      // style exception, too simple
+      setPostingPreAggregatedFileMime(post, cachedPosts, function updatedMimes(
+          error) {
+        if (error) {
+          callback(error);
+        } else {
+          setPostsPreAggreGatedFileMime(callback, cursor);
+        }
+      });
+      // style exception, too simple
+
+    }
+  });
+}
+
+function setThreadsPreAggregatedFileMime(callback, cursor) {
+
+  if (!cursor) {
+    cursor = cachedThreads.find({
+      'files.0' : {
+        $exists : true
+      }
+    }, {
+      files : 1
+    });
+
+  }
+
+  cursor.next(function(error, thread) {
+    if (error) {
+      callback(error);
+    } else if (!thread) {
+      setPostsPreAggreGatedFileMime(callback);
+    } else {
+
+      // style exception, too simple
+      setPostingPreAggregatedFileMime(thread, cachedThreads,
+          function updatedMimes(error) {
+            if (error) {
+              callback(error);
+            } else {
+              setThreadsPreAggregatedFileMime(callback, cursor);
+            }
+          });
+      // style exception, too simple
+
+    }
+  });
+
+}
+
 function upgrade(version, callback) {
 
   switch (version) {
+  case 1:
+    setThreadsPreAggregatedFileMime(callback);
+    break;
+
   default:
     callback('Cannot upgrade from version ' + version);
   }
@@ -513,7 +634,7 @@ exports.init = function(callback) {
 
   var dbSettings = require('./boot').getDbSettings();
 
-  var client = require('mongodb').MongoClient;
+  var client = mongo.MongoClient;
 
   var connectString = 'mongodb://';
 

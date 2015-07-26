@@ -608,11 +608,18 @@ function createThread(req, userData, parameters, board, threadId, wishesToSign,
       uploadHandler.saveUploads(parameters.boardUri, threadId, null,
           parameters.files, parameters.spoiler, function savedUploads(error) {
             if (error) {
-              callback(error);
-            } else {
-              updateBoardForThreadCreation(parameters.boardUri, threadId,
-                  callback, threadToAdd);
+              if (verbose) {
+                console.log(error);
+              }
+
+              if (debug) {
+                throw error;
+              }
             }
+
+            updateBoardForThreadCreation(parameters.boardUri, threadId,
+                callback, threadToAdd);
+
           });
       // style exception, too simple
 

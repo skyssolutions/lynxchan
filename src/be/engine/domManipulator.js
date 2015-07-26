@@ -547,12 +547,7 @@ function setUploadAttributes(file, thumbLink) {
     thumbLink.setAttribute('data-fileheight', file.height);
   }
 
-  var mime = file.mime || miscOps.getMime(file.path);
-  // TODO remove the attempt to use the file extension to find it's mmime.
-  // it is here because originally this information wouldn't be in the file
-  // pre-aggregated data.
-
-  thumbLink.setAttribute('data-filemime', mime);
+  thumbLink.setAttribute('data-filemime', file.mime);
 }
 
 function setUploadLinks(document, cell, file) {
