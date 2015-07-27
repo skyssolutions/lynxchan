@@ -142,14 +142,14 @@ function loadAndTestTemplates(path, templateSettings) {
             'lockIndicator', 'pinIndicator', 'labelId', 'labelRole',
             'divBanMessage', 'spanId', 'panelRange', 'labelRange',
             'cyclicIndicator', 'linkQuote', 'divPosts', 'labelOmission',
-            'linkPreview', 'linkEdit', 'labelLastEdit' ]
+            'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag' ]
       },
       {
         template : 'postCell',
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkSelf', 'deletionCheckBox', 'labelId',
             'labelRole', 'divBanMessage', 'spanId', 'panelRange', 'labelRange',
-            'linkQuote', 'linkPreview', 'linkEdit', 'labelLastEdit' ]
+            'linkQuote', 'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag' ]
       },
       {
         template : 'staffCell',
@@ -244,7 +244,7 @@ function loadAndTestTemplates(path, templateSettings) {
         fields : [ 'labelName', 'labelDescription', 'divThreads', 'divPages',
             'boardIdentifier', 'linkManagement', 'bannerImage', 'captchaDiv',
             'divName', 'linkModeration', 'labelMaxFileSize', 'linkPrevious',
-            'linkNext' ]
+            'linkNext', 'flagsDiv', 'flagCombobox' ]
       },
       {
         template : 'threadPage',
@@ -253,7 +253,7 @@ function loadAndTestTemplates(path, templateSettings) {
             'inputBan', 'divBanInput', 'divControls', 'controlBoardIdentifier',
             'controlThreadIdentifier', 'checkboxLock', 'checkboxPin',
             'bannerImage', 'captchaDiv', 'divName', 'labelMaxFileSize',
-            'checkboxCyclic' ]
+            'checkboxCyclic', 'flagsDiv', 'flagCombobox' ]
       },
       {
         template : 'messagePage',

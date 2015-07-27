@@ -5,15 +5,16 @@ var db = require('../db');
 var boards = db.boards();
 var url = require('url');
 var threads = db.threads();
+var flags = db.flags();
 var lang = require('../engine/langOps').languagePack();
 var posts = db.posts();
 var miscOps = require('../engine/miscOps');
 var modOps = require('../engine/modOps');
 var formOps = require('../engine/formOps');
 
-function outputModData(boardData, thread, posts, res) {
+function outputModData(boardData, flags, thread, posts, res) {
 
-  domManipulator.thread(boardData.boardUri, boardData, thread, posts,
+  domManipulator.thread(boardData.boardUri, boardData, flags, thread, posts,
       function gotThreadContent(error, content) {
         if (error) {
           formOps.outputError(error, res);
@@ -26,7 +27,7 @@ function outputModData(boardData, thread, posts, res) {
 
 }
 
-function getPostingData(boardData, parameters, res) {
+function getPostingData(boardData, flags, parameters, res) {
 
   threads.findOne({
     threadId : +parameters.threadId,
@@ -35,8 +36,10 @@ function getPostingData(boardData, parameters, res) {
     _id : 0,
     subject : 1,
     threadId : 1,
+    flag : 1,
     locked : 1,
     cyclic : 1,
+    flagName : 1,
     pinned : 1,
     lastEditTime : 1,
     lastEditLogin : 1,
@@ -67,6 +70,8 @@ function getPostingData(boardData, parameters, res) {
         subject : 1,
         ip : 1,
         creation : 1,
+        flagName : 1,
+        flag : 1,
         threadId : 1,
         lastEditTime : 1,
         lastEditLogin : 1,
@@ -83,7 +88,7 @@ function getPostingData(boardData, parameters, res) {
         if (error) {
           formOps.outputError(error, 500, res);
         } else {
-          outputModData(boardData, thread, posts, res);
+          outputModData(boardData, flags, thread, posts, res);
         }
 
       });
@@ -91,6 +96,24 @@ function getPostingData(boardData, parameters, res) {
       // style exception, too simple
     }
 
+  });
+
+}
+
+function getFlags(board, parameters, res) {
+
+  flags.find({
+    boardUri : parameters.boardUri
+  }, {
+    name : 1
+  }).sort({
+    name : 1
+  }).toArray(function gotFlags(error, flags) {
+    if (error) {
+      formOps.outputError(error, 500, res);
+    } else {
+      getPostingData(board, flags, parameters, res);
+    }
   });
 
 }
@@ -129,7 +152,7 @@ exports.process = function(req, res) {
           } else if (!modOps.isInBoardStaff(userData, board) && globalStaff) {
             formOps.outputError(lang.errDeniedManageBoard, 500, res);
           } else {
-            getPostingData(board, parameters, res);
+            getFlags(board, parameters, res);
           }
         });
         // style exception, too simple

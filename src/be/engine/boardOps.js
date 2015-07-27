@@ -13,6 +13,8 @@ var files = db.files();
 var reports = db.reports();
 var lang = require('./langOps').languagePack();
 var users = db.users();
+var threads = db.threads();
+var posts = db.posts();
 var boards = db.boards();
 var logs = db.logs();
 var boot = require('../boot');
@@ -997,6 +999,11 @@ function processFlagFile(toInsert, file, callback) {
       // style exception, too simple
 
     } else {
+      process.send({
+        board : toInsert.boardUri,
+        buildAll : true
+      });
+
       callback(null, toInsert._id);
     }
   });
@@ -1051,6 +1058,41 @@ exports.createFlag = function(userLogin, parameters, callback) {
 // end of flag creation
 
 // start of flag deletion
+function cleanFlagFromPostings(flagUrl, boardUri, callback) {
+
+  threads.updateMany({
+    boardUri : boardUri,
+    flag : flagUrl
+  }, {
+    $unset : {
+      flag : 1,
+      flagName : 1
+    }
+  }, function cleanedThreads() {
+
+    // style exception, too simple
+    posts.updateMany({
+      boardUri : boardUri,
+      flag : flagUrl
+    }, {
+      $unset : {
+        flag : 1,
+        flagName : 1
+      }
+    }, function cleanedPosts() {
+      process.send({
+        board : boardUri,
+        buildAll : true
+      });
+
+      callback(null, boardUri);
+    });
+    // style exception, too simple
+
+  });
+
+}
+
 function removeFlag(flag, callback) {
 
   flags.removeOne({
@@ -1060,10 +1102,19 @@ function removeFlag(flag, callback) {
       callback(error);
     } else {
 
-      gridFsHandler.removeFiles('/' + flag.boardUri + '/flags/' + flag._id,
-          function removedFlagFile(error) {
-            callback(error, flag.boardUri);
-          });
+      var flagUrl = '/' + flag.boardUri + '/flags/' + flag._id;
+
+      // style exception, too simple
+      gridFsHandler.removeFiles(flagUrl, function removedFlagFile(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          cleanFlagFromPostings(flagUrl, flag.boardUri, callback);
+        }
+
+      });
+      // style exception, too simple
 
     }
   });

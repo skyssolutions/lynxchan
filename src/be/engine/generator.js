@@ -10,6 +10,7 @@ var boards = db.boards();
 var domManipulator = require('./domManipulator');
 var boot = require('../boot');
 var boardOps = require('./boardOps');
+var flags = db.flags();
 var stats = db.stats();
 var settings = boot.getGeneralSettings();
 var topBoardsCount = settings.topBoardsCount || 25;
@@ -27,6 +28,8 @@ var postProjection = {
   threadId : 1,
   postId : 1,
   name : 1,
+  flag : 1,
+  flagName : 1,
   files : 1,
   banMessage : 1,
   message : 1,
@@ -44,11 +47,13 @@ var threadProjection = {
   subject : 1,
   signedRole : 1,
   banMessage : 1,
+  flagName : 1,
   cyclic : 1,
   lastEditTime : 1,
   lastEditLogin : 1,
   threadId : 1,
   creation : 1,
+  flag : 1,
   name : 1,
   page : 1,
   files : 1,
@@ -351,9 +356,29 @@ exports.preview = function(boardUri, threadId, postId, callback, postingData) {
 // board creation start
 // thread pages start
 
-exports.thread = function(boardUri, threadId, callback, boardData, threadData) {
+exports.thread = function(boardUri, threadId, callback, boardData, threadData,
+    flagData) {
 
-  if (!boardData) {
+  if (!flagData) {
+
+    flags.find({
+      boardUri : boardUri
+    }, {
+      name : 1
+    }).sort({
+      name : 1
+    }).toArray(
+        function gotFlags(error, foundFlags) {
+          if (error) {
+            callback(error);
+          } else {
+            exports.thread(boardUri, threadId, callback, boardData, threadData,
+                foundFlags);
+          }
+        });
+
+    return;
+  } else if (!boardData) {
     if (verbose) {
       console.log('Obtaining board data.');
     }
@@ -406,13 +431,13 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData) {
           callback(error);
         } else {
           // style exception, too simple
-          domManipulator.thread(boardUri, boardData, threadData, posts,
-              function savedHtml(error) {
+          domManipulator.thread(boardUri, boardData, flagData, threadData,
+              posts, function savedHtml(error) {
                 if (error) {
                   callback(error);
                 } else {
-                  jsonBuilder.thread(boardUri, boardData, threadData, posts,
-                      callback);
+                  jsonBuilder.thread(boardUri, boardData, flagData, threadData,
+                      posts, callback);
                 }
               });
           // style exception, too simple
@@ -488,7 +513,7 @@ exports.allThreads = function(boardUri, callback, boardData) {
 // page creation start
 
 function getLatestPosts(boardUri, page, threadsArray, pageCount, boardData,
-    callback) {
+    flagData, callback) {
 
   var postsToFetch = [];
 
@@ -514,8 +539,10 @@ function getLatestPosts(boardUri, page, threadsArray, pageCount, boardData,
         $push : {
           postId : '$postId',
           banMessage : '$banMessage',
+          flag : '$flag',
           markdown : '$markdown',
           files : '$files',
+          flagName : '$flagName',
           name : '$name',
           lastEditTime : '$lastEditTime',
           lastEditLogin : '$lastEditLogin',
@@ -533,12 +560,12 @@ function getLatestPosts(boardUri, page, threadsArray, pageCount, boardData,
     } else {
       // style exception, too simple
       domManipulator.page(boardUri, page, threadsArray, pageCount, boardData,
-          latestPosts, function savedHTML(error) {
+          flagData, latestPosts, function savedHTML(error) {
             if (error) {
               callback(error);
             } else {
               jsonBuilder.page(boardUri, page, threadsArray, pageCount,
-                  boardData, latestPosts, callback);
+                  boardData, flagData, latestPosts, callback);
             }
           });
       // style exception, too simple
@@ -549,7 +576,7 @@ function getLatestPosts(boardUri, page, threadsArray, pageCount, boardData,
 
 // pre-aggregates the page the thread is sitting in.
 function updateThreadsPage(boardUri, page, threadsArray, pageCount, boardData,
-    callback) {
+    flagData, callback) {
 
   var ids = [];
 
@@ -574,7 +601,7 @@ function updateThreadsPage(boardUri, page, threadsArray, pageCount, boardData,
     } else {
 
       getLatestPosts(boardUri, page, threadsArray, pageCount, boardData,
-          callback);
+          flagData, callback);
 
     }
 
@@ -582,10 +609,26 @@ function updateThreadsPage(boardUri, page, threadsArray, pageCount, boardData,
 
 }
 
-exports.page = function(boardUri, page, callback, boardData) {
+exports.page = function(boardUri, page, callback, boardData, flagData) {
 
-  // we allow for the basic board data to be informed, but fetch if not sent.
-  if (!boardData) {
+  if (!flagData) {
+
+    flags.find({
+      boardUri : boardUri
+    }, {
+      name : 1
+    }).sort({
+      name : 1
+    }).toArray(function gotFlags(error, foundFlags) {
+      if (error) {
+        callback(error);
+      } else {
+        exports.page(boardUri, page, callback, boardData, foundFlags);
+      }
+    });
+
+    return;
+  } else if (!boardData) {
 
     if (verbose) {
       console.log('Obtaining board data.');
@@ -632,7 +675,7 @@ exports.page = function(boardUri, page, callback, boardData) {
         } else {
 
           updateThreadsPage(boardUri, page, threadsArray, pageCount, boardData,
-              callback);
+              flagData, callback);
         }
       });
 

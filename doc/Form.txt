@@ -23,6 +23,7 @@ Parameters:
     password: password to be used for deletion. 8 characters.
     captcha: captcha input.
     spoiler: if anything is sent, indicates the images should be spoilered.
+    flag: id of a flag to be used.
 
 ------------------------------------------------------------------------------------------
 
@@ -42,6 +43,7 @@ Parameters:
     threadId*: id of the thread. Will be included in the posting form at the generation stage.
     captcha: captcha input.
     spoiler: if anything is sent, indicates the images should be spoilered.
+    flag: id of a flag to be used.
 
 ------------------------------------------------------------------------------------------
 
@@ -630,7 +632,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::50
+PAG_ID::51
 
 Name: deleteFlag
 

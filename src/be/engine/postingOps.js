@@ -1,9 +1,12 @@
 'use strict';
 
 // any operation regarding posting
+var mongo = require('mongodb');
+var ObjectID = mongo.ObjectID;
 var db = require('../db');
 var threads = db.threads();
 var boards = db.boards();
+var flags = db.flags();
 var tripcodes = db.tripcodes();
 var stats = db.stats();
 var posts = db.posts();
@@ -494,6 +497,30 @@ function createId(salt, boardUri, ip) {
   }
 }
 
+function getFlagUrl(flagId, boardUri, callback) {
+
+  if (!flagId || !flagId.length) {
+    callback();
+    return;
+  }
+
+  try {
+    flags.findOne({
+      boardUri : boardUri,
+      _id : new ObjectID(flagId)
+    }, function gotFlagData(error, flag) {
+      if (!flag) {
+        callback();
+      } else {
+        callback('/' + boardUri + '/flags/' + flagId, flag.name);
+      }
+    });
+  } catch (error) {
+    callback();
+  }
+
+}
+
 // } Section 1: Shared functions
 
 // Section 2: Thread
@@ -592,6 +619,11 @@ function createThread(req, userData, parameters, board, threadId, wishesToSign,
     email : parameters.email
   };
 
+  if (parameters.flag) {
+    threadToAdd.flagName = parameters.flagName;
+    threadToAdd.flag = parameters.flag;
+  }
+
   if (parameters.password) {
     threadToAdd.password = parameters.password;
   }
@@ -643,8 +675,19 @@ function getNewThreadId(req, userData, parameters, board, wishesToSign,
     if (error) {
       callback(error);
     } else {
-      createThread(req, userData, parameters, board,
-          lastIdData.value.lastPostId, wishesToSign, callback);
+
+      // style exception, too simple
+      getFlagUrl(parameters.flag, parameters.boardUri, function gotFlagUrl(
+          flagUrl, flagName) {
+
+        parameters.flagName = flagName;
+        parameters.flag = flagUrl;
+
+        createThread(req, userData, parameters, board,
+            lastIdData.value.lastPostId, wishesToSign, callback);
+      });
+      // style exception, too simple
+
     }
   });
 
@@ -981,6 +1024,11 @@ function createPost(req, parameters, userData, postId, thread, board,
     email : parameters.email
   };
 
+  if (parameters.flag) {
+    postToAdd.flagName = parameters.flagName;
+    postToAdd.flag = parameters.flag;
+  }
+
   if (parameters.password) {
     postToAdd.password = parameters.password;
   }
@@ -1013,6 +1061,21 @@ function createPost(req, parameters, userData, postId, thread, board,
 
 }
 
+function getPostFlag(req, parameters, userData, postId, thread, board,
+    wishesToSign, cb) {
+
+  getFlagUrl(parameters.flag, parameters.boardUri, function gotFlagUrl(flagUrl,
+      flagName) {
+
+    parameters.flagName = flagName;
+    parameters.flag = flagUrl;
+
+    createPost(req, parameters, userData, postId, thread, board, wishesToSign,
+        cb);
+  });
+
+}
+
 function getPostMarkdown(req, parameters, userData, thread, board, callback) {
 
   var wishesToSign = doesUserWishesToSign(userData, parameters);
@@ -1040,7 +1103,7 @@ function getPostMarkdown(req, parameters, userData, thread, board, callback) {
         if (error) {
           callback(error);
         } else {
-          createPost(req, parameters, userData, lastIdData.value.lastPostId,
+          getPostFlag(req, parameters, userData, lastIdData.value.lastPostId,
               thread, board, wishesToSign, callback);
         }
       });

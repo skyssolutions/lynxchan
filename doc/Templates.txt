@@ -21,6 +21,14 @@ labelName:
     use: have it's innerHTML manipulated.
     description: contains the URI and name of the board.
 
+flagsDiv:
+    use: might be removed.
+    description: element containing the flag selection.
+
+flagCombobox:
+    use: have children appended to it.
+    description: combobox used to select a flag.
+
 labelDescription:
     use: have it's innerHTML manipulated.
     description: contains the description of the board.
@@ -79,6 +87,14 @@ Elements:
 labelName:
     use: have it's innerHTML manipulated.
     description: contains the URI and name of the board.
+
+flagsDiv:
+    use: might be removed.
+    description: element containing the flag selection.
+
+flagCombobox:
+    use: have children appended to it.
+    description: combobox used to select a flag.
 
 labelDescription:
     use: have it's innerHTML manipulated.
@@ -182,6 +198,10 @@ linkEdit:
     use: have it's href manipulated or may be removed.
     description: link that opens the page used to edit the message of the OP.
 
+imgFlag:
+    use: have it's src and title manipulated or may be removed.
+    description: img used to display the poster's selected flag.
+
 labelLastEdit:
     use: have it's innerHTML manipulated or may be removed.
     description: label used to indicate the last time the thread was edited.
@@ -282,6 +302,10 @@ Elements:
 divBanMessage:
     use: have it's innerHTML manipulated or might be removed. 
     description: holds the ban message, if the content was used for a ban.
+
+imgFlag:
+    use: have it's src and title manipulated or may be removed.
+    description: img used to display the poster's selected flag.
 
 labelLastEdit:
     use: have it's innerHTML manipulated or may be removed.

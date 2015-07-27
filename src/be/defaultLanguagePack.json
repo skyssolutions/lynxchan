@@ -231,5 +231,7 @@
   "errRepeatedFlag": "There is already a flag with this name in this board.",
   "errFlagTooLarge": "File size exceeds the limit for flags.",
   "errFlagNotFound": "The specified flag could not be found.",
-  "msgFlagDeleted": "Flag deleted."
+  "msgFlagDeleted": "Flag deleted.",
+  "guiUnlimited": "limitless",
+  "guiNoFlag": "No flag"
 }

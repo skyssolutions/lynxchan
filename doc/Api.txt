@@ -52,6 +52,7 @@ Parameters:
     subject: subject of the thread. 128 characters.
     boardUri*: uri of the board.
     password: password to be used for deletion. 8 characters.
+    flag: id of a flag to be used.
     captcha: captcha input.
     spoiler(Boolean): indicates if the images should be spoilered.
 
@@ -70,6 +71,7 @@ Parameters:
     email: e-mail of the poster. 64 characters.
     message*: message to be posted. 2048 characters.
     subject: subject of the thread. 128 characters.
+    flag: id of a flag to be used.
     boardUri*: uri of the board.
     threadId*: id of the thread.
     password: password to be used for deletion. 8 characters.
@@ -453,6 +455,29 @@ Parameters:
     threadId: id of the thread to be edited.
     postId: id of the post to be edited.
     
+------------------------------------------------------------------------------------------
+
+PAG_ID::35
+
+Name: createFlag
+
+Description: creates a new flag for the board. Requires authentication, reserved for the board owner. Requires one image uploaded.
+
+Parameters:
+    boardUri: URI of the board.
+    flagName: name of the new flag. 16 characters.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::36
+
+Name: deleteFlag
+
+Description: Deletes a flag. Requires authentication, reserved for the board owner.
+
+Parameters:
+    flagId: id of the flag to be deleted.
+
 ------------------------------------------------------------------------------------------
 
 

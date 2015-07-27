@@ -25,6 +25,8 @@ Root(Object):
     id: thread-wise id of the poster.
     email: email of the poster.
     markdown: message with html markdown applied.
+    flag: url of the used flag.
+    flagName: name of the used flag.
     threadId(Number): unique id of the thread inside the board.
     subject: subject of the thread.
     lastEditTime(Date): date of the last time the message of the thread message was edited.
@@ -48,6 +50,8 @@ Root(Object):
         name: name of the poster.
         signedRole: role of the user that posted the thread.
         email: email of the poster.
+        flag: url of the used flag.
+        flagName: name of the used flag.
         lastEditTime(Date): date of the last time the message of the thread message was edited.
         lastEditLogin: Login of the last user to edit the thread message.
         postId(Number): unique id of the post inside the board.
@@ -78,6 +82,8 @@ Root(Object):
     banMessage: message to be displayed indicating this message was a cause to a ban.
     id: thread-wise id of the poster.
     email: email of the poster.
+    flag: url of the used flag.
+    flagName: name of the used flag.
     markdown: message with html markdown applied.
     subject: subject of the thread.
     name: name of the poster.
@@ -104,6 +110,8 @@ Root(Object):
         threadId(Number): unique id of the thread inside the board.
         subject: subject of the thread.
         message: text of the post.
+        flag: url of the used flag.
+        flagName: name of the used flag.
         lastEditTime(Date): date of the last time the message of the thread message was edited.
         lastEditLogin: Login of the last user to edit the thread message.
         name: name of the poster.
@@ -125,6 +133,8 @@ Root(Object):
             signedRole: role of the user that posted the thread.
             markdown: message with html markdown applied.
             email: email of the poster.
+            flag: url of the used flag.
+            flagName: name of the used flag.
             lastEditTime(Date): date of the last time the message of the thread message was edited.
             lastEditLogin: Login of the last user to edit the thread message.
             postId(Number): unique id of the post inside the board.

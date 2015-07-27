@@ -225,3 +225,5 @@ msgFlagCreated: message used after a new flag is created.
 errRepeatedFlag: error thrown when there is already a flag with the specified name in the board.
 errFlagNotFound: error thrown when the specified flag for an operation can't be found.
 msgFlagDeleted: message used after deleting a flag.
+guiUnlimited: label used when a file size limit for an operation is limitless.
+guiNoFlag: label used for the first option on a flag combobox.

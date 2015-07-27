@@ -187,7 +187,54 @@ function setCustomCss(board, document) {
   document.getElementsByTagName('head')[0].appendChild(link);
 }
 
-function setHeader(document, board, boardData) {
+function formatFileSize(size) {
+
+  if (size === Infinity) {
+
+    return lang.guiUnlimited;
+
+  }
+
+  var orderIndex = 0;
+
+  while (orderIndex < sizeOrders.length - 1 && size > 1023) {
+
+    orderIndex++;
+    size /= 1024;
+
+  }
+
+  return size.toFixed(2) + ' ' + sizeOrders[orderIndex];
+
+}
+
+function setFlags(document, board, flagData) {
+
+  if (!flagData || !flagData.length) {
+    removeElement(document.getElementById('flagsDiv'));
+
+    return;
+  }
+
+  var combobox = document.getElementById('flagCombobox');
+
+  var option = document.createElement('option');
+  option.innerHTML = lang.guiNoFlag;
+  combobox.appendChild(option);
+
+  for (var i = 0; i < flagData.length; i++) {
+    var flag = flagData[i];
+
+    option = document.createElement('option');
+    option.innerHTML = flag.name;
+    option.value = flag._id;
+
+    combobox.appendChild(option);
+  }
+
+}
+
+function setHeader(document, board, boardData, flagData) {
 
   var titleHeader = document.getElementById('labelName');
   titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
@@ -212,11 +259,13 @@ function setHeader(document, board, boardData) {
     setCustomCss(board, document);
   }
 
+  setFlags(document, board, flagData);
+
   document.getElementById('labelMaxFileSize').innerHTML = displayMaxSize;
 
 }
 
-function setLastEditedLabel(posting, cell) {
+function setSharedHideableElements(posting, cell) {
 
   var editedLabel = cell.getElementsByClassName('labelLastEdit')[0];
 
@@ -229,6 +278,15 @@ function setLastEditedLabel(posting, cell) {
 
   } else {
     removeElement(editedLabel);
+  }
+
+  var imgFlag = cell.getElementsByClassName('imgFlag')[0];
+
+  if (posting.flag) {
+    imgFlag.src = posting.flag;
+    imgFlag.title = posting.flagName;
+  } else {
+    removeElement(imgFlag);
   }
 
 }
@@ -334,7 +392,7 @@ function addThread(document, thread, posts, boardUri, innerPage, modding) {
     setOmittedInformation(thread, threadCell, posts, innerPage);
   }
 
-  setLastEditedLabel(thread, threadCell);
+  setSharedHideableElements(thread, threadCell);
 
   setThreadLinks(threadCell, thread, boardUri, innerPage);
 
@@ -377,7 +435,7 @@ function setPostHideableElements(postCell, post) {
     banMessageLabel.innerHTML = post.banMessage;
   }
 
-  setLastEditedLabel(post, postCell);
+  setSharedHideableElements(post, postCell);
 
 }
 
@@ -555,21 +613,6 @@ function setThreadSimpleElements(threadCell, thread) {
 }
 
 // Section 1.2.2: Uploads {
-function formatFileSize(size) {
-
-  var orderIndex = 0;
-
-  while (orderIndex < sizeOrders.length - 1 && size > 1023) {
-
-    orderIndex++;
-    size /= 1024;
-
-  }
-
-  return size.toFixed(2) + ' ' + sizeOrders[orderIndex];
-
-}
-
 function setUploadAttributes(file, thumbLink) {
   if (file.width) {
     thumbLink.setAttribute('data-filewidth', file.width);
@@ -2084,8 +2127,8 @@ function setModElements(modding, document, boardUri, boardData, threadData,
   }
 }
 
-exports.thread = function(boardUri, boardData, threadData, posts, callback,
-    modding) {
+exports.thread = function(boardUri, boardData, flagData, threadData, posts,
+    callback, modding) {
 
   try {
     var document = jsdom(templateHandler.threadPage);
@@ -2101,7 +2144,7 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
     var linkManagement = document.getElementById('linkManagement');
     linkManagement.href = '/boardManagement.js?boardUri=' + boardData.boardUri;
 
-    setHeader(document, boardUri, boardData);
+    setHeader(document, boardUri, boardData, flagData);
 
     setThreadHiddenIdentifiers(document, boardUri, threadData);
 
@@ -2177,7 +2220,7 @@ function addPagesLinks(document, pageCount, currentPage) {
   }
 }
 
-exports.page = function(board, page, threads, pageCount, boardData,
+exports.page = function(board, page, threads, pageCount, boardData, flagData,
     latestPosts, cb) {
 
   try {
@@ -2196,7 +2239,7 @@ exports.page = function(board, page, threads, pageCount, boardData,
 
     boardIdentifyInput.setAttribute('value', board);
 
-    setHeader(document, board, boardData);
+    setHeader(document, board, boardData, flagData);
 
     addPagesLinks(document, pageCount, page);
 

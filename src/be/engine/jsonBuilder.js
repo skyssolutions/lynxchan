@@ -37,6 +37,8 @@ function getPostObject(post, preview) {
     name : post.name,
     signedRole : post.signedRole,
     email : post.email,
+    flag : post.flag,
+    flagName : post.flagName,
     id : post.id,
     subject : post.subject,
     lastEditTime : post.lastEditTime,
@@ -83,6 +85,8 @@ function getThreadObject(thread, posts) {
     name : thread.name,
     email : thread.email,
     threadId : thread.threadId,
+    flag : thread.flag,
+    flagName : thread.flagName,
     subject : thread.subject,
     lastEditTime : thread.lastEditTime,
     lastEditLogin : thread.lastEditLogin,
@@ -98,7 +102,8 @@ function getThreadObject(thread, posts) {
 }
 // end of shared functions
 
-exports.thread = function(boardUri, boardData, threadData, posts, callback) {
+exports.thread = function(boardUri, boardData, flagData, threadData, posts,
+    callback) {
 
   var path = '/' + boardUri + '/res/' + threadData.threadId + '.json';
 
@@ -156,7 +161,7 @@ exports.preview = function(postingData, callback) {
 };
 
 exports.page = function(boardUri, page, threads, pageCount, boardData,
-    latestPosts, callback) {
+    flagData, latestPosts, callback) {
 
   var threadsToAdd = [];
 
