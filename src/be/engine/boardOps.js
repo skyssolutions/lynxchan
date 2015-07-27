@@ -14,7 +14,8 @@ var lang = require('./langOps').languagePack();
 var users = db.users();
 var boards = db.boards();
 var logs = db.logs();
-var settings = require('../boot').getGeneralSettings();
+var boot = require('../boot');
+var settings = boot.getGeneralSettings();
 var restrictedBoardCreation = settings.restrictBoardCreation;
 var validSettings = [ 'disableIds', 'disableCaptcha', 'forceAnonymity',
     'allowCode' ];
@@ -25,6 +26,8 @@ var replaceTable = {
   '<' : '&lt;',
   '>' : '&gt;'
 };
+
+var maxBannerSize = boot.maxBannerSize();
 
 var boardParameters = [ {
   field : 'boardUri',
@@ -472,6 +475,8 @@ exports.addBanner = function(user, parameters, callback) {
   } else if (parameters.files[0].mime.indexOf('image/') === -1) {
     callback(lang.errNotAnImage);
     return;
+  } else if (parameters.files[0].size > maxBannerSize) {
+    callback(lang.errBannerTooLarge);
   }
 
   boards.findOne({

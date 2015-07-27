@@ -757,6 +757,10 @@ bannersDiv:
     use: have children appended to it.
     description: holds the existing banners.
 
+maxSizeLabel:
+    use have it's innerHTML manipulated.
+    description: label that displays the maximum size allowed for banners.
+
 boardIdentifier:
     use: have it's value manipulated.
     description: hidden input used to identify the board when creating banners.

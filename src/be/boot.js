@@ -29,6 +29,7 @@ var spoilerImage;
 var fePath;
 var tempDirectory;
 var maxRequestSize;
+var maxBannerSize;
 var maxFileSize;
 
 var args = process.argv;
@@ -169,6 +170,14 @@ function setMaxSizes() {
 
   maxRequestSize = (generalSettings.maxRequestSizeMB || 2) * 1024 * 1024;
 
+  if (generalSettings.maxBannerSizeKB) {
+    maxBannerSize = generalSettings.maxBannerSizeKB * 1024;
+  } else if (generalSettings.maxFileSizeMB) {
+    maxBannerSize = maxFileSize;
+  } else {
+    maxBannerSize = 200 * 1024;
+  }
+
 }
 
 function setDefaultImages() {
@@ -303,6 +312,10 @@ exports.maxRequestSize = function() {
 
 exports.maxFileSize = function() {
   return maxFileSize;
+};
+
+exports.maxBannerSize = function() {
+  return maxBannerSize;
 };
 
 // after everything is all right, call this function to start the workers

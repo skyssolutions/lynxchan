@@ -223,5 +223,6 @@
   "errPostingNotFound": "Posting could not be found.",
   "titEdit": "Edit",
   "guiEditInfo": "Edited last time by {$login} on {$date}.",
-  "guiOpen": "Open"
+  "guiOpen": "Open",
+  "errBannerTooLarge": "The selected banner is too large."
 }

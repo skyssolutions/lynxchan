@@ -222,7 +222,7 @@ function loadAndTestTemplates(path, templateSettings) {
       },
       {
         template : 'bannerManagementPage',
-        fields : [ 'bannersDiv', 'boardIdentifier' ]
+        fields : [ 'bannersDiv', 'boardIdentifier', 'maxSizeLabel' ]
       },
       {
         template : 'errorPage',

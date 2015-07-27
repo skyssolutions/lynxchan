@@ -218,3 +218,4 @@ errPostingNotFound: error thrown when the specified posting can not be found.
 titEdit: title of the edit page.
 guiEditInfo: string used to inform the last time a posting was edited. Replaces: {$login}, {$date}.
 guiOpen: string used on the catalog on the link to open the thread when it doesn't have a file.
+errBannerTooLarge: error thrown when a banner is too large to be used.

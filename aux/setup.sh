@@ -1,38 +1,40 @@
 #!/bin/bash
 
-if getent passwd iojs  > /dev/null; then
+echo "Do you wish to download the default front-end to the default location? (y,n)"
+read answerFrontEnd
 
-  rm -rf /usr/bin/log-manager
-  rm -rf /etc/init/lynxchan.conf
-  rm -rf /usr/bin/lynxchan
-  rm -rf /etc/systemd/system/lynxchan.service
+echo "Do you wish to install the libraries? Requires io.js installed. (y,n)"
+read answerLibs
 
-  if [ -z $1 ]; then
-    echo "No automatic daemon install. You can inform the options upstart, systemd or sysvinit if you wish. Except the sysvinit isn't implemented. You can use one of the available daemon scripts and mannually install it."
-  elif [ $1 == "upstart" ]; then
-    echo "Upstart daemon installed at /etc/init"
-    cp ./log-manager.sh /usr/bin/log-manager
-    cp ./lynxchan.conf /etc/init/lynxchan.conf
+echo "Do you wish to install the default settings from the example? (127.0.0.1:8080 to listen to requests, expects a database at localhost:27017) (y,n)"
+read answerSettings
 
-    if [ ! -d /home/iojs ]; then
-      echo "Creating iojs's home folder for logs."
-      mkdir /home/iojs
-      chown node /home/iojs 
-      chmod 600 /home/iojs
-    fi
-  elif [ $1 == "sysvinit" ]; then
-    echo "Sorry, but this option is unavailable, I haven't used a system with sysvinit yet, so I didn't had the chance to implement it."
-  elif [ $1 == "systemd" ]; then
-    echo "SystemD service installed at /etc/systemd/system/"
-    cp ./lynxchan.systemd /etc/systemd/system/lynxchan.service
-  else
-    echo "Unrecognized option install "$1"."
-  fi
+if [ "$answerFrontEnd" == "y" ]; then
+  git clone https://github.com/lleaff/LynxChanFront.git ../src/fe
+  cd ../src/fe
+  git checkout Placeholders
 
-  ln -s $(readlink -f ..)/src/be/boot.js /usr/bin/lynxchan
+  cd ../../aux
 
-  echo "Installation complete. If you are using upstart, don't forget to add logManager as a cronjob for the node user so the logs are rotated properly."
-else
-  echo "User iojs does not exists. Add it to the system and run this script again."
+  echo "Default front-end installed."
+
 fi
- 
+
+if [ "$answerLibs" == "y" ]; then
+  cd ../src/be
+  npm install
+  cd ../../aux
+
+echo "Libraries installed."
+
+fi
+
+if [ "$answerSettings" == "y" ]; then
+  cd ../src/be
+
+  cp -r settings.example settings
+
+  cd ../../aux
+
+  echo "Default settings installed. The server will listen on 127.0.0.1:8080 and expects the database to be acessible at localhost:27017.  If you wish to change the settings, look for them at src/be/settings."
+fi

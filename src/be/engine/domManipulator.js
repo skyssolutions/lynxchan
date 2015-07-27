@@ -21,7 +21,6 @@ var verbose = settings.verbose;
 var accountCreationDisabled = settings.disableAccountCreation;
 var boardCreationRestricted = settings.restrictBoardCreation;
 var templateHandler = require('./templateHandler');
-var displayMaxSize = (boot.maxFileSize() / 1024 / 1024).toFixed(2);
 
 var indicatorsRelation = {
   pinned : 'pinIndicator',
@@ -52,6 +51,9 @@ var availableLogTypes = {
   hashBanLift : lang.guiTypeHashBanLift
 };
 var optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
+
+var displayMaxSize = formatFileSize(boot.maxFileSize());
+var displayMaxBannerSize = formatFileSize(boot.maxBannerSize());
 
 // Section 1: Shared functions {
 
@@ -630,6 +632,8 @@ exports.bannerManagement = function(boardUri, banners) {
     var document = jsdom(templateHandler.bannerManagementPage);
 
     document.title = lang.titBanners.replace('{$board}', boardUri);
+
+    document.getElementById('maxSizeLabel').innerHTML = displayMaxBannerSize;
 
     document.getElementById('boardIdentifier').setAttribute('value', boardUri);
 

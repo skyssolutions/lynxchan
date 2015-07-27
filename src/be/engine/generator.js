@@ -142,7 +142,7 @@ exports.all = function(callback) {
     fullReloadCallback(error, callback);
   });
 
-  exports.reloadAudioThumb(function reloaded(error) {
+  exports.audioThumb(function reloaded(error) {
     fullReloadCallback(error, callback);
   });
 
@@ -167,7 +167,7 @@ exports.login = function(callback) {
 
 };
 
-exports.reloadAudioThumb = function(callback) {
+exports.audioThumb = function(callback) {
 
   if (verbose) {
     console.log('Saving audio thumb image');
