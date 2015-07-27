@@ -31,6 +31,7 @@ var tempDirectory;
 var maxRequestSize;
 var maxBannerSize;
 var maxFileSize;
+var maxFlagSize;
 
 var args = process.argv;
 
@@ -178,6 +179,8 @@ function setMaxSizes() {
     maxBannerSize = 200 * 1024;
   }
 
+  maxFlagSize = (generalSettings.maxFlagSizeKB || 32) * 1024;
+
 }
 
 function setDefaultImages() {
@@ -312,6 +315,10 @@ exports.maxRequestSize = function() {
 
 exports.maxFileSize = function() {
   return maxFileSize;
+};
+
+exports.maxFlagSize = function() {
+  return maxFlagSize;
 };
 
 exports.maxBannerSize = function() {

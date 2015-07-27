@@ -224,5 +224,12 @@
   "titEdit": "Edit",
   "guiEditInfo": "Edited last time by {$login} on {$date}.",
   "guiOpen": "Open",
-  "errBannerTooLarge": "The selected banner is too large."
+  "errBannerTooLarge": "The selected banner is too large.",
+  "titFlagManagement": "Flag management",
+  "deniedFlagManagement": "You are not allowed to manage this board's flags.",
+  "msgFlagCreated": "Flag created.",
+  "errRepeatedFlag": "There is already a flag with this name in this board.",
+  "errFlagTooLarge": "File size exceeds the limit for flags.",
+  "errFlagNotFound": "The specified flag could not be found.",
+  "msgFlagDeleted": "Flag deleted."
 }

@@ -5,6 +5,7 @@
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var db = require('../db');
+var flags = db.flags();
 var miscOps = require('./miscOps');
 var gridFsHandler = require('./gridFsHandler');
 var logger = require('../logger');
@@ -28,6 +29,7 @@ var replaceTable = {
 };
 
 var maxBannerSize = boot.maxBannerSize();
+var maxFlagSize = boot.maxFlagSize();
 
 var boardParameters = [ {
   field : 'boardUri',
@@ -52,6 +54,12 @@ var filterParameters = [ {
 }, {
   field : 'replacementTerm',
   length : 32,
+  removeHTML : true
+} ];
+
+var newFlagParameters = [ {
+  field : 'flagName',
+  length : 16,
   removeHTML : true
 } ];
 
@@ -942,3 +950,155 @@ exports.deleteRule = function(parameters, userData, callback) {
     }
   });
 };
+
+exports.getFlagsData = function(userLogin, boardUri, callback) {
+
+  boards.findOne({
+    boardUri : boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errBoardNotFound);
+    } else if (board.owner !== userLogin) {
+      callback(lang.deniedFlagManagement);
+    } else {
+
+      flags.find({
+        boardUri : boardUri
+      }, {
+        name : 1
+      }).sort({
+        name : 1
+      }).toArray(callback);
+
+    }
+  });
+
+};
+
+// start of flag creation
+function processFlagFile(toInsert, file, callback) {
+
+  var newUrl = '/' + toInsert.boardUri + '/flags/' + toInsert._id;
+
+  gridFsHandler.writeFile(file.pathInDisk, newUrl, file.mime, {
+    boardUri : toInsert.boardUri,
+    type : 'flag'
+  }, function addedFlagFile(error) {
+    if (error) {
+
+      // style exception, too simple
+      flags.removeOne({
+        _id : new ObjectID(toInsert._id)
+      }, function removedFlag(deletionError) {
+        callback(deletionError || error);
+      });
+      // style exception, too simple
+
+    } else {
+      callback(null, toInsert._id);
+    }
+  });
+
+}
+
+exports.createFlag = function(userLogin, parameters, callback) {
+
+  if (!parameters.files.length) {
+    callback(lang.errNoFiles);
+    return;
+  } else if (parameters.files[0].mime.indexOf('image/') === -1) {
+    callback(lang.errNotAnImage);
+    return;
+  } else if (parameters.files[0].size > maxFlagSize) {
+    callback(lang.errFlagTooLarge);
+  }
+
+  miscOps.sanitizeStrings(parameters, newFlagParameters);
+
+  boards.findOne({
+    boardUri : parameters.boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errBoardNotFound);
+    } else if (board.owner !== userLogin) {
+      callback(lang.deniedFlagManagement);
+    } else {
+
+      var toInsert = {
+        boardUri : parameters.boardUri,
+        name : parameters.flagName
+      };
+
+      // style exception, too simple
+      flags.insertOne(toInsert, function insertedFlag(error) {
+        if (error && error.code === 11000) {
+          callback(lang.errRepeatedFlag);
+        } else if (error) {
+          callback(error);
+        } else {
+          processFlagFile(toInsert, parameters.files[0], callback);
+        }
+      });
+      // style exception, too simple
+
+    }
+  });
+};
+// end of flag creation
+
+// start of flag deletion
+function removeFlag(flag, callback) {
+
+  flags.removeOne({
+    _id : new ObjectID(flag._id)
+  }, function removedFlag(error) {
+    if (error) {
+      callback(error);
+    } else {
+
+      gridFsHandler.removeFiles('/' + flag.boardUri + '/flags/' + flag._id,
+          function removedFlagFile(error) {
+            callback(error, flag.boardUri);
+          });
+
+    }
+  });
+
+}
+
+exports.deleteFlag = function(userLogin, flagId, callback) {
+
+  flags.findOne({
+    _id : new ObjectID(flagId)
+  }, function gotFlag(error, flag) {
+    if (error) {
+      callback(error);
+    } else if (!flag) {
+      callback(lang.errFlagNotFound);
+    } else {
+
+      // style exception, too simple
+      boards.findOne({
+        boardUri : flag.boardUri
+      }, function gotBoard(error, board) {
+        if (error) {
+          callback(error);
+        } else if (!board) {
+          callback(lang.errBoardNotFound);
+        } else if (board.owner !== userLogin) {
+          callback(lang.deniedFlagManagement);
+        } else {
+          removeFlag(flag, callback);
+        }
+      });
+      // style exception, too simple
+
+    }
+  });
+
+};
+// end of flag deletion

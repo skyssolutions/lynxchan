@@ -607,4 +607,38 @@ Parameters:
     
 ------------------------------------------------------------------------------------------
 
+PAG_ID::49
+
+Name: flags
+
+Description: displays the flag management page of a board. Uses get parameters, requires authentication, reserved for the board owner.
+
+Parameters:
+    boardUri: URI of the board to have the flags managed.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::50
+
+Name: createFlag
+
+Description: creates a new flag for the board. Requires authentication, reserved for the board owner. Requires one image uploaded.
+
+Parameters:
+    boardUri: URI of the board.
+    flagName: name of the new flag. 16 characters.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::50
+
+Name: deleteFlag
+
+Description: Deletes a flag. Requires authentication, reserved for the board owner.
+
+Parameters:
+    flagId: id of the flag to be deleted.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

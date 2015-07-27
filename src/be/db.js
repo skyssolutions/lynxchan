@@ -16,7 +16,7 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 11;
+var maxIndexesSet = 12;
 
 var cachedVersions;
 var cachedPosts;
@@ -33,6 +33,7 @@ var cachedRecoveryRequests;
 var cachedStats;
 var cachedHashBans;
 var cachedTorIps;
+var cachedFlags;
 
 var loading;
 
@@ -304,6 +305,29 @@ function initCaptchas(callback) {
       indexSet(callback);
     }
   });
+}
+
+function initFlags(callback) {
+
+  cachedFlags = cachedDb.collection('flags');
+
+  cachedFlags.ensureIndex({
+    boardUri : 1,
+    name : 1
+  }, {
+    unique : true
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+
 }
 
 function initTorIps(callback) {
@@ -586,11 +610,13 @@ exports.torIps = function() {
   return cachedTorIps;
 };
 
+exports.flags = function() {
+  return cachedFlags;
+};
+
 // end of getters
 
 function checkCollections(db, callback) {
-
-  cachedDb = db;
 
   initBoards(callback);
 
@@ -614,11 +640,7 @@ function checkCollections(db, callback) {
 
   initTorIps(callback);
 
-  cachedFiles = db.collection('fs.files');
-
-  cachedLog = db.collection('staffLogs');
-
-  cachedStats = db.collection('boardStats');
+  initFlags(callback);
 
 }
 
@@ -650,6 +672,15 @@ exports.init = function(callback) {
     if (error) {
       callback(error);
     } else {
+
+      cachedDb = db;
+
+      cachedFiles = db.collection('fs.files');
+
+      cachedLog = db.collection('staffLogs');
+
+      cachedStats = db.collection('boardStats');
+
       checkCollections(db, callback);
     }
 

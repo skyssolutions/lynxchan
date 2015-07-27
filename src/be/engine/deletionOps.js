@@ -15,10 +15,17 @@ var logger = require('../logger');
 var boards = db.boards();
 var lang = require('./langOps').languagePack();
 var boot = require('../boot');
+var flags = db.flags();
+var boardStats = db.stats();
+var bans = db.bans();
+var hashBans = db.hashBans();
 var latestPosts = boot.latestPostCount();
 var settings = boot.getGeneralSettings();
 var verbose = settings.verbose;
 var threadLimit = boot.maxThreads();
+
+var collectionsToClean = [ reports, posts, threads, flags, hashBans,
+    boardStats, bans ];
 
 function removeThreads(boardUri, threadsToDelete, callback) {
 
@@ -693,31 +700,25 @@ exports.posting = function(userData, parameters, threadsToDelete,
 // end of content deletion process ( hope you enjoyed your ride)
 
 // start of board deletion
+function deleteBoardContent(board, callback, index) {
+  index = index || 0;
 
-function deleteBoardContent(board, callback) {
-  threads.remove({
-    boardUri : board.boardUri
-  }, function threadsDeleted(error) {
-    if (error) {
-      callback(error);
-    } else {
+  if (index < collectionsToClean.length) {
 
-      // style exception, too simple
-      posts.remove({
-        boardUri : board.boardUri
-      }, function removedPosts(error) {
+    collectionsToClean[index].remove({
+      boardUri : board
+    }, function removedData(error) {
+      deleteBoardContent(board, callback, index + 1);
 
-        process.send({
-          frontPage : true
-        });
+    });
 
-        callback(error);
+  } else {
+    process.send({
+      frontPage : true
+    });
 
-      });
-      // style exception, too simple
-
-    }
-  });
+    callback();
+  }
 
 }
 
@@ -745,7 +746,7 @@ function deleteBoardFiles(board, callback) {
         if (error) {
           callback(error);
         } else {
-          deleteBoardContent(board, callback);
+          deleteBoardContent(board.boardUri, callback);
         }
 
       });
@@ -756,7 +757,7 @@ function deleteBoardFiles(board, callback) {
 
 }
 
-function deleteBoardReports(board, user, callback) {
+function logBoardDeletion(board, user, callback) {
 
   var message = lang.logBoardDeletion.replace('{$board}', board.boardUri)
       .replace('{$login}', user);
@@ -774,17 +775,8 @@ function deleteBoardReports(board, user, callback) {
       logger.printLogError(message, error);
     }
 
-    // style exception, too simple
-    reports.remove({
-      boardUri : board.boardUri
-    }, function reportsDeleted(error) {
-      if (error) {
-        callback(error);
-      } else {
-        deleteBoardFiles(board, callback);
-      }
-    });
-    // style exception, too simple
+    deleteBoardFiles(board, callback);
+
   });
 }
 
@@ -808,7 +800,7 @@ function deleteBoard(board, user, callback) {
         if (error) {
           callback(error);
         } else {
-          deleteBoardReports(board, user, callback);
+          logBoardDeletion(board, user, callback);
         }
       });
 

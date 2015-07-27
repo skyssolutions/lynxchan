@@ -466,6 +466,10 @@ TEM_ID::12
 bManagement:
 
 Elements:
+flagManagementLink:
+    use: have it's href manipulated.
+    description: link to the page used to manipulate the board flags.
+
 ruleManagementLink:
     use: have it's href manipulated.
     description: link to the page used to manage the board rules.
@@ -1152,7 +1156,7 @@ boardIdentifier:
 
 ------------------------------------------------------------------------------------------
 
-TEM::39
+TEM_ID::39
 
 ruleManagementCell*:
 Root element: form
@@ -1172,7 +1176,7 @@ boardIdentifier:
 
 ------------------------------------------------------------------------------------------
 
-TEM::40
+TEM_ID::40
 
 rulesPage:
 
@@ -1187,7 +1191,7 @@ divRules:
 
 ------------------------------------------------------------------------------------------
 
-TEM::41
+TEM_ID::41
 
 ruleCell*:
 Root element: div
@@ -1203,19 +1207,19 @@ textLabel:
 
 ------------------------------------------------------------------------------------------
 
-TEM::42
+TEM_ID::42
 
 notFoundPage:
 
 ------------------------------------------------------------------------------------------
 
-TEM::43
+TEM_ID::43
 
 maintenancePage:
 
 ------------------------------------------------------------------------------------------
 
-TEM::44
+TEM_ID::44
 
 editPage:
 
@@ -1237,6 +1241,46 @@ postIdentifier:
     description: hidden input used to identify the post being edited. Will be removed if the posting being edited is a thread.
 
 ------------------------------------------------------------------------------------------
+
+TEM_ID::45
+
+flagsPage:
+
+Elements:
+flagsDiv:
+    use: have children appended to it.
+    description: div with the existing flags.
+
+boardIdentifier:
+    use: have it's value manipulated.
+    description: hidden input used to identify the board on flag creation.
+
+maxSizeLabel:
+    use: have it's innerHTML manipulated.
+    description: label with the maximum size allowed for flags.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::46
+
+flagCell*:
+Root element: form
+
+Elements:
+flagImg:
+    use: have it's src manipulated.
+    description: img that displays the flag.
+
+nameLabel:
+    use: have it's innerHTML manipulated.
+    description: label that displays the flag name.
+
+idIdentifier:
+    use: have it's value manipulated.
+    description: hidden input used to identify the flag on deletion.
+
+------------------------------------------------------------------------------------------
+
 
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.
 

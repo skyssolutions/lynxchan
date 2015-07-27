@@ -29,5 +29,7 @@
   "thumbSize": 128, 
   "maintenance": false,
   "maxFilters": 20,
-  "maxBoardVolunteers": 20
+  "maxBoardVolunteers": 20,
+  "maxBannerSizeKB": 200,
+  "maxFlagSizeKB": 32
 }

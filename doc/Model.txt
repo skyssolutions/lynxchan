@@ -196,6 +196,12 @@ torIps: stores known TOR ips.
 
 ----------------------------------------------------------------------------------------
 
+flags: stores board flags.
+    boardUri*/***: board where this flag belongs to.
+    name***: name of the flag to be displayed. 16 characters.
+
+----------------------------------------------------------------------------------------
+
 *: duplicated data, foreign key.
 **: unique key
 ***:part of a unique key combination.

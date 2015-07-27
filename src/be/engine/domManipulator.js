@@ -52,8 +52,35 @@ var availableLogTypes = {
 };
 var optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
 
+var boardManagementLinks = [ {
+  page : 'closedReports',
+  element : 'closedReportsLink'
+}, {
+  page : 'bans',
+  element : 'bansLink'
+}, {
+  page : 'bannerManagement',
+  element : 'bannerManagementLink'
+}, {
+  page : 'filterManagement',
+  element : 'filterManagementLink'
+}, {
+  page : 'rangeBans',
+  element : 'rangeBansLink'
+}, {
+  page : 'rules',
+  element : 'ruleManagementLink'
+}, {
+  page : 'hashBans',
+  element : 'hashBansLink'
+}, {
+  page : 'flags',
+  element : 'flagManagementLink'
+} ];
+
 var displayMaxSize = formatFileSize(boot.maxFileSize());
 var displayMaxBannerSize = formatFileSize(boot.maxBannerSize());
+var displayMaxFlagSize = formatFileSize(boot.maxFlagSize());
 
 // Section 1: Shared functions {
 
@@ -532,7 +559,7 @@ function formatFileSize(size) {
 
   var orderIndex = 0;
 
-  while (orderIndex < sizeOrders.length - 1 && size > 1024) {
+  while (orderIndex < sizeOrders.length - 1 && size > 1023) {
 
     orderIndex++;
     size /= 1024;
@@ -928,26 +955,14 @@ function setBoardOwnerControls(document, boardData) {
 
 function setBoardManagementLinks(document, boardData) {
 
-  var closedReportsUrl = '/closedReports.js?boardUri=' + boardData.boardUri;
-  document.getElementById('closedReportsLink').href = closedReportsUrl;
+  for (var i = 0; i < boardManagementLinks.length; i++) {
+    var link = boardManagementLinks[i];
 
-  var bansUrl = '/bans.js?boardUri=' + boardData.boardUri;
-  document.getElementById('bansLink').href = bansUrl;
+    var url = '/' + link.page + '.js?boardUri=' + boardData.boardUri;
+    document.getElementById(link.element).href = url;
 
-  var bannersUrl = '/bannerManagement.js?boardUri=' + boardData.boardUri;
-  document.getElementById('bannerManagementLink').href = bannersUrl;
+  }
 
-  var filtersUrl = '/filterManagement.js?boardUri=' + boardData.boardUri;
-  document.getElementById('filterManagementLink').href = filtersUrl;
-
-  var rangeBansUrl = '/rangeBans.js?boardUri=' + boardData.boardUri;
-  document.getElementById('rangeBansLink').href = rangeBansUrl;
-
-  var hashBansUrl = '/hashBans.js?boardUri=' + boardData.boardUri;
-  document.getElementById('hashBansLink').href = hashBansUrl;
-
-  var rulesUrl = '/rules.js?boardUri=' + boardData.boardUri;
-  document.getElementById('ruleManagementLink').href = rulesUrl;
 }
 
 exports.boardManagement = function(login, boardData, reports) {
@@ -1859,6 +1874,64 @@ exports.edit = function(parameters, message) {
     return error.toString();
   }
 };
+
+// Section 2.12: Flag management {
+function addFlagCells(document, flags, boardUri) {
+
+  var flagsDiv = document.getElementById('flagsDiv');
+
+  for (var i = 0; i < flags.length; i++) {
+    var flag = flags[i];
+
+    var cell = document.createElement('form');
+
+    setFormCellBoilerPlate(cell, '/deleteFlag.js', 'flagCell');
+
+    cell.innerHTML = templateHandler.flagCell;
+
+    var flagUrl = '/' + boardUri + '/flags/' + flag._id;
+
+    cell.getElementsByClassName('flagImg')[0].src = flagUrl;
+
+    cell.getElementsByClassName('idIdentifier')[0].setAttribute('value',
+        flag._id);
+
+    cell.getElementsByClassName('nameLabel')[0].innerHTML = flag.name;
+
+    flagsDiv.appendChild(cell);
+  }
+
+}
+
+exports.flagManagement = function(boardUri, flags, callback) {
+  try {
+
+    var document = jsdom(templateHandler.flagsPage);
+
+    document.title = lang.titFlagManagement;
+
+    document.getElementById('maxSizeLabel').innerHTML = displayMaxFlagSize;
+
+    document.getElementById('boardIdentifier').setAttribute('value', boardUri);
+
+    addFlagCells(document, flags, boardUri);
+
+    return serializer(document);
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+
+};
+
+// } Section 2.12: Flag management
 
 // Section 2: Dynamic pages
 

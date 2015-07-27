@@ -87,6 +87,7 @@ Settings files that goes into the settings directory:
 * `maxFilters`(Number): maximum amount of filters a board owner can set. Defaults to 20.
 * `maxBoardVolunteers`: maximum amount of volunteers a board can have. Defaults to 20.
 * `maxBannerSizeKB`: maximum size in kilobytes for board banners. Defaults to maximum upload file and to 200KB if there is no maximum upload size. Will be ignored if larger or equal than maximum upload size.
+* `maxFlagSizeKB`: maximum size in kilobytes for board flags. Defaults to 32KB.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.
@@ -115,3 +116,4 @@ Meta-data of files on gridfs will have the following values:
   * `catalog`
   * `preview`
   * `rules`
+  * `flag`

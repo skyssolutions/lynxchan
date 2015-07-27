@@ -15,17 +15,17 @@ Beta
 * [ffmpeg](https://www.ffmpeg.org/) if videoThumb setting is enabled. Requires zlib-devel on centOS.
 * [A front-end](https://github.com/lleaff/LynxChanFront) that must either be placed on the src/fe directory or have it's absolute path set on the general.json file. Read the readme.md on src/be for more information about how to configure the path for the front-end.
 
-# Install
+# Automatic install
+1. Required: run the script `aux/setup.sh` that will prompt for the install of a front-end, default settings and libraries.
+2. Optional: run the script `aux/root-setup.sh` that will prompt for the install of a command using a soft-link to `src/be/boot.js`. This script must be run as root. It will also try to install a service if you provide the argument `systemd` or `upstart` and have an user called `iojs`.
+  
+# Manual install
 1. Create the required settings file in the `src/be/settings` directory. Instructions can be found at `src/be/readme.md`. There is also a directory called settings.example with a set of functional settings.
-2. Create the user `iojs` on the system and make sure he has access to the `src/be` directory and the designed front-end directory.
-3. Run `aux/setup.sh` as root. Optionally add either the argument `upstart` or `systemd` to install a service to act as a daemon using the `iojs` user.
-
-# Dependencies
-Browse to `src/be` and run `npm install`.
-There are about a half-dozen. They are defined in the `package.json` file, so you don't have to worry with details.
+2. Browse to `src/be` and run `npm install`.
+3. Clone a front-end to the `src/fe` directory or clone to anywhere and set it's correct location on `src/be/settings/general.json`.
 
 # Running
-You can either run the `lynxchan` command or start the `lynxchan` service. You could just run the `src/be/boot.js` file. Install is optional. Run ``` sudo setcap 'cap_net_bind_service=+ep' `which iojs` ``` to be able to run it on port 80 without root access.
+You can either run the `lynxchan` command or start the `lynxchan` service if you ran the `aux/root-setup.sh` script. You could just run the `src/be/boot.js` file. Run ``` sudo setcap 'cap_net_bind_service=+ep' `which iojs` ``` to be able to run it on port 80 without root access.
 
 # Documentation
 As in many things, I am very anal about documentation.
@@ -48,6 +48,9 @@ There a couple of utility scripts there besides the install one. Rotating logs f
 
 # License
 MIT. Do whatever you want, I don't even know what is written there. I just know you can't sue me.
+
+# Development priority
+Infra-structure > features > cosmetic features > polish.
 
 # Contributing
 I would rather not having other people writing the initial code for the engine, but if you wish to suggest and discuss features or contribute to a default front-end to replace the placeholder ones I am using, you can find me under the name StephenLynx on #lynxchan at Rizon or e-mail me at sergio.a.vianna@gmail.com.

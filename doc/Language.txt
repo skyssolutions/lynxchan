@@ -219,3 +219,9 @@ titEdit: title of the edit page.
 guiEditInfo: string used to inform the last time a posting was edited. Replaces: {$login}, {$date}.
 guiOpen: string used on the catalog on the link to open the thread when it doesn't have a file.
 errBannerTooLarge: error thrown when a banner is too large to be used.
+titFlagManagement: title of the flag management page.
+deniedFlagManagement: error thrown when the user is not allowed to manage a board's flags.
+msgFlagCreated: message used after a new flag is created.
+errRepeatedFlag: error thrown when there is already a flag with the specified name in the board.
+errFlagNotFound: error thrown when the specified flag for an operation can't be found.
+msgFlagDeleted: message used after deleting a flag.
