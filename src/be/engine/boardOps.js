@@ -69,6 +69,9 @@ exports.getValidSettings = function() {
   return validSettings;
 };
 
+// Section 1: Write operations {
+
+// Section 1.1: Settings {
 function checkBoardRebuild(board, params) {
 
   var nameChanged = board.boardName !== params.boardName;
@@ -148,7 +151,9 @@ exports.setSettings = function(userData, parameters, callback) {
   });
 
 };
+// } Section 1.1: Settings
 
+// Section 1.2: Transfer {
 function updateUsersOwnedBoards(oldOwner, parameters, callback) {
 
   users.update({
@@ -260,7 +265,9 @@ exports.transfer = function(userData, parameters, callback) {
   });
 
 };
+// } Section 1.2: Transfer
 
+// Section 1.3: Volunteer management {
 function manageVolunteer(currentVolunteers, parameters, callback) {
 
   var isAVolunteer = currentVolunteers.indexOf(parameters.login) > -1;
@@ -335,65 +342,7 @@ exports.setVolunteer = function(userData, parameters, callback) {
   });
 
 };
-
-function isAllowedToManageBoard(login, boardData) {
-
-  var owner = login === boardData.owner;
-
-  var volunteer;
-
-  if (boardData.volunteers) {
-    volunteer = boardData.volunteers.indexOf(login) > -1;
-  }
-
-  return owner || volunteer;
-
-}
-
-function getBoardReports(boardData, callback) {
-
-  reports.find({
-    boardUri : boardData.boardUri,
-    closedBy : {
-      $exists : false
-    },
-    global : false
-  }).sort({
-    creation : -1
-  }).toArray(function(error, reports) {
-
-    callback(error, boardData, reports);
-
-  });
-
-}
-
-exports.getBoardManagementData = function(login, board, callback) {
-
-  boards.findOne({
-    boardUri : board
-  }, {
-    _id : 0,
-    owner : 1,
-    boardUri : 1,
-    boardName : 1,
-    anonymousName : 1,
-    settings : 1,
-    boardDescription : 1,
-    volunteers : 1
-  }, function(error, boardData) {
-    if (error) {
-      callback(error);
-    } else if (!boardData) {
-      callback(lang.errBoardNotFound);
-    } else if (isAllowedToManageBoard(login, boardData)) {
-      getBoardReports(boardData, callback);
-    } else {
-      callback(lang.errDeniedManageBoard);
-    }
-  });
-
-};
+// } Section 1.3: Volunteer management
 
 exports.createBoard = function(parameters, userData, callback) {
 
@@ -449,34 +398,6 @@ exports.createBoard = function(parameters, userData, callback) {
 
 };
 
-exports.getBannerData = function(user, boardUri, callback) {
-
-  boards.findOne({
-    boardUri : boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (board.owner !== user) {
-      callback(lang.errDeniedChangeBoardSettings);
-    } else {
-
-      // style exception, too simple
-      files.find({
-        'metadata.boardUri' : boardUri,
-        'metadata.type' : 'banner'
-      }).sort({
-        uploadDate : 1
-      }).toArray(function(error, banners) {
-        callback(error, banners);
-      });
-      // style exception, too simple
-    }
-  });
-
-};
-
 exports.addBanner = function(user, parameters, callback) {
 
   if (!parameters.files.length) {
@@ -513,8 +434,8 @@ exports.addBanner = function(user, parameters, callback) {
   });
 
 };
-// start of banner deletion
 
+// Section 1.4: Banner deletion {
 function removeBanner(banner, callback) {
   gridFsHandler.removeFiles(banner.filename, function removedFile(error) {
     callback(error, banner.metadata.boardUri);
@@ -558,27 +479,9 @@ exports.deleteBanner = function(login, parameters, callback) {
     callback(error);
   }
 };
-// end of banner deletion
+// } Section 1.4: Banner deletion
 
-exports.getFilterData = function(user, boardUri, callback) {
-
-  boards.findOne({
-    boardUri : boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (user !== board.owner) {
-      callback(lang.errDeniedChangeBoardSettings);
-    } else {
-      callback(null, board.filters || []);
-    }
-  });
-
-};
-
-// start of filter creation
+// Section 1.5: Filter creation {
 function setFilter(board, callback, parameters) {
   var existingFilters = board.filters || [];
 
@@ -638,7 +541,7 @@ exports.createFilter = function(user, parameters, callback) {
   });
 
 };
-// end of filter creation
+// } Section 1.5: Filter creation
 
 exports.deleteFilter = function(login, parameters, callback) {
 
@@ -685,36 +588,7 @@ exports.deleteFilter = function(login, parameters, callback) {
 
 };
 
-exports.getBoardModerationData = function(userData, boardUri, callback) {
-
-  var admin = userData.globalRole < 2;
-
-  if (!admin) {
-    callback(lang.errDeniedBoardMod);
-    return;
-  }
-
-  boards.findOne({
-    boardUri : boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else {
-
-      // style exception, too simple
-      users.findOne({
-        login : board.owner
-      }, function gotOwner(error, user) {
-        callback(error, board, user);
-      });
-      // style exception, too simple
-    }
-  });
-};
-
-// start of custom css upload
+// Section 1.6: Custom CSS upload {
 function updateBoardAfterNewCss(board, callback) {
 
   if (!boards.usesCustomCss) {
@@ -775,9 +649,9 @@ exports.setCustomCss = function(userData, boardUri, file, callback) {
   });
 
 };
-// end of custom css upload
+// } Section 1.6: Custom CSS upload
 
-// start of css deletion
+// Section 1.7: Custom CSS deletion {
 function updateBoardAfterDeleteCss(board, callback) {
 
   if (board.usesCustomCss) {
@@ -833,28 +707,7 @@ exports.deleteCustomCss = function(userData, boardUri, callback) {
   });
 
 };
-// start of css deletion
-
-exports.boardRules = function(boardUri, userData, callback) {
-
-  boards.findOne({
-    boardUri : boardUri
-  }, {
-    rules : 1,
-    owner : 1,
-    _id : 0
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (userData && userData.login !== board.owner) {
-      callback(lang.errDeniedRuleManagement);
-    } else {
-      callback(null, board.rules || []);
-    }
-  });
-};
+// } Section 1.8: Custom CSS deletion
 
 exports.addBoardRule = function(parameters, userData, callback) {
 
@@ -953,33 +806,7 @@ exports.deleteRule = function(parameters, userData, callback) {
   });
 };
 
-exports.getFlagsData = function(userLogin, boardUri, callback) {
-
-  boards.findOne({
-    boardUri : boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (board.owner !== userLogin) {
-      callback(lang.deniedFlagManagement);
-    } else {
-
-      flags.find({
-        boardUri : boardUri
-      }, {
-        name : 1
-      }).sort({
-        name : 1
-      }).toArray(callback);
-
-    }
-  });
-
-};
-
-// start of flag creation
+// Section 1.9: Flag creation {
 function processFlagFile(toInsert, file, callback) {
 
   var newUrl = '/' + toInsert.boardUri + '/flags/' + toInsert._id;
@@ -1055,9 +882,9 @@ exports.createFlag = function(userLogin, parameters, callback) {
     }
   });
 };
-// end of flag creation
+// } Section 1.9: Flag creation
 
-// start of flag deletion
+// Section 1.10: Flag deletion {
 function cleanFlagFromPostings(flagUrl, boardUri, callback) {
 
   threads.updateMany({
@@ -1152,4 +979,194 @@ exports.deleteFlag = function(userLogin, flagId, callback) {
   });
 
 };
-// end of flag deletion
+// } Section 1.10: Flag deletion
+
+// } Section 1: Write operations
+
+// Section 2: Read operations {
+
+// Section 2.1: Board management {
+function isAllowedToManageBoard(login, boardData) {
+
+  var owner = login === boardData.owner;
+
+  var volunteer;
+
+  if (boardData.volunteers) {
+    volunteer = boardData.volunteers.indexOf(login) > -1;
+  }
+
+  return owner || volunteer;
+
+}
+
+function getBoardReports(boardData, callback) {
+
+  reports.find({
+    boardUri : boardData.boardUri,
+    closedBy : {
+      $exists : false
+    },
+    global : false
+  }).sort({
+    creation : -1
+  }).toArray(function(error, reports) {
+
+    callback(error, boardData, reports);
+
+  });
+
+}
+
+exports.getBoardManagementData = function(login, board, callback) {
+
+  boards.findOne({
+    boardUri : board
+  }, {
+    _id : 0,
+    owner : 1,
+    boardUri : 1,
+    boardName : 1,
+    anonymousName : 1,
+    settings : 1,
+    boardDescription : 1,
+    volunteers : 1
+  }, function(error, boardData) {
+    if (error) {
+      callback(error);
+    } else if (!boardData) {
+      callback(lang.errBoardNotFound);
+    } else if (isAllowedToManageBoard(login, boardData)) {
+      getBoardReports(boardData, callback);
+    } else {
+      callback(lang.errDeniedManageBoard);
+    }
+  });
+
+};
+// } Section 2.1: Board management
+
+exports.getBannerData = function(user, boardUri, callback) {
+
+  boards.findOne({
+    boardUri : boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errBoardNotFound);
+    } else if (board.owner !== user) {
+      callback(lang.errDeniedChangeBoardSettings);
+    } else {
+
+      // style exception, too simple
+      files.find({
+        'metadata.boardUri' : boardUri,
+        'metadata.type' : 'banner'
+      }).sort({
+        uploadDate : 1
+      }).toArray(function(error, banners) {
+        callback(error, banners);
+      });
+      // style exception, too simple
+    }
+  });
+
+};
+
+exports.getFilterData = function(user, boardUri, callback) {
+
+  boards.findOne({
+    boardUri : boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errBoardNotFound);
+    } else if (user !== board.owner) {
+      callback(lang.errDeniedChangeBoardSettings);
+    } else {
+      callback(null, board.filters || []);
+    }
+  });
+
+};
+
+exports.getBoardModerationData = function(userData, boardUri, callback) {
+
+  var admin = userData.globalRole < 2;
+
+  if (!admin) {
+    callback(lang.errDeniedBoardMod);
+    return;
+  }
+
+  boards.findOne({
+    boardUri : boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errBoardNotFound);
+    } else {
+
+      // style exception, too simple
+      users.findOne({
+        login : board.owner
+      }, function gotOwner(error, user) {
+        callback(error, board, user);
+      });
+      // style exception, too simple
+    }
+  });
+};
+
+exports.boardRules = function(boardUri, userData, callback) {
+
+  boards.findOne({
+    boardUri : boardUri
+  }, {
+    rules : 1,
+    owner : 1,
+    _id : 0
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errBoardNotFound);
+    } else if (userData && userData.login !== board.owner) {
+      callback(lang.errDeniedRuleManagement);
+    } else {
+      callback(null, board.rules || []);
+    }
+  });
+};
+
+exports.getFlagsData = function(userLogin, boardUri, callback) {
+
+  boards.findOne({
+    boardUri : boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errBoardNotFound);
+    } else if (board.owner !== userLogin) {
+      callback(lang.deniedFlagManagement);
+    } else {
+
+      flags.find({
+        boardUri : boardUri
+      }, {
+        name : 1
+      }).sort({
+        name : 1
+      }).toArray(callback);
+
+    }
+  });
+
+};
+
+// } Section 2: Read operations
+

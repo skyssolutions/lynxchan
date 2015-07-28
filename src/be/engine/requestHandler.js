@@ -56,11 +56,6 @@ function processApiRequest(req, res) {
   }
 
   try {
-    if (debug) {
-      var module = require.resolve('../api' + pathName);
-      delete require.cache[module];
-    }
-
     if (maintenance) {
       apiOps.outputResponse(null, null, 'maintenance', res);
     } else {
@@ -82,11 +77,6 @@ function processFormRequest(req, res) {
   }
 
   try {
-    if (debug) {
-      var module = require.resolve('../form' + pathName);
-      delete require.cache[module];
-    }
-
     if (maintenance) {
       gridFs.outputFile('/maintenance.html', req, res, function streamedFile(
           error) {

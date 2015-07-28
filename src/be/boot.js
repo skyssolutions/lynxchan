@@ -6,16 +6,39 @@
 // Holds the loaded settings.
 // Controls the workers.
 
+var reloadDirectories = [ 'engine', 'form', 'api' ];
+
+exports.reload = function() {
+
+  for (var i = 0; i < reloadDirectories.length; i++) {
+    var directory = reloadDirectories[i];
+
+    var dirListing = fs.readdirSync(__dirname + '/' + directory);
+
+    for (var j = 0; j < dirListing.length; j++) {
+
+      var module = require.resolve('./' + directory + '/' + dirListing[j]);
+      delete require.cache[module];
+    }
+  }
+
+  exports.loadSettings();
+
+  require('./engine/templateHandler').loadTemplates();
+
+};
+
 var cluster = require('cluster');
 var db;
 var fs = require('fs');
 var logger = require('./logger');
 var generator;
 
-var MINIMUM_WORKER_UPTIME = 1000;
+var MINIMUM_WORKER_UPTIME = 5000;
 var forkTime = {};
 
 var defaultFilesArray;
+var defaultImages = [ 'thumb', 'audioThumb', 'defaultBanner', 'spoiler' ];
 
 var defaultFilesRelation;
 
@@ -183,7 +206,24 @@ function setMaxSizes() {
 
 }
 
+function checkImagesSet() {
+
+  for (var i = 0; i < defaultImages.length; i++) {
+
+    var image = defaultImages[i];
+
+    if (!templateSettings[image]) {
+      var error = 'Template image ' + image;
+      error += ' not set on the template settings.';
+      throw error;
+    }
+
+  }
+
+}
+
 function setDefaultImages() {
+
   var thumbExt = templateSettings.thumb.split('.');
 
   thumbExt = thumbExt[thumbExt.length - 1].toLowerCase();
@@ -276,6 +316,8 @@ exports.loadSettings = function() {
   var templateSettingsPath = fePath + '/templateSettings.json';
 
   templateSettings = JSON.parse(fs.readFileSync(templateSettingsPath));
+
+  checkImagesSet();
 
   setDefaultImages();
 

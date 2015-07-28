@@ -28,9 +28,7 @@ function main(req, res) {
 
   if (debug) {
     try {
-      clearCache();
-      boot.loadSettings();
-      require('./engine/templateHandler').loadTemplates();
+      boot.reload();
     } catch (error) {
       console.log(error);
       req.connection.destroy();
@@ -92,32 +90,6 @@ function startListening() {
     if (debug) {
       throw error;
     }
-  }
-
-}
-
-function clearCache() {
-
-  var engineListing = fs.readdirSync(__dirname + '/engine');
-
-  for (var i = 0; i < engineListing.length; i++) {
-
-    var module = require.resolve('./engine/' + engineListing[i]);
-    delete require.cache[module];
-  }
-
-  var formListing = fs.readdirSync(__dirname + '/form');
-
-  for (i = 0; i < formListing.length; i++) {
-
-    delete require.cache[require.resolve('./form/' + formListing[i])];
-  }
-
-  var apiListing = fs.readdirSync(__dirname + '/api');
-
-  for (i = 0; i < apiListing.length; i++) {
-
-    delete require.cache[require.resolve('./api/' + apiListing[i])];
   }
 
 }

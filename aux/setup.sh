@@ -10,10 +10,9 @@ echo "Do you wish to install the default settings from the example? (127.0.0.1:8
 read answerSettings
 
 if [ "$answerFrontEnd" == "y" ]; then
-  git clone https://github.com/lleaff/LynxChanFront.git ../src/fe
+  git clone https://gitlab.com/mrseth/LynxChanFront-Placeholder.git ../src/fe
   cd ../src/fe
-  git checkout Placeholders
-
+  
   cd ../../aux
 
   echo "Default front-end installed."

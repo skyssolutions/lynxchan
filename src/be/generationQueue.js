@@ -45,10 +45,9 @@ var rebuildingDefaultPages = false;
 // so we can tell its rebuilding the front-page
 var rebuildingFrontPage = false;
 var working = false;
-var debug = require('./boot').debug();
+var boot = require('./boot');
+var debug = boot.debug();
 var generator = require('./engine/generator');
-var domManipulator = require('./engine/domManipulator');
-var templateHandler = require('./engine/templateHandler');
 var verbose = require('./boot').getGeneralSettings().verbose;
 
 function checkForGlobalClearing(message) {
@@ -117,6 +116,22 @@ function processMessage(message) {
     clearTree(error, message);
   };
 
+  if (debug) {
+    try {
+      boot.reload();
+
+      generator = require('./engine/generator');
+    } catch (error) {
+      if (verbose) {
+        console.log(error);
+      }
+
+      if (debug) {
+        throw error;
+      }
+    }
+  }
+
   if (message.globalRebuild) {
     generator.all(generationCallback);
   } else if (message.defaultPages) {
@@ -152,10 +167,6 @@ function processQueue() {
 
   if (verbose) {
     console.log('Processing ' + JSON.stringify(message));
-  }
-
-  if (debug) {
-    templateHandler.loadTemplates();
   }
 
   processMessage(message);
