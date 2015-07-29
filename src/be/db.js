@@ -16,8 +16,9 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 12;
+var maxIndexesSet = 13;
 
+var cachedFlood;
 var cachedVersions;
 var cachedPosts;
 var cachedReports;
@@ -291,6 +292,27 @@ function initCaptchas(callback) {
   cachedCaptchas = cachedDb.collection('captchas');
 
   cachedCaptchas.ensureIndex({
+    expiration : 1
+  }, {
+    expireAfterSeconds : 0
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+}
+
+function initFlood(callback) {
+
+  cachedFlood = cachedDb.collection('floodRecord');
+
+  cachedFlood.ensureIndex({
     expiration : 1
   }, {
     expireAfterSeconds : 0
@@ -614,6 +636,10 @@ exports.flags = function() {
   return cachedFlags;
 };
 
+exports.flood = function() {
+  return cachedFlood;
+};
+
 // end of getters
 
 function checkCollections(db, callback) {
@@ -641,6 +667,8 @@ function checkCollections(db, callback) {
   initTorIps(callback);
 
   initFlags(callback);
+
+  initFlood(callback);
 
 }
 

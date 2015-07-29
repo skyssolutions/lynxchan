@@ -206,6 +206,12 @@ flags: stores board flags.
 
 ----------------------------------------------------------------------------------------
 
+floodRecord: stores the time when ips will be allowed to post again.
+    ip: ip of the entry.
+    expiration: time when the ip will be able to post or report again.
+
+----------------------------------------------------------------------------------------
+
 *: duplicated data, foreign key.
 **: unique key
 ***:part of a unique key combination.

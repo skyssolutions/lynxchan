@@ -19,6 +19,7 @@ var lang = require('./langOps').languagePack();
 var logger = require('../logger');
 var postOps = require('./postingOps');
 var defaultBanMessage = settings.defaultBanMessage;
+var flood = db.flood();
 
 if (!defaultBanMessage) {
   defaultBanMessage = lang.miscDefaultBanMessage;
@@ -254,6 +255,45 @@ exports.getClosedReports = function(userData, parameters, callback) {
 };
 // } Section 2.4: Closed reports
 
+// Section 2.5: Ban check {
+function getActiveBan(ip, boardUri, callback) {
+
+  var range = miscOps.getRange(ip);
+
+  var singleBanAnd = {
+    $and : [ {
+      expiration : {
+        $gt : new Date()
+      }
+    }, {
+      ip : ip
+    } ]
+  };
+
+  var rangeBanCondition = {
+    range : range
+  };
+
+  var globalOrLocalOr = {
+    $or : [ {
+      boardUri : boardUri
+    }, {
+      boardUri : {
+        $exists : false
+      }
+    } ]
+  };
+
+  var finalCondition = {
+    $and : [ globalOrLocalOr, {
+      $or : [ rangeBanCondition, singleBanAnd ]
+    } ]
+  };
+
+  bans.findOne(finalCondition, callback);
+
+}
+
 exports.checkForBan = function(req, boardUri, callback) {
 
   torOps.markAsTor(req, function markedAsTor(error) {
@@ -265,44 +305,29 @@ exports.checkForBan = function(req, boardUri, callback) {
 
       var ip = logger.ip(req);
 
-      var range = miscOps.getRange(ip);
+      // style exception, too simple
+      flood.count({
+        ip : ip,
+        expiration : {
+          $gt : new Date()
+        }
+      }, function gotCount(error, count) {
+        if (error) {
+          callback(error);
+        } else if (count) {
+          callback(lang.errFlood);
+        } else {
+          getActiveBan(ip, boardUri, callback);
+        }
+      });
+      // style exception, too simple
 
-      var singleBanAnd = {
-        $and : [ {
-          expiration : {
-            $gt : new Date()
-          }
-        }, {
-          ip : ip
-        } ]
-      };
-
-      var rangeBanCondition = {
-        range : range
-      };
-
-      var globalOrLocalOr = {
-        $or : [ {
-          boardUri : boardUri
-        }, {
-          boardUri : {
-            $exists : false
-          }
-        } ]
-      };
-
-      var finalCondition = {
-        $and : [ globalOrLocalOr, {
-          $or : [ rangeBanCondition, singleBanAnd ]
-        } ]
-      };
-
-      bans.findOne(finalCondition, callback);
     }
 
   });
 
 };
+// } Section 2.5: Ban check
 
 exports.getPostingToEdit = function(userData, parameters, callback) {
 

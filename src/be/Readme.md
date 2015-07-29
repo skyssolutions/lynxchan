@@ -88,6 +88,7 @@ Settings files that goes into the settings directory:
 * `maxBoardVolunteers`: maximum amount of volunteers a board can have. Defaults to 20.
 * `maxBannerSizeKB`: maximum size in kilobytes for board banners. Defaults to maximum upload file and to 200KB if there is no maximum upload size. Will be ignored if larger or equal than maximum upload size.
 * `maxFlagSizeKB`: maximum size in kilobytes for board flags. Defaults to 32KB.
+* `floodTimerSec`: time in seconds required between postings from the same ip. Not applicable to TOR users. Defaults to 10.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

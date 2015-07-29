@@ -31,5 +31,6 @@
   "maxFilters": 20,
   "maxBoardVolunteers": 20,
   "maxBannerSizeKB": 200,
-  "maxFlagSizeKB": 32
+  "maxFlagSizeKB": 32,
+  "timeBetweenPostsSec": 10
 }

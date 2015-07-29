@@ -233,5 +233,6 @@
   "errFlagNotFound": "The specified flag could not be found.",
   "msgFlagDeleted": "Flag deleted.",
   "guiUnlimited": "limitless",
-  "guiNoFlag": "No flag"
+  "guiNoFlag": "No flag",
+  "errFlood": "Flood detected."
 }

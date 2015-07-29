@@ -29,6 +29,8 @@ var bumpLimit = settings.autoSageLimit || 500;
 var autoLockLimit = bumpLimit * 2;
 var defaultAnonymousName = settings.defaultAnonymousName;
 var verbose = settings.verbose;
+var floodTimer = (settings.floodTimerSec || 10) * 1000;
+var flood = db.flood();
 
 if (!defaultAnonymousName) {
   defaultAnonymousName = lang.miscDefaultAnonymous;
@@ -104,6 +106,24 @@ function getSignedRole(userData, wishesToSign, board) {
   } else {
     return null;
   }
+
+}
+
+function recordFlood(ip) {
+
+  flood.insertOne({
+    ip : ip,
+    expiration : new Date(new Date().getTime() + floodTimer)
+  }, function addedFloodRecord(error) {
+    if (error) {
+      if (verbose) {
+        console.log(error);
+      }
+      if (debug) {
+        throw error;
+      }
+    }
+  });
 
 }
 
@@ -636,6 +656,8 @@ function createThread(req, userData, parameters, board, threadId, wishesToSign,
       callback(error);
     } else {
 
+      recordFlood(ip);
+
       // style exception, too simple
       uploadHandler.saveUploads(parameters.boardUri, threadId, null,
           parameters.files, parameters.spoiler, function savedUploads(error) {
@@ -1037,6 +1059,8 @@ function createPost(req, parameters, userData, postId, thread, board,
     if (error) {
       cb(error);
     } else {
+
+      recordFlood(ip);
 
       // style exception, too simple
       uploadHandler.saveUploads(parameters.boardUri, parameters.threadId,

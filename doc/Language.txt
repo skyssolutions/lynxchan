@@ -227,3 +227,4 @@ errFlagNotFound: error thrown when the specified flag for an operation can't be 
 msgFlagDeleted: message used after deleting a flag.
 guiUnlimited: label used when a file size limit for an operation is limitless.
 guiNoFlag: label used for the first option on a flag combobox.
+errFlood: error thrown when flood is detected.
