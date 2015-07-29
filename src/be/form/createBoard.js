@@ -5,13 +5,14 @@ var lang = require('../engine/langOps').languagePack();
 var mandatoryParameters = [ 'boardUri', 'boardName', 'boardDescription' ];
 var boardOps = require('../engine/boardOps');
 
-function createBoard(userData, parameters, res) {
+function createBoard(userData, parameters, res, captchaId) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
   }
 
-  boardOps.createBoard(parameters, userData, function boardCreated(error) {
+  boardOps.createBoard(captchaId, parameters, userData, function boardCreated(
+      error) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
@@ -28,7 +29,9 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    createBoard(userData, parameters, res);
+    var cookies = formOps.getCookies(req);
+
+    createBoard(userData, parameters, res, cookies.captchaid);
 
   });
 

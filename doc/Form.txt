@@ -121,6 +121,7 @@ Parameters:
     boardUri: URI of the new board. 32 characters, lower case and numbers only.
     boardName: name of the new board. 32 characters.
     boardDescription: description of the new board. 128 characters.
+    captcha: input for captcha.
 
 ------------------------------------------------------------------------------------------
 

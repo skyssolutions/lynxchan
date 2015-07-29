@@ -4,13 +4,14 @@ var apiOps = require('../engine/apiOps');
 var mandatoryParameters = [ 'boardUri', 'boardName', 'boardDescription' ];
 var boardOps = require('../engine/boardOps');
 
-function createBoard(auth, userData, parameters, res) {
+function createBoard(auth, userData, parameters, res, captchaId) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
   }
 
-  boardOps.createBoard(parameters, userData, function boardCreated(error) {
+  boardOps.createBoard(captchaId, parameters, userData, function boardCreated(
+      error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
@@ -23,9 +24,9 @@ function createBoard(auth, userData, parameters, res) {
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
-      parameters) {
+      parameters, captchaId) {
 
-    createBoard(auth, userData, parameters, res);
+    createBoard(auth, userData, parameters, res, captchaId);
 
   });
 

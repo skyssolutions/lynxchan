@@ -8,6 +8,7 @@ var db = require('../db');
 var flags = db.flags();
 var miscOps = require('./miscOps');
 var gridFsHandler = require('./gridFsHandler');
+var captchaOps = require('./captchaOps');
 var logger = require('../logger');
 var files = db.files();
 var reports = db.reports();
@@ -343,60 +344,6 @@ exports.setVolunteer = function(userData, parameters, callback) {
 
 };
 // } Section 1.3: Volunteer management
-
-exports.createBoard = function(parameters, userData, callback) {
-
-  var role = userData.globalRole || 4;
-
-  if (role > 1 && restrictedBoardCreation) {
-    callback(lang.errDeniedBoardCreation);
-    return;
-  }
-
-  miscOps.sanitizeStrings(parameters, boardParameters);
-
-  if (/\W/.test(parameters.boardUri)) {
-    callback(lang.errInvalidUri);
-    return;
-  }
-
-  boards.insert({
-    boardUri : parameters.boardUri,
-    boardName : parameters.boardName,
-    boardDescription : parameters.boardDescription,
-    owner : userData.login,
-    settings : []
-  }, function insertedBoard(error) {
-    if (error && error.code !== 11000) {
-      callback(error);
-    } else if (error) {
-      callback(lang.errUriInUse);
-    } else {
-
-      // style exception, too simple
-
-      users.update({
-        login : userData.login
-      }, {
-        $addToSet : {
-          ownedBoards : parameters.boardUri
-        }
-      }, function updatedUser(error) {
-        // signal rebuild of board pages
-        process.send({
-          board : parameters.boardUri,
-          buildAll : true
-        });
-
-        callback(error);
-      });
-
-      // style exception, too simple
-
-    }
-  });
-
-};
 
 exports.addBanner = function(user, parameters, callback) {
 
@@ -980,6 +927,73 @@ exports.deleteFlag = function(userLogin, flagId, callback) {
 
 };
 // } Section 1.10: Flag deletion
+
+function insertBoard(parameters, userData, callback) {
+
+  boards.insert({
+    boardUri : parameters.boardUri,
+    boardName : parameters.boardName,
+    boardDescription : parameters.boardDescription,
+    owner : userData.login,
+    settings : []
+  }, function insertedBoard(error) {
+    if (error && error.code !== 11000) {
+      callback(error);
+    } else if (error) {
+      callback(lang.errUriInUse);
+    } else {
+
+      // style exception, too simple
+      users.update({
+        login : userData.login
+      }, {
+        $addToSet : {
+          ownedBoards : parameters.boardUri
+        }
+      }, function updatedUser(error) {
+        // signal rebuild of board pages
+        process.send({
+          board : parameters.boardUri,
+          buildAll : true
+        });
+
+        callback(error);
+      });
+      // style exception, too simple
+
+    }
+  });
+
+}
+
+exports.createBoard = function(captchaId, parameters, userData, callback) {
+
+  var role = userData.globalRole || 4;
+
+  if (role > 1 && restrictedBoardCreation) {
+    callback(lang.errDeniedBoardCreation);
+    return;
+  }
+
+  miscOps.sanitizeStrings(parameters, boardParameters);
+
+  if (/\W/.test(parameters.boardUri)) {
+    callback(lang.errInvalidUri);
+    return;
+  }
+
+  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
+      function solvedCaptcha(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          insertBoard(parameters, userData, callback);
+        }
+
+      });
+
+};
 
 // } Section 1: Write operations
 

@@ -9,6 +9,7 @@ function createThread(req, res, parameters, userData, captchaId) {
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
   }
+
   apiOps.checkForBan(req, parameters.boardUri, res, function checked(error) {
     if (error) {
       apiOps.outputError(error, res);

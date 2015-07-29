@@ -352,7 +352,7 @@ function isCaptchaSolved(captcha, input) {
 
 exports.attemptCaptcha = function(id, input, board, callback) {
 
-  if (board.settings.indexOf('disableCaptcha') > -1) {
+  if (board && board.settings.indexOf('disableCaptcha') > -1) {
     if (verbose) {
       console.log('Captcha disabled');
     }
@@ -360,6 +360,8 @@ exports.attemptCaptcha = function(id, input, board, callback) {
     callback();
     return;
   }
+
+  input = input || '';
 
   input = input.trim();
 
