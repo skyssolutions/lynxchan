@@ -571,6 +571,10 @@ disableCaptchaCheckbox:
     use: might be turned on.
     description: check-box that indicates if the option to disable captchas is turned on. 
 
+enableArchiveCheckbox:
+    use: might be turned on.
+    description: checkbox that indicates if the board is archiving content. Will not work if the site owner don't enable archiving.
+
 forceAnonymityCheckbox:
     use: might be turned on.
     description: check-box that indicates if the option to force anonymity is turned on. 

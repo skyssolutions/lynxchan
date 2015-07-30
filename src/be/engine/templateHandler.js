@@ -289,7 +289,7 @@ function loadAndTestTemplates(path, templateSettings) {
             'disableCaptchaCheckbox', 'forceAnonymityCheckbox',
             'filterManagementLink', 'anonymousNameField', 'rangeBansLink',
             'hashBansLink', 'customCssIdentifier', 'ruleManagementLink',
-            'allowCodeCheckbox', 'flagManagementLink' ]
+            'allowCodeCheckbox', 'flagManagementLink', 'enableArchiveCheckbox' ]
       },
       {
         template : 'closedReportsPage',

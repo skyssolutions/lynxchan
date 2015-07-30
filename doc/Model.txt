@@ -11,6 +11,8 @@ boards: stores boards.
         disableIds: disables recording of thread-wise ids.
         disableCaptcha: disable captchas for posting in the board.
         forceAnonymity: disables the name input.
+        allowCode: allows the usage of [code] on postings.
+        archive: archives content if the site owner has enabled archiving.
     filters(Array): array of filters of the board. Each object contains the following fields:
         originalTerm: original term to be replaced. 32 characters.
         replacementTerm: term that will replace the original term. 32 characters.

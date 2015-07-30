@@ -11,6 +11,7 @@ var ObjectID = mongo.ObjectID;
 var boot = require('./boot');
 var settings = boot.getGeneralSettings();
 var verbose = settings.verbose;
+var noDaemon = boot.noDaemon();
 var debug = boot.debug();
 var initArchive = settings.serveArchive || settings.archiveLevel;
 
@@ -284,7 +285,7 @@ function indexSet(callback) {
   if (indexesSet === maxIndexesSet) {
     loading = false;
 
-    if (initArchive) {
+    if (initArchive && !noDaemon) {
       archive.init(callback);
     } else {
       callback();

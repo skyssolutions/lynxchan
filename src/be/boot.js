@@ -370,6 +370,10 @@ exports.maxFiles = function() {
 
 };
 
+exports.noDaemon = function() {
+  return noDaemon;
+};
+
 exports.maxRequestSize = function() {
   return maxRequestSize;
 };

@@ -22,7 +22,7 @@ var boot = require('../boot');
 var settings = boot.getGeneralSettings();
 var restrictedBoardCreation = settings.restrictBoardCreation;
 var validSettings = [ 'disableIds', 'disableCaptcha', 'forceAnonymity',
-    'allowCode' ];
+    'allowCode', 'archive' ];
 var maxRulesCount = settings.maxBoardRules || 20;
 var maxFiltersCount = settings.maxFilters || 20;
 var maxVolunteers = settings.maxBoardVolunteers || 20;

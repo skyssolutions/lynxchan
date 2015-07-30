@@ -35,7 +35,8 @@ var boardSettingsRelation = {
   disableIds : 'disableIdsCheckbox',
   disableCaptcha : 'disableCaptchaCheckbox',
   forceAnonymity : 'forceAnonymityCheckbox',
-  allowCode : 'allowCodeCheckbox'
+  allowCode : 'allowCodeCheckbox',
+  archive : 'enableArchiveCheckbox'
 };
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 var availableLogTypes = {
@@ -2207,7 +2208,7 @@ function setModElements(modding, document, boardUri, boardData, threadData,
           boardUri : boardUri,
           type : 'thread',
           threadId : threadData.threadId
-        }, callback, archive);
+        }, callback, archive && boardData.settings.indexOf('archive') > -1);
   }
 }
 

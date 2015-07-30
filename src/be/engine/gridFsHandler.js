@@ -7,7 +7,8 @@ var archiveHandler = require('../archive');
 var files = db.files();
 var conn = db.conn();
 var mongo = require('mongodb');
-var settings = require('../boot').getGeneralSettings();
+var boot = require('../boot');
+var settings = boot.getGeneralSettings();
 var disable304 = settings.disable304;
 var verbose = settings.verbose;
 var miscOps = require('./miscOps');
@@ -15,6 +16,7 @@ var permanentTypes = [ 'media', 'preview' ];
 var streamableMimes = [ 'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg',
     'audio/ogg', 'audio/webm' ];
 var chunkSize = 1024 * 255;
+var noDaemon = boot.noDaemon();
 
 // start of writing data
 function writeDataOnOpenFile(gs, data, callback, archive, meta, mime,
@@ -26,9 +28,9 @@ function writeDataOnOpenFile(gs, data, callback, archive, meta, mime,
 
   gs.write(data, true, function wroteData(error) {
 
-    if (error || !archive) {
+    if (error || !archive || noDaemon) {
       callback(error);
-    } else if (archive) {
+    } else {
       archiveHandler.archiveData(data, destination, mime, meta, callback);
     }
 
@@ -78,9 +80,9 @@ function writeFileOnOpenFile(gs, path, callback, archive, destination, meta,
 
     // style exception, too simple
     gs.close(function closed(closeError, result) {
-      if (!archive || error) {
+      if (!archive || error || noDaemon) {
         callback(error || closeError);
-      } else if (!error) {
+      } else {
         archiveHandler.writeFile(path, destination, mime, meta, callback);
       }
 
@@ -94,7 +96,7 @@ exports.writeFile = function(path, destination, mime, meta, callback, archive) {
 
   if (verbose) {
     var message = 'Writing ' + mime + ' file on gridfs under \'';
-    message += destination + '\' from ' + path;
+    message += destination + '\'';
     console.log(message);
   }
 

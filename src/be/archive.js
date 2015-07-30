@@ -120,7 +120,7 @@ function writeDataOnOpenFile(gs, data, callback) {
 exports.archiveData = function(data, destination, mime, meta, callback) {
 
   if (verbose) {
-    console.log('Archiving data on under \'' + destination + '\'');
+    console.log('Archiving data under \'' + destination + '\'');
   }
 
   var gs = mongo.GridStore(conn, destination, 'w', {
@@ -169,7 +169,7 @@ exports.writeFile = function(path, destination, mime, meta, callback) {
 
   if (verbose) {
     var message = 'Archiving ' + mime + ' file under \'';
-    message += destination + '\' from ' + path;
+    message += destination + '\'';
     console.log(message);
   }
 

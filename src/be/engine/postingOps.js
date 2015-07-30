@@ -658,9 +658,16 @@ function createThread(req, userData, parameters, board, threadId, wishesToSign,
 
       recordFlood(ip);
 
+      var allowsArchive = false;
+
+      if (board.settings) {
+        allowsArchive = board.settings.indexOf('archive') > -1;
+      }
+
       // style exception, too simple
       uploadHandler.saveUploads(parameters.boardUri, threadId, null,
-          parameters.files, parameters.spoiler, function savedUploads(error) {
+          parameters.files, parameters.spoiler, allowsArchive,
+          function savedUploads(error) {
             if (error) {
               if (verbose) {
                 console.log(error);
@@ -1062,10 +1069,16 @@ function createPost(req, parameters, userData, postId, thread, board,
 
       recordFlood(ip);
 
+      var allowsArchive = false;
+
+      if (board.settings) {
+        allowsArchive = board.settings.indexOf('archive') > -1;
+      }
+
       // style exception, too simple
       uploadHandler.saveUploads(parameters.boardUri, parameters.threadId,
-          postId, parameters.files, parameters.spoiler, function savedFiles(
-              error) {
+          postId, parameters.files, parameters.spoiler, allowsArchive,
+          function savedFiles(error) {
             if (error) {
               if (verbose) {
                 console.log(error);
