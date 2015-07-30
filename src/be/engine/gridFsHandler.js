@@ -3,6 +3,7 @@
 // writing, deleting, outputting files
 
 var db = require('../db');
+var archiveHandler = require('../archive');
 var files = db.files();
 var conn = db.conn();
 var mongo = require('mongodb');
@@ -16,7 +17,8 @@ var streamableMimes = [ 'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg',
 var chunkSize = 1024 * 255;
 
 // start of writing data
-function writeDataOnOpenFile(gs, data, callback) {
+function writeDataOnOpenFile(gs, data, callback, archive, meta, mime,
+    destination) {
 
   if (typeof (data) === 'string') {
     data = new Buffer(data, 'utf-8');
@@ -24,13 +26,17 @@ function writeDataOnOpenFile(gs, data, callback) {
 
   gs.write(data, true, function wroteData(error) {
 
-    callback(error);
+    if (error || !archive) {
+      callback(error);
+    } else if (archive) {
+      archiveHandler.archiveData(data, destination, mime, meta, callback);
+    }
 
   });
 
 }
 
-exports.writeData = function(data, destination, mime, meta, callback) {
+exports.writeData = function(data, destination, mime, meta, callback, archive) {
 
   if (verbose) {
     console.log('Writing data on gridfs under \'' + destination + '\'');
@@ -52,7 +58,8 @@ exports.writeData = function(data, destination, mime, meta, callback) {
         if (error) {
           callback(error);
         } else {
-          writeDataOnOpenFile(gs, data, callback);
+          writeDataOnOpenFile(gs, data, callback, archive, meta, mime,
+              destination);
         }
       });
 
@@ -65,19 +72,25 @@ exports.writeData = function(data, destination, mime, meta, callback) {
 // end of writing data
 
 // start of transferring file to gridfs
-function writeFileOnOpenFile(gs, path, callback) {
+function writeFileOnOpenFile(gs, path, callback, archive, destination, meta,
+    mime) {
   gs.writeFile(path, function wroteFile(error) {
 
     // style exception, too simple
     gs.close(function closed(closeError, result) {
-      callback(error || closeError);
+      if (!archive || error) {
+        callback(error || closeError);
+      } else if (!error) {
+        archiveHandler.writeFile(path, destination, mime, meta, callback);
+      }
+
     });
     // style exception, too simple
 
   });
 }
 
-exports.writeFile = function(path, destination, mime, meta, callback) {
+exports.writeFile = function(path, destination, mime, meta, callback, archive) {
 
   if (verbose) {
     var message = 'Writing ' + mime + ' file on gridfs under \'';
@@ -101,7 +114,8 @@ exports.writeFile = function(path, destination, mime, meta, callback) {
         if (error) {
           callback(error);
         } else {
-          writeFileOnOpenFile(gs, path, callback);
+          writeFileOnOpenFile(gs, path, callback, archive, destination, meta,
+              mime);
         }
       });
       // style exception, too simple
@@ -122,6 +136,7 @@ exports.removeFiles = function(name, callback) {
   });
 };
 
+// start of outputting file
 function setExpiration(header, stats) {
   var expiration = new Date();
 
@@ -272,10 +287,20 @@ function streamRange(range, gs, header, res, stats, callback) {
 
 }
 
-function streamFile(stats, req, callback, cookies, res) {
-
+function getHeader(stats, req, cookies) {
   var header = miscOps.corsHeader(stats.contentType);
   header.push([ 'last-modified', stats.uploadDate.toString() ]);
+
+  setExpiration(header, stats);
+
+  setCookies(header, cookies);
+
+  return header;
+}
+
+exports.streamFile = function(stats, req, callback, cookies, res, optCon) {
+
+  var header = getHeader(stats, req, cookies);
 
   var range;
 
@@ -284,11 +309,8 @@ function streamFile(stats, req, callback, cookies, res) {
     header.push([ 'Accept-Ranges', 'bytes' ]);
   }
 
-  setExpiration(header, stats);
+  var gs = mongo.GridStore(optCon || conn, stats.filename, 'r');
 
-  setCookies(header, cookies);
-
-  var gs = mongo.GridStore(conn, stats.filename, 'r');
   gs.open(function openedGs(error, gs) {
 
     if (!error) {
@@ -307,7 +329,7 @@ function streamFile(stats, req, callback, cookies, res) {
     }
   });
 
-}
+};
 
 function shouldOutput304(lastSeen, filestats) {
 
@@ -322,7 +344,6 @@ exports.outputFile = function(file, req, res, callback, cookies, retry) {
 
   if (verbose) {
     console.log('Outputting \'' + file + '\' from gridfs');
-
   }
 
   var lastSeen = req.headers ? req.headers['if-modified-since'] : null;
@@ -357,8 +378,9 @@ exports.outputFile = function(file, req, res, callback, cookies, retry) {
       res.writeHead(304);
       res.end();
     } else {
-      streamFile(fileStats, req, callback, cookies, res);
+      exports.streamFile(fileStats, req, callback, cookies, res);
     }
   });
 
 };
+// end of outputting file

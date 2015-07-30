@@ -228,3 +228,5 @@ msgFlagDeleted: message used after deleting a flag.
 guiUnlimited: label used when a file size limit for an operation is limitless.
 guiNoFlag: label used for the first option on a flag combobox.
 errFlood: error thrown when flood is detected.
+titMainArchive: title of the main archive page.
+titBoardArchive: title of the board archive page. Replaces: {$board}.

@@ -208,6 +208,12 @@ function loadAndTestTemplates(path, templateSettings) {
       }, {
         template : 'flagCell',
         fields : [ 'flagImg', 'nameLabel', 'idIdentifier' ]
+      }, {
+        template : 'mainArchiveCell',
+        fields : [ 'linkBoard' ]
+      }, {
+        template : 'boardArchiveCell',
+        fields : [ 'linkThread' ]
       } ];
 
   var pageTests = [
@@ -356,6 +362,12 @@ function loadAndTestTemplates(path, templateSettings) {
       }, {
         template : 'flagsPage',
         fields : [ 'flagsDiv', 'boardIdentifier', 'maxSizeLabel' ]
+      }, {
+        template : 'mainArchivePage',
+        fields : [ 'boardsDiv' ]
+      }, {
+        template : 'boardArchivePage',
+        fields : [ 'threadsDiv' ]
       } ];
 
   var errors = [];

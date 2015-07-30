@@ -21,6 +21,7 @@ var verbose = settings.verbose;
 var accountCreationDisabled = settings.disableAccountCreation;
 var boardCreationRestricted = settings.restrictBoardCreation;
 var templateHandler = require('./templateHandler');
+var archive = settings.archiveLevel > 0;
 
 var indicatorsRelation = {
   pinned : 'pinIndicator',
@@ -1976,6 +1977,89 @@ exports.flagManagement = function(boardUri, flags, callback) {
 
 // } Section 2.12: Flag management
 
+exports.mainArchive = function(boards) {
+
+  try {
+
+    var document = jsdom(templateHandler.mainArchivePage);
+
+    document.title = lang.titMainArchive;
+
+    var boardsDiv = document.getElementById('boardsDiv');
+
+    for (var i = 0; i < boards.length; i++) {
+
+      var cell = document.createElement('div');
+
+      cell.innerHTML = templateHandler.mainArchiveCell;
+
+      var link = cell.getElementsByClassName('linkBoard')[0];
+
+      var board = boards[i];
+
+      link.href = '/' + board + '/';
+      link.innerHTML = board;
+
+      boardsDiv.appendChild(cell);
+    }
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+};
+
+exports.boardArchive = function(boardUri, threads) {
+
+  try {
+
+    var document = jsdom(templateHandler.boardArchivePage);
+
+    document.title = lang.titBoardArchive.replace('{$board}', boardUri);
+
+    var threadsDiv = document.getElementById('threadsDiv');
+
+    for (var i = 0; i < threads.length; i++) {
+
+      var cell = document.createElement('div');
+
+      cell.innerHTML = templateHandler.boardArchiveCell;
+
+      var link = cell.getElementsByClassName('linkThread')[0];
+
+      var thread = threads[i];
+
+      link.href = '/' + boardUri + '/res/' + thread + '.html';
+      link.innerHTML = thread;
+
+      threadsDiv.appendChild(cell);
+    }
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+
+};
+
 // Section 2: Dynamic pages
 
 // Section 3: Static pages {
@@ -2123,7 +2207,7 @@ function setModElements(modding, document, boardUri, boardData, threadData,
           boardUri : boardUri,
           type : 'thread',
           threadId : threadData.threadId
-        }, callback);
+        }, callback, archive);
   }
 }
 

@@ -5,12 +5,14 @@ var dbVersion = 2;
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
 
+var archive = require('./archive');
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var boot = require('./boot');
 var settings = boot.getGeneralSettings();
 var verbose = settings.verbose;
 var debug = boot.debug();
+var initArchive = settings.serveArchive || settings.archiveLevel;
 
 var indexesSet;
 
@@ -282,7 +284,11 @@ function indexSet(callback) {
   if (indexesSet === maxIndexesSet) {
     loading = false;
 
-    callback();
+    if (initArchive) {
+      archive.init(callback);
+    } else {
+      callback();
+    }
   }
 }
 

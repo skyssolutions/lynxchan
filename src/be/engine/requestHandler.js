@@ -11,9 +11,10 @@ var miscOps = require('./miscOps');
 var settings = require('../boot').getGeneralSettings();
 var verbose = settings.verbose;
 var maintenance = settings.maintenance;
+var archive = require('../archive');
 var gridFs = require('./gridFsHandler');
 var staticHandler = require('./staticHandler');
-var debug = require('../boot').debug();
+var serveArchive = settings.serveArchive;
 
 function outputError(error, res) {
 
@@ -86,7 +87,6 @@ function processFormRequest(req, res) {
       });
     } else {
       require('../form' + pathName).process(req, res);
-
     }
 
   } catch (error) {
@@ -134,7 +134,31 @@ function outputGfsFile(req, res) {
     processFormRequest(req, res);
 
     return;
-  } else
+  } else if (gotSecondString && !/\W/.test(splitArray[1])) {
+    // redirects after cutting the index.html
+    res.writeHead(302, {
+      'Location' : '/' + splitArray[1] + '/'
+
+    });
+    res.end();
+    return;
+
+  }
+
+  gridFs.outputFile(pathName, req, res, function streamedFile(error) {
+    if (error) {
+      outputError(error, res);
+    }
+  });
+
+}
+
+function outputArchiveFile(req, res) {
+  var pathName = getPathNameForGfs(req);
+
+  var splitArray = pathName.split('/');
+
+  var gotSecondString = splitArray.length === 2 && splitArray[1].length;
 
   // redirects after cutting the index.html
   if (gotSecondString && !/\W/.test(splitArray[1])) {
@@ -147,12 +171,29 @@ function outputGfsFile(req, res) {
     return;
   }
 
-  gridFs.outputFile(pathName, req, res, function streamedFile(error) {
-    if (error) {
-      outputError(error, res);
-    }
-  });
+  if (pathName === '/') {
+    try {
 
+      archive.mainArquive(req, res);
+
+    } catch (error) {
+      formOps.outputError(error, 500, res);
+    }
+  } else if (splitArray.length === 3 && !splitArray[2].length) {
+    try {
+
+      archive.boardArquive(splitArray[1], req, res);
+
+    } catch (error) {
+      formOps.outputError(error, 500, res);
+    }
+  } else {
+    archive.outputFile(pathName, req, res, function streamedFile(error) {
+      if (error) {
+        outputError(error, res);
+      }
+    });
+  }
 }
 
 function outputStaticFile(req, res) {
@@ -175,12 +216,20 @@ exports.handle = function(req, res) {
 
   var subdomain = req.headers.host.split('.');
 
-  if (subdomain.length && subdomain[0] === 'api') {
+  if (subdomain.length > 1) {
+    subdomain = subdomain[0];
+  } else {
+    subdomain = null;
+  }
+
+  if (subdomain === 'api') {
     processApiRequest(req, res);
-  } else if (subdomain.length && subdomain[0] === 'static') {
+  } else if (subdomain === 'static') {
     outputStaticFile(req, res);
+  } else if (subdomain === 'archive' && serveArchive) {
+    outputArchiveFile(req, res);
   } else {
     outputGfsFile(req, res);
-
   }
+
 };

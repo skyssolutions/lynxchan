@@ -89,6 +89,8 @@ Settings files that goes into the settings directory:
 * `maxBannerSizeKB`: maximum size in kilobytes for board banners. Defaults to maximum upload file and to 200KB if there is no maximum upload size. Will be ignored if larger or equal than maximum upload size.
 * `maxFlagSizeKB`: maximum size in kilobytes for board flags. Defaults to 32KB.
 * `floodTimerSec`: time in seconds required between postings from the same ip. Not applicable to TOR users. Defaults to 10.
+* `archiveLevel`(Number): archive setting. 0 will not archive anything, 1 will archive only html pages of threads, 2 will archive uploads and thumbnails too. Defaults to 0.
+* `serveArchive`(Boolean): indicates that the application will serve the archive on sub-domain `archive`.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.
@@ -96,8 +98,9 @@ Settings files that goes into the settings directory:
 * `database`: database to use.
 * `login`: login to use on the database.
 * `password`: password to use on the database.
-
 `login` is optional and `password` will only be used if login is informed.
+
+`archive.json`: archive database information. Same fields than `db.json`.
 
 Settings files must contain a json object where each key defined here will have its corresponding value.
 

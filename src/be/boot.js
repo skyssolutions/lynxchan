@@ -26,6 +26,8 @@ exports.reload = function() {
 
   require('./engine/templateHandler').loadTemplates();
 
+  require('./archive').reload();
+
 };
 
 var cluster = require('cluster');
@@ -42,6 +44,7 @@ var defaultImages = [ 'thumb', 'audioThumb', 'defaultBanner', 'spoiler' ];
 
 var defaultFilesRelation;
 
+var archiveSettings;
 var dbSettings;
 var generalSettings;
 var templateSettings;
@@ -165,6 +168,10 @@ exports.torDebug = function() {
 exports.getDbSettings = function() {
 
   return dbSettings;
+};
+
+exports.getArchiveSettings = function() {
+  return archiveSettings;
 };
 
 exports.getGeneralSettings = function() {
@@ -294,11 +301,23 @@ function composeDefaultFiles() {
 
 }
 
-exports.loadSettings = function() {
-
+function loadDatabasesSettings() {
   var dbSettingsPath = __dirname + '/settings/db.json';
 
   dbSettings = JSON.parse(fs.readFileSync(dbSettingsPath));
+
+  try {
+    var archivePath = __dirname + '/settings/archive.json';
+
+    archiveSettings = JSON.parse(fs.readFileSync(archivePath));
+  } catch (error) {
+
+  }
+}
+
+exports.loadSettings = function() {
+
+  loadDatabasesSettings();
 
   var generalSettingsPath = __dirname + '/settings/general.json';
 
@@ -377,7 +396,17 @@ function bootWorkers() {
     return;
   }
 
-  for (var i = 0; i < require('os').cpus().length; i++) {
+  var workerLimit;
+
+  var coreCount = require('os').cpus().length;
+
+  if (debug && coreCount > 2) {
+    workerLimit = 2;
+  } else {
+    workerLimit = coreCount;
+  }
+
+  for (var i = 0; i < workerLimit; i++) {
     cluster.fork();
   }
 

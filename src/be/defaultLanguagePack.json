@@ -234,5 +234,7 @@
   "msgFlagDeleted": "Flag deleted.",
   "guiUnlimited": "limitless",
   "guiNoFlag": "No flag",
-  "errFlood": "Flood detected."
+  "errFlood": "Flood detected.",
+  "titMainArchive": "Available boards",
+  "titBoardArchive": "Available threads on /{$board}/"
 }

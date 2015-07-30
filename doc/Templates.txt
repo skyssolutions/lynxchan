@@ -1310,6 +1310,52 @@ idIdentifier:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::47
+
+mainArchivePage:
+
+Elements:
+boardsDiv:
+    use: have children appended to it.
+    description: div that displays the available boards in the archive.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::48
+
+mainArchiveCell*:
+rootElement: div
+
+Elements:
+linkBoard:
+    use: have it's href and innerHTML manipulated.
+    description: link to the archived board.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::49
+
+boardArchivePage:
+
+Elements:
+threadsDiv:
+    use: have children appended to it.
+    description: div that displays the available threads in the board archive.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::50
+
+boardArchiveCell*:
+rootElement: div
+
+Elements:
+linkThread:
+    use: have it's href and innerHTML manipulated.
+    description: link to the archived thread.
+
+------------------------------------------------------------------------------------------
+
 
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.
 

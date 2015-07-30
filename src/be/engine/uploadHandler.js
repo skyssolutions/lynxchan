@@ -23,6 +23,7 @@ videoDimensionsCommand += 'stream=width,height ';
 var videoThumbCommand = 'ffmpeg -i {$path} -y -vframes 1 -vf scale=';
 var mp3ThumbCommand = 'ffmpeg -i {$path} -y -an -vcodec copy {$destination}';
 mp3ThumbCommand += ' && mogrify -resize {$dimension} {$destination}';
+var archive = settings.archiveLevel > 1;
 
 var supportedMimes = settings.acceptedMimes;
 var thumbSize = settings.thumbSize || 128;
@@ -201,7 +202,7 @@ function transferMediaToGfs(boardUri, threadId, postId, fileId, file, cb,
   gsHandler.writeFile(file.pathInDisk, fileName, file.mime, meta,
       function wroteFile(error) {
         cb(error);
-      });
+      }, archive);
 
 }
 
@@ -219,7 +220,7 @@ function processThumb(boardUri, fileId, ext, file, meta, cb, threadId, postId) {
               meta);
         }
 
-      });
+      }, archive);
 }
 
 function useGenericThumb(audioMime, file, boardUri, threadId, postId, fileId,
