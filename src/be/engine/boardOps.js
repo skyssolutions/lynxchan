@@ -25,6 +25,7 @@ var settings = boot.getGeneralSettings();
 var restrictedBoardCreation = settings.restrictBoardCreation;
 var validSettings = [ 'disableIds', 'disableCaptcha', 'forceAnonymity',
     'allowCode', 'archive' ];
+var defaultSettings = [ 'disableIds', 'disableCaptcha' ];
 var maxRulesCount = settings.maxBoardRules || 20;
 var maxFiltersCount = settings.maxFilters || 20;
 var maxVolunteers = settings.maxBoardVolunteers || 20;
@@ -988,7 +989,7 @@ function insertBoard(parameters, userData, callback) {
         parameters.toString() + Math.random() + new Date()).digest('hex'),
     boardDescription : parameters.boardDescription,
     owner : userData.login,
-    settings : []
+    settings : defaultSettings,
   }, function insertedBoard(error) {
     if (error && error.code !== 11000) {
       callback(error);
