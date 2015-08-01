@@ -250,7 +250,8 @@ function loadAndTestTemplates(path, templateSettings) {
         fields : [ 'labelName', 'labelDescription', 'divThreads', 'divPages',
             'boardIdentifier', 'linkManagement', 'bannerImage', 'captchaDiv',
             'divName', 'linkModeration', 'labelMaxFileSize', 'linkPrevious',
-            'linkNext', 'flagsDiv', 'flagCombobox' ]
+            'linkNext', 'flagsDiv', 'flagCombobox', 'panelMessage',
+            'divMessage' ]
       },
       {
         template : 'threadPage',
@@ -259,7 +260,8 @@ function loadAndTestTemplates(path, templateSettings) {
             'inputBan', 'divBanInput', 'divControls', 'controlBoardIdentifier',
             'controlThreadIdentifier', 'checkboxLock', 'checkboxPin',
             'bannerImage', 'captchaDiv', 'divName', 'labelMaxFileSize',
-            'checkboxCyclic', 'flagsDiv', 'flagCombobox' ]
+            'checkboxCyclic', 'flagsDiv', 'flagCombobox', 'panelMessage',
+            'divMessage' ]
       },
       {
         template : 'messagePage',
@@ -289,7 +291,8 @@ function loadAndTestTemplates(path, templateSettings) {
             'disableCaptchaCheckbox', 'forceAnonymityCheckbox',
             'filterManagementLink', 'anonymousNameField', 'rangeBansLink',
             'hashBansLink', 'customCssIdentifier', 'ruleManagementLink',
-            'allowCodeCheckbox', 'flagManagementLink', 'enableArchiveCheckbox' ]
+            'allowCodeCheckbox', 'flagManagementLink', 'enableArchiveCheckbox',
+            'boardMessageField' ]
       },
       {
         template : 'closedReportsPage',

@@ -338,6 +338,7 @@ Description: changes board settings. Requires authentication. Restricted to the 
 
 Parameters:
     boardUri*: board uri.
+    boardMessage: new message of the board. 256 characters.
     boardName*: new name of the board. 32 characters.
     boardDescription*: new description of the board. 128 characters.
     anonymousName: name to be used when the user is anonymous. 32 character.

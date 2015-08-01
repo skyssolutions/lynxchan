@@ -12,7 +12,7 @@ Beta
 * [Io.js](http://iojs.org), I suggest installing from source code. Just remember to checkout the latest tag instead of using the latest commit.
 * [MongoDB](https://www.mongodb.org/)
 * [ImageMagick](http://www.imagemagick.org/script/index.php)
-* [ffmpeg](https://www.ffmpeg.org/) if videoThumb setting is enabled. Requires zlib-devel on centOS.
+* [ffmpeg](https://www.ffmpeg.org/) if mediaThumb setting is enabled. Requires zlib-devel on centOS.
 * [A front-end](https://gitlab.com/mrseth/LynxChanFront-Placeholder) that must either be placed on the `src/fe` directory or have it's absolute path set on the general.json file. Read the readme.md on src/be for more information about how to configure the path for the front-end.
 
 # Automatic install

@@ -12,7 +12,7 @@ read answerSettings
 if [ "$answerFrontEnd" == "y" ]; then
   git clone https://gitlab.com/mrseth/LynxChanFront-Placeholder.git ../src/fe
   cd ../src/fe
-  
+  git checkout master
   cd ../../aux
 
   echo "Default front-end installed."

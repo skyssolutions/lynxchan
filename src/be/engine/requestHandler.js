@@ -13,6 +13,7 @@ var verbose = settings.verbose;
 var maintenance = settings.maintenance;
 var archive = require('../archive');
 var gridFs = require('./gridFsHandler');
+var lang = require('./langOps').languagePack();
 var staticHandler = require('./staticHandler');
 var serveArchive = settings.serveArchive;
 
@@ -226,8 +227,12 @@ exports.handle = function(req, res) {
     processApiRequest(req, res);
   } else if (subdomain === 'static') {
     outputStaticFile(req, res);
-  } else if (subdomain === 'archive' && serveArchive) {
-    outputArchiveFile(req, res);
+  } else if (subdomain === 'archive') {
+    if (serveArchive) {
+      outputArchiveFile(req, res);
+    } else {
+      formOps.outputError(lang.errNotServingArchives, 500, res);
+    }
   } else {
     outputGfsFile(req, res);
   }

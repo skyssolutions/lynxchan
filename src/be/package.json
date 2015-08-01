@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://gitlab.com/mrseth/LynxChan.git"
   },
-  "version": "0.4.3",
+  "version": "0.5.0",
   "devDependencies": {
     "mongodb": "latest",
     "gm": "latest",

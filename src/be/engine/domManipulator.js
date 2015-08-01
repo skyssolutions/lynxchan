@@ -236,6 +236,24 @@ function setFlags(document, board, flagData) {
 
 }
 
+function setBoardToggleableElements(boardData, document) {
+  var settings = boardData.settings;
+
+  if (settings.indexOf('disableCaptcha') > -1) {
+    removeElement(document.getElementById('captchaDiv'));
+  }
+
+  if (settings.indexOf('forceAnonymity') > -1) {
+    removeElement(document.getElementById('divName'));
+  }
+
+  if (boardData.boardMarkdown && boardData.boardMarkdown.length) {
+    document.getElementById('divMessage').innerHTML = boardData.boardMarkdown;
+  } else {
+    removeElement(document.getElementById('panelMessage'));
+  }
+}
+
 function setHeader(document, board, boardData, flagData) {
 
   var titleHeader = document.getElementById('labelName');
@@ -247,15 +265,7 @@ function setHeader(document, board, boardData, flagData) {
   var linkBanner = '/randomBanner.js?boardUri=' + board;
   document.getElementById('bannerImage').src = linkBanner;
 
-  var settings = boardData.settings;
-
-  if (settings.indexOf('disableCaptcha') > -1) {
-    removeElement(document.getElementById('captchaDiv'));
-  }
-
-  if (settings.indexOf('forceAnonymity') > -1) {
-    removeElement(document.getElementById('divName'));
-  }
+  setBoardToggleableElements(boardData, document);
 
   if (boardData.usesCustomCss) {
     setCustomCss(board, document);
@@ -958,15 +968,7 @@ function setBoardControlCheckBoxes(document, boardData) {
 
 }
 
-function setBoardOwnerControls(document, boardData) {
-
-  setBoardControlIdentifiers(document, boardData);
-
-  setBoardControlCheckBoxes(document, boardData);
-
-  var volunteersDiv = document.getElementById('volunteersDiv');
-
-  var volunteers = boardData.volunteers || [];
+function setBoardFields(document, boardData) {
 
   document.getElementById('boardNameField').setAttribute('value',
       boardData.boardName);
@@ -976,6 +978,22 @@ function setBoardOwnerControls(document, boardData) {
 
   document.getElementById('anonymousNameField').setAttribute('value',
       boardData.anonymousName || '');
+
+  var messageContent = boardData.boardMessage || '';
+
+  document.getElementById('boardMessageField').defaultValue = messageContent;
+
+}
+
+function setBoardOwnerControls(document, boardData) {
+
+  setBoardControlIdentifiers(document, boardData);
+
+  setBoardControlCheckBoxes(document, boardData);
+
+  var volunteersDiv = document.getElementById('volunteersDiv');
+
+  var volunteers = boardData.volunteers || [];
 
   for (var i = 0; i < volunteers.length; i++) {
 
@@ -1020,6 +1038,8 @@ exports.boardManagement = function(login, boardData, reports) {
         boardData.boardUri);
 
     setBoardManagementLinks(document, boardData);
+
+    setBoardFields(document, boardData);
 
     var boardLabel = document.getElementById('boardLabel');
 

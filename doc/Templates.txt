@@ -22,6 +22,14 @@ TEM_ID::02
 boardPage:
 
 Elements:
+panelMessage:
+    use: might be removed.
+    description: panel that holds the element containing the board message.
+
+divMessage:
+    use: have it's innerHTML manipulated.
+    description: contains the board message.
+
 labelName:
     use: have it's innerHTML manipulated.
     description: contains the URI and name of the board.
@@ -89,6 +97,14 @@ TEM_ID::03
 threadPage:
 
 Elements:
+panelMessage:
+    use: might be removed.
+    description: panel that holds the element containing the board message.
+
+divMessage:
+    use: have it's innerHTML manipulated.
+    description: contains the board message.
+
 labelName:
     use: have it's innerHTML manipulated.
     description: contains the URI and name of the board.
@@ -594,6 +610,10 @@ rangeBansLink:
 hashBansLink:
     use: have it's href manipulated.
     description: link to the hash bans management page.
+
+boardMessageField:
+    use: have it's value manipulated.
+    description: field with the board message.
 
 ------------------------------------------------------------------------------------------
 

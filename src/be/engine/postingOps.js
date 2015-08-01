@@ -291,7 +291,7 @@ function applyFilters(filters, message) {
 }
 
 // Section 1.2: Markdown {
-function replaceStyleMarkdown(message, replaceCode) {
+exports.replaceStyleMarkdown = function(message, replaceCode) {
 
   var split = message.split('\n');
 
@@ -315,7 +315,7 @@ function replaceStyleMarkdown(message, replaceCode) {
   message = split.join('<br>');
   return message;
 
-}
+};
 
 function replaceMarkdown(message, posts, board, replaceCode, callback) {
 
@@ -387,7 +387,7 @@ function replaceMarkdown(message, posts, board, replaceCode, callback) {
 
   });
 
-  message = replaceStyleMarkdown(message, replaceCode);
+  message = exports.replaceStyleMarkdown(message, replaceCode);
 
   callback(null, message);
 

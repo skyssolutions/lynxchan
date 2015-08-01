@@ -18,6 +18,7 @@ var threads = db.threads();
 var posts = db.posts();
 var boards = db.boards();
 var logs = db.logs();
+var postingOps = require('./postingOps');
 var boot = require('../boot');
 var settings = boot.getGeneralSettings();
 var restrictedBoardCreation = settings.restrictBoardCreation;
@@ -26,6 +27,7 @@ var validSettings = [ 'disableIds', 'disableCaptcha', 'forceAnonymity',
 var maxRulesCount = settings.maxBoardRules || 20;
 var maxFiltersCount = settings.maxFilters || 20;
 var maxVolunteers = settings.maxBoardVolunteers || 20;
+var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
 var replaceTable = {
   '<' : '&lt;',
   '>' : '&gt;'
@@ -49,6 +51,9 @@ var boardParameters = [ {
   field : 'boardDescription',
   length : 128,
   removeHTML : true
+}, {
+  field : 'boardMessage',
+  length : 256
 } ];
 
 var filterParameters = [ {
@@ -73,11 +78,7 @@ exports.getValidSettings = function() {
 // Section 1: Write operations {
 
 // Section 1.1: Settings {
-function checkBoardRebuild(board, params) {
-
-  var nameChanged = board.boardName !== params.boardName;
-
-  var descriptionChanged = board.boardDescription !== params.boardDescription;
+function captchaOrAnonimityChanged(board, params) {
 
   var oldSettings = board.settings;
   var newSettings = params.settings;
@@ -92,7 +93,32 @@ function checkBoardRebuild(board, params) {
 
   var anonChanged = hadAnon !== hasAnon;
 
-  if (nameChanged || descriptionChanged || captchaChanged || anonChanged) {
+  return anonChanged || captchaChanged;
+
+}
+
+function fieldsChanged(board, params) {
+
+  for (var i = 0; i < boardFieldsToCheck.length; i++) {
+    var field = boardFieldsToCheck[i];
+
+    if (board[field] || params[field]) {
+      if (board[field] !== params[field]) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function checkBoardRebuild(board, params) {
+
+  var didFieldsChanged = fieldsChanged(board, params);
+
+  var settingsChanged = captchaOrAnonimityChanged(board, params);
+
+  if (didFieldsChanged || settingsChanged) {
 
     process.send({
       board : params.boardUri,
@@ -101,11 +127,32 @@ function checkBoardRebuild(board, params) {
 
   }
 
-  if (nameChanged) {
+  if (board.boardName !== params.boardName) {
     process.send({
       frontPage : true
     });
   }
+
+}
+
+function getMessageMarkdown(message) {
+  if (!message) {
+    return null;
+  }
+
+  var ret = message.replace(/[<>]/g, function replace(match) {
+    return replaceTable[match];
+  });
+
+  ret = ret.replace(/\[.+\]\(.+\)/g, function prettyLinks(match) {
+    var matchesArray = match.match(/\[(.+)\]\((.+)\)/);
+
+    return '<a href=\"' + matchesArray[2] + '\">' + matchesArray[1] + '</a>';
+  });
+
+  ret = postingOps.replaceStyleMarkdown(ret);
+
+  return ret;
 
 }
 
@@ -118,6 +165,8 @@ function saveNewSettings(board, parameters, callback) {
       boardName : parameters.boardName,
       boardDescription : parameters.boardDescription,
       settings : parameters.settings,
+      boardMessage : parameters.boardMessage,
+      boardMarkdown : getMessageMarkdown(parameters.boardMessage),
       anonymousName : parameters.anonymousName
     }
   }, function updatedBoard(error) {
@@ -1041,6 +1090,7 @@ exports.getBoardManagementData = function(login, board, callback) {
     owner : 1,
     boardUri : 1,
     boardName : 1,
+    boardMessage : 1,
     anonymousName : 1,
     settings : 1,
     boardDescription : 1,

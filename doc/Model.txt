@@ -20,6 +20,8 @@ boards: stores boards.
     postsPerHour(Number): latest PPM stats for this  board.
     usesCustomCss(Boolean): pre-aggregated boolean indicating the board has a custom css file set.
     rules(Array): array with board rules. Each rule is limited to 512 characters.
+    boardMessage: message of the board. 256 characters.
+    boardMarkdown: markdown of the message.
 
 ----------------------------------------------------------------------------------------
 

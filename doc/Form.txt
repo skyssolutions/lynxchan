@@ -374,6 +374,7 @@ Parameters:
     disableCaptcha: if any value is passed, captchas will be disabled.
     forceAnonymity: if any value is passed, the name input is disabled on posting.
     allowCode: if any value is passed, use of code tag will be allowed on markdown.
+    boardMessage: new message of the board. 256 characters.
 
 ------------------------------------------------------------------------------------------
 

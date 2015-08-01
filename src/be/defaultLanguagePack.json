@@ -236,5 +236,6 @@
   "guiNoFlag": "No flag",
   "errFlood": "Flood detected.",
   "titMainArchive": "Available boards",
-  "titBoardArchive": "Available threads on /{$board}/"
+  "titBoardArchive": "Available threads on /{$board}/",
+  "errNotServingArchives": "This instance is not set to serve archive files."
 }
