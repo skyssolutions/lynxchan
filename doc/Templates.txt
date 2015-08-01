@@ -215,6 +215,10 @@ Root element: form
 Observation: will have the class "multipleUploads" added to it if contains more than one upload.
 
 Elements:
+labelIp:
+    use: have it's innerHTML manipulated or might be removed.
+    description: label used to display the hashed ip of the poster to the staff.
+
 linkEdit:
     use: have it's href manipulated or may be removed.
     description: link that opens the page used to edit the message of the OP.
@@ -243,9 +247,9 @@ linkName:
     use: have it's innerHTML manipulated and might have its href manipulated.
     description: contains the poster's name and links to the poster e-mail. Will have the class "noEmailName" added if it doesn't have an e-mail to be added to href.
 
-panelRange:
+panelIp:
     use: might be removed.
-    description: object to be removed if the range is not going to be informed.
+    description: object to be removed if the range and ip are not going to be informed.
 
 labelRange:
     use: have it's innerHTML manipulated.
@@ -320,6 +324,10 @@ Root element: form
 Observation: will have the class "multipleUploads" added to it if contains more than one upload.
 
 Elements:
+labelIp:
+    use: have it's innerHTML manipulated or might be removed.
+    description: label used to display the hashed ip of the poster to the staff.
+
 divBanMessage:
     use: have it's innerHTML manipulated or might be removed. 
     description: holds the ban message, if the content was used for a ban.
@@ -340,9 +348,9 @@ linkPreview:
     use: have it's href manipulated.
     description: link to the post's preview.
 
-panelRange:
+panelIp:
     use: might be removed. 
-    description: object to be removed if the range is not going to be informed.
+    description: object to be removed if the range and ip are not going to be informed.
 
 labelRange:
     use: have it's innerHTML manipulated. 

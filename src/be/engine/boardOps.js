@@ -12,6 +12,7 @@ var captchaOps = require('./captchaOps');
 var logger = require('../logger');
 var files = db.files();
 var reports = db.reports();
+var crypto = require('crypto');
 var lang = require('./langOps').languagePack();
 var users = db.users();
 var threads = db.threads();
@@ -977,11 +978,14 @@ exports.deleteFlag = function(userLogin, flagId, callback) {
 };
 // } Section 1.10: Flag deletion
 
+// Section 1.11: Creation {
 function insertBoard(parameters, userData, callback) {
 
   boards.insert({
     boardUri : parameters.boardUri,
     boardName : parameters.boardName,
+    ipSalt : crypto.createHash('sha256').update(
+        parameters.toString() + Math.random() + new Date()).digest('hex'),
     boardDescription : parameters.boardDescription,
     owner : userData.login,
     settings : []
@@ -1043,6 +1047,7 @@ exports.createBoard = function(captchaId, parameters, userData, callback) {
       });
 
 };
+// } Section 1.11: Creation
 
 // } Section 1: Write operations
 

@@ -22,6 +22,7 @@ boards: stores boards.
     rules(Array): array with board rules. Each rule is limited to 512 characters.
     boardMessage: message of the board. 256 characters.
     boardMarkdown: markdown of the message.
+    ipSalt: salt used to display hashed ips to staff.
 
 ----------------------------------------------------------------------------------------
 

@@ -139,6 +139,7 @@ exports.process = function(req, res) {
           owner : 1,
           _id : 0,
           boardUri : 1,
+          ipSalt : 1,
           boardName : 1,
           settings : 1,
           boardMarkdown : 1,

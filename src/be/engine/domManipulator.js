@@ -13,6 +13,7 @@ var settings = boot.getGeneralSettings();
 var gridFs = require('./gridFsHandler');
 var serializer = require('jsdom').serializeDocument;
 var miscOps = require('./miscOps');
+var crypto = require('crypto');
 var jsdom = require('jsdom').jsdom;
 var lang = require('./langOps').languagePack();
 var siteTitle = settings.siteTitle || lang.titDefaultChanTitle;
@@ -118,6 +119,17 @@ function getReportLink(report) {
   }
 
   return link;
+}
+
+function setPostingIp(cell, postingData, boardData) {
+
+  var labelRange = cell.getElementsByClassName('labelRange')[0];
+  labelRange.innerHTML = miscOps.getRange(postingData.ip);
+
+  var labelIp = cell.getElementsByClassName('labelIp')[0];
+  labelIp.innerHTML = crypto.createHash('sha256').update(
+      boardData.ipSalt + postingData.ip).digest('hex');
+
 }
 
 // Section 1.1: Date formatting functions {
@@ -304,7 +316,7 @@ function setSharedHideableElements(posting, cell) {
 }
 
 // Section 1.2: Thread content {
-function setThreadHiddeableElements(thread, cell, modding, boardUri) {
+function setThreadHiddeableElements(thread, cell, modding, boardUri, bData) {
 
   for ( var key in indicatorsRelation) {
     if (!thread[key]) {
@@ -328,10 +340,9 @@ function setThreadHiddeableElements(thread, cell, modding, boardUri) {
   }
 
   if (modding && thread.ip) {
-    var labelRange = cell.getElementsByClassName('labelRange')[0];
-    labelRange.innerHTML = miscOps.getRange(thread.ip);
+    setPostingIp(cell, thread, bData);
   } else {
-    removeElement(cell.getElementsByClassName('panelRange')[0]);
+    removeElement(cell.getElementsByClassName('panelIp')[0]);
   }
 
 }
@@ -391,7 +402,8 @@ function getThreadCellBase(document, thread) {
   return threadCell;
 }
 
-function addThread(document, thread, posts, boardUri, innerPage, modding) {
+function addThread(document, thread, posts, boardUri, innerPage, modding,
+    boardData) {
 
   var threadCell = getThreadCellBase(document, thread);
 
@@ -410,7 +422,7 @@ function addThread(document, thread, posts, boardUri, innerPage, modding) {
 
   setThreadComplexElements(boardUri, thread, threadCell, innerPage);
 
-  setThreadHiddeableElements(thread, threadCell, modding, boardUri);
+  setThreadHiddeableElements(thread, threadCell, modding, boardUri, boardData);
 
   setThreadSimpleElements(threadCell, thread);
 
@@ -420,7 +432,7 @@ function addThread(document, thread, posts, boardUri, innerPage, modding) {
   document.getElementById('divThreads').appendChild(threadCell);
 
   addPosts(document, posts || [], boardUri, thread.threadId, modding,
-      threadCell.getElementsByClassName('divPosts')[0]);
+      threadCell.getElementsByClassName('divPosts')[0], boardData);
 
 }
 
@@ -489,14 +501,13 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document,
       post.files, modding);
 }
 
-function setPostModElements(post, modding, postCell, boardUri, threadId) {
+function setPostModElements(post, modding, postCell, boardUri, threadId,
+    boardData) {
 
   if (modding && post.ip) {
-
-    var labelRange = postCell.getElementsByClassName('labelRange')[0];
-    labelRange.innerHTML = miscOps.getRange(post.ip);
+    setPostingIp(postCell, post, boardData);
   } else {
-    removeElement(postCell.getElementsByClassName('panelRange')[0]);
+    removeElement(postCell.getElementsByClassName('panelIp')[0]);
   }
 
   if (modding) {
@@ -510,7 +521,7 @@ function setPostModElements(post, modding, postCell, boardUri, threadId) {
 }
 
 function setPostInnerElements(document, boardUri, threadId, post, postCell,
-    preview, modding) {
+    preview, modding, boardData) {
 
   var linkName = postCell.getElementsByClassName('linkName')[0];
 
@@ -529,14 +540,15 @@ function setPostInnerElements(document, boardUri, threadId, post, postCell,
 
   setPostHideableElements(postCell, post);
 
-  setPostModElements(post, modding, postCell, boardUri, threadId);
+  setPostModElements(post, modding, postCell, boardUri, threadId, boardData);
 
   setPostComplexElements(postCell, post, boardUri, threadId, document, preview,
       modding);
 
 }
 
-function addPosts(document, posts, boardUri, threadId, modding, divPosts) {
+function addPosts(document, posts, boardUri, threadId, modding, divPosts,
+    boardData) {
 
   for (var i = 0; i < posts.length; i++) {
     var postCell = document.createElement('div');
@@ -551,7 +563,7 @@ function addPosts(document, posts, boardUri, threadId, modding, divPosts) {
     postCell.id = post.postId;
 
     setPostInnerElements(document, boardUri, threadId, post, postCell, false,
-        modding);
+        modding, boardData);
 
     divPosts.appendChild(postCell);
 
@@ -2253,7 +2265,7 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
 
     setThreadHiddenIdentifiers(document, boardUri, threadData);
 
-    addThread(document, threadData, posts, boardUri, true, modding);
+    addThread(document, threadData, posts, boardUri, true, modding, boardData);
 
     setModElements(modding, document, boardUri, boardData, threadData, posts,
         callback);

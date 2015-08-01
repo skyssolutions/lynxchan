@@ -1,6 +1,6 @@
 'use strict';
 
-var dbVersion = 2;
+var dbVersion = 3;
 
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
@@ -8,6 +8,7 @@ var dbVersion = 2;
 var archive = require('./archive');
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
+var crypto = require('crypto');
 var boot = require('./boot');
 var settings = boot.getGeneralSettings();
 var verbose = settings.verbose;
@@ -195,11 +196,50 @@ function setThreadsPreAggregatedFileMime(callback, cursor) {
 
 }
 
+function setBoardIpSalt(callback) {
+
+  cachedBoards.find({}, {}).toArray(
+      function gotBoards(error, boards) {
+        if (error || !boards.length) {
+          callback(error);
+        } else {
+          var operations = [];
+
+          for (var i = 0; i < boards.length; i++) {
+            var board = boards[i];
+
+            operations.push({
+              updateOne : {
+                filter : {
+                  boardUri : board.boardUri
+                },
+                update : {
+                  $set : {
+                    ipSalt : crypto.createHash('sha256').update(
+                        JSON.stringify(board) + Math.random() + new Date())
+                        .digest('hex')
+                  }
+                }
+              }
+            });
+          }
+
+          cachedBoards.bulkWrite(operations, callback);
+
+        }
+      });
+
+}
+
 function upgrade(version, callback) {
 
   switch (version) {
   case 1:
     setThreadsPreAggregatedFileMime(callback);
+    break;
+
+  case 2:
+    setBoardIpSalt(callback);
     break;
 
   default:
@@ -225,7 +265,6 @@ function iterateUpgrades(currentVersion, callback) {
     } else {
 
       // style exception, too simple
-
       cachedVersions.updateOne({
         version : currentVersion
       }, {
@@ -243,7 +282,6 @@ function iterateUpgrades(currentVersion, callback) {
           iterateUpgrades(currentVersion + 1, callback);
         }
       });
-
       // style exception, too simple
 
     }

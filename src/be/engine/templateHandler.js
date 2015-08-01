@@ -140,16 +140,17 @@ function loadAndTestTemplates(path, templateSettings) {
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkReply', 'linkSelf', 'deletionCheckBox',
             'lockIndicator', 'pinIndicator', 'labelId', 'labelRole',
-            'divBanMessage', 'spanId', 'panelRange', 'labelRange',
+            'divBanMessage', 'spanId', 'panelIp', 'labelRange',
             'cyclicIndicator', 'linkQuote', 'divPosts', 'labelOmission',
-            'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag' ]
+            'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag', 'labelIp' ]
       },
       {
         template : 'postCell',
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkSelf', 'deletionCheckBox', 'labelId',
-            'labelRole', 'divBanMessage', 'spanId', 'panelRange', 'labelRange',
-            'linkQuote', 'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag' ]
+            'labelRole', 'divBanMessage', 'spanId', 'panelIp', 'labelRange',
+            'linkQuote', 'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag',
+            'labelIp' ]
       },
       {
         template : 'staffCell',
