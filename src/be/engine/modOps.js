@@ -602,9 +602,9 @@ function appendPostsToBanLog(informedPosts, informedThreads, pieces) {
   if (informedPosts.length) {
     if (informedThreads.length) {
       logMessage += pieces.threadAndPostPiece;
-    } else {
-      logMessage += pieces.postPiece;
     }
+
+    logMessage += pieces.postPiece;
 
     for (var i = 0; i < informedPosts.length; i++) {
       if (i) {
@@ -661,8 +661,9 @@ function logBans(foundBoards, userData, board, informedPosts, informedThreads,
 
 }
 
-function updateThreadsBanMessage(foundBoards, userData, reportedObjects,
-    parameters, callback, informedThreads, informedPosts, board) {
+function updateThreadsBanMessage(pages, parentThreads, foundBoards, userData,
+    reportedObjects, parameters, callback, informedThreads, informedPosts,
+    board) {
 
   threads.updateMany({
     boardUri : board,
@@ -680,7 +681,6 @@ function updateThreadsBanMessage(foundBoards, userData, reportedObjects,
     } else {
 
       // style exception, too simple
-
       posts.updateMany({
         boardUri : board,
         postId : {
@@ -695,6 +695,40 @@ function updateThreadsBanMessage(foundBoards, userData, reportedObjects,
           callback(error);
         } else {
 
+          var rebuiltPages = [];
+
+          for (var i = 0; i < pages.length; i++) {
+
+            var page = pages[i];
+
+            if (rebuiltPages.indexOf(page) === -1) {
+              rebuiltPages.push(page);
+              process.send({
+                board : board,
+                page : pages[i]
+              });
+            }
+          }
+
+          for (i = 0; i < informedThreads.length; i++) {
+            process.send({
+              board : board,
+              thread : informedThreads[i]
+            });
+          }
+
+          for (i = 0; i < parentThreads.length; i++) {
+
+            var parent = parentThreads[i];
+
+            if (informedThreads.indexOf(parent) === -1) {
+              process.send({
+                board : board,
+                thread : parent
+              });
+            }
+          }
+
           logBans(foundBoards, userData, board, informedPosts, informedThreads,
               reportedObjects, parameters, callback);
 
@@ -702,14 +736,16 @@ function updateThreadsBanMessage(foundBoards, userData, reportedObjects,
 
       });
       // style exception, too simple
+
     }
 
   });
 
 }
 
-function createBans(foundIps, foundBoards, board, userData, reportedObjects,
-    parameters, callback, informedThreads, informedPosts) {
+function createBans(foundIps, parentThreads, pages, foundBoards, board,
+    userData, reportedObjects, parameters, callback, informedThreads,
+    informedPosts) {
 
   var operations = [];
 
@@ -744,15 +780,16 @@ function createBans(foundIps, foundBoards, board, userData, reportedObjects,
     if (error) {
       callback(error);
     } else {
-      updateThreadsBanMessage(foundBoards, userData, reportedObjects,
-          parameters, callback, informedThreads, informedPosts, board);
+      updateThreadsBanMessage(pages, parentThreads, foundBoards, userData,
+          reportedObjects, parameters, callback, informedThreads,
+          informedPosts, board);
     }
   });
 
 }
 
-function getPostIps(foundIps, foundBoards, informedPosts, board, userData,
-    reportedObjects, parameters, callback, informedThreads) {
+function getPostIps(foundIps, pages, foundBoards, informedPosts, board,
+    userData, reportedObjects, parameters, callback, informedThreads) {
 
   posts.aggregate([ {
     $match : {
@@ -770,6 +807,9 @@ function getPostIps(foundIps, foundBoards, informedPosts, board, userData,
       _id : 0,
       ips : {
         $addToSet : '$ip'
+      },
+      parents : {
+        $addToSet : '$threadId'
       }
     }
   } ],
@@ -779,13 +819,42 @@ function getPostIps(foundIps, foundBoards, informedPosts, board, userData,
           callback(error);
         } else if (!results.length) {
 
-          createBans(foundIps, foundBoards, board, userData, reportedObjects,
-              parameters, callback, informedThreads, informedPosts);
+          createBans(foundIps, [], pages, foundBoards, board, userData,
+              reportedObjects, parameters, callback, informedThreads,
+              informedPosts);
 
         } else {
-          createBans(foundIps.concat(results[0].ips), foundBoards, board,
-              userData, reportedObjects, parameters, callback, informedThreads,
-              informedPosts);
+
+          // style exception, too simple
+          threads.aggregate([ {
+            $match : {
+              threadId : {
+                $in : results[0].parents
+              }
+            }
+          }, {
+            $group : {
+              _id : 0,
+              pages : {
+                $addToSet : '$page'
+              },
+              parents : {
+                $addToSet : '$threadId'
+              }
+            }
+          } ], function gotPages(error, pageResults) {
+            if (error) {
+              callback(error);
+            } else {
+              createBans(foundIps.concat(results[0].ips),
+                  pageResults[0].parents, pages.concat(pageResults[0].pages),
+                  foundBoards, board, userData, reportedObjects, parameters,
+                  callback, informedThreads, informedPosts);
+
+            }
+          });
+          // style exception, too simple
+
         }
       });
 
@@ -828,18 +897,23 @@ function getThreadIps(board, foundBoards, userData, reportedObjects,
       _id : 0,
       ips : {
         $addToSet : '$ip'
+      },
+      pages : {
+        $addToSet : '$page'
       }
+
     }
   } ], function gotIps(error, results) {
 
     if (error) {
       callback(error);
     } else if (!results.length) {
-      getPostIps([], foundBoards, informedPosts, board, userData,
+      getPostIps([], [], foundBoards, informedPosts, board, userData,
           reportedObjects, parameters, callback, informedThreads);
     } else {
-      getPostIps(results[0].ips, foundBoards, informedPosts, board, userData,
-          reportedObjects, parameters, callback, informedThreads);
+      getPostIps(results[0].ips, results[0].pages, foundBoards, informedPosts,
+          board, userData, reportedObjects, parameters, callback,
+          informedThreads);
     }
 
   });

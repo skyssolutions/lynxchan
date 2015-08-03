@@ -130,7 +130,7 @@
     "globalPiece": "globally ",
     "midPiece": "banned the posters of the following ",
     "threadPiece": "threads: ",
-    "threadAndPostPiece": "and the following ",
+    "threadAndPostPiece": " and the following ",
     "postPiece": "posts: ",
     "endPiece": " from board /{$board}/ until {$expiration} with reason \"{$reason}\"."
   },
