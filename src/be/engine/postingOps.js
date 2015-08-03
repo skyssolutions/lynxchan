@@ -496,7 +496,7 @@ exports.markdownText = function(message, board, replaceCode, callback) {
           if (error) {
             callback(error);
           } else if (!result.length) {
-            replaceMarkdown(message, [], board, callback);
+            replaceMarkdown(message, [], board, replaceCode, callback);
           } else {
             replaceMarkdown(message, result[0].posts, board, replaceCode,
                 callback);

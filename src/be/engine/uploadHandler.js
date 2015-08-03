@@ -438,22 +438,17 @@ exports.saveUploads = function(boardUri, threadId, postId, files, spoiler,
 
     var file = files[index];
 
-    if (supportedMimes.indexOf(file.mime) > -1) {
-      checkForHashBan(boardUri, file.md5, function isBanned(error, banned) {
-        if (error) {
-          callback(error);
-        } else if (banned) {
-          exports.saveUploads(boardUri, threadId, postId, files, spoiler,
-              allowsArchive, callback, index + 1);
-        } else {
-          processFile(boardUri, threadId, postId, files, file, spoiler,
-              allowsArchive, callback, index);
-        }
-      });
-    } else {
-      exports.saveUploads(boardUri, threadId, postId, files, spoiler,
-          allowsArchive, callback, index + 1);
-    }
+    checkForHashBan(boardUri, file.md5, function isBanned(error, banned) {
+      if (error) {
+        callback(error);
+      } else if (banned) {
+        exports.saveUploads(boardUri, threadId, postId, files, spoiler,
+            allowsArchive, callback, index + 1);
+      } else {
+        processFile(boardUri, threadId, postId, files, file, spoiler,
+            allowsArchive, callback, index);
+      }
+    });
 
   } else {
     callback();

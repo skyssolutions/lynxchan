@@ -29,6 +29,7 @@ The global status are:
     denied: user is not allowed to perform the requested operation.
     ok: operation successful.
     maintenance: site is going under maintenance.
+    formatNotAllowed: an uploaded file has a format that is now allowed.
     banned: user is banned. In this case, data will contain and object with the following fields: reason, board, expiration.
 
 The back-end will truncate strings longer than the maximum length.

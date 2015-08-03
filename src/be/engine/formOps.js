@@ -16,6 +16,7 @@ var miscOps = require('./miscOps');
 var jsdom = require('jsdom').jsdom;
 var domManipulator = require('./domManipulator');
 var uploadHandler = require('./uploadHandler');
+var validMimes = uploadHandler.supportedMimes();
 var lang = require('./langOps').languagePack();
 var uploadDir = boot.tempDir();
 var maxRequestSize = boot.maxRequestSize();
@@ -102,7 +103,9 @@ function transferFileInformation(files, fields, parsedCookies, cb, res) {
 
       var acceptableSize = file.size && file.size < maxFileSize;
 
-      if (acceptableSize) {
+      if (validMimes.indexOf(mime) === -1) {
+        exports.outputError(lang.errFormatNotAllowed, 500, res);
+      } else if (acceptableSize) {
         var toPush = {
           size : file.size,
           md5 : checkSum,

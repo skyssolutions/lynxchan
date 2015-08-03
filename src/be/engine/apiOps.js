@@ -17,6 +17,7 @@ var uploadHandler = require('./uploadHandler');
 var maxRequestSize = boot.maxRequestSize();
 var maxFileSize = boot.maxFileSize();
 var maxFiles = boot.maxFiles();
+var allowedMimes = uploadHandler.supportedMimes();
 var lang = require('./langOps').languagePack();
 var videoMimes = uploadHandler.videoMimes();
 
@@ -111,21 +112,21 @@ function getImageBounds(toPush, parsedData, res, finalArray, toRemove, cb) {
 
 function getVideoBounds(toPush, parsedData, res, finalArray, toRemove, cb) {
 
-  uploadHandler.getVideoBounds(toPush, function gotBounds(error,
-      width, height) {
+  uploadHandler.getVideoBounds(toPush,
+      function gotBounds(error, width, height) {
 
-    if (!error) {
+        if (!error) {
 
-      toPush.width = width;
-      toPush.height = height;
+          toPush.width = width;
+          toPush.height = height;
 
-      finalArray.push(toPush);
-    } else if (verbose) {
-      console.log(error);
-    }
+          finalArray.push(toPush);
+        } else if (verbose) {
+          console.log(error);
+        }
 
-    storeImages(parsedData, res, finalArray, toRemove, cb);
-  });
+        storeImages(parsedData, res, finalArray, toRemove, cb);
+      });
 
 }
 
@@ -155,6 +156,8 @@ function processFile(parsedData, res, finalArray, toRemove, callback) {
 
           if (stats.size > maxFileSize) {
             exports.outputResponse(null, null, 'fileTooLarge', res);
+          } else if (allowedMimes.indexOf(mime) === -1) {
+            exports.outputResponse(null, null, 'formatNotAllowed', res);
           } else {
 
             var toPush = {
