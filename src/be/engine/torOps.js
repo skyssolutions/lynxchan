@@ -5,8 +5,7 @@ var boot = require('../boot');
 var torDebug = boot.torDebug();
 var settings = boot.getGeneralSettings();
 var verbose = settings.verbose;
-var defaultSource = 'https://check.torproject.org/exit-addresses';
-var ipSource = settings.torSource || defaultSource;
+var ipSource = settings.torSource;
 var https = require('https');
 var http = require('http');
 

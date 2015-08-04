@@ -12,11 +12,11 @@ var fs = require('fs');
 var crypto = require('crypto');
 var modOps = require('./modOps');
 var path = require('path');
-var tempDir = boot.tempDir();
+var tempDir = settings.tempDirectory;
 var uploadHandler = require('./uploadHandler');
-var maxRequestSize = boot.maxRequestSize();
-var maxFileSize = boot.maxFileSize();
-var maxFiles = boot.maxFiles();
+var maxRequestSize = settings.maxRequestSizeMB;
+var maxFileSize = settings.maxFileSizeMB;
+var maxFiles = settings.maxFiles;
 var allowedMimes = uploadHandler.supportedMimes();
 var lang = require('./langOps').languagePack();
 var videoMimes = uploadHandler.videoMimes();
@@ -94,7 +94,8 @@ exports.checkBlankParameters = function(object, parameters, res) {
 
 };
 
-function getImageBounds(toPush, parsedData, res, finalArray, toRemove, cb) {
+function getImageBounds(toPush, parsedData, res, finalArray, toRemove, cb,
+    exceptionalMimes) {
 
   uploadHandler.getImageBounds(toPush.pathInDisk, function gotBounds(error,
       width, height) {
@@ -105,32 +106,36 @@ function getImageBounds(toPush, parsedData, res, finalArray, toRemove, cb) {
       finalArray.push(toPush);
     }
 
-    storeImages(parsedData, res, finalArray, toRemove, cb);
+    storeImages(parsedData, res, finalArray, toRemove, cb, exceptionalMimes);
   });
 
 }
 
-function getVideoBounds(toPush, parsedData, res, finalArray, toRemove, cb) {
+function getVideoBounds(toPush, parsedData, res, finalArray, toRemove, cb,
+    exceptionalMimes) {
 
-  uploadHandler.getVideoBounds(toPush,
-      function gotBounds(error, width, height) {
+  uploadHandler
+      .getVideoBounds(toPush,
+          function gotBounds(error, width, height) {
 
-        if (!error) {
+            if (!error) {
 
-          toPush.width = width;
-          toPush.height = height;
+              toPush.width = width;
+              toPush.height = height;
 
-          finalArray.push(toPush);
-        } else if (verbose) {
-          console.log(error);
-        }
+              finalArray.push(toPush);
+            } else if (verbose) {
+              console.log(error);
+            }
 
-        storeImages(parsedData, res, finalArray, toRemove, cb);
-      });
+            storeImages(parsedData, res, finalArray, toRemove, cb,
+                exceptionalMimes);
+          });
 
 }
 
-function processFile(parsedData, res, finalArray, toRemove, callback) {
+function processFile(parsedData, res, finalArray, toRemove, callback,
+    exceptionalMimes) {
   var file = parsedData.parameters.files.shift();
 
   var matches = file.content.match(/^data:([0-9A-Za-z-+\/]+);base64,(.+)$/);
@@ -151,17 +156,17 @@ function processFile(parsedData, res, finalArray, toRemove, callback) {
       toRemove.push(location);
 
       // style exception, too simple
-
       fs.stat(location, function gotStats(error, stats) {
         if (error) {
-          storeImages(parsedData, res, finalArray, toRemove, callback);
+          storeImages(parsedData, res, finalArray, toRemove, callback,
+              exceptionalMimes);
         } else {
 
           var mime = matches[1];
 
           if (stats.size > maxFileSize) {
             exports.outputResponse(null, null, 'fileTooLarge', res);
-          } else if (allowedMimes.indexOf(mime) === -1) {
+          } else if (allowedMimes.indexOf(mime) === -1 && !exceptionalMimes) {
             exports.outputResponse(null, null, 'formatNotAllowed', res);
           } else {
 
@@ -179,17 +184,18 @@ function processFile(parsedData, res, finalArray, toRemove, callback) {
             if (toPush.mime.indexOf('image/') > -1) {
 
               getImageBounds(toPush, parsedData, res, finalArray, toRemove,
-                  callback);
+                  callback, exceptionalMimes);
 
             } else if (video && settings.mediaThumb) {
 
               getVideoBounds(toPush, parsedData, res, finalArray, toRemove,
-                  callback);
+                  callback, exceptionalMimes);
             } else {
 
               finalArray.push(toPush);
 
-              storeImages(parsedData, res, finalArray, toRemove, callback);
+              storeImages(parsedData, res, finalArray, toRemove, callback,
+                  exceptionalMimes);
             }
           }
         }
@@ -198,21 +204,24 @@ function processFile(parsedData, res, finalArray, toRemove, callback) {
 
       // style exception, too simple
     } else {
-      storeImages(parsedData, res, finalArray, toRemove, callback);
+      storeImages(parsedData, res, finalArray, toRemove, callback,
+          exceptionalMimes);
     }
 
   });
 
 }
 
-function storeImages(parsedData, res, finalArray, toRemove, callback) {
+function storeImages(parsedData, res, finalArray, toRemove, callback,
+    exceptionalMimes) {
 
   var hasFilesField = parsedData.parameters && parsedData.parameters.files;
 
   var tooManyFiles = finalArray.length === maxFiles;
 
   if (!tooManyFiles && hasFilesField && parsedData.parameters.files.length) {
-    processFile(parsedData, res, finalArray, toRemove, callback);
+    processFile(parsedData, res, finalArray, toRemove, callback,
+        exceptionalMimes);
 
   } else {
     var parameters = parsedData.parameters || {};
@@ -239,7 +248,8 @@ function storeImages(parsedData, res, finalArray, toRemove, callback) {
 
 }
 
-exports.getAuthenticatedData = function(req, res, callback, optionalAuth) {
+exports.getAuthenticatedData = function(req, res, callback, optionalAuth,
+    exceptionalMimes) {
 
   exports.getAnonJsonData(req, res, function gotData(auth, parameters,
       captchaId) {
@@ -255,11 +265,11 @@ exports.getAuthenticatedData = function(req, res, callback, optionalAuth) {
 
     });
 
-  });
+  }, exceptionalMimes);
 
 };
 
-exports.getAnonJsonData = function(req, res, callback) {
+exports.getAnonJsonData = function(req, res, callback, exceptionalMimes) {
 
   var body = '';
 
@@ -280,7 +290,7 @@ exports.getAnonJsonData = function(req, res, callback) {
     try {
       var parsedData = JSON.parse(body);
 
-      storeImages(parsedData, res, [], [], callback);
+      storeImages(parsedData, res, [], [], callback, exceptionalMimes);
 
     } catch (error) {
       exports.outputResponse(null, error.toString(), 'parseError', res);

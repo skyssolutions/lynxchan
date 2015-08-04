@@ -23,13 +23,13 @@ var boot = require('../boot');
 var debug = boot.debug();
 var lang = require('./langOps').languagePack();
 var settings = boot.getGeneralSettings();
-var latestPostsCount = boot.latestPostCount();
-var threadLimit = boot.maxThreads();
-var bumpLimit = settings.autoSageLimit || 500;
+var latestPostsCount = settings.latestPostCount;
+var threadLimit = settings.maxThreadCount;
+var bumpLimit = settings.autoSageLimit;
 var autoLockLimit = bumpLimit * 2;
 var defaultAnonymousName = settings.defaultAnonymousName;
 var verbose = settings.verbose;
-var floodTimer = (settings.floodTimerSec || 10) * 1000;
+var floodTimer = settings.floodTimerSec * 1000;
 var flood = db.flood();
 
 if (!defaultAnonymousName) {

@@ -44,6 +44,6 @@ exports.process = function(req, res) {
 
     setCustomCss(userData, parameters, res);
 
-  });
+  }, false, true);
 
 };

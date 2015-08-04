@@ -24,14 +24,8 @@ var videoThumbCommand = 'ffmpeg -i {$path} -y -vframes 1 -vf scale=';
 var mp3ThumbCommand = 'ffmpeg -i {$path} -y -an -vcodec copy {$destination}';
 mp3ThumbCommand += ' && mogrify -resize {$dimension} {$destination}';
 var archive = settings.archiveLevel > 1;
-
 var supportedMimes = settings.acceptedMimes;
-var thumbSize = settings.thumbSize || 128;
-if (!supportedMimes) {
-  supportedMimes = [ 'image/png', 'image/jpeg', 'image/gif', 'image/bmp',
-      'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg', 'audio/ogg',
-      'audio/webm' ];
-}
+var thumbSize = settings.thumbSize;
 
 var correctedMimesRelation = {
   'video/webm' : 'audio/webm',

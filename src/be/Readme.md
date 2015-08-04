@@ -67,7 +67,7 @@ Settings files that goes into the settings directory:
 * `siteTitle`: name to be used as the title of the front-page. Defaults to the `titDefaultChanTitle` entry on the language pack.
 * `maxRequestSizeMB`: maximum size in megabytes of incoming requests. Defaults to 2MB.
 * `maxFileSizeMB`: maximum size in megabytes of individual uploaded files. Defaults to infinity.
-* `acceptedMimes`(Array): accepted mimes on uploads. Defaults to `[ 'image/png', 'image/jpeg', 'image/gif', 'image/bmp' ]`.
+* `acceptedMimes`(Array): accepted mimes on uploads. Defaults to `[ 'image/png', 'image/jpeg', 'image/gif', 'image/bmp', 'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg', 'audio/ogg', 'audio/webm' ]`.
 * `maxFiles`(Number): maximum amount of files on each post. Defaults to 3.
 * `defaultBanMessage`: default ban message to be used for banned content when the person applying the ban does not submit a message. Defaults to the `miscDefaultBanMessage` entry on the language pack.
 * `disableAccountCreation`(Boolean): disables account creation for users.
@@ -86,7 +86,7 @@ Settings files that goes into the settings directory:
 * `multipleReports`(Boolean): if true, allows for multiple postings to be reported at once.
 * `maxFilters`(Number): maximum amount of filters a board owner can set. Defaults to 20.
 * `maxBoardVolunteers`: maximum amount of volunteers a board can have. Defaults to 20.
-* `maxBannerSizeKB`: maximum size in kilobytes for board banners. Defaults to maximum upload file and to 200KB if there is no maximum upload size. Will be ignored if larger or equal than maximum upload size.
+* `maxBannerSizeKB`: maximum size in kilobytes for board banners. Defaults to 200KB.
 * `maxFlagSizeKB`: maximum size in kilobytes for board flags. Defaults to 32KB.
 * `floodTimerSec`: time in seconds required between postings from the same ip. Not applicable to TOR users. Defaults to 10.
 * `archiveLevel`(Number): archive setting. 0 will not archive anything, 1 will archive only html pages of threads, 2 will archive uploads and thumbnails too. Defaults to 0.

@@ -19,10 +19,10 @@ var flags = db.flags();
 var boardStats = db.stats();
 var bans = db.bans();
 var hashBans = db.hashBans();
-var latestPosts = boot.latestPostCount();
 var settings = boot.getGeneralSettings();
 var verbose = settings.verbose;
-var threadLimit = boot.maxThreads();
+var threadLimit = settings.maxThreadCount;
+var latestPosts = settings.latestPostCount;
 
 var collectionsToClean = [ reports, posts, threads, flags, hashBans,
     boardStats, bans ];

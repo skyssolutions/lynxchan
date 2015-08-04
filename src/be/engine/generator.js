@@ -13,11 +13,11 @@ var boardOps = require('./boardOps');
 var flags = db.flags();
 var stats = db.stats();
 var settings = boot.getGeneralSettings();
-var topBoardsCount = settings.topBoardsCount || 25;
+var topBoardsCount = settings.topBoardsCount;
 var miscOps = require('./miscOps');
 var templateSettings = boot.getTemplateSettings();
 var gfsHandler = require('./gridFsHandler');
-var pageSize = settings.pageSize || 10;
+var pageSize = settings.pageSize;
 var verbose = settings.verbose;
 var jsonBuilder = require('./jsonBuilder');
 

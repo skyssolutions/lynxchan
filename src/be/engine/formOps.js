@@ -18,10 +18,10 @@ var domManipulator = require('./domManipulator');
 var uploadHandler = require('./uploadHandler');
 var validMimes = uploadHandler.supportedMimes();
 var lang = require('./langOps').languagePack();
-var uploadDir = boot.tempDir();
-var maxRequestSize = boot.maxRequestSize();
-var maxFileSize = boot.maxFileSize();
-var maxFiles = boot.maxFiles();
+var uploadDir = settings.tempDirectory;
+var maxRequestSize = settings.maxRequestSizeMB;
+var maxFileSize = settings.maxFileSizeMB;
+var maxFiles = settings.maxFiles;
 var videoMimes = uploadHandler.videoMimes();
 
 exports.getCookies = function(req) {
@@ -45,7 +45,8 @@ exports.getCookies = function(req) {
   return parsedCookies;
 };
 
-function getImageDimensions(toPush, files, fields, cookies, callback, res) {
+function getImageDimensions(toPush, files, fields, cookies, callback, res,
+    exceptionalMimes) {
 
   uploadHandler.getImageBounds(toPush.pathInDisk, function gotBounds(error,
       width, height) {
@@ -56,12 +57,14 @@ function getImageDimensions(toPush, files, fields, cookies, callback, res) {
       fields.files.push(toPush);
     }
 
-    transferFileInformation(files, fields, cookies, callback, res);
+    transferFileInformation(files, fields, cookies, callback, res,
+        exceptionalMimes);
   });
 
 }
 
-function getVideoDimensions(toPush, files, fields, cookies, callback, res) {
+function getVideoDimensions(toPush, files, fields, cookies, callback, res,
+    exceptionalMimes) {
 
   uploadHandler.getVideoBounds(toPush,
       function gotBounds(error, width, height) {
@@ -72,7 +75,8 @@ function getVideoDimensions(toPush, files, fields, cookies, callback, res) {
           fields.files.push(toPush);
         }
 
-        transferFileInformation(files, fields, cookies, callback, res);
+        transferFileInformation(files, fields, cookies, callback, res,
+            exceptionalMimes);
       });
 
 }
@@ -92,7 +96,8 @@ function getCheckSum(path, callback) {
 
 }
 
-function transferFileInformation(files, fields, parsedCookies, cb, res) {
+function transferFileInformation(files, fields, parsedCookies, cb, res,
+    exceptionalMimes) {
 
   if (files.files.length && fields.files.length < maxFiles) {
 
@@ -103,7 +108,7 @@ function transferFileInformation(files, fields, parsedCookies, cb, res) {
 
       var acceptableSize = file.size && file.size < maxFileSize;
 
-      if (validMimes.indexOf(mime) === -1) {
+      if (validMimes.indexOf(mime) === -1 && !exceptionalMimes) {
         exports.outputError(lang.errFormatNotAllowed, 500, res);
       } else if (acceptableSize) {
         var toPush = {
@@ -119,7 +124,8 @@ function transferFileInformation(files, fields, parsedCookies, cb, res) {
 
         if (toPush.mime.indexOf('image/') > -1) {
 
-          getImageDimensions(toPush, files, fields, parsedCookies, cb, res);
+          getImageDimensions(toPush, files, fields, parsedCookies, cb, res,
+              exceptionalMimes);
 
         } else if (video) {
 
@@ -128,13 +134,15 @@ function transferFileInformation(files, fields, parsedCookies, cb, res) {
         } else {
           fields.files.push(toPush);
 
-          transferFileInformation(files, fields, parsedCookies, cb, res);
+          transferFileInformation(files, fields, parsedCookies, cb, res,
+              exceptionalMimes);
         }
 
       } else if (file.size) {
         exports.outputError(lang.errFileTooLarge, 500, res);
       } else {
-        transferFileInformation(files, fields, parsedCookies, cb, res);
+        transferFileInformation(files, fields, parsedCookies, cb, res,
+            exceptionalMimes);
       }
     });
 
@@ -148,7 +156,8 @@ function transferFileInformation(files, fields, parsedCookies, cb, res) {
 
 }
 
-function processParsedRequest(res, fields, files, callback, parsedCookies) {
+function processParsedRequest(res, fields, files, callback, parsedCookies,
+    exceptionalMimes) {
 
   for ( var key in fields) {
     if (fields.hasOwnProperty(key)) {
@@ -160,7 +169,8 @@ function processParsedRequest(res, fields, files, callback, parsedCookies) {
 
   if (files.files) {
 
-    transferFileInformation(files, fields, parsedCookies, callback, res);
+    transferFileInformation(files, fields, parsedCookies, callback, res,
+        exceptionalMimes);
 
   } else {
     if (verbose) {
@@ -182,7 +192,7 @@ function redirectToLogin(res) {
 }
 
 exports.getAuthenticatedPost = function(req, res, getParameters, callback,
-    optionalAuth) {
+    optionalAuth, exceptionalMimes) {
 
   if (getParameters) {
 
@@ -196,7 +206,7 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback,
         }
 
       });
-    });
+    }, exceptionalMimes);
   } else {
 
     accountOps.validate(exports.getCookies(req), function validated(error,
@@ -212,10 +222,9 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback,
 
 };
 
-exports.getPostData = function(req, res, callback) {
+exports.getPostData = function(req, res, callback, exceptionalMimes) {
 
   try {
-
     var parser = new multiParty.Form({
       uploadDir : uploadDir,
       autoFiles : true
@@ -254,7 +263,7 @@ exports.getPostData = function(req, res, callback) {
         exports.outputError(error, 500, res);
       } else {
         processParsedRequest(res, fields, files, callback, exports
-            .getCookies(req));
+            .getCookies(req), exceptionalMimes);
 
       }
 

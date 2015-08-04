@@ -32,6 +32,11 @@ var indicatorsRelation = {
 var accountSettingsRelation = {
   alwaysSignRole : 'checkboxAlwaysSign'
 };
+
+var boardControlIdentifiers = [ 'addVolunteerBoardIdentifier',
+    'deletionIdentifier', 'transferBoardIdentifier', 'boardSettingsIdentifier',
+    'customCssIdentifier' ];
+
 var boardSettingsRelation = {
   disableIds : 'disableIdsCheckbox',
   disableCaptcha : 'disableCaptchaCheckbox',
@@ -81,9 +86,9 @@ var boardManagementLinks = [ {
   element : 'flagManagementLink'
 } ];
 
-var displayMaxSize = formatFileSize(boot.maxFileSize());
-var displayMaxBannerSize = formatFileSize(boot.maxBannerSize());
-var displayMaxFlagSize = formatFileSize(boot.maxFlagSize());
+var displayMaxSize = formatFileSize(settings.maxFileSizeMB);
+var displayMaxBannerSize = formatFileSize(settings.maxBannerSizeKB);
+var displayMaxFlagSize = formatFileSize(settings.maxFlagSizeKB);
 
 // Section 1: Shared functions {
 
@@ -204,9 +209,7 @@ function setCustomCss(board, document) {
 function formatFileSize(size) {
 
   if (size === Infinity) {
-
     return lang.guiUnlimited;
-
   }
 
   var orderIndex = 0;
@@ -348,6 +351,7 @@ function setThreadHiddeableElements(thread, cell, modding, boardUri, bData) {
 }
 
 function assembleOmissionContent(thread, displayedImages, displayedPosts) {
+
   var pieces = lang.guiOmmitedInfo;
   var postDifference = thread.postCount - displayedPosts;
   var startPiece = postDifference > 1 ? pieces.startPiecePlural
@@ -408,7 +412,7 @@ function addThread(document, thread, posts, boardUri, innerPage, modding,
   var threadCell = getThreadCellBase(document, thread);
 
   var notEnougPosts = !thread.postCount;
-  notEnougPosts = notEnougPosts || thread.postCount <= boot.latestPostCount();
+  notEnougPosts = notEnougPosts || thread.postCount <= settings.latestPostCount;
 
   if (innerPage || notEnougPosts) {
     removeElement(threadCell.getElementsByClassName('labelOmission')[0]);
@@ -438,6 +442,7 @@ function addThread(document, thread, posts, boardUri, innerPage, modding,
 
 // Section 1.2.1: Post content {
 function setPostHideableElements(postCell, post) {
+
   var subjectLabel = postCell.getElementsByClassName('labelSubject')[0];
   if (post.subject) {
     subjectLabel.innerHTML = post.subject;
@@ -465,6 +470,7 @@ function setPostHideableElements(postCell, post) {
 
 function setPostLinks(postCell, post, boardUri, link, threadId, linkQuote,
     deletionCheckbox) {
+
   var linkStart = '/' + boardUri + '/res/' + threadId + '.html#';
   link.href = linkStart + post.postId;
   linkQuote.href = linkStart + 'q' + post.postId;
@@ -572,6 +578,7 @@ function addPosts(document, posts, boardUri, threadId, modding, divPosts,
 }
 // } Section 1.2.1: Post content
 function setThreadLinks(threadCell, thread, boardUri, innerPage) {
+
   var linkReply = threadCell.getElementsByClassName('linkReply')[0];
   if (innerPage) {
     removeElement(linkReply);
@@ -638,6 +645,7 @@ function setThreadSimpleElements(threadCell, thread) {
 
 // Section 1.2.2: Uploads {
 function setUploadAttributes(file, thumbLink) {
+
   if (file.width) {
     thumbLink.setAttribute('data-filewidth', file.width);
     thumbLink.setAttribute('data-fileheight', file.height);
@@ -647,6 +655,7 @@ function setUploadAttributes(file, thumbLink) {
 }
 
 function setUploadLinks(document, cell, file) {
+
   var thumbLink = cell.getElementsByClassName('imgLink')[0];
   thumbLink.href = file.path;
 
@@ -667,6 +676,7 @@ function setUploadLinks(document, cell, file) {
 }
 
 function setUploadModElements(modding, cell, file) {
+
   if (!modding) {
     removeElement(cell.getElementsByClassName('divHash')[0]);
   } else {
@@ -675,6 +685,7 @@ function setUploadModElements(modding, cell, file) {
 }
 
 function getUploadCellBase(document) {
+
   var cell = document.createElement('figure');
   cell.innerHTML = templateHandler.uploadCell;
   cell.setAttribute('class', 'uploadCell');
@@ -896,6 +907,7 @@ exports.bans = function(bans) {
 
 // Section 2.2: Closed reports {
 function setClosedReportCell(cell, report) {
+
   if (report.reason) {
     var reason = cell.getElementsByClassName('reasonLabel')[0];
     reason.innerHTML = report.reason;
@@ -912,8 +924,8 @@ function setClosedReportCell(cell, report) {
 }
 
 exports.closedReports = function(reports, callback) {
-  try {
 
+  try {
     var document = jsdom(templateHandler.closedReportsPage);
 
     document.title = lang.titClosedReports;
@@ -951,23 +963,6 @@ exports.closedReports = function(reports, callback) {
 // } Section 2.2: Closed reports
 
 // Section 2.3: Board control {
-function setBoardControlIdentifiers(document, boardData) {
-  document.getElementById('addVolunteerBoardIdentifier').setAttribute('value',
-      boardData.boardUri);
-
-  document.getElementById('deletionIdentifier').setAttribute('value',
-      boardData.boardUri);
-
-  document.getElementById('transferBoardIdentifier').setAttribute('value',
-      boardData.boardUri);
-
-  document.getElementById('boardSettingsIdentifier').setAttribute('value',
-      boardData.boardUri);
-
-  document.getElementById('customCssIdentifier').setAttribute('value',
-      boardData.boardUri);
-}
-
 function setBoardControlCheckBoxes(document, boardData) {
 
   var settings = boardData.settings;
@@ -999,7 +994,10 @@ function setBoardFields(document, boardData) {
 
 function setBoardOwnerControls(document, boardData) {
 
-  setBoardControlIdentifiers(document, boardData);
+  for (var i = 0; i < boardControlIdentifiers.length; i++) {
+    document.getElementById(boardControlIdentifiers[i]).setAttribute('value',
+        boardData.boardUri);
+  }
 
   setBoardControlCheckBoxes(document, boardData);
 
@@ -1007,7 +1005,7 @@ function setBoardOwnerControls(document, boardData) {
 
   var volunteers = boardData.volunteers || [];
 
-  for (var i = 0; i < volunteers.length; i++) {
+  for (i = 0; i < volunteers.length; i++) {
 
     var cell = document.createElement('form');
     cell.innerHTML = templateHandler.volunteerCell;

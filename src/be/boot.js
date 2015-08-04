@@ -54,10 +54,6 @@ var genericAudioThumb;
 var spoilerImage;
 var fePath;
 var tempDirectory;
-var maxRequestSize;
-var maxBannerSize;
-var maxFileSize;
-var maxFlagSize;
 
 var args = process.argv;
 
@@ -193,23 +189,15 @@ exports.tempDir = function() {
 };
 
 function setMaxSizes() {
-  if (generalSettings.maxFileSizeMB) {
-    maxFileSize = generalSettings.maxFileSizeMB * 1024 * 1024;
-  } else {
-    maxFileSize = Infinity;
+  if (generalSettings.maxFileSizeMB !== Infinity) {
+    generalSettings.maxFileSizeMB = generalSettings.maxFileSizeMB * 1024 * 1024;
   }
 
-  maxRequestSize = (generalSettings.maxRequestSizeMB || 2) * 1024 * 1024;
+  generalSettings.maxRequestSizeMB *= 1024 * 1024;
 
-  if (generalSettings.maxBannerSizeKB) {
-    maxBannerSize = generalSettings.maxBannerSizeKB * 1024;
-  } else if (generalSettings.maxFileSizeMB) {
-    maxBannerSize = maxFileSize;
-  } else {
-    maxBannerSize = 200 * 1024;
-  }
+  generalSettings.maxBannerSizeKB *= 1024;
 
-  maxFlagSize = (generalSettings.maxFlagSizeKB || 32) * 1024;
+  generalSettings.maxFlagSizeKB *= 1024;
 
 }
 
@@ -315,18 +303,58 @@ function loadDatabasesSettings() {
   }
 }
 
-exports.loadSettings = function() {
+function loadGeneralSettings() {
 
-  loadDatabasesSettings();
+  var defaultSettings = {
+    address : '0.0.0.0',
+    port : 80,
+    fePath : __dirname + '/../fe',
+    tempDirectory : '/tmp',
+    pageSize : 10,
+    latestPostCount : 5,
+    autoSageLimit : 500,
+    maxFiles : 3,
+    maxThreadCount : 50,
+    emailSender : 'noreply@mychan.com',
+    captchaExpiration : 5,
+    maxRequestSizeMB : 2,
+    maxFileSizeMB : Infinity,
+    acceptedMimes : [ 'image/png', 'image/jpeg', 'image/gif', 'image/bmp',
+        'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg', 'audio/ogg',
+        'audio/webm' ],
+    logPageSize : 50,
+    topBoardsCount : 25,
+    boardsPerPage : 50,
+    torSource : 'https://check.torproject.org/exit-addresses',
+    maxBoardRules : 20,
+    thumbSize : 128,
+    maxFilters : 20,
+    maxBoardVolunteers : 20,
+    maxBannerSizeKB : 200,
+    maxFlagSizeKB : 32,
+    floodTimerSec : 10,
+    archiveLevel : 0
+  };
 
   var generalSettingsPath = __dirname + '/settings/general.json';
 
   generalSettings = JSON.parse(fs.readFileSync(generalSettingsPath));
 
-  generalSettings.address = generalSettings.address || '0.0.0.0';
-  generalSettings.port = generalSettings.port || 80;
+  for ( var key in defaultSettings) {
+    if (!generalSettings[key]) {
+      generalSettings[key] = defaultSettings[key];
+    }
+  }
 
-  fePath = generalSettings.fePath || __dirname + '/../fe';
+}
+
+exports.loadSettings = function() {
+
+  loadDatabasesSettings();
+
+  loadGeneralSettings();
+
+  fePath = generalSettings.fePath;
 
   tempDirectory = generalSettings.tempDirectory || '/tmp';
 
@@ -346,48 +374,8 @@ exports.loadSettings = function() {
 
 };
 
-exports.latestPostCount = function() {
-
-  return generalSettings.latestPostCount || 5;
-
-};
-
-exports.maxThreads = function() {
-
-  return generalSettings.maxThreadCount || 50;
-
-};
-
-exports.captchaExpiration = function() {
-
-  return generalSettings.captchaExpiration || 5;
-
-};
-
-exports.maxFiles = function() {
-
-  return generalSettings.maxFiles || 3;
-
-};
-
 exports.noDaemon = function() {
   return noDaemon;
-};
-
-exports.maxRequestSize = function() {
-  return maxRequestSize;
-};
-
-exports.maxFileSize = function() {
-  return maxFileSize;
-};
-
-exports.maxFlagSize = function() {
-  return maxFlagSize;
-};
-
-exports.maxBannerSize = function() {
-  return maxBannerSize;
 };
 
 // after everything is all right, call this function to start the workers
