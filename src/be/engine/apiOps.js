@@ -135,6 +135,11 @@ function processFile(parsedData, res, finalArray, toRemove, callback) {
 
   var matches = file.content.match(/^data:([0-9A-Za-z-+\/]+);base64,(.+)$/);
 
+  if (!matches) {
+    exports.outputResponse(null, null, 'fileParseError', res);
+    return;
+  }
+
   var location = uploadPath(tempDir, file.name);
 
   var content = matches[2];

@@ -24,6 +24,8 @@ The global status are:
     error: internal server occurred. The error string will be on the data field.
     blank: parameter was sent in blank. The parameter will be on the data field.
     tooLarge: request body is too large.
+    fileParseError: error when trying to parse an uploaded file.
+    parseError: error when parsing the request itself.
     construction: page is under construction and unavailable.
     fileTooLarge: sent file is too large.
     denied: user is not allowed to perform the requested operation.
