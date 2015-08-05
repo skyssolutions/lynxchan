@@ -460,6 +460,10 @@ TEM_ID::10
 gManagement:
 
 Elements:
+globalSettingsLink:
+    use: might be removed.
+    description: link to the global settings page.
+
 divStaff:
     use: have children appended to it.
     description: contains the list of the staff of the site.
@@ -1388,6 +1392,176 @@ linkThread:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::51
+
+globalSettings:
+
+Elements:
+fieldAddress:
+    use: have it's value manipulated.
+    description: field that displays the address being used.
+
+fieldPort:
+    use: have it's value manipulated.
+    description: field that displays the port being used.
+
+fieldFePath:
+    use: have it's value manipulated.
+    description: field that displays the path used to the front-end.
+
+fieldPageSize:
+    use: have it's value manipulated.
+    description: field that displays page size for boards.
+
+fieldLatestPostsCount:
+    use: have it's value manipulated.
+    description: field that displays the amount of posts being displayed for each thread on board pages.
+
+fieldAutoSageLimit:
+    use: have it's value manipulated.
+    description: field that displays how many posts a thread must have so it won't be bumped anymore.
+
+fieldThreadLimit:
+    use: have it's value manipulated.
+    description: field that displays how many threads a board can have.
+
+fieldTempDir:
+    use: have it's value manipulated.
+    description: field that displays the directory being used to store temporary files.
+
+fieldSenderEmail:
+    use: have it's value manipulated.
+    description: field that displays the e-mail being used as sender of automated e-mails.
+
+fieldCaptchaExpiration:
+    use: have it's value manipulated.
+    description: field that displays the expiration of captchas in minutes.
+
+fieldCaptchaFonts:
+    use: have it's value manipulated.
+    description: field that displays the fonts being used by the captcha.
+
+fieldSiteTitle:
+    use: have it's value manipulated.
+    description: field that displays the title of the site.
+
+fieldMaxRequestSize:
+    use: have it's value manipulated.
+    description: field that displays the maximum size allowed for requests in megabytes.
+
+fieldMaxFileSize:
+    use: have it's value manipulated.
+    description: field that displays the maximum size allowed for files.
+
+fieldAcceptedMimes:
+    use: have it's value manipulated.
+    description: field that displays the accepted mimes to be uploaded along posts.
+
+fieldMaxFiles:
+    use: have it's value manipulated.
+    description: field that displays the maximum amount of files allowed to be uploaded at once.
+
+fieldBanMessage:
+    use: have it's value manipulated.
+    description: field that displays the default ban message to be displayed on posts.
+
+fieldLogPageSize:
+    use: have it's value manipulated.
+    description: field that displays the maximum amount of log entries to be displayed on each page of the logs.
+
+fieldAnonymousName:
+    use: have it's value manipulated.
+    description: field that displays the name used for anonymous posters by default.
+
+fieldTopBoardsCount:
+    use: have it's value manipulated.
+    description: field that displays the amount of boards to be displayed on the top boards list.
+
+fieldBoardsPerPage:
+    use: have it's value manipulated.
+    description: field that displays the amount of boards to be displayed on each page of the boards listing.
+
+fieldTorSource:
+    use: have it's value manipulated.
+    description: field that displays the url used to fetch the list of TOR exit nodes ips.
+
+fieldLanguagePack:
+    use: have it's value manipulated.
+    description: field that displays the path to the language pack being used.
+
+fieldMaxRules:
+    use: have it's value manipulated.
+    description: field that displays the maximum amount of allowed rules per board.
+
+fieldThumbSize:
+    use: have it's value manipulated.
+    description: field that displays the maximum dimension for thumbnails.
+
+fieldMaxFilters:
+    use: have it's value manipulated.
+    description: field that displays the maximum amount of filters per board.
+
+fieldMaxVolunteers:
+    use: have it's value manipulated.
+    description: field that displays the maximum amount of volunteers a board can have.
+
+fieldMaxBannerSize:
+    use: have it's value manipulated.
+    description: field that displays the maximum size allowed for board banners in kilobytes.
+
+fieldMaxFlagSize:
+    use: have it's value manipulated.
+    description: field that displays the maximum size allowed for flags in kilobytes.
+
+fieldFloodInterval:
+    use: have it's value manipulated.
+    description: field that displays the amount of seconds an user must wait before posts so it won't be marked as flood.
+
+checkboxVerbose:
+    use: might be turned on.
+    description: indicates the server is on verbose mode.
+
+checkboxDisable304:
+    use: might be turned on.
+    description: indicates the server has http response 304 disabled.
+
+checkboxSsl:
+    use: might be turned on.
+    description: indicates the server has ssl enabled.
+
+checkboxBlockTor:
+    use: might be turned on.
+    description: indicates the server is blocking TOR users.
+
+checkboxMediaThumb:
+    use: might be turned on.
+    description: indicates the server is generating thumbnails for audio and video files.
+
+checkboxMaintenance:
+    use: might be turned on.
+    description: indicates the server is on maintenance mode.
+
+checkboxMultipleReports:
+    use: might be turned on.
+    description: indicates the server allows for the report of multiple items at once.
+
+checkboxServeArchive:
+    use: might be turned on.
+    description: indicates the server is serving archives.
+
+checkboxDisableAccountCreation:
+    use: might be turned on.
+    description: indicates that account creation is disabled.
+
+checkboxRestrictBoardCreation:
+    use: might be turned on.
+    description: indicates that only root and admins can create boards.
+
+comboArchive:
+    use: have children appended to it.
+    description: indicates the level of archiving enabled.
+
+------------------------------------------------------------------------------------------
 
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.
 

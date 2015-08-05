@@ -645,4 +645,12 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::52
+
+Name: globalSettings
+
+Description: displays the page that allows for the user to change global settings. Requires authentication. Restricted to root users.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

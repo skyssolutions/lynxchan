@@ -59,6 +59,174 @@ var availableLogTypes = {
   hashBanLift : lang.guiTypeHashBanLift
 };
 var optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
+var siteSettingsRelation = {
+
+  fieldAddress : {
+    setting : 'address',
+    type : 'string'
+  },
+  fieldPort : {
+    setting : 'port',
+    type : 'string'
+  },
+  fieldFePath : {
+    setting : 'fePath',
+    type : 'string'
+  },
+  fieldPageSize : {
+    setting : 'pageSize',
+    type : 'string'
+  },
+  fieldLatestPostsCount : {
+    setting : 'latestPostCount',
+    type : 'string'
+  },
+  fieldAutoSageLimit : {
+    setting : 'autoSageLimit',
+    type : 'string'
+  },
+  fieldThreadLimit : {
+    setting : 'maxThreadCount',
+    type : 'string'
+  },
+  fieldSiteTitle : {
+    setting : 'siteTitle',
+    type : 'string'
+  },
+  fieldTempDir : {
+    setting : 'tempDirectory',
+    type : 'string'
+  },
+  fieldSenderEmail : {
+    setting : 'emailSender',
+    type : 'string'
+  },
+  fieldCaptchaExpiration : {
+    setting : 'captchaExpiration',
+    type : 'string'
+  },
+  fieldMaxRequestSize : {
+    setting : 'maxRequestSizeMB',
+    type : 'string'
+  },
+  fieldMaxFileSize : {
+    setting : 'maxFileSizeMB',
+    type : 'string'
+  },
+  fieldMaxFiles : {
+    setting : 'maxFiles',
+    type : 'string'
+  },
+  fieldBanMessage : {
+    setting : 'defaultBanMessage',
+    type : 'string'
+  },
+  fieldLogPageSize : {
+    setting : 'logPageSize',
+    type : 'string'
+  },
+  fieldAnonymousName : {
+    setting : 'defaultAnonymousName',
+    type : 'string'
+  },
+  fieldTopBoardsCount : {
+    setting : 'topBoardsCount',
+    type : 'string'
+  },
+  fieldBoardsPerPage : {
+    setting : 'boardsPerPage',
+    type : 'string'
+  },
+  fieldTorSource : {
+    setting : 'torSource',
+    type : 'string'
+  },
+  fieldLanguagePack : {
+    setting : 'languagePackPath',
+    type : 'string'
+  },
+  fieldMaxRules : {
+    setting : 'maxBoardRules',
+    type : 'string'
+  },
+  fieldThumbSize : {
+    setting : 'thumbSize',
+    type : 'string'
+  },
+  fieldMaxFilters : {
+    setting : 'maxFilters',
+    type : 'string'
+  },
+  fieldMaxVolunteers : {
+    setting : 'maxBoardVolunteers',
+    type : 'string'
+  },
+  fieldMaxBannerSize : {
+    setting : 'maxBannerSizeKB',
+    type : 'string'
+  },
+  fieldMaxFlagSize : {
+    setting : 'maxFlagSizeKB',
+    type : 'string'
+  },
+  fieldFloodInterval : {
+    setting : 'floodTimerSec',
+    type : 'string'
+  },
+  checkboxVerbose : {
+    setting : 'verbose',
+    type : 'boolean'
+  },
+  checkboxDisable304 : {
+    setting : 'disable304',
+    type : 'boolean'
+  },
+  checkboxSsl : {
+    setting : 'ssl',
+    type : 'boolean'
+  },
+  checkboxBlockTor : {
+    setting : 'blockTor',
+    type : 'boolean'
+  },
+  checkboxMediaThumb : {
+    setting : 'mediaThumb',
+    type : 'boolean'
+  },
+  checkboxMaintenance : {
+    setting : 'maintenance',
+    type : 'boolean'
+  },
+  checkboxMultipleReports : {
+    setting : 'multipleReports',
+    type : 'boolean'
+  },
+  checkboxServeArchive : {
+    setting : 'serveArchive',
+    type : 'boolean'
+  },
+  checkboxDisableAccountCreation : {
+    setting : 'disableAccountCreation',
+    type : 'boolean'
+  },
+  checkboxRestrictBoardCreation : {
+    setting : 'restrictBoardCreation',
+    type : 'boolean'
+  },
+  fieldCaptchaFonts : {
+    setting : 'captchaFonts',
+    type : 'array'
+  },
+  fieldAcceptedMimes : {
+    setting : 'acceptedMimes',
+    type : 'array'
+  },
+  comboArchive : {
+    setting : 'archiveLevel',
+    type : 'combo',
+    options : lang.guiArchiveLevels
+  }
+};
 
 var boardManagementLinks = [ {
   page : 'closedReports',
@@ -86,9 +254,9 @@ var boardManagementLinks = [ {
   element : 'flagManagementLink'
 } ];
 
-var displayMaxSize = formatFileSize(settings.maxFileSizeMB);
-var displayMaxBannerSize = formatFileSize(settings.maxBannerSizeKB);
-var displayMaxFlagSize = formatFileSize(settings.maxFlagSizeKB);
+var displayMaxSize = formatFileSize(settings.maxFileSizeB);
+var displayMaxBannerSize = formatFileSize(settings.maxBannerSizeB);
+var displayMaxFlagSize = formatFileSize(settings.maxFlagSizeB);
 
 // Section 1: Shared functions {
 
@@ -1158,7 +1326,7 @@ function setNewStaffComboBox(document, userRole) {
 
 }
 
-function setGlobalBansLink(userRole, document) {
+function setGlobalManagementLinks(userRole, document) {
 
   var displayBans = userRole < miscOps.getMaxStaffRole();
 
@@ -1166,6 +1334,10 @@ function setGlobalBansLink(userRole, document) {
     removeElement(document.getElementById('hashBansLink'));
     removeElement(document.getElementById('rangeBansLink'));
     removeElement(document.getElementById('bansLink'));
+  }
+
+  if (userRole !== 0) {
+    removeElement(document.getElementById('globalSettingsLink'));
   }
 }
 
@@ -1178,7 +1350,7 @@ exports.globalManagement = function(userRole, userLogin, staff, reports) {
 
     setReportList(document, reports);
 
-    setGlobalBansLink(userRole, document);
+    setGlobalManagementLinks(userRole, document);
 
     if (userRole < 2) {
       setNewStaffComboBox(document, userRole);
@@ -2090,6 +2262,66 @@ exports.boardArchive = function(boardUri, threads) {
   }
 
 };
+
+// Section 2.13: Global settings {
+function setComboSetting(document, element, setting) {
+
+  for (var i = 0; i < setting.options.length; i++) {
+
+    var option = document.createElement('option');
+    option.value = i;
+    option.innerHTML = setting.options[i];
+
+    if (i === settings[setting.setting]) {
+      option.setAttribute('selected', 'selected');
+    }
+
+    element.appendChild(option);
+  }
+}
+
+exports.globalSettings = function(settings) {
+
+  try {
+
+    var document = jsdom(templateHandler.globalSettings);
+
+    for ( var key in siteSettingsRelation) {
+
+      var setting = siteSettingsRelation[key];
+
+      var element = document.getElementById(key);
+
+      switch (setting.type) {
+      case 'string':
+        element.setAttribute('value', settings[setting.setting] || '');
+        break;
+      case 'boolean':
+        if (settings[setting.setting]) {
+          element.setAttribute('checked', true);
+        }
+        break;
+
+      case 'array':
+        element.setAttribute('value', (settings[setting.setting] || '')
+            .toString());
+        break;
+      case 'combo':
+        setComboSetting(document, element, setting);
+        break;
+      }
+
+    }
+
+    document.title = lang.titGlobalSettings;
+
+    return serializer(document);
+
+  } catch (error) {
+
+  }
+};
+// } Section 2.13: Global settings
 
 // Section 2: Dynamic pages
 

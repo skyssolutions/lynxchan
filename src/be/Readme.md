@@ -51,7 +51,7 @@ A file called `templateSettings.json` should be located on the front-end directo
 Settings files that goes into the settings directory:
 `general.json`: contains general settings for the application. Holds the following settings:
 * `verbose`(Boolean): if true, will output text for debugging on several points, like IO on the json api.
-* `disable304`: if true, will never use http status 304.
+* `disable304`(Boolean): if true, will never use http status 304.
 * `address`: ip to bind the server on. Defaults to `0.0.0.0`.
 * `port`(Number): port to listen for http. Defaults to 80.
 * `ssl`(Boolean): if true, will listen to https on port 443.
@@ -85,10 +85,10 @@ Settings files that goes into the settings directory:
 * `maintenance`(Boolean): if set to true, the site will refuse any request to dynamic pages or functions used to interact with the system. Only static files and files on gridfs will be output to the user.
 * `multipleReports`(Boolean): if true, allows for multiple postings to be reported at once.
 * `maxFilters`(Number): maximum amount of filters a board owner can set. Defaults to 20.
-* `maxBoardVolunteers`: maximum amount of volunteers a board can have. Defaults to 20.
-* `maxBannerSizeKB`: maximum size in kilobytes for board banners. Defaults to 200KB.
-* `maxFlagSizeKB`: maximum size in kilobytes for board flags. Defaults to 32KB.
-* `floodTimerSec`: time in seconds required between postings from the same ip. Not applicable to TOR users. Defaults to 10.
+* `maxBoardVolunteers`(Number: maximum amount of volunteers a board can have. Defaults to 20.
+* `maxBannerSizeKB`(Number): maximum size in kilobytes for board banners. Defaults to 200KB.
+* `maxFlagSizeKB`(Number): maximum size in kilobytes for board flags. Defaults to 32KB.
+* `floodTimerSec`(Number): time in seconds required between postings from the same ip. Not applicable to TOR users. Defaults to 10.
 * `archiveLevel`(Number): archive setting. 0 will not archive anything, 1 will archive only html pages of threads, 2 will archive uploads and thumbnails too. Defaults to 0.
 * `serveArchive`(Boolean): indicates that the application will serve the archive on sub-domain `archive`.
 

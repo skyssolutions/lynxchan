@@ -19,8 +19,8 @@ var uploadHandler = require('./uploadHandler');
 var validMimes = uploadHandler.supportedMimes();
 var lang = require('./langOps').languagePack();
 var uploadDir = settings.tempDirectory;
-var maxRequestSize = settings.maxRequestSizeMB;
-var maxFileSize = settings.maxFileSizeMB;
+var maxRequestSize = settings.maxRequestSizeB;
+var maxFileSize = settings.maxFileSizeB;
 var maxFiles = settings.maxFiles;
 var videoMimes = uploadHandler.videoMimes();
 

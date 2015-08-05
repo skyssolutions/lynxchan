@@ -1,7 +1,8 @@
 'use strict';
 
 // miscellaneous
-var verbose = require('../boot').getGeneralSettings().verbose;
+var settings = require('../boot').getGeneralSettings();
+var verbose = settings.verbose;
 var formOps = require('./formOps');
 var db = require('../db');
 var users = db.users();
@@ -222,6 +223,16 @@ exports.getGlobalRoleLabel = function(role) {
     return lang.miscRoleGlobalJanitor;
   default:
     return lang.miscRoleUser;
+  }
+
+};
+
+exports.getGlobalSettingsData = function(userData, callback) {
+
+  if (userData.globalRole !== 0) {
+    callback(lang.errDeniedGlobalSettings);
+  } else {
+    callback(null, settings);
   }
 
 };

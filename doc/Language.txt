@@ -232,3 +232,6 @@ titMainArchive: title of the main archive page.
 titBoardArchive: title of the board archive page. Replaces: {$board}.
 errNotServingArchives: error thrown when the instance is not set to serve archives.
 errFormatNotAllowed: error thrown when an uploaded file uses a format disallowed by the server.
+titGlobalSettings: title of the global settings page.
+errDeniedGlobalSettings: error thrown when the user is not allowed to edit global settings.
+guiArchiveLevels: array with the labels to be shown to archive options in this order: no archive, only pages, pages and images.

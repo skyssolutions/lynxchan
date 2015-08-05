@@ -30,8 +30,8 @@ var maxRulesCount = settings.maxBoardRules;
 var maxFiltersCount = settings.maxFilters;
 var maxVolunteers = settings.maxBoardVolunteers;
 var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
-var maxBannerSize = settings.maxBannerSizeKB;
-var maxFlagSize = settings.maxFlagSizeKB;
+var maxBannerSize = settings.maxBannerSizeB;
+var maxFlagSize = settings.maxFlagSizeB;
 
 var replaceTable = {
   '<' : '&lt;',

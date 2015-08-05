@@ -280,7 +280,8 @@ function loadAndTestTemplates(path, templateSettings) {
       {
         template : 'gManagement',
         fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
-            'reportDiv', 'bansLink', 'rangeBansLink', 'hashBansLink' ]
+            'reportDiv', 'bansLink', 'rangeBansLink', 'hashBansLink',
+            'globalSettingsLink' ]
       },
       {
         template : 'bManagement',
@@ -363,15 +364,36 @@ function loadAndTestTemplates(path, templateSettings) {
         template : 'editPage',
         fields : [ 'fieldMessage', 'boardIdentifier', 'threadIdentifier',
             'postIdentifier' ]
-      }, {
+      },
+      {
         template : 'flagsPage',
         fields : [ 'flagsDiv', 'boardIdentifier', 'maxSizeLabel' ]
-      }, {
+      },
+      {
         template : 'mainArchivePage',
         fields : [ 'boardsDiv' ]
-      }, {
+      },
+      {
         template : 'boardArchivePage',
         fields : [ 'threadsDiv' ]
+      },
+      {
+        template : 'globalSettings',
+        fields : [ 'fieldAddress', 'fieldPort', 'fieldFePath', 'fieldPageSize',
+            'fieldLatestPostsCount', 'fieldAutoSageLimit', 'fieldThreadLimit',
+            'fieldTempDir', 'fieldSenderEmail', 'fieldCaptchaExpiration',
+            'fieldCaptchaFonts', 'fieldSiteTitle', 'fieldMaxRequestSize',
+            'fieldMaxFileSize', 'fieldAcceptedMimes', 'fieldMaxFiles',
+            'fieldBanMessage', 'fieldLogPageSize', 'fieldAnonymousName',
+            'fieldTopBoardsCount', 'fieldBoardsPerPage', 'fieldTorSource',
+            'fieldLanguagePack', 'fieldMaxRules', 'fieldThumbSize',
+            'fieldMaxFilters', 'fieldMaxVolunteers', 'fieldMaxBannerSize',
+            'fieldMaxFlagSize', 'fieldFloodInterval', 'checkboxVerbose',
+            'checkboxDisable304', 'checkboxSsl', 'checkboxBlockTor',
+            'checkboxMediaThumb', 'checkboxMaintenance',
+            'checkboxMultipleReports', 'checkboxDisableAccountCreation',
+            'checkboxRestrictBoardCreation', 'checkboxServeArchive',
+            'comboArchive' ]
       } ];
 
   var errors = [];

@@ -190,14 +190,19 @@ exports.tempDir = function() {
 
 function setMaxSizes() {
   if (generalSettings.maxFileSizeMB !== Infinity) {
-    generalSettings.maxFileSizeMB = generalSettings.maxFileSizeMB * 1024 * 1024;
+    generalSettings.maxFileSizeB = generalSettings.maxFileSizeMB * 1024 * 1024;
+  } else {
+    generalSettings.maxFileSizeB = Infinity;
   }
 
-  generalSettings.maxRequestSizeMB *= 1024 * 1024;
+  var requestSizeB = generalSettings.maxRequestSizeMB * 1024 * 1024;
+  generalSettings.maxRequestSizeB = requestSizeB;
 
-  generalSettings.maxBannerSizeKB *= 1024;
+  var bannerSizeB = generalSettings.maxBannerSizeKB * 1024;
+  generalSettings.maxBannerSizeB = bannerSizeB;
 
-  generalSettings.maxFlagSizeKB *= 1024;
+  var flagSizeB = generalSettings.maxFlagSizeKB * 1024;
+  generalSettings.maxFlagSizeB = flagSizeB;
 
 }
 

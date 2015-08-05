@@ -238,5 +238,12 @@
   "titMainArchive": "Available boards",
   "titBoardArchive": "Available threads on /{$board}/",
   "errNotServingArchives": "This instance is not set to serve archive files.",
-  "errFormatNotAllowed": "A file had a format that is not allowed by the server."
+  "errFormatNotAllowed": "A file had a format that is not allowed by the server.",
+  "titGlobalSettings": "Global settings",
+  "errDeniedGlobalSettings": "You are not allowed to edit the global settings.",
+  "guiArchiveLevels": [
+    "Don't archive",
+    "Archive only pages",
+    "Archive pages and images"
+  ]
 }
