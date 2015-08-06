@@ -9,7 +9,7 @@ Beta
 4. Having a modular front-end so people can easily create and use different templates.
 
 # Required software
-* [Io.js](http://iojs.org), I suggest installing from source code. Just remember to checkout the latest tag instead of using the latest commit.
+* [Io.js](http://iojs.org), I suggest installing from source code. Just remember to checkout the latest tag instead of using the latest commit. Btw, bcrypt isn't working for version 3.0 yet, so stay on 2.5 until further notice.
 * [MongoDB](https://www.mongodb.org/)
 * [ImageMagick](http://www.imagemagick.org/script/index.php)
 * [ffmpeg](https://www.ffmpeg.org/) if mediaThumb setting is enabled. Requires zlib-devel on centOS.

@@ -235,3 +235,4 @@ errFormatNotAllowed: error thrown when an uploaded file uses a format disallowed
 titGlobalSettings: title of the global settings page.
 errDeniedGlobalSettings: error thrown when the user is not allowed to edit global settings.
 guiArchiveLevels: array with the labels to be shown to archive options in this order: no archive, only pages, pages and images.
+msgSavedGlobalSettings: message used after saving global settings.

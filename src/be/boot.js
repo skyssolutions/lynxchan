@@ -8,6 +8,45 @@
 
 var reloadDirectories = [ 'engine', 'form', 'api' ];
 
+exports.getDefaultSettings = function() {
+
+  return {
+    address : '0.0.0.0',
+    port : 80,
+    fePath : __dirname + '/../fe',
+    tempDirectory : '/tmp',
+    pageSize : 10,
+    latestPostCount : 5,
+    autoSageLimit : 500,
+    maxFiles : 3,
+    maxThreadCount : 50,
+    emailSender : 'noreply@mychan.com',
+    captchaExpiration : 5,
+    maxRequestSizeMB : 2,
+    maxFileSizeMB : Infinity,
+    acceptedMimes : [ 'image/png', 'image/jpeg', 'image/gif', 'image/bmp',
+        'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg', 'audio/ogg',
+        'audio/webm' ],
+    logPageSize : 50,
+    topBoardsCount : 25,
+    boardsPerPage : 50,
+    torSource : 'https://check.torproject.org/exit-addresses',
+    maxBoardRules : 20,
+    thumbSize : 128,
+    maxFilters : 20,
+    maxBoardVolunteers : 20,
+    maxBannerSizeKB : 200,
+    maxFlagSizeKB : 32,
+    floodTimerSec : 10,
+    archiveLevel : 0
+  };
+
+};
+
+exports.setNewSettings = function(newSettings, callback) {
+  callback();
+};// TODO;
+
 exports.reload = function() {
 
   for (var i = 0; i < reloadDirectories.length; i++) {
@@ -310,36 +349,7 @@ function loadDatabasesSettings() {
 
 function loadGeneralSettings() {
 
-  var defaultSettings = {
-    address : '0.0.0.0',
-    port : 80,
-    fePath : __dirname + '/../fe',
-    tempDirectory : '/tmp',
-    pageSize : 10,
-    latestPostCount : 5,
-    autoSageLimit : 500,
-    maxFiles : 3,
-    maxThreadCount : 50,
-    emailSender : 'noreply@mychan.com',
-    captchaExpiration : 5,
-    maxRequestSizeMB : 2,
-    maxFileSizeMB : Infinity,
-    acceptedMimes : [ 'image/png', 'image/jpeg', 'image/gif', 'image/bmp',
-        'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg', 'audio/ogg',
-        'audio/webm' ],
-    logPageSize : 50,
-    topBoardsCount : 25,
-    boardsPerPage : 50,
-    torSource : 'https://check.torproject.org/exit-addresses',
-    maxBoardRules : 20,
-    thumbSize : 128,
-    maxFilters : 20,
-    maxBoardVolunteers : 20,
-    maxBannerSizeKB : 200,
-    maxFlagSizeKB : 32,
-    floodTimerSec : 10,
-    archiveLevel : 0
-  };
+  var defaultSettings = exports.getDefaultSettings();
 
   var generalSettingsPath = __dirname + '/settings/general.json';
 

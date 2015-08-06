@@ -6,6 +6,7 @@ var verbose = settings.verbose;
 var formOps = require('./formOps');
 var db = require('../db');
 var users = db.users();
+var boot = require('../boot');
 var lang = require('./langOps').languagePack();
 var reports = db.reports();
 
@@ -286,5 +287,297 @@ exports.getManagementData = function(userRole, userLogin, callback) {
 exports.getRange = function(ip) {
 
   return ip ? ip.match(/(\d+.\d+).\d+.\d+/)[1] : null;
+
+};
+
+function getParametersArray() {
+
+  return [ {
+    param : 'address',
+    type : 'string',
+    setting : 'address'
+  }, {
+    param : 'port',
+    type : 'number',
+    setting : 'port'
+  }, {
+    param : 'fePath',
+    type : 'string',
+    setting : 'fePath'
+  }, {
+    param : 'boardPageSize',
+    type : 'number',
+    setting : 'pageSize'
+  }, {
+    param : 'latestPostsCount',
+    type : 'number',
+    setting : 'latestPostCount'
+  }, {
+    param : 'autoSageLimit',
+    type : 'number',
+    setting : 'autoSageLimit'
+  }, {
+    param : 'threadLimit',
+    type : 'number',
+    setting : 'maxThreadCount'
+  }, {
+    param : 'tempDir',
+    type : 'string',
+    setting : 'tempDirectory'
+  }, {
+    param : 'senderEmail',
+    type : 'string',
+    setting : 'emailSender'
+  }, {
+    param : 'captchaExpiration',
+    type : 'number',
+    setting : 'captchaExpiration'
+  }, {
+    param : 'captchaFonts',
+    type : 'array',
+    setting : 'captchaFonts'
+  }, {
+    param : 'siteTitle',
+    type : 'number',
+    setting : 'siteTitle'
+  }, {
+    param : 'maxRequestSize',
+    type : 'number',
+    setting : 'maxRequestSizeMB'
+  }, {
+    param : 'maxFileSize',
+    type : 'number',
+    setting : 'maxFileSizeMB'
+  }, {
+    param : 'acceptedMimes',
+    type : 'array',
+    setting : 'acceptedMimes'
+  }, {
+    param : 'maxFiles',
+    type : 'number',
+    setting : 'maxFiles'
+  }, {
+    param : 'banMessage',
+    type : 'string',
+    setting : 'defaultBanMessage'
+  }, {
+    param : 'logPageSize',
+    type : 'number',
+    setting : 'logPageSize'
+  }, {
+    param : 'anonymousName',
+    type : 'string',
+    setting : 'defaultAnonymousName'
+  }, {
+    param : 'topBoardsCount',
+    type : 'number',
+    setting : 'topBoardsCount'
+  }, {
+    param : 'boardsPerPage',
+    type : 'number',
+    setting : 'boardsPerPage'
+  }, {
+    param : 'torSource',
+    type : 'string',
+    setting : 'torSource'
+  }, {
+    param : 'languagePack',
+    type : 'string',
+    setting : 'languagePackPath'
+  }, {
+    param : 'thumbSize',
+    type : 'number',
+    setting : 'thumbSize'
+  }, {
+    param : 'maxRules',
+    type : 'number',
+    setting : 'maxBoardRules'
+  }, {
+    param : 'maxFilters',
+    type : 'number',
+    setting : 'maxFilters'
+  }, {
+    param : 'maxVolunteers',
+    type : 'number',
+    setting : 'maxBoardVolunteers'
+  }, {
+    param : 'maxBannerSize',
+    type : 'number',
+    setting : 'maxBannerSizeKB'
+  }, {
+    param : 'maxFlagSize',
+    type : 'number',
+    setting : 'maxFlagSizeKB'
+  }, {
+    param : 'floodInterval',
+    type : 'number',
+    setting : 'floodTimerSec'
+  }, {
+    param : 'disable304',
+    type : 'boolean',
+    setting : 'disable304'
+  }, {
+    param : 'verbose',
+    type : 'boolean',
+    setting : 'verbose'
+  }, {
+    param : 'blockTor',
+    type : 'boolean',
+    setting : 'blockTor'
+  }, {
+    param : 'mediaThumb',
+    type : 'boolean',
+    setting : 'mediaThumb'
+  }, {
+    param : 'maintenance',
+    type : 'boolean',
+    setting : 'maintenance'
+  }, {
+    param : 'disableAccountCreation',
+    type : 'boolean',
+    setting : 'disableAccountCreation'
+  }, {
+    param : 'retrictBoardCreation',
+    type : 'boolean',
+    setting : 'restrictBoardCreation'
+  }, {
+    param : 'multipleReports',
+    type : 'boolean',
+    setting : 'multipleReports'
+  }, {
+    param : 'ssl',
+    type : 'boolean',
+    setting : 'ssl'
+  }, {
+    param : 'serveArchive',
+    type : 'boolean',
+    setting : 'serveArchive'
+  }, {
+    param : 'archiveLevel',
+    type : 'range',
+    setting : 'archiveLevel',
+    limit : 2
+  } ];
+}
+
+function arraysDif(defaultArray, processedArray) {
+
+  if (defaultArray && defaultArray.length === processedArray.length) {
+
+    for (var i = 0; i < defaultArray.length; i++) {
+      if (processedArray.indexOf(defaultArray[i]) === -1) {
+        return true;
+      }
+    }
+
+  } else {
+    return true;
+  }
+
+  return false;
+
+}
+
+function processArraySetting(item, parameters, newSettings, defaultSettings) {
+
+  var processedParameter = parameters[item.param];
+
+  if (processedParameter) {
+    processedParameter = processedParameter.toString().trim().split(',');
+
+    var processedArray = [];
+
+    for (var j = 0; j < processedParameter.length; j++) {
+      var trimmedElement = processedParameter[j].trim();
+
+      if (trimmedElement.length) {
+        processedArray.push(trimmedElement);
+      }
+    }
+
+    if (arraysDif(defaultSettings[item.setting], processedArray)) {
+      newSettings[item.setting] = processedArray;
+    }
+  }
+}
+
+function processStringSetting(item, parameters, defaultSettings, newSettings) {
+
+  var processedParameter = parameters[item.param];
+
+  if (processedParameter) {
+    processedParameter = processedParameter.toString().trim();
+
+    if (processedParameter !== defaultSettings[item.setting]) {
+      newSettings[item.setting] = processedParameter;
+    }
+  }
+
+}
+
+function processRangeSetting(item, parameters, defaultSettings, newSettings) {
+
+  var processedParameter = +parameters[item.param];
+
+  if (processedParameter) {
+    if (processedParameter !== defaultSettings[item.setting]) {
+      newSettings[item.setting] = processedParameter > item.limit ? item.limit
+          : processedParameter;
+    }
+  }
+}
+
+exports.setGlobalSettings = function(userData, parameters, callback) {
+
+  if (userData.globalRole !== 0) {
+    callback(lang.errDeniedGlobalSettings);
+
+    return;
+  }
+
+  var parametersArray = getParametersArray();
+
+  var newSettings = {};
+
+  var defaultSettings = boot.getDefaultSettings();
+
+  for (var i = 0; i < parametersArray.length; i++) {
+    var item = parametersArray[i];
+
+    var processedParameter;
+
+    switch (item.type) {
+    case 'string':
+      processStringSetting(item, parameters, defaultSettings, newSettings);
+      break;
+
+    case 'array':
+      processArraySetting(item, parameters, newSettings, defaultSettings);
+      break;
+
+    case 'boolean':
+      if (parameters[item.param]) {
+        newSettings[item.setting] = true;
+      }
+      break;
+
+    case 'number':
+      processedParameter = +parameters[item.param];
+
+      if (processedParameter) {
+        if (processedParameter !== defaultSettings[item.setting]) {
+          newSettings[item.setting] = processedParameter;
+        }
+      }
+      break;
+
+    case 'range':
+      processRangeSetting(item, parameters, defaultSettings, newSettings);
+
+      break;
+    }
+  }
+
+  boot.setNewSettings(newSettings, callback);
 
 };

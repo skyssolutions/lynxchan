@@ -245,5 +245,6 @@
     "Don't archive",
     "Archive only pages",
     "Archive pages and images"
-  ]
+  ],
+  "msgSavedGlobalSettings": "Global settings saved."
 }

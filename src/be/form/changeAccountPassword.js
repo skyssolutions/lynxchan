@@ -3,7 +3,7 @@
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var accountOps = require('../engine/accountOps');
-function changeSettings(userData, parameters, res) {
+function changePassword(userData, parameters, res) {
 
   accountOps.changePassword(userData, parameters, function changedPassword(
       error, newHash) {
@@ -26,7 +26,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    changeSettings(userData, parameters, res);
+    changePassword(userData, parameters, res);
 
   });
 

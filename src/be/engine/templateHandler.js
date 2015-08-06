@@ -390,10 +390,9 @@ function loadAndTestTemplates(path, templateSettings) {
             'fieldMaxFilters', 'fieldMaxVolunteers', 'fieldMaxBannerSize',
             'fieldMaxFlagSize', 'fieldFloodInterval', 'checkboxVerbose',
             'checkboxDisable304', 'checkboxSsl', 'checkboxBlockTor',
-            'checkboxMediaThumb', 'checkboxMaintenance',
+            'checkboxMediaThumb', 'checkboxMaintenance', 'comboArchive',
             'checkboxMultipleReports', 'checkboxDisableAccountCreation',
-            'checkboxRestrictBoardCreation', 'checkboxServeArchive',
-            'comboArchive' ]
+            'checkboxRestrictBoardCreation', 'checkboxServeArchive' ]
       } ];
 
   var errors = [];
