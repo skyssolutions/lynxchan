@@ -338,7 +338,7 @@ function getParametersArray() {
     setting : 'captchaFonts'
   }, {
     param : 'siteTitle',
-    type : 'number',
+    type : 'string',
     setting : 'siteTitle'
   }, {
     param : 'maxRequestSize',
@@ -482,21 +482,10 @@ function processArraySetting(item, parameters, newSettings, defaultSettings) {
 
   var processedParameter = parameters[item.param];
 
-  if (processedParameter) {
-    processedParameter = processedParameter.toString().trim().split(',');
+  if (processedParameter.length) {
 
-    var processedArray = [];
-
-    for (var j = 0; j < processedParameter.length; j++) {
-      var trimmedElement = processedParameter[j].trim();
-
-      if (trimmedElement.length) {
-        processedArray.push(trimmedElement);
-      }
-    }
-
-    if (arraysDif(defaultSettings[item.setting], processedArray)) {
-      newSettings[item.setting] = processedArray;
+    if (arraysDif(defaultSettings[item.setting], processedParameter)) {
+      newSettings[item.setting] = processedParameter;
     }
   }
 }
@@ -523,6 +512,17 @@ function processRangeSetting(item, parameters, defaultSettings, newSettings) {
     if (processedParameter !== defaultSettings[item.setting]) {
       newSettings[item.setting] = processedParameter > item.limit ? item.limit
           : processedParameter;
+    }
+  }
+}
+
+function processNumberSetting(parameters, defaultSettings, item, newSettings) {
+
+  var processedParameter = +parameters[item.param];
+
+  if (processedParameter) {
+    if (processedParameter !== defaultSettings[item.setting]) {
+      newSettings[item.setting] = processedParameter;
     }
   }
 }
@@ -562,13 +562,8 @@ exports.setGlobalSettings = function(userData, parameters, callback) {
       break;
 
     case 'number':
-      processedParameter = +parameters[item.param];
+      processNumberSetting(parameters, defaultSettings, item, newSettings);
 
-      if (processedParameter) {
-        if (processedParameter !== defaultSettings[item.setting]) {
-          newSettings[item.setting] = processedParameter;
-        }
-      }
       break;
 
     case 'range':
@@ -576,6 +571,10 @@ exports.setGlobalSettings = function(userData, parameters, callback) {
 
       break;
     }
+  }
+
+  if (verbose) {
+    console.log('New settings: ' + JSON.stringify(newSettings, null, 2));
   }
 
   boot.setNewSettings(newSettings, callback);

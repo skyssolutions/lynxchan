@@ -7,6 +7,7 @@
 // messages can have the following keys:
 // globalRebuild (Boolean): rebuilds every single page.
 // defaultPages (Boolean): rebuilds default pages.
+// allBoards (Boolean): rebuilds all boards.
 // frontPage (Boolean): rebuilds the front-page.
 // board: boardUri that will be rebuilt.
 // catalog(Boolean): indicates to rebuild only the board catalog.
@@ -40,6 +41,8 @@ var queueTree = {};
 // requests
 var rebuildingAll = false;
 
+var rebuildingAllBoards = false;
+
 // so we can tell its rebuilding default pages
 var rebuildingDefaultPages = false;
 // so we can tell its rebuilding the front-page
@@ -48,14 +51,23 @@ var working = false;
 var boot = require('./boot');
 var debug = boot.debug();
 var generator = require('./engine/generator');
-var verbose = require('./boot').getGeneralSettings().verbose;
+var verbose = boot.getGeneralSettings().verbose;
+
+exports.reload = function() {
+  generator = require('./engine/generator');
+  verbose = boot.getGeneralSettings().verbose;
+};
 
 function checkForGlobalClearing(message) {
 
   if (message.globalRebuild) {
     rebuildingAll = false;
+    rebuildingAllBoards = false;
     rebuildingDefaultPages = false;
     rebuildingFrontPage = false;
+    return true;
+  } else if (message.allBoards) {
+    rebuildingAllBoards = false;
     return true;
   } else if (message.defaultPages) {
     rebuildingDefaultPages = false;
@@ -110,6 +122,23 @@ function clearTree(error, message) {
 
 }
 
+function debugPreGeneration() {
+
+  try {
+    boot.reload();
+
+    generator = require('./engine/generator');
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+  }
+}
+
 function processMessage(message) {
 
   var generationCallback = function(error) {
@@ -117,23 +146,13 @@ function processMessage(message) {
   };
 
   if (debug) {
-    try {
-      boot.reload();
-
-      generator = require('./engine/generator');
-    } catch (error) {
-      if (verbose) {
-        console.log(error);
-      }
-
-      if (debug) {
-        throw error;
-      }
-    }
+    debugPreGeneration();
   }
 
   if (message.globalRebuild) {
     generator.all(generationCallback);
+  } else if (message.allBoards) {
+    generator.boards(generationCallback);
   } else if (message.defaultPages) {
     generator.defaultPages(generationCallback);
   } else if (message.frontPage) {
@@ -316,6 +335,17 @@ exports.queue = function(message) {
   }
 
   if (message.globalRebuild) {
+    rebuildingAll = true;
+    putInQueue(message);
+    return;
+  }
+
+  if ((message.boardUri || message.allBoards) && rebuildingAllBoards) {
+    return;
+  }
+
+  if (message.allBoards) {
+    rebuildingAllBoards = true;
     putInQueue(message);
     return;
   }

@@ -246,5 +246,6 @@
     "Archive only pages",
     "Archive pages and images"
   ],
-  "msgSavedGlobalSettings": "Global settings saved."
+  "msgSavedGlobalSettings": "Global settings saved.",
+  "errArchiveNotLoaded": "The archives were not loaded, the server must be restarted to they can load."
 }

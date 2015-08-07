@@ -207,14 +207,7 @@ function outputStaticFile(req, res) {
   });
 }
 
-exports.handle = function(req, res) {
-
-  if (!req.headers || !req.headers.host) {
-    res.writeHead(200, miscOps.corsHeader('text/plain'));
-    res.end('get fucked, m8 :^)');
-    return;
-  }
-
+function getSubdomain(req) {
   var subdomain = req.headers.host.split('.');
 
   if (subdomain.length > 1) {
@@ -223,16 +216,33 @@ exports.handle = function(req, res) {
     subdomain = null;
   }
 
+  return subdomain;
+
+}
+
+exports.handle = function(req, res) {
+
+  if (!req.headers || !req.headers.host) {
+    res.writeHead(200, miscOps.corsHeader('text/plain'));
+    res.end('get fucked, m8 :^)');
+    return;
+  }
+
+  var subdomain = getSubdomain(req);
+
   if (subdomain === 'api') {
     processApiRequest(req, res);
   } else if (subdomain === 'static') {
     outputStaticFile(req, res);
   } else if (subdomain === 'archive') {
-    if (serveArchive) {
+    if (serveArchive && archive.loaded()) {
       outputArchiveFile(req, res);
-    } else {
+    } else if (!serveArchive) {
       formOps.outputError(lang.errNotServingArchives, 500, res);
+    } else {
+      formOps.outputError(lang.errArchiveNotLoaded, 500, res);
     }
+
   } else {
     outputGfsFile(req, res);
   }

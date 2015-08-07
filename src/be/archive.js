@@ -11,6 +11,11 @@ var domManipulator;
 var boot = require('./boot');
 var verbose = boot.getGeneralSettings().verbose;
 var debug = boot.debug();
+var loaded = false;
+
+exports.loaded = function() {
+  return loaded;
+};
 
 exports.reload = function() {
   formOps = require('./engine/formOps');
@@ -89,6 +94,8 @@ exports.init = function(callback) {
         if (error) {
           callback(error);
         } else {
+
+          loaded = true;
 
           formOps = require('./engine/formOps');
           gridFsHandler = require('./engine/gridFsHandler');

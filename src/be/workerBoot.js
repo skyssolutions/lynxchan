@@ -18,6 +18,10 @@ var fePath;
 var booted = false;
 var debug = boot.debug();
 
+exports.reload = function() {
+  requestHandler = require('./engine/requestHandler');
+};
+
 // functions
 function main(req, res) {
 

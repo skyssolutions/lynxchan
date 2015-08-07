@@ -6,7 +6,32 @@
 // Holds the loaded settings.
 // Controls the workers.
 
+var cluster = require('cluster');
+var db;
+var fs = require('fs');
+var logger = require('./logger');
+var generator;
+
 var reloadDirectories = [ 'engine', 'form', 'api' ];
+
+var MINIMUM_WORKER_UPTIME = 5000;
+var forkTime = {};
+
+var defaultFilesArray;
+var defaultImages = [ 'thumb', 'audioThumb', 'defaultBanner', 'spoiler' ];
+
+var defaultFilesRelation;
+
+var archiveSettings;
+var dbSettings;
+var generalSettings;
+var templateSettings;
+var genericThumb;
+var defaultBanner;
+var genericAudioThumb;
+var spoilerImage;
+var fePath;
+var tempDirectory;
 
 exports.getDefaultSettings = function() {
 
@@ -43,9 +68,84 @@ exports.getDefaultSettings = function() {
 
 };
 
-exports.setNewSettings = function(newSettings, callback) {
+function broadCastReload(reloadsToMake, callback) {
+
+  process.send({
+    upStream : true,
+    reload : true,
+    rebuilds : reloadsToMake
+  });
+
   callback();
-};// TODO;
+
+}
+
+function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
+
+  var rebuildFP = generalSettings.siteTitle !== settings.siteTitle;
+
+  var topChanged = generalSettings.topBoardsCount !== settings.topBoardsCount;
+
+  rebuildFP = rebuildFP || topChanged;
+
+  if (rebuildFP) {
+    reloadsToMake.push({
+      frontPage : true
+    });
+  }
+
+  var rebuildBoards = generalSettings.pageSize !== settings.pageSize;
+  var fileSizeDelta = generalSettings.maxFileSizeMB !== settings.maxFileSizeMB;
+
+  rebuildBoards = rebuildBoards || fileSizeDelta;
+
+  if (rebuildBoards) {
+    reloadsToMake.push({
+      allBoards : true
+    });
+  }
+
+  broadCastReload(reloadsToMake, callback);
+}
+
+function checkSettingsChanges(settings, callback) {
+  var reloadsToMake = [];
+
+  if (generalSettings.fePath !== settings.fePath) {
+    reloadsToMake.push({
+      globalRebuild : true
+    });
+
+    broadCastReload(reloadsToMake, callback);
+    return;
+  }
+
+  checkGeneralSettingsChanged(settings, reloadsToMake, callback);
+
+}
+
+exports.setNewSettings = function(settings, callback) {
+
+  fs.writeFile(__dirname + '/settings/general.json', new Buffer(JSON.stringify(
+      settings, null, 2), 'utf-8'), function wroteFile(error) {
+    if (error) {
+      callback(error);
+    } else {
+
+      var exceptionalFields = [ 'siteTitle', 'captchaFonts',
+          'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage' ];
+
+      for ( var key in generalSettings) {
+        if (!settings[key] && exceptionalFields.indexOf(key) === -1) {
+          settings[key] = generalSettings[key];
+        }
+      }
+
+      checkSettingsChanges(settings, callback);
+    }
+  });
+
+};
 
 exports.reload = function() {
 
@@ -65,34 +165,13 @@ exports.reload = function() {
 
   require('./engine/templateHandler').loadTemplates();
 
+  require('./workerBoot').reload();
+
+  require('./scheduleHandler').reload();
+
   require('./archive').reload();
 
 };
-
-var cluster = require('cluster');
-var db;
-var fs = require('fs');
-var logger = require('./logger');
-var generator;
-
-var MINIMUM_WORKER_UPTIME = 5000;
-var forkTime = {};
-
-var defaultFilesArray;
-var defaultImages = [ 'thumb', 'audioThumb', 'defaultBanner', 'spoiler' ];
-
-var defaultFilesRelation;
-
-var archiveSettings;
-var dbSettings;
-var generalSettings;
-var templateSettings;
-var genericThumb;
-var defaultBanner;
-var genericAudioThumb;
-var spoilerImage;
-var fePath;
-var tempDirectory;
 
 var args = process.argv;
 
@@ -422,7 +501,29 @@ function bootWorkers() {
     forkTime[worker.id] = new Date().getTime();
 
     worker.on('message', function receivedMessage(message) {
-      genQueue.queue(message);
+
+      if (message.upStream) {
+        message.upStream = false;
+
+        if (message.reload) {
+          exports.reload();
+
+          genQueue.reload();
+
+          for (var i = 0; i < message.rebuilds.length; i++) {
+            genQueue.queue(message.rebuilds[i]);
+          }
+
+        }
+
+        for ( var id in cluster.workers) {
+          cluster.workers[id].send(message);
+        }
+
+      } else {
+        genQueue.queue(message);
+      }
+
     });
   });
 
@@ -684,6 +785,12 @@ if (cluster.isMaster) {
   });
 
 } else {
+
+  process.on('message', function messageReceived(msg) {
+    if (msg.reload) {
+      exports.reload();
+    }
+  });
 
   require('./workerBoot').boot();
 }

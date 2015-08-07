@@ -240,7 +240,7 @@ function storeImages(parsedData, res, finalArray, toRemove, callback,
     res.on('finish', endingCb);
 
     if (verbose) {
-      console.log('Api input: ' + JSON.stringify(parameters));
+      console.log('Api input: ' + JSON.stringify(parameters, null, 2));
     }
 
     callback(parsedData.auth, parameters, parsedData.captchaId);
@@ -329,7 +329,7 @@ exports.outputResponse = function(auth, data, status, res) {
   res.writeHead(200, miscOps.corsHeader('application/json'));
 
   if (verbose) {
-    console.log('Api output: ' + JSON.stringify(output));
+    console.log('Api output: ' + JSON.stringify(output, null, 2));
   }
 
   res.end(JSON.stringify(output));

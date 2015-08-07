@@ -18,6 +18,13 @@ var torHandler = require('./engine/torOps');
 // currently it handles the removal of expired captcha's images, applies board
 // hourly stats and removes invalid temporary files.
 
+exports.reload = function() {
+  
+  gridFsHandler = require('./engine/gridFsHandler');
+  generator = require('./engine/generator');
+  torHandler = require('./engine/torOps');
+};
+
 exports.start = function() {
 
   expiredCaptcha(true);

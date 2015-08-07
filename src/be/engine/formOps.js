@@ -148,7 +148,7 @@ function transferFileInformation(files, fields, parsedCookies, cb, res,
 
   } else {
     if (verbose) {
-      console.log('Form input: ' + JSON.stringify(fields));
+      console.log('Form input: ' + JSON.stringify(fields, null, 2));
     }
 
     cb(parsedCookies, fields);
@@ -174,7 +174,7 @@ function processParsedRequest(res, fields, files, callback, parsedCookies,
 
   } else {
     if (verbose) {
-      console.log('Form input: ' + JSON.stringify(fields));
+      console.log('Form input: ' + JSON.stringify(fields, null, 2));
     }
 
     callback(parsedCookies, fields);

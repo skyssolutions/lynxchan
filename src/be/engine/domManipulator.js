@@ -22,7 +22,7 @@ var verbose = settings.verbose;
 var accountCreationDisabled = settings.disableAccountCreation;
 var boardCreationRestricted = settings.restrictBoardCreation;
 var templateHandler = require('./templateHandler');
-var archive = settings.archiveLevel > 0;
+var archive = settings.archiveLevel > 0 && require('../archive').loaded();
 
 var indicatorsRelation = {
   pinned : 'pinIndicator',

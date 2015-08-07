@@ -1,7 +1,6 @@
 'use strict';
 
-var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var apiOps = require('../engine/apiOps');
 var miscOps = require('../engine/miscOps');
 var toSanitize = [ 'captchaFonts', 'acceptedMimes' ];
 
@@ -11,20 +10,18 @@ function changeGlobalSettings(userData, parameters, res) {
 
     var param = toSanitize[i];
 
-    var rawParam = parameters[param];
+    var receivedArray = parameters[param];
 
-    if (!rawParam) {
+    if (!receivedArray) {
       parameters[param] = [];
       continue;
     }
 
-    var parts = rawParam.toString().trim().split(',');
-
     var newArray = [];
 
-    for (var j = 0; j < parts.length; j++) {
+    for (var j = 0; j < receivedArray.length; j++) {
 
-      var processedPart = parts[j].trim();
+      var processedPart = receivedArray[j].trim();
 
       if (processedPart.length) {
         newArray.push(processedPart);
@@ -40,10 +37,9 @@ function changeGlobalSettings(userData, parameters, res) {
       function changedGlobalSettings(error) {
 
         if (error) {
-          formOps.outputError(error, 500, res);
+          apiOps.outputError(error, res);
         } else {
-          formOps.outputResponse(lang.msgSavedGlobalSettings,
-              '/globalSettings.js', res);
+          apiOps.outputResponse(null, null, 'ok', res);
         }
 
       });
@@ -52,7 +48,7 @@ function changeGlobalSettings(userData, parameters, res) {
 
 exports.process = function(req, res) {
 
-  formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
+  apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
     changeGlobalSettings(userData, parameters, res);
   });
