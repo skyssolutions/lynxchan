@@ -17,16 +17,12 @@ function login(parameters, res) {
     } else {
       apiOps.outputResponse(null, hash, 'ok', res);
     }
-
   });
 }
 
 exports.process = function(req, res) {
 
   apiOps.getAnonJsonData(req, res, function gotData(auth, parameters) {
-
     login(parameters, res);
-
   });
-
 };

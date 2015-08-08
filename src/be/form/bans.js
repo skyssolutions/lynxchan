@@ -17,18 +17,14 @@ function getBans(userData, parameters, res) {
       res.end(domManipulator.bans(bans));
     }
   });
-
 }
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, false,
       function gotData(auth, userData) {
-
         var parameters = url.parse(req.url, true).query;
 
         getBans(userData, parameters, res);
-
       });
-
 };

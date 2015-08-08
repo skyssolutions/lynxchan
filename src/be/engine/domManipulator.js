@@ -42,7 +42,8 @@ var boardSettingsRelation = {
   disableCaptcha : 'disableCaptchaCheckbox',
   forceAnonymity : 'forceAnonymityCheckbox',
   allowCode : 'allowCodeCheckbox',
-  archive : 'enableArchiveCheckbox'
+  archive : 'enableArchiveCheckbox',
+  early404 : 'early404Checkbox'
 };
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 var availableLogTypes = {

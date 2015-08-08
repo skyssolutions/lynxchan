@@ -18,7 +18,6 @@ function processReceivedPosting(threadsToDelete, postsToDelete, posting) {
 
       postsToDelete[posting.board] = boardObject;
     }
-
   } else {
 
     boardObject = threadsToDelete[posting.board] || [];
@@ -26,7 +25,6 @@ function processReceivedPosting(threadsToDelete, postsToDelete, posting) {
     boardObject.push(+posting.thread);
 
     threadsToDelete[posting.board] = boardObject;
-
   }
 }
 
@@ -52,9 +50,7 @@ function processParameters(userData, parameters, res) {
         } else {
           apiOps.outputResponse(null, null, 'ok', res);
         }
-
       });
-
 }
 
 exports.process = function(req, res) {
@@ -86,7 +82,5 @@ exports.process = function(req, res) {
     } else {
       processParameters(null, parameters, res);
     }
-
   });
-
 };

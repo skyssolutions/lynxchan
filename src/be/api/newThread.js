@@ -34,9 +34,6 @@ exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters, captchaId) {
-
     createThread(req, res, parameters, userData, captchaId);
-
   }, true);
-
 };

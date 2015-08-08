@@ -17,7 +17,6 @@ function addRule(parameters, userData, res) {
       apiOps.outputResponse(null, null, 'ok', res);
     }
   });
-
 }
 
 exports.process = function(req, res) {
@@ -26,7 +25,5 @@ exports.process = function(req, res) {
       parameters) {
 
     addRule(parameters, userData, res);
-
   });
-
 };

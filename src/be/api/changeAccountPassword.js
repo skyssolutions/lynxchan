@@ -16,9 +16,7 @@ function changeSettings(userData, parameters, res) {
         newHash : newHash
       }, null, 'ok', res);
     }
-
   });
-
 }
 
 exports.process = function(req, res) {
@@ -27,7 +25,5 @@ exports.process = function(req, res) {
       parameters) {
 
     changeSettings(userData, parameters, res);
-
   });
-
 };

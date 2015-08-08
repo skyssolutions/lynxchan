@@ -16,7 +16,6 @@ function setAccountSettings(userData, parameters, res) {
     if (desiredSettings.indexOf(setting) > -1) {
       newSettings.push(setting);
     }
-
   }
 
   parameters.settings = newSettings;
@@ -29,7 +28,6 @@ function setAccountSettings(userData, parameters, res) {
       apiOps.outputResponse(null, null, 'ok', res);
     }
   });
-
 }
 
 exports.process = function(req, res) {
@@ -38,7 +36,5 @@ exports.process = function(req, res) {
       parameters) {
 
     setAccountSettings(userData, parameters, res);
-
   });
-
 };

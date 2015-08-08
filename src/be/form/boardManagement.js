@@ -19,18 +19,14 @@ function getBoardManagementData(board, userData, res) {
               reports));
         }
       });
-
 }
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, false,
       function gotData(auth, userData) {
-
         var parameters = url.parse(req.url, true).query;
-
+        
         getBoardManagementData(parameters.boardUri, userData, res);
-
       });
-
 };

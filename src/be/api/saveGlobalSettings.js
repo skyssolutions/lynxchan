@@ -26,24 +26,19 @@ function changeGlobalSettings(userData, parameters, res) {
       if (processedPart.length) {
         newArray.push(processedPart);
       }
-
     }
 
     parameters[param] = newArray;
-
   }
 
   miscOps.setGlobalSettings(userData, parameters,
       function changedGlobalSettings(error) {
-
         if (error) {
           apiOps.outputError(error, res);
         } else {
           apiOps.outputResponse(null, null, 'ok', res);
         }
-
       });
-
 }
 
 exports.process = function(req, res) {
@@ -52,5 +47,4 @@ exports.process = function(req, res) {
       parameters) {
     changeGlobalSettings(userData, parameters, res);
   });
-
 };

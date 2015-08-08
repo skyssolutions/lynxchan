@@ -835,3 +835,173 @@ exports.board = function(userData, boardUri, callback) {
 
 };
 // end of board deletion
+
+// start of early 404 cleanup
+function removeEarly404Files(results, callback) {
+
+  var orArray = [];
+
+  var operations = [];
+
+  for (var i = 0; i < results.length; i++) {
+    var board = results[i];
+
+    operations.push({
+      updateOne : {
+        filter : {
+          boardUri : board._id
+        },
+        update : {
+          $inc : {
+            threadCount : -board.threads.length
+          }
+        }
+      }
+    });
+
+    orArray.push({
+      'metadata.boardUri' : board._id,
+      'metadata.threadId' : {
+        $in : board.threads
+      }
+    });
+  }
+
+  files.aggregate([ {
+    $match : {
+      $or : orArray
+    }
+  }, {
+    $group : {
+      _id : 0,
+      files : {
+        $addToSet : '$filename'
+      }
+    }
+  } ], function gotFiles(error, results) {
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      gridFs.removeFiles(results[0].files, function deletedFiles(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          boards.bulkWrite(operations, callback);
+        }
+
+      });
+      // style exception, too simple
+
+    }
+  });
+}
+
+function removeEarly404Posts(results, callback) {
+
+  if (verbose) {
+    var msg = 'Cleaning threads for early 404: ';
+    msg += JSON.stringify(results, null, 2);
+    console.log(msg);
+  }
+
+  var orArray = [];
+
+  for (var i = 0; i < results.length; i++) {
+    var board = results[i];
+
+    orArray.push({
+      boardUri : board._id,
+      threadId : {
+        $in : board.threads
+      }
+    });
+  }
+
+  threads.deleteMany({
+    $or : orArray
+  }, function removedThreads(error) {
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      posts.deleteMany({
+        $or : orArray
+      }, function removedPosts(error) {
+        if (error) {
+          callback(error);
+        } else {
+          removeEarly404Files(results, callback);
+        }
+      });
+      // style exception, too simple
+
+    }
+  });
+
+}
+
+exports.cleanEarly404 = function(callback) {
+
+  boards.aggregate([ {
+    $match : {
+      settings : {
+        $elemMatch : {
+          $eq : 'early404'
+        }
+      }
+    }
+  }, {
+    $group : {
+      _id : 0,
+      boards : {
+        $addToSet : '$boardUri'
+      }
+    }
+  } ], function gotBoards(error, results) {
+    if (!results || !results.length) {
+      callback(error);
+    } else {
+
+      var oldestAge = new Date(new Date().getTime() - (1000 * 60 * 60));
+
+      // style exception, too simple
+      threads.aggregate([ {
+        $match : {
+          postCount : {
+            $not : {
+              $gte : 5
+            }
+          },
+          boardUri : {
+            $in : results[0].boards
+          },
+          creation : {
+            $lte : oldestAge
+          }
+        }
+
+      }, {
+        $group : {
+          _id : '$boardUri',
+          threads : {
+            $addToSet : '$threadId'
+          }
+        }
+      } ], function gotThreads(error, results) {
+        if (!results || !results.length) {
+          callback(error);
+        } else {
+          removeEarly404Posts(results, callback);
+        }
+      });
+      // style exception, too simple
+
+    }
+  });
+
+};
+// end of early 404 cleanup

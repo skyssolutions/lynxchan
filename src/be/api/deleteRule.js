@@ -12,16 +12,12 @@ function deleteRule(parameters, userData, res) {
       apiOps.outputResponse(null, null, 'ok', res);
     }
   });
-
 }
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-
     deleteRule(parameters, userData, res);
-
   });
-
 };

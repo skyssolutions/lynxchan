@@ -27,7 +27,5 @@ exports.process = function(req, res) {
       parameters, captchaId) {
 
     createBoard(auth, userData, parameters, res, captchaId);
-
   });
-
 };

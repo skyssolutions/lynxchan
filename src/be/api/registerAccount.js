@@ -17,15 +17,11 @@ function createAccount(parameters, res) {
       apiOps.outputResponse(null, hash, 'ok', res);
     }
   });
-
 }
 
 exports.process = function(req, res) {
 
   apiOps.getAnonJsonData(req, res, function gotData(auth, parameters) {
-
     createAccount(parameters, res);
-
   });
-
 };

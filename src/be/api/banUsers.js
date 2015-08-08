@@ -14,7 +14,6 @@ function reportContent(userData, parameters, res) {
         } else {
           apiOps.outputResponse(null, null, 'ok', res);
         }
-
       });
 }
 
@@ -24,7 +23,5 @@ exports.process = function(req, res) {
       parameters) {
 
     reportContent(userData, parameters, res);
-
   });
-
 };

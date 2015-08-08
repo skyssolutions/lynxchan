@@ -23,9 +23,6 @@ exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-
     setUserRole(auth, userData, parameters, res);
-
   });
-
 };

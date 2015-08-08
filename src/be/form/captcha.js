@@ -67,13 +67,9 @@ exports.process = function(req, res) {
             path : '/'
           } ]);
         }
-
       });
-
     } else {
       showCaptch(req, id, res);
     }
-
   });
-
 };

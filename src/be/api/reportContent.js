@@ -24,16 +24,12 @@ function reportContent(req, parameters, res) {
         } else {
           apiOps.outputResponse(null, null, 'ok', res);
         }
-
       });
 }
 
 exports.process = function(req, res) {
 
   apiOps.getAnonJsonData(req, res, function gotData(auth, parameters) {
-
     reportContent(req, parameters, res);
-
   });
-
 };

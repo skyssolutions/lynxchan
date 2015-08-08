@@ -1219,7 +1219,6 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
     } else {
 
       // style exception, too simple
-
       captchaOps.attemptCaptcha(captchaId, parameters.captcha, board,
           function solvedCaptcha(error) {
 
@@ -1230,7 +1229,6 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
             }
 
           });
-
       // style exception, too simple
 
     }

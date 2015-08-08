@@ -9,6 +9,7 @@ var debug = boot.debug();
 var gridFsHandler = require('./engine/gridFsHandler');
 var db = require('./db');
 var generator = require('./engine/generator');
+var delOps = require('./engine/deletionOps');
 var boards = db.boards();
 var stats = db.stats();
 var files = db.files();
@@ -19,9 +20,10 @@ var torHandler = require('./engine/torOps');
 // hourly stats and removes invalid temporary files.
 
 exports.reload = function() {
-  
+
   gridFsHandler = require('./engine/gridFsHandler');
   generator = require('./engine/generator');
+  delOps = require('./engine/deletionOps');
   torHandler = require('./engine/torOps');
 };
 
@@ -36,7 +38,40 @@ exports.start = function() {
   boardsStats();
 
   torRefresh();
+
+  early404(true);
 };
+
+// start of early 404 check
+function cleanEarly404() {
+
+  delOps.cleanEarly404(function cleanedUp(error) {
+    if (error) {
+      if (verbose) {
+        console.log(error);
+      }
+
+      if (debug) {
+        throw error;
+      }
+    }
+
+    early404();
+  });
+}
+
+function early404(immediate) {
+
+  if (immediate) {
+    cleanEarly404();
+  } else {
+
+    setTimeout(function() {
+      cleanEarly404();
+    }, 1000 * 60 * 30);
+  }
+}
+// end of early 404 check
 
 // start of tor refresh
 function refreshTorEntries() {

@@ -17,7 +17,6 @@ function deleteBoard(userData, parameters, res) {
           apiOps.outputResponse(null, null, 'ok', res);
         }
       });
-
 }
 
 exports.process = function(req, res) {
@@ -26,7 +25,5 @@ exports.process = function(req, res) {
       parameters) {
 
     deleteBoard(userData, parameters, res);
-
   });
-
 };

@@ -18,18 +18,14 @@ function getBoardModerationData(board, userData, res) {
           res.end(domManipulator.boardModeration(boardData, ownerData));
         }
       });
-
 }
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, false,
       function gotData(auth, userData) {
-
         var parameters = url.parse(req.url, true).query;
 
         getBoardModerationData(parameters.boardUri, userData, res);
-
       });
-
 };

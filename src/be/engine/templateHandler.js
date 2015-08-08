@@ -56,9 +56,7 @@ function loadPages(errors, templatesPath, templateSettings, pages) {
 
       errors.push('\nPage ' + page.template + error);
     }
-
   }
-
 }
 
 function getTestCell(document, templateName, fePath, templateSettings) {
@@ -294,7 +292,7 @@ function loadAndTestTemplates(path, templateSettings) {
             'filterManagementLink', 'anonymousNameField', 'rangeBansLink',
             'hashBansLink', 'customCssIdentifier', 'ruleManagementLink',
             'allowCodeCheckbox', 'flagManagementLink', 'enableArchiveCheckbox',
-            'boardMessageField' ]
+            'boardMessageField', 'early404Checkbox' ]
       },
       {
         template : 'closedReportsPage',

@@ -12,18 +12,13 @@ function setVolunteer(auth, userData, parameters, res) {
     } else {
       apiOps.outputResponse(auth, null, 'ok', res);
     }
-
   });
-
 }
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-
     setVolunteer(auth, userData, parameters, res);
-
   });
-
 };

@@ -12,7 +12,6 @@ function setThreadSettings(userData, parameters, res) {
       apiOps.outputResponse(null, null, 'ok', res);
     }
   });
-
 }
 
 exports.process = function(req, res) {
@@ -21,7 +20,5 @@ exports.process = function(req, res) {
       parameters) {
 
     setThreadSettings(userData, parameters, res);
-
   });
-
 };

@@ -17,15 +17,11 @@ function recoverAccount(domain, parameters, res) {
       apiOps.outputResponse(null, null, 'ok', res);
     }
   });
-
 }
 
 exports.process = function(req, res) {
 
   apiOps.getAnonJsonData(req, res, function gotData(auth, parameters) {
-
     recoverAccount('http://' + req.headers.host.substring(4), parameters, res);
-
   });
-
 };

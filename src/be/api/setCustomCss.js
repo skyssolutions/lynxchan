@@ -21,22 +21,16 @@ function setCustomCss(parameters, userData, res) {
           if (error) {
             apiOps.outputError(error, res);
           } else {
-
             apiOps.outputResponse(null, null, 'ok', res);
           }
         });
-
   }
-
 }
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-
     setCustomCss(parameters, userData, res);
-
   }, false, true);
-
 };

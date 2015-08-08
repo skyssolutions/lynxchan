@@ -12,16 +12,12 @@ function liftHashBan(userData, parameters, res) {
       apiOps.outputResponse(null, null, 'ok', res);
     }
   });
-
 }
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-
     liftHashBan(userData, parameters, res);
-
   });
-
 };

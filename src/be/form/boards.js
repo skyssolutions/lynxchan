@@ -18,7 +18,6 @@ exports.process = function(req, res) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
-
       var pageCount = Math.floor(count / pageSize);
       pageCount += (count % pageSize ? 1 : 0);
 
@@ -48,8 +47,7 @@ exports.process = function(req, res) {
         }
       });
       // style exception, too simple
+
     }
-
   });
-
 };

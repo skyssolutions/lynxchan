@@ -18,18 +18,14 @@ function getBannerData(boardUri, userData, res) {
       res.end(domManipulator.bannerManagement(boardUri, banners));
     }
   });
-
 }
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, false,
       function gotData(auth, userData) {
-
         var parameters = url.parse(req.url, true).query;
 
         getBannerData(parameters.boardUri, userData, res);
-
       });
-
 };

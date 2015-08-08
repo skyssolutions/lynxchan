@@ -18,7 +18,6 @@ function deleteFilter(parameters, userData, res) {
       apiOps.outputResponse(null, null, 'ok', res);
     }
   });
-
 }
 
 exports.process = function(req, res) {
@@ -27,7 +26,5 @@ exports.process = function(req, res) {
       parameters) {
 
     deleteFilter(parameters, userData, res);
-
   });
-
 };

@@ -24,7 +24,7 @@ var boot = require('../boot');
 var settings = boot.getGeneralSettings();
 var restrictedBoardCreation = settings.restrictBoardCreation;
 var validSettings = [ 'disableIds', 'disableCaptcha', 'forceAnonymity',
-    'allowCode', 'archive' ];
+    'allowCode', 'archive', 'early404' ];
 var defaultSettings = [ 'disableIds', 'disableCaptcha' ];
 var maxRulesCount = settings.maxBoardRules;
 var maxFiltersCount = settings.maxFilters;

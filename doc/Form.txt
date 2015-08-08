@@ -377,6 +377,7 @@ Parameters:
     forceAnonymity: if any value is passed, the name input is disabled on posting.
     allowCode: if any value is passed, use of code tag will be allowed on markdown.
     boardMessage: new message of the board. 256 characters.
+    early404: will delete threads after one hour if they do not receive at least 5 replies.
 
 ------------------------------------------------------------------------------------------
 
