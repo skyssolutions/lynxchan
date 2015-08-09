@@ -160,18 +160,37 @@ function getMessageMarkdown(message) {
 
 function saveNewSettings(board, parameters, callback) {
 
+  var newSettings = {
+    boardName : parameters.boardName,
+    boardDescription : parameters.boardDescription,
+    settings : parameters.settings,
+    boardMessage : parameters.boardMessage,
+    boardMarkdown : getMessageMarkdown(parameters.boardMessage),
+    anonymousName : parameters.anonymousName
+  };
+
+  var updateBlock = {
+    $set : newSettings
+  };
+
+  var informedHourlyLimit = +parameters.hourlyThreadLimit;
+
+  informedHourlyLimit = informedHourlyLimit && informedHourlyLimit !== Infinity;
+
+  if (informedHourlyLimit) {
+    newSettings.hourlyThreadLimit = +parameters.hourlyThreadLimit;
+  } else if (board.hourlyThreadLimit) {
+    updateBlock.$unset = {
+      lockedUntil : 1,
+      threadLockCount : 1,
+      lockCountStart : 1,
+      hourlyThreadLimit : 1
+    };
+  }
+
   boards.updateOne({
     boardUri : parameters.boardUri
-  }, {
-    $set : {
-      boardName : parameters.boardName,
-      boardDescription : parameters.boardDescription,
-      settings : parameters.settings,
-      boardMessage : parameters.boardMessage,
-      boardMarkdown : getMessageMarkdown(parameters.boardMessage),
-      anonymousName : parameters.anonymousName
-    }
-  }, function updatedBoard(error) {
+  }, updateBlock, function updatedBoard(error) {
 
     checkBoardRebuild(board, parameters);
 
@@ -1098,6 +1117,7 @@ exports.getBoardManagementData = function(login, board, callback) {
     boardName : 1,
     boardMessage : 1,
     anonymousName : 1,
+    hourlyThreadLimit : 1,
     settings : 1,
     boardDescription : 1,
     volunteers : 1

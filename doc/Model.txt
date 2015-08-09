@@ -5,6 +5,10 @@ boards: stores boards.
     boardDescription: description of the board. 128 characters.
     lastPostId: id of last post in this board.
     lastFileId: id of last file posted in this board.
+    hourlyThreadLimit(Number): hourly thread limit of the board.
+    lockedUntil(Date): time of when the board will unlock.
+    threadLockCount(Number): counting of created threads in the last hour towards the lock.
+    lockCountStart(Date): time of when the counter towards the lock started.
     threadCount(Number): pre-aggregated number of threads in the board.
     volunteers(Array): array of logins of the users that are volunteers in the board.
     settings(Array): list of settings of the board. May contain the following strings:

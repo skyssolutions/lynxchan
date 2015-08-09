@@ -689,16 +689,78 @@ function createThread(req, userData, parameters, board, threadId, wishesToSign,
 
 }
 
+function resetLock(board) {
+
+  if (board.lockedUntil) {
+    return true;
+  }
+
+  var expiration = new Date(new Date().getTime() - (1000 * 60 * 60));
+
+  return board.lockCountStart <= expiration;
+
+}
+
+function setLockReset(updateBlock, board, setBlock) {
+
+  updateBlock.$unset = {
+    lockedUntil : 1
+  };
+
+  board.lockCountStart = null;
+  board.threadLockCount = 0;
+
+  setBlock.threadLockCount = 1;
+
+}
+
+function setUpdateForHourlyLimit(updateBlock, board) {
+
+  var usedSet = false;
+
+  var setBlock = {};
+
+  if (resetLock(board)) {
+    usedSet = true;
+    setLockReset(updateBlock, board, setBlock);
+
+  } else {
+    updateBlock.$inc.threadLockCount = 1;
+
+  }
+
+  if (!board.lockCountStart) {
+    usedSet = true;
+    setBlock.lockCountStart = new Date();
+  }
+
+  if (board.threadLockCount >= board.hourlyThreadLimit - 1) {
+    var lockExpiration = new Date(new Date().getTime() + (1000 * 60 * 60));
+    usedSet = true;
+    setBlock.lockedUntil = lockExpiration;
+  }
+
+  if (usedSet) {
+    updateBlock.$set = setBlock;
+  }
+}
+
 function getNewThreadId(req, userData, parameters, board, wishesToSign,
     callback) {
 
-  boards.findOneAndUpdate({
-    boardUri : parameters.boardUri
-  }, {
+  var updateBlock = {
     $inc : {
       lastPostId : 1
     }
-  }, {
+  };
+
+  if (board.hourlyThreadLimit) {
+    setUpdateForHourlyLimit(updateBlock, board);
+  }
+
+  boards.findOneAndUpdate({
+    boardUri : parameters.boardUri
+  }, updateBlock, {
     returnOriginal : false
   }, function gotLastIdInfo(error, lastIdData) {
     if (error) {
@@ -719,7 +781,6 @@ function getNewThreadId(req, userData, parameters, board, wishesToSign,
 
     }
   });
-
 }
 
 function checkMarkdownForThread(req, userData, parameters, board, callback) {
@@ -755,7 +816,11 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
     _id : 0,
     owner : 1,
     volunteers : 1,
+    hourlyThreadLimit : 1,
+    lockedUntil : 1,
+    lockCountStart : 1,
     filters : 1,
+    threadLockCount : 1,
     anonymousName : 1,
     settings : 1
   }, function gotBoard(error, board) {
@@ -763,6 +828,8 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
       cb(error);
     } else if (!board) {
       cb(lang.errBoardNotFound);
+    } else if (board.lockedUntil > new Date()) {
+      cb(lang.errBoardLocked);
     } else {
 
       if (board.settings.indexOf('forceAnonymity') > -1) {

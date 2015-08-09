@@ -237,3 +237,4 @@ errDeniedGlobalSettings: error thrown when the user is not allowed to edit globa
 guiArchiveLevels: array with the labels to be shown to archive options in this order: no archive, only pages, pages and images.
 msgSavedGlobalSettings: message used after saving global settings.
 errArchiveNotLoaded: error thrown when the the user tries to access the archives, they were enabled but the server haven't been restarted yet.
+errBoardLocked: error thrown when the board is locked for thread creation.

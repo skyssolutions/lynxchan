@@ -292,7 +292,7 @@ function loadAndTestTemplates(path, templateSettings) {
             'filterManagementLink', 'anonymousNameField', 'rangeBansLink',
             'hashBansLink', 'customCssIdentifier', 'ruleManagementLink',
             'allowCodeCheckbox', 'flagManagementLink', 'enableArchiveCheckbox',
-            'boardMessageField', 'early404Checkbox' ]
+            'boardMessageField', 'early404Checkbox', 'hourlyThreadLimitField' ]
       },
       {
         template : 'closedReportsPage',

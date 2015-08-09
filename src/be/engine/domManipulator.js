@@ -1152,6 +1152,9 @@ function setBoardFields(document, boardData) {
   document.getElementById('boardDescriptionField').setAttribute('value',
       boardData.boardDescription);
 
+  document.getElementById('hourlyThreadLimitField').setAttribute('value',
+      boardData.hourlyThreadLimit || '');
+
   document.getElementById('anonymousNameField').setAttribute('value',
       boardData.anonymousName || '');
 

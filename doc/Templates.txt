@@ -523,6 +523,10 @@ TEM_ID::12
 bManagement:
 
 Elements:
+hourlyThreadLimitField:
+    use: have it's value manipulated.
+    description: used to display the hourly thread limit.
+
 flagManagementLink:
     use: have it's href manipulated.
     description: link to the page used to manipulate the board flags.

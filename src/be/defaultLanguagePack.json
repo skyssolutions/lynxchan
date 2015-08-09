@@ -247,5 +247,6 @@
     "Archive pages and images"
   ],
   "msgSavedGlobalSettings": "Global settings saved.",
-  "errArchiveNotLoaded": "The archives were not loaded, the server must be restarted to they can load."
+  "errArchiveNotLoaded": "The archives were not loaded, the server must be restarted to they can load.",
+  "errBoardLocked": "This board is locked for thread creation because it exceeded it's hourly limit for thread creation. Try again later."
 }
