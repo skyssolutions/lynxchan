@@ -544,18 +544,27 @@ function getFlagUrl(flagId, boardUri, callback) {
 // } Section 1: Shared functions
 
 // Section 2: Thread
-function finishThreadCreation(boardUri, threadId, callback, thread) {
+function finishThreadCreation(boardUri, threadId, enabledCaptcha, callback,
+    thread) {
 
-  // signal rebuild of board pages
-  process.send({
-    board : boardUri
-  });
+  if (enabledCaptcha) {
+    process.send({
+      board : boardUri,
+      buildAll : true
+    });
+  } else {
 
-  // signal rebuild of thread
-  process.send({
-    board : boardUri,
-    thread : threadId
-  });
+    // signal rebuild of board pages
+    process.send({
+      board : boardUri
+    });
+
+    // signal rebuild of thread
+    process.send({
+      board : boardUri,
+      thread : threadId
+    });
+  }
 
   addPostToStats(boardUri, function updatedStats(error) {
     if (error) {
@@ -573,7 +582,8 @@ function finishThreadCreation(boardUri, threadId, callback, thread) {
 
 }
 
-function updateBoardForThreadCreation(boardUri, threadId, callback, thread) {
+function updateBoardForThreadCreation(boardUri, threadId, enabledCaptcha,
+    callback, thread) {
 
   boards.findOneAndUpdate({
     boardUri : boardUri
@@ -595,13 +605,15 @@ function updateBoardForThreadCreation(boardUri, threadId, callback, thread) {
           if (error) {
             callback(error);
           } else {
-            finishThreadCreation(boardUri, threadId, callback, thread);
+            finishThreadCreation(boardUri, threadId, enabledCaptcha, callback,
+                thread);
           }
         });
         // style exception, too simple
 
       } else {
-        finishThreadCreation(boardUri, threadId, callback, thread);
+        finishThreadCreation(boardUri, threadId, enabledCaptcha, callback,
+            thread);
       }
 
     }
@@ -609,7 +621,7 @@ function updateBoardForThreadCreation(boardUri, threadId, callback, thread) {
 }
 
 function createThread(req, userData, parameters, board, threadId, wishesToSign,
-    callback) {
+    enabledCaptcha, callback) {
 
   var salt = crypto.createHash('sha256').update(
       threadId + parameters.toString() + Math.random() + new Date()).digest(
@@ -651,7 +663,7 @@ function createThread(req, userData, parameters, board, threadId, wishesToSign,
   threads.insert(threadToAdd, function createdThread(error) {
     if (error && error.code === 11000) {
       createThread(req, userData, parameters, board, threadId + 1,
-          wishesToSign, callback);
+          wishesToSign, enabledCaptcha, callback);
     } else if (error) {
       callback(error);
     } else {
@@ -679,7 +691,7 @@ function createThread(req, userData, parameters, board, threadId, wishesToSign,
             }
 
             updateBoardForThreadCreation(parameters.boardUri, threadId,
-                callback, threadToAdd);
+                enabledCaptcha, callback, threadToAdd);
 
           });
       // style exception, too simple
@@ -745,6 +757,83 @@ function setUpdateForHourlyLimit(updateBlock, board) {
   }
 }
 
+function setAutoCaptchaReset(board, setBlock) {
+
+  board.autoCaptchaStartTime = null;
+  board.autoCaptchaCount = 0;
+
+  setBlock.autoCaptchaCount = 1;
+
+  return true;
+}
+
+function setStartTime(usedSet, board, setBlock, updateBlock) {
+  if (!board.autoCaptchaStartTime) {
+    usedSet = true;
+    setBlock.autoCaptchaStartTime = new Date();
+  }
+
+  if (usedSet) {
+    updateBlock.$set = setBlock;
+  }
+}
+
+function setCaptchaEnabling(updateBlock) {
+
+  updateBlock.$pullAll = {
+    settings : [ 'disableCaptcha' ]
+  };
+
+  var unsetBlock = updateBlock.$unset || {};
+
+  unsetBlock.autoCaptchaCount = 1;
+  unsetBlock.autoCaptchaStartTime = 1;
+
+  updateBlock.$unset = unsetBlock;
+
+  delete updateBlock.$inc.autoCaptchaCount;
+
+  if (updateBlock.$set) {
+    delete updateBlock.$set.autoCaptchaStartTime;
+    delete updateBlock.$set.autoCaptchaCount;
+  }
+
+  return true;
+}
+
+function setUpdateForAutoCaptcha(updateBlock, board) {
+
+  if (board.settings.indexOf('disableCaptcha') === -1) {
+    return false;
+  }
+
+  var expiration = new Date(new Date().getTime() - (1000 * 60 * 60));
+
+  var setBlock = updateBlock.$set;
+  var usedSet = false;
+
+  if (setBlock) {
+    usedSet = true;
+
+  } else {
+    setBlock = {};
+  }
+
+  if (board.autoCaptchaStartTime <= expiration) {
+
+    usedSet = setAutoCaptchaReset(board, setBlock);
+
+  } else {
+    updateBlock.$inc.autoCaptchaCount = 1;
+  }
+
+  setStartTime(usedSet, board, setBlock, updateBlock);
+
+  if (board.autoCaptchaCount >= board.autoCaptchaThreshold - 1) {
+    return setCaptchaEnabling(updateBlock);
+  }
+}
+
 function getNewThreadId(req, userData, parameters, board, wishesToSign,
     callback) {
 
@@ -758,6 +847,12 @@ function getNewThreadId(req, userData, parameters, board, wishesToSign,
     setUpdateForHourlyLimit(updateBlock, board);
   }
 
+  var enabledCaptcha;
+
+  if (board.autoCaptchaThreshold) {
+    enabledCaptcha = setUpdateForAutoCaptcha(updateBlock, board);
+  }
+
   boards.findOneAndUpdate({
     boardUri : parameters.boardUri
   }, updateBlock, {
@@ -768,15 +863,16 @@ function getNewThreadId(req, userData, parameters, board, wishesToSign,
     } else {
 
       // style exception, too simple
-      getFlagUrl(parameters.flag, parameters.boardUri, function gotFlagUrl(
-          flagUrl, flagName) {
+      getFlagUrl(parameters.flag, parameters.boardUri,
+          function gotFlagUrl(flagUrl, flagName) {
 
-        parameters.flagName = flagName;
-        parameters.flag = flagUrl;
+            parameters.flagName = flagName;
+            parameters.flag = flagUrl;
 
-        createThread(req, userData, parameters, board,
-            lastIdData.value.lastPostId, wishesToSign, callback);
-      });
+            createThread(req, userData, parameters, board,
+                lastIdData.value.lastPostId, wishesToSign, enabledCaptcha,
+                callback);
+          });
       // style exception, too simple
 
     }
@@ -816,6 +912,9 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
     _id : 0,
     owner : 1,
     volunteers : 1,
+    autoCaptchaThreshold : 1,
+    autoCaptchaCount : 1,
+    autoCaptchaStartTime : 1,
     hourlyThreadLimit : 1,
     lockedUntil : 1,
     lockCountStart : 1,

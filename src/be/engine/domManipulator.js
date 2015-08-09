@@ -1152,6 +1152,9 @@ function setBoardFields(document, boardData) {
   document.getElementById('boardDescriptionField').setAttribute('value',
       boardData.boardDescription);
 
+  document.getElementById('autoCaptchaThresholdField').setAttribute('value',
+      boardData.autoCaptchaThreshold || '');
+
   document.getElementById('hourlyThreadLimitField').setAttribute('value',
       boardData.hourlyThreadLimit || '');
 

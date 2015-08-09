@@ -158,6 +158,26 @@ function getMessageMarkdown(message) {
 
 }
 
+function setUpdateForAutoCaptcha(parameters, newSettings, updateBlock, board) {
+
+  var informedAutoCaptcha = +parameters.autoCaptchaLimit;
+
+  informedAutoCaptcha = informedAutoCaptcha && informedAutoCaptcha !== Infinity;
+
+  if (informedAutoCaptcha) {
+    newSettings.autoCaptchaThreshold = +parameters.autoCaptchaLimit;
+  } else if (board.autoCaptchaThreshold) {
+    if (!updateBlock.$unset) {
+      updateBlock.$unset = {};
+    }
+
+    updateBlock.$unset.autoCaptchaCount = 1;
+    updateBlock.$unset.autoCaptchaStartTime = 1;
+    updateBlock.$unset.autoCaptchaThreshold = 1;
+
+  }
+}
+
 function saveNewSettings(board, parameters, callback) {
 
   var newSettings = {
@@ -187,6 +207,8 @@ function saveNewSettings(board, parameters, callback) {
       hourlyThreadLimit : 1
     };
   }
+
+  setUpdateForAutoCaptcha(parameters, newSettings, updateBlock, board);
 
   boards.updateOne({
     boardUri : parameters.boardUri
@@ -1118,6 +1140,7 @@ exports.getBoardManagementData = function(login, board, callback) {
     boardMessage : 1,
     anonymousName : 1,
     hourlyThreadLimit : 1,
+    autoCaptchaThreshold : 1,
     settings : 1,
     boardDescription : 1,
     volunteers : 1

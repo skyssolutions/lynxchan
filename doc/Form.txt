@@ -371,6 +371,7 @@ Parameters:
     boardUri*: board URI.
     boardName*: new name of the board. 32 characters.
     boardDescription*: new description of the board. 128 characters.
+    autoCaptchaLimit(Number): a limit that automatically enables captcha if these many threads are created within an hour.
     disableIds: if any value is passed, ids on threads and posts will be disabled.
     hourlyThreadLimit: limit of new threads allowed per hour. If exceeded, the board will lock for thread creation temporarily.
     anonymousName: name to be used when the user is anonymous. 32 character.
