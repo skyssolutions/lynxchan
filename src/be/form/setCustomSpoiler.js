@@ -4,11 +4,11 @@ var formOps = require('../engine/formOps');
 var boardOps = require('../engine/boardOps');
 var lang = require('../engine/langOps').languagePack();
 
-function setCustomCss(userData, parameters, res) {
+function setCustomSpoiler(userData, parameters, res) {
 
   if (parameters.files.length) {
-    boardOps.setCustomCss(userData, parameters.boardUri, parameters.files[0],
-        function customCssSet(error, boardUri) {
+    boardOps.setCustomSpoiler(userData, parameters.boardUri,
+        parameters.files[0], function customSpoilerSet(error, boardUri) {
           if (error) {
             formOps.outputError(error, 500, res);
           } else {
@@ -16,12 +16,12 @@ function setCustomCss(userData, parameters, res) {
             var redirect = '/boardManagement.js?boardUri=';
             redirect += parameters.boardUri;
 
-            formOps.outputResponse(lang.msgCssSet, redirect, res);
+            formOps.outputResponse(lang.msgSpoilerSet, redirect, res);
           }
         });
   } else {
-    boardOps.deleteCustomCss(userData, parameters.boardUri,
-        function deletedCss(error) {
+    boardOps.deleteCustomSpoiler(userData, parameters.boardUri,
+        function deletedSpoiler(error) {
           if (error) {
             formOps.outputError(error, 500, res);
           } else {
@@ -29,7 +29,7 @@ function setCustomCss(userData, parameters, res) {
             var redirect = '/boardManagement.js?boardUri=';
             redirect += parameters.boardUri;
 
-            formOps.outputResponse(lang.msgCssDeleted, redirect, res);
+            formOps.outputResponse(lang.msgSpoilerDeleted, redirect, res);
           }
         });
 
@@ -42,7 +42,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    setCustomCss(userData, parameters, res);
+    setCustomSpoiler(userData, parameters, res);
 
   }, false, true);
 

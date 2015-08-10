@@ -1091,6 +1091,84 @@ exports.createBoard = function(captchaId, parameters, userData, callback) {
 };
 // } Section 1.11: Creation
 
+exports.setCustomSpoiler = function(userData, boardUri, file, callback) {
+
+  boards.findOne({
+    boardUri : boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errBoardNotFound);
+    } else if (board.owner !== userData.login) {
+      callback(lang.errDeniedSpoilerManagement);
+    } else if (file.mime.indexOf('image/') === -1) {
+      callback(lang.errNotAnImage);
+    } else {
+
+      var newPath = '/' + boardUri + '/custom.spoiler';
+
+      // style exception, too simple
+      gridFsHandler.writeFile(file.pathInDisk, newPath, file.mime, {
+        boardUri : boardUri
+      }, function savedFile(error) {
+
+        if (error) {
+          callback(error);
+        } else if (!boards.usesCustomSpoiler) {
+          boards.updateOne({
+            boardUri : board.boardUri
+          }, {
+            $set : {
+              usesCustomSpoiler : true
+            }
+          }, callback);
+        } else {
+          callback();
+        }
+
+      });
+      // style exception, too simple
+
+    }
+  });
+};
+
+exports.deleteCustomSpoiler = function(userData, boardUri, callback) {
+
+  boards.findOne({
+    boardUri : boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errBoardNotFound);
+    } else if (board.owner !== userData.login) {
+      callback(lang.errDeniedSpoilerManagement);
+    } else {
+
+      // style exception, too simple
+      gridFsHandler.removeFiles('/' + boardUri + '/custom.spoiler',
+          function removedFile(error) {
+            if (error) {
+              callback(error);
+            } else {
+              boards.updateOne({
+                boardUri : board.boardUri
+              }, {
+                $set : {
+                  usesCustomSpoiler : false
+                }
+              }, callback);
+            }
+          });
+      // style exception, too simple
+
+    }
+  });
+
+};
+
 // } Section 1: Write operations
 
 // Section 2: Read operations {
@@ -1139,6 +1217,7 @@ exports.getBoardManagementData = function(login, board, callback) {
     boardName : 1,
     boardMessage : 1,
     anonymousName : 1,
+    usesCustomSpoiler : 1,
     hourlyThreadLimit : 1,
     autoCaptchaThreshold : 1,
     settings : 1,
@@ -1280,6 +1359,4 @@ exports.getFlagsData = function(userLogin, boardUri, callback) {
   });
 
 };
-
 // } Section 2: Read operations
-

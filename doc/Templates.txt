@@ -523,6 +523,14 @@ TEM_ID::12
 bManagement:
 
 Elements:
+customSpoilerIdentifier:
+    use: have it's value manipulated.
+    description: hidden identifier used in the custom spoiler form.
+
+customSpoilerIndicator:
+    use: might be removed.
+    description: element indicating the board has a custom spoiler.
+
 hourlyThreadLimitField:
     use: have it's value manipulated.
     description: used to display the hourly thread limit.

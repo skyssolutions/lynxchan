@@ -368,7 +368,7 @@ function checkExpiredCaptchas() {
 
       if (verbose) {
         var message = 'Deleting expired captchas: ';
-        message += JSON.stringify(expiredFiles);
+        message += JSON.stringify(expiredFiles, null, 2);
         console.log(message);
       }
 

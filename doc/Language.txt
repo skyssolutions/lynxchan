@@ -238,3 +238,6 @@ guiArchiveLevels: array with the labels to be shown to archive options in this o
 msgSavedGlobalSettings: message used after saving global settings.
 errArchiveNotLoaded: error thrown when the the user tries to access the archives, they were enabled but the server haven't been restarted yet.
 errBoardLocked: error thrown when the board is locked for thread creation.
+errDeniedSpoilerManagement: error thrown when the user is not allowed to manage the custom spoiler of a board.
+msgSpoilerSet: message displayed after setting a custom spoiler on a board.
+msgSpoilerDeleted: message displayed after deleting a custom spoiler on a board.

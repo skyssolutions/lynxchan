@@ -185,7 +185,7 @@ function processQueue() {
   var message = queueArray.shift();
 
   if (verbose) {
-    console.log('Processing ' + JSON.stringify(message));
+    console.log('Processing ' + JSON.stringify(message, null, 2));
   }
 
   processMessage(message);
@@ -201,8 +201,9 @@ function putInQueue(message, boardInformation) {
   queueArray.push(message);
 
   if (verbose) {
-    console.log('Current queue tree :\n' + JSON.stringify(queueTree));
-    console.log('Current queue array :\n' + JSON.stringify(queueArray));
+    console.log('Current queue tree :\n' + JSON.stringify(queueTree, null, 2));
+    console
+        .log('Current queue array :\n' + JSON.stringify(queueArray, null, 2));
   }
 
   if (!working) {
@@ -327,7 +328,7 @@ function checkForDefaultAndFrontPages(message) {
 exports.queue = function(message) {
 
   if (verbose) {
-    console.log('Queuing ' + JSON.stringify(message));
+    console.log('Queuing ' + JSON.stringify(message, null, 2));
   }
 
   if (rebuildingAll) {

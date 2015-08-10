@@ -283,17 +283,18 @@ function loadAndTestTemplates(path, templateSettings) {
       },
       {
         template : 'bManagement',
-        fields : [ 'volunteersDiv', 'boardLabel', 'ownerControlDiv',
+        fields : [ 'volunteersDiv', 'ownerControlDiv', 'bansLink',
+            'forceAnonymityCheckbox', 'customSpoilerIdentifier',
             'addVolunteerBoardIdentifier', 'transferBoardIdentifier',
-            'deletionIdentifier', 'reportDiv', 'closedReportsLink', 'bansLink',
+            'deletionIdentifier', 'reportDiv', 'closedReportsLink',
             'bannerManagementLink', 'boardNameField', 'boardDescriptionField',
-            'boardSettingsIdentifier', 'disableIdsCheckbox',
-            'disableCaptchaCheckbox', 'forceAnonymityCheckbox',
-            'filterManagementLink', 'anonymousNameField', 'rangeBansLink',
-            'hashBansLink', 'customCssIdentifier', 'ruleManagementLink',
-            'allowCodeCheckbox', 'flagManagementLink', 'enableArchiveCheckbox',
-            'boardMessageField', 'early404Checkbox', 'hourlyThreadLimitField',
-            'autoCaptchaThresholdField' ]
+            'boardMessageField', 'boardSettingsIdentifier',
+            'disableIdsCheckbox', 'rangeBansLink', 'disableCaptchaCheckbox',
+            'filterManagementLink', 'anonymousNameField', 'boardLabel',
+            'customCssIdentifier', 'ruleManagementLink', 'allowCodeCheckbox',
+            'flagManagementLink', 'enableArchiveCheckbox', 'early404Checkbox',
+            'hourlyThreadLimitField', 'autoCaptchaThresholdField',
+            'hashBansLink', 'customSpoilerIndicator' ]
       },
       {
         template : 'closedReportsPage',

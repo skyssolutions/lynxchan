@@ -35,7 +35,7 @@ var accountSettingsRelation = {
 
 var boardControlIdentifiers = [ 'addVolunteerBoardIdentifier',
     'deletionIdentifier', 'transferBoardIdentifier', 'boardSettingsIdentifier',
-    'customCssIdentifier' ];
+    'customCssIdentifier', 'customSpoilerIdentifier' ];
 
 var boardSettingsRelation = {
   disableIds : 'disableIdsCheckbox',
@@ -1167,20 +1167,12 @@ function setBoardFields(document, boardData) {
 
 }
 
-function setBoardOwnerControls(document, boardData) {
-
-  for (var i = 0; i < boardControlIdentifiers.length; i++) {
-    document.getElementById(boardControlIdentifiers[i]).setAttribute('value',
-        boardData.boardUri);
-  }
-
-  setBoardControlCheckBoxes(document, boardData);
-
+function setVolunteersDiv(document, boardData) {
   var volunteersDiv = document.getElementById('volunteersDiv');
 
   var volunteers = boardData.volunteers || [];
 
-  for (i = 0; i < volunteers.length; i++) {
+  for (var i = 0; i < volunteers.length; i++) {
 
     var cell = document.createElement('form');
     cell.innerHTML = templateHandler.volunteerCell;
@@ -1196,8 +1188,23 @@ function setBoardOwnerControls(document, boardData) {
         boardData.boardUri);
 
     volunteersDiv.appendChild(cell);
-
   }
+}
+
+function setBoardOwnerControls(document, boardData) {
+
+  for (var i = 0; i < boardControlIdentifiers.length; i++) {
+    document.getElementById(boardControlIdentifiers[i]).setAttribute('value',
+        boardData.boardUri);
+  }
+
+  if (!boardData.usesCustomSpoiler) {
+    removeElement(document.getElementById('customSpoilerIndicator'));
+  }
+
+  setBoardControlCheckBoxes(document, boardData);
+
+  setVolunteersDiv(document, boardData);
 
 }
 

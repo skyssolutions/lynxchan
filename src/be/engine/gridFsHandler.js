@@ -256,7 +256,7 @@ function readParts(currentPosition, res, range, gs, callback) {
 function streamRange(range, gs, header, res, stats, callback) {
 
   if (verbose) {
-    console.log('Outputting range ' + JSON.stringify(range));
+    console.log('Outputting range ' + JSON.stringify(range, null, 2));
   }
 
   // If the range can't be fulfilled.

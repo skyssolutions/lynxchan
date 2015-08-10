@@ -679,7 +679,7 @@ function createThread(req, userData, parameters, board, threadId, wishesToSign,
       // style exception, too simple
       uploadHandler.saveUploads(parameters.boardUri, threadId, null,
           parameters.files, parameters.spoiler, allowsArchive,
-          function savedUploads(error) {
+          board.usesCustomSpoiler, function savedUploads(error) {
             if (error) {
               if (verbose) {
                 console.log(error);
@@ -916,6 +916,7 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
     autoCaptchaCount : 1,
     autoCaptchaStartTime : 1,
     hourlyThreadLimit : 1,
+    usesCustomSpoiler : 1,
     lockedUntil : 1,
     lockCountStart : 1,
     filters : 1,
@@ -1244,7 +1245,7 @@ function createPost(req, parameters, userData, postId, thread, board,
       // style exception, too simple
       uploadHandler.saveUploads(parameters.boardUri, parameters.threadId,
           postId, parameters.files, parameters.spoiler, allowsArchive,
-          function savedFiles(error) {
+          board.usesCustomSpoiler, function savedFiles(error) {
             if (error) {
               if (verbose) {
                 console.log(error);
@@ -1374,6 +1375,7 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
     _id : 0,
     filters : 1,
     owner : 1,
+    usesCustomSpoiler : 1,
     anonymousName : 1,
     settings : 1,
     volunteers : 1

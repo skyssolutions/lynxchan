@@ -708,4 +708,15 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::54
+
+Name: setCustomSpoiler
+
+Description: uploads a custom spoiler for a board. Requires authentication. Allowed only for board owners. If no file is sent, any set file will be removed.
+
+Parameters:
+    boardUri: URI of the board to have it's custom spoiler image managed.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

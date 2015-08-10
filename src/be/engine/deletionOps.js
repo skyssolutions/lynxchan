@@ -656,11 +656,11 @@ function printAuth(userData, parameters, threadsToDelete, postsToDelete) {
   }
 
   if (userData) {
-    console.log('User identification ' + JSON.stringify(userData));
+    console.log('User identification ' + JSON.stringify(userData, null, 2));
   }
 
-  console.log('Deleting threads: ' + JSON.stringify(threadsToDelete));
-  console.log('Deleting posts: ' + JSON.stringify(postsToDelete));
+  console.log('Deleting threads: ' + JSON.stringify(threadsToDelete, null, 2));
+  console.log('Deleting posts: ' + JSON.stringify(postsToDelete, null, 2));
 }
 
 exports.posting = function(userData, parameters, threadsToDelete,

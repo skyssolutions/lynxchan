@@ -3,11 +3,11 @@
 var apiOps = require('../engine/apiOps');
 var boardOps = require('../engine/boardOps');
 
-function setCustomCss(parameters, userData, res) {
+function setCustomSpoiler(parameters, userData, res) {
 
   if (parameters.files.length) {
-    boardOps.setCustomCss(userData, parameters.boardUri, parameters.files[0],
-        function customCssSet(error, boardUri) {
+    boardOps.setCustomSpoiler(userData, parameters.boardUri,
+        parameters.files[0], function customSpoilerSet(error, boardUri) {
           if (error) {
             apiOps.outputError(error, res);
           } else {
@@ -16,8 +16,8 @@ function setCustomCss(parameters, userData, res) {
           }
         });
   } else {
-    boardOps.deleteCustomCss(userData, parameters.boardUri,
-        function deletedCss(error) {
+    boardOps.deleteCustomSpoiler(userData, parameters.boardUri,
+        function deletedSpoiler(error) {
           if (error) {
             apiOps.outputError(error, res);
           } else {
@@ -31,6 +31,6 @@ exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-    setCustomCss(parameters, userData, res);
+    setCustomSpoiler(parameters, userData, res);
   }, false, true);
 };

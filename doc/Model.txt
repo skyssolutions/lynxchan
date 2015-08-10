@@ -31,6 +31,7 @@ boards: stores boards.
     boardMessage: message of the board. 256 characters.
     boardMarkdown: markdown of the message.
     ipSalt: salt used to display hashed ips to staff.
+    usesCustomSpoiler(Boolean): pre-aggregated boolean indicating the board has a custom spoiler.
 
 ----------------------------------------------------------------------------------------
 
