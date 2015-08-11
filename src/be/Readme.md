@@ -91,6 +91,7 @@ Settings files that goes into the settings directory:
 * `floodTimerSec`(Number): time in seconds required between postings from the same ip. Not applicable to TOR users. Defaults to 10.
 * `archiveLevel`(Number): archive setting. 0 will not archive anything, 1 will archive only html pages of threads, 2 will archive uploads and thumbnails too. Defaults to 0.
 * `serveArchive`(Boolean): indicates that the application will serve the archive on sub-domain `archive`.
+* `maxBoardTags`(Number): maximum amount of tags each board can have. Defaults to 5.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

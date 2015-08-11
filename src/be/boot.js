@@ -42,6 +42,7 @@ exports.getDefaultSettings = function() {
     tempDirectory : '/tmp',
     pageSize : 10,
     latestPostCount : 5,
+    maxBoardTags : 5,
     autoSageLimit : 500,
     maxFiles : 3,
     maxThreadCount : 50,

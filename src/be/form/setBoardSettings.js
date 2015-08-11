@@ -26,6 +26,10 @@ function setBoardSettings(userData, parameters, res) {
 
   parameters.settings = desiredSettings;
 
+  if (parameters.tags) {
+    parameters.tags = parameters.tags.split(',');
+  }
+
   boardOps.setSettings(userData, parameters, function settingsSaved(error) {
     if (error) {
       formOps.outputError(error, 500, res);

@@ -178,6 +178,32 @@ function setUpdateForAutoCaptcha(parameters, newSettings, updateBlock, board) {
   }
 }
 
+function sanitizeBoardTags(tags) {
+
+  if (!tags || !tags.length) {
+    return [];
+  }
+
+  var toRet = [];
+
+  var replaceFunction = function replace(match) {
+    return replaceTable[match];
+  };
+
+  var i;
+
+  for (i = 0; i < tags.length && toRet.length < settings.maxBoardTags; i++) {
+    var tagToAdd = tags[i].toString().trim().replace(/[<>]/g, replaceFunction)
+        .toLowerCase();
+
+    if (tagToAdd.length) {
+      toRet.push(tagToAdd);
+    }
+  }
+
+  return toRet;
+}
+
 function saveNewSettings(board, parameters, callback) {
 
   var newSettings = {
@@ -186,7 +212,8 @@ function saveNewSettings(board, parameters, callback) {
     settings : parameters.settings,
     boardMessage : parameters.boardMessage,
     boardMarkdown : getMessageMarkdown(parameters.boardMessage),
-    anonymousName : parameters.anonymousName
+    anonymousName : parameters.anonymousName || '',
+    tags : sanitizeBoardTags(parameters.tags)
   };
 
   var updateBlock = {
@@ -1212,17 +1239,18 @@ exports.getBoardManagementData = function(login, board, callback) {
     boardUri : board
   }, {
     _id : 0,
+    tags : 1,
     owner : 1,
+    settings : 1,
     boardUri : 1,
     boardName : 1,
+    volunteers : 1,
     boardMessage : 1,
     anonymousName : 1,
+    boardDescription : 1,
     usesCustomSpoiler : 1,
     hourlyThreadLimit : 1,
-    autoCaptchaThreshold : 1,
-    settings : 1,
-    boardDescription : 1,
-    volunteers : 1
+    autoCaptchaThreshold : 1
   }, function(error, boardData) {
     if (error) {
       callback(error);

@@ -45,6 +45,16 @@ var boardSettingsRelation = {
   archive : 'enableArchiveCheckbox',
   early404 : 'early404Checkbox'
 };
+
+var boardFieldsRelation = {
+  boardNameField : 'boardName',
+  tagsField : 'tags',
+  boardDescriptionField : 'boardDescription',
+  autoCaptchaThresholdField : 'autoCaptchaThreshold',
+  hourlyThreadLimitField : 'hourlyThreadLimit',
+  anonymousNameField : 'anonymousName'
+};
+
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 var availableLogTypes = {
   '' : lang.guiAllTypes,
@@ -152,6 +162,10 @@ var siteSettingsRelation = {
   },
   fieldThumbSize : {
     setting : 'thumbSize',
+    type : 'string'
+  },
+  fieldMaxTags : {
+    setting : 'maxBoardTags',
     type : 'string'
   },
   fieldMaxFilters : {
@@ -1146,20 +1160,11 @@ function setBoardControlCheckBoxes(document, boardData) {
 
 function setBoardFields(document, boardData) {
 
-  document.getElementById('boardNameField').setAttribute('value',
-      boardData.boardName);
+  for ( var key in boardFieldsRelation) {
 
-  document.getElementById('boardDescriptionField').setAttribute('value',
-      boardData.boardDescription);
-
-  document.getElementById('autoCaptchaThresholdField').setAttribute('value',
-      boardData.autoCaptchaThreshold || '');
-
-  document.getElementById('hourlyThreadLimitField').setAttribute('value',
-      boardData.hourlyThreadLimit || '');
-
-  document.getElementById('anonymousNameField').setAttribute('value',
-      boardData.anonymousName || '');
+    document.getElementById(key).setAttribute('value',
+        boardData[boardFieldsRelation[key]] || '');
+  }
 
   var messageContent = boardData.boardMessage || '';
 
@@ -1842,6 +1847,9 @@ function setBoardCell(board, boardCell) {
 
   var labelDescription = boardCell.getElementsByClassName('divDescription')[0];
   labelDescription.innerHTML = board.boardDescription;
+
+  var labelTags = boardCell.getElementsByClassName('labelTags')[0];
+  labelTags.innerHTML = board.tags.join(', ');
 }
 
 function setPages(document, pageCount) {

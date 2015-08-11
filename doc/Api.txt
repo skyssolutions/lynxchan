@@ -345,6 +345,7 @@ Parameters:
     boardName*: new name of the board. 32 characters.
     autoCaptchaLimit(Number): a limit that automatically enables captcha if these many threads are created within an hour.
     boardDescription*: new description of the board. 128 characters.
+    tags(Array): array of tags to be used on this board.
     anonymousName: name to be used when the user is anonymous. 32 character.
     hourlyThreadLimit(Number): limit of new threads allowed per hour. If exceeded, the board will lock for thread creation temporarily.
     settings(Array): new settings of the board. May contain the following values:
@@ -535,6 +536,7 @@ Parameters:
     multipleReports(Boolean): enables users to report multiple posts at once.
     serveArchive(Boolean): sets the server to serve archived files.
     archiveLevel(Number): level of archiving. 0 = no archives. 1 = only pages. 2 = pages and files.
+    maxTags(Number): maximum amount of tags per board.
 
 ------------------------------------------------------------------------------------------
 

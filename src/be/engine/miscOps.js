@@ -393,6 +393,10 @@ function getParametersArray() {
     type : 'number',
     setting : 'maxBoardRules'
   }, {
+    param : 'maxTags',
+    type : 'number',
+    setting : 'maxBoardTags'
+  }, {
     param : 'maxFilters',
     type : 'number',
     setting : 'maxFilters'

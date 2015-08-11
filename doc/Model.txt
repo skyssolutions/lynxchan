@@ -1,6 +1,6 @@
 boards: stores boards.
     owner*: login of the board owner.
-    boardUri**: url of the board. 32 characters. Only a-Z,_ and 0-9 allowed.
+    boardUri**: url of the board. 32 characters. Only a-Z, _ and 0-9 allowed.
     boardName: name of the board. 32 characters.
     boardDescription: description of the board. 128 characters.
     lastPostId: id of last post in this board.
@@ -32,6 +32,7 @@ boards: stores boards.
     boardMarkdown: markdown of the message.
     ipSalt: salt used to display hashed ips to staff.
     usesCustomSpoiler(Boolean): pre-aggregated boolean indicating the board has a custom spoiler.
+    tags(Array): array of strings used as tags to identify the board subjects. Each tag can be up to 32 characters. Any upper-case character will be converted to lower-case.
 
 ----------------------------------------------------------------------------------------
 
@@ -107,7 +108,7 @@ posts: stores posts.
 ----------------------------------------------------------------------------------------
 
 users: stores users.
-    login**: login of the user. 16 characters. Only a-Z,_ and 0-9 allowed.
+    login**: login of the user. 16 characters. Only a-Z, _ and 0-9 allowed.
     email: e-mail of the user. 64 characters.
     password: hashed password of the user.
     ownedBoards(Array): list of the uri's of the boards owned by this user.

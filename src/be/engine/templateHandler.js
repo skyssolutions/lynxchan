@@ -184,7 +184,7 @@ function loadAndTestTemplates(path, templateSettings) {
       {
         template : 'boardsCell',
         fields : [ 'linkBoard', 'labelPostsPerHour', 'labelPostCount',
-            'divDescription' ]
+            'divDescription', 'labelTags' ]
       },
       {
         template : 'rangeBanCell',
@@ -294,7 +294,7 @@ function loadAndTestTemplates(path, templateSettings) {
             'customCssIdentifier', 'ruleManagementLink', 'allowCodeCheckbox',
             'flagManagementLink', 'enableArchiveCheckbox', 'early404Checkbox',
             'hourlyThreadLimitField', 'autoCaptchaThresholdField',
-            'hashBansLink', 'customSpoilerIndicator' ]
+            'hashBansLink', 'customSpoilerIndicator', 'tagsField' ]
       },
       {
         template : 'closedReportsPage',
@@ -392,7 +392,8 @@ function loadAndTestTemplates(path, templateSettings) {
             'checkboxDisable304', 'checkboxSsl', 'checkboxBlockTor',
             'checkboxMediaThumb', 'checkboxMaintenance', 'comboArchive',
             'checkboxMultipleReports', 'checkboxDisableAccountCreation',
-            'checkboxRestrictBoardCreation', 'checkboxServeArchive' ]
+            'checkboxRestrictBoardCreation', 'checkboxServeArchive',
+            'fieldMaxTags' ]
       } ];
 
   var errors = [];
