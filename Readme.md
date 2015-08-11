@@ -16,8 +16,8 @@ Beta
 * [A front-end](https://gitlab.com/mrseth/LynxChanFront-Placeholder) that must either be placed on the `src/fe` directory or have it's absolute path set on the general.json file. Read the readme.md on src/be for more information about how to configure the path for the front-end.
 
 # Automatic install
-1. Required: run the script `aux/setup.sh` that will prompt for the install of a front-end, default settings and libraries.
-2. Optional: run the script `aux/root-setup.sh` that will prompt for the install of a command using a soft-link to `src/be/boot.js`. This script must be run as root. It will also try to install a service if you provide the argument `systemd` or `upstart` and have an user called `iojs`.
+1. Required: browse to `aux` and run the script `setup.sh` that will prompt for the install of a front-end, default settings and libraries. Browsing to the `aux` directory is required because the scripts use relative paths to this directory.
+2. Optional: run the script `root-setup.sh` that will prompt for the install of a command using a soft-link to `src/be/boot.js`. This script must be run as root. It will also try to install a service if you provide the argument `systemd` or `upstart` and have an user called `iojs`.
   
 # Manual install
 1. Create the required settings file in the `src/be/settings` directory. Instructions can be found at `src/be/readme.md`. There is also a directory called settings.example with a set of functional settings.

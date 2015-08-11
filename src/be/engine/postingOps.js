@@ -668,18 +668,13 @@ function createThread(req, userData, parameters, board, threadId, wishesToSign,
       callback(error);
     } else {
 
-      recordFlood(ip);
-
-      var allowsArchive = false;
-
-      if (board.settings) {
-        allowsArchive = board.settings.indexOf('archive') > -1;
+      if (!req.isTor) {
+        recordFlood(ip);
       }
 
       // style exception, too simple
-      uploadHandler.saveUploads(parameters.boardUri, threadId, null,
-          parameters.files, parameters.spoiler, allowsArchive,
-          board.usesCustomSpoiler, function savedUploads(error) {
+      uploadHandler.saveUploads(board, threadId, null, parameters,
+          function savedUploads(error) {
             if (error) {
               if (verbose) {
                 console.log(error);
@@ -912,6 +907,7 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
     _id : 0,
     owner : 1,
     volunteers : 1,
+    boardUri : 1,
     autoCaptchaThreshold : 1,
     autoCaptchaCount : 1,
     autoCaptchaStartTime : 1,
@@ -1234,18 +1230,13 @@ function createPost(req, parameters, userData, postId, thread, board,
       cb(error);
     } else {
 
-      recordFlood(ip);
-
-      var allowsArchive = false;
-
-      if (board.settings) {
-        allowsArchive = board.settings.indexOf('archive') > -1;
+      if (!req.isTor) {
+        recordFlood(ip);
       }
 
       // style exception, too simple
-      uploadHandler.saveUploads(parameters.boardUri, parameters.threadId,
-          postId, parameters.files, parameters.spoiler, allowsArchive,
-          board.usesCustomSpoiler, function savedFiles(error) {
+      uploadHandler.saveUploads(board, parameters.threadId, postId, parameters,
+          function savedFiles(error) {
             if (error) {
               if (verbose) {
                 console.log(error);
@@ -1375,6 +1366,7 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
     _id : 0,
     filters : 1,
     owner : 1,
+    boardUri : 1,
     usesCustomSpoiler : 1,
     anonymousName : 1,
     settings : 1,

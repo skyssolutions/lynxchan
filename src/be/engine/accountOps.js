@@ -219,9 +219,14 @@ exports.login = function(parameters, callback) {
 
 exports.validate = function(auth, callback) {
 
+  if (auth.hash === undefined || auth.hash === null) {
+    callback(lang.errInvalidAccount);
+    return;
+  }
+
   users.findOne({
     login : auth.login,
-    hash : auth.hash
+    hash : auth.hash.toString()
   }, {
     _id : 0,
     login : 1,

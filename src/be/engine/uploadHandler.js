@@ -98,13 +98,14 @@ exports.removeFromDisk = function(path, callback) {
 };
 
 // start of upload saving process
-function updatePostingFiles(boardUri, threadId, postId, files, file,
-    allowsArchive, customSpoiler, callback, index, spoiler, updatedFileCount) {
+function updatePostingFiles(boardData, threadId, postId, file, callback,
+    updatedFileCount) {
 
+  // updates thread's file count before proceeding
   if (postId && !updatedFileCount) {
     threads.updateOne({
       threadId : threadId,
-      boardUri : boardUri
+      boardUri : boardData.boardUri
     }, {
       $inc : {
         fileCount : 1
@@ -113,9 +114,7 @@ function updatePostingFiles(boardUri, threadId, postId, files, file,
       if (error) {
         callback(error);
       } else {
-        updatePostingFiles(boardUri, threadId, postId, files, file,
-            allowsArchive, customSpoiler, callback, index, spoiler,
-            updatedFileCount, true);
+        updatePostingFiles(boardData, threadId, postId, file, callback, true);
       }
     });
 
@@ -123,7 +122,7 @@ function updatePostingFiles(boardUri, threadId, postId, files, file,
   }
 
   var queryBlock = {
-    boardUri : boardUri,
+    boardUri : boardData.boardUri,
     threadId : threadId
   };
 
@@ -148,95 +147,85 @@ function updatePostingFiles(boardUri, threadId, postId, files, file,
         height : file.height
       }
     }
-  }, function updatedPosting(error) {
-    if (error) {
-      callback(error);
-    } else {
-      exports.saveUploads(boardUri, threadId, postId, files, spoiler,
-          allowsArchive, customSpoiler, callback, index + 1);
-    }
-
-  });
+  }, callback);
 
 }
 
-function cleanThumbNail(boardUri, threadId, postId, files, file, allowsArchive,
-    customSpoiler, callback, index, saveError, spoiler) {
+function cleanThumbNail(boardData, threadId, postId, file, saveError, cb) {
 
   if (file.thumbOnDisk) {
 
     exports.removeFromDisk(file.thumbOnDisk, function removed(deletionError) {
       if (saveError || deletionError) {
-        callback(saveError || deletionError);
+        cb(saveError || deletionError);
       } else {
-        updatePostingFiles(boardUri, threadId, postId, files, file,
-            allowsArchive, customSpoiler, callback, index, spoiler);
+        updatePostingFiles(boardData, threadId, postId, file, cb);
       }
 
     });
   } else {
 
     if (saveError) {
-      callback(saveError);
+      cb(saveError);
     } else {
-      updatePostingFiles(boardUri, threadId, postId, files, file,
-          allowsArchive, customSpoiler, callback, index, spoiler);
+      updatePostingFiles(boardData, threadId, postId, file, cb);
     }
   }
 }
 
-function transferMediaToGfs(boardUri, threadId, postId, fileId, file,
-    allowsArchive, cb, extension, meta) {
+function transferMediaToGfs(boardData, threadId, postId, fileId, file,
+    extension, meta, cb) {
 
   var fileName = fileId + '.' + extension;
-  fileName = '/' + boardUri + '/media/' + fileName;
+  fileName = '/' + boardData.boardUri + '/media/' + fileName;
 
   file.path = fileName;
   file.gfsName = fileId + '.' + extension;
 
-  gsHandler.writeFile(file.pathInDisk, fileName, file.mime, meta,
-      function wroteFile(error) {
-        cb(error);
-      }, archive && allowsArchive);
+  var allowsArchive;
+
+  if (boardData.settings) {
+    allowsArchive = boardData.settings.indexOf('archive') > -1;
+  }
+
+  var archiveMedia = allowsArchive && archive;
+
+  gsHandler.writeFile(file.pathInDisk, fileName, file.mime, meta, cb,
+      archiveMedia);
 
 }
 
-function processThumb(boardUri, fileId, ext, file, meta, allowsArchive, cb,
-    threadId, postId) {
-  var thumbName = '/' + boardUri + '/media/' + 't_' + fileId + '.' + ext;
+function processThumb(boardData, threadId, postId, fileId, ext, file, meta,
+    callback) {
+  var thumbName = '/' + boardData.boardUri + '/media/' + 't_' + fileId;
+  thumbName += '.' + ext;
 
   file.thumbPath = thumbName;
+
+  var allowsArchive;
+
+  if (boardData.settings) {
+    allowsArchive = boardData.settings.indexOf('archive') > -1;
+  }
 
   gsHandler.writeFile(file.thumbOnDisk, thumbName, file.thumbMime, meta,
       function wroteTbToGfs(error) {
         if (error) {
-          cb(error);
+          callback(error);
         } else {
-          transferMediaToGfs(boardUri, threadId, postId, fileId, file,
-              allowsArchive, cb, ext, meta);
+          transferMediaToGfs(boardData, threadId, postId, fileId, file, ext,
+              meta, callback);
         }
 
       }, archive && allowsArchive);
 }
 
-function useGenericThumb(audioMime, file, boardUri, threadId, postId, fileId,
-    allowsArchive, cb, ext, meta, spoiler) {
-
-  var genericToUse = audioMime ? genericAudioThumb : genericThumb;
-
-  file.thumbPath = spoiler ? spoilerPath : genericToUse;
-
-  transferMediaToGfs(boardUri, threadId, postId, fileId, file, allowsArchive,
-      cb, ext, meta);
-}
-
-function transferThumbToGfs(boardUri, threadId, postId, fileId, file,
-    allowsArchive, cb) {
+function transferThumbToGfs(boardData, threadId, postId, fileId, file, cb) {
 
   var parts = file.title.split('.');
 
   var meta = {
-    boardUri : boardUri,
+    boardUri : boardData.boardUri,
     threadId : threadId,
     type : 'media'
   };
@@ -251,12 +240,11 @@ function transferThumbToGfs(boardUri, threadId, postId, fileId, file,
 
     if (file.thumbOnDisk) {
 
-      processThumb(boardUri, fileId, ext, file, meta, allowsArchive, cb,
-          threadId, postId);
+      processThumb(boardData, threadId, postId, fileId, ext, file, meta, cb);
 
     } else {
-      transferMediaToGfs(boardUri, threadId, postId, fileId, file,
-          allowsArchive, cb, ext, meta);
+      transferMediaToGfs(boardData, threadId, postId, fileId, file, ext, meta,
+          cb);
     }
 
   } else {
@@ -265,10 +253,10 @@ function transferThumbToGfs(boardUri, threadId, postId, fileId, file,
 
 }
 
-function saveUpload(boardUri, threadId, postId, file, allowsArchive, callback) {
+function saveUpload(boardData, threadId, postId, file, callback) {
 
   boards.findOneAndUpdate({
-    boardUri : boardUri
+    boardUri : boardData.boardUri
   }, {
     $inc : {
       lastFileId : 1
@@ -279,22 +267,19 @@ function saveUpload(boardUri, threadId, postId, file, allowsArchive, callback) {
     if (error) {
       callback(error);
     } else {
-      transferThumbToGfs(boardUri, threadId, postId, result.value.lastFileId,
-          file, allowsArchive, callback);
+      transferThumbToGfs(boardData, threadId, postId, result.value.lastFileId,
+          file, callback);
     }
   });
 
 }
 
-function transferFilesToGS(boardUri, threadId, postId, files, file,
-    allowsArchive, customSpoiler, callback, index, spoiler) {
+function transferFilesToGS(boardData, threadId, postId, file, callback) {
 
-  saveUpload(boardUri, threadId, postId, file, allowsArchive,
-      function transferedFile(error) {
+  saveUpload(boardData, threadId, postId, file, function transferedFile(error) {
 
-        cleanThumbNail(boardUri, threadId, postId, files, file, allowsArchive,
-            customSpoiler, callback, index, error, spoiler);
-      });
+    cleanThumbNail(boardData, threadId, postId, file, error, callback);
+  });
 }
 
 function checkForHashBan(boardUri, md5, callback) {
@@ -312,8 +297,8 @@ function checkForHashBan(boardUri, md5, callback) {
 
 }
 
-function generateVideoThumb(file, files, tooSmall, index, threadId, boardUri,
-    postId, allowsArchive, customSpoiler, callback, spoiler) {
+function generateVideoThumb(boardData, threadId, postId, file, tooSmall,
+    callback) {
 
   var command = videoThumbCommand.replace('{$path}', file.pathInDisk);
 
@@ -336,15 +321,13 @@ function generateVideoThumb(file, files, tooSmall, index, threadId, boardUri,
     if (error) {
       callback(error);
     } else {
-      transferFilesToGS(boardUri, threadId, postId, files, file, allowsArchive,
-          customSpoiler, callback, index, spoiler);
+      transferFilesToGS(boardData, threadId, postId, file, callback);
     }
   });
 
 }
 
-function generateAudioThumb(file, files, boardUri, threadId, postId,
-    allowsArchive, customSpoiler, callback, index, spoiler) {
+function generateAudioThumb(boardData, threadId, postId, file, callback) {
 
   var thumbDestination = file.pathInDisk + '_.png';
 
@@ -361,26 +344,34 @@ function generateAudioThumb(file, files, boardUri, threadId, postId,
       file.thumbMime = 'image/png';
     }
 
-    transferFilesToGS(boardUri, threadId, postId, files, file, allowsArchive,
-        customSpoiler, callback, index, spoiler);
-
+    transferFilesToGS(boardData, threadId, postId, file, callback);
   });
 
 }
 
-function processFile(boardUri, threadId, postId, files, file, spoiler,
-    allowsArchive, customSpoiler, callback, index) {
+function processSpoilerThumb(boardData, threadId, postId, file, callback) {
+
+  var spoilerToUse;
+
+  console.log(JSON.stringify(boardData, null, 2));
+
+  if (boardData.usesCustomSpoiler) {
+    spoilerToUse = '/' + boardData.boardUri + '/custom.spoiler';
+  } else {
+    spoilerToUse = spoilerPath;
+  }
+
+  file.thumbPath = spoilerToUse;
+
+  transferFilesToGS(boardData, threadId, postId, file, callback);
+}
+
+function processFile(boardData, threadId, postId, file, parameters, callback) {
 
   var tooSmall = file.height <= thumbSize && file.width <= thumbSize;
+  if (parameters.spoiler) {
 
-  if (spoiler) {
-
-    file.thumbPath = customSpoiler ? '/' + boardUri + '/custom.spoiler'
-        : spoilerPath;
-
-    transferFilesToGS(boardUri, threadId, postId, files, file, allowsArchive,
-        customSpoiler, callback, index, spoiler);
-
+    processSpoilerThumb(boardData, threadId, postId, file, callback);
   } else if (file.mime.indexOf('image/') !== -1 && !tooSmall) {
 
     var thumbDestination = file.pathInDisk + '_t';
@@ -389,27 +380,22 @@ function processFile(boardUri, threadId, postId, files, file, spoiler,
     file.thumbMime = file.mime;
 
     im(file.pathInDisk).resize(thumbSize, thumbSize).noProfile().write(
-        thumbDestination,
-        function(error) {
+        thumbDestination, function(error) {
           if (error) {
             callback(error);
           } else {
-            transferFilesToGS(boardUri, threadId, postId, files, file,
-                allowsArchive, customSpoiler, callback, index, spoiler);
+            transferFilesToGS(boardData, threadId, postId, file, callback);
 
           }
         });
 
   } else if (videoMimes.indexOf(file.mime) > -1 && settings.mediaThumb) {
 
-    generateVideoThumb(file, files, tooSmall, index, threadId, boardUri,
-        postId, allowsArchive, customSpoiler, callback, spoiler);
+    generateVideoThumb(boardData, threadId, postId, file, tooSmall, callback);
 
   } else if (thumbAudioMimes.indexOf(file.mime) > -1 && settings.mediaThumb) {
 
-    generateAudioThumb(file, files, boardUri, threadId, postId, allowsArchive,
-        customSpoiler, callback, index, spoiler);
-
+    generateAudioThumb(boardData, threadId, postId, file, callback);
   } else {
 
     if (thumbAudioMimes.indexOf(file.mime) > -1) {
@@ -418,31 +404,40 @@ function processFile(boardUri, threadId, postId, files, file, spoiler,
       file.thumbPath = genericThumb;
     }
 
-    transferFilesToGS(boardUri, threadId, postId, files, file, allowsArchive,
-        customSpoiler, callback, index, spoiler);
-
+    transferFilesToGS(boardData, threadId, postId, file, callback);
   }
-
 }
 
-exports.saveUploads = function(boardUri, threadId, postId, files, spoiler,
-    allowsArchive, customSpoiler, callback, index) {
+exports.saveUploads = function(boardData, threadId, postId, parameters,
+    callback, index) {
 
   index = index || 0;
 
-  if (index < files.length) {
+  if (index < parameters.files.length) {
 
-    var file = files[index];
+    var file = parameters.files[index];
 
-    checkForHashBan(boardUri, file.md5, function isBanned(error, banned) {
+    checkForHashBan(boardData.boardUri, file.md5, function isBanned(error,
+        banned) {
       if (error) {
         callback(error);
       } else if (banned) {
-        exports.saveUploads(boardUri, threadId, postId, files, spoiler,
-            allowsArchive, customSpoiler, callback, index + 1);
+        exports.saveUploads(boardData, threadId, postId, parameters, callback,
+            index + 1);
       } else {
-        processFile(boardUri, threadId, postId, files, file, spoiler,
-            allowsArchive, customSpoiler, callback, index);
+
+        // style exception, too simple
+        processFile(boardData, threadId, postId, file, parameters,
+            function processedFile(error) {
+              if (error) {
+                callback(error);
+              } else {
+                exports.saveUploads(boardData, threadId, postId, parameters,
+                    callback, index + 1);
+              }
+            });
+        // style exception, too simple
+
       }
     });
 
