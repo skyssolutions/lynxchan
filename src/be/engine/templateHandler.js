@@ -393,7 +393,7 @@ function loadAndTestTemplates(path, templateSettings) {
             'checkboxMediaThumb', 'checkboxMaintenance', 'comboArchive',
             'checkboxMultipleReports', 'checkboxDisableAccountCreation',
             'checkboxRestrictBoardCreation', 'checkboxServeArchive',
-            'fieldMaxTags' ]
+            'fieldMaxTags', 'checkboxDisableFloodCheck' ]
       } ];
 
   var errors = [];

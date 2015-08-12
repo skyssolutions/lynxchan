@@ -21,6 +21,7 @@ var torHandler = require('./engine/torOps');
 
 exports.reload = function() {
 
+  verbose = settings.verbose;
   gridFsHandler = require('./engine/gridFsHandler');
   generator = require('./engine/generator');
   delOps = require('./engine/deletionOps');

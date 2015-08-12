@@ -108,7 +108,7 @@ function transferFileInformation(files, fields, parsedCookies, cb, res,
 
       var acceptableSize = file.size && file.size < maxFileSize;
 
-      if (validMimes.indexOf(mime) === -1 && !exceptionalMimes) {
+      if (validMimes.indexOf(mime) === -1 && !exceptionalMimes && file.size) {
         exports.outputError(lang.errFormatNotAllowed, 500, res);
       } else if (acceptableSize) {
         var toPush = {

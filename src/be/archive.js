@@ -18,6 +18,8 @@ exports.loaded = function() {
 };
 
 exports.reload = function() {
+
+  verbose = boot.getGeneralSettings().verbose;
   formOps = require('./engine/formOps');
   gridFsHandler = require('./engine/gridFsHandler');
   domManipulator = require('./engine/domManipulator');

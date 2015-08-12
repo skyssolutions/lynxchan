@@ -429,6 +429,10 @@ function getParametersArray() {
     type : 'boolean',
     setting : 'blockTor'
   }, {
+    param : 'disableFloodCheck',
+    type : 'boolean',
+    setting : 'disableFloodCheck'
+  }, {
     param : 'mediaThumb',
     type : 'boolean',
     setting : 'mediaThumb'

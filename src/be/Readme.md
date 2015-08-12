@@ -92,6 +92,7 @@ Settings files that goes into the settings directory:
 * `archiveLevel`(Number): archive setting. 0 will not archive anything, 1 will archive only html pages of threads, 2 will archive uploads and thumbnails too. Defaults to 0.
 * `serveArchive`(Boolean): indicates that the application will serve the archive on sub-domain `archive`.
 * `maxBoardTags`(Number): maximum amount of tags each board can have. Defaults to 5.
+* `disableFloodCheck`(Boolean): indicates if the flood checks should be disabled. This shouldn't affect performance at all, since it's meant to be used for benchmarking purposes.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

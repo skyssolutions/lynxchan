@@ -14,6 +14,7 @@ var reports = db.reports();
 var miscOps = require('./miscOps');
 var settings = require('../boot').getGeneralSettings();
 var blockTor = settings.blockTor;
+var disableFloodCheck = settings.disableFloodCheck;
 var multipleReports = settings.multipleReports;
 var lang = require('./langOps').languagePack();
 var logger = require('../logger');
@@ -314,7 +315,7 @@ exports.checkForBan = function(req, boardUri, callback) {
       }, function gotCount(error, count) {
         if (error) {
           callback(error);
-        } else if (count) {
+        } else if (count && !disableFloodCheck) {
           callback(lang.errFlood);
         } else {
           getActiveBan(ip, boardUri, callback);

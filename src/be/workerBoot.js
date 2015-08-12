@@ -19,6 +19,8 @@ var booted = false;
 var debug = boot.debug();
 
 exports.reload = function() {
+
+  verbose = boot.getGeneralSettings().verbose;
   requestHandler = require('./engine/requestHandler');
 };
 

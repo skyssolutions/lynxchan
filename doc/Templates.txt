@@ -1585,6 +1585,10 @@ checkboxDisableAccountCreation:
     use: might be turned on.
     description: indicates that account creation is disabled.
 
+checkboxDisableFloodCheck:
+    use: might be turned on.
+    description: indicates that flood checks are disabled.
+
 checkboxRestrictBoardCreation:
     use: might be turned on.
     description: indicates that only root and admins can create boards.

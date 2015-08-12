@@ -194,9 +194,9 @@ function sanitizeBoardTags(tags) {
 
   for (i = 0; i < tags.length && toRet.length < settings.maxBoardTags; i++) {
     var tagToAdd = tags[i].toString().trim().replace(/[<>]/g, replaceFunction)
-        .toLowerCase();
+        .toLowerCase().substring(0, 32);
 
-    if (tagToAdd.length) {
+    if (tagToAdd.length && toRet.indexOf(tagToAdd) === -1) {
       toRet.push(tagToAdd);
     }
   }
