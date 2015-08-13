@@ -81,7 +81,19 @@ exports.updateIps = function(callback) {
   }).end();
 
 };
+
 // end of update
+function markAsProxy(ip, req) {
+
+  if (req.headers && req.headers['x-forwarded-for']) {
+    var proxy = req.headers['x-forwarded-for'];
+
+    if (proxy !== ip) {
+      req.isProxy = true;
+    }
+  }
+
+}
 
 exports.markAsTor = function(req, callback) {
 
@@ -99,6 +111,8 @@ exports.markAsTor = function(req, callback) {
         if (verbose) {
           console.log('Marked ip ' + ip + ' as TOR.');
         }
+      } else {
+        markAsProxy(ip, req);
       }
       callback(null, req);
     }

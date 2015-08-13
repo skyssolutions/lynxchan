@@ -59,7 +59,7 @@ exports.formatedTime = function(time) {
 };
 
 exports.ip = function(req) {
-  return req.isTor ? null : req.connection.remoteAddress;
+  return req.isTor || req.isProxy ? null : req.connection.remoteAddress;
 };
 
 // It just gets the formated date and put the formated time after it with an

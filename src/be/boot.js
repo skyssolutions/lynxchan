@@ -174,87 +174,131 @@ exports.reload = function() {
 
 };
 
+var informedArguments = {
+  debug : {
+    short : '-d',
+    long : '--debug',
+    type : 'boolean'
+  },
+  torDebug : {
+    short : '-td',
+    long : '--tor-debug',
+    type : 'boolean'
+  },
+  noDaemon : {
+    short : '-nd',
+    long : '--no-daemon',
+    type : 'boolean'
+  },
+  setRole : {
+    short : '-sr',
+    long : '--set-role',
+    type : 'boolean'
+  },
+  createAccount : {
+    short : '-ca',
+    long : '--create-account',
+    type : 'boolean'
+  },
+  reload : {
+    short : '-r',
+    long : '--reload',
+    type : 'boolean'
+  },
+  reloadLogin : {
+    short : '-rl',
+    long : '--reload-login',
+    type : 'boolean'
+  },
+  reloadBanner : {
+    short : '-rb',
+    long : '--reload-banner',
+    type : 'boolean'
+  },
+  reloadFront : {
+    short : '-rf',
+    long : '--reload-front',
+    type : 'boolean'
+  },
+  reloadNotFound : {
+    short : '-rn',
+    long : '--reload-notfound',
+    type : 'boolean'
+  },
+  reloadAudio : {
+    short : '-ra',
+    long : '--reload-audio',
+    type : 'boolean'
+  },
+  reloadThumb : {
+    short : '-rt',
+    long : '--reload-thumb',
+    type : 'boolean'
+  },
+  reloadSpoiler : {
+    short : '-rs',
+    long : '--reload-spoiler',
+    type : 'boolean'
+  },
+  reloadMaintenance : {
+    short : '-rm',
+    long : '--reload-maintenance',
+    type : 'boolean'
+  },
+  login : {
+    short : '-l',
+    long : '--login',
+    type : 'value'
+  },
+  password : {
+    short : '-p',
+    long : '--password',
+    type : 'value'
+  },
+  globalRole : {
+    short : '-gr',
+    long : '--global-role',
+    type : 'value'
+  }
+};
+
 var args = process.argv;
 
-var debug = args.indexOf('-d') > -1;
-debug = debug || args.indexOf('--debug') > -1;
+for ( var key in informedArguments) {
 
-var torDebug = args.indexOf('-td') > -1;
-torDebug = torDebug || args.indexOf('--tor-debug') > -1;
+  var element = informedArguments[key];
 
-var noDaemon = args.indexOf('-nd') > -1;
-noDaemon = noDaemon || args.indexOf('--no-daemon') > -1;
+  switch (element.type) {
+  case 'value':
+    var elementIndex = args.indexOf(element.short);
+    if (elementIndex === -1) {
+      elementIndex = args.indexOf(elementIndex);
+    }
 
-var setRole = args.indexOf('-sr') > -1;
-setRole = setRole || args.indexOf('--set-role') > -1;
+    if (elementIndex !== -1) {
+      element.value = args[elementIndex + 1];
+    }
+    break;
+  case 'boolean':
+    element.informed = args.indexOf(element.short) > -1;
 
-var createAccount = args.indexOf('-ca') > -1;
-createAccount = createAccount || args.indexOf('--create-account') > -1;
+    if (!element.informed) {
+      element.informed = args.indexOf(element.long) > -1;
+    }
 
-var reload = args.indexOf('-r') > -1;
-reload = reload || args.indexOf('--reload') > -1;
-
-var reloadLogin = args.indexOf('-rl') > -1;
-reloadLogin = reloadLogin || args.indexOf('--reload-login') > -1;
-
-var reloadBanner = args.indexOf('-rb') > -1;
-reloadBanner = reloadBanner || args.indexOf('--reload-banner') > -1;
-
-var reloadFront = args.indexOf('-rf') > -1;
-reloadFront = reloadFront || args.indexOf('--reload-front') > -1;
-
-var reload404 = args.indexOf('-rn') > -1;
-reload404 = reload404 || args.indexOf('--reload-notfound') > -1;
-
-var reloadAudioThumb = args.indexOf('-ra') > -1;
-reloadAudioThumb = reloadAudioThumb || args.indexOf('--reload-audio') > -1;
-
-var reloadThumb = args.indexOf('-rt') > -1;
-reloadThumb = reloadThumb || args.indexOf('--reload-thumb') > -1;
-
-var reloadSpoiler = args.indexOf('-rs') > -1;
-reloadSpoiler = reloadSpoiler || args.indexOf('--rebuild-spoiler') > -1;
-
-var reloadMaintenance = args.indexOf('-rm') > -1;
-reloadSpoiler = reloadSpoiler || args.indexOf('--rebuild-maintenance') > -1;
-
-var informedLogin;
-var informedPassword;
-var informedRole;
-
-if (createAccount || setRole) {
-  var loginIndex = args.indexOf('-l');
-  if (loginIndex === -1) {
-    loginIndex = args.indexOf('--login');
-  }
-
-  var passwordIndex = args.indexOf('-p');
-  if (passwordIndex === -1) {
-    passwordIndex = args.indexOf('--password');
-  }
-
-  var roleIndex = args.indexOf('-gr');
-  if (roleIndex === -1) {
-    roleIndex = args.indexOf('--global-role');
-  }
-
-  roleIndex++;
-  passwordIndex++;
-  loginIndex++;
-
-  if (passwordIndex && passwordIndex < args.length) {
-    informedPassword = args[passwordIndex];
-  }
-
-  if (loginIndex && loginIndex < args.length) {
-    informedLogin = args[loginIndex];
-  }
-
-  if (roleIndex && roleIndex < args.length) {
-    informedRole = args[roleIndex];
+    break;
   }
 
 }
+
+var debug = informedArguments.debug.informed;
+var noDaemon = informedArguments.noDaemon.informed;
+
+var informedLogin = informedArguments.login.value;
+var informedPassword = informedArguments.password.value;
+var informedRole = informedArguments.globalRole.value;
+
+var createAccount = informedArguments.createAccount.informed;
 
 exports.genericThumb = function() {
   return genericThumb;
@@ -277,7 +321,7 @@ exports.debug = function() {
 };
 
 exports.torDebug = function() {
-  return torDebug;
+  return informedArguments.torDebug.informed;
 };
 
 exports.getDbSettings = function() {
@@ -375,40 +419,40 @@ function composeDefaultFiles() {
   defaultFilesRelation = {
     '/' : {
       generatorFunction : 'frontPage',
-      command : reloadFront
+      command : informedArguments.reloadFront.informed
     },
     '/404.html' : {
       generatorFunction : 'notFound',
-      command : reload404
+      command : informedArguments.reloadNotFound.informed
     },
     '/login.html' : {
       generatorFunction : 'login',
-      command : reloadLogin
+      command : informedArguments.reloadLogin.informed
     },
     '/maintenance.html' : {
       generatorFunction : 'maintenance',
-      command : reloadMaintenance
+      command : informedArguments.reloadMaintenance.informed
     }
   };
 
   defaultFilesRelation[genericThumb] = {
     generatorFunction : 'thumb',
-    command : reloadThumb
+    command : informedArguments.reloadThumb.informed
   };
 
   defaultFilesRelation[spoilerImage] = {
     generatorFunction : 'spoiler',
-    command : reloadSpoiler
+    command : informedArguments.reloadSpoiler.informed
   };
 
   defaultFilesRelation[defaultBanner] = {
     generatorFunction : 'defaultBanner',
-    command : reloadBanner
+    command : informedArguments.reloadBanner.informed
   };
 
   defaultFilesRelation[genericAudioThumb] = {
     generatorFunction : 'audioThumb',
-    command : reloadAudioThumb
+    command : informedArguments.reloadAudio.informed
   };
 
 }
@@ -601,7 +645,7 @@ function checkForDefaultPages() {
   generator = require('./engine/generator');
   require('./engine/templateHandler').loadTemplates();
 
-  if (reload) {
+  if (informedArguments.reload.informed) {
     regenerateAll();
     return;
   }
@@ -734,7 +778,7 @@ function initTorControl() {
 
       if (createAccount) {
         createAccountFunction();
-      } else if (setRole) {
+      } else if (informedArguments.setRole.informed) {
         setRoleFunction();
       } else {
         checkForDefaultPages();

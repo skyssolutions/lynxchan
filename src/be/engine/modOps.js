@@ -14,6 +14,7 @@ var reports = db.reports();
 var miscOps = require('./miscOps');
 var settings = require('../boot').getGeneralSettings();
 var blockTor = settings.blockTor;
+var blockProxy = settings.blockProxy;
 var disableFloodCheck = settings.disableFloodCheck;
 var multipleReports = settings.multipleReports;
 var lang = require('./langOps').languagePack();
@@ -302,6 +303,8 @@ exports.checkForBan = function(req, boardUri, callback) {
       callback(error);
     } else if (req.isTor) {
       callback(blockTor ? lang.errBlockedTor : null);
+    } else if (req.isProxy) {
+      callback(blockProxy ? lang.errBlockedProxy : null);
     } else {
 
       var ip = logger.ip(req);

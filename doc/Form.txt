@@ -708,6 +708,7 @@ Parameters:
     archiveLevel(Number): level of archiving. 0 = no archives. 1 = only pages. 2 = pages and files.
     maxTags(Number): maximum amount of tags per board.
     disableFloodCheck(Boolean): disables flood checks.
+    blockProxy(Boolean): blocks proxy users.
 
 ------------------------------------------------------------------------------------------
 

@@ -23,8 +23,8 @@ It accepts the following arguments:
 * `--reload-notfound`, `-rn`: will rebuild 404 page on boot.
 * `--reload-thumb`, `-rt`: will rebuild generic thumbnail on boot.
 * `--reload-audio`, `-ra`: will rebuild generic audio thumb on boot.
-* `--rebuild-spoiler`, `-rs`: will rebuild spoiler image on boot.
-* `--rebuild-maintenance`, `-rm`: will rebuild maintenance page on boot.
+* `--reload-spoiler`, `-rs`: will rebuild spoiler image on boot.
+* `--reload-maintenance`, `-rm`: will rebuild maintenance page on boot.
 * `--no-daemon`, `-nd`: will not start listening. For rebuilding pages while having a server running.
 * `--create-account`, `-ca`: will create a new account. Require the use of the login, role and password parameters.
 * `--login`, `-l`: informs a login.
@@ -93,6 +93,7 @@ Settings files that goes into the settings directory:
 * `serveArchive`(Boolean): indicates that the application will serve the archive on sub-domain `archive`.
 * `maxBoardTags`(Number): maximum amount of tags each board can have. Defaults to 5.
 * `disableFloodCheck`(Boolean): indicates if the flood checks should be disabled. This shouldn't affect performance at all, since it's meant to be used for benchmarking purposes.
+* `blockProxy`(Boolean): indicates that proxy users are blocked.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

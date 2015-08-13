@@ -1597,6 +1597,10 @@ comboArchive:
     use: have children appended to it.
     description: indicates the level of archiving enabled.
 
+checkboxBlockProxy:
+    use: might be turned on.
+    description: indicates if proxy users are blocked.
+
 ------------------------------------------------------------------------------------------
 
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.

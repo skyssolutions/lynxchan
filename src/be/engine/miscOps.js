@@ -453,6 +453,10 @@ function getParametersArray() {
     type : 'boolean',
     setting : 'multipleReports'
   }, {
+    param : 'blockProxy',
+    type : 'boolean',
+    setting : 'blockProxy'
+  }, {
     param : 'ssl',
     type : 'boolean',
     setting : 'ssl'

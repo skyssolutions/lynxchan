@@ -251,5 +251,6 @@
   "errBoardLocked": "This board is locked for thread creation because it exceeded it's hourly limit for thread creation. Try again later.",
   "errDeniedSpoilerManagement": "You are not allowed to manage the custom spoiler of this board.",
   "msgSpoilerSet": "Custom spoiler saved.",
-  "msgSpoilerDeleted": "Custom spoiler deleted."
+  "msgSpoilerDeleted": "Custom spoiler deleted.",
+  "errBlockedProxy": "Proxy users are blocked."
 }

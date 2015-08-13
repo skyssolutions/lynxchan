@@ -216,6 +216,10 @@ var siteSettingsRelation = {
     setting : 'multipleReports',
     type : 'boolean'
   },
+  checkboxBlockProxy : {
+    setting : 'blockProxy',
+    type : 'boolean'
+  },
   checkboxDisableFloodCheck : {
     setting : 'disableFloodCheck',
     type : 'boolean'
@@ -1853,7 +1857,12 @@ function setBoardCell(board, boardCell) {
   labelDescription.innerHTML = board.boardDescription;
 
   var labelTags = boardCell.getElementsByClassName('labelTags')[0];
-  labelTags.innerHTML = board.tags.join(', ');
+
+  if (board.tags) {
+    labelTags.innerHTML = board.tags.join(', ');
+  } else {
+    removeElement(labelTags);
+  }
 }
 
 function setPages(document, pageCount) {

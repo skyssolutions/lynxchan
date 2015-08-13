@@ -668,7 +668,7 @@ function createThread(req, userData, parameters, board, threadId, wishesToSign,
       callback(error);
     } else {
 
-      if (!req.isTor) {
+      if (!req.isTor && !req.isProxy) {
         recordFlood(ip);
       }
 
@@ -1230,7 +1230,7 @@ function createPost(req, parameters, userData, postId, thread, board,
       cb(error);
     } else {
 
-      if (!req.isTor) {
+      if (!req.isTor && !req.isProxy) {
         recordFlood(ip);
       }
 
