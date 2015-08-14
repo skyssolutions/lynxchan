@@ -137,24 +137,13 @@ exports.archiveData = function(data, destination, mime, meta, callback) {
     metadata : meta
   });
 
-  exports.removeFiles(destination, function clearedFile(error) {
+  gs.open(function openedGs(error, gs) {
+
     if (error) {
       callback(error);
     } else {
-
-      // style exception, the parent callback is too simple
-      gs.open(function openedGs(error, gs) {
-
-        if (error) {
-          callback(error);
-        } else {
-          writeDataOnOpenFile(gs, data, callback);
-        }
-      });
-
+      writeDataOnOpenFile(gs, data, callback);
     }
-    // style exception, the parent callback is too simple
-
   });
 
 };
@@ -187,22 +176,12 @@ exports.writeFile = function(path, destination, mime, meta, callback) {
     metadata : meta
   });
 
-  exports.removeFiles(destination, function clearedFile(error) {
+  gs.open(function openedGs(error, gs) {
+
     if (error) {
       callback(error);
     } else {
-
-      // style exception, too simple
-      gs.open(function openedGs(error, gs) {
-
-        if (error) {
-          callback(error);
-        } else {
-          writeFileOnOpenFile(gs, path, callback);
-        }
-      });
-      // style exception, too simple
-
+      writeFileOnOpenFile(gs, path, callback);
     }
   });
 
@@ -220,11 +199,13 @@ exports.removeFiles = function(name, callback) {
 };
 
 // start of outputting file
-function shouldOutput304(lastSeen, filestats) {
+function shouldOutput304(lastSeen, stats) {
 
-  var mTimeMatches = lastSeen === filestats.uploadDate.toString();
+  var lastM = stats.metadata.lastModified || stats.uploadDate;
 
-  return mTimeMatches && !filestats.metadata.status;
+  var mTimeMatches = lastSeen === lastM.toString();
+
+  return mTimeMatches && !stats.metadata.status;
 }
 
 // retry means it has already failed to get a page and now is trying to get the
@@ -241,6 +222,7 @@ exports.outputFile = function(file, req, res, callback, retry) {
     filename : file
   }, {
     uploadDate : 1,
+    'metadata.lastModified' : 1,
     'metadata.status' : 1,
     'metadata.type' : 1,
     length : 1,

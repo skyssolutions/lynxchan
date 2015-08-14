@@ -38,36 +38,26 @@ function writeDataOnOpenFile(gs, data, callback, archive, meta, mime,
 
 }
 
-exports.writeData = function(data, destination, mime, meta, callback, archive) {
+exports.writeData = function(data, dest, mime, meta, callback, archive) {
+
+  meta.lastModified = new Date();
 
   if (verbose) {
-    console.log('Writing data on gridfs under \'' + destination + '\'');
+    console.log('Writing data on gridfs under \'' + dest + '\'');
   }
 
-  var gs = mongo.GridStore(conn, destination, 'w', {
+  var gs = mongo.GridStore(conn, dest, 'w', {
     'content_type' : mime,
     metadata : meta
   });
 
-  exports.removeFiles(destination, function clearedFile(error) {
+  gs.open(function openedGs(error, gs) {
+
     if (error) {
       callback(error);
     } else {
-
-      // style exception, the parent callback is too simple
-      gs.open(function openedGs(error, gs) {
-
-        if (error) {
-          callback(error);
-        } else {
-          writeDataOnOpenFile(gs, data, callback, archive, meta, mime,
-              destination);
-        }
-      });
-
+      writeDataOnOpenFile(gs, data, callback, archive, meta, mime, dest);
     }
-    // style exception, the parent callback is too simple
-
   });
 
 };
@@ -92,36 +82,27 @@ function writeFileOnOpenFile(gs, path, callback, archive, destination, meta,
   });
 }
 
-exports.writeFile = function(path, destination, mime, meta, callback, archive) {
+exports.writeFile = function(path, dest, mime, meta, callback, archive) {
+
+  meta.lastModified = new Date();
 
   if (verbose) {
     var message = 'Writing ' + mime + ' file on gridfs under \'';
-    message += destination + '\'';
+    message += dest + '\'';
     console.log(message);
   }
 
-  var gs = mongo.GridStore(conn, destination, 'w', {
+  var gs = mongo.GridStore(conn, dest, 'w', {
     'content_type' : mime,
     metadata : meta
   });
 
-  exports.removeFiles(destination, function clearedFile(error) {
+  gs.open(function openedGs(error, gs) {
+
     if (error) {
       callback(error);
     } else {
-
-      // style exception, too simple
-      gs.open(function openedGs(error, gs) {
-
-        if (error) {
-          callback(error);
-        } else {
-          writeFileOnOpenFile(gs, path, callback, archive, destination, meta,
-              mime);
-        }
-      });
-      // style exception, too simple
-
+      writeFileOnOpenFile(gs, path, callback, archive, dest, meta, mime);
     }
   });
 
@@ -291,7 +272,8 @@ function streamRange(range, gs, header, res, stats, callback) {
 
 function getHeader(stats, req, cookies) {
   var header = miscOps.corsHeader(stats.contentType);
-  header.push([ 'last-modified', stats.uploadDate.toString() ]);
+  var lastM = stats.metadata.lastModified || stats.uploadDate;
+  header.push([ 'last-modified', lastM.toString() ]);
 
   setExpiration(header, stats);
 
@@ -333,11 +315,13 @@ exports.streamFile = function(stats, req, callback, cookies, res, optCon) {
 
 };
 
-function shouldOutput304(lastSeen, filestats) {
+function shouldOutput304(lastSeen, stats) {
 
-  var mTimeMatches = lastSeen === filestats.uploadDate.toString();
+  var lastM = stats.metadata.lastModified || stats.uploadDate;
 
-  return mTimeMatches && !disable304 && !filestats.metadata.status;
+  var mTimeMatches = lastSeen === lastM.toString();
+
+  return mTimeMatches && !disable304 && !stats.metadata.status;
 }
 
 // retry means it has already failed to get a page and now is trying to get the
@@ -354,6 +338,7 @@ exports.outputFile = function(file, req, res, callback, cookies, retry) {
     filename : file
   }, {
     uploadDate : 1,
+    'metadata.lastModified' : 1,
     'metadata.status' : 1,
     'metadata.type' : 1,
     length : 1,
