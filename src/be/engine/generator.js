@@ -244,7 +244,15 @@ exports.frontPage = function(callback) {
     console.log('Generating front-page');
   }
 
-  boards.find({}, {
+  boards.find({
+    settings : {
+      $not : {
+        $elemMatch : {
+          $in : [ 'unindex' ]
+        }
+      }
+    }
+  }, {
     boardUri : 1,
     _id : 0,
     boardName : 1

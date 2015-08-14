@@ -43,7 +43,8 @@ var boardSettingsRelation = {
   forceAnonymity : 'forceAnonymityCheckbox',
   allowCode : 'allowCodeCheckbox',
   archive : 'enableArchiveCheckbox',
-  early404 : 'early404Checkbox'
+  early404 : 'early404Checkbox',
+  unindex : 'unindexCheckbox'
 };
 
 var boardFieldsRelation = {

@@ -354,6 +354,7 @@ Parameters:
         forceAnonymity: the name input is disabled on posting.
         allowCode: the use of [code] is allowed.
         early404: will delete threads after one hour if they do not receive at least 5 replies.
+        unindex: the board will not be displayed on the top boards or the boards list.
 
 ------------------------------------------------------------------------------------------
 

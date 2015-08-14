@@ -381,6 +381,7 @@ Parameters:
     boardMessage: new message of the board. 256 characters.
     early404: will delete threads after one hour if they do not receive at least 5 replies.
     tags(Array): array of tags to be used on this board.
+    unindex: if any value is passed, the board will not be displayed on the top boards or the boards list.
 
 ------------------------------------------------------------------------------------------
 

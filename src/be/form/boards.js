@@ -26,7 +26,15 @@ exports.process = function(req, res) {
       var toSkip = (parameters.page - 1) * pageSize;
 
       // style exception, too simple
-      boards.find({}, {
+      boards.find({
+        settings : {
+          $not : {
+            $elemMatch : {
+              $in : [ 'unindex' ]
+            }
+          }
+        }
+      }, {
         _id : 0,
         boardName : 1,
         boardUri : 1,
@@ -40,7 +48,7 @@ exports.process = function(req, res) {
         boardUri : 1
       }).skip(toSkip).limit(pageSize).toArray(function(error, foundBoards) {
         if (error) {
-          formOps.outpuError(error, 500, res);
+          formOps.outputError(error, 500, res);
         } else {
           res.writeHead(200, miscOps.corsHeader('text/html'));
 

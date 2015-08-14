@@ -288,7 +288,7 @@ function loadAndTestTemplates(path, templateSettings) {
             'addVolunteerBoardIdentifier', 'transferBoardIdentifier',
             'deletionIdentifier', 'reportDiv', 'closedReportsLink',
             'bannerManagementLink', 'boardNameField', 'boardDescriptionField',
-            'boardMessageField', 'boardSettingsIdentifier',
+            'boardMessageField', 'boardSettingsIdentifier', 'unindexCheckbox',
             'disableIdsCheckbox', 'rangeBansLink', 'disableCaptchaCheckbox',
             'filterManagementLink', 'anonymousNameField', 'boardLabel',
             'customCssIdentifier', 'ruleManagementLink', 'allowCodeCheckbox',
