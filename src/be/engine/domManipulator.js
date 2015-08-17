@@ -1367,6 +1367,12 @@ function setGlobalManagementLinks(userRole, document) {
   if (userRole !== 0) {
     removeElement(document.getElementById('globalSettingsLink'));
   }
+
+  var deleteArchive = userRole < 2;
+
+  if (!deleteArchive) {
+    removeElement(document.getElementById('archiveDeletionLink'));
+  }
 }
 
 exports.globalManagement = function(userRole, userLogin, staff, reports) {
@@ -2320,7 +2326,7 @@ exports.globalSettings = function(settings) {
 
   try {
 
-    var document = jsdom(templateHandler.globalSettings);
+    var document = jsdom(templateHandler.globalSettingsPage);
 
     for ( var key in siteSettingsRelation) {
 
@@ -2354,26 +2360,67 @@ exports.globalSettings = function(settings) {
     return serializer(document);
 
   } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
 
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
   }
 };
 // } Section 2.13: Global settings
+
+// This page COULD be static, since it doesn't need any manipulation.
+// However, given how often it will be accessed and how it might require
+// manipulation in the future, I will leave it as a dynamic page.
+// Section 2.14: Archive deletion {
+exports.archiveDeletion = function() {
+  try {
+    var document = jsdom(templateHandler.archiveDeletionPage);
+
+    document.title = lang.titArchiveDeletion;
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+
+};
+// } Section 2.14: Archive deletion
 
 // Section 2: Dynamic pages
 
 // Section 3: Static pages {
 exports.notFound = function(callback) {
 
-  var document = jsdom(templateHandler.notFoundPage);
+  try {
+    var document = jsdom(templateHandler.notFoundPage);
 
-  document.title = lang.titNotFound;
+    document.title = lang.titNotFound;
 
-  gridFs.writeData(serializer(document), '/404.html', 'text/html', {
-    status : 404
-  }, callback);
+    gridFs.writeData(serializer(document), '/404.html', 'text/html', {
+      status : 404
+    }, callback);
+  } catch (error) {
+    callback(error);
+  }
+
 };
 
 exports.login = function(callback) {
+
   try {
     var document = jsdom(templateHandler.loginPage);
 
@@ -2387,16 +2434,7 @@ exports.login = function(callback) {
         callback);
 
   } catch (error) {
-
-    if (verbose) {
-      console.log(error);
-    }
-
-    if (debug) {
-      throw error;
-    }
-
-    return error.toString();
+    callback(error);
   }
 
 };

@@ -279,7 +279,7 @@ function loadAndTestTemplates(path, templateSettings) {
         template : 'gManagement',
         fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
             'reportDiv', 'bansLink', 'rangeBansLink', 'hashBansLink',
-            'globalSettingsLink' ]
+            'globalSettingsLink', 'archiveDeletionLink' ]
       },
       {
         template : 'bManagement',
@@ -378,7 +378,7 @@ function loadAndTestTemplates(path, templateSettings) {
         fields : [ 'threadsDiv' ]
       },
       {
-        template : 'globalSettings',
+        template : 'globalSettingsPage',
         fields : [ 'fieldAddress', 'fieldPort', 'fieldFePath', 'fieldPageSize',
             'fieldLatestPostsCount', 'fieldAutoSageLimit', 'fieldThreadLimit',
             'fieldTempDir', 'fieldSenderEmail', 'fieldCaptchaExpiration',
@@ -394,6 +394,9 @@ function loadAndTestTemplates(path, templateSettings) {
             'checkboxMultipleReports', 'checkboxDisableAccountCreation',
             'checkboxRestrictBoardCreation', 'checkboxServeArchive',
             'fieldMaxTags', 'checkboxDisableFloodCheck', 'checkboxBlockProxy' ]
+      }, {
+        template : 'archiveDeletionPage',
+        fields : []
       } ];
 
   var errors = [];

@@ -6,6 +6,7 @@ var files;
 var mongo = require('mongodb');
 var gridFsHandler;
 var formOps;
+var lang;
 var miscOps;
 var domManipulator;
 var boot = require('./boot');
@@ -319,5 +320,109 @@ exports.boardArquive = function(board, req, res) {
 
     }
   });
+
+};
+
+function checkForDeletionError(userData, callback) {
+
+  var allowed = userData.globalRole < 2;
+
+  if (!lang) {
+    lang = require('./engine/langOps').languagePack();
+  }
+
+  if (!allowed) {
+    callback(lang.errDeniedArchiveDeletion);
+    return true;
+
+  } else if (!loaded) {
+    callback(lang.errArchiveNotLoaded);
+    return true;
+
+  }
+
+  return false;
+}
+
+exports.deleteBoard = function(userData, boardUri, callback) {
+
+  if (checkForDeletionError(userData, callback)) {
+    return;
+  }
+
+  files.aggregate([ {
+    $match : {
+      'metadata.boardUri' : boardUri
+    }
+  }, {
+    $group : {
+      _id : 0,
+      files : {
+        $addToSet : '$filename'
+      }
+    }
+  } ], function threads(error, results) {
+    if (error) {
+      callback(error);
+    } else {
+
+      var files = results.length ? results[0].files : [];
+
+      exports.removeFiles(files, callback);
+    }
+  });
+
+};
+
+exports.deleteThread = function(userData, parameters, callback) {
+
+  if (checkForDeletionError(userData, callback)) {
+    return;
+  }
+
+  files.aggregate([ {
+    $match : {
+      'metadata.boardUri' : parameters.boardUri,
+      'metadata.threadId' : +parameters.threadId
+    }
+  }, {
+    $group : {
+      _id : 0,
+      files : {
+        $addToSet : '$filename'
+      }
+    }
+  } ], function gotFiles(error, results) {
+    if (error) {
+      callback(error);
+    } else {
+
+      var files = results.length ? results[0].files : [];
+
+      exports.removeFiles(files, callback);
+    }
+  });
+
+};
+
+exports.deleteUpload = function(userData, parameters, callback) {
+
+  if (checkForDeletionError(userData, callback)) {
+    return;
+  }
+
+  var toDelete = [];
+
+  var splitNames = parameters.filename.toString().split(',');
+
+  for (var i = 0; i < splitNames.length; i++) {
+    var part = splitNames[i].trim();
+
+    if (part.length) {
+      toDelete.push('/' + parameters.boardUri + '/media/' + part);
+    }
+  }
+
+  exports.removeFiles(toDelete, callback);
 
 };

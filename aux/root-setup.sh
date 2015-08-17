@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 echo "Do you wish to install the command lynxchan for all users using a soft-link? (y,n)"
 read answerCommand
 

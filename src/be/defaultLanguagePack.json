@@ -252,5 +252,8 @@
   "errDeniedSpoilerManagement": "You are not allowed to manage the custom spoiler of this board.",
   "msgSpoilerSet": "Custom spoiler saved.",
   "msgSpoilerDeleted": "Custom spoiler deleted.",
-  "errBlockedProxy": "Proxy users are blocked."
+  "errBlockedProxy": "Proxy users are blocked.",
+  "titArchiveDeletion": "Archive deletion",
+  "errDeniedArchiveDeletion": "You are not allowed to delete archived content.",
+  "msgArchiveRemoved": "Content removed from archive."
 }

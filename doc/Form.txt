@@ -724,4 +724,47 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::55
+
+Name: archiveDeletion
+
+Description: displays the page used to delete content from archive. Reserved for root and admins. Requires authentication.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::56
+
+Name: deleteArchivedBoard
+
+Description: deletes all files and threads from an archived board. Reserved for root and admins. Requires authentication.
+
+Parameters:
+    boardUri: uri of the board to be removed from files.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::57
+
+Name: deleteArchivedThread
+
+Description: deletes a thread from the archives. Reserved for root and admins. Requires authentication.
+
+Parameters:
+    boardUri: uri of the board containing the thread.
+    threadId: id of the thread to be removed.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::58
+
+Name: deleteArchivedUpload
+
+Description: deletes an upload from the archives. Reserved for root and admins. Requires authentication.
+
+Parameters:
+    boardUri: uri of the board containing the thread.
+    filename(Array): names of the files to be removed.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
