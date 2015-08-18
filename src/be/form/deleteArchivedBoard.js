@@ -10,8 +10,7 @@ function removeArchivedBoard(userData, parameters, res) {
     return;
   }
 
-  archive.deleteBoard(userData, parameters.boardUri, function reportClosed(
-      error, global, board) {
+  archive.deleteBoard(userData, parameters, function reportClosed(error) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {

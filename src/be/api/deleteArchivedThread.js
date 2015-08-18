@@ -1,23 +1,21 @@
 'use strict';
 
-var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var apiOps = require('../engine/apiOps');
 var archive = require('../archive');
 var mandatoryParameters = [ 'boardUri', 'threadId' ];
 
 function removeArchivedThread(userData, parameters, res) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+  if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
   }
 
   archive.deleteThread(userData, parameters, function reportClosed(error) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      apiOps.outputError(error, res);
     } else {
 
-      formOps
-          .outputResponse(lang.msgArchiveRemoved, '/archiveDeletion.js', res);
+      apiOps.outputResponse(null, null, 'ok', res);
     }
   });
 
@@ -25,7 +23,7 @@ function removeArchivedThread(userData, parameters, res) {
 
 exports.process = function(req, res) {
 
-  formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
+  apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
     removeArchivedThread(userData, parameters, res);

@@ -4,9 +4,11 @@ var conn;
 var files;
 
 var mongo = require('mongodb');
+var logger = require('./logger');
 var gridFsHandler;
 var formOps;
 var lang;
+var logs;
 var miscOps;
 var domManipulator;
 var boot = require('./boot');
@@ -100,6 +102,7 @@ exports.init = function(callback) {
 
           loaded = true;
 
+          logs = require('./db').logs();
           formOps = require('./engine/formOps');
           gridFsHandler = require('./engine/gridFsHandler');
           domManipulator = require('./engine/domManipulator');
@@ -344,15 +347,49 @@ function checkForDeletionError(userData, callback) {
   return false;
 }
 
-exports.deleteBoard = function(userData, boardUri, callback) {
+function logArchiveDeletion(userData, parameters, callback) {
+
+  var parts = lang.logArchiveDeletion;
+
+  var msg = parts.startPiece.replace('{$login}', userData.login);
+
+  if (parameters.threadId) {
+    msg += parts.threadPiece.replace('{$thread}', parameters.threadId);
+  } else if (parameters.files) {
+    msg += parts.filesPiece.replace('{$files}', parameters.files.join(', '));
+  } else {
+    msg += parts.boardPiece;
+  }
+
+  msg = msg.replace('{$board}', parameters.boardUri);
+
+  logs.insertOne({
+    user : userData.login,
+    type : 'archiveDeletion',
+    time : new Date(),
+    description : msg,
+    global : true,
+    boardUri : parameters.boardUri
+  }, function insertedLog(error) {
+
+    if (error) {
+      logger.printLogError(msg, error);
+    }
+
+    callback();
+  });
+}
+
+exports.deleteBoard = function(userData, parameters, callback) {
 
   if (checkForDeletionError(userData, callback)) {
+    console.log('del error');
     return;
   }
 
   files.aggregate([ {
     $match : {
-      'metadata.boardUri' : boardUri
+      'metadata.boardUri' : parameters.boardUri
     }
   }, {
     $group : {
@@ -366,9 +403,18 @@ exports.deleteBoard = function(userData, boardUri, callback) {
       callback(error);
     } else {
 
-      var files = results.length ? results[0].files : [];
+      if (!results.length) {
+        callback();
+        return;
+      }
 
-      exports.removeFiles(files, callback);
+      exports.removeFiles(results[0].files, function removedFiles(error) {
+        if (error) {
+          callback(error);
+        } else {
+          logArchiveDeletion(userData, parameters, callback);
+        }
+      });
     }
   });
 
@@ -397,9 +443,20 @@ exports.deleteThread = function(userData, parameters, callback) {
       callback(error);
     } else {
 
-      var files = results.length ? results[0].files : [];
+      if (!results.length) {
+        callback();
+        return;
+      }
 
-      exports.removeFiles(files, callback);
+      // style exception, too simple
+      exports.removeFiles(results[0].files, function removedFiles(error) {
+        if (error) {
+          callback(error);
+        } else {
+          logArchiveDeletion(userData, parameters, callback);
+        }
+      });
+      // style exception, too simple
     }
   });
 
@@ -423,6 +480,18 @@ exports.deleteUpload = function(userData, parameters, callback) {
     }
   }
 
-  exports.removeFiles(toDelete, callback);
+  if (!toDelete.length) {
+    callback();
+    return;
+  }
 
+  exports.removeFiles(toDelete, function removedFiles(error) {
+    if (error) {
+      callback(error);
+    } else {
+      parameters.files = toDelete;
+
+      logArchiveDeletion(userData, parameters, callback);
+    }
+  });
 };

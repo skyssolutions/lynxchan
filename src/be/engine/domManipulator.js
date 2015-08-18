@@ -59,6 +59,7 @@ var boardFieldsRelation = {
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 var availableLogTypes = {
   '' : lang.guiAllTypes,
+  archiveDeletion : lang.guiTypeArchiveDeletion,
   ban : lang.guiTypeBan,
   rangeBan : lang.guiTypeRange,
   banLift : lang.guiTypeBanLift,

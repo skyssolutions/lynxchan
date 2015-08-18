@@ -245,3 +245,9 @@ errBlockedProxy: error throw when proxy users are blocked.
 titArchiveDeletion: title of the archive deletion page.
 errDeniedArchiveDeletion: error thrown when the user is not allowed to delete content from the archive.
 msgArchiveRemoved: message displayed after removing content from the archives.
+guiTypeArchiveDeletion: label used to select logs of archive deletion.
+logArchiveDeletion: object containing the pieces used for the log message when deleting something from the archives. Contains the following fields:
+    startPiece: piece used at the start of the message. Replaces: {$login}
+    boardPiece: piece used when a board is being deleted whole from the archives. Replaces: {$board}
+    threadPiece: piece used when a thread is being deleted from the archives. Replaces: {$board}, {$thread}
+    filesPiece: piece used when files are being deleted from the archives. Replaces: {$board}, {$files}
