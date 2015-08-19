@@ -203,8 +203,8 @@ function readParts(currentPosition, res, range, gs, callback) {
 
   gs.read(toRead, function readChunk(error, chunk) {
     if (error) {
-      console.log(error);
       callback(error);
+      gs.close();
     } else {
       if (verbose) {
         console.log('Read ' + chunk.length + ' bytes.');
@@ -219,6 +219,7 @@ function readParts(currentPosition, res, range, gs, callback) {
         if (verbose) {
           console.log('Finished reading.');
         }
+
         finishPartialStream(res, gs, callback);
 
       } else {
@@ -262,6 +263,7 @@ function streamRange(range, gs, header, res, stats, callback) {
   gs.seek(range.start, function skipped(error) {
     if (error) {
       callback(error);
+      gs.close();
     } else {
       readParts(range.start, res, range, gs, callback);
 
@@ -302,8 +304,24 @@ exports.streamFile = function(stats, req, callback, cookies, res, optCon) {
 
         header.push([ 'Content-Length', stats.length ]);
         res.writeHead(stats.metadata.status || 200, header);
-        gs.stream(true).pipe(res);
-        callback();
+
+        var stream = gs.stream();
+
+        stream.on('data', function(chunk) {
+          res.write(chunk);
+        });
+
+        stream.on('error', function(error) {
+          callback(error);
+          gs.close();
+        });
+
+        stream.on('end', function() {
+
+          gs.close();
+          res.end();
+          callback();
+        });
 
       } else {
         streamRange(range, gs, header, res, stats, callback);
