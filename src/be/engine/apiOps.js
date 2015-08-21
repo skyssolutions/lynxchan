@@ -341,6 +341,10 @@ exports.checkForBan = function(req, boardUri, res, callback) {
     if (error) {
       callback(error);
     } else if (ban) {
+      if (ban.range) {
+        ban.range = ban.range.join('.');
+      }
+
       exports.outputResponse(null, {
         reason : ban.reason,
         range : ban.range,

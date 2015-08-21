@@ -49,12 +49,6 @@ var editArguments = [ {
   removeHTML : true
 } ];
 
-var rangeBanArguments = [ {
-  field : 'range',
-  length : 7,
-  removeHTML : true
-} ];
-
 var hashBanArguments = [ {
   field : 'hash',
   length : 32,
@@ -1206,8 +1200,21 @@ exports.setThreadSettings = function(userData, parameters, callback) {
 // Section 3.6: Range ban{
 function placeRangeBan(userData, parameters, callback) {
 
+  var processedRange = [];
+
+  var informedRange = parameters.range.toString().trim().split('.');
+
+  for (var i = 0; i < informedRange.length && i < 8; i++) {
+
+    var part = +informedRange[i];
+
+    if (!isNaN(part) && part <= 255 && part >= 0) {
+      processedRange.push(part);
+    }
+  }
+
   var rangeBan = {
-    range : parameters.range,
+    range : processedRange,
     appliedBy : userData.login,
   };
 
@@ -1254,8 +1261,6 @@ function placeRangeBan(userData, parameters, callback) {
 }
 
 exports.placeRangeBan = function(userData, parameters, callback) {
-
-  miscOps.sanitizeStrings(parameters, rangeBanArguments);
 
   var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 

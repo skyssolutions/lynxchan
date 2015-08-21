@@ -6,14 +6,15 @@
     "type": "git",
     "url": "https://gitlab.com/mrseth/LynxChan.git"
   },
-  "version": "1.0.5",
+  "version": "1.0.6",
   "devDependencies": {
     "mongodb": "latest",
     "gm": "latest",
     "jsdom": "latest",
     "nodemailer": "latest",
     "multiparty": "latest",
-    "bcrypt": "latest"
+    "bcrypt": "latest",
+    "ip-address": "latest"
   },
   "author": "Stephen Lynx",
   "license": "MIT"

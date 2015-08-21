@@ -1,5 +1,7 @@
 'use strict';
 
+var ipv6 = require('ip-address').v6;
+
 exports.addMinutes = function(date, amount) {
   return new Date(date.getTime() + amount * 60000);
 };
@@ -58,8 +60,24 @@ exports.formatedTime = function(time) {
   return hourString + ':' + minuteString + ':' + secondString;
 };
 
+exports.convertIpToArray = function convertIpToArray(ip) {
+
+  if (ip.match(/\d+.\d+.\d+.\d+/)) {
+    return ipv6.Address.fromAddress4(ip).toUnsignedByteArray().slice(-4);
+  } else {
+    return new ipv6.Address(ip).toUnsignedByteArray();
+  }
+};
+
 exports.ip = function(req) {
-  return req.isTor || req.isProxy ? null : req.connection.remoteAddress;
+  return req.isTor || req.isProxy ? null : exports
+      .convertIpToArray(req.connection.remoteAddress);
+};
+
+exports.extractRange = function(ip) {
+
+  return ip ? ip.slice(0, ip.length / 2) : null;
+
 };
 
 // It just gets the formated date and put the formated time after it with an

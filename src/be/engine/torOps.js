@@ -2,6 +2,7 @@
 
 var torIps = require('../db').torIps();
 var boot = require('../boot');
+var logger = require('../logger');
 var torDebug = boot.torDebug();
 var settings = boot.getGeneralSettings();
 var verbose = settings.verbose;
@@ -27,8 +28,12 @@ function processData(data, callback) {
 
   var operations = [];
 
+  var convertedIps = [];
+
   for (var i = 0; i < match.length; i++) {
-    var ip = match[i];
+    var ip = logger.convertIpToArray(match[i]);
+
+    convertedIps.push(ip);
 
     operations.push({
       updateOne : {
@@ -50,7 +55,7 @@ function processData(data, callback) {
     deleteMany : {
       filter : {
         ip : {
-          $nin : match
+          $nin : convertedIps
         }
       }
     }

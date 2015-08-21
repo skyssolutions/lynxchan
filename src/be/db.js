@@ -1,6 +1,6 @@
 'use strict';
 
-var dbVersion = 3;
+var dbVersion = 4;
 
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
@@ -81,6 +81,7 @@ function registerLatestVersion(callback) {
 }
 
 // Implement upgrades here. The version is the current version.
+// start of file mime pre-aggregation from version 1 to 2
 function setPostingPreAggregatedFileMime(posting, collection, callback) {
 
   var files = [];
@@ -195,7 +196,9 @@ function setThreadsPreAggregatedFileMime(callback, cursor) {
   });
 
 }
+// end of file mime pre-aggregation from version 1 to 2
 
+// start of board salt creation from version 2 to 3
 function setBoardIpSalt(callback) {
 
   cachedBoards.find({}, {}).toArray(
@@ -230,6 +233,251 @@ function setBoardIpSalt(callback) {
       });
 
 }
+// end of board salt creation from version 2 to 3
+
+// start of ip conversion from version 3 to 4
+function convertIp(ip) {
+  var newIp = [];
+
+  var converted = ip.trim().split('.');
+
+  for (var i = 0; i < converted.length; i++) {
+    var part = +converted[i];
+
+    if (!isNaN(part) && part <= 255 && part >= 0) {
+      newIp.push(part);
+    }
+  }
+
+  return newIp;
+
+}
+
+function migrateTorIps(callback) {
+
+  cachedTorIps.find().toArray(function gotTorIps(error, ips) {
+    if (error) {
+      callback(error);
+    } else {
+
+      var operations = [];
+
+      for (var i = 0; i < ips.length; i++) {
+        var ip = ips[i];
+
+        operations.push({
+          updateOne : {
+            filter : {
+              _id : new ObjectID(ip._id)
+            },
+            update : {
+              $set : {
+                ip : convertIp(ip.ip)
+              }
+            }
+          }
+        });
+
+      }
+
+      if (operations.length) {
+        cachedTorIps.bulkWrite(operations, callback);
+
+      } else {
+        callback();
+      }
+
+    }
+  });
+
+}
+
+function fixTorIpsIndex(callback) {
+
+  cachedTorIps.dropIndex('ip_1', function indexesDropped(error) {
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      cachedTorIps.ensureIndex({
+        ip : 1
+      }, function setIndex(error, index) {
+        if (error) {
+          callback(error);
+
+        } else {
+          migrateTorIps(callback);
+        }
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+}
+
+function migrateBanIps(callback) {
+
+  cachedBans.find({}, {
+    ip : 1,
+    range : 1
+  }).toArray(function gotBans(error, bans) {
+    if (error) {
+      callback(error);
+    } else {
+
+      var operations = [];
+
+      for (var i = 0; i < bans.length; i++) {
+        var ban = bans[i];
+
+        var setBlock;
+
+        if (ban.ip) {
+          setBlock = {
+            ip : convertIp(ban.ip)
+          };
+        } else {
+          setBlock = {
+            range : convertIp(ban.range)
+          };
+        }
+
+        operations.push({
+          updateOne : {
+            filter : {
+              _id : new ObjectID(ban._id)
+            },
+            update : {
+              $set : setBlock
+            }
+          }
+        });
+
+      }
+
+      if (operations.length) {
+        // style exception, too simple
+        cachedBans.bulkWrite(operations, function migratedIps(error) {
+          if (error) {
+            callback(error);
+          } else {
+            fixTorIpsIndex(callback);
+          }
+        });
+        // style exception, too simple
+
+      } else {
+        fixTorIpsIndex(callback);
+      }
+
+    }
+  });
+
+}
+
+function migratePostIps(callback) {
+
+  cachedPosts.find({
+    ip : {
+      $exists : true
+    }
+  }, {
+    ip : 1
+  }).toArray(function gotPosts(error, posts) {
+    if (error) {
+      callback(error);
+    } else {
+      var operations = [];
+
+      for (var i = 0; i < posts.length; i++) {
+        var post = posts[i];
+
+        operations.push({
+          updateOne : {
+            filter : {
+              _id : new ObjectID(post._id)
+            },
+            update : {
+              $set : {
+                ip : convertIp(post.ip)
+              }
+            }
+          }
+        });
+      }
+
+      if (operations.length) {
+        // style exception, too simple
+        cachedPosts.bulkWrite(operations, function wroteIps(error) {
+          if (error) {
+            callback(error);
+          } else {
+            migrateBanIps(callback);
+          }
+        });
+        // style exception, too simple
+
+      } else {
+        migrateBanIps(callback);
+      }
+    }
+  });
+}
+
+function migrateThreadIps(callback) {
+
+  cachedThreads.find({
+    ip : {
+      $exists : true
+    }
+  }, {
+    ip : 1
+  }).toArray(function gotThreads(error, threads) {
+    if (error) {
+      callback(error);
+    } else {
+
+      var operations = [];
+
+      for (var i = 0; i < threads.length; i++) {
+        var thread = threads[i];
+
+        operations.push({
+          updateOne : {
+            filter : {
+              _id : new ObjectID(thread._id)
+            },
+            update : {
+              $set : {
+                ip : convertIp(thread.ip)
+              }
+            }
+          }
+        });
+      }
+
+      if (operations.length) {
+
+        // style exception, too simple
+        cachedThreads.bulkWrite(operations, function wroteIps(error) {
+          if (error) {
+            callback(error);
+          } else {
+            migratePostIps(callback);
+          }
+        });
+        // style exception, too simple
+
+      } else {
+        migratePostIps(callback);
+      }
+    }
+  });
+}
+// end of ip conversion from version 3 to 4
 
 function upgrade(version, callback) {
 
@@ -240,6 +488,10 @@ function upgrade(version, callback) {
 
   case 2:
     setBoardIpSalt(callback);
+    break;
+
+  case 3:
+    migrateThreadIps(callback);
     break;
 
   default:
@@ -403,8 +655,6 @@ function initTorIps(callback) {
 
   cachedTorIps.ensureIndex({
     ip : 1
-  }, {
-    unique : true
   }, function setIndex(error, index) {
     if (error) {
       if (loading) {

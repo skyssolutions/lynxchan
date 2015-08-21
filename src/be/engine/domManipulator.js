@@ -322,7 +322,7 @@ function getReportLink(report) {
 function setPostingIp(cell, postingData, boardData) {
 
   var labelRange = cell.getElementsByClassName('labelRange')[0];
-  labelRange.innerHTML = miscOps.getRange(postingData.ip);
+  labelRange.innerHTML = miscOps.getRange(postingData.ip).join('.');
 
   var labelIp = cell.getElementsByClassName('labelIp')[0];
   labelIp.innerHTML = crypto.createHash('sha256').update(
@@ -982,7 +982,7 @@ exports.ban = function(ban, board) {
     document.getElementById('boardLabel').innerHTML = board;
 
     if (ban.range) {
-      document.getElementById('rangeLabel').innerHTML = ban.range;
+      document.getElementById('rangeLabel').innerHTML = ban.range.join('.');
     } else {
       document.getElementById('reasonLabel').innerHTML = ban.reason;
 
@@ -1974,7 +1974,8 @@ function setRangeBanCells(document, rangeBans) {
     banCell.innerHTML = templateHandler.rangeBanCell;
     setFormCellBoilerPlate(banCell, '/liftBan.js', 'rangeBanCell');
 
-    banCell.getElementsByClassName('rangeLabel')[0].innerHTML = rangeBan.range;
+    banCell.getElementsByClassName('rangeLabel')[0].innerHTML = rangeBan.range
+        .join('.');
     banCell.getElementsByClassName('idIdentifier')[0].setAttribute('value',
         rangeBan._id);
 

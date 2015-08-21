@@ -6,6 +6,7 @@ Required modules:
 * multiparty: used when parsing requests to the form api.
 * bcrypt: used for encrypting passwords.
 * nodemailer: used to send e-mails for people resetting account passwords.
+* ip-address: used to handle ips.
 
 Latest version of all them.
 

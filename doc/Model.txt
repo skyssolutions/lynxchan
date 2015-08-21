@@ -41,7 +41,7 @@ threads: stores board's threads.
     name: name of the poster. 32 characters.
     signedRole: role of the user that posted the thread.
     password: password used to delete the thread. 8 characters.
-    ip: ip of the poster. Null if poster used TOR.
+    ip(Array): ip of the poster. Null if poster used TOR or a proxy.
     flag: url of this thread's flag.
     banMessage: message to be displayed indicating this message was a cause to a ban. 128 characters.
     salt: thread's salt used for id generation.
@@ -86,7 +86,7 @@ posts: stores posts.
     flag: url of this post's flag.
     flagName: name of the flag used.
     subject: subject of the thread. 128 characters.
-    ip: ip of the poster. Null if poster used TOR.
+    ip(Array): ip of the poster. Null if poster used TOR or a proxy.
     message: text of the post. 2048 characters.
     markdown: text of the post after markdown.
     banMessage: message to be displayed indicating this message was a cause to a ban. 128 characters.
@@ -149,9 +149,9 @@ bans: stores bans.
     _id**: unique id of the ban.
     appliedBy*: login of the user that applied the ban.
     expiration(Date): date of when the ban will expire.
-    range: range of the ban. Only includes the two first parts of the ip. 7 characters.
+    range(Array): range of the ban. Only includes the first half of the ip.
     reason: reason of the ban. 256 characters.
-    ip: banned ip.
+    ip(Array): banned ip.
     boardUri*: board of the ban. If not set, the ban is global.
 
 ----------------------------------------------------------------------------------------
@@ -213,7 +213,7 @@ hashBans: stores bans on files.
 ----------------------------------------------------------------------------------------
 
 torIps: stores known TOR ips.
-    ip**: ip of the exit node.
+    ip(Array)**: ip of the exit node.
 
 ----------------------------------------------------------------------------------------
 

@@ -6,6 +6,7 @@ var verbose = settings.verbose;
 var formOps = require('./formOps');
 var db = require('../db');
 var users = db.users();
+var logger = require('../logger');
 var boot = require('../boot');
 var lang = require('./langOps').languagePack();
 var reports = db.reports();
@@ -286,7 +287,7 @@ exports.getManagementData = function(userRole, userLogin, callback) {
 
 exports.getRange = function(ip) {
 
-  return ip ? ip.match(/(\d+.\d+).\d+.\d+/)[1] : null;
+  return ip ? logger.extractRange(ip) : null;
 
 };
 
