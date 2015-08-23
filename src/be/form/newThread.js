@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var postingOps = require('../engine/postingOps');
+var postingOps = require('../engine/postingOps').thread;
 var captchaOps = require('../engine/captchaOps');
 var lang = require('../engine/langOps').languagePack();
 var mandatoryParameters = [ 'message', 'boardUri' ];

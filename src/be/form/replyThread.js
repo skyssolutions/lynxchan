@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var postingOps = require('../engine/postingOps');
+var postingOps = require('../engine/postingOps').post;
 var captchaOps = require('../engine/captchaOps');
 var lang = require('../engine/langOps').languagePack();
 var mandatoryParameters = [ 'message', 'boardUri', 'threadId' ];
@@ -20,7 +20,6 @@ function createPost(req, res, parameters, userData, captchaId) {
         } else {
 
           // style exception, too simple
-
           postingOps.newPost(req, userData, parameters, captchaId,
               function postCreated(error, id) {
                 if (error) {

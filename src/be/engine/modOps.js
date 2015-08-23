@@ -19,7 +19,7 @@ var disableFloodCheck = settings.disableFloodCheck;
 var multipleReports = settings.multipleReports;
 var lang = require('./langOps').languagePack();
 var logger = require('../logger');
-var postOps = require('./postingOps');
+var postOps = require('./postingOps').common;
 var defaultBanMessage = settings.defaultBanMessage;
 var flood = db.flood();
 

@@ -1,7 +1,7 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var postingOps = require('../engine/postingOps');
+var postingOps = require('../engine/postingOps').post;
 var mandatoryParameters = [ 'message', 'boardUri', 'threadId' ];
 
 function createPost(req, res, parameters, userData, captchaId) {
