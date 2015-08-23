@@ -1,6 +1,6 @@
 'use strict';
 
-var domManipulator = require('../engine/domManipulator');
+var domManipulator = require('../engine/domManipulator').staticPages;
 var db = require('../db');
 var boards = db.boards();
 var url = require('url');

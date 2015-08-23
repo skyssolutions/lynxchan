@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var url = require('url');
 var miscOps = require('../engine/miscOps');
 var boardOps = require('../engine/boardOps');
-var domManipulator = require('../engine/domManipulator');
+var domManipulator = require('../engine/domManipulator').dynamicPages;
 
 function getFilterData(boardUri, userData, res) {
 

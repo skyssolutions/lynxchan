@@ -3,7 +3,7 @@
 var formOps = require('../engine/formOps');
 var miscOps = require('../engine/miscOps');
 var lang = require('../engine/langOps').languagePack();
-var domManipulator = require('../engine/domManipulator');
+var domManipulator = require('../engine/domManipulator').dynamicPages;
 
 exports.process = function(req, res) {
 

@@ -1,13 +1,13 @@
 'use strict';
 
-// handles logic of page generation.
+// handles logic of static pages generation.
 // will not actually handle the dom, that happens at domManipulator
 
 var db = require('../db');
 var posts = db.posts();
 var threads = db.threads();
 var boards = db.boards();
-var domManipulator = require('./domManipulator');
+var domManipulator = require('./domManipulator').staticPages;
 var boot = require('../boot');
 var boardOps = require('./boardOps');
 var flags = db.flags();

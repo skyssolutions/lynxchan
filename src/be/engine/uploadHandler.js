@@ -17,7 +17,7 @@ var genericThumb = boot.genericThumb();
 var genericAudioThumb = boot.genericAudioThumb();
 var spoilerPath = boot.spoilerImage();
 var posts = db.posts();
-var settings = require('../boot').getGeneralSettings();
+var settings = boot.getGeneralSettings();
 var videoDimensionsCommand = 'ffprobe -v error -show_entries ';
 videoDimensionsCommand += 'stream=width,height ';
 var videoThumbCommand = 'ffmpeg -i {$path} -y -vframes 1 -vf scale=';

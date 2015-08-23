@@ -74,12 +74,6 @@ exports.ip = function(req) {
       .convertIpToArray(req.connection.remoteAddress);
 };
 
-exports.extractRange = function(ip) {
-
-  return ip ? ip.slice(0, ip.length / 2) : null;
-
-};
-
 // It just gets the formated date and put the formated time after it with an
 // underscore in between
 exports.timestamp = function(time) {

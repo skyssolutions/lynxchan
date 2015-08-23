@@ -4,7 +4,7 @@ var captchaOps = require('../engine/captchaOps');
 var formOps = require('../engine/formOps');
 var url = require('url');
 var miscOps = require('../engine/miscOps');
-var domManipulator = require('../engine/domManipulator');
+var domManipulator = require('../engine/domManipulator').dynamicPages;
 
 exports.process = function(req, res) {
 

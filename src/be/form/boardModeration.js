@@ -3,7 +3,7 @@
 var boardOps = require('../engine/boardOps');
 var url = require('url');
 var miscOps = require('../engine/miscOps');
-var domManipulator = require('../engine/domManipulator');
+var domManipulator = require('../engine/domManipulator').dynamicPages;
 var formOps = require('../engine/formOps');
 
 function getBoardModerationData(board, userData, res) {

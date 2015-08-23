@@ -3,7 +3,7 @@
 var boards = require('../db').boards();
 var miscOps = require('../engine/miscOps');
 var formOps = require('../engine/formOps');
-var domManipulator = require('../engine/domManipulator');
+var domManipulator = require('../engine/domManipulator').dynamicPages;
 var settings = require('../boot').getGeneralSettings();
 var pageSize = settings.boardsPerPage || 50;
 var url = require('url');

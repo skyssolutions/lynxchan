@@ -3,7 +3,7 @@
 var logs = require('../db').logs();
 var miscOps = require('../engine/miscOps');
 var formOps = require('../engine/formOps');
-var domManipulator = require('../engine/domManipulator');
+var domManipulator = require('../engine/domManipulator').dynamicPages;
 var optionalParameters = [ 'type', 'before', 'after', 'user', 'boardUri' ];
 var settings = require('../boot').getGeneralSettings();
 var pageSize = settings.logPageSize || 50;

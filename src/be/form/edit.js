@@ -3,7 +3,7 @@
 var formOps = require('../engine/formOps');
 var url = require('url');
 var miscOps = require('../engine/miscOps');
-var domManipulator = require('../engine/domManipulator');
+var domManipulator = require('../engine/domManipulator').dynamicPages;
 var modOps = require('../engine/modOps');
 
 function getPostingToEdit(userData, parameters, res) {

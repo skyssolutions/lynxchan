@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var miscOps = require('../engine/miscOps');
-var domManipulator = require('../engine/domManipulator');
+var domManipulator = require('../engine/domManipulator').dynamicPages;
 
 function getGlobalSettings(userData, res) {
 
