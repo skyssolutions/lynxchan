@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var miscOps = require('../engine/miscOps');
-var domManipulator = require('../engine/domManipulator').dynamicPages;
+var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
 function getGlobalSettings(userData, res) {
 
@@ -13,7 +13,7 @@ function getGlobalSettings(userData, res) {
     } else {
       res.writeHead(200, miscOps.corsHeader('text/html'));
 
-      res.end(domManipulator.globalSettings(settings));
+      res.end(dom.globalSettings(settings));
     }
   });
 

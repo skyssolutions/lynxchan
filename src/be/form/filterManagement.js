@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var url = require('url');
 var miscOps = require('../engine/miscOps');
 var boardOps = require('../engine/boardOps');
-var domManipulator = require('../engine/domManipulator').dynamicPages;
+var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
 function getFilterData(boardUri, userData, res) {
 
@@ -15,7 +15,7 @@ function getFilterData(boardUri, userData, res) {
     } else {
       res.writeHead(200, miscOps.corsHeader('text/html'));
 
-      res.end(domManipulator.filterManagement(boardUri, filters));
+      res.end(dom.filterManagement(boardUri, filters));
     }
   });
 

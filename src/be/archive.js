@@ -25,7 +25,7 @@ exports.reload = function() {
   verbose = boot.getGeneralSettings().verbose;
   formOps = require('./engine/formOps');
   gridFsHandler = require('./engine/gridFsHandler');
-  domManipulator = require('./engine/domManipulator');
+  domManipulator = require('./engine/domManipulator').dynamicPages.miscPages;
   miscOps = require('./engine/miscOps');
 };
 
@@ -105,7 +105,8 @@ exports.init = function(callback) {
           logs = require('./db').logs();
           formOps = require('./engine/formOps');
           gridFsHandler = require('./engine/gridFsHandler');
-          domManipulator = require('./engine/domManipulator');
+          domManipulator = require('./engine/domManipulator').dynamicPages;
+          domManipulator = domManipulator.miscPages;
           miscOps = require('./engine/miscOps');
 
           conn = db;

@@ -7,7 +7,7 @@ var templateHandler = require('../templateHandler');
 var lang = require('../langOps').languagePack();
 var boot = require('../../boot');
 var settings = boot.getGeneralSettings();
-var common = require('./common');
+var common = require('.').common;
 var archive = settings.archiveLevel > 0 && require('../../archive').loaded();
 
 var accountCreationDisabled = settings.disableAccountCreation;

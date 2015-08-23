@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var miscOps = require('../engine/miscOps');
-var domManipulator = require('../engine/domManipulator').dynamicPages;
+var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 
 exports.process = function(req, res) {
 

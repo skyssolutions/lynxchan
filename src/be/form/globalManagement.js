@@ -1,6 +1,6 @@
 'use strict';
 
-var domManipulator = require('../engine/domManipulator').dynamicPages;
+var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 var formOps = require('../engine/formOps');
 var miscOps = require('../engine/miscOps');
 
@@ -14,8 +14,8 @@ function getManagementData(userData, res) {
 
           res.writeHead(200, miscOps.corsHeader('text/html'));
 
-          res.end(domManipulator.globalManagement(userData.globalRole,
-              userData.login, globalStaff, globalReports));
+          res.end(dom.globalManagement(userData.globalRole, userData.login,
+              globalStaff, globalReports));
 
         }
       });

@@ -3,7 +3,7 @@
 var boardOps = require('../engine/boardOps');
 var url = require('url');
 var miscOps = require('../engine/miscOps');
-var domManipulator = require('../engine/domManipulator').dynamicPages;
+var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 var formOps = require('../engine/formOps');
 
 function getBoardManagementData(board, userData, res) {
@@ -15,8 +15,7 @@ function getBoardManagementData(board, userData, res) {
         } else {
           res.writeHead(200, miscOps.corsHeader('text/html'));
 
-          res.end(domManipulator.boardManagement(userData.login, boardData,
-              reports));
+          res.end(dom.boardManagement(userData.login, boardData, reports));
         }
       });
 }

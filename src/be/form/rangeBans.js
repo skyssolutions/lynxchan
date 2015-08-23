@@ -3,7 +3,7 @@
 var formOps = require('../engine/formOps');
 var url = require('url');
 var miscOps = require('../engine/miscOps');
-var domManipulator = require('../engine/domManipulator').dynamicPages;
+var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var modOps = require('../engine/modOps');
 
 function getRangeBans(userData, parameters, res) {
@@ -15,7 +15,7 @@ function getRangeBans(userData, parameters, res) {
     } else {
       res.writeHead(200, miscOps.corsHeader('text/html'));
 
-      res.end(domManipulator.rangeBans(rangeBans, parameters.boardUri));
+      res.end(dom.rangeBans(rangeBans, parameters.boardUri));
     }
   });
 
