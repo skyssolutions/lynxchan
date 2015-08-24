@@ -1,7 +1,7 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var modOps = require('../engine/modOps');
+var modOps = require('../engine/modOps').report;
 
 function closeReport(userData, parameters, res) {
 

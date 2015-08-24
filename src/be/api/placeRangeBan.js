@@ -2,7 +2,7 @@
 
 var apiOps = require('../engine/apiOps');
 var mandatoryParameters = [ 'range' ];
-var modOps = require('../engine/modOps');
+var modOps = require('../engine/modOps').ipBan;
 
 function placeRangeBan(userData, parameters, res) {
 

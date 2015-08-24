@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var modOps = require('../engine/modOps');
+var modOps = require('../engine/modOps').hashBan;
 var lang = require('../engine/langOps').languagePack();
 
 function liftHashBan(userData, parameters, res) {

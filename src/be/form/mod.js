@@ -9,7 +9,7 @@ var flags = db.flags();
 var lang = require('../engine/langOps').languagePack();
 var posts = db.posts();
 var miscOps = require('../engine/miscOps');
-var modOps = require('../engine/modOps');
+var modOps = require('../engine/modOps').common;
 var formOps = require('../engine/formOps');
 
 function outputModData(boardData, flags, thread, posts, res) {
@@ -130,7 +130,7 @@ exports.process = function(req, res) {
           return;
         }
 
-        var globalStaff = userData.globalRole > miscOps.getMaxStaffRole();
+        var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
         // style exception, too simple
         boards.findOne({
@@ -151,7 +151,7 @@ exports.process = function(req, res) {
             formOps.outputError(error, 500, res);
           } else if (!board) {
             formOps.outputError(lang.errBoardNotFound, 500, res);
-          } else if (!modOps.isInBoardStaff(userData, board) && globalStaff) {
+          } else if (!modOps.isInBoardStaff(userData, board) && !globalStaff) {
             formOps.outputError(lang.errDeniedManageBoard, 500, res);
           } else {
             getFlags(board, parameters, res);

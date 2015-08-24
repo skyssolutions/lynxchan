@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
-var modOps = require('../engine/modOps');
+var modOps = require('../engine/modOps').edit;
 
 function saveThreadSettings(userData, parameters, res) {
 

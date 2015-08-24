@@ -1,7 +1,7 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var modOps = require('../engine/modOps');
+var modOps = require('../engine/modOps').report;
 var lang = require('../engine/langOps').languagePack();
 
 function reportContent(req, parameters, res) {

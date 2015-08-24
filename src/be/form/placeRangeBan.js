@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var modOps = require('../engine/modOps');
+var modOps = require('../engine/modOps').ipBan;
 var lang = require('../engine/langOps').languagePack();
 var mandatoryParameters = [ 'range' ];
 

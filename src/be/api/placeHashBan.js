@@ -2,7 +2,7 @@
 
 var apiOps = require('../engine/apiOps');
 var mandatoryParameters = [ 'hash' ];
-var modOps = require('../engine/modOps');
+var modOps = require('../engine/modOps').hashBan;
 
 function placeHashBan(userData, parameters, res) {
 

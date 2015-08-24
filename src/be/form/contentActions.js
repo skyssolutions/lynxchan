@@ -97,25 +97,25 @@ function processParameters(req, userData, parameters, res) {
 
   if (parameters.action.toLowerCase() === 'report') {
 
-    modOps.report(req, reportedObjects, parameters, function createdReports(
-        error, ban) {
-      if (error) {
-        formOps.outputError(error, 500, res);
-      } else if (ban) {
-        res.writeHead(200, miscOps.corsHeader('text/html'));
+    modOps.report.report(req, reportedObjects, parameters,
+        function createdReports(error, ban) {
+          if (error) {
+            formOps.outputError(error, 500, res);
+          } else if (ban) {
+            res.writeHead(200, miscOps.corsHeader('text/html'));
 
-        var board = ban.boardUri ? '/' + ban.boardUri + '/'
-            : lang.miscAllBoards.toLowerCase();
+            var board = ban.boardUri ? '/' + ban.boardUri + '/'
+                : lang.miscAllBoards.toLowerCase();
 
-        res.end(domManipulator.ban(ban, board));
-      } else {
-        formOps.outputResponse(lang.msgContentReported, '/', res);
-      }
+            res.end(domManipulator.ban(ban, board));
+          } else {
+            formOps.outputResponse(lang.msgContentReported, '/', res);
+          }
 
-    });
+        });
   } else if (parameters.action.toLowerCase() === 'ban') {
 
-    modOps.ban(userData, reportedObjects, parameters, function(error) {
+    modOps.ipBan.ban(userData, reportedObjects, parameters, function(error) {
       if (error) {
         formOps.outputError(error, 500, res);
       } else {
