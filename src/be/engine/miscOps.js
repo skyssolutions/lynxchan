@@ -132,7 +132,7 @@ var MIMETYPES = {
   zip : 'application/zip'
 };
 
-var replaceTable = {
+exports.htmlReplaceTable = {
   '<' : '&lt;',
   '>' : '&gt;'
 };
@@ -184,7 +184,7 @@ function sanitizeParameter(object, parameter) {
       if (parameter.removeHTML) {
         object[parameter.field] = object[parameter.field].replace(/[<>]/g,
             function replace(match) {
-              return replaceTable[match];
+              return exports.htmlReplaceTable[match];
             });
       }
 

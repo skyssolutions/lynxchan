@@ -1,7 +1,7 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var boardOps = require('../engine/boardOps');
+var boardOps = require('../engine/boardOps').rules;
 var mandatoryParameters = [ 'rule' ];
 
 function addRule(parameters, userData, res) {

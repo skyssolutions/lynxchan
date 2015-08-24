@@ -1,6 +1,6 @@
 'use strict';
 
-var boardOps = require('../engine/boardOps');
+var boardOps = require('../engine/boardOps').meta;
 var url = require('url');
 var miscOps = require('../engine/miscOps');
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;

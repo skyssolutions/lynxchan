@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var boardOps = require('../engine/boardOps');
+var boardOps = require('../engine/boardOps').flags;
 var lang = require('../engine/langOps').languagePack();
 
 function deleteFlag(parameters, userData, res) {

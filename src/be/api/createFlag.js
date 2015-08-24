@@ -1,7 +1,7 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var boardOps = require('../engine/boardOps');
+var boardOps = require('../engine/boardOps').flags;
 var mandatoryParameters = [ 'flagName' ];
 
 function createFlag(parameters, userData, res) {

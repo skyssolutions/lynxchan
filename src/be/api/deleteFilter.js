@@ -1,7 +1,7 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var boardOps = require('../engine/boardOps');
+var boardOps = require('../engine/boardOps').filters;
 var mandatoryParameters = [ 'boardUri', 'filterIdentifier' ];
 
 function deleteFilter(parameters, userData, res) {

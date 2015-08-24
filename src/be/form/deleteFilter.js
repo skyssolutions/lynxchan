@@ -3,7 +3,7 @@
 var formOps = require('../engine/formOps');
 var url = require('url');
 var lang = require('../engine/langOps').languagePack();
-var boardOps = require('../engine/boardOps');
+var boardOps = require('../engine/boardOps').filters;
 var mandatoryParameters = [ 'boardUri', 'filterIdentifier' ];
 
 function deleteFilter(parameters, userData, res) {

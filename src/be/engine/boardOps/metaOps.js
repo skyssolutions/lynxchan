@@ -1,42 +1,25 @@
 'use strict';
 
-// handles board operations
-
-var mongo = require('mongodb');
-var ObjectID = mongo.ObjectID;
-var db = require('../db');
-var flags = db.flags();
-var miscOps = require('./miscOps');
-var gridFsHandler = require('./gridFsHandler');
-var captchaOps = require('./captchaOps');
-var logger = require('../logger');
-var files = db.files();
-var reports = db.reports();
 var crypto = require('crypto');
-var lang = require('./langOps').languagePack();
-var users = db.users();
-var threads = db.threads();
-var posts = db.posts();
-var boards = db.boards();
-var logs = db.logs();
-var postingOps = require('./postingOps').common;
-var boot = require('../boot');
-var settings = boot.getGeneralSettings();
-var restrictedBoardCreation = settings.restrictBoardCreation;
-var validSettings = [ 'disableIds', 'disableCaptcha', 'forceAnonymity',
-    'allowCode', 'archive', 'early404', 'unindex' ];
-var defaultSettings = [ 'disableIds', 'disableCaptcha' ];
-var maxRulesCount = settings.maxBoardRules;
-var maxFiltersCount = settings.maxFilters;
-var maxVolunteers = settings.maxBoardVolunteers;
 var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
-var maxBannerSize = settings.maxBannerSizeB;
-var maxFlagSize = settings.maxFlagSizeB;
+var miscOps = require('../miscOps');
+var gridFsHandler = require('../gridFsHandler');
+var captchaOps = require('../captchaOps');
+var postingOps = require('../postingOps').common;
+var logger = require('../../logger');
+var settings = require('../../boot').getGeneralSettings();
+var db = require('../../db');
+var reports = db.reports();
+var users = db.users();
+var logs = db.logs();
+var boards = db.boards();
+var lang = require('../langOps').languagePack();
 
-var replaceTable = {
-  '<' : '&lt;',
-  '>' : '&gt;'
-};
+var restrictedBoardCreation = settings.restrictBoardCreation;
+
+var maxVolunteers = settings.maxBoardVolunteers;
+
+var defaultSettings = [ 'disableIds', 'disableCaptcha' ];
 
 var boardParameters = [ {
   field : 'boardUri',
@@ -58,28 +41,7 @@ var boardParameters = [ {
   length : 256
 } ];
 
-var filterParameters = [ {
-  field : 'originalTerm',
-  length : 32
-}, {
-  field : 'replacementTerm',
-  length : 32,
-  removeHTML : true
-} ];
-
-var newFlagParameters = [ {
-  field : 'flagName',
-  length : 16,
-  removeHTML : true
-} ];
-
-exports.getValidSettings = function() {
-  return validSettings;
-};
-
-// Section 1: Write operations {
-
-// Section 1.1: Settings {
+// Section 1: Settings {
 function captchaOrAnonimityChanged(board, params) {
 
   var oldSettings = board.settings;
@@ -143,7 +105,7 @@ function getMessageMarkdown(message) {
   }
 
   var ret = message.replace(/[<>]/g, function replace(match) {
-    return replaceTable[match];
+    return miscOps.htmlReplaceTable[match];
   });
 
   ret = ret.replace(/\[.+\]\(.+\)/g, function prettyLinks(match) {
@@ -187,7 +149,7 @@ function sanitizeBoardTags(tags) {
   var toRet = [];
 
   var replaceFunction = function replace(match) {
-    return replaceTable[match];
+    return miscOps.replaceTable[match];
   };
 
   var i;
@@ -271,9 +233,9 @@ exports.setSettings = function(userData, parameters, callback) {
   });
 
 };
-// } Section 1.1: Settings
+// } Section 1: Settings
 
-// Section 1.2: Transfer {
+// Section 2: Transfer {
 function updateUsersOwnedBoards(oldOwner, parameters, callback) {
 
   users.update({
@@ -385,9 +347,9 @@ exports.transfer = function(userData, parameters, callback) {
   });
 
 };
-// } Section 1.2: Transfer
+// } Section 2: Transfer
 
-// Section 1.3: Volunteer management {
+// Section 3: Volunteer management {
 function manageVolunteer(currentVolunteers, parameters, callback) {
 
   var isAVolunteer = currentVolunteers.indexOf(parameters.login) > -1;
@@ -462,199 +424,9 @@ exports.setVolunteer = function(userData, parameters, callback) {
   });
 
 };
-// } Section 1.3: Volunteer management
+// } Section 3: Volunteer management
 
-exports.addBanner = function(user, parameters, callback) {
-
-  if (!parameters.files.length) {
-    callback(lang.errNoFiles);
-    return;
-  } else if (parameters.files[0].mime.indexOf('image/') === -1) {
-    callback(lang.errNotAnImage);
-    return;
-  } else if (parameters.files[0].size > maxBannerSize) {
-    callback(lang.errBannerTooLarge);
-  }
-
-  boards.findOne({
-    boardUri : parameters.boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (board.owner !== user) {
-      callback(lang.errDeniedChangeBoardSettings);
-    } else {
-      var bannerPath = '/' + parameters.boardUri + '/banners/';
-      bannerPath += new Date().getTime();
-
-      var file = parameters.files[0];
-
-      gridFsHandler.writeFile(file.pathInDisk, bannerPath, file.mime, {
-        boardUri : parameters.boardUri,
-        status : 200,
-        type : 'banner'
-      }, callback);
-    }
-  });
-
-};
-
-// Section 1.4: Banner deletion {
-function removeBanner(banner, callback) {
-  gridFsHandler.removeFiles(banner.filename, function removedFile(error) {
-    callback(error, banner.metadata.boardUri);
-  });
-
-}
-
-exports.deleteBanner = function(login, parameters, callback) {
-
-  try {
-
-    files.findOne({
-      _id : new ObjectID(parameters.bannerId)
-    }, function gotBanner(error, banner) {
-      if (error) {
-        callback(error);
-      } else if (!banner) {
-        callback(lang.errBannerNotFound);
-      } else {
-        // style exception, too simple
-
-        boards.findOne({
-          boardUri : banner.metadata.boardUri
-        }, function gotBoard(error, board) {
-          if (error) {
-            callback(error);
-          } else if (!board) {
-            callback(lang.errBoardNotFound);
-          } else if (board.owner !== login) {
-            callback(lang.errDeniedChangeBoardSettings);
-          } else {
-            removeBanner(banner, callback);
-          }
-        });
-        // style exception, too simple
-
-      }
-
-    });
-  } catch (error) {
-    callback(error);
-  }
-};
-// } Section 1.4: Banner deletion
-
-// Section 1.5: Filter creation {
-function setFilter(board, callback, parameters) {
-  var existingFilters = board.filters || [];
-
-  var found = false;
-
-  for (var i = 0; i < existingFilters.length; i++) {
-    var filter = existingFilters[i];
-
-    if (filter.originalTerm === parameters.originalTerm) {
-      found = true;
-
-      filter.replacementTerm = parameters.replacementTerm;
-
-      break;
-    }
-  }
-
-  if (!found) {
-
-    existingFilters.push({
-      originalTerm : parameters.originalTerm,
-      replacementTerm : parameters.replacementTerm
-    });
-
-  }
-
-  boards.updateOne({
-    boardUri : parameters.boardUri
-  }, {
-    $set : {
-      filters : existingFilters
-    }
-  }, function updatedFilters(error) {
-    callback(error);
-  });
-
-}
-
-exports.createFilter = function(user, parameters, callback) {
-
-  miscOps.sanitizeStrings(parameters, filterParameters);
-
-  boards.findOne({
-    boardUri : parameters.boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (board.owner !== user) {
-      callback(lang.errDeniedChangeBoardSettings);
-    } else if (board.filters && board.filters.length >= maxFiltersCount) {
-      callback(lang.errMaxFiltersReached);
-    } else {
-      setFilter(board, callback, parameters);
-    }
-  });
-
-};
-// } Section 1.5: Filter creation
-
-exports.deleteFilter = function(login, parameters, callback) {
-
-  boards.findOne({
-    boardUri : parameters.boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (board.owner !== login) {
-      callback(lang.errDeniedChangeBoardSettings);
-    } else {
-
-      var existingFilters = board.filters || [];
-
-      for (var i = 0; i < existingFilters.length; i++) {
-        var filter = existingFilters[i];
-        if (filter.originalTerm === parameters.filterIdentifier) {
-
-          existingFilters.splice(i, 1);
-
-          break;
-        }
-
-      }
-
-      // style exception, too simple
-
-      boards.updateOne({
-        boardUri : parameters.boardUri
-      }, {
-        $set : {
-          filters : existingFilters
-        }
-      }, function updatedFilters(error) {
-        callback(error);
-      });
-
-      // style exception, too simple
-
-    }
-  });
-
-};
-
-// Section 1.6: Custom CSS upload {
+// Section 4: Custom CSS upload {
 function updateBoardAfterNewCss(board, callback) {
 
   if (!boards.usesCustomCss) {
@@ -715,9 +487,9 @@ exports.setCustomCss = function(userData, boardUri, file, callback) {
   });
 
 };
-// } Section 1.6: Custom CSS upload
+// } Section 4: Custom CSS upload
 
-// Section 1.7: Custom CSS deletion {
+// Section 5: Custom CSS deletion {
 function updateBoardAfterDeleteCss(board, callback) {
 
   if (board.usesCustomCss) {
@@ -773,281 +545,9 @@ exports.deleteCustomCss = function(userData, boardUri, callback) {
   });
 
 };
-// } Section 1.8: Custom CSS deletion
+// } Section 5: Custom CSS deletion
 
-exports.addBoardRule = function(parameters, userData, callback) {
-
-  boards.findOne({
-    boardUri : parameters.boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (userData.login !== board.owner) {
-      callback(!lang.errDeniedRuleManagement);
-    } else {
-      if (board.rules && board.rules.length >= maxRulesCount) {
-        callback(lang.errRuleLimitReached);
-
-        return;
-      }
-
-      var rule = parameters.rule.substring(0, 512).replace(/[<>]/g,
-          function replace(match) {
-            return replaceTable[match];
-          });
-
-      // style exception, too simple
-      boards.updateOne({
-        boardUri : parameters.boardUri
-      }, {
-        $push : {
-          rules : rule
-        }
-      }, function updatedRules(error) {
-        if (error) {
-          callback(error);
-        } else {
-          process.send({
-            board : board.boardUri,
-            rules : true
-          });
-          callback();
-        }
-      });
-      // style exception, too simple
-
-    }
-  });
-};
-
-exports.deleteRule = function(parameters, userData, callback) {
-
-  boards.findOne({
-    boardUri : parameters.boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errNoBoardFound);
-    } else if (board.owner !== userData.login) {
-      callback(lang.errDeniedRuleManagement);
-    } else {
-
-      if (isNaN(parameters.ruleIndex)) {
-        callback(lang.errInvalidIndex);
-        return;
-      }
-
-      var index = +parameters.ruleIndex;
-
-      if (!board.rules || board.rules.length <= index) {
-        callback();
-        return;
-      }
-
-      board.rules.splice(index, 1);
-
-      // style exception, too simple
-      boards.updateOne({
-        boardUri : parameters.boardUri
-      }, {
-        $set : {
-          rules : board.rules
-        }
-      }, function updatedRules(error) {
-        if (error) {
-          callback(error);
-        } else {
-          process.send({
-            board : board.boardUri,
-            rules : true
-          });
-          callback();
-        }
-      });
-      // style exception, too simple
-    }
-  });
-};
-
-// Section 1.9: Flag creation {
-function processFlagFile(toInsert, file, callback) {
-
-  var newUrl = '/' + toInsert.boardUri + '/flags/' + toInsert._id;
-
-  gridFsHandler.writeFile(file.pathInDisk, newUrl, file.mime, {
-    boardUri : toInsert.boardUri,
-    type : 'flag'
-  }, function addedFlagFile(error) {
-    if (error) {
-
-      // style exception, too simple
-      flags.removeOne({
-        _id : new ObjectID(toInsert._id)
-      }, function removedFlag(deletionError) {
-        callback(deletionError || error);
-      });
-      // style exception, too simple
-
-    } else {
-      process.send({
-        board : toInsert.boardUri,
-        buildAll : true
-      });
-
-      callback(null, toInsert._id);
-    }
-  });
-
-}
-
-exports.createFlag = function(userLogin, parameters, callback) {
-
-  if (!parameters.files.length) {
-    callback(lang.errNoFiles);
-    return;
-  } else if (parameters.files[0].mime.indexOf('image/') === -1) {
-    callback(lang.errNotAnImage);
-    return;
-  } else if (parameters.files[0].size > maxFlagSize) {
-    callback(lang.errFlagTooLarge);
-  }
-
-  miscOps.sanitizeStrings(parameters, newFlagParameters);
-
-  boards.findOne({
-    boardUri : parameters.boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (board.owner !== userLogin) {
-      callback(lang.deniedFlagManagement);
-    } else {
-
-      var toInsert = {
-        boardUri : parameters.boardUri,
-        name : parameters.flagName
-      };
-
-      // style exception, too simple
-      flags.insertOne(toInsert, function insertedFlag(error) {
-        if (error && error.code === 11000) {
-          callback(lang.errRepeatedFlag);
-        } else if (error) {
-          callback(error);
-        } else {
-          processFlagFile(toInsert, parameters.files[0], callback);
-        }
-      });
-      // style exception, too simple
-
-    }
-  });
-};
-// } Section 1.9: Flag creation
-
-// Section 1.10: Flag deletion {
-function cleanFlagFromPostings(flagUrl, boardUri, callback) {
-
-  threads.updateMany({
-    boardUri : boardUri,
-    flag : flagUrl
-  }, {
-    $unset : {
-      flag : 1,
-      flagName : 1
-    }
-  }, function cleanedThreads() {
-
-    // style exception, too simple
-    posts.updateMany({
-      boardUri : boardUri,
-      flag : flagUrl
-    }, {
-      $unset : {
-        flag : 1,
-        flagName : 1
-      }
-    }, function cleanedPosts() {
-      process.send({
-        board : boardUri,
-        buildAll : true
-      });
-
-      callback(null, boardUri);
-    });
-    // style exception, too simple
-
-  });
-
-}
-
-function removeFlag(flag, callback) {
-
-  flags.removeOne({
-    _id : new ObjectID(flag._id)
-  }, function removedFlag(error) {
-    if (error) {
-      callback(error);
-    } else {
-
-      var flagUrl = '/' + flag.boardUri + '/flags/' + flag._id;
-
-      // style exception, too simple
-      gridFsHandler.removeFiles(flagUrl, function removedFlagFile(error) {
-
-        if (error) {
-          callback(error);
-        } else {
-          cleanFlagFromPostings(flagUrl, flag.boardUri, callback);
-        }
-
-      });
-      // style exception, too simple
-
-    }
-  });
-
-}
-
-exports.deleteFlag = function(userLogin, flagId, callback) {
-
-  flags.findOne({
-    _id : new ObjectID(flagId)
-  }, function gotFlag(error, flag) {
-    if (error) {
-      callback(error);
-    } else if (!flag) {
-      callback(lang.errFlagNotFound);
-    } else {
-
-      // style exception, too simple
-      boards.findOne({
-        boardUri : flag.boardUri
-      }, function gotBoard(error, board) {
-        if (error) {
-          callback(error);
-        } else if (!board) {
-          callback(lang.errBoardNotFound);
-        } else if (board.owner !== userLogin) {
-          callback(lang.deniedFlagManagement);
-        } else {
-          removeFlag(flag, callback);
-        }
-      });
-      // style exception, too simple
-
-    }
-  });
-
-};
-// } Section 1.10: Flag deletion
-
-// Section 1.11: Creation {
+// Section 6: Creation {
 function insertBoard(parameters, userData, callback) {
 
   boards.insert({
@@ -1116,7 +616,7 @@ exports.createBoard = function(captchaId, parameters, userData, callback) {
       });
 
 };
-// } Section 1.11: Creation
+// } Section 6: Creation
 
 exports.setCustomSpoiler = function(userData, boardUri, file, callback) {
 
@@ -1196,11 +696,7 @@ exports.deleteCustomSpoiler = function(userData, boardUri, callback) {
 
 };
 
-// } Section 1: Write operations
-
-// Section 2: Read operations {
-
-// Section 2.1: Board management {
+// Section 7: Board management {
 function isAllowedToManageBoard(login, boardData) {
 
   var owner = login === boardData.owner;
@@ -1264,53 +760,7 @@ exports.getBoardManagementData = function(login, board, callback) {
   });
 
 };
-// } Section 2.1: Board management
-
-exports.getBannerData = function(user, boardUri, callback) {
-
-  boards.findOne({
-    boardUri : boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (board.owner !== user) {
-      callback(lang.errDeniedChangeBoardSettings);
-    } else {
-
-      // style exception, too simple
-      files.find({
-        'metadata.boardUri' : boardUri,
-        'metadata.type' : 'banner'
-      }).sort({
-        uploadDate : 1
-      }).toArray(function(error, banners) {
-        callback(error, banners);
-      });
-      // style exception, too simple
-    }
-  });
-
-};
-
-exports.getFilterData = function(user, boardUri, callback) {
-
-  boards.findOne({
-    boardUri : boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (user !== board.owner) {
-      callback(lang.errDeniedChangeBoardSettings);
-    } else {
-      callback(null, board.filters || []);
-    }
-  });
-
-};
+// } Section 7: Board management
 
 exports.getBoardModerationData = function(userData, boardUri, callback) {
 
@@ -1340,51 +790,3 @@ exports.getBoardModerationData = function(userData, boardUri, callback) {
     }
   });
 };
-
-exports.boardRules = function(boardUri, userData, callback) {
-
-  boards.findOne({
-    boardUri : boardUri
-  }, {
-    rules : 1,
-    owner : 1,
-    _id : 0
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (userData && userData.login !== board.owner) {
-      callback(lang.errDeniedRuleManagement);
-    } else {
-      callback(null, board.rules || []);
-    }
-  });
-};
-
-exports.getFlagsData = function(userLogin, boardUri, callback) {
-
-  boards.findOne({
-    boardUri : boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (board.owner !== userLogin) {
-      callback(lang.deniedFlagManagement);
-    } else {
-
-      flags.find({
-        boardUri : boardUri
-      }, {
-        name : 1
-      }).sort({
-        name : 1
-      }).toArray(callback);
-
-    }
-  });
-
-};
-// } Section 2: Read operations

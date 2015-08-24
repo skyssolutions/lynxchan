@@ -3,7 +3,7 @@
 var formOps = require('../engine/formOps');
 var url = require('url');
 var miscOps = require('../engine/miscOps');
-var boardOps = require('../engine/boardOps');
+var boardOps = require('../engine/boardOps').filters;
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
 function getFilterData(boardUri, userData, res) {

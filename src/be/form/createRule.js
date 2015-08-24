@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
-var boardOps = require('../engine/boardOps');
+var boardOps = require('../engine/boardOps').rules;
 var mandatoryParameters = [ 'rule' ];
 
 function addRule(parameters, userData, res) {

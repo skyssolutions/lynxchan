@@ -3,7 +3,7 @@
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var mandatoryParameters = [ 'boardUri', 'boardName', 'boardDescription' ];
-var boardOps = require('../engine/boardOps');
+var boardOps = require('../engine/boardOps').meta;
 
 function createBoard(userData, parameters, res, captchaId) {
 
