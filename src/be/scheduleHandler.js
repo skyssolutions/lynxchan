@@ -11,7 +11,7 @@ var debug = boot.debug();
 var gridFsHandler = require('./engine/gridFsHandler');
 var db = require('./db');
 var generator = require('./engine/generator');
-var delOps = require('./engine/deletionOps');
+var delOps = require('./engine/deletionOps').miscDeletions;
 var boards = db.boards();
 var stats = db.stats();
 var files = db.files();
@@ -26,7 +26,7 @@ exports.reload = function() {
   verbose = settings.verbose;
   gridFsHandler = require('./engine/gridFsHandler');
   generator = require('./engine/generator');
-  delOps = require('./engine/deletionOps');
+  delOps = require('./engine/deletionOps').miscDeletions;
   torHandler = require('./engine/torOps');
 };
 

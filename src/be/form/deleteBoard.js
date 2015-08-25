@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
-var deletionOps = require('../engine/deletionOps');
+var deletionOps = require('../engine/deletionOps').miscDeletions;
 
 function deleteBoard(userData, parameters, res) {
 

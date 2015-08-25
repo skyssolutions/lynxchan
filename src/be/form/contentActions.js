@@ -7,7 +7,7 @@ var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var lang = require('../engine/langOps').languagePack();
 var lang = require('../engine/langOps').languagePack();
 var miscOps = require('../engine/miscOps');
-var deleteOps = require('../engine/deletionOps');
+var deleteOps = require('../engine/deletionOps').postingDeletions;
 
 function processPostForDeletion(board, thread, splitKey, threadsToDelete,
     postsToDelete) {

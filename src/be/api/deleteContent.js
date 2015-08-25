@@ -2,7 +2,7 @@
 
 var apiOps = require('../engine/apiOps');
 var accountOps = require('../engine/accountOps');
-var deleteOps = require('../engine/deletionOps');
+var deleteOps = require('../engine/deletionOps').postingDeletions;
 
 function processReceivedPosting(threadsToDelete, postsToDelete, posting) {
   var boardObject;

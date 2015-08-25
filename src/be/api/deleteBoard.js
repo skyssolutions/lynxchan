@@ -1,7 +1,7 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var deletionOps = require('../engine/deletionOps');
+var deletionOps = require('../engine/deletionOps').miscDeletions;
 
 function deleteBoard(userData, parameters, res) {
 
