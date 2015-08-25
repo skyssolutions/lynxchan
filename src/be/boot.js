@@ -774,6 +774,8 @@ function initTorControl() {
     } else {
       if (!noDaemon) {
         require('./scheduleHandler').start();
+      } else {
+        require('./engine/accountOps');
       }
 
       if (createAccount) {
