@@ -45,6 +45,24 @@ exports.getCookies = function(req) {
   return parsedCookies;
 };
 
+function getGifDimensions(toPush, files, fields, cookies, callback, res,
+    exceptionalMimes) {
+
+  uploadHandler.getGifBounds(toPush.pathInDisk, function gotBounds(error,
+      width, height) {
+    if (!error) {
+      toPush.width = width;
+      toPush.height = height;
+
+      fields.files.push(toPush);
+    }
+
+    transferFileInformation(files, fields, cookies, callback, res,
+        exceptionalMimes);
+  });
+
+}
+
 function getImageDimensions(toPush, files, fields, cookies, callback, res,
     exceptionalMimes) {
 
@@ -121,6 +139,13 @@ function transferFileInformation(files, fields, parsedCookies, cb, res,
 
         var video = videoMimes.indexOf(toPush.mime) > -1;
         video = video && settings.mediaThumb;
+
+        if (toPush.mime === 'image/gif') {
+
+          getGifDimensions(toPush, files, fields, parsedCookies, cb, res,
+              exceptionalMimes);
+
+        } else
 
         if (toPush.mime.indexOf('image/') > -1) {
 

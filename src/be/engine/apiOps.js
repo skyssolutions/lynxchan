@@ -94,6 +94,24 @@ exports.checkBlankParameters = function(object, parameters, res) {
 
 };
 
+function getGifBounds(toPush, parsedData, res, finalArray, toRemove, callback,
+    exceptionalMimes) {
+
+  uploadHandler.getGifBounds(toPush.pathInDisk, function gotBounds(error,
+      width, height) {
+    if (!error) {
+      toPush.width = width;
+      toPush.height = height;
+
+      finalArray.push(toPush);
+    }
+
+    storeImages(parsedData, res, finalArray, toRemove, callback,
+        exceptionalMimes);
+  });
+
+}
+
 function getImageBounds(toPush, parsedData, res, finalArray, toRemove, cb,
     exceptionalMimes) {
 
@@ -181,7 +199,12 @@ function processFile(parsedData, res, finalArray, toRemove, callback,
 
             var video = videoMimes.indexOf(toPush.mime) > -1;
 
-            if (toPush.mime.indexOf('image/') > -1) {
+            if (toPush.mime === 'image/gif') {
+
+              getGifBounds(toPush, parsedData, res, finalArray, toRemove,
+                  callback, exceptionalMimes);
+
+            } else if (toPush.mime.indexOf('image/') > -1) {
 
               getImageBounds(toPush, parsedData, res, finalArray, toRemove,
                   callback, exceptionalMimes);
@@ -201,8 +224,8 @@ function processFile(parsedData, res, finalArray, toRemove, callback,
         }
 
       });
-
       // style exception, too simple
+
     } else {
       storeImages(parsedData, res, finalArray, toRemove, callback,
           exceptionalMimes);

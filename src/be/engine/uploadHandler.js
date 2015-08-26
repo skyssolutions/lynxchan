@@ -58,6 +58,34 @@ exports.getImageBounds = function(path, callback) {
 
 };
 
+exports.getGifBounds = function(path, callback) {
+
+  exec('identify ' + path, function(error, results) {
+    if (error) {
+      callback(error);
+    } else {
+      var lines = results.split('\n');
+
+      var maxHeight = 0;
+      var maxWidth = 0;
+
+      for (var i = 0; i < lines.length; i++) {
+        var dimensions = lines[i].match(/\s(\d+)x(\d+)\s/);
+
+        if (dimensions) {
+
+          maxWidth = dimensions[1] > maxWidth ? dimensions[1] : maxWidth;
+          maxHeight = dimensions[2] > maxHeight ? dimensions[2] : maxHeight;
+
+        }
+      }
+
+      callback(null, maxWidth, maxHeight);
+    }
+  });
+
+};
+
 // side-effect: might change the file mime.
 exports.getVideoBounds = function(file, callback) {
 
