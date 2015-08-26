@@ -7,6 +7,7 @@ Files should be sent with an input of type "file" using name "files".
 Pages that require proper validation will redirect the user to /login.html if authentication fails. Validation will require both the login and hash cookies to be set. The hash is the hash created when an account is created or performs login.
 Array parameters will be split using commas and spaces will be ignored.
 Boolean parameters will be just checked if they return a true condition on the server using simple js evaluation (if(parameters.X)).
+Pages with optional json output will require the get parameter "json" with any value to output the data in json form. 
 
 ------------------------------------------------------------------------------------------
 
@@ -54,6 +55,14 @@ PAG_ID::03
 Name: account
 
 Description: display the account page for the user. Requires validation.
+
+Json output(Object): object with the account data. Contains the following fields:
+    login: login of the user.
+    email: e-mail of the user.
+    boardCreationAllowed(boolean): indicates if the user is allowed to create boards.
+    ownedBoards(Array): array with the list of uri of boards owned by the user.
+    settings(Array): array of account settings. May contain the following values:
+        alwaysSignRole: user wishes to always use his role signature when posting.
 
 ------------------------------------------------------------------------------------------
 
@@ -133,6 +142,20 @@ Name: globalManagement
 
 Description: displays page for global staff to perform global management using their global tools like the fancy faggots they are. Requires validation. Forbidden for users with global role higher than 3.
 
+Json output(Object): object with data used in global management. Contains the following fields:
+    login: login of the user.
+    globalRole: global role of the user.
+    staff(Array): array with the global staff of the site the user is allowed to manage. Contains objects each with the following fields:
+        login: login of the user.
+        globalRole: global role of the user.
+    reports(Array): array with the global reports. Contains objects each with the following fields:
+        _id: unique id of the report.
+        threadId(Number): id of the thread either reported or containing the reported post.
+        postId(Number): id of the reported post.
+        boardUri: board containing the reported content.
+        reason: reason of why the content was reported.
+        creation: when the content was reported.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::11
@@ -155,6 +178,33 @@ Description: displays page for board management. Requires validation. Allowed on
 
 Parameters:
     boardUri: uri of the board the user wishes to manage.
+
+Json output(Object): object with data used to manage the board. Contains the following fields:
+    usesCustomSpoiler(Boolean): indicates if the board has a custom spoiler image.
+    volunteers(Array): array with the logins of the board volunteers.
+    boardName: name of the board.
+    boardDescription: description of the board.
+    anonName: name used for anonymous users.
+    hourlyThreadLimit(Number): how many threads can be created on the board within an hour before it locks thread creation.
+    autoCaptchaThreshold(Number): how many threads can be created on the board within an hour before captcha is turned on automatically.
+    settings(Array): array of settings being used in the board. May contain the following values:
+        disableIds: disables recording of thread-wise ids.
+        disableCaptcha: disable captchas for posting in the board.
+        forceAnonymity: disables the name input.
+        unindex: removes board from index.
+        allowCode: allows the usage of [code] on postings.
+        archive: archives content if the site owner has enabled archiving.
+        early404: makes threads with less than 5 replies to be deleted after an hour.
+    tags(Array): array of tags for the board.
+    boardMessage: message displayed on the board header.
+    isOwner(Boolean): indicates if the user owns the board.
+    openReports(Array): array of open reports. Each object contains the following fields:
+        _id: unique id of the report.
+        boardUri: board of the report.
+        threadId(Number): thread that either contains the reported post or was reported.
+        postId(Number): reported post.
+        reason: reason of the report.
+        creation: when the content was reported.
 
 ------------------------------------------------------------------------------------------
 
@@ -229,6 +279,15 @@ Description: display the list of closed reports. Requires authentication. It use
 
 Parameters:
     boardUri: board to display the closed reports of. If not informed, global reports will be displayed instead. 
+
+Json output(Array): array with the closed reports. Each object contains the following fields:
+    _id: unique id of the report.
+    boardUri: board of the report.
+    threadId(Number): thread that either contains the reported post or was reported.
+    postId(Number): reported post.
+    reason: reason of the report.
+    closing: when the report was closed.
+    closedBy: login of the user that closed the report.
 
 ------------------------------------------------------------------------------------------
 

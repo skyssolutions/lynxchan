@@ -26,18 +26,21 @@ var reportArguments = [ {
 // Section 1: Closed reports {
 function getClosedReports(parameters, callback) {
 
-  var queryBlock = {
+  reports.find({
     closedBy : {
       $exists : true
     },
     global : parameters.boardUri ? false : true
-  };
-
-  reports.find(queryBlock).sort({
+  }, {
+    boardUri : 1,
+    threadId : 1,
+    closedBy : 1,
+    postId : 1,
+    reason : 1,
+    closing : 1
+  }).sort({
     creation : -1
-  }).toArray(function gotReports(error, reports) {
-    callback(error, reports);
-  });
+  }).toArray(callback);
 
 }
 

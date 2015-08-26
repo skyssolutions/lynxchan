@@ -41,6 +41,11 @@ var boardParameters = [ {
   length : 256
 } ];
 
+exports.getValidSettings = function() {
+  return [ 'disableIds', 'disableCaptcha', 'forceAnonymity', 'allowCode',
+      'archive', 'early404', 'unindex' ];
+};
+
 // Section 1: Settings {
 function captchaOrAnonimityChanged(board, params) {
 
@@ -719,6 +724,12 @@ function getBoardReports(boardData, callback) {
       $exists : false
     },
     global : false
+  }, {
+    boardUri : 1,
+    threadId : 1,
+    creation : 1,
+    postId : 1,
+    reason : 1
   }).sort({
     creation : -1
   }).toArray(function(error, reports) {

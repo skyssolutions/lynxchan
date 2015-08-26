@@ -3,6 +3,9 @@
 // builds static JSON
 // json counterpart of domManipulator
 
+var settings = require('../boot').getGeneralSettings();
+var blockedBoardCreation = settings.restrictBoardCreation;
+
 var gridFsHandler = require('./gridFsHandler');
 
 // start of shared functions
@@ -241,4 +244,52 @@ exports.rules = function(boardUri, rules, callback) {
         boardUri : boardUri,
         type : 'rules'
       }, callback);
+};
+
+exports.account = function(userData) {
+
+  return JSON.stringify({
+    login : userData.login,
+    email : userData.email || '',
+    ownedBoards : userData.ownedBoards || [],
+    settings : userData.settings || [],
+    boardCreationAllowed : userData.globalRole < 2 || !blockedBoardCreation
+  });
+
+};
+
+exports.globalManagement = function(userRole, userLogin, staff, reports) {
+
+  return JSON.stringify({
+    login : userLogin,
+    globalRole : isNaN(userRole) ? 4 : userRole,
+    staff : staff || [],
+    reports : reports || []
+  });
+
+};
+
+exports.boardManagement = function(userLogin, boardData, reports) {
+
+  return JSON.stringify({
+    usesCustomSpoiler : boardData.usesCustomSpoiler,
+    volunteers : boardData.volunteers || [],
+    boardName : boardData.boardName,
+    boardDescription : boardData.boardDescription,
+    anonName : boardData.anonymousName,
+    hourlyThreadLimit : boardData.hourlyThreadLimit,
+    autoCaptchaThreshold : boardData.autoCaptchaThreshold,
+    settings : boardData.settings || [],
+    tags : boardData.tags || [],
+    boardMessage : boardData.boardMessage,
+    isOwner : userLogin === boardData.owner,
+    openReports : reports || reports
+  });
+
+};
+
+exports.closedReports = function(closedReports) {
+
+  return JSON.stringify(closedReports);
+
 };

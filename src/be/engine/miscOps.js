@@ -272,6 +272,12 @@ exports.getManagementData = function(userRole, userLogin, callback) {
           closedBy : {
             $exists : false
           }
+        }, {
+          boardUri : 1,
+          reason : 1,
+          threadId : 1,
+          creation : 1,
+          postId : 1
         }).sort({
           creation : -1
         }).toArray(function(gotReportserror, reports) {
