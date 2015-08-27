@@ -110,6 +110,8 @@ exports.getBannerData = function(user, boardUri, callback) {
       files.find({
         'metadata.boardUri' : boardUri,
         'metadata.type' : 'banner'
+      }, {
+        filename : 1
       }).sort({
         uploadDate : 1
       }).toArray(function(error, banners) {

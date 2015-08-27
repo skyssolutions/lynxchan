@@ -1,7 +1,6 @@
 'use strict';
 
 var miscOps = require('../miscOps');
-var crypto = require('crypto');
 var lang = require('../langOps').languagePack();
 var templateHandler = require('../templateHandler');
 var boot = require('../../boot');
@@ -76,8 +75,8 @@ function setPostingIp(cell, postingData, boardData) {
   labelRange.innerHTML = miscOps.getRange(postingData.ip).join('.');
 
   var labelIp = cell.getElementsByClassName('labelIp')[0];
-  labelIp.innerHTML = crypto.createHash('sha256').update(
-      boardData.ipSalt + postingData.ip).digest('hex');
+  labelIp.innerHTML = miscOps
+      .hashIpForDisplay(postingData.ip, boardData.ipSalt);
 
 }
 

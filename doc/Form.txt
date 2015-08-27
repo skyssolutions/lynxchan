@@ -301,6 +301,60 @@ Parameters:
     boardUri: board containing the thread.
     threadId: id of the thread.
 
+Json output(Object): object with the data of the thread.
+    signedRole: role of the user that posted the thread.
+    banMessage: message to be displayed indicating this message was a cause to a ban.
+    id: thread-wise id of the poster.
+    email: email of the poster.
+    markdown: message with html markdown applied.
+    flag: url of the used flag.
+    flagName: name of the used flag.
+    threadId(Number): unique id of the thread inside the board.
+    subject: subject of the thread.
+    lastEditTime(Date): date of the last time the message of the thread message was edited.
+    lastEditLogin: Login of the last user to edit the thread message.
+    message: text of the post.
+    name: name of the poster.
+    ip: hashed and salted ip of the poster.
+    range: range of the poster.
+    creation(Date): time when the post was created.
+    locked(Boolean: indicates if the thread is locked and cannot be replied to.
+    cyclic(Boolean): indicates if the thread is cyclic.
+    pinned(Boolean): indicates if the thread is pinned and will be listed on top of unpinned threads.
+    files(Array): files uploaded with the thread. Each object contains the following fields:
+        originalName: original name of the upload.
+        path: path for the file.
+        thumb: path for the file's thumbnail.
+        size(Number) size in bytes of the file.
+        name: name of the file.
+        mime: mime of the file.
+        width(Number): width of the file, if image.
+        height(Number): size of the file, if image.
+    posts(Array): array of the posts in this thread. Each object contains the following fields:
+        name: name of the poster.
+        signedRole: role of the user that posted the thread.
+        email: email of the poster.
+        flag: url of the used flag.
+        flagName: name of the used flag.
+        lastEditTime(Date): date of the last time the message of the thread message was edited.
+        lastEditLogin: Login of the last user to edit the thread message.
+        postId(Number): unique id of the post inside the board.
+        id: thread-wise id of the poster.
+        markdown: message with html markdown applied.
+        subject: subject of the thread.
+        message: text of the post.
+        banMessage: message to be displayed indicating this message was a cause to a ban.
+        creation(Date): time when the post was created.
+        files(Array): pre-aggregated array of files uploaded with the post. Each object contains the following fields:
+            originalName: original name of the upload.
+            path: path for the file.
+            thumb: path for the file's thumbnail.
+            size(Number) size in bytes of the file.
+            width(Number): width of the file, if image.
+            mime: mime of the file.
+            height(Number): size of the file, if image. 
+            name: name of the file.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::20
@@ -311,6 +365,12 @@ Description: displays the global or board bans. Requires authentication. Uses ge
 
 Parameters:
     boardUri: board to display the bans of. If not informed, global bans will be displayed instead. 
+
+Json output(Array): array with the bans. Each object contains the following values:
+    _id: unique id of the ban.
+    reason: reason of the ban.
+    expiration: when the ban expires.
+    appliedBy: login of the user that applied the ban.
 
 ------------------------------------------------------------------------------------------
 
@@ -384,6 +444,10 @@ Description: displays screen to manage board banners. It uses get parameters. Re
 
 Parameters:
     boardUri: URI of the board to be managed.
+
+Json output(Array): array of existing banners for the board. Each object contains the following fields:
+    _id: id of the banner.
+    filename: path for the banner.
 
 ------------------------------------------------------------------------------------------
 
@@ -463,6 +527,27 @@ Parameters:
     before: parseable date that if informed, will display only logs before the specified date.
     after: parseable date that if informed, will display only logs after the specified date.
     user: if informed, only logs for the user will be shown.
+
+Json output(Object): object with the data of the search. Contains the following fields:
+    pageCount: amount of pages found.
+    logs(Array): array with the found logs. Each object contains the following fields:
+        user: login of the user that caused this entry to be registered.
+        global(Boolean): indicates if the entry is global.
+        time: time of when the entry was registered.
+        description: message of the entry.
+        boardUri: board related to this entry.
+        type: type of the entry. May have one of the following values:
+            ban
+            deletion
+            banLift
+            reportClosure
+            globalRoleChange
+            boardDeletion
+            boardTransfer
+            rangeBan
+            hashBan
+            hashBanLift
+            archiveDeletion
     
 ------------------------------------------------------------------------------------------
 
@@ -474,6 +559,10 @@ Description: page used to manage filters of a board. Uses get parameters. Reserv
 
 Parameters:
     boardUri: URI of the board to have its filters managed.
+
+Json output(Array): array with filters of the board. Each object contains the following fields:
+    originalTerm: term to be replaced.
+    replacementTerm: term that will replace the original one.
 
 ------------------------------------------------------------------------------------------
 
@@ -511,6 +600,9 @@ Description: page used by global admins to moderate boards. It provides tools li
 Parameters:
     boardUri: URI of the board be moderated.
 
+Json output(Object): object with the moderation data of the board. Contains the following fields:
+    owner: login of the board owner.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::35
@@ -521,6 +613,16 @@ Description: displays all existing boards. Uses get parameters.
 
 Parameters:
     page: page to be viewed.
+
+Json output(Object): object with data regarding the available boards. Contains the following fields:
+    pageCount: total amount of available pages.
+    boards(Array): array with the available boards. Each object contains the following fields:
+        boardUri: uri of the board.
+        boardName: name of the board.
+        boardDescription: description of the board.
+        lastPostId(Number): total amount of posts made on this board so far.
+        postsPerHour(Number): how many posts this board received in the last hour.
+        tags(Array): array with strings identifying the subjects of the board.
 
 ------------------------------------------------------------------------------------------
 
@@ -556,6 +658,10 @@ Description: displays the page for management of range bans. Requires authentica
 Parameters: 
     boardUri: if informed, will display only range bans for the board.
 
+Json output(Array): array with the range bans found. Each object contains the following fields:
+    _id: unique id of the range ban.
+    range: range of the ban.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::39
@@ -578,6 +684,10 @@ Description: displays the page for management of hash bans. Requires authenticat
 
 Parameters: 
     boardUri: if informed, will display only hash bans for the board.
+
+Json output(Array): array with the hash bans. Each object contains the following fields:
+    _id: unique id of the hash ban.
+    md5: banned hash.
 
 ------------------------------------------------------------------------------------------
 
@@ -624,6 +734,8 @@ Description: displays the page used to manage a board rule's. Requires authentic
 Parameters: 
     boardUri: URI of the board the user wishes to manage it's rules.
 
+Json output(Array): array with the board rules.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::45
@@ -660,6 +772,9 @@ Parameters:
     boardUri: URI of the board to have a posting edited.
     threadId: id of the thread to be edited.
     postId: id of the post to be edited.
+
+Json output(Object): object with the data pertinent to the post being edited. Contains the following fields:
+    message: original message of the posting.
     
 ------------------------------------------------------------------------------------------
 

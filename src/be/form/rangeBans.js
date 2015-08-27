@@ -3,6 +3,7 @@
 var formOps = require('../engine/formOps');
 var url = require('url');
 var miscOps = require('../engine/miscOps');
+var jsonBuilder = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var modOps = require('../engine/modOps').ipBan;
 
@@ -13,9 +14,17 @@ function getRangeBans(userData, parameters, res) {
     if (error) {
       formOps.outputError(error, res);
     } else {
-      res.writeHead(200, miscOps.corsHeader('text/html'));
+      var json = parameters.json;
 
-      res.end(dom.rangeBans(rangeBans, parameters.boardUri));
+      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+          : 'text/html'));
+
+      if (json) {
+        res.end(jsonBuilder.rangeBans(rangeBans));
+      } else {
+        res.end(dom.rangeBans(rangeBans, parameters.boardUri));
+      }
+
     }
   });
 

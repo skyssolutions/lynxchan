@@ -24,6 +24,8 @@ function getHashBans(parameters, callback) {
     boardUri : parameters.boardUri ? parameters.boardUri : {
       $exists : false
     }
+  }, {
+    md5 : 1
   }).sort({
     md5 : 1
   }).toArray(function gotBans(error, hashBans) {

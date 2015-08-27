@@ -3,6 +3,7 @@
 var formOps = require('../engine/formOps');
 var url = require('url');
 var miscOps = require('../engine/miscOps');
+var jsonBuilder = require('../engine/jsonBuilder');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var modOps = require('../engine/modOps').edit;
 
@@ -13,9 +14,17 @@ function getPostingToEdit(userData, parameters, res) {
     if (error) {
       formOps.outputError(error, res);
     } else {
-      res.writeHead(200, miscOps.corsHeader('text/html'));
+      var json = parameters.json;
 
-      res.end(domManipulator.edit(parameters, message));
+      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+          : 'text/html'));
+
+      if (json) {
+        res.end(jsonBuilder.edit(message));
+      } else {
+        res.end(domManipulator.edit(parameters, message));
+      }
+
     }
   });
 

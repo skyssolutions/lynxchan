@@ -23,9 +23,6 @@ function setBanCell(ban, cell) {
   var appliedByLabel = cell.getElementsByClassName('appliedByLabel')[0];
   appliedByLabel.innerHTML = ban.appliedBy;
 
-  var boardLabel = cell.getElementsByClassName('boardLabel')[0];
-  boardLabel.innerHTML = ban.boardUri ? ban.boardUri : lang.miscAllBoards;
-
   cell.getElementsByClassName('idIdentifier')[0].setAttribute('value', ban._id);
 
 }

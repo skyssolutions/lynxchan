@@ -5,6 +5,7 @@ var settings = require('../boot').getGeneralSettings();
 var verbose = settings.verbose;
 var formOps = require('./formOps');
 var db = require('../db');
+var crypto = require('crypto');
 var users = db.users();
 var boot = require('../boot');
 var lang = require('./langOps').languagePack();
@@ -160,6 +161,12 @@ exports.getMime = function(pathName) {
   }
 
   return mime;
+};
+
+exports.hashIpForDisplay = function(ip, salt) {
+
+  return crypto.createHash('sha256').update(salt + ip).digest('hex');
+
 };
 
 // parameters must be an array of objects. each object must contain two keys:

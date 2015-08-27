@@ -769,10 +769,6 @@ appliedByLabel:
     use: have it's innerHTML manipulated.
     description: holds the login of the user that applied the ban.
 
-boardLabel: 
-    use: have it's innerHTML manipulated.
-    description: holds the board in which the ban relates to.
-
 ------------------------------------------------------------------------------------------
 
 TEM_ID::19

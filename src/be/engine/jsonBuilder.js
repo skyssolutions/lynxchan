@@ -3,6 +3,7 @@
 // builds static JSON
 // json counterpart of domManipulator
 
+var miscOps = require('../engine/miscOps');
 var settings = require('../boot').getGeneralSettings();
 var blockedBoardCreation = settings.restrictBoardCreation;
 
@@ -35,7 +36,7 @@ function getFilesArray(fileArray) {
 
 }
 
-function getPostObject(post, preview) {
+function getPostObject(post, preview, boardData, modding) {
   var toReturn = {
     name : post.name,
     signedRole : post.signedRole,
@@ -53,6 +54,11 @@ function getPostObject(post, preview) {
     files : getFilesArray(post.files)
   };
 
+  if (modding) {
+    toReturn.ip = miscOps.hashIpForDisplay(post.ip, boardData.ipSalt);
+    toReturn.range = miscOps.getRange(post.ip).join('.');
+  }
+
   if (!preview) {
     toReturn.postId = post.postId;
   }
@@ -60,7 +66,7 @@ function getPostObject(post, preview) {
   return toReturn;
 }
 
-function buildThreadPosts(posts) {
+function buildThreadPosts(posts, boardData, modding) {
   var threadPosts = [];
 
   if (posts) {
@@ -69,7 +75,7 @@ function buildThreadPosts(posts) {
 
       var post = posts[i];
 
-      var postToAdd = getPostObject(post);
+      var postToAdd = getPostObject(post, false, boardData, modding);
 
       threadPosts.push(postToAdd);
 
@@ -79,9 +85,9 @@ function buildThreadPosts(posts) {
   return threadPosts;
 }
 
-function getThreadObject(thread, posts) {
+function getThreadObject(thread, posts, boardData, modding) {
 
-  return {
+  var threadObject = {
     signedRole : thread.signedRole,
     banMessage : thread.banMessage,
     id : thread.id,
@@ -100,22 +106,37 @@ function getThreadObject(thread, posts) {
     pinned : thread.pinned ? true : false,
     cyclic : thread.cyclic ? true : false,
     files : getFilesArray(thread.files),
-    posts : buildThreadPosts(posts)
+    posts : buildThreadPosts(posts, boardData, modding)
   };
+
+  if (modding) {
+    threadObject.ip = miscOps.hashIpForDisplay(thread.ip, boardData.ipSalt);
+    threadObject.range = miscOps.getRange(thread.ip).join('.');
+  }
+
+  return threadObject;
 }
 // end of shared functions
 
-exports.thread = function(boardUri, boardData, flagData, threadData, posts,
-    callback) {
+exports.thread = function(boardUri, boardData, threadData, posts, callback,
+    modding) {
 
-  var path = '/' + boardUri + '/res/' + threadData.threadId + '.json';
+  var threadObject = getThreadObject(threadData, posts, boardData, modding);
 
-  gridFsHandler.writeData(JSON.stringify(getThreadObject(threadData, posts)),
-      path, 'application/json', {
-        boardUri : boardUri,
-        threadId : threadData.threadId,
-        type : 'thread'
-      }, callback);
+  if (modding) {
+    return JSON.stringify(threadObject);
+
+  } else {
+
+    var path = '/' + boardUri + '/res/' + threadData.threadId + '.json';
+
+    gridFsHandler.writeData(JSON.stringify(threadObject), path,
+        'application/json', {
+          boardUri : boardUri,
+          threadId : threadData.threadId,
+          type : 'thread'
+        }, callback);
+  }
 };
 
 exports.frontPage = function(boards, callback) {
@@ -291,5 +312,79 @@ exports.boardManagement = function(userLogin, boardData, reports) {
 exports.closedReports = function(closedReports) {
 
   return JSON.stringify(closedReports);
+
+};
+
+exports.bans = function(bans) {
+
+  return JSON.stringify(bans);
+
+};
+
+exports.bannerManagement = function(boardUri, banners) {
+
+  return JSON.stringify(banners);
+
+};
+
+exports.logs = function(logs, pageCount) {
+
+  return JSON.stringify({
+    pageCount : pageCount,
+    logs : logs
+  });
+
+};
+
+exports.filterManagement = function(filters) {
+
+  return JSON.stringify(filters);
+
+};
+
+exports.boardModeration = function(ownerData) {
+
+  return JSON.stringify({
+    owner : ownerData.login
+  });
+
+};
+
+exports.boards = function(pageCount, boards) {
+
+  return JSON.stringify({
+    pageCount : pageCount,
+    boards : boards
+  });
+
+};
+
+exports.rangeBans = function(rangeBans) {
+
+  for (var i = 0; i < rangeBans.length; i++) {
+    rangeBans[i].range = rangeBans[i].range.join('.');
+  }
+
+  return JSON.stringify(rangeBans);
+
+};
+
+exports.hashBans = function(hashBans) {
+
+  return JSON.stringify(hashBans);
+
+};
+
+exports.ruleManagement = function(rules) {
+
+  return JSON.stringify(rules);
+
+};
+
+exports.edit = function(message) {
+
+  return JSON.stringify({
+    message : message
+  });
 
 };

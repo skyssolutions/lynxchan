@@ -48,7 +48,11 @@ function getBans(parameters, callback) {
     }
   };
 
-  bans.find(queryBlock).sort({
+  bans.find(queryBlock, {
+    reason : 1,
+    expiration : 1,
+    appliedBy : 1
+  }).sort({
     creation : -1
   }).toArray(function gotBans(error, bans) {
     callback(error, bans);
@@ -93,7 +97,9 @@ function getRangeBans(parameters, callback) {
     }
   };
 
-  bans.find(queryBlock).sort({
+  bans.find(queryBlock, {
+    range : 1
+  }).sort({
     creation : -1
   }).toArray(function gotBans(error, rangeBans) {
     callback(error, rangeBans);

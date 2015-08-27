@@ -2,22 +2,31 @@
 
 var formOps = require('../engine/formOps');
 var url = require('url');
+var jsonBuilder = require('../engine/jsonBuilder');
 var miscOps = require('../engine/miscOps');
 var boardOps = require('../engine/boardOps').filters;
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
-function getFilterData(boardUri, userData, res) {
+function getFilterData(parameters, userData, res) {
 
-  boardOps.getFilterData(userData.login, boardUri, function gotFilterData(
-      error, filters) {
-    if (error) {
-      formOps.outputError(error, 500, res);
-    } else {
-      res.writeHead(200, miscOps.corsHeader('text/html'));
+  boardOps.getFilterData(userData.login, parameters.boardUri,
+      function gotFilterData(error, filters) {
+        if (error) {
+          formOps.outputError(error, 500, res);
+        } else {
+          var json = parameters.json;
 
-      res.end(dom.filterManagement(boardUri, filters));
-    }
-  });
+          res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+              : 'text/html'));
+
+          if (json) {
+            res.end(jsonBuilder.filterManagement(filters));
+          } else {
+            res.end(dom.filterManagement(parameters.boardUri, filters));
+          }
+
+        }
+      });
 
 }
 
@@ -28,7 +37,7 @@ exports.process = function(req, res) {
 
         var parameters = url.parse(req.url, true).query;
 
-        getFilterData(parameters.boardUri, userData, res);
+        getFilterData(parameters, userData, res);
 
       });
 

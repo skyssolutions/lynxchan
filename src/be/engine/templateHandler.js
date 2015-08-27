@@ -169,7 +169,7 @@ function loadAndTestTemplates(path, templateSettings) {
       {
         template : 'banCell',
         fields : [ 'reasonLabel', 'expirationLabel', 'appliedByLabel',
-            'boardLabel', 'idLabel' ]
+            'idLabel' ]
       },
       {
         template : 'logCell',

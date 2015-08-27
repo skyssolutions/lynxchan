@@ -3,19 +3,28 @@
 var boardOps = require('../engine/boardOps').meta;
 var url = require('url');
 var miscOps = require('../engine/miscOps');
+var jsonBuilder = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var formOps = require('../engine/formOps');
 
-function getBoardModerationData(board, userData, res) {
+function getBoardModerationData(parameters, userData, res) {
 
-  boardOps.getBoardModerationData(userData, board,
+  boardOps.getBoardModerationData(userData, parameters.boardUri,
       function gotBoardModerationData(error, boardData, ownerData) {
         if (error) {
           formOps.outputError(error, 500, res);
         } else {
-          res.writeHead(200, miscOps.corsHeader('text/html'));
+          var json = parameters.json;
 
-          res.end(dom.boardModeration(boardData, ownerData));
+          res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+              : 'text/html'));
+
+          if (json) {
+            res.end(jsonBuilder.boardModeration(ownerData));
+          } else {
+            res.end(dom.boardModeration(boardData, ownerData));
+          }
+
         }
       });
 }
@@ -26,6 +35,6 @@ exports.process = function(req, res) {
       function gotData(auth, userData) {
         var parameters = url.parse(req.url, true).query;
 
-        getBoardModerationData(parameters.boardUri, userData, res);
+        getBoardModerationData(parameters, userData, res);
       });
 };

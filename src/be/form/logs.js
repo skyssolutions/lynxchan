@@ -2,11 +2,12 @@
 
 var logs = require('../db').logs();
 var miscOps = require('../engine/miscOps');
+var jsonBuilder = require('../engine/jsonBuilder');
 var formOps = require('../engine/formOps');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var optionalParameters = [ 'type', 'before', 'after', 'user', 'boardUri' ];
 var settings = require('../boot').getGeneralSettings();
-var pageSize = settings.logPageSize || 50;
+var pageSize = settings.logPageSize;
 var url = require('url');
 
 function getParameters(req) {
@@ -88,20 +89,34 @@ exports.process = function(req, res) {
       var toSkip = (parameters.page - 1) * pageSize;
 
       // style exception, too simple
-
-      logs.find(queryBlock).sort({
+      logs.find(queryBlock, {
+        user : 1,
+        _id : 0,
+        type : 1,
+        time : 1,
+        boardUri : 1,
+        description : 1,
+        global : 1
+      }).sort({
         time : -1
-      }).skip(toSkip).limit(pageSize).toArray(function gotLogs(error, logs) {
-        if (error) {
-          formOps.outputError(error, 500, res);
-        } else {
-          res.writeHead(200, miscOps.corsHeader('text/html'));
+      }).skip(toSkip).limit(pageSize).toArray(
+          function gotLogs(error, logs) {
+            if (error) {
+              formOps.outputError(error, 500, res);
+            } else {
+              var json = parameters.json;
 
-          res.end(domManipulator.logs(logs, pageCount, parameters));
-        }
+              res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+                  : 'text/html'));
 
-      });
+              if (json) {
+                res.end(jsonBuilder.logs(logs, pageCount));
+              } else {
+                res.end(domManipulator.logs(logs, pageCount, parameters));
+              }
 
+            }
+          });
       // style exception, too simple
     }
 

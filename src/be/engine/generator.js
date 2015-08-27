@@ -445,8 +445,8 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
                 if (error) {
                   callback(error);
                 } else {
-                  jsonBuilder.thread(boardUri, boardData, flagData, threadData,
-                      posts, callback);
+                  jsonBuilder.thread(boardUri, boardData, threadData, posts,
+                      callback);
                 }
               });
           // style exception, too simple

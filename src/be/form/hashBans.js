@@ -2,6 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var url = require('url');
+var jsonBuilder = require('../engine/jsonBuilder');
 var miscOps = require('../engine/miscOps');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var modOps = require('../engine/modOps').hashBan;
@@ -13,9 +14,17 @@ function getHashBans(userData, parameters, res) {
         if (error) {
           formOps.outputError(error, res);
         } else {
-          res.writeHead(200, miscOps.corsHeader('text/html'));
+          var json = parameters.json;
 
-          res.end(dom.hashBans(hashBans, parameters.boardUri));
+          res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+              : 'text/html'));
+
+          if (json) {
+            res.end(jsonBuilder.hashBans(hashBans));
+          } else {
+            res.end(dom.hashBans(hashBans, parameters.boardUri));
+          }
+
         }
       });
 

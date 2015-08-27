@@ -3,6 +3,7 @@
 var boards = require('../db').boards();
 var miscOps = require('../engine/miscOps');
 var formOps = require('../engine/formOps');
+var jsonBuilder = require('../engine/jsonBuilder');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var settings = require('../boot').getGeneralSettings();
 var pageSize = settings.boardsPerPage || 50;
@@ -46,15 +47,24 @@ exports.process = function(req, res) {
         postsPerHour : -1,
         lastPostId : -1,
         boardUri : 1
-      }).skip(toSkip).limit(pageSize).toArray(function(error, foundBoards) {
-        if (error) {
-          formOps.outputError(error, 500, res);
-        } else {
-          res.writeHead(200, miscOps.corsHeader('text/html'));
+      }).skip(toSkip).limit(pageSize).toArray(
+          function(error, foundBoards) {
+            if (error) {
+              formOps.outputError(error, 500, res);
+            } else {
+              var json = parameters.json;
 
-          res.end(domManipulator.boards(foundBoards, pageCount));
-        }
-      });
+              res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+                  : 'text/html'));
+
+              if (json) {
+                res.end(jsonBuilder.boards(pageCount, foundBoards));
+              } else {
+                res.end(domManipulator.boards(foundBoards, pageCount));
+              }
+
+            }
+          });
       // style exception, too simple
 
     }

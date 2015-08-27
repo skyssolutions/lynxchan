@@ -2,19 +2,28 @@
 
 var formOps = require('../engine/formOps');
 var url = require('url');
+var jsonBuilder = require('../engine/jsonBuilder');
 var miscOps = require('../engine/miscOps');
 var boardOps = require('../engine/boardOps').rules;
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
-function getRulesData(boardUri, userData, res) {
+function getRulesData(parameters, userData, res) {
 
-  boardOps.boardRules(boardUri, userData, function gotRules(error, rules) {
+  boardOps.boardRules(parameters.boardUri, userData, function gotRules(error,
+      rules) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
-      res.writeHead(200, miscOps.corsHeader('text/html'));
+      var json = parameters.json;
 
-      res.end(dom.ruleManagement(boardUri, rules));
+      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+          : 'text/html'));
+
+      if (json) {
+        res.end(jsonBuilder.ruleManagement(rules));
+      } else {
+        res.end(dom.ruleManagement(parameters.boardUri, rules));
+      }
     }
   });
 
@@ -27,7 +36,7 @@ exports.process = function(req, res) {
 
         var parameters = url.parse(req.url, true).query;
 
-        getRulesData(parameters.boardUri, userData, res);
+        getRulesData(parameters, userData, res);
 
       });
 

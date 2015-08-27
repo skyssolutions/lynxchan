@@ -2,22 +2,33 @@
 
 var formOps = require('../engine/formOps');
 var url = require('url');
+var jsonBuilder = require('../engine/jsonBuilder');
 var miscOps = require('../engine/miscOps');
 var boardOps = require('../engine/boardOps').banners;
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
-function getBannerData(boardUri, userData, res) {
+function getBannerData(parameters, userData, res) {
 
-  boardOps.getBannerData(userData.login, boardUri, function gotBannerData(
-      error, banners) {
-    if (error) {
-      formOps.outputError(error, 500, res);
-    } else {
-      res.writeHead(200, miscOps.corsHeader('text/html'));
+  boardOps
+      .getBannerData(userData.login, parameters.boardUri,
+          function gotBannerData(error, banners) {
+            if (error) {
+              formOps.outputError(error, 500, res);
+            } else {
+              var json = parameters.json;
 
-      res.end(dom.bannerManagement(boardUri, banners));
-    }
-  });
+              res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+                  : 'text/html'));
+
+              if (json) {
+                res.end(jsonBuilder.bannerManagement(parameters.boardUri,
+                    banners));
+              } else {
+                res.end(dom.bannerManagement(parameters.boardUri, banners));
+              }
+
+            }
+          });
 }
 
 exports.process = function(req, res) {
@@ -26,6 +37,6 @@ exports.process = function(req, res) {
       function gotData(auth, userData) {
         var parameters = url.parse(req.url, true).query;
 
-        getBannerData(parameters.boardUri, userData, res);
+        getBannerData(parameters, userData, res);
       });
 };
