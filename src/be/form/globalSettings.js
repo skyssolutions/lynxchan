@@ -2,18 +2,25 @@
 
 var formOps = require('../engine/formOps');
 var miscOps = require('../engine/miscOps');
+var url = require('url');
+var jsonBuilder = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
-function getGlobalSettings(userData, res) {
+function getGlobalSettings(userData, res, json) {
 
   miscOps.getGlobalSettingsData(userData, function gotBannerData(error,
       settings) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
-      res.writeHead(200, miscOps.corsHeader('text/html'));
+      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+          : 'text/html'));
 
-      res.end(dom.globalSettings(settings));
+      if (json) {
+        res.end(jsonBuilder.globalSettings(settings));
+      } else {
+        res.end(dom.globalSettings(settings));
+      }
     }
   });
 
@@ -24,7 +31,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, false,
       function gotData(auth, userData) {
 
-        getGlobalSettings(userData, res);
+        getGlobalSettings(userData, res, url.parse(req.url, true).query.json);
 
       });
 

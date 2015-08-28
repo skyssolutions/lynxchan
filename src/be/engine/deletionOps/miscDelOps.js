@@ -272,7 +272,7 @@ function removeEarly404Files(results, callback) {
 
   var operations = [];
 
-  var genQueue = require('../generationQueue');
+  var genQueue = require('../../generationQueue');
 
   for (var i = 0; i < results.length; i++) {
     var board = results[i];

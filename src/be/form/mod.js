@@ -87,6 +87,7 @@ function getPostingData(boardData, flagData, parameters, res, json) {
         lastEditLogin : 1,
         id : 1,
         postId : 1,
+        message : 1,
         name : 1,
         files : 1,
         email : 1,

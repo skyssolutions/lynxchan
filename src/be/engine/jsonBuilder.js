@@ -10,7 +10,7 @@ var blockedBoardCreation = settings.restrictBoardCreation;
 var gridFsHandler = require('./gridFsHandler');
 
 // start of shared functions
-function getFilesArray(fileArray) {
+function getFilesArray(fileArray, modding) {
 
   var toReturn = [];
 
@@ -18,7 +18,7 @@ function getFilesArray(fileArray) {
     for (var i = 0; i < fileArray.length; i++) {
       var file = fileArray[i];
 
-      toReturn.push({
+      var toPush = {
         originalName : file.originalName,
         path : file.path,
         thumb : file.thumb,
@@ -27,7 +27,13 @@ function getFilesArray(fileArray) {
         size : file.size,
         width : file.width,
         height : file.height
-      });
+      };
+
+      if (modding) {
+        toPush.md5 = file.md5;
+      }
+
+      toReturn.push(toPush);
 
     }
   }
@@ -51,10 +57,10 @@ function getPostObject(post, preview, boardData, modding) {
     message : post.message,
     banMessage : post.banMessage,
     creation : post.creation,
-    files : getFilesArray(post.files)
+    files : getFilesArray(post.files, modding)
   };
 
-  if (modding) {
+  if (modding && post.ip) {
     toReturn.ip = miscOps.hashIpForDisplay(post.ip, boardData.ipSalt);
     toReturn.range = miscOps.getRange(post.ip).join('.');
   }
@@ -105,11 +111,11 @@ function getThreadObject(thread, posts, boardData, modding) {
     locked : thread.locked ? true : false,
     pinned : thread.pinned ? true : false,
     cyclic : thread.cyclic ? true : false,
-    files : getFilesArray(thread.files),
+    files : getFilesArray(thread.files, modding),
     posts : buildThreadPosts(posts, boardData, modding)
   };
 
-  if (modding) {
+  if (modding && thread.ip) {
     threadObject.ip = miscOps.hashIpForDisplay(thread.ip, boardData.ipSalt);
     threadObject.range = miscOps.getRange(thread.ip).join('.');
   }
@@ -385,6 +391,52 @@ exports.edit = function(message) {
 
   return JSON.stringify({
     message : message
+  });
+
+};
+
+exports.flagManagement = function(flags) {
+
+  return JSON.stringify(flags);
+
+};
+
+exports.globalSettings = function(globalSettings) {
+
+  return JSON.stringify({
+    address : globalSettings.address,
+    port : globalSettings.port,
+    autoSageLimit : globalSettings.autoSageLimit,
+    tempDirectory : globalSettings.tempDirectory,
+    emailSender : globalSettings.emailSender,
+    siteTitle : globalSettings.siteTitle,
+    maxRequestSizeMB : globalSettings.maxRequestSizeMB,
+    maxBoardTags : globalSettings.maxBoardTags,
+    verbose : globalSettings.verbose,
+    disableFloodCheck : globalSettings.disableFloodCheck,
+    mediaThumb : globalSettings.mediaThumb,
+    serveArchive : globalSettings.serveArchive,
+    fePath : globalSettings.fePath,
+    pageSize : globalSettings.pageSize,
+    latestPostCount : globalSettings.latestPostCount,
+    maxFiles : globalSettings.maxFiles,
+    maxThreadCount : globalSettings.maxThreadCount,
+    captchaExpiration : globalSettings.captchaExpiration,
+    maxFileSizeMB : globalSettings.maxFileSizeMB,
+    acceptedMimes : globalSettings.acceptedMimes,
+    logPageSize : globalSettings.logPageSize,
+    topBoardsCount : globalSettings.topBoardsCount,
+    boardsPerPage : globalSettings.boardsPerPage,
+    torSource : globalSettings.torSource,
+    maxBoardRules : globalSettings.maxBoardRules,
+    thumbSize : globalSettings.thumbSize,
+    maxFilters : globalSettings.maxFilters,
+    maxBoardVolunteers : globalSettings.maxBoardVolunteers,
+    maxBannerSizeKB : globalSettings.maxBannerSizeKB,
+    maxFlagSizeKB : globalSettings.maxFlagSizeKB,
+    floodTimerSec : globalSettings.floodTimerSec,
+    archiveLevel : globalSettings.archiveLevel,
+    captchaFonts : globalSettings.captchaFonts
   });
 
 };

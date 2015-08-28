@@ -324,6 +324,7 @@ Json output(Object): object with the data of the thread.
     files(Array): files uploaded with the thread. Each object contains the following fields:
         originalName: original name of the upload.
         path: path for the file.
+        md5: md5 hash of the file.
         thumb: path for the file's thumbnail.
         size(Number) size in bytes of the file.
         name: name of the file.
@@ -346,6 +347,7 @@ Json output(Object): object with the data of the thread.
         banMessage: message to be displayed indicating this message was a cause to a ban.
         creation(Date): time when the post was created.
         files(Array): pre-aggregated array of files uploaded with the post. Each object contains the following fields:
+            md5: md5 hash of the file.
             originalName: original name of the upload.
             path: path for the file.
             thumb: path for the file's thumbnail.
@@ -801,6 +803,10 @@ Description: displays the flag management page of a board. Uses get parameters, 
 Parameters:
     boardUri: URI of the board to have the flags managed.
 
+Json output(Array): array of flags of the board. Each object contains the following fields:
+    _id: unique id of the flag.
+    name: name of the flag.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::50
@@ -831,6 +837,41 @@ PAG_ID::52
 Name: globalSettings
 
 Description: displays the page that allows for the user to change global settings. Requires authentication. Restricted to root users.
+
+Json output(Object): object with the current global settings. It contains the following fields:
+    address: address to connect to.
+    port(Number): port to listen to.
+    autoSageLimit(Number): how many posts a thread must received before it stops being bumped.
+    tempDirectory: temporary directory to be used.
+    emailSender: e-mail to be used for sender when sending automated e-mail.
+    siteTitle: site title to be used.
+    maxRequestSizeMB(Number): maximum allowed request size in megabytes.
+    maxBoardTags(Number): maximum number allowed to be used for board tags.
+    verbose(Boolean): indicates if the server must use verbose mode.
+    disableFloodCheck(Boolean): indicates if the server must not block posts on flood.
+    mediaThumb(Boolean): indicates if the server will generate thumbnails for media files.
+    serveArchive(Boolean): indicates if the server will serve archives.
+    fePath: path to the front-end to be used.
+    pageSize(Number): how many threads should be displayed by page.
+    latestPostCount(Number): how many posts must be displayed per thread on board pages.
+    maxFiles(Number): how many files can be uploaded at once when posting.
+    maxThreadCount(Number): how many threads a board is allowed to have.
+    captchaExpiration(Number): how many minutes must pass before captchas expire.
+    maxFileSizeMB(Number): maximum size allowed for files in megabytes.
+    acceptedMimes(Array): array of valid mimes for uploads on posts.
+    logPageSize(Number): how many log entries should be displayed on the logs page.
+    topBoardsCount(Number): how many boards should be picked for top boards.
+    boardsPerPage(Number): how many boards should be displayed on the boards page.
+    torSource: url to be used to fetch ips of tor exit nodes.
+    maxBoardRules(Number): maximum number of rules boards can have.
+    thumbSize(Number): maximum dimension of thumbnails. Both for height and width.
+    maxFilters(Number): maximum number of filters a board can have.
+    maxBoardVolunteers(Number): maximum number of volunteers a board can have.
+    maxBannerSizeKB(Number): maximum size banners can have in kilobytes.
+    maxFlagSizeKB(Number): maximum size flags can have in kilobytes.
+    floodTimerSec(Number): minimum time in seconds users must wait between posts.
+    archiveLevel(Number): indicates what should be archived.
+    captchaFonts(Array): array of paths to font files to be used on captcha.
 
 ------------------------------------------------------------------------------------------
 
