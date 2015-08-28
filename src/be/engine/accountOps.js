@@ -5,6 +5,7 @@ var users = db.users();
 var requests = db.recoveryRequests();
 var miscOps = require('./miscOps');
 var bcrypt = require('bcrypt');
+var captchaOps = require('./captchaOps');
 var domManipulator = require('./domManipulator').dynamicPages.miscPages;
 var logger = require('../logger');
 var logs = db.logs();
@@ -114,22 +115,8 @@ exports.setGlobalRole = function(operatorData, parameters, callback, override) {
 };
 // end of global role change
 
-exports.registerUser = function(parameters, callback, role, override) {
-
-  if (!override && creationDisabled) {
-    callback(lang.errNoNewAccounts);
-    return;
-  }
-
-  miscOps.sanitizeStrings(parameters, newAccountParameters);
-
-  if (/\W/.test(parameters.login)) {
-    callback(lang.errInvalidLogin);
-    return;
-  } else if (role !== undefined && isNaN(role)) {
-    callback(lang.errInvalidRole);
-    return;
-  }
+// start of account creation
+function createAccount(parameters, role, callback) {
 
   bcrypt.hash(parameters.password, 8, function(error, hash) {
     if (error) {
@@ -158,13 +145,47 @@ exports.registerUser = function(parameters, callback, role, override) {
           exports.createSession(parameters.login, callback);
         }
       });
-
       // style exception, too simple
 
     }
   });
 
+}
+
+exports.registerUser = function(parameters, cb, role, override, captchaId) {
+
+  if (!override && creationDisabled) {
+    cb(lang.errNoNewAccounts);
+    return;
+  }
+
+  miscOps.sanitizeStrings(parameters, newAccountParameters);
+
+  if (/\W/.test(parameters.login)) {
+    cb(lang.errInvalidLogin);
+    return;
+  } else if (role !== undefined && isNaN(role)) {
+    cb(lang.errInvalidRole);
+    return;
+  }
+
+  if (override) {
+    createAccount(parameters, role, cb);
+  } else {
+    captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
+        function solvedCaptcha(error) {
+
+          if (error) {
+            cb(error);
+          } else {
+            createAccount(parameters, role, cb);
+          }
+
+        });
+  }
+
 };
+// end of account creation
 
 exports.createSession = function(login, callback) {
 

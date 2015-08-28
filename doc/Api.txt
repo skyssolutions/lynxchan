@@ -107,6 +107,7 @@ Parameters:
     login*: login of the account. 16 characters. Only a-Z,_ and 0-9 allowed.
     password*: password of the account.
     email: e-mail of the account. 64 characters.
+    captcha: input for captcha.
 
 Output: the hash of the recently created session for the account.
 
@@ -222,6 +223,7 @@ Description: reports posts or threads.
 
 Parameters: 
     reason: reason of the report. 256 characters.    
+    captcha: captcha input.
     global(Boolean): indicates if the reports are global.
     postings(Array): array of content to be reported. Contains objects with the following fields:
         board: board to which the content belongs.

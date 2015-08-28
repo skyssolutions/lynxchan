@@ -6,6 +6,7 @@ var miscOps = require('../miscOps');
 var moduleRoot = require('.');
 var ipBan = moduleRoot.ipBan;
 var common = moduleRoot.common;
+var captchaOps = require('../captchaOps');
 var lang = require('../langOps').languagePack();
 var db = require('../../db');
 var boards = db.boards();
@@ -93,20 +94,18 @@ function createReport(req, report, reportedContent, parameters, callback) {
     if (error && error.code !== 11000) {
       callback(error);
     } else {
-      exports.report(req, reportedContent, parameters, callback);
+      iterateReports(req, reportedContent, parameters, callback);
     }
   });
 
 }
 
-exports.report = function(req, reportedContent, parameters, callback) {
-
-  miscOps.sanitizeStrings(parameters, reportArguments);
+function iterateReports(req, reportedContent, parameters, cb) {
 
   if (!reportedContent.length) {
-    callback();
+    cb();
   } else if (reportedContent.length > 1 && !multipleReports) {
-    callback(lang.errDeniedMultipleReports);
+    cb(lang.errDeniedMultipleReports);
   } else {
 
     var report = reportedContent.shift();
@@ -115,8 +114,9 @@ exports.report = function(req, reportedContent, parameters, callback) {
 
     ipBan.checkForBan(req, uriToCheck, function checkedForBan(error, ban) {
       if (error || ban) {
-        callback(error, ban);
+        cb(error, ban);
       } else {
+
         // style exception, too simple
         var queryBlock = {
           boardUri : report.board,
@@ -125,11 +125,11 @@ exports.report = function(req, reportedContent, parameters, callback) {
 
         var countCb = function(error, count) {
           if (error) {
-            callback(error);
+            cb(error);
           } else if (!count) {
-            exports.report(req, reportedContent, parameters, callback);
+            iterateReports(req, reportedContent, parameters, cb);
           } else {
-            createReport(req, report, reportedContent, parameters, callback);
+            createReport(req, report, reportedContent, parameters, cb);
           }
 
         };
@@ -143,13 +143,29 @@ exports.report = function(req, reportedContent, parameters, callback) {
         } else {
           threads.count(queryBlock, countCb);
         }
-
         // style exception, too simple
+
       }
 
     });
 
   }
+
+}
+
+exports.report = function(req, reportedContent, parameters, captchaId, cb) {
+
+  miscOps.sanitizeStrings(parameters, reportArguments);
+
+  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
+      function solvedCaptcha(error) {
+        if (error) {
+          cb(error);
+        } else {
+          iterateReports(req, reportedContent, parameters, cb);
+        }
+
+      });
 
 };
 // } Section 2: Create report

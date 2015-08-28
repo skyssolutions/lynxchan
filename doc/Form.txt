@@ -76,6 +76,7 @@ Parameters:
     login*: login of the account. 16 characters. Only a-Z,_ and 0-9 allowed.
     password*: password of the account.
     email: e-mail of the account. 64 characters.
+    captcha: input for captcha.
 
 ------------------------------------------------------------------------------------------
 
@@ -245,7 +246,8 @@ Parameters:
     banMessage: message to be displayed in the banned content.
     action: action to be performed. 'ban', 'delete' and 'report' may be used, case insensitive.
     global: if any value is passed, indicates the reports are global.
-    expiration: date able to be converted to a new Date of when the bans should expire.
+    expiration: date able to be converted to a new Date of when the bans should expire.    
+    captcha: captcha input. Used only for reporting.
 
 ------------------------------------------------------------------------------------------
 

@@ -74,7 +74,7 @@ function processSplitKeyForGeneralUse(splitKey, reportedObjects) {
   }
 }
 
-function processParameters(req, userData, parameters, res) {
+function processParameters(req, userData, parameters, res, captchaId) {
 
   var reportedObjects = [];
   var threads = {};
@@ -97,7 +97,7 @@ function processParameters(req, userData, parameters, res) {
 
   if (parameters.action.toLowerCase() === 'report') {
 
-    modOps.report.report(req, reportedObjects, parameters,
+    modOps.report.report(req, reportedObjects, parameters, captchaId,
         function createdReports(error, ban) {
           if (error) {
             formOps.outputError(error, 500, res);
@@ -162,17 +162,17 @@ exports.process = function(req, res) {
       if (authenticate) {
 
         // style exception,too simple
-        accountOps.validate(auth, function validated(error, auth, userData) {
+        accountOps.validate(auth, function validated(error, newAuth, userData) {
           if (error) {
             formOps.outputError(error, 500, res);
           } else {
-            processParameters(req, userData, parameters, res);
+            processParameters(req, userData, parameters, res, auth.captchaid);
           }
         });
         // style exception,too simple
 
       } else {
-        processParameters(req, null, parameters, res);
+        processParameters(req, null, parameters, res, auth.captchaid);
       }
 
     });
