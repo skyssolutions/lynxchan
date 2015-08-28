@@ -16,8 +16,8 @@ var torOps = require('../torOps');
 var settings = require('../../boot').getGeneralSettings();
 var defaultBanMessage = settings.defaultBanMessage;
 var disableFloodCheck = settings.disableFloodCheck;
-var blockTor = settings.blockTor;
-var blockProxy = settings.blockProxy;
+var blockTor = settings.torAccess < 1;
+var blockProxy = settings.proxyAccess < 1;
 var logger = require('../../logger');
 
 if (!defaultBanMessage) {

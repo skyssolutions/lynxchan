@@ -18,6 +18,8 @@ var uploadHandler = require('../uploadHandler');
 var lang = require('../langOps').languagePack();
 var miscOps = require('../miscOps');
 var captchaOps = require('../captchaOps');
+var refuseTorFiles = settings.torAccess < 2;
+var refuseProxyFiles = settings.proxyAccess < 2;
 
 var latestPostsCount = settings.latestPostCount;
 var bumpLimit = settings.autoSageLimit;
@@ -307,22 +309,29 @@ function createPost(req, parameters, userData, postId, thread, board,
         common.recordFlood(ip);
       }
 
-      // style exception, too simple
-      uploadHandler.saveUploads(board, parameters.threadId, postId, parameters,
-          function savedFiles(error) {
-            if (error) {
-              if (verbose) {
-                console.log(error);
-              }
+      var refuseFiles = req.isTor && refuseTorFiles;
+      refuseFiles = refuseFiles || req.isProxy && refuseProxyFiles;
 
-              if (debug) {
-                throw error;
-              }
-            }
-            updateThread(parameters, postId, thread, cb, postToAdd);
+      if (!refuseFiles) {
+        // style exception, too simple
+        uploadHandler.saveUploads(board, parameters.threadId, postId,
+            parameters, function savedFiles(error) {
+              if (error) {
+                if (verbose) {
+                  console.log(error);
+                }
 
-          });
-      // style exception, too simple
+                if (debug) {
+                  throw error;
+                }
+              }
+              updateThread(parameters, postId, thread, cb, postToAdd);
+
+            });
+        // style exception, too simple
+      } else {
+        updateThread(parameters, postId, thread, cb, postToAdd);
+      }
 
     }
   });

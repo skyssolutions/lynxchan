@@ -251,3 +251,5 @@ logArchiveDeletion: object containing the pieces used for the log message when d
     boardPiece: piece used when a board is being deleted whole from the archives. Replaces: {$board}
     threadPiece: piece used when a thread is being deleted from the archives. Replaces: {$board}, {$thread}
     filesPiece: piece used when files are being deleted from the archives. Replaces: {$board}, {$files}
+guiProxyLevels: array containing the posting levels for proxy users. First elements indicates no posting, second posting without files, third posting with files.
+guiTorLevels: array containing the posting levels for proxy users. First elements indicates no posting, second posting without files, third posting with files.

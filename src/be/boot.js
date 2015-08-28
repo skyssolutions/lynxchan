@@ -64,7 +64,9 @@ exports.getDefaultSettings = function() {
     maxBannerSizeKB : 200,
     maxFlagSizeKB : 32,
     floodTimerSec : 10,
-    archiveLevel : 0
+    archiveLevel : 0,
+    torAccess : 0,
+    proxyAccess : 0
   };
 
 };

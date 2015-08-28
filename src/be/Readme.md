@@ -78,7 +78,6 @@ Settings files that goes into the settings directory:
 * `topBoardsCount`(Number): amount of boards to be listed in the top boards. Defaults to 25. 
 * `boardsPerPage`(Number): amount of boards to be listed in boards.js. Defaults to 50.
 * `torSource`: url to the list of TOR exit nodes ips. Defaults to `https://check.torproject.org/exit-addresses`.
-* `blockTor`(Boolean): if true, TOR users will be blocked.
 * `languagePackPath`: absolute path to an optional language pack.
 * `mediaThumb`(Boolean): if true, videos and music will generate thumbs instead of using the generic ones. Requires ffmpeg installed.
 * `maxBoardRules`(Number): maximum amount of rules that board owners can set. Defaults to 20.
@@ -94,7 +93,8 @@ Settings files that goes into the settings directory:
 * `serveArchive`(Boolean): indicates that the application will serve the archive on sub-domain `archive`.
 * `maxBoardTags`(Number): maximum amount of tags each board can have. Defaults to 5.
 * `disableFloodCheck`(Boolean): indicates if the flood checks should be disabled. This shouldn't affect performance at all, since it's meant to be used for benchmarking purposes.
-* `blockProxy`(Boolean): indicates that proxy users are blocked.
+* `torAccess`(Number): access allowed for TOR users. 0 will block them completely, 1 will allow them to post without uploads, 2 will allow for them to post normally.
+* `proxyAccess`(Number): access allowed for proxy users. See torAccess.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

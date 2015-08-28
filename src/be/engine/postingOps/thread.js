@@ -16,6 +16,8 @@ var uploadHandler = require('../uploadHandler');
 var lang = require('../langOps').languagePack();
 var miscOps = require('../miscOps');
 var captchaOps = require('../captchaOps');
+var refuseTorFiles = settings.torAccess < 2;
+var refuseProxyFiles = settings.proxyAccess < 2;
 
 var threadLimit = settings.maxThreadCount;
 
@@ -150,25 +152,34 @@ function createThread(req, userData, parameters, board, threadId, wishesToSign,
         common.recordFlood(ip);
       }
 
-      // style exception, too simple
-      uploadHandler.saveUploads(board, threadId, null, parameters,
-          function savedUploads(error) {
-            if (error) {
-              if (verbose) {
-                console.log(error);
+      var refuseFiles = req.isTor && refuseTorFiles;
+      refuseFiles = refuseFiles || req.isProxy && refuseProxyFiles;
+
+      if (!refuseFiles) {
+
+        // style exception, too simple
+        uploadHandler.saveUploads(board, threadId, null, parameters,
+            function savedUploads(error) {
+              if (error) {
+                if (verbose) {
+                  console.log(error);
+                }
+
+                if (debug) {
+                  throw error;
+                }
               }
 
-              if (debug) {
-                throw error;
-              }
-            }
+              updateBoardForThreadCreation(parameters.boardUri, threadId,
+                  enabledCaptcha, callback, threadToAdd);
 
-            updateBoardForThreadCreation(parameters.boardUri, threadId,
-                enabledCaptcha, callback, threadToAdd);
+            });
+        // style exception, too simple
 
-          });
-      // style exception, too simple
-
+      } else {
+        updateBoardForThreadCreation(parameters.boardUri, threadId,
+            enabledCaptcha, callback, threadToAdd);
+      }
     }
   });
 

@@ -874,6 +874,8 @@ Json output(Object): object with the current global settings. It contains the fo
     floodTimerSec(Number): minimum time in seconds users must wait between posts.
     archiveLevel(Number): indicates what should be archived.
     captchaFonts(Array): array of paths to font files to be used on captcha.
+    torAccess(Number): level of access for tor users.
+    proxyAccess(Number): level of access for proxy users.
 
 ------------------------------------------------------------------------------------------
 
@@ -916,7 +918,6 @@ Parameters:
     floodInterval(Number): amount of seconds users must wait before posting again so their post won't be discarded as flood.
     disable304(Boolean): disabled http response 304.
     verbose(Boolean): enables verbose mode on the server.
-    blockTor(Boolean): blocks tor users.
     mediaThumb(Boolean): generated thumbnails from media files.
     maintenance(Boolean): sets the server to maintenance mode.
     disableAccountCreation(Boolean): disables account creation.
@@ -926,7 +927,9 @@ Parameters:
     archiveLevel(Number): level of archiving. 0 = no archives. 1 = only pages. 2 = pages and files.
     maxTags(Number): maximum amount of tags per board.
     disableFloodCheck(Boolean): disables flood checks.
-    blockProxy(Boolean): blocks proxy users.
+    torAccess(Number): access for tor users.
+    proxyAccess(Number): access for proxy users.    
+   
 
 ------------------------------------------------------------------------------------------
 

@@ -262,5 +262,15 @@
     "boardPiece": "board /{$board}/.",
     "threadPiece": "thread {$thread} from board /{$board}/.",
     "filesPiece": "files {$files} from board /{$board}/."
-  }
+  },
+  "guiProxyLevels": [
+    "No posting",
+    "Post without files",
+    "Post with files"
+  ],
+  "guiTorLevels": [
+    "No posting",
+    "Post without files",
+    "Post with files"
+  ]
 }

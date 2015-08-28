@@ -389,11 +389,11 @@ function loadAndTestTemplates(path, templateSettings) {
             'fieldLanguagePack', 'fieldMaxRules', 'fieldThumbSize',
             'fieldMaxFilters', 'fieldMaxVolunteers', 'fieldMaxBannerSize',
             'fieldMaxFlagSize', 'fieldFloodInterval', 'checkboxVerbose',
-            'checkboxDisable304', 'checkboxSsl', 'checkboxBlockTor',
+            'checkboxDisable304', 'checkboxSsl', 'comboTorAccess',
             'checkboxMediaThumb', 'checkboxMaintenance', 'comboArchive',
             'checkboxMultipleReports', 'checkboxDisableAccountCreation',
             'checkboxRestrictBoardCreation', 'checkboxServeArchive',
-            'fieldMaxTags', 'checkboxDisableFloodCheck', 'checkboxBlockProxy' ]
+            'fieldMaxTags', 'checkboxDisableFloodCheck', 'comboProxyAccess' ]
       }, {
         template : 'archiveDeletionPage',
         fields : []

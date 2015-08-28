@@ -438,9 +438,10 @@ function getParametersArray() {
     type : 'boolean',
     setting : 'verbose'
   }, {
-    param : 'blockTor',
-    type : 'boolean',
-    setting : 'blockTor'
+    param : 'torAccess',
+    type : 'range',
+    limit : 2,
+    setting : 'torAccess'
   }, {
     param : 'disableFloodCheck',
     type : 'boolean',
@@ -466,9 +467,10 @@ function getParametersArray() {
     type : 'boolean',
     setting : 'multipleReports'
   }, {
-    param : 'blockProxy',
-    type : 'boolean',
-    setting : 'blockProxy'
+    param : 'proxyAccess',
+    type : 'range',
+    limit : 2,
+    setting : 'proxyAccess'
   }, {
     param : 'ssl',
     type : 'boolean',

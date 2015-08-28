@@ -193,10 +193,6 @@ var siteSettingsRelation = {
     setting : 'ssl',
     type : 'boolean'
   },
-  checkboxBlockTor : {
-    setting : 'blockTor',
-    type : 'boolean'
-  },
   checkboxMediaThumb : {
     setting : 'mediaThumb',
     type : 'boolean'
@@ -207,10 +203,6 @@ var siteSettingsRelation = {
   },
   checkboxMultipleReports : {
     setting : 'multipleReports',
-    type : 'boolean'
-  },
-  checkboxBlockProxy : {
-    setting : 'blockProxy',
     type : 'boolean'
   },
   checkboxDisableFloodCheck : {
@@ -241,6 +233,16 @@ var siteSettingsRelation = {
     setting : 'archiveLevel',
     type : 'combo',
     options : lang.guiArchiveLevels
+  },
+  comboProxyAccess : {
+    setting : 'proxyAccess',
+    type : 'combo',
+    options : lang.guiProxyLevels
+  },
+  comboTorAccess : {
+    setting : 'torAccess',
+    type : 'combo',
+    options : lang.guiTorLevels
   }
 };
 

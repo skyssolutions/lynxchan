@@ -1565,10 +1565,6 @@ checkboxSsl:
     use: might be turned on.
     description: indicates the server has ssl enabled.
 
-checkboxBlockTor:
-    use: might be turned on.
-    description: indicates the server is blocking TOR users.
-
 checkboxMediaThumb:
     use: might be turned on.
     description: indicates the server is generating thumbnails for audio and video files.
@@ -1601,9 +1597,13 @@ comboArchive:
     use: have children appended to it.
     description: indicates the level of archiving enabled.
 
-checkboxBlockProxy:
-    use: might be turned on.
-    description: indicates if proxy users are blocked.
+comboProxyAccess:
+    use: have children appended to it.
+    description: indicates the level of access users have.
+
+comboTorAccess:
+    use: have children appended to it.
+    description: indicates the level of access TOR users have.
 
 ------------------------------------------------------------------------------------------
 

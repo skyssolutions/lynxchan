@@ -436,7 +436,9 @@ exports.globalSettings = function(globalSettings) {
     maxFlagSizeKB : globalSettings.maxFlagSizeKB,
     floodTimerSec : globalSettings.floodTimerSec,
     archiveLevel : globalSettings.archiveLevel,
-    captchaFonts : globalSettings.captchaFonts
+    captchaFonts : globalSettings.captchaFonts,
+    torAccess : globalSettings.torAccess,
+    proxyAccess : globalSettings.proxyAccess
   });
 
 };
