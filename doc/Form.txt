@@ -988,4 +988,16 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::59
+
+Name: deleteFromIp
+
+Description: deletes posts and threads from an ip from multiple boards. Requires authentication. Reserved for users with an role equal or lower than the global setting clearIpMinRole.
+
+Parameters:
+    ip*: ip to have its posts deleted.
+    boards: uri of the boards to have posts from the informed ip deleted. If not informed, the posts from the ip will be deleted from all boards.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

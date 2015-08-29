@@ -274,5 +274,7 @@
     "No posting",
     "Post without files",
     "Post with files"
-  ]
+  ],
+  "errDeniedIpDeletion": "You are now allowed to delete all posts from a single ip.",
+  "msgDeletedFromIp": "Posts from ip deleted."
 }

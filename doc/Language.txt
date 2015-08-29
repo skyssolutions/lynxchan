@@ -249,3 +249,5 @@ logArchiveDeletion: object containing the pieces used for the log message when d
 guiProxyLevels: array containing the posting levels for proxy users. First element indicates no posting, second posting without files, third posting with files.
 guiTorLevels: array containing the posting levels for proxy users. First element indicates no posting, second posting without files, third posting with files.
 miscRoles: array with the global roles. First element is for the root role, second for admin, third for global volunteer, fourth for global janitor, fifth for regular users.
+errDeniedIpDeletion: error thrown when the user is not allowed to delete posts from a single ip.
+msgDeletedFromIp: message displayed after deleting postings from an ip.

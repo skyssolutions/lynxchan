@@ -500,6 +500,10 @@ hashBansLink:
     use: might be removed.
     description: link to the hash bans management page.
 
+ipDeletionForm:
+    use: might be removed.
+    description: form used to delete all posts from the whole site coming from a single ip.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::11

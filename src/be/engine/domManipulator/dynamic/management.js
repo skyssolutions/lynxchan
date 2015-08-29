@@ -520,6 +520,23 @@ function setGlobalManagementLinks(userRole, document) {
   }
 }
 
+function processHideableForms(document, userRole) {
+
+  if (userRole < 2) {
+    setNewStaffComboBox(document, userRole);
+  } else {
+    common.removeElement(document.getElementById('addStaffForm'));
+  }
+
+  var allowedToDeleteFromIp = userRole <= settings.clearIpMinRole;
+
+  if (!allowedToDeleteFromIp) {
+    common.removeElement(document.getElementById('ipDeletionForm'));
+
+  }
+
+}
+
 exports.globalManagement = function(userRole, userLogin, staff, reports) {
 
   try {
@@ -531,11 +548,7 @@ exports.globalManagement = function(userRole, userLogin, staff, reports) {
 
     setGlobalManagementLinks(userRole, document);
 
-    if (userRole < 2) {
-      setNewStaffComboBox(document, userRole);
-    } else {
-      common.removeElement(document.getElementById('addStaffForm'));
-    }
+    processHideableForms(document, userRole);
 
     var userLabel = document.getElementById('userLabel');
 

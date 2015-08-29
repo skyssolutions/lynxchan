@@ -279,7 +279,7 @@ function loadAndTestTemplates(path, templateSettings) {
         template : 'gManagement',
         fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
             'reportDiv', 'bansLink', 'rangeBansLink', 'hashBansLink',
-            'globalSettingsLink', 'archiveDeletionLink' ]
+            'globalSettingsLink', 'archiveDeletionLink', 'ipDeletionForm' ]
       },
       {
         template : 'bManagement',
