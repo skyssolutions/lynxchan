@@ -150,18 +150,36 @@ exports.setNewSettings = function(settings, callback) {
 
 };
 
+function reloadDirectory(directory) {
+
+  var dirListing = fs.readdirSync(directory);
+
+  for (var i = 0; i < dirListing.length; i++) {
+
+    var module = dirListing[i];
+
+    if (module !== 'index.js') {
+
+      var fullPath = directory + '/' + module;
+
+      var stat = fs.statSync(fullPath);
+
+      if (stat.isDirectory()) {
+        reloadDirectory(fullPath);
+      }
+
+      delete require.cache[require.resolve(fullPath)];
+    }
+  }
+
+}
+
 exports.reload = function() {
 
   for (var i = 0; i < reloadDirectories.length; i++) {
-    var directory = reloadDirectories[i];
 
-    var dirListing = fs.readdirSync(__dirname + '/' + directory);
+    reloadDirectory(__dirname + '/' + reloadDirectories[i]);
 
-    for (var j = 0; j < dirListing.length; j++) {
-
-      var module = require.resolve('./' + directory + '/' + dirListing[j]);
-      delete require.cache[module];
-    }
   }
 
   exports.loadSettings();
