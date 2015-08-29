@@ -243,6 +243,12 @@ var siteSettingsRelation = {
     setting : 'torAccess',
     type : 'combo',
     options : lang.guiTorLevels
+  },
+  comboMinClearIpRole : {
+    setting : 'clearIpMinRole',
+    type : 'combo',
+    options : lang.miscRoles,
+    limit : 4
   }
 };
 
@@ -729,7 +735,11 @@ exports.flagManagement = function(boardUri, flags, callback) {
 // Section 6: Global settings {
 function setComboSetting(document, element, setting) {
 
-  for (var i = 0; i < setting.options.length; i++) {
+  var limit = setting.limit && setting.limit < setting.options.length;
+
+  limit = limit ? setting.limit : setting.options.length;
+
+  for (var i = 0; i < limit; i++) {
 
     var option = document.createElement('option');
     option.value = i;

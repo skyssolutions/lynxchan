@@ -542,6 +542,7 @@ Parameters:
     disableFloodCheck(Boolean): disables flood checks.
     torAccess(Number): access level for TOR users.
     proxyAccess(Number): access level for proxy users.    
+    clearIpMinRole(Number): minimum global role required so an user must be able to see non-hashed ips from users.
 
 ------------------------------------------------------------------------------------------
 

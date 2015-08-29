@@ -69,14 +69,14 @@ exports.getReportLink = function(report) {
   return link;
 };
 
-function setPostingIp(cell, postingData, boardData) {
+function setPostingIp(cell, postingData, boardData, userRole) {
 
   var labelRange = cell.getElementsByClassName('labelRange')[0];
   labelRange.innerHTML = miscOps.getRange(postingData.ip).join('.');
 
   var labelIp = cell.getElementsByClassName('labelIp')[0];
-  labelIp.innerHTML = miscOps
-      .hashIpForDisplay(postingData.ip, boardData.ipSalt);
+  labelIp.innerHTML = miscOps.hashIpForDisplay(postingData.ip,
+      boardData.ipSalt, userRole);
 
 }
 
@@ -243,7 +243,8 @@ function setSharedHideableElements(posting, cell) {
 }
 
 // Section 2: Thread content {
-function setThreadHiddeableElements(thread, cell, modding, boardUri, bData) {
+function setThreadHiddeableElements(thread, cell, modding, boardUri, bData,
+    userRole) {
 
   for ( var key in exports.indicatorsRelation) {
     if (!thread[key]) {
@@ -268,7 +269,7 @@ function setThreadHiddeableElements(thread, cell, modding, boardUri, bData) {
   }
 
   if (modding && thread.ip) {
-    setPostingIp(cell, thread, bData);
+    setPostingIp(cell, thread, bData, userRole);
   } else {
     exports.removeElement(cell.getElementsByClassName('panelIp')[0]);
   }
@@ -331,7 +332,7 @@ function getThreadCellBase(document, thread) {
 }
 
 exports.addThread = function(document, thread, posts, boardUri, innerPage,
-    modding, boardData) {
+    modding, boardData, userRole) {
 
   var threadCell = getThreadCellBase(document, thread);
 
@@ -351,7 +352,8 @@ exports.addThread = function(document, thread, posts, boardUri, innerPage,
 
   setThreadComplexElements(boardUri, thread, threadCell, innerPage);
 
-  setThreadHiddeableElements(thread, threadCell, modding, boardUri, boardData);
+  setThreadHiddeableElements(thread, threadCell, modding, boardUri, boardData,
+      userRole);
 
   setThreadSimpleElements(threadCell, thread);
 
@@ -361,7 +363,7 @@ exports.addThread = function(document, thread, posts, boardUri, innerPage,
   document.getElementById('divThreads').appendChild(threadCell);
 
   addPosts(document, posts || [], boardUri, thread.threadId, modding,
-      threadCell.getElementsByClassName('divPosts')[0], boardData);
+      threadCell.getElementsByClassName('divPosts')[0], boardData, userRole);
 };
 
 // Section 2.1: Post content {
@@ -431,10 +433,10 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document,
 }
 
 function setPostModElements(post, modding, postCell, boardUri, threadId,
-    boardData) {
+    boardData, userRole) {
 
   if (modding && post.ip) {
-    setPostingIp(postCell, post, boardData);
+    setPostingIp(postCell, post, boardData, userRole);
   } else {
     exports.removeElement(postCell.getElementsByClassName('panelIp')[0]);
   }
@@ -449,7 +451,7 @@ function setPostModElements(post, modding, postCell, boardUri, threadId,
 }
 
 exports.setPostInnerElements = function(document, boardUri, threadId, post,
-    postCell, preview, modding, boardData) {
+    postCell, preview, modding, boardData, userRole) {
 
   var linkName = postCell.getElementsByClassName('linkName')[0];
 
@@ -468,14 +470,15 @@ exports.setPostInnerElements = function(document, boardUri, threadId, post,
 
   setPostHideableElements(postCell, post);
 
-  setPostModElements(post, modding, postCell, boardUri, threadId, boardData);
+  setPostModElements(post, modding, postCell, boardUri, threadId, boardData,
+      userRole);
 
   setPostComplexElements(postCell, post, boardUri, threadId, document, preview,
       modding);
 };
 
 function addPosts(document, posts, boardUri, threadId, modding, divPosts,
-    boardData) {
+    boardData, userRole) {
 
   for (var i = 0; i < posts.length; i++) {
     var postCell = document.createElement('div');
@@ -490,7 +493,7 @@ function addPosts(document, posts, boardUri, threadId, modding, divPosts,
     postCell.id = post.postId;
 
     exports.setPostInnerElements(document, boardUri, threadId, post, postCell,
-        false, modding, boardData);
+        false, modding, boardData, userRole);
 
     divPosts.appendChild(postCell);
   }

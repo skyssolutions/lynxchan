@@ -42,7 +42,7 @@ function getFilesArray(fileArray, modding) {
 
 }
 
-function getPostObject(post, preview, boardData, modding) {
+function getPostObject(post, preview, boardData, modding, userRole) {
   var toReturn = {
     name : post.name,
     signedRole : post.signedRole,
@@ -61,7 +61,7 @@ function getPostObject(post, preview, boardData, modding) {
   };
 
   if (modding && post.ip) {
-    toReturn.ip = miscOps.hashIpForDisplay(post.ip, boardData.ipSalt);
+    toReturn.ip = miscOps.hashIpForDisplay(post.ip, boardData.ipSalt, userRole);
     toReturn.range = miscOps.getRange(post.ip).join('.');
   }
 
@@ -72,7 +72,7 @@ function getPostObject(post, preview, boardData, modding) {
   return toReturn;
 }
 
-function buildThreadPosts(posts, boardData, modding) {
+function buildThreadPosts(posts, boardData, modding, userRole) {
   var threadPosts = [];
 
   if (posts) {
@@ -81,7 +81,7 @@ function buildThreadPosts(posts, boardData, modding) {
 
       var post = posts[i];
 
-      var postToAdd = getPostObject(post, false, boardData, modding);
+      var postToAdd = getPostObject(post, false, boardData, modding, userRole);
 
       threadPosts.push(postToAdd);
 
@@ -91,7 +91,7 @@ function buildThreadPosts(posts, boardData, modding) {
   return threadPosts;
 }
 
-function getThreadObject(thread, posts, boardData, modding) {
+function getThreadObject(thread, posts, boardData, modding, userRole) {
 
   var threadObject = {
     signedRole : thread.signedRole,
@@ -112,11 +112,12 @@ function getThreadObject(thread, posts, boardData, modding) {
     pinned : thread.pinned ? true : false,
     cyclic : thread.cyclic ? true : false,
     files : getFilesArray(thread.files, modding),
-    posts : buildThreadPosts(posts, boardData, modding)
+    posts : buildThreadPosts(posts, boardData, modding, userRole)
   };
 
   if (modding && thread.ip) {
-    threadObject.ip = miscOps.hashIpForDisplay(thread.ip, boardData.ipSalt);
+    threadObject.ip = miscOps.hashIpForDisplay(thread.ip, boardData.ipSalt,
+        userRole);
     threadObject.range = miscOps.getRange(thread.ip).join('.');
   }
 
@@ -125,9 +126,10 @@ function getThreadObject(thread, posts, boardData, modding) {
 // end of shared functions
 
 exports.thread = function(boardUri, boardData, threadData, posts, callback,
-    modding) {
+    modding, userRole) {
 
-  var threadObject = getThreadObject(threadData, posts, boardData, modding);
+  var threadObject = getThreadObject(threadData, posts, boardData, modding,
+      userRole);
 
   if (modding) {
     return JSON.stringify(threadObject);
@@ -438,7 +440,8 @@ exports.globalSettings = function(globalSettings) {
     archiveLevel : globalSettings.archiveLevel,
     captchaFonts : globalSettings.captchaFonts,
     torAccess : globalSettings.torAccess,
-    proxyAccess : globalSettings.proxyAccess
+    proxyAccess : globalSettings.proxyAccess,
+    clearIpMinRole : globalSettings.clearIpMinRole
   });
 
 };

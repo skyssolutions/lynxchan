@@ -159,7 +159,7 @@ function setModElements(modding, document, boardUri, boardData, threadData,
 }
 
 exports.thread = function(boardUri, boardData, flagData, threadData, posts,
-    callback, modding) {
+    callback, modding, userRole) {
 
   try {
     var document = jsdom(templateHandler.threadPage);
@@ -180,10 +180,10 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
     setThreadHiddenIdentifiers(document, boardUri, threadData);
 
     common.addThread(document, threadData, posts, boardUri, true, modding,
-        boardData);
+        boardData, userRole);
 
     setModElements(modding, document, boardUri, boardData, threadData, posts,
-        callback);
+        callback, userRole);
 
   } catch (error) {
     callback(error);

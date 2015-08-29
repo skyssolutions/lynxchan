@@ -1605,6 +1605,10 @@ comboTorAccess:
     use: have children appended to it.
     description: indicates the level of access TOR users have.
 
+comboMinClearIpRole:
+    use: have children appended to it.
+    description: indicates the minimum global role required so user are able to see clear ips from users.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::52

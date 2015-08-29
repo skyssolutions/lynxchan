@@ -13,18 +13,18 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var modOps = require('../engine/modOps').common;
 var formOps = require('../engine/formOps');
 
-function outputModData(boardData, flagData, thread, posts, res, json) {
+function outputModData(bData, flagData, thread, posts, res, json, userRole) {
 
   if (json) {
     res.writeHead(200, miscOps.corsHeader('application/json'));
 
-    res.end(jsonBuilder.thread(boardData.boardUri, boardData, thread, posts,
-        null, true));
+    res.end(jsonBuilder.thread(bData.boardUri, bData, thread, posts, null,
+        true, userRole));
 
   } else {
 
-    domManipulator.thread(boardData.boardUri, boardData, flagData, thread,
-        posts, function gotThreadContent(error, content) {
+    domManipulator.thread(bData.boardUri, bData, flagData, thread, posts,
+        function gotThreadContent(error, content) {
           if (error) {
             formOps.outputError(error, res);
           } else {
@@ -32,12 +32,12 @@ function outputModData(boardData, flagData, thread, posts, res, json) {
 
             res.end(content);
           }
-        }, true);
+        }, true, userRole);
   }
 
 }
 
-function getPostingData(boardData, flagData, parameters, res, json) {
+function getPostingData(boardData, flagData, parameters, res, json, userRole) {
 
   threads.findOne({
     threadId : +parameters.threadId,
@@ -95,14 +95,16 @@ function getPostingData(boardData, flagData, parameters, res, json) {
         markdown : 1
       }).sort({
         creation : 1
-      }).toArray(function gotPosts(error, posts) {
-        if (error) {
-          formOps.outputError(error, 500, res);
-        } else {
-          outputModData(boardData, flagData, thread, posts, res, json);
-        }
+      }).toArray(
+          function gotPosts(error, posts) {
+            if (error) {
+              formOps.outputError(error, 500, res);
+            } else {
+              outputModData(boardData, flagData, thread, posts, res, json,
+                  userRole);
+            }
 
-      });
+          });
 
       // style exception, too simple
     }
@@ -111,10 +113,10 @@ function getPostingData(boardData, flagData, parameters, res, json) {
 
 }
 
-function getFlags(board, parameters, res, json) {
+function getFlags(board, parameters, res, json, userRole) {
 
   if (json) {
-    getPostingData(board, null, parameters, res, true);
+    getPostingData(board, null, parameters, res, true, userRole);
   } else {
 
     flags.find({
@@ -127,7 +129,7 @@ function getFlags(board, parameters, res, json) {
       if (error) {
         formOps.outputError(error, 500, res);
       } else {
-        getPostingData(board, flagData, parameters, res);
+        getPostingData(board, flagData, parameters, res, false, userRole);
       }
     });
   }
@@ -170,7 +172,8 @@ exports.process = function(req, res) {
           } else if (!modOps.isInBoardStaff(userData, board) && !globalStaff) {
             formOps.outputError(lang.errDeniedManageBoard, 500, res);
           } else {
-            getFlags(board, parameters, res, parameters.json);
+            getFlags(board, parameters, res, parameters.json,
+                userData.globalRole);
           }
         });
         // style exception, too simple

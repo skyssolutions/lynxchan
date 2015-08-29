@@ -66,7 +66,8 @@ exports.getDefaultSettings = function() {
     floodTimerSec : 10,
     archiveLevel : 0,
     torAccess : 0,
-    proxyAccess : 0
+    proxyAccess : 0,
+    clearIpMinRole : 0
   };
 
 };

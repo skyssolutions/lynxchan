@@ -96,11 +96,6 @@ miscReasonNnull: reason for blank parameter when it is null.
 miscReasonUndefined: reason for blank parameter when it is undefined.
 miscReasonNoLength: reason for blank parameter when it has no length.
 errUnknownExtension: error thrown when the extension of the file being saved to mongo cannot be understood.
-miscRoleRoot: role label for root.
-miscRoleAdmin: role label for admin.
-miscRoleGlobalVolunteer: role label for global volunteer.
-miscRoleGlobalJanitor: role label for global janitor.
-miscRoleUser: role label for regular user.
 errDeniedGlobalManagement: error throw when the user is not allowed to view global management data.
 miscDefaultBanMessage: default ban message.
 miscDefaultAnonymous: default name to be used for anonymous posts.
@@ -251,5 +246,6 @@ logArchiveDeletion: object containing the pieces used for the log message when d
     boardPiece: piece used when a board is being deleted whole from the archives. Replaces: {$board}
     threadPiece: piece used when a thread is being deleted from the archives. Replaces: {$board}, {$thread}
     filesPiece: piece used when files are being deleted from the archives. Replaces: {$board}, {$files}
-guiProxyLevels: array containing the posting levels for proxy users. First elements indicates no posting, second posting without files, third posting with files.
-guiTorLevels: array containing the posting levels for proxy users. First elements indicates no posting, second posting without files, third posting with files.
+guiProxyLevels: array containing the posting levels for proxy users. First element indicates no posting, second posting without files, third posting with files.
+guiTorLevels: array containing the posting levels for proxy users. First element indicates no posting, second posting without files, third posting with files.
+miscRoles: array with the global roles. First element is for the root role, second for admin, third for global volunteer, fourth for global janitor, fifth for regular users.

@@ -163,7 +163,11 @@ exports.getMime = function(pathName) {
   return mime;
 };
 
-exports.hashIpForDisplay = function(ip, salt) {
+exports.hashIpForDisplay = function(ip, salt, userRole) {
+
+  if (userRole <= settings.clearIpMinRole) {
+    return ip.join('.');
+  }
 
   return crypto.createHash('sha256').update(salt + ip).digest('hex');
 
@@ -220,17 +224,10 @@ exports.corsHeader = function(contentType) {
 
 exports.getGlobalRoleLabel = function(role) {
 
-  switch (role) {
-  case 0:
-    return lang.miscRoleRoot;
-  case 1:
-    return lang.miscRoleAdmin;
-  case 2:
-    return lang.miscRoleGlobalVolunteer;
-  case 3:
-    return lang.miscRoleGlobalJanitor;
-  default:
-    return lang.miscRoleUser;
+  if (role >= 0 && role <= 3) {
+    return lang.miscRoles[role];
+  } else {
+    return lang.miscRoles[4];
   }
 
 };
@@ -484,6 +481,11 @@ function getParametersArray() {
     type : 'range',
     setting : 'archiveLevel',
     limit : 2
+  }, {
+    param : 'clearIpMinRole',
+    type : 'range',
+    setting : 'clearIpMinRole',
+    limit : 3
   } ];
 }
 

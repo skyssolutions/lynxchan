@@ -876,6 +876,7 @@ Json output(Object): object with the current global settings. It contains the fo
     captchaFonts(Array): array of paths to font files to be used on captcha.
     torAccess(Number): level of access for tor users.
     proxyAccess(Number): level of access for proxy users.
+    clearIpMinRole(Number): minimum global role required so an user must be able to see non-hashed ips from users.
 
 ------------------------------------------------------------------------------------------
 
@@ -929,7 +930,7 @@ Parameters:
     disableFloodCheck(Boolean): disables flood checks.
     torAccess(Number): access for tor users.
     proxyAccess(Number): access for proxy users.    
-   
+    clearIpMinRole(Number): minimum global role required so an user must be able to see non-hashed ips from users.
 
 ------------------------------------------------------------------------------------------
 

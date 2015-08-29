@@ -95,11 +95,13 @@
   "miscReasonUndefined": "undefined",
   "miscReasonNoLength": "empty",
   "errUnknownExtension": "Unknown extension.",
-  "miscRoleRoot": "Root",
-  "miscRoleAdmin": "Admin",
-  "miscRoleGlobalVolunteer": "Global volunteer",
-  "miscRoleGlobalJanitor": "Global janitor",
-  "miscRoleUser": "User",
+  "miscRoles": [
+    "Root",
+    "Admin",
+    "Global volunteer",
+    "Global janitor",
+    "User"
+  ],
   "errDeniedGlobalManagement": "Your global role does not allow you to retrieve global management data.",
   "miscDefaultBanMessage": "(USER WAS BANNED FOR THIS POST)",
   "miscDefaultAnonymous": "Anonymous",
