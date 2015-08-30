@@ -395,6 +395,10 @@ function getParametersArray() {
     type : 'string',
     setting : 'languagePackPath'
   }, {
+    param : 'thumbExtension',
+    type : 'string',
+    setting : 'thumbExtension'
+  }, {
     param : 'thumbSize',
     type : 'number',
     setting : 'thumbSize'

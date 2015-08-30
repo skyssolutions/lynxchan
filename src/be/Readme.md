@@ -96,6 +96,7 @@ Settings files that goes into the settings directory:
 * `torAccess`(Number): access allowed for TOR users. 0 will block them completely, 1 will allow them to post without uploads, 2 will allow for them to post normally.
 * `proxyAccess`(Number): access allowed for proxy users. See torAccess.
 * `clearIpMinRole`(Number): minimum global role required for users to see non-hashed ips from posts and perform global deletions from ip.
+* `thumbExtension`: forces all thumbs to use this extension. Keeps gifs from being animated as a side-effect, even if `gif` is used.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

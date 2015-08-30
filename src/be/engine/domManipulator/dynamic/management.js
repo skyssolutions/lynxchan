@@ -177,6 +177,10 @@ var siteSettingsRelation = {
     setting : 'maxFlagSizeKB',
     type : 'string'
   },
+  fieldThumbExtension : {
+    setting : 'thumbExtension',
+    type : 'string'
+  },
   fieldFloodInterval : {
     setting : 'floodTimerSec',
     type : 'string'

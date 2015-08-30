@@ -877,6 +877,7 @@ Json output(Object): object with the current global settings. It contains the fo
     torAccess(Number): level of access for tor users.
     proxyAccess(Number): level of access for proxy users.
     clearIpMinRole(Number): minimum global role required so an user must be able to see non-hashed ips from users.
+    thumbExtension: extension to be used on thumbnails.
 
 ------------------------------------------------------------------------------------------
 
@@ -931,6 +932,7 @@ Parameters:
     torAccess(Number): access for tor users.
     proxyAccess(Number): access for proxy users.    
     clearIpMinRole(Number): minimum global role required so an user must be able to see non-hashed ips from users.
+    thumbExtension: extension to be used on thumbnails.
 
 ------------------------------------------------------------------------------------------
 

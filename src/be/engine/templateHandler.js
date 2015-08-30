@@ -394,7 +394,7 @@ function loadAndTestTemplates(path, templateSettings) {
             'checkboxMultipleReports', 'checkboxDisableAccountCreation',
             'checkboxRestrictBoardCreation', 'checkboxServeArchive',
             'fieldMaxTags', 'checkboxDisableFloodCheck', 'comboProxyAccess',
-            'comboMinClearIpRole' ]
+            'comboMinClearIpRole', 'fieldThumbExtension' ]
       }, {
         template : 'archiveDeletionPage',
         fields : []

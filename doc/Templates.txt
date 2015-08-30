@@ -1613,6 +1613,10 @@ comboMinClearIpRole:
     use: have children appended to it.
     description: indicates the minimum global role required so user are able to see clear ips from users.
 
+fieldThumbExtension:
+    use: have it's value manipulated.
+    description: field used to inform the extension to be used on thumbnails.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::52

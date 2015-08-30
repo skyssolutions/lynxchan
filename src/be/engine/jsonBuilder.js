@@ -441,7 +441,8 @@ exports.globalSettings = function(globalSettings) {
     captchaFonts : globalSettings.captchaFonts,
     torAccess : globalSettings.torAccess,
     proxyAccess : globalSettings.proxyAccess,
-    clearIpMinRole : globalSettings.clearIpMinRole
+    clearIpMinRole : globalSettings.clearIpMinRole,
+    thumbExtension : globalSettings.thumbExtension
   });
 
 };

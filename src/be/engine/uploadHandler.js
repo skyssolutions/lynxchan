@@ -13,6 +13,7 @@ var boards = db.boards();
 var lang = require('./langOps').languagePack();
 var exec = require('child_process').exec;
 var boot = require('../boot');
+var miscOps = require('../engine/miscOps');
 var genericThumb = boot.genericThumb();
 var genericAudioThumb = boot.genericAudioThumb();
 var spoilerPath = boot.spoilerImage();
@@ -226,7 +227,7 @@ function transferMediaToGfs(boardData, threadId, postId, fileId, file,
 function processThumb(boardData, threadId, postId, fileId, ext, file, meta,
     callback) {
   var thumbName = '/' + boardData.boardUri + '/media/' + 't_' + fileId;
-  thumbName += '.' + ext;
+  thumbName += '.' + (settings.thumbExtension || ext);
 
   file.thumbPath = thumbName;
 
@@ -330,7 +331,9 @@ function generateVideoThumb(boardData, threadId, postId, file, tooSmall,
 
   var command = videoThumbCommand.replace('{$path}', file.pathInDisk);
 
-  var thumbDestination = file.pathInDisk + '_.png';
+  var extensionToUse = settings.thumbExtension || 'png';
+
+  var thumbDestination = file.pathInDisk + '_.' + extensionToUse;
 
   if (tooSmall) {
     command += '-1:-1';
@@ -342,7 +345,7 @@ function generateVideoThumb(boardData, threadId, postId, file, tooSmall,
 
   command += ' ' + thumbDestination;
 
-  file.thumbMime = 'image/png';
+  file.thumbMime = miscOps.getMime(thumbDestination);
   file.thumbOnDisk = thumbDestination;
 
   exec(command, function createdThumb(error) {
@@ -357,7 +360,9 @@ function generateVideoThumb(boardData, threadId, postId, file, tooSmall,
 
 function generateAudioThumb(boardData, threadId, postId, file, callback) {
 
-  var thumbDestination = file.pathInDisk + '_.png';
+  var extensionToUse = settings.thumbExtension || 'png';
+
+  var thumbDestination = file.pathInDisk + '_.' + extensionToUse;
 
   var mp3Command = mp3ThumbCommand.replace('{$path}', file.pathInDisk).replace(
       /\{\$destination\}/g, thumbDestination).replace('{$dimension}',
@@ -369,7 +374,7 @@ function generateAudioThumb(boardData, threadId, postId, file, callback) {
       file.thumbPath = genericAudioThumb;
     } else {
       file.thumbOnDisk = thumbDestination;
-      file.thumbMime = 'image/png';
+      file.thumbMime = miscOps.getMime(thumbDestination);
     }
 
     transferFilesToGS(boardData, threadId, postId, file, callback);
@@ -377,11 +382,56 @@ function generateAudioThumb(boardData, threadId, postId, file, callback) {
 
 }
 
+function generateGifThumb(boardData, threadId, postId, file, callback) {
+
+  var thumbDestination = file.pathInDisk + '_t';
+
+  if (settings.thumbExtension) {
+    thumbDestination += '.' + settings.thumbExtension;
+  }
+
+  file.thumbOnDisk = thumbDestination;
+  file.thumbMime = file.mime;
+
+  var command = 'convert \'' + file.pathInDisk + '[0]\' -resize ' + thumbSize;
+  command += 'x' + thumbSize + ' ' + thumbDestination;
+
+  exec(command, function resized(error) {
+    if (error) {
+      callback(error);
+    } else {
+      transferFilesToGS(boardData, threadId, postId, file, callback);
+
+    }
+  });
+}
+
+function generateImageThumb(boardData, threadId, postId, file, callback) {
+
+  var thumbDestination = file.pathInDisk + '_t';
+
+  if (settings.thumbExtension) {
+    thumbDestination += '.' + settings.thumbExtension;
+  }
+
+  file.thumbOnDisk = thumbDestination;
+  file.thumbMime = file.mime;
+
+  im(file.pathInDisk).resize(thumbSize, thumbSize).noProfile().write(
+      thumbDestination, function(error) {
+        if (error) {
+          callback(error);
+        } else {
+          transferFilesToGS(boardData, threadId, postId, file, callback);
+
+        }
+      });
+
+}
+
 function processSpoilerThumb(boardData, threadId, postId, file, callback) {
 
   var spoilerToUse;
-
-  console.log(JSON.stringify(boardData, null, 2));
 
   if (boardData.usesCustomSpoiler) {
     spoilerToUse = '/' + boardData.boardUri + '/custom.spoiler';
@@ -397,25 +447,19 @@ function processSpoilerThumb(boardData, threadId, postId, file, callback) {
 function processFile(boardData, threadId, postId, file, parameters, callback) {
 
   var tooSmall = file.height <= thumbSize && file.width <= thumbSize;
+
+  var gifCondition = settings.thumbExtension || tooSmall;
+
   if (parameters.spoiler) {
 
     processSpoilerThumb(boardData, threadId, postId, file, callback);
+  } else if (file.mime === 'image/gif' && gifCondition) {
+
+    generateGifThumb(boardData, threadId, postId, file, callback);
+
   } else if (file.mime.indexOf('image/') !== -1 && !tooSmall) {
 
-    var thumbDestination = file.pathInDisk + '_t';
-
-    file.thumbOnDisk = thumbDestination;
-    file.thumbMime = file.mime;
-
-    im(file.pathInDisk).resize(thumbSize, thumbSize).noProfile().write(
-        thumbDestination, function(error) {
-          if (error) {
-            callback(error);
-          } else {
-            transferFilesToGS(boardData, threadId, postId, file, callback);
-
-          }
-        });
+    generateImageThumb(boardData, threadId, postId, file, callback);
 
   } else if (videoMimes.indexOf(file.mime) > -1 && settings.mediaThumb) {
 
