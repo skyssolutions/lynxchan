@@ -329,27 +329,40 @@ function lookForUserEmailOfRequest(domain, login, callback) {
 
 }
 
-exports.requestRecovery = function(domain, login, callback) {
+exports.requestRecovery = function(domain, parameters, captchaId, callback) {
 
-  requests.findOne({
-    login : login,
-    expiration : {
-      $gte : new Date()
-    }
-  }, {
-    _id : 0,
-    expiration : 1
-  }, function gotRequest(error, request) {
-    if (error) {
-      callback(error);
-    } else if (request) {
+  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
+      function solvedCaptcha(error) {
 
-      callback(lang.errPendingRequest.replace('{$expiration}',
-          request.expiration.toString()));
-    } else {
-      lookForUserEmailOfRequest(domain, login, callback);
-    }
-  });
+        if (error) {
+          callback(error);
+        } else {
+
+          // style exception, too simple
+          requests.findOne({
+            login : parameters.login,
+            expiration : {
+              $gte : new Date()
+            }
+          }, {
+            _id : 0,
+            expiration : 1
+          }, function gotRequest(error, request) {
+            if (error) {
+              callback(error);
+            } else if (request) {
+
+              callback(lang.errPendingRequest.replace('{$expiration}',
+                  request.expiration.toString()));
+            } else {
+              lookForUserEmailOfRequest(domain, parameters.login, callback);
+            }
+          });
+          // style exception, too simple
+
+        }
+
+      });
 
 };
 // end of reset request

@@ -108,6 +108,7 @@ Description: sends an e-mail to the user with a link so he can recover his accou
 
 Parameters:
     login: login of the account.
+    captcha: captcha input.
 
 ------------------------------------------------------------------------------------------
 
