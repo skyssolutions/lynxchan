@@ -249,6 +249,7 @@ Parameters:
     global: if any value is passed, indicates the reports are global.
     expiration: date able to be converted to a new Date of when the bans should expire.    
     captcha: captcha input. Used only for reporting.
+    deleteUploads: if informed, only the uploads and not the posts and threads will be deleted.
 
 ------------------------------------------------------------------------------------------
 

@@ -127,7 +127,7 @@ function reaggregateThread(board, parentThreads, callback, index) {
 }
 
 function signalAndLoop(parentThreads, board, userData, parameters,
-    threadsToDelete, postsToDelete, foundBoards, callback) {
+    threadsToDelete, postsToDelete, foundBoards, foundThreads, callback) {
 
   for (var i = 0; i < parentThreads.length; i++) {
     var parentThread = parentThreads[i];
@@ -136,6 +136,17 @@ function signalAndLoop(parentThreads, board, userData, parameters,
       board : board.boardUri,
       thread : parentThread
     });
+  }
+
+  if (parameters.deleteUploads) {
+    for (i = 0; i < foundThreads.length; i++) {
+      var thread = foundThreads[i];
+
+      process.send({
+        board : board.boardUri,
+        thread : thread
+      });
+    }
   }
 
   process.send({
@@ -149,49 +160,68 @@ function signalAndLoop(parentThreads, board, userData, parameters,
 function updateBoardAndThreads(userData, board, threadsToDelete, postsToDelete,
     parameters, foundBoards, callback, foundThreads, parentThreads) {
 
-  boards.update({
-    boardUri : board.boardUri
-  }, {
-    $inc : {
-      threadCount : -foundThreads.length
-    }
-  }, function updatedThreadCount(error) {
-    if (error) {
-      callback(error);
-    } else {
-      // style exception, too simple
-      reaggregateThread(board, parentThreads, function reaggregated(error) {
-        if (error) {
-          callback(error);
-        } else {
-          signalAndLoop(parentThreads, board, userData, parameters,
-              threadsToDelete, postsToDelete, foundBoards, callback);
+  if (!parameters.deleteUploads) {
 
-        }
-      });
-      // style exception, too simple
-    }
+    boards.update({
+      boardUri : board.boardUri
+    }, {
+      $inc : {
+        threadCount : -foundThreads.length
+      }
+    }, function updatedThreadCount(error) {
+      if (error) {
+        callback(error);
+      } else {
 
-  });
+        // style exception, too simple
+        reaggregateThread(board, parentThreads, function reaggregated(error) {
+          if (error) {
+            callback(error);
+          } else {
+            signalAndLoop(parentThreads, board, userData, parameters,
+                threadsToDelete, postsToDelete, foundBoards, foundThreads,
+                callback);
+
+          }
+        });
+        // style exception, too simple
+
+      }
+
+    });
+  } else {
+    signalAndLoop(parentThreads, board, userData, parameters, threadsToDelete,
+        postsToDelete, foundBoards, foundThreads, callback);
+  }
 
 }
 
 function removeContentFiles(userData, board, threadsToDelete, postsToDelete,
     parameters, foundBoards, cb, foundThreads, foundPosts, parentThreads) {
 
+  var matchBlock = {
+    'metadata.boardUri' : board.boardUri,
+    $or : [ {
+      'metadata.threadId' : {
+        $in : foundThreads
+      }
+    }, {
+      'metadata.postId' : {
+        $in : foundPosts
+      }
+    } ]
+  };
+
+  if (parameters.deleteUploads) {
+    matchBlock['metadata.type'] = 'media';
+
+    matchBlock.$or[0]['metadata.postId'] = {
+      $exists : false
+    };
+  }
+
   files.aggregate([ {
-    $match : {
-      'metadata.boardUri' : board.boardUri,
-      $or : [ {
-        'metadata.threadId' : {
-          $in : foundThreads
-        }
-      }, {
-        'metadata.postId' : {
-          $in : foundPosts
-        }
-      } ]
-    }
+    $match : matchBlock
   }, {
     $group : {
       _id : 0,
@@ -271,7 +301,10 @@ function logRemoval(userData, board, threadsToDelete, postsToDelete,
 
   var pieces = lang.logPostingDeletion;
 
-  var logMessage = pieces.startPiece.replace('{$login}', userData.login);
+  var startPiece = parameters.deleteUploads ? pieces.uploadStartPiece
+      : pieces.startPiece;
+
+  var logMessage = startPiece.replace('{$login}', userData.login);
 
   var threadList = appendThreadDeletionLog(foundThreads);
 
@@ -317,46 +350,97 @@ function logRemoval(userData, board, threadsToDelete, postsToDelete,
 function removeFoundContent(userData, board, threadsToDelete, postsToDelete,
     parameters, foundBoards, cb, foundThreads, foundPosts, parentThreads) {
 
-  threads.remove({
-    boardUri : board.boardUri,
-    threadId : {
-      $in : foundThreads
-    }
-  }, function removedThreads(error) {
-    if (error) {
-      cb(error);
-    } else {
-      // style exception, too simple
+  if (parameters.deleteUploads) {
+    threads.updateMany({
+      boardUri : board.boardUri,
+      threadId : {
+        $in : foundThreads
+      }
+    }, {
+      $set : {
+        files : []
+      }
+    }, function removedThreadFiles(error) {
+      if (error) {
+        cb(error);
+      } else {
 
-      posts.remove({
-        boardUri : board.boardUri,
-        postId : {
-          $in : foundPosts
-        }
-      }, function removedPosts(error) {
-        if (error) {
-          cb(error);
-        } else {
-          if (userData) {
-
-            logRemoval(userData, board, threadsToDelete, postsToDelete,
-                parameters, foundBoards, cb, foundThreads, foundPosts,
-                parentThreads, userData);
-
-          } else {
-
-            removeContentFiles(userData, board, threadsToDelete, postsToDelete,
-                parameters, foundBoards, cb, foundThreads, foundPosts,
-                parentThreads);
+        // style exception, too simple
+        posts.updateMany({
+          boardUri : board.boardUri,
+          postId : {
+            $in : foundPosts
           }
-        }
+        }, {
+          $set : {
+            files : []
+          }
+        }, function removedPostFiles(error) {
+          if (error) {
+            cb(error);
+          } else {
+            if (userData) {
 
-      });
+              logRemoval(userData, board, threadsToDelete, postsToDelete,
+                  parameters, foundBoards, cb, foundThreads, foundPosts,
+                  parentThreads, userData);
 
-      // style exception, too simple
-    }
+            } else {
 
-  });
+              removeContentFiles(userData, board, threadsToDelete,
+                  postsToDelete, parameters, foundBoards, cb, foundThreads,
+                  foundPosts, parentThreads);
+            }
+          }
+        });
+        // style exception, too simple
+
+      }
+    });
+
+  } else {
+
+    threads.remove({
+      boardUri : board.boardUri,
+      threadId : {
+        $in : foundThreads
+      }
+    }, function removedThreads(error) {
+      if (error) {
+        cb(error);
+      } else {
+
+        // style exception, too simple
+        posts.remove({
+          boardUri : board.boardUri,
+          postId : {
+            $in : foundPosts
+          }
+        }, function removedPosts(error) {
+          if (error) {
+            cb(error);
+          } else {
+            if (userData) {
+
+              logRemoval(userData, board, threadsToDelete, postsToDelete,
+                  parameters, foundBoards, cb, foundThreads, foundPosts,
+                  parentThreads, userData);
+
+            } else {
+
+              removeContentFiles(userData, board, threadsToDelete,
+                  postsToDelete, parameters, foundBoards, cb, foundThreads,
+                  foundPosts, parentThreads);
+            }
+          }
+
+        });
+        // style exception, too simple
+
+      }
+
+    });
+  }
 
 }
 
@@ -414,17 +498,28 @@ function sanitizeParentThreads(foundThreads, rawParents) {
 function getPostsToDelete(userData, board, threadsToDelete, postsToDelete,
     parameters, foundBoards, callback, foundThreads, queryBlock) {
 
-  var orBlock = [ {
-    threadId : queryBlock.threadId
-  }, {
-    postId : {
-      $in : postsToDelete[board.boardUri] || []
-    }
-  } ];
+  if (parameters.deleteUploads) {
 
-  queryBlock.$or = orBlock;
+    queryBlock = {
+      postId : {
+        $in : postsToDelete[board.boardUri] || []
+      }
+    };
 
-  delete queryBlock.threadId;
+  } else {
+
+    var orBlock = [ {
+      threadId : queryBlock.threadId
+    }, {
+      postId : {
+        $in : postsToDelete[board.boardUri] || []
+      }
+    } ];
+
+    queryBlock.$or = orBlock;
+
+    delete queryBlock.threadId;
+  }
 
   posts.aggregate([ {
     $match : queryBlock

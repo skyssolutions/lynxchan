@@ -10,10 +10,10 @@ var miscOps = require('../engine/miscOps');
 var deleteOps = require('../engine/deletionOps').postingDeletions;
 
 function processPostForDeletion(board, thread, splitKey, threadsToDelete,
-    postsToDelete) {
+    postsToDelete, onlyFiles) {
   var threadTestObject = threadsToDelete[board] || [];
 
-  if (threadTestObject.indexOf(+thread) === -1) {
+  if (threadTestObject.indexOf(+thread) === -1 || onlyFiles) {
 
     var post = splitKey[2];
 
@@ -26,7 +26,8 @@ function processPostForDeletion(board, thread, splitKey, threadsToDelete,
   }
 }
 
-function processSplitKeyForDeletion(splitKey, threadsToDelete, postsToDelete) {
+function processSplitKeyForDeletion(splitKey, threadsToDelete, postsToDelete,
+    onlyFiles) {
 
   var longEnough = splitKey.length > 1;
 
@@ -38,7 +39,7 @@ function processSplitKeyForDeletion(splitKey, threadsToDelete, postsToDelete) {
     if (splitKey.length > 2 && !isNaN(splitKey[2])) {
 
       processPostForDeletion(board, thread, splitKey, threadsToDelete,
-          postsToDelete);
+          postsToDelete, onlyFiles);
 
     } else {
       var boardObject = threadsToDelete[board] || [];
@@ -86,7 +87,8 @@ function processParameters(req, userData, parameters, res, captchaId) {
       var splitKey = key.split('-');
 
       if (parameters.action.toLowerCase() === 'delete') {
-        processSplitKeyForDeletion(splitKey, threads, posts);
+        processSplitKeyForDeletion(splitKey, threads, posts,
+            parameters.deleteUploads);
       } else {
         processSplitKeyForGeneralUse(splitKey, reportedObjects);
       }

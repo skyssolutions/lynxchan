@@ -41,6 +41,7 @@
   "errBannerNotFound": "Banner not found.",
   "errDeniedBoardMod": "You are not allowed to moderate boards.",
   "logPostingDeletion": {
+    "uploadStartPiece": "User {$login} deleted the files of the following",
     "startPiece": "User {$login} deleted the following",
     "threadPiece": " threads:",
     "threadAndPostPiece": " and the following",

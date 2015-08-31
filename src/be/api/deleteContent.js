@@ -4,13 +4,14 @@ var apiOps = require('../engine/apiOps');
 var accountOps = require('../engine/accountOps');
 var deleteOps = require('../engine/deletionOps').postingDeletions;
 
-function processReceivedPosting(threadsToDelete, postsToDelete, posting) {
+function processReceivedPosting(threadsToDelete, postsToDelete, posting,
+    onlyFiles) {
   var boardObject;
 
   if (posting.post) {
     var testThreadObject = threadsToDelete[posting.board] || [];
 
-    if (testThreadObject.indexOf(+posting.thread) === -1) {
+    if (testThreadObject.indexOf(+posting.thread) === -1 || onlyFiles) {
 
       boardObject = postsToDelete[posting.board] || [];
 
@@ -39,7 +40,7 @@ function processParameters(userData, parameters, res) {
 
   for (var i = 0; i < parameters.postings.length; i++) {
     processReceivedPosting(threadsToDelete, postsToDelete,
-        parameters.postings[i]);
+        parameters.postings[i], parameters.deleteUploads);
   }
 
   deleteOps.posting(userData, parameters, threadsToDelete, postsToDelete,

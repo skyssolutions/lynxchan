@@ -53,6 +53,7 @@ errNotAnImage: error thrown when the operation requires an image but the file is
 errBannerNotFound: error thrown when the specified banner could not be found.
 errDeniedBoardMod: error thrown when the user is not allowed to moderate boards.
 logPostingDeletion: object containing pieces used to compose the message added to the log on posting deletion. Contains the following fields:
+    uploadStartPiece: piece used at the beginning of the message when only files are to be deleted. Replaces: {$login}.
     startPiece: piece used at the beginning of the message. Replaces: {$login}.
     threadPiece: piece used to indicate the threads that will be deleted.
     threadAndPostPiece: piece used to indicate posts that will be deleted in addition to threads being deleted.

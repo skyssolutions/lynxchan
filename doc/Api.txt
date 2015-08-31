@@ -198,6 +198,7 @@ Description: deletes posts or threads. If the password is not provided, authenti
 
 Parameters:
     password: password to be used for deletion.
+    deleteUploads(Boolean): indicates that only the files, and not the threads and posts are to be deleted.
     postings(Array): array of content to be deleted. Contains objects with the following fields:
         board: board to which the content belongs.
         thread: thread to be deleted or that contains the post to be deleted.
