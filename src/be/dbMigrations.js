@@ -170,6 +170,11 @@ exports.setBoardIpSalt = function(callback) {
 // Added on 1.0.6
 // Section 3: Ip conversion from strings to array of ints {
 function convertIp(ip) {
+
+  if (!ip) {
+    return null;
+  }
+
   var newIp = [];
 
   var converted = ip.trim().split('.');
