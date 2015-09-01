@@ -191,6 +191,7 @@ staffLogs: stores log activity from staff.
         hashBan
         hashBanLift
         archiveDeletion
+        fileDeletion
     time(Date): date and time of when the event occurred.
     boardUri*: board related to the event.
     description: string describing the event.

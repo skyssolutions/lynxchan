@@ -26,6 +26,7 @@ var availableLogTypes = {
   rangeBan : lang.guiTypeRange,
   banLift : lang.guiTypeBanLift,
   deletion : lang.guiTypeDeletion,
+  fileDeletion : lang.guiTypeFileDeletion,
   reportClosure : lang.guiTypeReportClosure,
   globalRoleChange : lang.guiTypeGlobalRoleChange,
   boardDeletion : lang.guiTypeBoardDeletion,

@@ -127,7 +127,8 @@ function reaggregateThread(board, parentThreads, callback, index) {
 }
 
 function signalAndLoop(parentThreads, board, userData, parameters,
-    threadsToDelete, postsToDelete, foundBoards, foundThreads, callback) {
+    threadsToDelete, postsToDelete, foundBoards, foundThreads, foundPosts,
+    callback) {
 
   for (var i = 0; i < parentThreads.length; i++) {
     var parentThread = parentThreads[i];
@@ -149,16 +150,19 @@ function signalAndLoop(parentThreads, board, userData, parameters,
     }
   }
 
-  process.send({
-    board : board.boardUri
-  });
+  if (foundThreads.length || foundPosts.length) {
+
+    process.send({
+      board : board.boardUri
+    });
+  }
 
   iterateBoardsToDelete(userData, parameters, threadsToDelete, postsToDelete,
       foundBoards, callback);
 }
 
 function updateBoardAndThreads(userData, board, threadsToDelete, postsToDelete,
-    parameters, foundBoards, callback, foundThreads, parentThreads) {
+    parameters, foundBoards, cb, foundThreads, foundPosts, parentThreads) {
 
   if (!parameters.deleteUploads) {
 
@@ -170,17 +174,17 @@ function updateBoardAndThreads(userData, board, threadsToDelete, postsToDelete,
       }
     }, function updatedThreadCount(error) {
       if (error) {
-        callback(error);
+        cb(error);
       } else {
 
         // style exception, too simple
         reaggregateThread(board, parentThreads, function reaggregated(error) {
           if (error) {
-            callback(error);
+            cb(error);
           } else {
             signalAndLoop(parentThreads, board, userData, parameters,
                 threadsToDelete, postsToDelete, foundBoards, foundThreads,
-                callback);
+                foundPosts, cb);
 
           }
         });
@@ -191,7 +195,7 @@ function updateBoardAndThreads(userData, board, threadsToDelete, postsToDelete,
     });
   } else {
     signalAndLoop(parentThreads, board, userData, parameters, threadsToDelete,
-        postsToDelete, foundBoards, foundThreads, callback);
+        postsToDelete, foundBoards, foundThreads, foundPosts, cb);
   }
 
 }
@@ -242,13 +246,15 @@ function removeContentFiles(userData, board, threadsToDelete, postsToDelete,
           } else {
             updateBoardAndThreads(userData, board, threadsToDelete,
                 postsToDelete, parameters, foundBoards, cb, foundThreads,
-                parentThreads);
+                foundPosts, parentThreads);
           }
         });
         // style exception, too simple
+
       } else {
         updateBoardAndThreads(userData, board, threadsToDelete, postsToDelete,
-            parameters, foundBoards, cb, foundThreads, parentThreads);
+            parameters, foundBoards, cb, foundThreads, foundPosts,
+            parentThreads);
       }
     }
   });
@@ -296,8 +302,7 @@ function appendPostDeletionLog(foundThreads, foundPosts) {
 
 }
 
-function logRemoval(userData, board, threadsToDelete, postsToDelete,
-    parameters, foundBoards, cb, foundThreads, foundPosts, parentThreads) {
+function getLogMessage(parameters, foundThreads, foundPosts, userData, board) {
 
   var pieces = lang.logPostingDeletion;
 
@@ -328,9 +333,26 @@ function logRemoval(userData, board, threadsToDelete, postsToDelete,
 
   logMessage += pieces.endPiece.replace('{$board}', board.boardUri);
 
+  return logMessage;
+
+}
+
+function logRemoval(userData, board, threadsToDelete, postsToDelete,
+    parameters, foundBoards, cb, foundThreads, foundPosts, parentThreads) {
+
+  if (!foundThreads.length && !foundPosts.length) {
+    removeContentFiles(userData, board, threadsToDelete, postsToDelete,
+        parameters, foundBoards, cb, foundThreads, foundPosts, parentThreads);
+
+    return;
+  }
+
+  var logMessage = getLogMessage(parameters, foundThreads, foundPosts,
+      userData, board);
+
   logs.insert({
     user : userData.login,
-    type : 'deletion',
+    type : parameters.deleteUploads ? 'fileDeletion' : 'deletion',
     time : new Date(),
     boardUri : board.boardUri,
     description : logMessage,
@@ -444,14 +466,7 @@ function removeFoundContent(userData, board, threadsToDelete, postsToDelete,
 
 }
 
-function composeQueryBlock(board, threadsToDelete, userData, parameters,
-    callback) {
-  var threadQueryBlock = {
-    boardUri : board.boardUri,
-    threadId : {
-      $in : threadsToDelete[board.boardUri] || []
-    }
-  };
+function isAllowedByStaffPower(userData, board) {
 
   var isOwner;
   var isVolunteer;
@@ -468,7 +483,26 @@ function composeQueryBlock(board, threadsToDelete, userData, parameters,
 
   }
 
-  if (!isOwner && !isVolunteer && !isOnGLobalStaff) {
+  return isOwner || isVolunteer || isOnGLobalStaff;
+
+}
+
+function composeQueryBlock(board, threadsToDelete, userData, parameters,
+    callback) {
+  var threadQueryBlock = {
+    boardUri : board.boardUri,
+    threadId : {
+      $in : threadsToDelete[board.boardUri] || []
+    }
+  };
+
+  if (parameters.deleteUploads) {
+    threadQueryBlock['files.0'] = {
+      $exists : true
+    };
+  }
+
+  if (!isAllowedByStaffPower(userData, board)) {
     if (!parameters.password) {
       return false;
     } else {
@@ -503,6 +537,9 @@ function getPostsToDelete(userData, board, threadsToDelete, postsToDelete,
     queryBlock = {
       postId : {
         $in : postsToDelete[board.boardUri] || []
+      },
+      'files.0' : {
+        $exists : true
       }
     };
 
@@ -586,6 +623,7 @@ function getThreadsToDelete(userData, board, threadsToDelete, postsToDelete,
     if (error) {
       callback(error);
     } else {
+
       var foundThreads = results.length ? results[0].threads : [];
 
       getPostsToDelete(userData, board, threadsToDelete, postsToDelete,
