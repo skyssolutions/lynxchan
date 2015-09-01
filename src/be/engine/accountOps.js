@@ -240,7 +240,7 @@ exports.login = function(parameters, callback) {
 
 exports.validate = function(auth, callback) {
 
-  if (auth.hash === undefined || auth.hash === null) {
+  if (!auth || !auth.hash || !auth.login) {
     callback(lang.errInvalidAccount);
     return;
   }
