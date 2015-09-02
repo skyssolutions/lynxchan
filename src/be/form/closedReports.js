@@ -12,7 +12,7 @@ function getClosedReports(userData, parameters, res) {
   modOps.getClosedReports(userData, parameters, function gotClosedReports(
       error, reports) {
     if (error) {
-      formOps.outputError(error, res);
+      formOps.outputError(error, 500, res);
     } else {
       var json = parameters.json;
 

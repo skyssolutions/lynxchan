@@ -12,7 +12,7 @@ function getRangeBans(userData, parameters, res) {
   modOps.getRangeBans(userData, parameters, function gotRangeBans(error,
       rangeBans) {
     if (error) {
-      formOps.outputError(error, res);
+      formOps.outputError(error, 500, res);
     } else {
       var json = parameters.json;
 

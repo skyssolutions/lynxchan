@@ -131,7 +131,7 @@ function processParameters(req, userData, parameters, res, captchaId) {
         function deletedPostings(error) {
 
           if (error) {
-            formOps.outputError(error, res);
+            formOps.outputError(error, 500, res);
           } else {
             formOps.outputResponse(lang.msgContentDeleted, '/', res);
           }
@@ -179,7 +179,7 @@ exports.process = function(req, res) {
 
     });
   } catch (error) {
-    formOps.outputError(error, res);
+    formOps.outputError(error, 500, res);
   }
 
 };

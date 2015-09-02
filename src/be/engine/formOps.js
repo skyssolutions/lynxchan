@@ -354,6 +354,11 @@ exports.outputError = function(error, code, res) {
     throw error;
   }
 
+  if (!res) {
+    res = code;
+    code = 500;
+  }
+
   res.writeHead(code, miscOps.corsHeader('text/html'));
 
   res.end(domManipulator.error(code, error.toString()));

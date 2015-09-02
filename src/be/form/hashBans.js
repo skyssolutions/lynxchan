@@ -12,7 +12,7 @@ function getHashBans(userData, parameters, res) {
   modOps.getHashBans(userData, parameters,
       function gotHashBans(error, hashBans) {
         if (error) {
-          formOps.outputError(error, res);
+          formOps.outputError(error, 500, res);
         } else {
           var json = parameters.json;
 

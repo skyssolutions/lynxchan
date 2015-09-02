@@ -65,7 +65,7 @@ function getPostingData(boardData, flagData, parameters, res, json, userRole) {
     markdown : 1
   }, function gotThread(error, thread) {
     if (error) {
-      formOps.outputError(thread);
+      formOps.outputError(error, 500, res);
     } else if (!thread) {
       formOps.outputError(lang.errThreadNotFound, 500, res);
     } else {

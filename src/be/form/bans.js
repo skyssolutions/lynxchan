@@ -11,7 +11,7 @@ function getBans(userData, parameters, res) {
 
   modOps.getBans(userData, parameters, function gotBans(error, bans) {
     if (error) {
-      formOps.outputError(error, res);
+      formOps.outputError(error, 500, res);
     } else {
 
       var json = parameters.json;
