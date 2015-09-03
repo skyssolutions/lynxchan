@@ -758,6 +758,12 @@ function placeRangeBan(userData, parameters, callback) {
     }
   }
 
+  if (!processedRange.length) {
+    callback(lang.errInvalidRange);
+
+    return;
+  }
+
   var rangeBan = {
     range : processedRange,
     appliedBy : userData.login,

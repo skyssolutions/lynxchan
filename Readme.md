@@ -9,7 +9,7 @@ Beta
 4. Having a modular front-end so people can easily create and use different templates.
 
 # Required software
-* [Io.js](http://iojs.org), I suggest installing from source code. Just remember to checkout the latest tag instead of using the latest commit.
+* [Io.js](http://iojs.org), I suggest installing from source code. Just remember to checkout the latest tag instead of using the latest commit. I recommend using version 2.5.0 for production. I had random crashes with both 3.2.0 and 3.3.0.
 * [MongoDB](https://www.mongodb.org/)
 * [ImageMagick](http://www.imagemagick.org/script/index.php)
 * [ffmpeg](https://www.ffmpeg.org/) if mediaThumb setting is enabled. Requires zlib-devel on centOS.
@@ -34,7 +34,7 @@ You can find all the information you need at the documents in `doc`.
 # Front-end
 The front end are static files and templates. They are handled as a separate project and you can use them on any location in the system. But the path to its files will default to `src/fe`.
 Note that the front-end directory is in the ignore. I am designing this project to have a modular front-end, so theres no point in having a default front-end in the repository. 
-* [Definitive front-end](https://github.com/lleaff/LynxChanFront) is the definitive version developed by lleaff. It is prettier and has more features. Requires gulp to be built.
+* [Definitive front-end](https://github.com/lleaff/LynxChanFront) is the definitive version developed by lleaff. It is prettier and has more features. Requires gulp to be built. Discontinued and stuck on 0.4.2.
 * [Placeholder front-end](https://gitlab.com/mrseth/LynxChanFront-Placeholder) is usually more up to date, but has less features and is kind of rough.
 
 # Back-end

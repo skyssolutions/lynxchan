@@ -712,8 +712,6 @@ exports.posting = function(userData, parameters, threadsToDelete,
 };
 // } Section 1: Posting deletion
 
-// Section 2: Deletion from ip {
-
 exports.deleteFromIp = function(parameters, userData, callback) {
 
   var allowed = userData.globalRole <= settings.clearIpMinRole;
@@ -725,7 +723,7 @@ exports.deleteFromIp = function(parameters, userData, callback) {
     return;
   }
 
-  var ip = parameters.ip.trim().split('.');
+  var ip = parameters.ip.toString().trim().split('.');
 
   var processedIp = [];
 
@@ -823,5 +821,3 @@ exports.deleteFromIp = function(parameters, userData, callback) {
   });
 
 };
-
-// } Section 2: Deletion from ip

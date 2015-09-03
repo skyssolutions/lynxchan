@@ -252,3 +252,4 @@ guiTorLevels: array containing the posting levels for proxy users. First element
 miscRoles: array with the global roles. First element is for the root role, second for admin, third for global volunteer, fourth for global janitor, fifth for regular users.
 errDeniedIpDeletion: error thrown when the user is not allowed to delete posts from a single ip.
 msgDeletedFromIp: message displayed after deleting postings from an ip.
+errInvalidRange: error thrown when an invalid range is informed.

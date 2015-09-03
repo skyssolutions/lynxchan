@@ -278,5 +278,6 @@
     "Post with files"
   ],
   "errDeniedIpDeletion": "You are now allowed to delete all posts from a single ip.",
-  "msgDeletedFromIp": "Posts from ip deleted."
+  "msgDeletedFromIp": "Posts from ip deleted.",
+  "errInvalidRange": "Invalid range informed."
 }
