@@ -102,7 +102,7 @@ function markAsProxy(ip, req) {
 
 exports.markAsTor = function(req, callback) {
 
-  var ip = req.connection.remoteAddress;
+  var ip = logger.convertIpToArray(req.connection.remoteAddress);
 
   torIps.count({
     ip : ip
