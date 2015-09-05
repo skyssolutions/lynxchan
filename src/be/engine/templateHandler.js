@@ -395,7 +395,7 @@ function loadAndTestTemplates(path, templateSettings) {
             'checkboxRestrictBoardCreation', 'checkboxServeArchive',
             'fieldMaxTags', 'checkboxDisableFloodCheck', 'comboProxyAccess',
             'comboMinClearIpRole', 'fieldThumbExtension',
-            'checkboxDisableTopBoards' ]
+            'checkboxDisableTopBoards', 'checkboxGlobalBoardModeration' ]
       }, {
         template : 'archiveDeletionPage',
         fields : []

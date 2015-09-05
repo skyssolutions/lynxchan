@@ -221,6 +221,10 @@ var siteSettingsRelation = {
     setting : 'serveArchive',
     type : 'boolean'
   },
+  checkboxGlobalBoardModeration : {
+    setting : 'allowGlobalBoardModeration',
+    type : 'boolean'
+  },
   checkboxDisableAccountCreation : {
     setting : 'disableAccountCreation',
     type : 'boolean'

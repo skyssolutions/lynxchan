@@ -444,7 +444,8 @@ exports.globalSettings = function(globalSettings) {
     proxyAccess : globalSettings.proxyAccess,
     clearIpMinRole : globalSettings.clearIpMinRole,
     thumbExtension : globalSettings.thumbExtension,
-    disableTopBoards : globalSettings.disableTopBoards
+    disableTopBoards : globalSettings.disableTopBoards,
+    allowGlobalBoardModeration : globalSettings.allowGlobalBoardModeration
   });
 
 };

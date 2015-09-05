@@ -452,6 +452,10 @@ function getParametersArray() {
     type : 'boolean',
     setting : 'mediaThumb'
   }, {
+    param : 'allowGlobalBoardModeration',
+    type : 'boolean',
+    setting : 'allowGlobalBoardModeration'
+  }, {
     param : 'maintenance',
     type : 'boolean',
     setting : 'maintenance'
