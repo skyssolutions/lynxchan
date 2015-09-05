@@ -12,7 +12,7 @@ TEM_ID::01
 index:
 Elements:
 divBoards:
-    use: have children appended to it.
+    use: have children appended to it or might be removed.
     description: contains the listing of boards.
 
 ------------------------------------------------------------------------------------------
@@ -1584,6 +1584,10 @@ checkboxMultipleReports:
 checkboxServeArchive:
     use: might be turned on.
     description: indicates the server is serving archives.
+
+checkboxDisableTopBoards:
+    use: might be turned on.
+    description: indicates the server is doesn't list the top boards on the front-page.    
 
 checkboxDisableAccountCreation:
     use: might be turned on.

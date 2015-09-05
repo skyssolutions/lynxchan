@@ -238,10 +238,29 @@ exports.notFound = function(callback) {
 
 };
 
+// start of front-page generation
+function saveFrontPage(foundBoards, callback) {
+
+  domManipulator.frontPage(foundBoards, function savedHtml(error) {
+    if (error) {
+      callback(error);
+    } else {
+      jsonBuilder.frontPage(foundBoards, callback);
+    }
+
+  });
+
+}
+
 exports.frontPage = function(callback) {
 
   if (verbose) {
     console.log('Generating front-page');
+  }
+
+  if (settings.disableTopBoards) {
+    saveFrontPage(null, callback);
+    return;
   }
 
   boards.find({
@@ -264,20 +283,12 @@ exports.frontPage = function(callback) {
     if (error) {
       callback(error);
     } else {
-      // style exception, too simple
-      domManipulator.frontPage(foundBoards, function savedHtml(error) {
-        if (error) {
-          callback(error);
-        } else {
-          jsonBuilder.frontPage(foundBoards, callback);
-        }
-
-      });
-      // style exception, too simple
+      saveFrontPage(foundBoards, callback);
     }
   });
 
 };
+// end of front-page generation
 
 exports.defaultPages = function(callback) {
 

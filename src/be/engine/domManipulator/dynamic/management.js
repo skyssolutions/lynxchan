@@ -193,6 +193,10 @@ var siteSettingsRelation = {
     setting : 'disable304',
     type : 'boolean'
   },
+  checkboxDisableTopBoards : {
+    setting : 'disableTopBoards',
+    type : 'boolean'
+  },
   checkboxSsl : {
     setting : 'ssl',
     type : 'boolean'

@@ -151,15 +151,16 @@ exports.frontPage = function(boards, callback) {
 
   var topBoards = [];
 
-  for (var i = 0; i < boards.length; i++) {
+  if (boards) {
+    for (var i = 0; i < boards.length; i++) {
 
-    var board = boards[i];
+      var board = boards[i];
 
-    topBoards.push({
-      boardUri : board.boardUri,
-      boardName : board.boardName
-    });
-
+      topBoards.push({
+        boardUri : board.boardUri,
+        boardName : board.boardName
+      });
+    }
   }
 
   gridFsHandler.writeData(JSON.stringify({
@@ -442,7 +443,8 @@ exports.globalSettings = function(globalSettings) {
     torAccess : globalSettings.torAccess,
     proxyAccess : globalSettings.proxyAccess,
     clearIpMinRole : globalSettings.clearIpMinRole,
-    thumbExtension : globalSettings.thumbExtension
+    thumbExtension : globalSettings.thumbExtension,
+    disableTopBoards : globalSettings.disableTopBoards
   });
 
 };

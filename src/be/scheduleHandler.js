@@ -23,7 +23,11 @@ var torHandler = require('./engine/torOps');
 
 exports.reload = function() {
 
+  settings = boot.getGeneralSettings();
+
   verbose = settings.verbose;
+  tempDirectory = settings.tempDirectory;
+  captchaExpiration = settings.captchaExpiration;
   gridFsHandler = require('./engine/gridFsHandler');
   generator = require('./engine/generator');
   delOps = require('./engine/deletionOps').miscDeletions;
@@ -165,22 +169,27 @@ function applyStats(stats) {
         throw error;
       }
     } else {
-      // style exception, too simple
-      generator.frontPage(function generatedFrontPage(error) {
-        if (error) {
-          if (verbose) {
-            console.log(error.toString());
-          }
+      if (!settings.disableTopBoards) {
 
-          if (debug) {
-            throw error;
-          }
-        } else {
-          boardsStats();
-        }
-      });
-      // style exception, too simple
+        // style exception, too simple
+        generator.frontPage(function generatedFrontPage(error) {
+          if (error) {
+            if (verbose) {
+              console.log(error.toString());
+            }
 
+            if (debug) {
+              throw error;
+            }
+          } else {
+            boardsStats();
+          }
+        });
+        // style exception, too simple
+
+      } else {
+        boardsStats();
+      }
     }
 
   });

@@ -90,6 +90,10 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
 
   var topChanged = generalSettings.topBoardsCount !== settings.topBoardsCount;
 
+  // was top boards enabled or disabled?
+  var tDChange = generalSettings.disableTopBoards !== settings.disableTopBoards;
+  topChanged = topChanged || tDChange;
+
   rebuildFP = rebuildFP || topChanged;
 
   if (rebuildFP) {
@@ -137,7 +141,8 @@ exports.setNewSettings = function(settings, callback) {
     } else {
 
       var exceptionalFields = [ 'siteTitle', 'captchaFonts',
-          'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage' ];
+          'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage',
+          'disableTopBoards' ];
 
       for ( var key in generalSettings) {
         if (!settings[key] && exceptionalFields.indexOf(key) === -1) {
@@ -186,12 +191,13 @@ exports.reload = function() {
   exports.loadSettings();
 
   require('./engine/templateHandler').loadTemplates();
-
-  require('./workerBoot').reload();
-
-  require('./scheduleHandler').reload();
-
   require('./archive').reload();
+
+  if (cluster.isMaster) {
+    require('./scheduleHandler').reload();
+  } else {
+    require('./workerBoot').reload();
+  }
 
 };
 

@@ -880,6 +880,7 @@ Json output(Object): object with the current global settings. It contains the fo
     proxyAccess(Number): level of access for proxy users.
     clearIpMinRole(Number): minimum global role required so an user must be able to see non-hashed ips from users.
     thumbExtension: extension to be used on thumbnails.
+    disableTopBoards(Boolean): indicates if the top boards are disabled.
 
 ------------------------------------------------------------------------------------------
 
@@ -935,6 +936,7 @@ Parameters:
     proxyAccess(Number): access for proxy users.    
     clearIpMinRole(Number): minimum global role required so an user must be able to see non-hashed ips from users.
     thumbExtension: extension to be used on thumbnails.
+    disableTopBoards(Boolean): disables the top boards listing on the front-page.
 
 ------------------------------------------------------------------------------------------
 

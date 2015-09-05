@@ -88,12 +88,12 @@ exports.updateIps = function(callback) {
 };
 
 // end of update
-function markAsProxy(ip, req) {
+function markAsProxy(req) {
 
   if (req.headers && req.headers['x-forwarded-for']) {
     var proxy = req.headers['x-forwarded-for'];
 
-    if (proxy !== ip) {
+    if (proxy !== req.connection.remoteAddress) {
       req.isProxy = true;
     }
   }
@@ -117,7 +117,7 @@ exports.markAsTor = function(req, callback) {
           console.log('Marked ip ' + ip + ' as TOR.');
         }
       } else {
-        markAsProxy(ip, req);
+        markAsProxy(req);
       }
       callback(null, req);
     }

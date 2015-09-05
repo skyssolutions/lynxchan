@@ -456,6 +456,10 @@ function getParametersArray() {
     type : 'boolean',
     setting : 'maintenance'
   }, {
+    param : 'disableTopBoards',
+    type : 'boolean',
+    setting : 'disableTopBoards'
+  }, {
     param : 'disableAccountCreation',
     type : 'boolean',
     setting : 'disableAccountCreation'

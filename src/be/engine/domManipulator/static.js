@@ -49,39 +49,6 @@ exports.login = function(callback) {
 
 };
 
-exports.frontPage = function(boards, callback) {
-
-  try {
-
-    var document = jsdom(templateHandler.index);
-
-    document.title = siteTitle;
-
-    var boardsDiv = document.getElementById('divBoards');
-
-    for (var i = 0; i < boards.length; i++) {
-
-      var board = boards[i];
-
-      var link = document.createElement('a');
-
-      link.href = '/' + board.boardUri + '/';
-      link.innerHTML = '/' + board.boardUri + '/ - ' + board.boardName;
-
-      if (i) {
-        boardsDiv.appendChild(document.createElement('br'));
-      }
-
-      boardsDiv.appendChild(link);
-
-    }
-
-    gridFs.writeData(serializer(document), '/', 'text/html', {}, callback);
-  } catch (error) {
-    callback(error);
-  }
-};
-
 // Section 1: Thread {
 function setThreadHiddenIdentifiers(document, boardUri, threadData) {
   var boardIdentifyInput = document.getElementById('boardIdentifier');
@@ -360,6 +327,51 @@ exports.catalog = function(boardUri, threads, callback) {
 };
 
 // } Section 3: Catalog
+
+// Section 4: Front page {
+function setTopBoards(document, boards, boardsDiv) {
+
+  for (var i = 0; i < boards.length; i++) {
+
+    var board = boards[i];
+
+    var link = document.createElement('a');
+
+    link.href = '/' + board.boardUri + '/';
+    link.innerHTML = '/' + board.boardUri + '/ - ' + board.boardName;
+
+    if (i) {
+      boardsDiv.appendChild(document.createElement('br'));
+    }
+
+    boardsDiv.appendChild(link);
+
+  }
+
+}
+
+exports.frontPage = function(boards, callback) {
+
+  try {
+
+    var document = jsdom(templateHandler.index);
+
+    document.title = siteTitle;
+
+    var boardsDiv = document.getElementById('divBoards');
+
+    if (!boards) {
+      common.removeElement(boardsDiv);
+    } else {
+      setTopBoards(document, boards, boardsDiv);
+    }
+
+    gridFs.writeData(serializer(document), '/', 'text/html', {}, callback);
+  } catch (error) {
+    callback(error);
+  }
+};
+// } Section 4: Front page
 
 exports.preview = function(postingData, callback) {
   try {
