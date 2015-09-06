@@ -3,11 +3,17 @@
 // builds static JSON
 // json counterpart of domManipulator
 
-var miscOps = require('../engine/miscOps');
 var settings = require('../boot').getGeneralSettings();
 var blockedBoardCreation = settings.restrictBoardCreation;
+var miscOps;
 
 var gridFsHandler = require('./gridFsHandler');
+
+exports.loadDependencies = function() {
+
+  miscOps = require('../engine/miscOps');
+
+};
 
 // start of shared functions
 function getFilesArray(fileArray, modding) {

@@ -2,14 +2,14 @@
 
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
-var templateHandler = require('../../templateHandler');
-var lang = require('../../langOps').languagePack();
-var common = require('..').common;
 var boot = require('../../../boot');
 var settings = boot.getGeneralSettings();
 var debug = boot.debug();
 var verbose = settings.verbose;
-var miscOps = require('../../miscOps');
+var templateHandler;
+var lang;
+var common;
+var miscOps;
 
 var boardCreationRestricted = settings.restrictBoardCreation;
 
@@ -19,20 +19,30 @@ var accountSettingsRelation = {
   alwaysSignRole : 'checkboxAlwaysSign'
 };
 
-var availableLogTypes = {
-  '' : lang.guiAllTypes,
-  archiveDeletion : lang.guiTypeArchiveDeletion,
-  ban : lang.guiTypeBan,
-  rangeBan : lang.guiTypeRange,
-  banLift : lang.guiTypeBanLift,
-  deletion : lang.guiTypeDeletion,
-  fileDeletion : lang.guiTypeFileDeletion,
-  reportClosure : lang.guiTypeReportClosure,
-  globalRoleChange : lang.guiTypeGlobalRoleChange,
-  boardDeletion : lang.guiTypeBoardDeletion,
-  boardTransfer : lang.guiTypeBoardTransfer,
-  hashBan : lang.guiTypeHashBan,
-  hashBanLift : lang.guiTypeHashBanLift
+var availableLogTypes;
+
+exports.loadDependencies = function() {
+
+  templateHandler = require('../../templateHandler');
+  lang = require('../../langOps').languagePack();
+  availableLogTypes = {
+    '' : lang.guiAllTypes,
+    archiveDeletion : lang.guiTypeArchiveDeletion,
+    ban : lang.guiTypeBan,
+    rangeBan : lang.guiTypeRange,
+    banLift : lang.guiTypeBanLift,
+    deletion : lang.guiTypeDeletion,
+    fileDeletion : lang.guiTypeFileDeletion,
+    reportClosure : lang.guiTypeReportClosure,
+    globalRoleChange : lang.guiTypeGlobalRoleChange,
+    boardDeletion : lang.guiTypeBoardDeletion,
+    boardTransfer : lang.guiTypeBoardTransfer,
+    hashBan : lang.guiTypeHashBan,
+    hashBanLift : lang.guiTypeHashBanLift
+  };
+  common = require('..').common;
+  miscOps = require('../../miscOps');
+
 };
 
 exports.ban = function(ban, board) {

@@ -5,27 +5,39 @@ var boot = require('../boot');
 var settings = boot.getGeneralSettings();
 var debug = boot.debug();
 var verbose = settings.verbose;
-var accountOps = require('./accountOps');
-var miscOps = require('./miscOps');
 var bans = require('../db').bans();
 var fs = require('fs');
 var crypto = require('crypto');
-var modOps = require('./modOps').ipBan;
 var path = require('path');
 var tempDir = settings.tempDirectory;
-var uploadHandler = require('./uploadHandler');
 var maxRequestSize = settings.maxRequestSizeB;
 var maxFileSize = settings.maxFileSizeB;
 var maxFiles = settings.maxFiles;
-var allowedMimes = uploadHandler.supportedMimes();
-var lang = require('./langOps').languagePack();
-var videoMimes = uploadHandler.videoMimes();
+var accountOps;
+var miscOps;
+var modOps;
+var uploadHandler;
+var allowedMimes;
+var videoMimes;
+var lang;
 
 var FILE_EXT_RE = /(\.[_\-a-zA-Z0-9]{0,16}).*/;
 // replace base64 characters with safe-for-filename characters
 var b64Safe = {
   '/' : '_',
   '+' : '-'
+};
+
+exports.loadDependencies = function() {
+
+  accountOps = require('./accountOps');
+  miscOps = require('./miscOps');
+  modOps = require('./modOps').ipBan;
+  uploadHandler = require('./uploadHandler');
+  allowedMimes = uploadHandler.supportedMimes();
+  videoMimes = uploadHandler.videoMimes();
+  lang = require('./langOps').languagePack();
+
 };
 
 function uploadPath(baseDir, filename) {

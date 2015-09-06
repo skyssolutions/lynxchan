@@ -2,19 +2,19 @@
 
 var crypto = require('crypto');
 var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
-var miscOps = require('../miscOps');
-var gridFsHandler = require('../gridFsHandler');
-var captchaOps = require('../captchaOps');
-var postingOps = require('../postingOps').common;
 var logger = require('../../logger');
 var settings = require('../../boot').getGeneralSettings();
 var db = require('../../db');
 var reports = db.reports();
 var users = db.users();
 var logs = db.logs();
-var modCommonOps = require('../modOps').common;
 var boards = db.boards();
-var lang = require('../langOps').languagePack();
+var gridFsHandler;
+var captchaOps;
+var postingOps;
+var miscOps;
+var modCommonOps;
+var lang;
 
 var restrictedBoardCreation = settings.restrictBoardCreation;
 
@@ -41,6 +41,17 @@ var boardParameters = [ {
   field : 'boardMessage',
   length : 256
 } ];
+
+exports.loadDependencies = function() {
+
+  gridFsHandler = require('../gridFsHandler');
+  captchaOps = require('../captchaOps');
+  postingOps = require('../postingOps').common;
+  miscOps = require('../miscOps');
+  modCommonOps = require('../modOps').common;
+  lang = require('../langOps').languagePack();
+
+};
 
 exports.getValidSettings = function() {
   return [ 'disableIds', 'disableCaptcha', 'forceAnonymity', 'allowCode',

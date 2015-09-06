@@ -3,13 +3,13 @@
 // miscellaneous
 var settings = require('../boot').getGeneralSettings();
 var verbose = settings.verbose;
-var formOps = require('./formOps');
 var db = require('../db');
 var crypto = require('crypto');
 var users = db.users();
 var boot = require('../boot');
-var lang = require('./langOps').languagePack();
 var reports = db.reports();
+var formOps;
+var lang;
 
 var MAX_STAFF_ROLE = 3;
 
@@ -136,6 +136,13 @@ var MIMETYPES = {
 exports.htmlReplaceTable = {
   '<' : '&lt;',
   '>' : '&gt;'
+};
+
+exports.loadDependencies = function() {
+
+  formOps = require('./formOps');
+  lang = require('./langOps').languagePack();
+
 };
 
 exports.getRandomInt = function(min, max) {

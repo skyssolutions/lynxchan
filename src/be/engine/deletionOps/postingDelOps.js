@@ -1,9 +1,6 @@
 'use strict';
 
-var gridFs = require('../gridFsHandler');
-var miscOps = require('../miscOps');
 var logger = require('../../logger');
-var lang = require('../langOps').languagePack();
 var db = require('../../db');
 var posts = db.posts();
 var threads = db.threads();
@@ -13,6 +10,17 @@ var files = db.files();
 var settings = require('../../boot').getGeneralSettings();
 var verbose = settings.verbose;
 var latestPosts = settings.latestPostCount;
+var gridFs;
+var lang;
+var miscOps;
+
+exports.loadDependencies = function() {
+
+  gridFs = require('../gridFsHandler');
+  lang = require('../langOps').languagePack();
+  miscOps = require('../miscOps');
+
+};
 
 // Section 1: Posting deletion {
 function reaggregateLatestPosts(countData, board, parentThreads, callback,

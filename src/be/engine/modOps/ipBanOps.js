@@ -2,7 +2,6 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
-var miscOps = require('../miscOps');
 var db = require('../../db');
 var bans = db.bans();
 var flood = db.flood();
@@ -10,19 +9,16 @@ var boards = db.boards();
 var logs = db.logs();
 var threads = db.threads();
 var posts = db.posts();
-var common = require('.').common;
-var lang = require('../langOps').languagePack();
-var torOps = require('../torOps');
 var settings = require('../../boot').getGeneralSettings();
 var defaultBanMessage = settings.defaultBanMessage;
 var disableFloodCheck = settings.disableFloodCheck;
 var blockTor = settings.torAccess < 1;
 var blockProxy = settings.proxyAccess < 1;
-var logger = require('../../logger');
-
-if (!defaultBanMessage) {
-  defaultBanMessage = lang.miscDefaultBanMessage;
-}
+var common;
+var logger;
+var lang;
+var torOps;
+var miscOps;
 
 var banArguments = [ {
   field : 'reason',
@@ -33,6 +29,20 @@ var banArguments = [ {
   length : 128,
   removeHTML : true
 } ];
+
+exports.loadDependencies = function() {
+
+  common = require('.').common;
+  logger = require('../../logger');
+  lang = require('../langOps').languagePack();
+  torOps = require('../torOps');
+  miscOps = require('../miscOps');
+
+  if (!defaultBanMessage) {
+    defaultBanMessage = lang.miscDefaultBanMessage;
+  }
+
+};
 
 // Section 1: Bans {
 function getBans(parameters, callback) {

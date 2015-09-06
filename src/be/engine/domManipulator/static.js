@@ -2,16 +2,26 @@
 
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
-var gridFs = require('../gridFsHandler');
-var templateHandler = require('../templateHandler');
-var lang = require('../langOps').languagePack();
 var boot = require('../../boot');
 var settings = boot.getGeneralSettings();
-var common = require('.').common;
 var archive = settings.archiveLevel > 0 && require('../../archive').loaded();
+var common;
+var templateHandler;
+var lang;
+var gridFs;
+var siteTitle;
 
 var accountCreationDisabled = settings.disableAccountCreation;
-var siteTitle = settings.siteTitle || lang.titDefaultChanTitle;
+
+exports.loadDependencies = function() {
+
+  common = require('.').common;
+  templateHandler = require('../templateHandler');
+  lang = require('../langOps').languagePack();
+  gridFs = require('../gridFsHandler');
+  siteTitle = settings.siteTitle || lang.titDefaultChanTitle;
+
+};
 
 exports.notFound = function(callback) {
 

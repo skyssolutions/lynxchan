@@ -9,6 +9,9 @@ var debug = boot.debug();
 
 var languagePack = {};
 
+exports.loadDependencies = function() {
+};
+
 exports.languagePack = function() {
 
   if (!languagePack) {

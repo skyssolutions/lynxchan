@@ -2,13 +2,20 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
-var gridFsHandler = require('../gridFsHandler');
-var lang = require('../langOps').languagePack();
 var settings = require('../../boot').getGeneralSettings();
 var maxBannerSize = settings.maxBannerSizeB;
 var db = require('../../db');
 var boards = db.boards();
 var files = db.files();
+var gridFsHandler;
+var lang;
+
+exports.loadDependencies = function() {
+
+  gridFsHandler = require('../gridFsHandler');
+  lang = require('../langOps').languagePack();
+
+};
 
 exports.addBanner = function(user, parameters, callback) {
 

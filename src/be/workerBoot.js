@@ -85,7 +85,9 @@ function startListening() {
     var message = 'Server worker ' + cluster.worker.id;
     message += ' booted at ' + logger.timestamp();
 
-    requestHandler = require('./engine/requestHandler');
+    if (!debug) {
+      requestHandler = require('./engine/requestHandler');
+    }
 
     console.log(message);
   } catch (error) {
@@ -106,6 +108,8 @@ exports.boot = function() {
     if (error) {
       console.log(error);
     } else {
+      boot.startEngine();
+
       startListening();
     }
 

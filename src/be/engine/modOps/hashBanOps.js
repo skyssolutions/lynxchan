@@ -2,20 +2,28 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
-var miscOps = require('../miscOps');
 var logger = require('../../logger');
-var common = require('.').common;
-var lang = require('../langOps').languagePack();
 var db = require('../../db');
 var boards = db.boards();
 var logs = db.logs();
 var hashBans = db.hashBans();
+var lang;
+var common;
+var miscOps;
 
 var hashBanArguments = [ {
   field : 'hash',
   length : 32,
   removeHTML : true
 } ];
+
+exports.loadDependencies = function() {
+
+  lang = require('../langOps').languagePack();
+  common = require('.').common;
+  miscOps = require('../miscOps');
+
+};
 
 // Section 1: Hash bans {
 function getHashBans(parameters, callback) {

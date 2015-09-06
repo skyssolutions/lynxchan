@@ -7,19 +7,19 @@ var db = require('../db');
 var posts = db.posts();
 var threads = db.threads();
 var boards = db.boards();
-var domManipulator = require('./domManipulator').staticPages;
 var boot = require('../boot');
-var boardOps = require('./boardOps').rules;
 var flags = db.flags();
 var stats = db.stats();
 var settings = boot.getGeneralSettings();
 var topBoardsCount = settings.topBoardsCount;
-var miscOps = require('./miscOps');
 var templateSettings = boot.getTemplateSettings();
-var gfsHandler = require('./gridFsHandler');
 var pageSize = settings.pageSize;
 var verbose = settings.verbose;
-var jsonBuilder = require('./jsonBuilder');
+var domManipulator;
+var boardOps;
+var miscOps;
+var gfsHandler;
+var jsonBuilder;
 
 var postProjection = {
   _id : 0,
@@ -82,6 +82,16 @@ var boardProjection = {
 var toGenerate;
 var MAX_TO_GENERATE = 9;
 var reloading;
+
+exports.loadDependencies = function() {
+
+  domManipulator = require('./domManipulator').staticPages;
+  boardOps = require('./boardOps').rules;
+  miscOps = require('./miscOps');
+  gfsHandler = require('./gridFsHandler');
+  jsonBuilder = require('./jsonBuilder');
+
+};
 
 var fullReloadCallback = function(error, callback) {
 

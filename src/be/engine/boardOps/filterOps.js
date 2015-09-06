@@ -1,10 +1,17 @@
 'use strict';
 
+var settings = require('../../boot').getGeneralSettings();
 var db = require('../../db');
 var boards = db.boards();
-var miscOps = require('../miscOps');
-var lang = require('../langOps').languagePack();
-var settings = require('../../boot').getGeneralSettings();
+var miscOps;
+var lang;
+
+exports.loadDependencies = function() {
+
+  miscOps = require('../miscOps');
+  lang = require('../langOps').languagePack();
+
+};
 
 var maxFiltersCount = settings.maxFilters;
 

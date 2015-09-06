@@ -1,10 +1,10 @@
 'use strict';
 
-var miscOps = require('../miscOps');
-var lang = require('../langOps').languagePack();
-var templateHandler = require('../templateHandler');
 var boot = require('../../boot');
 var settings = boot.getGeneralSettings();
+var lang;
+var templateHandler;
+var miscOps;
 
 exports.indicatorsRelation = {
   pinned : 'pinIndicator',
@@ -13,6 +13,16 @@ exports.indicatorsRelation = {
 };
 
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
+var displayMaxSize;
+
+exports.loadDependencies = function() {
+
+  lang = require('../langOps').languagePack();
+  displayMaxSize = exports.formatFileSize(settings.maxFileSizeB);
+  templateHandler = require('../templateHandler');
+  miscOps = require('../miscOps');
+
+};
 
 exports.formatFileSize = function(size) {
 
@@ -32,8 +42,6 @@ exports.formatFileSize = function(size) {
   return size.toFixed(2) + ' ' + sizeOrders[orderIndex];
 
 };
-
-var displayMaxSize = exports.formatFileSize(settings.maxFileSizeB);
 
 exports.setFormCellBoilerPlate = function(cell, action, cssClass) {
   cell.method = 'post';

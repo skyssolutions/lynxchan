@@ -1,6 +1,5 @@
 'use strict';
 
-var gridFs = require('../gridFsHandler');
 var logger = require('../../logger');
 var db = require('../../db');
 var threads = db.threads();
@@ -14,13 +13,21 @@ var reports = db.reports();
 var logs = db.logs();
 var posts = db.posts();
 var boards = db.boards();
-var lang = require('../langOps').languagePack();
 var settings = require('../../boot').getGeneralSettings();
 var verbose = settings.verbose;
 var threadLimit = settings.maxThreadCount;
+var lang;
+var gridFs;
 
 var collectionsToClean = [ reports, posts, threads, flags, hashBans,
     boardStats, bans ];
+
+exports.loadDependencies = function() {
+
+  lang = require('../langOps').languagePack();
+  gridFs = require('../gridFsHandler');
+
+};
 
 // Section 1: Thread cleanup {
 function removeThreads(boardUri, threadsToDelete, callback) {

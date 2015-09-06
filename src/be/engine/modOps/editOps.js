@@ -2,20 +2,29 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
-var lang = require('../langOps').languagePack();
-var miscOps = require('../miscOps');
-var postOps = require('../postingOps').common;
 var db = require('../../db');
 var boards = db.boards();
 var threads = db.threads();
 var posts = db.posts();
-var common = require('.').common;
+var lang;
+var miscOps;
+var postOps;
+var common;
 
 var editArguments = [ {
   field : 'message',
   length : 2048,
   removeHTML : true
 } ];
+
+exports.loadDependencies = function() {
+
+  lang = require('../langOps').languagePack();
+  miscOps = require('../miscOps');
+  postOps = require('../postingOps').common;
+  common = require('.').common;
+
+};
 
 exports.getPostingToEdit = function(userData, parameters, callback) {
 

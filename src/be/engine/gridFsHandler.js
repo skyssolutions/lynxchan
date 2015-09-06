@@ -11,12 +11,19 @@ var boot = require('../boot');
 var settings = boot.getGeneralSettings();
 var disable304 = settings.disable304;
 var verbose = settings.verbose;
-var miscOps = require('./miscOps');
-var permanentTypes = [ 'media', 'preview' ];
+var noDaemon = boot.noDaemon();
+var miscOps;
+
+var chunkSize = 1024 * 255;
 var streamableMimes = [ 'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg',
     'audio/ogg', 'audio/webm' ];
-var chunkSize = 1024 * 255;
-var noDaemon = boot.noDaemon();
+var permanentTypes = [ 'media', 'preview' ];
+
+exports.loadDependencies = function() {
+
+  miscOps = require('./miscOps');
+
+};
 
 // start of writing data
 function writeDataOnOpenFile(gs, data, callback, archive, meta, mime,

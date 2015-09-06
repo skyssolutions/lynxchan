@@ -14,6 +14,9 @@ require('jsdom').defaultDocumentFeatures = {
   MutationEvents : false
 };
 
+exports.loadDependencies = function() {
+};
+
 function testPageFields(document, page, errors) {
 
   var error = '';

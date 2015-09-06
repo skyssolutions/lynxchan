@@ -3,8 +3,6 @@
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var crypto = require('crypto');
-var lang = require('../langOps').languagePack();
-var miscOps = require('../miscOps');
 var db = require('../../db');
 var posts = db.posts();
 var stats = db.stats();
@@ -15,6 +13,10 @@ var boot = require('../../boot');
 var debug = boot.debug();
 var settings = boot.getGeneralSettings();
 var verbose = settings.verbose;
+var lang;
+var miscOps;
+
+var floodTimer = settings.floodTimerSec * 1000;
 
 exports.postingParameters = [ {
   field : 'subject',
@@ -38,11 +40,16 @@ exports.postingParameters = [ {
 
 exports.defaultAnonymousName = settings.defaultAnonymousName;
 
-if (!exports.defaultAnonymousName) {
-  exports.defaultAnonymousName = lang.miscDefaultAnonymous;
-}
+exports.loadDependencies = function() {
 
-var floodTimer = settings.floodTimerSec * 1000;
+  lang = require('../langOps').languagePack();
+  miscOps = require('../miscOps');
+
+  if (!exports.defaultAnonymousName) {
+    exports.defaultAnonymousName = lang.miscDefaultAnonymous;
+  }
+
+};
 
 var greenTextFunction = function(match) {
   return '<span class="greenText">' + match + '</span>';

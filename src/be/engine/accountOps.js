@@ -3,10 +3,7 @@
 var db = require('../db');
 var users = db.users();
 var requests = db.recoveryRequests();
-var miscOps = require('./miscOps');
 var bcrypt = require('bcrypt');
-var captchaOps = require('./captchaOps');
-var domManipulator = require('./domManipulator').dynamicPages.miscPages;
 var logger = require('../logger');
 var logs = db.logs();
 var crypto = require('crypto');
@@ -14,8 +11,12 @@ var mailer = require('nodemailer').createTransport();
 var settings = require('../boot').getGeneralSettings();
 var sender = settings.emailSender || 'noreply@mychan.com';
 var creationDisabled = settings.disableAccountCreation;
+var miscOps;
+var captchaOps;
+var domManipulator;
+var lang;
+
 var validAccountSettings = [ 'alwaysSignRole' ];
-var lang = require('./langOps').languagePack();
 
 var newAccountParameters = [ {
   field : 'login',
@@ -29,6 +30,15 @@ var changeSettingsParameters = [ {
   field : 'email',
   length : 64
 } ];
+
+exports.loadDependencies = function() {
+
+  miscOps = require('./miscOps');
+  captchaOps = require('./captchaOps');
+  domManipulator = require('./domManipulator').dynamicPages.miscPages;
+  lang = require('./langOps').languagePack();
+
+};
 
 exports.validAccountSettings = function() {
   return validAccountSettings;

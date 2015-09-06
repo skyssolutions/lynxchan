@@ -4,20 +4,33 @@ var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var settings = require('../../boot').getGeneralSettings();
 var maxFlagSize = settings.maxFlagSizeB;
-var gridFsHandler = require('../gridFsHandler');
-var miscOps = require('../miscOps');
-var db = require('../../db');
-var boards = db.boards();
-var threads = db.threads();
-var posts = db.posts();
-var flags = db.flags();
-var lang = require('../langOps').languagePack();
+var gridFsHandler;
+var miscOps;
+var db;
+var boards;
+var threads;
+var posts;
+var flags;
+var lang;
 
 var newFlagParameters = [ {
   field : 'flagName',
   length : 16,
   removeHTML : true
 } ];
+
+exports.loadDependencies = function() {
+
+  gridFsHandler = require('../gridFsHandler');
+  miscOps = require('../miscOps');
+  db = require('../../db');
+  boards = db.boards();
+  threads = db.threads();
+  posts = db.posts();
+  flags = db.flags();
+  lang = require('../langOps').languagePack();
+
+};
 
 // Section 1: Flag creation {
 function processFlagFile(toInsert, file, callback) {

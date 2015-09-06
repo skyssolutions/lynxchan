@@ -1,6 +1,5 @@
 'use strict';
 
-var gsHandler = require('../gridFsHandler');
 var db = require('../../db');
 var boards = db.boards();
 var files = db.files();
@@ -13,17 +12,29 @@ var settings = boot.getGeneralSettings();
 var verbose = settings.verbose;
 var bumpLimit = settings.autoSageLimit;
 var common = require('.').common;
-var generator = require('../generator');
-var uploadHandler = require('../uploadHandler');
-var lang = require('../langOps').languagePack();
-var miscOps = require('../miscOps');
-var captchaOps = require('../captchaOps');
 var refuseTorFiles = settings.torAccess < 2;
 var refuseProxyFiles = settings.proxyAccess < 2;
+var gsHandler;
+var generator;
+var uploadHandler;
+var lang;
+var miscOps;
+var captchaOps;
 
 var latestPostsCount = settings.latestPostCount;
 var bumpLimit = settings.autoSageLimit;
 var autoLockLimit = bumpLimit * 2;
+
+exports.loadDependencies = function() {
+
+  gsHandler = require('../gridFsHandler');
+  generator = require('../generator');
+  uploadHandler = require('../uploadHandler');
+  lang = require('../langOps').languagePack();
+  miscOps = require('../miscOps');
+  captchaOps = require('../captchaOps');
+
+};
 
 function cleanPostFiles(files, postId, callback) {
 
@@ -246,6 +257,7 @@ function updateThread(parameters, postId, thread, callback, post) {
     if (error) {
       callback(error);
     } else {
+
       // style exception, too simple
       generator.preview(null, null, null, function generatedPreview(error) {
         if (error) {
@@ -255,8 +267,8 @@ function updateThread(parameters, postId, thread, callback, post) {
               callback);
         }
       }, post);
-
       // style exception, too simple
+
     }
 
   });

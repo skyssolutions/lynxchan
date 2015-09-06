@@ -2,13 +2,21 @@
 
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
-var templateHandler = require('../../templateHandler');
-var lang = require('../../langOps').languagePack();
-var common = require('..').common;
 var boot = require('../../../boot');
 var settings = boot.getGeneralSettings();
 var debug = boot.debug();
 var verbose = settings.verbose;
+var templateHandler;
+var lang;
+var common;
+
+exports.loadDependencies = function() {
+
+  var templateHandler = require('../../templateHandler');
+  var lang = require('../../langOps').languagePack();
+  var common = require('..').common;
+
+};
 
 // Section 1: Bans {
 function setBanCell(ban, cell) {

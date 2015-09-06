@@ -1,8 +1,12 @@
 'use strict';
 
 var settings = require('../../boot').getGeneralSettings();
-var maxRoleStaff = require('../miscOps').getMaxStaffRole();
 var globalBoardModeration = settings.allowGlobalBoardModeration;
+var maxRoleStaff;
+
+exports.loadDependencies = function() {
+  maxRoleStaff = require('../miscOps').getMaxStaffRole();
+};
 
 exports.isInBoardStaff = function(userData, board, requiredGlobalRole) {
 

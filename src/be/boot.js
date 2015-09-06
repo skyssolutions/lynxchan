@@ -90,7 +90,7 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
 
   var topChanged = generalSettings.topBoardsCount !== settings.topBoardsCount;
 
-  // was top boards enabled or disabled?
+  // was top boards enabled or disabled on this change?
   var tDChange = generalSettings.disableTopBoards !== settings.disableTopBoards;
   topChanged = topChanged || tDChange;
 
@@ -189,6 +189,8 @@ exports.reload = function() {
   }
 
   exports.loadSettings();
+
+  exports.startEngine();
 
   require('./engine/templateHandler').loadTemplates();
   require('./archive').reload();
@@ -715,18 +717,7 @@ function checkForDefaultPages() {
 
 }
 
-try {
-  exports.loadSettings();
-} catch (error) {
-  if (generalSettings.verbose) {
-    console.log(error);
-  }
-
-  if (debug) {
-    throw error;
-  }
-  return;
-}
+exports.loadSettings();
 
 db = require('./db');
 
@@ -745,14 +736,12 @@ var createAccountFunction = function() {
       if (debug) {
         throw error;
       }
-
-      checkForDefaultPages();
-
     } else {
       console.log('Account ' + informedLogin + ' created.');
 
-      checkForDefaultPages();
     }
+
+    checkForDefaultPages();
 
   }, informedRole, true);
 
@@ -775,15 +764,31 @@ var setRoleFunction = function() {
         throw error;
       }
 
-      checkForDefaultPages();
-
     } else {
       console.log('Set role ' + informedRole + ' for ' + informedLogin + '.');
 
-      checkForDefaultPages();
     }
 
+    checkForDefaultPages();
+
   }, true);
+
+};
+
+// loads inter-modular dependencies in the engine by making sure every module is
+// loaded to only then set references they might have between them
+// vroom vroom :v
+exports.startEngine = function() {
+
+  var dirListing = fs.readdirSync(__dirname + '/engine');
+
+  for (var i = 0; i < dirListing.length; i++) {
+    require('./engine/' + dirListing[i]);
+  }
+
+  for (i = 0; i < dirListing.length; i++) {
+    require('./engine/' + dirListing[i]).loadDependencies();
+  }
 
 };
 
@@ -791,18 +796,12 @@ function initTorControl() {
 
   require('./engine/torOps').init(function initializedTorControl(error) {
     if (error) {
-      if (generalSettings.verbose) {
-        console.log(error);
-      }
 
-      if (debug) {
-        throw error;
-      }
+      throw error;
+
     } else {
       if (!noDaemon) {
         require('./scheduleHandler').start();
-      } else {
-        require('./engine/accountOps');
       }
 
       if (createAccount) {
@@ -823,13 +822,9 @@ function checkDbVersions() {
   db.checkVersion(function checkedVersion(error) {
 
     if (error) {
-      if (generalSettings.verbose) {
-        console.log(error);
-      }
 
-      if (debug) {
-        throw error;
-      }
+      throw error;
+
     } else {
       initTorControl();
     }
@@ -843,14 +838,12 @@ if (cluster.isMaster) {
   db.init(function bootedDb(error) {
 
     if (error) {
-      if (generalSettings.verbose) {
-        console.log(error);
-      }
 
-      if (debug) {
-        throw error;
-      }
+      throw error;
+
     } else {
+
+      exports.startEngine();
 
       checkDbVersions();
 

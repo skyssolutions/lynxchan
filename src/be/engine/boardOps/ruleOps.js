@@ -1,11 +1,18 @@
 'use strict';
 
-var lang = require('../langOps').languagePack();
 var db = require('../../db');
 var boards = db.boards();
 var settings = require('../../boot').getGeneralSettings();
 var maxRulesCount = settings.maxBoardRules;
-var miscOps = require('../miscOps');
+var lang;
+var miscOps;
+
+exports.loadDependencies = function() {
+
+  miscOps = require('../miscOps');
+  lang = require('../langOps').languagePack();
+
+};
 
 exports.addBoardRule = function(parameters, userData, callback) {
 

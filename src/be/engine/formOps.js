@@ -4,25 +4,39 @@
 var boot = require('../boot');
 var settings = boot.getGeneralSettings();
 var bans = require('../db').bans();
-var accountOps = require('./accountOps');
-var uploadHandler = require('./uploadHandler');
 var fs = require('fs');
 var crypto = require('crypto');
 var debug = boot.debug();
 var verbose = settings.verbose;
-var modOps = require('./modOps').ipBan;
 var multiParty = require('multiparty');
-var miscOps = require('./miscOps');
 var jsdom = require('jsdom').jsdom;
-var domManipulator = require('./domManipulator').dynamicPages.miscPages;
-var uploadHandler = require('./uploadHandler');
-var validMimes = uploadHandler.supportedMimes();
-var lang = require('./langOps').languagePack();
 var uploadDir = settings.tempDirectory;
 var maxRequestSize = settings.maxRequestSizeB;
 var maxFileSize = settings.maxFileSizeB;
 var maxFiles = settings.maxFiles;
-var videoMimes = uploadHandler.videoMimes();
+var accountOps;
+var uploadHandler;
+var modOps;
+var miscOps;
+var domManipulator;
+var lang;
+var uploadHandler;
+var validMimes;
+var videoMimes;
+
+exports.loadDependencies = function() {
+
+  accountOps = require('./accountOps');
+  uploadHandler = require('./uploadHandler');
+  modOps = require('./modOps').ipBan;
+  miscOps = require('./miscOps');
+  domManipulator = require('./domManipulator').dynamicPages.miscPages;
+  lang = require('./langOps').languagePack();
+  uploadHandler = require('./uploadHandler');
+  validMimes = uploadHandler.supportedMimes();
+  videoMimes = uploadHandler.videoMimes();
+
+};
 
 exports.getCookies = function(req) {
   var parsedCookies = {};

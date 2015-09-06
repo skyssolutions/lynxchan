@@ -4,22 +4,34 @@ var crypto = require('crypto');
 var db = require('../../db');
 var threads = db.threads();
 var boards = db.boards();
-var common = require('.').common;
-var generator = require('../generator');
 var boot = require('../../boot');
 var debug = boot.debug();
 var settings = boot.getGeneralSettings();
 var verbose = settings.verbose;
-var delOps = require('../deletionOps').miscDeletions;
 var logger = require('../../logger');
-var uploadHandler = require('../uploadHandler');
-var lang = require('../langOps').languagePack();
-var miscOps = require('../miscOps');
-var captchaOps = require('../captchaOps');
 var refuseTorFiles = settings.torAccess < 2;
 var refuseProxyFiles = settings.proxyAccess < 2;
+var common;
+var delOps;
+var generator;
+var uploadHandler;
+var lang;
+var miscOps;
+var captchaOps;
 
 var threadLimit = settings.maxThreadCount;
+
+exports.loadDependencies = function() {
+
+  common = require('.').common;
+  delOps = require('../deletionOps').miscDeletions;
+  generator = require('../generator');
+  uploadHandler = require('../uploadHandler');
+  lang = require('../langOps').languagePack();
+  miscOps = require('../miscOps');
+  captchaOps = require('../captchaOps');
+
+};
 
 function finishThreadCreation(boardUri, threadId, enabledCaptcha, callback,
     thread) {

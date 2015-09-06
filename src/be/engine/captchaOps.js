@@ -15,13 +15,13 @@ var crypto = require('crypto');
 var boot = require('../boot');
 var settings = boot.getGeneralSettings();
 var captchaExpiration = settings.captchaExpiration;
-var uploadHandler = require('./uploadHandler');
-var formOps = require('./formOps');
-var gridFsHandler = require('./gridFsHandler');
 var tempDirectory = settings.tempDirectory;
-var miscOps = require('./miscOps');
 var url = require('url');
-var lang = require('./langOps').languagePack();
+var miscOps;
+var lang;
+var uploadHandler;
+var formOps;
+var gridFsHandler;
 
 // captcha settings
 var fonts = settings.captchaFonts || [];
@@ -39,7 +39,7 @@ var width = 300;
 var minLineX = width / 4;
 var maxLineX = width - minLineX;
 
-// used to distortion doesn't pull point too hard
+// used so distortion doesn't pull points too hard
 var distortLimiter = 30;
 
 // used to control how many points are pulled
@@ -58,6 +58,16 @@ var minLines = 1;
 var maxLines = 3;
 var lineWidth = 2;
 var noise = 'multiplicative';
+
+exports.loadDependencies = function() {
+
+  miscOps = require('./miscOps');
+  lang = require('./langOps').languagePack();
+  uploadHandler = require('./uploadHandler');
+  formOps = require('./formOps');
+  gridFsHandler = require('./gridFsHandler');
+
+};
 
 function getRandomColor() {
   var red = miscOps.getRandomInt(minColor, maxColor).toString(16);

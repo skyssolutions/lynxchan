@@ -5,17 +5,28 @@
 
 var indexString = 'index.html';
 var url = require('url');
-var formOps = require('./formOps');
-var apiOps = require('./apiOps');
-var miscOps = require('./miscOps');
 var settings = require('../boot').getGeneralSettings();
 var verbose = settings.verbose;
 var maintenance = settings.maintenance;
 var archive = require('../archive');
-var gridFs = require('./gridFsHandler');
-var lang = require('./langOps').languagePack();
-var staticHandler = require('./staticHandler');
 var serveArchive = settings.serveArchive;
+var formOps;
+var apiOps;
+var miscOps;
+var gridFs;
+var lang;
+var staticHandler;
+
+exports.loadDependencies = function() {
+
+  formOps = require('./formOps');
+  apiOps = require('./apiOps');
+  miscOps = require('./miscOps');
+  gridFs = require('./gridFsHandler');
+  lang = require('./langOps').languagePack();
+  staticHandler = require('./staticHandler');
+
+};
 
 function outputError(error, res) {
 

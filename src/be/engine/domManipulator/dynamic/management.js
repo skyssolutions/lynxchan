@@ -2,18 +2,18 @@
 
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
-var templateHandler = require('../../templateHandler');
-var lang = require('../../langOps').languagePack();
-var common = require('..').common;
 var boot = require('../../../boot');
 var settings = boot.getGeneralSettings();
 var debug = boot.debug();
 var verbose = settings.verbose;
-var miscOps = require('../../miscOps');
 var globalBoardModeration = settings.allowGlobalBoardModeration;
+var common;
+var templateHandler;
+var lang;
+var miscOps;
 
-var displayMaxBannerSize = common.formatFileSize(settings.maxBannerSizeB);
-var displayMaxFlagSize = common.formatFileSize(settings.maxFlagSizeB);
+var displayMaxBannerSize;
+var displayMaxFlagSize;
 
 var boardSettingsRelation = {
   disableIds : 'disableIdsCheckbox',
@@ -64,205 +64,218 @@ var boardManagementLinks = [ {
   element : 'flagManagementLink'
 } ];
 
-var siteSettingsRelation = {
+var siteSettingsRelation;
 
-  fieldAddress : {
-    setting : 'address',
-    type : 'string'
-  },
-  fieldPort : {
-    setting : 'port',
-    type : 'string'
-  },
-  fieldFePath : {
-    setting : 'fePath',
-    type : 'string'
-  },
-  fieldPageSize : {
-    setting : 'pageSize',
-    type : 'string'
-  },
-  fieldLatestPostsCount : {
-    setting : 'latestPostCount',
-    type : 'string'
-  },
-  fieldAutoSageLimit : {
-    setting : 'autoSageLimit',
-    type : 'string'
-  },
-  fieldThreadLimit : {
-    setting : 'maxThreadCount',
-    type : 'string'
-  },
-  fieldSiteTitle : {
-    setting : 'siteTitle',
-    type : 'string'
-  },
-  fieldTempDir : {
-    setting : 'tempDirectory',
-    type : 'string'
-  },
-  fieldSenderEmail : {
-    setting : 'emailSender',
-    type : 'string'
-  },
-  fieldCaptchaExpiration : {
-    setting : 'captchaExpiration',
-    type : 'string'
-  },
-  fieldMaxRequestSize : {
-    setting : 'maxRequestSizeMB',
-    type : 'string'
-  },
-  fieldMaxFileSize : {
-    setting : 'maxFileSizeMB',
-    type : 'string'
-  },
-  fieldMaxFiles : {
-    setting : 'maxFiles',
-    type : 'string'
-  },
-  fieldBanMessage : {
-    setting : 'defaultBanMessage',
-    type : 'string'
-  },
-  fieldLogPageSize : {
-    setting : 'logPageSize',
-    type : 'string'
-  },
-  fieldAnonymousName : {
-    setting : 'defaultAnonymousName',
-    type : 'string'
-  },
-  fieldTopBoardsCount : {
-    setting : 'topBoardsCount',
-    type : 'string'
-  },
-  fieldBoardsPerPage : {
-    setting : 'boardsPerPage',
-    type : 'string'
-  },
-  fieldTorSource : {
-    setting : 'torSource',
-    type : 'string'
-  },
-  fieldLanguagePack : {
-    setting : 'languagePackPath',
-    type : 'string'
-  },
-  fieldMaxRules : {
-    setting : 'maxBoardRules',
-    type : 'string'
-  },
-  fieldThumbSize : {
-    setting : 'thumbSize',
-    type : 'string'
-  },
-  fieldMaxTags : {
-    setting : 'maxBoardTags',
-    type : 'string'
-  },
-  fieldMaxFilters : {
-    setting : 'maxFilters',
-    type : 'string'
-  },
-  fieldMaxVolunteers : {
-    setting : 'maxBoardVolunteers',
-    type : 'string'
-  },
-  fieldMaxBannerSize : {
-    setting : 'maxBannerSizeKB',
-    type : 'string'
-  },
-  fieldMaxFlagSize : {
-    setting : 'maxFlagSizeKB',
-    type : 'string'
-  },
-  fieldThumbExtension : {
-    setting : 'thumbExtension',
-    type : 'string'
-  },
-  fieldFloodInterval : {
-    setting : 'floodTimerSec',
-    type : 'string'
-  },
-  checkboxVerbose : {
-    setting : 'verbose',
-    type : 'boolean'
-  },
-  checkboxDisable304 : {
-    setting : 'disable304',
-    type : 'boolean'
-  },
-  checkboxDisableTopBoards : {
-    setting : 'disableTopBoards',
-    type : 'boolean'
-  },
-  checkboxSsl : {
-    setting : 'ssl',
-    type : 'boolean'
-  },
-  checkboxMediaThumb : {
-    setting : 'mediaThumb',
-    type : 'boolean'
-  },
-  checkboxMaintenance : {
-    setting : 'maintenance',
-    type : 'boolean'
-  },
-  checkboxMultipleReports : {
-    setting : 'multipleReports',
-    type : 'boolean'
-  },
-  checkboxDisableFloodCheck : {
-    setting : 'disableFloodCheck',
-    type : 'boolean'
-  },
-  checkboxServeArchive : {
-    setting : 'serveArchive',
-    type : 'boolean'
-  },
-  checkboxGlobalBoardModeration : {
-    setting : 'allowGlobalBoardModeration',
-    type : 'boolean'
-  },
-  checkboxDisableAccountCreation : {
-    setting : 'disableAccountCreation',
-    type : 'boolean'
-  },
-  checkboxRestrictBoardCreation : {
-    setting : 'restrictBoardCreation',
-    type : 'boolean'
-  },
-  fieldCaptchaFonts : {
-    setting : 'captchaFonts',
-    type : 'array'
-  },
-  fieldAcceptedMimes : {
-    setting : 'acceptedMimes',
-    type : 'array'
-  },
-  comboArchive : {
-    setting : 'archiveLevel',
-    type : 'combo',
-    options : lang.guiArchiveLevels
-  },
-  comboProxyAccess : {
-    setting : 'proxyAccess',
-    type : 'combo',
-    options : lang.guiProxyLevels
-  },
-  comboTorAccess : {
-    setting : 'torAccess',
-    type : 'combo',
-    options : lang.guiTorLevels
-  },
-  comboMinClearIpRole : {
-    setting : 'clearIpMinRole',
-    type : 'combo',
-    options : lang.miscRoles,
-    limit : 4
-  }
+exports.loadDependencies = function() {
+
+  common = require('..').common;
+  displayMaxBannerSize = common.formatFileSize(settings.maxBannerSizeB);
+  displayMaxFlagSize = common.formatFileSize(settings.maxFlagSizeB);
+  templateHandler = require('../../templateHandler');
+  lang = require('../../langOps').languagePack();
+  miscOps = require('../../miscOps');
+
+  siteSettingsRelation = {
+
+    fieldAddress : {
+      setting : 'address',
+      type : 'string'
+    },
+    fieldPort : {
+      setting : 'port',
+      type : 'string'
+    },
+    fieldFePath : {
+      setting : 'fePath',
+      type : 'string'
+    },
+    fieldPageSize : {
+      setting : 'pageSize',
+      type : 'string'
+    },
+    fieldLatestPostsCount : {
+      setting : 'latestPostCount',
+      type : 'string'
+    },
+    fieldAutoSageLimit : {
+      setting : 'autoSageLimit',
+      type : 'string'
+    },
+    fieldThreadLimit : {
+      setting : 'maxThreadCount',
+      type : 'string'
+    },
+    fieldSiteTitle : {
+      setting : 'siteTitle',
+      type : 'string'
+    },
+    fieldTempDir : {
+      setting : 'tempDirectory',
+      type : 'string'
+    },
+    fieldSenderEmail : {
+      setting : 'emailSender',
+      type : 'string'
+    },
+    fieldCaptchaExpiration : {
+      setting : 'captchaExpiration',
+      type : 'string'
+    },
+    fieldMaxRequestSize : {
+      setting : 'maxRequestSizeMB',
+      type : 'string'
+    },
+    fieldMaxFileSize : {
+      setting : 'maxFileSizeMB',
+      type : 'string'
+    },
+    fieldMaxFiles : {
+      setting : 'maxFiles',
+      type : 'string'
+    },
+    fieldBanMessage : {
+      setting : 'defaultBanMessage',
+      type : 'string'
+    },
+    fieldLogPageSize : {
+      setting : 'logPageSize',
+      type : 'string'
+    },
+    fieldAnonymousName : {
+      setting : 'defaultAnonymousName',
+      type : 'string'
+    },
+    fieldTopBoardsCount : {
+      setting : 'topBoardsCount',
+      type : 'string'
+    },
+    fieldBoardsPerPage : {
+      setting : 'boardsPerPage',
+      type : 'string'
+    },
+    fieldTorSource : {
+      setting : 'torSource',
+      type : 'string'
+    },
+    fieldLanguagePack : {
+      setting : 'languagePackPath',
+      type : 'string'
+    },
+    fieldMaxRules : {
+      setting : 'maxBoardRules',
+      type : 'string'
+    },
+    fieldThumbSize : {
+      setting : 'thumbSize',
+      type : 'string'
+    },
+    fieldMaxTags : {
+      setting : 'maxBoardTags',
+      type : 'string'
+    },
+    fieldMaxFilters : {
+      setting : 'maxFilters',
+      type : 'string'
+    },
+    fieldMaxVolunteers : {
+      setting : 'maxBoardVolunteers',
+      type : 'string'
+    },
+    fieldMaxBannerSize : {
+      setting : 'maxBannerSizeKB',
+      type : 'string'
+    },
+    fieldMaxFlagSize : {
+      setting : 'maxFlagSizeKB',
+      type : 'string'
+    },
+    fieldThumbExtension : {
+      setting : 'thumbExtension',
+      type : 'string'
+    },
+    fieldFloodInterval : {
+      setting : 'floodTimerSec',
+      type : 'string'
+    },
+    checkboxVerbose : {
+      setting : 'verbose',
+      type : 'boolean'
+    },
+    checkboxDisable304 : {
+      setting : 'disable304',
+      type : 'boolean'
+    },
+    checkboxDisableTopBoards : {
+      setting : 'disableTopBoards',
+      type : 'boolean'
+    },
+    checkboxSsl : {
+      setting : 'ssl',
+      type : 'boolean'
+    },
+    checkboxMediaThumb : {
+      setting : 'mediaThumb',
+      type : 'boolean'
+    },
+    checkboxMaintenance : {
+      setting : 'maintenance',
+      type : 'boolean'
+    },
+    checkboxMultipleReports : {
+      setting : 'multipleReports',
+      type : 'boolean'
+    },
+    checkboxDisableFloodCheck : {
+      setting : 'disableFloodCheck',
+      type : 'boolean'
+    },
+    checkboxServeArchive : {
+      setting : 'serveArchive',
+      type : 'boolean'
+    },
+    checkboxGlobalBoardModeration : {
+      setting : 'allowGlobalBoardModeration',
+      type : 'boolean'
+    },
+    checkboxDisableAccountCreation : {
+      setting : 'disableAccountCreation',
+      type : 'boolean'
+    },
+    checkboxRestrictBoardCreation : {
+      setting : 'restrictBoardCreation',
+      type : 'boolean'
+    },
+    fieldCaptchaFonts : {
+      setting : 'captchaFonts',
+      type : 'array'
+    },
+    fieldAcceptedMimes : {
+      setting : 'acceptedMimes',
+      type : 'array'
+    },
+    comboArchive : {
+      setting : 'archiveLevel',
+      type : 'combo',
+      options : lang.guiArchiveLevels
+    },
+    comboProxyAccess : {
+      setting : 'proxyAccess',
+      type : 'combo',
+      options : lang.guiProxyLevels
+    },
+    comboTorAccess : {
+      setting : 'torAccess',
+      type : 'combo',
+      options : lang.guiTorLevels
+    },
+    comboMinClearIpRole : {
+      setting : 'clearIpMinRole',
+      type : 'combo',
+      options : lang.miscRoles,
+      limit : 4
+    }
+  };
+
 };
 
 exports.bannerManagement = function(boardUri, banners) {

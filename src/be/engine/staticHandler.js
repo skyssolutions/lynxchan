@@ -8,11 +8,18 @@ var verbose = boot.getGeneralSettings().verbose;
 var disable304 = boot.getGeneralSettings().disable304;
 var debug = boot.debug();
 var fs = require('fs');
-var gridFs = require('./gridFsHandler');
-var miscOps = require('./miscOps');
 var url = require('url');
+var gridFs;
+var miscOps;
 
 var filesCache = {};
+
+exports.loadDependencies = function() {
+
+  gridFs = require('./gridFsHandler');
+  miscOps = require('./miscOps');
+
+};
 
 function respond(fileContent, header, res) {
 

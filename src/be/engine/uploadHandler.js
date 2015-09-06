@@ -5,15 +5,12 @@ var fs = require('fs');
 var im = require('gm').subClass({
   imageMagick : true
 });
-var gsHandler = require('./gridFsHandler');
 var db = require('../db');
 var hashBans = db.hashBans();
 var threads = db.threads();
 var boards = db.boards();
-var lang = require('./langOps').languagePack();
 var exec = require('child_process').exec;
 var boot = require('../boot');
-var miscOps = require('../engine/miscOps');
 var genericThumb = boot.genericThumb();
 var genericAudioThumb = boot.genericAudioThumb();
 var spoilerPath = boot.spoilerImage();
@@ -27,6 +24,9 @@ mp3ThumbCommand += ' && mogrify -resize {$dimension} {$destination}';
 var archive = settings.archiveLevel > 1;
 var supportedMimes = settings.acceptedMimes;
 var thumbSize = settings.thumbSize;
+var miscOps;
+var lang;
+var gsHandler;
 
 var correctedMimesRelation = {
   'video/webm' : 'audio/webm',
@@ -36,6 +36,14 @@ var correctedMimesRelation = {
 var thumbAudioMimes = [ 'audio/mpeg', 'audio/ogg' ];
 
 var videoMimes = [ 'video/webm', 'video/mp4', 'video/ogg' ];
+
+exports.loadDependencies = function() {
+
+  miscOps = require('./miscOps');
+  lang = require('./langOps').languagePack();
+  gsHandler = require('./gridFsHandler');
+
+};
 
 exports.videoMimes = function() {
   return videoMimes;

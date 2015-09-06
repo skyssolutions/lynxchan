@@ -2,12 +2,6 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
-var miscOps = require('../miscOps');
-var moduleRoot = require('.');
-var ipBan = moduleRoot.ipBan;
-var common = moduleRoot.common;
-var captchaOps = require('../captchaOps');
-var lang = require('../langOps').languagePack();
 var db = require('../../db');
 var boards = db.boards();
 var threads = db.threads();
@@ -17,12 +11,29 @@ var reports = db.reports();
 var settings = require('../../boot').getGeneralSettings();
 var logger = require('../../logger');
 var multipleReports = settings.multipleReports;
+var miscOps;
+var moduleRoot;
+var ipBan;
+var common;
+var captchaOps;
+var lang;
 
 var reportArguments = [ {
   field : 'reason',
   length : 256,
   removeHTML : true
 } ];
+
+exports.loadDependencies = function() {
+
+  miscOps = require('../miscOps');
+  moduleRoot = require('.');
+  ipBan = moduleRoot.ipBan;
+  common = moduleRoot.common;
+  captchaOps = require('../captchaOps');
+  lang = require('../langOps').languagePack();
+
+};
 
 // Section 1: Closed reports {
 function getClosedReports(parameters, callback) {
