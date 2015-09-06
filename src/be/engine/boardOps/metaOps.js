@@ -12,6 +12,7 @@ var db = require('../../db');
 var reports = db.reports();
 var users = db.users();
 var logs = db.logs();
+var modCommonOps = require('../modOps').common;
 var boards = db.boards();
 var lang = require('../langOps').languagePack();
 
@@ -702,20 +703,6 @@ exports.deleteCustomSpoiler = function(userData, boardUri, callback) {
 };
 
 // Section 7: Board management {
-function isAllowedToManageBoard(login, boardData) {
-
-  var owner = login === boardData.owner;
-
-  var volunteer;
-
-  if (boardData.volunteers) {
-    volunteer = boardData.volunteers.indexOf(login) > -1;
-  }
-
-  return owner || volunteer;
-
-}
-
 function getBoardReports(boardData, callback) {
 
   reports.find({
@@ -740,7 +727,7 @@ function getBoardReports(boardData, callback) {
 
 }
 
-exports.getBoardManagementData = function(login, board, callback) {
+exports.getBoardManagementData = function(userData, board, callback) {
 
   boards.findOne({
     boardUri : board
@@ -763,7 +750,7 @@ exports.getBoardManagementData = function(login, board, callback) {
       callback(error);
     } else if (!boardData) {
       callback(lang.errBoardNotFound);
-    } else if (isAllowedToManageBoard(login, boardData)) {
+    } else if (modCommonOps.isInBoardStaff(userData, boardData)) {
       getBoardReports(boardData, callback);
     } else {
       callback(lang.errDeniedManageBoard);

@@ -10,6 +10,7 @@ var settings = boot.getGeneralSettings();
 var debug = boot.debug();
 var verbose = settings.verbose;
 var miscOps = require('../../miscOps');
+var globalBoardModeration = settings.allowGlobalBoardModeration;
 
 var displayMaxBannerSize = common.formatFileSize(settings.maxBannerSizeB);
 var displayMaxFlagSize = common.formatFileSize(settings.maxFlagSizeB);
@@ -391,7 +392,7 @@ function setBoardManagementLinks(document, boardData) {
 
 }
 
-exports.boardManagement = function(login, boardData, reports) {
+exports.boardManagement = function(userData, boardData, reports) {
 
   try {
 
@@ -411,7 +412,9 @@ exports.boardManagement = function(login, boardData, reports) {
 
     common.setReportList(document, reports);
 
-    if (login === boardData.owner) {
+    var globallyAllowed = globalBoardModeration && userData.globalRole <= 1;
+
+    if (userData.login === boardData.owner || globallyAllowed) {
       setBoardOwnerControls(document, boardData);
     } else {
       common.removeElement(document.getElementById('ownerControlDiv'));

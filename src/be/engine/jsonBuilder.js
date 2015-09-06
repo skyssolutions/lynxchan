@@ -299,7 +299,7 @@ exports.globalManagement = function(userRole, userLogin, staff, reports) {
 
 };
 
-exports.boardManagement = function(userLogin, boardData, reports) {
+exports.boardManagement = function(userData, boardData, reports) {
 
   return JSON.stringify({
     usesCustomSpoiler : boardData.usesCustomSpoiler,
@@ -312,7 +312,7 @@ exports.boardManagement = function(userLogin, boardData, reports) {
     settings : boardData.settings || [],
     tags : boardData.tags || [],
     boardMessage : boardData.boardMessage,
-    isOwner : userLogin === boardData.owner,
+    isOwner : userData.login === boardData.owner,
     openReports : reports || reports
   });
 
