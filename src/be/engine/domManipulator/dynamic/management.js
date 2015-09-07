@@ -250,6 +250,10 @@ exports.loadDependencies = function() {
       setting : 'captchaFonts',
       type : 'array'
     },
+    fieldAddons : {
+      setting : 'addons',
+      type : 'array'
+    },
     fieldAcceptedMimes : {
       setting : 'acceptedMimes',
       type : 'array'

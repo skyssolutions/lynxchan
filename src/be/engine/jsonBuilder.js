@@ -457,7 +457,8 @@ exports.globalSettings = function(globalSettings) {
     thumbExtension : globalSettings.thumbExtension,
     disableTopBoards : globalSettings.disableTopBoards,
     allowGlobalBoardModeration : globalSettings.allowGlobalBoardModeration,
-    boardCreationRequirement : globalSettings.boardCreationRequirement
+    boardCreationRequirement : globalSettings.boardCreationRequirement,
+    addons : globalSettings.addons
   });
 
 };

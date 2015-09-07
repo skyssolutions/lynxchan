@@ -354,6 +354,10 @@ function getParametersArray() {
     type : 'array',
     setting : 'captchaFonts'
   }, {
+    param : 'addons',
+    type : 'array',
+    setting : 'addons'
+  }, {
     param : 'siteTitle',
     type : 'string',
     setting : 'siteTitle'

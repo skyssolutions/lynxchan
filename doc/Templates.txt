@@ -1625,6 +1625,10 @@ checkboxGlobalBoardModeration:
     use: might be turned on.
     description: indicates the that the global staff is allowed to manage boards.
 
+fieldAddons:
+    use: have it's value manipulated.
+    description: field that displays the addons that should be loaded.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::52

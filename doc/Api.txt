@@ -548,6 +548,7 @@ Parameters:
     thumbExtension: extension to be used on thumbnails.
     disableTopBoards(Boolean): disables the top boards listing on the front-page.
     allowGlobalBoardModeration(Boolean): allows global staff to moderate boards.
+    addons(Array): array of addons to be loaded.
 
 ------------------------------------------------------------------------------------------
 

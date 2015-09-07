@@ -787,6 +787,8 @@ exports.startEngine = function() {
     require('./engine/' + dirListing[i]).loadDependencies();
   }
 
+  require('./engine/addonOps').startAddons();
+  
 };
 
 function initTorControl() {
