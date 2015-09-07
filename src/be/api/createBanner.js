@@ -5,7 +5,7 @@ var boardOps = require('../engine/boardOps').banners;
 
 function createBanner(parameters, userData, res) {
 
-  boardOps.addBanner(userData.login, parameters, function createdBanner(error) {
+  boardOps.addBanner(userData, parameters, function createdBanner(error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {

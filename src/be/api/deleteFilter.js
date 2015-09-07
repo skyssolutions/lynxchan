@@ -10,8 +10,7 @@ function deleteFilter(parameters, userData, res) {
     return;
   }
 
-  boardOps.deleteFilter(userData.login, parameters, function filterDeleted(
-      error) {
+  boardOps.deleteFilter(userData, parameters, function filterDeleted(error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {

@@ -5,8 +5,7 @@ var boardOps = require('../engine/boardOps').banners;
 
 function deleteBanner(parameters, userData, res) {
 
-  boardOps.deleteBanner(userData.login, parameters, function deletedBanner(
-      error) {
+  boardOps.deleteBanner(userData, parameters, function deletedBanner(error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {

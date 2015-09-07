@@ -12,8 +12,8 @@ function deleteFilter(parameters, userData, res) {
     return;
   }
 
-  boardOps.deleteFilter(userData.login, parameters, function filterDeleted(
-      error, filters) {
+  boardOps.deleteFilter(userData, parameters, function filterDeleted(error,
+      filters) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {

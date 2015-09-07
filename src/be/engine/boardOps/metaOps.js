@@ -16,6 +16,8 @@ var miscOps;
 var modCommonOps;
 var lang;
 
+var globalBoardModeration = settings.allowGlobalBoardModeration;
+
 var restrictedBoardCreation = settings.restrictBoardCreation;
 
 var maxVolunteers = settings.maxBoardVolunteers;
@@ -230,6 +232,8 @@ function saveNewSettings(board, parameters, callback) {
 
 exports.setSettings = function(userData, parameters, callback) {
 
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+
   boards.findOne({
     boardUri : parameters.boardUri
   }, function(error, board) {
@@ -238,7 +242,7 @@ exports.setSettings = function(userData, parameters, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
-    } else if (board.owner !== userData.login) {
+    } else if (board.owner !== userData.login && !globallyAllowed) {
       callback(lang.errDeniedChangeBoardSettings);
     } else {
       miscOps.sanitizeStrings(parameters, boardParameters);
@@ -417,10 +421,7 @@ function manageVolunteer(currentVolunteers, parameters, callback) {
 
 exports.setVolunteer = function(userData, parameters, callback) {
 
-  if (userData.login === parameters.login) {
-    callback(lang.errSelfVolunteer);
-    return;
-  }
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
   boards.findOne({
     boardUri : parameters.boardUri
@@ -433,8 +434,10 @@ exports.setVolunteer = function(userData, parameters, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
-    } else if (board.owner !== userData.login) {
+    } else if (board.owner !== userData.login && !globallyAllowed) {
       callback(lang.errDeniedSetVolunteer);
+    } else if (parameters.login === board.owner) {
+      callback(lang.errOwnerVolunteer);
     } else {
       manageVolunteer(board.volunteers || [], parameters, callback);
     }
@@ -474,6 +477,8 @@ function updateBoardAfterNewCss(board, callback) {
 
 exports.setCustomCss = function(userData, boardUri, file, callback) {
 
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+
   boards.findOne({
     boardUri : boardUri
   }, function gotBoard(error, board) {
@@ -481,7 +486,7 @@ exports.setCustomCss = function(userData, boardUri, file, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
-    } else if (board.owner !== userData.login) {
+    } else if (board.owner !== userData.login && !globallyAllowed) {
       callback(lang.errDeniedCssManagement);
     } else if (file.mime !== 'text/css') {
       callback(lang.errOnlyCssAllowed);
@@ -536,6 +541,8 @@ function updateBoardAfterDeleteCss(board, callback) {
 
 exports.deleteCustomCss = function(userData, boardUri, callback) {
 
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+
   boards.findOne({
     boardUri : boardUri
   }, function gotBoard(error, board) {
@@ -543,7 +550,7 @@ exports.deleteCustomCss = function(userData, boardUri, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
-    } else if (board.owner !== userData.login) {
+    } else if (board.owner !== userData.login && !globallyAllowed) {
       callback(lang.errDeniedCssManagement);
     } else {
 
@@ -637,6 +644,8 @@ exports.createBoard = function(captchaId, parameters, userData, callback) {
 
 exports.setCustomSpoiler = function(userData, boardUri, file, callback) {
 
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+
   boards.findOne({
     boardUri : boardUri
   }, function gotBoard(error, board) {
@@ -644,7 +653,7 @@ exports.setCustomSpoiler = function(userData, boardUri, file, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
-    } else if (board.owner !== userData.login) {
+    } else if (board.owner !== userData.login && !globallyAllowed) {
       callback(lang.errDeniedSpoilerManagement);
     } else if (file.mime.indexOf('image/') === -1) {
       callback(lang.errNotAnImage);
@@ -680,6 +689,8 @@ exports.setCustomSpoiler = function(userData, boardUri, file, callback) {
 
 exports.deleteCustomSpoiler = function(userData, boardUri, callback) {
 
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+
   boards.findOne({
     boardUri : boardUri
   }, function gotBoard(error, board) {
@@ -687,7 +698,7 @@ exports.deleteCustomSpoiler = function(userData, boardUri, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
-    } else if (board.owner !== userData.login) {
+    } else if (board.owner !== userData.login && !globallyAllowed) {
       callback(lang.errDeniedSpoilerManagement);
     } else {
 

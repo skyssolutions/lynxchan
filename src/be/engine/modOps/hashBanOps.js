@@ -53,7 +53,7 @@ exports.getHashBans = function(userData, parameters, callback) {
         callback(error);
       } else if (!board) {
         callback(lang.errBoardNotFound);
-      } else if (!common.isInBoardStaff(userData, board)) {
+      } else if (!common.isInBoardStaff(userData, board, 2)) {
         callback(lang.errDeniedBoardHashBansManagement);
       } else {
         getHashBans(parameters, callback);
@@ -132,7 +132,7 @@ exports.placeHashBan = function(userData, parameters, callback) {
         callback(error);
       } else if (!board) {
         callback(lang.errBoardNotFound);
-      } else if (!common.isInBoardStaff(userData, board)) {
+      } else if (!common.isInBoardStaff(userData, board, 2)) {
         callback(lang.errDeniedBoardHashBansManagement);
       } else {
         placeHashBan(userData, parameters, callback);
@@ -202,7 +202,7 @@ function checkForBoardHashBanLiftPermission(hashBan, userData, callback) {
       callback();
     } else {
 
-      if (common.isInBoardStaff(userData, board)) {
+      if (common.isInBoardStaff(userData, board, 2)) {
         liftHashBan(hashBan, userData, callback);
       } else {
         callback(lang.errDeniedBoardHashBansManagement);

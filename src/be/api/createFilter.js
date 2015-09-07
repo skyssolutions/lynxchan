@@ -10,8 +10,7 @@ function createFilter(parameters, userData, res) {
     return;
   }
 
-  boardOps.createFilter(userData.login, parameters, function filterCreated(
-      error) {
+  boardOps.createFilter(userData, parameters, function filterCreated(error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {

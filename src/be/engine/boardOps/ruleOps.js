@@ -7,6 +7,8 @@ var maxRulesCount = settings.maxBoardRules;
 var lang;
 var miscOps;
 
+var globalBoardModeration = settings.allowGlobalBoardModeration;
+
 exports.loadDependencies = function() {
 
   miscOps = require('../miscOps');
@@ -16,6 +18,8 @@ exports.loadDependencies = function() {
 
 exports.addBoardRule = function(parameters, userData, callback) {
 
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+
   boards.findOne({
     boardUri : parameters.boardUri
   }, function gotBoard(error, board) {
@@ -23,7 +27,7 @@ exports.addBoardRule = function(parameters, userData, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
-    } else if (userData.login !== board.owner) {
+    } else if (userData.login !== board.owner && !globallyAllowed) {
       callback(!lang.errDeniedRuleManagement);
     } else {
       if (board.rules && board.rules.length >= maxRulesCount) {
@@ -63,6 +67,8 @@ exports.addBoardRule = function(parameters, userData, callback) {
 
 exports.deleteRule = function(parameters, userData, callback) {
 
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+
   boards.findOne({
     boardUri : parameters.boardUri
   }, function gotBoard(error, board) {
@@ -70,7 +76,7 @@ exports.deleteRule = function(parameters, userData, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errNoBoardFound);
-    } else if (board.owner !== userData.login) {
+    } else if (board.owner !== userData.login && !globallyAllowed) {
       callback(lang.errDeniedRuleManagement);
     } else {
 
@@ -107,11 +113,18 @@ exports.deleteRule = function(parameters, userData, callback) {
         }
       });
       // style exception, too simple
+
     }
   });
 };
 
 exports.boardRules = function(boardUri, userData, callback) {
+
+  var globallyAllowed;
+
+  if (userData) {
+    globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+  }
 
   boards.findOne({
     boardUri : boardUri
@@ -124,7 +137,7 @@ exports.boardRules = function(boardUri, userData, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
-    } else if (userData && userData.login !== board.owner) {
+    } else if (userData && userData.login !== board.owner && !globallyAllowed) {
       callback(lang.errDeniedRuleManagement);
     } else {
       callback(null, board.rules || []);

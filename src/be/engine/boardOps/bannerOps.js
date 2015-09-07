@@ -10,6 +10,8 @@ var files = db.files();
 var gridFsHandler;
 var lang;
 
+var globalBoardModeration = settings.allowGlobalBoardModeration;
+
 exports.loadDependencies = function() {
 
   gridFsHandler = require('../gridFsHandler');
@@ -17,7 +19,7 @@ exports.loadDependencies = function() {
 
 };
 
-exports.addBanner = function(user, parameters, callback) {
+exports.addBanner = function(userData, parameters, callback) {
 
   if (!parameters.files.length) {
     callback(lang.errNoFiles);
@@ -29,6 +31,8 @@ exports.addBanner = function(user, parameters, callback) {
     callback(lang.errBannerTooLarge);
   }
 
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+
   boards.findOne({
     boardUri : parameters.boardUri
   }, function gotBoard(error, board) {
@@ -36,7 +40,7 @@ exports.addBanner = function(user, parameters, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
-    } else if (board.owner !== user) {
+    } else if (board.owner !== userData.login && !globallyAllowed) {
       callback(lang.errDeniedChangeBoardSettings);
     } else {
       var bannerPath = '/' + parameters.boardUri + '/banners/';
@@ -62,7 +66,9 @@ function removeBanner(banner, callback) {
 
 }
 
-exports.deleteBanner = function(login, parameters, callback) {
+exports.deleteBanner = function(userData, parameters, callback) {
+
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
   try {
 
@@ -74,8 +80,8 @@ exports.deleteBanner = function(login, parameters, callback) {
       } else if (!banner) {
         callback(lang.errBannerNotFound);
       } else {
-        // style exception, too simple
 
+        // style exception, too simple
         boards.findOne({
           boardUri : banner.metadata.boardUri
         }, function gotBoard(error, board) {
@@ -83,7 +89,7 @@ exports.deleteBanner = function(login, parameters, callback) {
             callback(error);
           } else if (!board) {
             callback(lang.errBoardNotFound);
-          } else if (board.owner !== login) {
+          } else if (board.owner !== userData.login && !globallyAllowed) {
             callback(lang.errDeniedChangeBoardSettings);
           } else {
             removeBanner(banner, callback);
@@ -100,7 +106,9 @@ exports.deleteBanner = function(login, parameters, callback) {
 };
 // } Section 1: Banner deletion
 
-exports.getBannerData = function(user, boardUri, callback) {
+exports.getBannerData = function(userData, boardUri, callback) {
+
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
   boards.findOne({
     boardUri : boardUri
@@ -109,7 +117,7 @@ exports.getBannerData = function(user, boardUri, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
-    } else if (board.owner !== user) {
+    } else if (board.owner !== userData.login && !globallyAllowed) {
       callback(lang.errDeniedChangeBoardSettings);
     } else {
 
@@ -125,6 +133,7 @@ exports.getBannerData = function(user, boardUri, callback) {
         callback(error, banners);
       });
       // style exception, too simple
+
     }
   });
 

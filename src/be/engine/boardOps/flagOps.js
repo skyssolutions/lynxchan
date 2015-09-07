@@ -13,6 +13,8 @@ var posts;
 var flags;
 var lang;
 
+var globalBoardModeration = settings.allowGlobalBoardModeration;
+
 var newFlagParameters = [ {
   field : 'flagName',
   length : 16,
@@ -63,7 +65,7 @@ function processFlagFile(toInsert, file, callback) {
 
 }
 
-exports.createFlag = function(userLogin, parameters, callback) {
+exports.createFlag = function(userData, parameters, callback) {
 
   if (!parameters.files.length) {
     callback(lang.errNoFiles);
@@ -77,6 +79,8 @@ exports.createFlag = function(userLogin, parameters, callback) {
 
   miscOps.sanitizeStrings(parameters, newFlagParameters);
 
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+
   boards.findOne({
     boardUri : parameters.boardUri
   }, function gotBoard(error, board) {
@@ -84,7 +88,7 @@ exports.createFlag = function(userLogin, parameters, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
-    } else if (board.owner !== userLogin) {
+    } else if (board.owner !== userData.login && !globallyAllowed) {
       callback(lang.deniedFlagManagement);
     } else {
 
@@ -174,7 +178,9 @@ function removeFlag(flag, callback) {
 
 }
 
-exports.deleteFlag = function(userLogin, flagId, callback) {
+exports.deleteFlag = function(userData, flagId, callback) {
+
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
   flags.findOne({
     _id : new ObjectID(flagId)
@@ -193,7 +199,7 @@ exports.deleteFlag = function(userLogin, flagId, callback) {
           callback(error);
         } else if (!board) {
           callback(lang.errBoardNotFound);
-        } else if (board.owner !== userLogin) {
+        } else if (board.owner !== userData.login && !globallyAllowed) {
           callback(lang.deniedFlagManagement);
         } else {
           removeFlag(flag, callback);
@@ -207,7 +213,9 @@ exports.deleteFlag = function(userLogin, flagId, callback) {
 };
 // } Section 2: Flag deletion
 
-exports.getFlagsData = function(userLogin, boardUri, callback) {
+exports.getFlagsData = function(userData, boardUri, callback) {
+
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
   boards.findOne({
     boardUri : boardUri
@@ -216,7 +224,7 @@ exports.getFlagsData = function(userLogin, boardUri, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
-    } else if (board.owner !== userLogin) {
+    } else if (board.owner !== userData.login && !globallyAllowed) {
       callback(lang.deniedFlagManagement);
     } else {
 

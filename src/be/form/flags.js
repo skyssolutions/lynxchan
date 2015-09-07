@@ -9,24 +9,24 @@ var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
 function getFlagData(parameters, userData, res) {
 
-  boardOps.getFlagsData(userData.login, parameters.boardUri,
-      function gotFlagData(error, flags) {
-        if (error) {
-          formOps.outputError(error, 500, res);
-        } else {
-          var json = parameters.json;
+  boardOps.getFlagsData(userData, parameters.boardUri, function gotFlagData(
+      error, flags) {
+    if (error) {
+      formOps.outputError(error, 500, res);
+    } else {
+      var json = parameters.json;
 
-          res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-              : 'text/html'));
+      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+          : 'text/html'));
 
-          if (json) {
-            res.end(jsonBuilder.flagManagement(flags));
-          } else {
-            res.end(dom.flagManagement(parameters.boardUri, flags));
-          }
+      if (json) {
+        res.end(jsonBuilder.flagManagement(flags));
+      } else {
+        res.end(dom.flagManagement(parameters.boardUri, flags));
+      }
 
-        }
-      });
+    }
+  });
 
 }
 

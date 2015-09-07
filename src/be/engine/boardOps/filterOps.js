@@ -6,6 +6,8 @@ var boards = db.boards();
 var miscOps;
 var lang;
 
+var globalBoardModeration = settings.allowGlobalBoardModeration;
+
 exports.loadDependencies = function() {
 
   miscOps = require('../miscOps');
@@ -63,9 +65,11 @@ function setFilter(board, callback, parameters) {
 
 }
 
-exports.createFilter = function(user, parameters, callback) {
+exports.createFilter = function(userData, parameters, callback) {
 
   miscOps.sanitizeStrings(parameters, filterParameters);
+
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
   boards.findOne({
     boardUri : parameters.boardUri
@@ -74,7 +78,7 @@ exports.createFilter = function(user, parameters, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
-    } else if (board.owner !== user) {
+    } else if (board.owner !== userData.login && !globallyAllowed) {
       callback(lang.errDeniedChangeBoardSettings);
     } else if (board.filters && board.filters.length >= maxFiltersCount) {
       callback(lang.errMaxFiltersReached);
@@ -86,7 +90,9 @@ exports.createFilter = function(user, parameters, callback) {
 };
 // } Section 1: Filter creation
 
-exports.deleteFilter = function(login, parameters, callback) {
+exports.deleteFilter = function(userData, parameters, callback) {
+
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
   boards.findOne({
     boardUri : parameters.boardUri
@@ -95,7 +101,7 @@ exports.deleteFilter = function(login, parameters, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
-    } else if (board.owner !== login) {
+    } else if (board.owner !== userData.login && !globallyAllowed) {
       callback(lang.errDeniedChangeBoardSettings);
     } else {
 
@@ -113,7 +119,6 @@ exports.deleteFilter = function(login, parameters, callback) {
       }
 
       // style exception, too simple
-
       boards.updateOne({
         boardUri : parameters.boardUri
       }, {
@@ -123,7 +128,6 @@ exports.deleteFilter = function(login, parameters, callback) {
       }, function updatedFilters(error) {
         callback(error);
       });
-
       // style exception, too simple
 
     }
@@ -131,7 +135,9 @@ exports.deleteFilter = function(login, parameters, callback) {
 
 };
 
-exports.getFilterData = function(user, boardUri, callback) {
+exports.getFilterData = function(userData, boardUri, callback) {
+
+  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
   boards.findOne({
     boardUri : boardUri
@@ -140,7 +146,7 @@ exports.getFilterData = function(user, boardUri, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
-    } else if (user !== board.owner) {
+    } else if (userData.login !== board.owner && !globallyAllowed) {
       callback(lang.errDeniedChangeBoardSettings);
     } else {
       callback(null, board.filters || []);

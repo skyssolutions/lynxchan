@@ -81,7 +81,7 @@ exports.getBans = function(userData, parameters, callback) {
         callback(error);
       } else if (!board) {
         callback(lang.errBoardNotFound);
-      } else if (!common.isInBoardStaff(userData, board)) {
+      } else if (!common.isInBoardStaff(userData, board, 2)) {
         callback(lang.errDeniedBoardBanManagement);
       } else {
         getBans(parameters, callback);
@@ -128,7 +128,7 @@ exports.getRangeBans = function(userData, parameters, callback) {
         callback(error);
       } else if (!board) {
         callback(lang.errBoardNotFound);
-      } else if (!common.isInBoardStaff(userData, board)) {
+      } else if (!common.isInBoardStaff(userData, board, 2)) {
         callback(lang.errDeniedBoardRangeBanManagement);
       } else {
         getRangeBans(parameters, callback);
@@ -713,7 +713,7 @@ function checkForBoardBanLiftPermission(ban, userData, callback) {
       callback();
     } else {
 
-      if (common.isInBoardStaff(userData, board)) {
+      if (common.isInBoardStaff(userData, board, 2)) {
         liftBan(ban, userData, callback);
       } else {
         callback(lang.errDeniedBoardBanManagement);
@@ -833,7 +833,7 @@ exports.placeRangeBan = function(userData, parameters, callback) {
         callback(error);
       } else if (!board) {
         callback(lang.errBoardNotFound);
-      } else if (!common.isInBoardStaff(userData, board)) {
+      } else if (!common.isInBoardStaff(userData, board, 2)) {
         callback(lang.errDeniedBoardRangeBanManagement);
       } else {
         placeRangeBan(userData, parameters, callback);

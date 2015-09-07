@@ -6,8 +6,8 @@ var lang = require('../engine/langOps').languagePack();
 
 function deleteBanner(parameters, userData, res) {
 
-  boardOps.deleteBanner(userData.login, parameters, function deletedBanner(
-      error, board) {
+  boardOps.deleteBanner(userData, parameters, function deletedBanner(error,
+      board) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {

@@ -12,9 +12,9 @@ var common;
 
 exports.loadDependencies = function() {
 
-  var templateHandler = require('../../templateHandler');
-  var lang = require('../../langOps').languagePack();
-  var common = require('..').common;
+  templateHandler = require('../../templateHandler');
+  lang = require('../../langOps').languagePack();
+  common = require('..').common;
 
 };
 

@@ -30,7 +30,7 @@
   "errDeniedChangeBoardSettings": "You are not allowed to change this board settings.",
   "logTransferBoard": "User {$actor} transferred board /{$board}/ to {$login}.",
   "errDeniedBoardTransfer": "You are not allowed to transfer this board.",
-  "errSelfVolunteer": "You cannot set yourself as a volunteer.",
+  "errOwnerVolunteer": "You cannot set the board owner as a volunteer.",
   "errDeniedSetVolunteer": "You are not allowed to set volunteers on this board.",
   "errDeniedManageBoard": "You are not allowed to manage this board.",
   "errDeniedBoardCreation": "Board creation is restricted to just root and admin users.",

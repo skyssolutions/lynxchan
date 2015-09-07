@@ -10,7 +10,7 @@ function createFlag(parameters, userData, res) {
     return;
   }
 
-  boardOps.createFlag(userData.login, parameters, function createdFlag(error) {
+  boardOps.createFlag(userData, parameters, function createdFlag(error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {

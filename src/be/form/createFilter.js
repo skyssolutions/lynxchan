@@ -12,8 +12,8 @@ function createFilter(parameters, userData, res) {
     return;
   }
 
-  boardOps.createFilter(userData.login, parameters, function filterCreated(
-      error, filters) {
+  boardOps.createFilter(userData, parameters, function filterCreated(error,
+      filters) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {

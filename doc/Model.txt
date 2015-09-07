@@ -6,7 +6,7 @@ boards: stores boards.
     lastPostId: id of last post in this board.
     lastFileId: id of last file posted in this board.
     autoCaptchaThreshold(Number): hourly threshold that enables captcha if exceeded.
-    autoCaptchaCount(Number):  thread counting towards automatic captcha activation.
+    autoCaptchaCount(Number): counting towards automatic captcha activation.
     autoCaptchaStartTime(Date): time of when the counting towards automatic captchaActivation started.
     hourlyThreadLimit(Number): hourly thread limit of the board.
     lockedUntil(Date): time of when the board will unlock.

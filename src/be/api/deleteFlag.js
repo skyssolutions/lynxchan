@@ -5,8 +5,7 @@ var boardOps = require('../engine/boardOps').flags;
 
 function deleteFlag(parameters, userData, res) {
 
-  boardOps.deleteFlag(userData.login, parameters.flagId, function deletedFlag(
-      error) {
+  boardOps.deleteFlag(userData, parameters.flagId, function deletedFlag(error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {

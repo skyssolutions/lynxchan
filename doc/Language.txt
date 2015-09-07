@@ -42,7 +42,7 @@ errBoardNotFound: error thrown when the board for an operation can't be found.
 errDeniedChangeBoardSettings: error thrown when the user is not allowed to change a board's settings.
 logTransferBoard: log entry for board ownership transfer. Replaces: {$actor}, {$board}, {$login}.
 errDeniedBoardTransfer: error thrown when the user is not allowed to transfer ownership of a board.
-errSelfVolunteer: error thrown when the user tries to assign himself as a volunteer of a board he owns.
+errOwnerVolunteer: error thrown when the user tries to assign the board owner as a volunteer.
 errDeniedSetVolunteer: error thrown when the user is not allowed to assign volunteers on a board.
 errDeniedManageBoard: error thrown when the user is not allowed to view the management page of a board.
 errDeniedBoardCreation: error thrown when board creation is restricted to admins and root users and the user is neither of these.
