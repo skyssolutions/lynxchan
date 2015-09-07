@@ -17,7 +17,6 @@
   "maxFiles": 3,
   "defaultBanMessage": "(USER WAS BANNED FOR THIS POST)",
   "disableAccountCreation": false,
-  "restrictBoardCreation": false,
   "logPageSize": 50,
   "defaultAnonymousName": "Anonymous",
   "topBoardsCount": 25,

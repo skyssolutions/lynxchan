@@ -1597,9 +1597,9 @@ checkboxDisableFloodCheck:
     use: might be turned on.
     description: indicates that flood checks are disabled.
 
-checkboxRestrictBoardCreation:
-    use: might be turned on.
-    description: indicates that only root and admins can create boards.
+comboBoardCreationRequirement:
+    use: have children appended to it.
+    description: indicates the minimum global role required for people to create boards.
 
 comboArchive:
     use: have children appended to it.

@@ -536,7 +536,7 @@ Parameters:
     mediaThumb(Boolean): generated thumbnails from media files.
     maintenance(Boolean): sets the server to maintenance mode.
     disableAccountCreation(Boolean): disables account creation.
-    retrictBoardCreation(Boolean): restricts board creation to root and admins.
+    boardCreationRequirement(Number): defines the minimum global role required for users to create boards.
     multipleReports(Boolean): enables users to report multiple posts at once.
     serveArchive(Boolean): sets the server to serve archived files.
     archiveLevel(Number): level of archiving. 0 = no archives. 1 = only pages. 2 = pages and files.

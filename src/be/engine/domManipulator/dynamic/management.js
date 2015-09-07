@@ -241,9 +241,10 @@ exports.loadDependencies = function() {
       setting : 'disableAccountCreation',
       type : 'boolean'
     },
-    checkboxRestrictBoardCreation : {
-      setting : 'restrictBoardCreation',
-      type : 'boolean'
+    comboBoardCreationRequirement : {
+      setting : 'boardCreationRequirement',
+      type : 'combo',
+      options : lang.miscRoles
     },
     fieldCaptchaFonts : {
       setting : 'captchaFonts',

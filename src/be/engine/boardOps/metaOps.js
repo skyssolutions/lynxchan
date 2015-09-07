@@ -18,7 +18,7 @@ var lang;
 
 var globalBoardModeration = settings.allowGlobalBoardModeration;
 
-var restrictedBoardCreation = settings.restrictBoardCreation;
+var boardCreationRequirement = settings.boardCreationRequirement;
 
 var maxVolunteers = settings.maxBoardVolunteers;
 
@@ -614,9 +614,9 @@ function insertBoard(parameters, userData, callback) {
 
 exports.createBoard = function(captchaId, parameters, userData, callback) {
 
-  var role = userData.globalRole || 4;
+  var allowed = userData.globalRole <= boardCreationRequirement;
 
-  if (role > 1 && restrictedBoardCreation) {
+  if (!allowed && boardCreationRequirement <= miscOps.getMaxStaffRole()) {
     callback(lang.errDeniedBoardCreation);
     return;
   }

@@ -67,7 +67,8 @@ exports.getDefaultSettings = function() {
     archiveLevel : 0,
     torAccess : 0,
     proxyAccess : 0,
-    clearIpMinRole : 0
+    clearIpMinRole : 0,
+    boardCreationRequirement : 4
   };
 
 };
@@ -729,9 +730,7 @@ var createAccountFunction = function() {
 
     if (error) {
 
-      if (generalSettings.verbose) {
-        console.log(error);
-      }
+      console.log(error);
 
       if (debug) {
         throw error;
@@ -756,9 +755,7 @@ var setRoleFunction = function() {
 
     if (error) {
 
-      if (generalSettings.verbose) {
-        console.log(error);
-      }
+      console.log(error);
 
       if (debug) {
         throw error;

@@ -253,3 +253,4 @@ miscRoles: array with the global roles. First element is for the root role, seco
 errDeniedIpDeletion: error thrown when the user is not allowed to delete posts from a single ip.
 msgDeletedFromIp: message displayed after deleting postings from an ip.
 errInvalidRange: error thrown when an invalid range is informed.
+errNoPassword: error thrown when no password is provided for account creation.

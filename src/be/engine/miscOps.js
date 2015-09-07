@@ -475,10 +475,6 @@ function getParametersArray() {
     type : 'boolean',
     setting : 'disableAccountCreation'
   }, {
-    param : 'retrictBoardCreation',
-    type : 'boolean',
-    setting : 'restrictBoardCreation'
-  }, {
     param : 'multipleReports',
     type : 'boolean',
     setting : 'multipleReports'
@@ -505,6 +501,11 @@ function getParametersArray() {
     type : 'range',
     setting : 'clearIpMinRole',
     limit : 3
+  }, {
+    param : 'boardCreationRequirement',
+    type : 'range',
+    setting : 'boardCreationRequirement',
+    limit : 4
   } ];
 }
 

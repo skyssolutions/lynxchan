@@ -302,13 +302,13 @@ exports.boardArquive = function(board, req, res) {
     }
   }, {
     $sort : {
-      'metadata.threadId' : -1
+      'metadata.threadId' : 1
     }
   }, {
     $group : {
       _id : 0,
       threads : {
-        $addToSet : '$metadata.threadId'
+        $push : '$metadata.threadId'
       }
     }
   } ], function gotAvailableThreads(error, results) {

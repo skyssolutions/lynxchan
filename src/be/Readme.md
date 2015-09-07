@@ -36,6 +36,12 @@ It accepts the following arguments:
 Arguments that are meant to inform values should be used in the following manner:
 `argument value`
 
+# Sub-domains
+The following sub-domains are used by the engine:
+* `static`: used to retrieve static files from the front-end.
+* `api`: used to access the json api.
+* `archive`: used to access the archives.
+
 # Directory structure
 The json api files will be stored on the api directory and accessed by the same sub-domain. `api.domain/function` will use the file `api/function.js`.
 The form api for support of users without js because they are retarded tin foilers are in the form directory and are accessed using `domain/function.js`.
@@ -72,7 +78,7 @@ Settings files that goes into the settings directory:
 * `maxFiles`(Number): maximum amount of files on each post. Defaults to 3.
 * `defaultBanMessage`: default ban message to be used for banned content when the person applying the ban does not submit a message. Defaults to the `miscDefaultBanMessage` entry on the language pack.
 * `disableAccountCreation`(Boolean): disables account creation for users.
-* `restrictBoardCreation`(Boolean): disables board creation for users with global role greater than 1.
+* `boardCreationRequirement`(Number): minimum global role required for board creation.
 * `logPageSize`(Number): amount of log entries to be displayed at once. Defaults to 50.
 * `defaultAnonymousName`: Default anonymous name if none is set for the board. Defaults to the `miscDefaultAnonymous` entry on the language pack.
 * `topBoardsCount`(Number): amount of boards to be listed in the top boards. Defaults to 25. 

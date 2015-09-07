@@ -11,7 +11,7 @@ var lang;
 var common;
 var miscOps;
 
-var boardCreationRestricted = settings.restrictBoardCreation;
+var boardCreationRequirement = settings.boardCreationRequirement;
 
 var optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
 
@@ -187,9 +187,9 @@ function fillOwnedBoardsDiv(document, boardList) {
 
 function setBoardCreationForm(userData, document) {
 
-  var allowed = userData.globalRole < 2;
+  var allowed = userData.globalRole <= boardCreationRequirement;
 
-  if (boardCreationRestricted && !allowed) {
+  if (boardCreationRequirement <= miscOps.getMaxStaffRole() && !allowed) {
     common.removeElement(document.getElementById('boardCreationDiv'));
   }
 }

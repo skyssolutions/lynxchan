@@ -4,14 +4,15 @@
 // json counterpart of domManipulator
 
 var settings = require('../boot').getGeneralSettings();
-var blockedBoardCreation = settings.restrictBoardCreation;
+var gridFsHandler;
 var miscOps;
 
-var gridFsHandler = require('./gridFsHandler');
+var boardCreationRequirement = settings.boardCreationRequirement;
 
 exports.loadDependencies = function() {
 
   miscOps = require('../engine/miscOps');
+  gridFsHandler = require('./gridFsHandler');
 
 };
 
@@ -284,12 +285,16 @@ exports.rules = function(boardUri, rules, callback) {
 
 exports.account = function(userData) {
 
+  var allowed = userData.globalRole <= boardCreationRequirement;
+
+  allowed = allowed || boardCreationRequirement > miscOps.getMaxStaffRole();
+
   return JSON.stringify({
     login : userData.login,
     email : userData.email || '',
     ownedBoards : userData.ownedBoards || [],
     settings : userData.settings || [],
-    boardCreationAllowed : userData.globalRole < 2 || !blockedBoardCreation
+    boardCreationAllowed : allowed
   });
 
 };
@@ -451,7 +456,8 @@ exports.globalSettings = function(globalSettings) {
     clearIpMinRole : globalSettings.clearIpMinRole,
     thumbExtension : globalSettings.thumbExtension,
     disableTopBoards : globalSettings.disableTopBoards,
-    allowGlobalBoardModeration : globalSettings.allowGlobalBoardModeration
+    allowGlobalBoardModeration : globalSettings.allowGlobalBoardModeration,
+    boardCreationRequirement : globalSettings.boardCreationRequirement
   });
 
 };

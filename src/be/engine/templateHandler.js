@@ -395,7 +395,7 @@ function loadAndTestTemplates(path, templateSettings) {
             'checkboxDisable304', 'checkboxSsl', 'comboTorAccess',
             'checkboxMediaThumb', 'checkboxMaintenance', 'comboArchive',
             'checkboxMultipleReports', 'checkboxDisableAccountCreation',
-            'checkboxRestrictBoardCreation', 'checkboxServeArchive',
+            'comboBoardCreationRequirement', 'checkboxServeArchive',
             'fieldMaxTags', 'checkboxDisableFloodCheck', 'comboProxyAccess',
             'comboMinClearIpRole', 'fieldThumbExtension',
             'checkboxDisableTopBoards', 'checkboxGlobalBoardModeration' ]

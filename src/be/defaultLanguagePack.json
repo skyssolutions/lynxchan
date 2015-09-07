@@ -33,7 +33,7 @@
   "errOwnerVolunteer": "You cannot set the board owner as a volunteer.",
   "errDeniedSetVolunteer": "You are not allowed to set volunteers on this board.",
   "errDeniedManageBoard": "You are not allowed to manage this board.",
-  "errDeniedBoardCreation": "Board creation is restricted to just root and admin users.",
+  "errDeniedBoardCreation": "You do not have clearance to create boards.",
   "errInvalidUri": "Invalid uri.",
   "errUriInUse": "Uri already in use.",
   "errNoFiles": "No files sent.",
@@ -279,5 +279,6 @@
   ],
   "errDeniedIpDeletion": "You are now allowed to delete all posts from a single ip.",
   "msgDeletedFromIp": "Posts from ip deleted.",
-  "errInvalidRange": "Invalid range informed."
+  "errInvalidRange": "Invalid range informed.",
+  "errNoPassword": "No password provided."
 }

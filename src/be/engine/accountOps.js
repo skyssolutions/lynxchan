@@ -171,8 +171,11 @@ exports.registerUser = function(parameters, cb, role, override, captchaId) {
 
   miscOps.sanitizeStrings(parameters, newAccountParameters);
 
-  if (/\W/.test(parameters.login)) {
+  if (!parameters.login || /\W/.test(parameters.login)) {
     cb(lang.errInvalidLogin);
+    return;
+  } else if (!parameters.password) {
+    cb(lang.errNoPassword);
     return;
   } else if (role !== undefined && isNaN(role)) {
     cb(lang.errInvalidRole);
