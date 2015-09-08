@@ -13,6 +13,7 @@ var logger = require('./logger');
 var generator;
 
 var reloadDirectories = [ 'engine', 'form', 'api', 'addons' ];
+var reloadIgnore = [ 'index.js', '.ignore', '.git', 'dont-reload' ];
 
 var MINIMUM_WORKER_UPTIME = 5000;
 var forkTime = {};
@@ -165,7 +166,7 @@ function reloadDirectory(directory) {
 
     var module = dirListing[i];
 
-    if (module !== 'index.js') {
+    if (reloadIgnore.indexOf(module.toLowerCase()) === -1) {
 
       var fullPath = directory + '/' + module;
 
