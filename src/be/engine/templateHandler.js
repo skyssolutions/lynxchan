@@ -17,7 +17,7 @@ require('jsdom').defaultDocumentFeatures = {
 exports.loadDependencies = function() {
 };
 
-function testPageFields(document, page, errors) {
+exports.testPageFields = function(document, page, errors) {
 
   var error = '';
 
@@ -32,9 +32,9 @@ function testPageFields(document, page, errors) {
   }
 
   return error;
-}
+};
 
-function loadPages(errors, templatesPath, templateSettings, pages) {
+exports.loadPages = function(errors, templatesPath, templateSettings, pages) {
 
   for (var i = 0; i < pages.length; i++) {
 
@@ -53,39 +53,39 @@ function loadPages(errors, templatesPath, templateSettings, pages) {
 
     var document = jsdom(template);
 
-    var error = testPageFields(document, page, errors);
+    var error = exports.testPageFields(document, page, errors);
 
     if (error.length) {
 
       errors.push('\nPage ' + page.template + error);
     }
   }
-}
+};
 
-function getTestCell(document, templateName, fePath, templateSettings) {
+exports.getTestCell = function(document, name, fePath, templateSettings) {
 
   var toReturn = document.createElement('div');
 
-  var fullPath = fePath + templateSettings[templateName];
+  var fullPath = fePath + templateSettings[name];
 
   try {
     var template = fs.readFileSync(fullPath);
   } catch (error) {
-    console.log('Error loading ' + templateName + '.');
+    console.log('Error loading ' + name + '.');
     throw error;
   }
 
-  exports[templateName] = template;
+  exports[name] = template;
 
   toReturn.innerHTML = template;
 
   return toReturn;
-}
+};
 
-function testCell(document, templatesPath, templateSettings, cell) {
+exports.testCell = function(document, templatesPath, templateSettings, cell) {
   var error = '';
 
-  var cellElement = getTestCell(document, cell.template, templatesPath,
+  var cellElement = exports.getTestCell(document, cell.template, templatesPath,
       templateSettings);
 
   for (var j = 0; j < cell.fields.length; j++) {
@@ -101,9 +101,9 @@ function testCell(document, templatesPath, templateSettings, cell) {
   }
 
   return error;
-}
+};
 
-function loadCells(errors, templatesPath, templateSettings, cells) {
+exports.loadCells = function(errors, templatesPath, templateSettings, cells) {
 
   var document = jsdom('<html></html>');
 
@@ -113,17 +113,16 @@ function loadCells(errors, templatesPath, templateSettings, cells) {
 
     var errorFound = false;
 
-    var error = testCell(document, templatesPath, templateSettings, cell);
+    var error = exports.testCell(document, templatesPath, templateSettings,
+        cell);
 
     if (error.length) {
       errors.push('\nCell ' + cell.template + error);
     }
-
   }
+};
 
-}
-
-function loadAndTestTemplates(path, templateSettings) {
+exports.loadAndTestTemplates = function(path, templateSettings) {
 
   var cellTests = [
       {
@@ -406,9 +405,9 @@ function loadAndTestTemplates(path, templateSettings) {
 
   var errors = [];
 
-  loadCells(errors, path, templateSettings, cellTests);
+  exports.loadCells(errors, path, templateSettings, cellTests);
 
-  loadPages(errors, path, templateSettings, pageTests);
+  exports.loadPages(errors, path, templateSettings, pageTests);
 
   if (errors.length) {
 
@@ -432,12 +431,12 @@ function loadAndTestTemplates(path, templateSettings) {
     }
 
   }
-}
+};
 
 exports.loadTemplates = function() {
 
   var fePath = boot.getFePath() + '/templates/';
   var templateSettings = boot.getTemplateSettings();
 
-  loadAndTestTemplates(fePath, templateSettings);
+  exports.loadAndTestTemplates(fePath, templateSettings);
 };

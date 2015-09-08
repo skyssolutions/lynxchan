@@ -122,7 +122,7 @@ exports.recordFlood = function(ip) {
 };
 
 // Section 1: Tripcode {
-function generateSecureTripcode(name, password, parameters, callback) {
+exports.generateSecureTripcode = function(name, password, parameters, cb) {
 
   var tripcode = crypto.createHash('sha256').update(password + Math.random())
       .digest('base64').substring(0, 6);
@@ -132,17 +132,17 @@ function generateSecureTripcode(name, password, parameters, callback) {
     tripcode : tripcode
   }, function createdTripcode(error) {
     if (error && error.code === 11000) {
-      generateSecureTripcode(name, password, parameters, callback);
+      exports.generateSecureTripcode(name, password, parameters, cb);
     } else {
 
       parameters.name = name + '##' + tripcode;
-      callback(error, parameters);
+      cb(error, parameters);
     }
   });
 
-}
+};
 
-function checkForSecureTripcode(name, parameters, callback) {
+exports.checkForSecureTripcode = function(name, parameters, callback) {
 
   var password = name.substring(name.indexOf('##') + 2);
 
@@ -154,21 +154,17 @@ function checkForSecureTripcode(name, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!tripcode) {
-
-      generateSecureTripcode(name, password, parameters, callback);
-
+      exports.generateSecureTripcode(name, password, parameters, callback);
     } else {
-
       parameters.name = name + '##' + tripcode.tripcode;
-
       callback(null, parameters);
     }
 
   });
 
-}
+};
 
-function processRegularTripcode(name, parameters, callback) {
+exports.processRegularTripcode = function(name, parameters, callback) {
   var roleSignatureRequestIndex = name.toLowerCase().indexOf('#rs');
   if (roleSignatureRequestIndex > -1) {
 
@@ -192,7 +188,7 @@ function processRegularTripcode(name, parameters, callback) {
   parameters.name = name + '#' + password;
 
   callback(null, parameters);
-}
+};
 
 exports.checkForTripcode = function(parameters, callback) {
 
@@ -207,11 +203,9 @@ exports.checkForTripcode = function(parameters, callback) {
   var secure = name.indexOf('##') > -1;
 
   if (!secure) {
-
-    processRegularTripcode(name, parameters, callback);
-
+    exports.processRegularTripcode(name, parameters, callback);
   } else {
-    checkForSecureTripcode(name, parameters, callback);
+    exports.checkForSecureTripcode(name, parameters, callback);
   }
 
 };
@@ -260,9 +254,9 @@ exports.addPostToStats = function(boardUri, callback) {
 
 };
 
-function escapeRegExp(string) {
+exports.escapeRegExp = function(string) {
   return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
-}
+};
 
 exports.applyFilters = function(filters, message) {
 
@@ -274,9 +268,8 @@ exports.applyFilters = function(filters, message) {
 
     var filter = filters[i];
 
-    message = message.replace(
-        new RegExp(escapeRegExp(filter.originalTerm), 'g'),
-        filter.replacementTerm);
+    message = message.replace(new RegExp(exports
+        .escapeRegExp(filter.originalTerm), 'g'), filter.replacementTerm);
 
   }
 
@@ -311,7 +304,7 @@ exports.replaceStyleMarkdown = function(message, replaceCode) {
 
 };
 
-function replaceMarkdown(message, posts, board, replaceCode, callback) {
+exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
 
   var postObject = {};
 
@@ -383,11 +376,11 @@ function replaceMarkdown(message, posts, board, replaceCode, callback) {
 
   message = exports.replaceStyleMarkdown(message, replaceCode);
 
-  callback(null, message);
+  cb(null, message);
 
-}
+};
 
-function getCrossQuotes(message, postsToFindObject) {
+exports.getCrossQuotes = function(message, postsToFindObject) {
 
   var crossQuotes = message.match(/>>>\/\w+\/\d+/g) || [];
 
@@ -410,9 +403,9 @@ function getCrossQuotes(message, postsToFindObject) {
 
   }
 
-}
+};
 
-function getQuotes(message, board, postsToFindObject) {
+exports.getQuotes = function(message, board, postsToFindObject) {
 
   var quotes = message.match(/>>\d+/g) || [];
 
@@ -432,7 +425,7 @@ function getQuotes(message, board, postsToFindObject) {
 
   }
 
-}
+};
 
 exports.markdownText = function(message, board, replaceCode, callback) {
 
@@ -440,9 +433,9 @@ exports.markdownText = function(message, board, replaceCode, callback) {
 
   var postsToFindObject = {};
 
-  getCrossQuotes(message, postsToFindObject);
+  exports.getCrossQuotes(message, postsToFindObject);
 
-  getQuotes(message, board, postsToFindObject);
+  exports.getQuotes(message, board, postsToFindObject);
 
   var orBlock = [];
 
@@ -458,7 +451,7 @@ exports.markdownText = function(message, board, replaceCode, callback) {
   }
 
   if (!orBlock.length) {
-    replaceMarkdown(message, [], board, replaceCode, callback);
+    exports.replaceMarkdown(message, [], board, replaceCode, callback);
   } else {
 
     posts.aggregate([ {
@@ -484,19 +477,18 @@ exports.markdownText = function(message, board, replaceCode, callback) {
         }
 
       }
-    } ],
-        function gotPosts(error, result) {
+    } ], function gotPosts(error, result) {
 
-          if (error) {
-            callback(error);
-          } else if (!result.length) {
-            replaceMarkdown(message, [], board, replaceCode, callback);
-          } else {
-            replaceMarkdown(message, result[0].posts, board, replaceCode,
-                callback);
-          }
+      if (error) {
+        callback(error);
+      } else if (!result.length) {
+        exports.replaceMarkdown(message, [], board, replaceCode, callback);
+      } else {
+        exports.replaceMarkdown(message, result[0].posts, board, replaceCode,
+            callback);
+      }
 
-        });
+    });
   }
 };
 // } Section 2: Markdown

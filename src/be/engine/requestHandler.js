@@ -28,7 +28,7 @@ exports.loadDependencies = function() {
 
 };
 
-function outputError(error, res) {
+exports.outputError = function(error, res) {
 
   var header = miscOps.corsHeader('text/plain');
 
@@ -58,9 +58,9 @@ function outputError(error, res) {
 
   res.end();
 
-}
+};
 
-function processApiRequest(req, res) {
+exports.processApiRequest = function(req, res) {
 
   var pathName = url.parse(req.url).pathname;
 
@@ -79,9 +79,9 @@ function processApiRequest(req, res) {
     apiOps.outputError(error, res);
   }
 
-}
+};
 
-function processFormRequest(req, res) {
+exports.processFormRequest = function(req, res) {
 
   var pathName = url.parse(req.url).pathname;
 
@@ -94,7 +94,7 @@ function processFormRequest(req, res) {
       gridFs.outputFile('/maintenance.html', req, res, function streamedFile(
           error) {
         if (error) {
-          outputError(error, res);
+          exports.outputError(error, res);
         }
       });
     } else {
@@ -105,9 +105,9 @@ function processFormRequest(req, res) {
     formOps.outputError(error, 500, res);
   }
 
-}
+};
 
-function getPathNameForGfs(req) {
+exports.getPathNameForGfs = function(req) {
   var pathName = url.parse(req.url).pathname;
 
   // look at the alias starting from the second character so a board named
@@ -131,11 +131,11 @@ function getPathNameForGfs(req) {
   }
 
   return pathName;
-}
+};
 
-function outputGfsFile(req, res) {
+exports.outputGfsFile = function(req, res) {
 
-  var pathName = getPathNameForGfs(req);
+  var pathName = exports.getPathNameForGfs(req);
 
   var splitArray = pathName.split('/');
 
@@ -143,7 +143,7 @@ function outputGfsFile(req, res) {
 
   if (pathName.indexOf('.js', pathName.length - 3) !== -1) {
 
-    processFormRequest(req, res);
+    exports.processFormRequest(req, res);
 
     return;
   } else if (gotSecondString && !/\W/.test(splitArray[1])) {
@@ -159,14 +159,15 @@ function outputGfsFile(req, res) {
 
   gridFs.outputFile(pathName, req, res, function streamedFile(error) {
     if (error) {
-      outputError(error, res);
+      exports.outputError(error, res);
     }
   });
 
-}
+};
 
-function outputArchiveFile(req, res) {
-  var pathName = getPathNameForGfs(req);
+exports.outputArchiveFile = function(req, res) {
+
+  var pathName = exports.getPathNameForGfs(req);
 
   var splitArray = pathName.split('/');
 
@@ -202,23 +203,23 @@ function outputArchiveFile(req, res) {
   } else {
     archive.outputFile(pathName, req, res, function streamedFile(error) {
       if (error) {
-        outputError(error, res);
+        exports.outputError(error, res);
       }
     });
   }
-}
+};
 
-function outputStaticFile(req, res) {
+exports.outputStaticFile = function(req, res) {
 
   staticHandler.outputFile(req, res, function fileOutput(error) {
     if (error) {
-      outputError(error, res);
+      exports.outputError(error, res);
     }
 
   });
-}
+};
 
-function getSubdomain(req) {
+exports.getSubdomain = function(req) {
   var subdomain = req.headers.host.split('.');
 
   if (subdomain.length > 1) {
@@ -229,7 +230,7 @@ function getSubdomain(req) {
 
   return subdomain;
 
-}
+};
 
 exports.handle = function(req, res) {
 
@@ -239,15 +240,15 @@ exports.handle = function(req, res) {
     return;
   }
 
-  var subdomain = getSubdomain(req);
+  var subdomain = exports.getSubdomain(req);
 
   if (subdomain === 'api') {
-    processApiRequest(req, res);
+    exports.processApiRequest(req, res);
   } else if (subdomain === 'static') {
-    outputStaticFile(req, res);
+    exports.outputStaticFile(req, res);
   } else if (subdomain === 'archive') {
     if (serveArchive && archive.loaded()) {
-      outputArchiveFile(req, res);
+      exports.outputArchiveFile(req, res);
     } else if (!serveArchive) {
       formOps.outputError(lang.errNotServingArchives, 500, res);
     } else {
@@ -255,7 +256,7 @@ exports.handle = function(req, res) {
     }
 
   } else {
-    outputGfsFile(req, res);
+    exports.outputGfsFile(req, res);
   }
 
 };

@@ -33,8 +33,8 @@ exports.loadDependencies = function() {
 
 };
 
-function finishThreadCreation(boardUri, threadId, enabledCaptcha, callback,
-    thread) {
+exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
+    callback, thread) {
 
   if (enabledCaptcha) {
     process.send({
@@ -69,10 +69,10 @@ function finishThreadCreation(boardUri, threadId, enabledCaptcha, callback,
 
   });
 
-}
+};
 
-function updateBoardForThreadCreation(boardUri, threadId, enabledCaptcha,
-    callback, thread) {
+exports.updateBoardForThreadCreation = function(boardUri, threadId,
+    enabledCaptcha, callback, thread) {
 
   boards.findOneAndUpdate({
     boardUri : boardUri
@@ -94,23 +94,23 @@ function updateBoardForThreadCreation(boardUri, threadId, enabledCaptcha,
           if (error) {
             callback(error);
           } else {
-            finishThreadCreation(boardUri, threadId, enabledCaptcha, callback,
-                thread);
+            exports.finishThreadCreation(boardUri, threadId, enabledCaptcha,
+                callback, thread);
           }
         });
         // style exception, too simple
 
       } else {
-        finishThreadCreation(boardUri, threadId, enabledCaptcha, callback,
-            thread);
+        exports.finishThreadCreation(boardUri, threadId, enabledCaptcha,
+            callback, thread);
       }
 
     }
   });
-}
+};
 
-function createThread(req, userData, parameters, board, threadId, wishesToSign,
-    enabledCaptcha, callback) {
+exports.createThread = function(req, userData, parameters, board, threadId,
+    wishesToSign, enabledCaptcha, callback) {
 
   var salt = crypto.createHash('sha256').update(
       threadId + parameters.toString() + Math.random() + new Date()).digest(
@@ -154,7 +154,7 @@ function createThread(req, userData, parameters, board, threadId, wishesToSign,
 
   threads.insert(threadToAdd, function createdThread(error) {
     if (error && error.code === 11000) {
-      createThread(req, userData, parameters, board, threadId + 1,
+      exports.createThread(req, userData, parameters, board, threadId + 1,
           wishesToSign, enabledCaptcha, callback);
     } else if (error) {
       callback(error);
@@ -182,22 +182,22 @@ function createThread(req, userData, parameters, board, threadId, wishesToSign,
                 }
               }
 
-              updateBoardForThreadCreation(parameters.boardUri, threadId,
-                  enabledCaptcha, callback, threadToAdd);
+              exports.updateBoardForThreadCreation(parameters.boardUri,
+                  threadId, enabledCaptcha, callback, threadToAdd);
 
             });
         // style exception, too simple
 
       } else {
-        updateBoardForThreadCreation(parameters.boardUri, threadId,
+        exports.updateBoardForThreadCreation(parameters.boardUri, threadId,
             enabledCaptcha, callback, threadToAdd);
       }
     }
   });
 
-}
+};
 
-function resetLock(board) {
+exports.resetLock = function(board) {
 
   if (board.lockedUntil) {
     return true;
@@ -207,9 +207,9 @@ function resetLock(board) {
 
   return board.lockCountStart <= expiration;
 
-}
+};
 
-function setLockReset(updateBlock, board, setBlock) {
+exports.setLockReset = function(updateBlock, board, setBlock) {
 
   updateBlock.$unset = {
     lockedUntil : 1
@@ -220,17 +220,17 @@ function setLockReset(updateBlock, board, setBlock) {
 
   setBlock.threadLockCount = 1;
 
-}
+};
 
-function setUpdateForHourlyLimit(updateBlock, board) {
+exports.setUpdateForHourlyLimit = function(updateBlock, board) {
 
   var usedSet = false;
 
   var setBlock = {};
 
-  if (resetLock(board)) {
+  if (exports.resetLock(board)) {
     usedSet = true;
-    setLockReset(updateBlock, board, setBlock);
+    exports.setLockReset(updateBlock, board, setBlock);
 
   } else {
     updateBlock.$inc.threadLockCount = 1;
@@ -251,9 +251,9 @@ function setUpdateForHourlyLimit(updateBlock, board) {
   if (usedSet) {
     updateBlock.$set = setBlock;
   }
-}
+};
 
-function setAutoCaptchaReset(board, setBlock) {
+exports.setAutoCaptchaReset = function(board, setBlock) {
 
   board.autoCaptchaStartTime = null;
   board.autoCaptchaCount = 0;
@@ -261,9 +261,9 @@ function setAutoCaptchaReset(board, setBlock) {
   setBlock.autoCaptchaCount = 1;
 
   return true;
-}
+};
 
-function setStartTime(usedSet, board, setBlock, updateBlock) {
+exports.setStartTime = function(usedSet, board, setBlock, updateBlock) {
   if (!board.autoCaptchaStartTime) {
     usedSet = true;
     setBlock.autoCaptchaStartTime = new Date();
@@ -272,9 +272,9 @@ function setStartTime(usedSet, board, setBlock, updateBlock) {
   if (usedSet) {
     updateBlock.$set = setBlock;
   }
-}
+};
 
-function setCaptchaEnabling(updateBlock) {
+exports.setCaptchaEnabling = function(updateBlock) {
 
   updateBlock.$pullAll = {
     settings : [ 'disableCaptcha' ]
@@ -295,9 +295,9 @@ function setCaptchaEnabling(updateBlock) {
   }
 
   return true;
-}
+};
 
-function setUpdateForAutoCaptcha(updateBlock, board) {
+exports.setUpdateForAutoCaptcha = function(updateBlock, board) {
 
   if (board.settings.indexOf('disableCaptcha') === -1) {
     return false;
@@ -317,21 +317,21 @@ function setUpdateForAutoCaptcha(updateBlock, board) {
 
   if (board.autoCaptchaStartTime <= expiration) {
 
-    usedSet = setAutoCaptchaReset(board, setBlock);
+    usedSet = exports.setAutoCaptchaReset(board, setBlock);
 
   } else {
     updateBlock.$inc.autoCaptchaCount = 1;
   }
 
-  setStartTime(usedSet, board, setBlock, updateBlock);
+  exports.setStartTime(usedSet, board, setBlock, updateBlock);
 
   if (board.autoCaptchaCount >= board.autoCaptchaThreshold - 1) {
-    return setCaptchaEnabling(updateBlock);
+    return exports.setCaptchaEnabling(updateBlock);
   }
-}
+};
 
-function getNewThreadId(req, userData, parameters, board, wishesToSign,
-    callback) {
+exports.getNewThreadId = function(req, userData, parameters, board,
+    wishesToSign, callback) {
 
   var updateBlock = {
     $inc : {
@@ -340,13 +340,13 @@ function getNewThreadId(req, userData, parameters, board, wishesToSign,
   };
 
   if (board.hourlyThreadLimit) {
-    setUpdateForHourlyLimit(updateBlock, board);
+    exports.setUpdateForHourlyLimit(updateBlock, board);
   }
 
   var enabledCaptcha;
 
   if (board.autoCaptchaThreshold) {
-    enabledCaptcha = setUpdateForAutoCaptcha(updateBlock, board);
+    enabledCaptcha = exports.setUpdateForAutoCaptcha(updateBlock, board);
   }
 
   boards.findOneAndUpdate({
@@ -365,7 +365,7 @@ function getNewThreadId(req, userData, parameters, board, wishesToSign,
             parameters.flagName = flagName;
             parameters.flag = flagUrl;
 
-            createThread(req, userData, parameters, board,
+            exports.createThread(req, userData, parameters, board,
                 lastIdData.value.lastPostId, wishesToSign, enabledCaptcha,
                 callback);
           });
@@ -373,9 +373,10 @@ function getNewThreadId(req, userData, parameters, board, wishesToSign,
 
     }
   });
-}
+};
 
-function checkMarkdownForThread(req, userData, parameters, board, callback) {
+exports.checkMarkdownForThread = function(req, userData, parameters, board,
+    callback) {
 
   common.markdownText(parameters.message, parameters.boardUri, board.settings
       .indexOf('allowCode') > -1, function gotMarkdown(error, markdown) {
@@ -391,15 +392,16 @@ function checkMarkdownForThread(req, userData, parameters, board, callback) {
         if (error) {
           callback(error);
         } else {
-          getNewThreadId(req, userData, parameters, board, wishesToSign,
-              callback);
+          exports.getNewThreadId(req, userData, parameters, board,
+              wishesToSign, callback);
         }
       });
       // style exception, too simple
+
     }
   });
 
-}
+};
 
 exports.newThread = function(req, userData, parameters, captchaId, cb) {
 
@@ -445,7 +447,8 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
             if (error) {
               cb(error);
             } else {
-              checkMarkdownForThread(req, userData, parameters, board, cb);
+              exports.checkMarkdownForThread(req, userData, parameters, board,
+                  cb);
             }
           });
       // style exception, too simple

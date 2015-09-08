@@ -12,7 +12,7 @@ var fs = require('fs');
 var logger = require('./logger');
 var generator;
 
-var reloadDirectories = [ 'engine', 'form', 'api' ];
+var reloadDirectories = [ 'engine', 'form', 'api', 'addons' ];
 
 var MINIMUM_WORKER_UPTIME = 5000;
 var forkTime = {};
@@ -410,9 +410,7 @@ function checkImagesSet() {
       error += ' not set on the template settings.';
       throw error;
     }
-
   }
-
 }
 
 function setDefaultImages() {
@@ -754,16 +752,13 @@ var setRoleFunction = function() {
   }, function setRole(error) {
 
     if (error) {
-
       console.log(error);
-
       if (debug) {
         throw error;
       }
 
     } else {
       console.log('Set role ' + informedRole + ' for ' + informedLogin + '.');
-
     }
 
     checkForDefaultPages();
@@ -788,16 +783,14 @@ exports.startEngine = function() {
   }
 
   require('./engine/addonOps').startAddons();
-  
+
 };
 
 function initTorControl() {
 
   require('./engine/torOps').init(function initializedTorControl(error) {
     if (error) {
-
       throw error;
-
     } else {
       if (!noDaemon) {
         require('./scheduleHandler').start();
@@ -821,9 +814,7 @@ function checkDbVersions() {
   db.checkVersion(function checkedVersion(error) {
 
     if (error) {
-
       throw error;
-
     } else {
       initTorControl();
     }
@@ -837,15 +828,11 @@ if (cluster.isMaster) {
   db.init(function bootedDb(error) {
 
     if (error) {
-
       throw error;
-
     } else {
-
       exports.startEngine();
 
       checkDbVersions();
-
     }
 
   });

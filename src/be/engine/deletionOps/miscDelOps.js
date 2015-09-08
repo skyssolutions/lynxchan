@@ -30,7 +30,7 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Thread cleanup {
-function removeThreads(boardUri, threadsToDelete, callback) {
+exports.removeThreads = function(boardUri, threadsToDelete, callback) {
 
   threads.remove({
     boardUri : boardUri,
@@ -59,9 +59,9 @@ function removeThreads(boardUri, threadsToDelete, callback) {
 
   });
 
-}
+};
 
-function getThreadFilesToRemove(boardUri, threadsToRemove, callback) {
+exports.getThreadFilesToRemove = function(boardUri, threadsToRemove, callback) {
 
   files.aggregate([ {
     $match : {
@@ -89,7 +89,7 @@ function getThreadFilesToRemove(boardUri, threadsToRemove, callback) {
         if (error) {
           callback(error);
         } else {
-          removeThreads(boardUri, threadsToRemove, callback);
+          exports.removeThreads(boardUri, threadsToRemove, callback);
         }
       });
       // style exception, too simple
@@ -97,7 +97,7 @@ function getThreadFilesToRemove(boardUri, threadsToRemove, callback) {
     }
   });
 
-}
+};
 
 exports.cleanThreads = function(boardUri, callback) {
 
@@ -129,7 +129,8 @@ exports.cleanThreads = function(boardUri, callback) {
     } else if (!threadsToRemove.length) {
       callback();
     } else {
-      getThreadFilesToRemove(boardUri, threadsToRemove[0].threads, callback);
+      exports.getThreadFilesToRemove(boardUri, threadsToRemove[0].threads,
+          callback);
     }
   });
 
@@ -137,7 +138,7 @@ exports.cleanThreads = function(boardUri, callback) {
 // } Section 1: Thread cleanup
 
 // Section 2: Board deletion {
-function deleteBoardContent(board, callback, index) {
+exports.deleteBoardContent = function(board, callback, index) {
   index = index || 0;
 
   if (index < collectionsToClean.length) {
@@ -145,7 +146,7 @@ function deleteBoardContent(board, callback, index) {
     collectionsToClean[index].remove({
       boardUri : board
     }, function removedData(error) {
-      deleteBoardContent(board, callback, index + 1);
+      exports.deleteBoardContent(board, callback, index + 1);
 
     });
 
@@ -157,9 +158,9 @@ function deleteBoardContent(board, callback, index) {
     callback();
   }
 
-}
+};
 
-function deleteBoardFiles(board, callback) {
+exports.deleteBoardFiles = function(board, callback) {
 
   files.aggregate([ {
     $match : {
@@ -183,7 +184,7 @@ function deleteBoardFiles(board, callback) {
         if (error) {
           callback(error);
         } else {
-          deleteBoardContent(board.boardUri, callback);
+          exports.deleteBoardContent(board.boardUri, callback);
         }
 
       });
@@ -192,9 +193,9 @@ function deleteBoardFiles(board, callback) {
     }
   });
 
-}
+};
 
-function logBoardDeletion(board, user, callback) {
+exports.logBoardDeletion = function(board, user, callback) {
 
   var message = lang.logBoardDeletion.replace('{$board}', board.boardUri)
       .replace('{$login}', user);
@@ -212,12 +213,12 @@ function logBoardDeletion(board, user, callback) {
       logger.printLogError(message, error);
     }
 
-    deleteBoardFiles(board, callback);
+    exports.deleteBoardFiles(board, callback);
 
   });
-}
+};
 
-function deleteBoard(board, user, callback) {
+exports.deleteBoard = function(board, user, callback) {
 
   boards.remove({
     boardUri : board.boardUri
@@ -237,7 +238,7 @@ function deleteBoard(board, user, callback) {
         if (error) {
           callback(error);
         } else {
-          logBoardDeletion(board, user, callback);
+          exports.logBoardDeletion(board, user, callback);
         }
       });
       // style exception, too simple
@@ -245,7 +246,7 @@ function deleteBoard(board, user, callback) {
     }
   });
 
-}
+};
 
 exports.board = function(userData, boardUri, callback) {
 
@@ -265,7 +266,7 @@ exports.board = function(userData, boardUri, callback) {
     } else if (board.owner !== userData.login && !admin) {
       callback(lang.errDeniedBoardDeletion);
     } else {
-      deleteBoard(board, userData.login, callback);
+      exports.deleteBoard(board, userData.login, callback);
     }
   });
 
@@ -273,7 +274,7 @@ exports.board = function(userData, boardUri, callback) {
 // } Section 2: Board deletion
 
 // Section 3: Early 404 removal {
-function removeEarly404Files(results, callback) {
+exports.removeEarly404Files = function(results, callback) {
 
   var orArray = [];
 
@@ -339,9 +340,9 @@ function removeEarly404Files(results, callback) {
 
     }
   });
-}
+};
 
-function removeEarly404Posts(results, callback) {
+exports.removeEarly404Posts = function(results, callback) {
 
   if (verbose) {
     var msg = 'Cleaning threads for early 404: ';
@@ -376,7 +377,7 @@ function removeEarly404Posts(results, callback) {
         if (error) {
           callback(error);
         } else {
-          removeEarly404Files(results, callback);
+          exports.removeEarly404Files(results, callback);
         }
       });
       // style exception, too simple
@@ -384,7 +385,7 @@ function removeEarly404Posts(results, callback) {
     }
   });
 
-}
+};
 
 exports.cleanEarly404 = function(callback) {
 
@@ -437,7 +438,7 @@ exports.cleanEarly404 = function(callback) {
         if (!results || !results.length) {
           callback(error);
         } else {
-          removeEarly404Posts(results, callback);
+          exports.removeEarly404Posts(results, callback);
         }
       });
       // style exception, too simple

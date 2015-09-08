@@ -249,7 +249,7 @@ exports.notFound = function(callback) {
 };
 
 // start of front-page generation
-function saveFrontPage(foundBoards, callback) {
+exports.saveFrontPage = function(foundBoards, callback) {
 
   domManipulator.frontPage(foundBoards, function savedHtml(error) {
     if (error) {
@@ -260,7 +260,7 @@ function saveFrontPage(foundBoards, callback) {
 
   });
 
-}
+};
 
 exports.frontPage = function(callback) {
 
@@ -269,7 +269,7 @@ exports.frontPage = function(callback) {
   }
 
   if (settings.disableTopBoards) {
-    saveFrontPage(null, callback);
+    exports.saveFrontPage(null, callback);
     return;
   }
 
@@ -293,7 +293,7 @@ exports.frontPage = function(callback) {
     if (error) {
       callback(error);
     } else {
-      saveFrontPage(foundBoards, callback);
+      exports.saveFrontPage(foundBoards, callback);
     }
   });
 
@@ -476,7 +476,7 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
 
 };
 
-function iterateThreadsCursor(boardUri, boardData, cursor, callback) {
+exports.iterateThreadsCursor = function(boardUri, boardData, cursor, callback) {
 
   cursor.next(function(error, thread) {
     if (error) {
@@ -490,7 +490,7 @@ function iterateThreadsCursor(boardUri, boardData, cursor, callback) {
         if (error) {
           callback(error);
         } else {
-          iterateThreadsCursor(boardUri, boardData, cursor, callback);
+          exports.iterateThreadsCursor(boardUri, boardData, cursor, callback);
         }
 
       }, boardData, thread);
@@ -499,17 +499,17 @@ function iterateThreadsCursor(boardUri, boardData, cursor, callback) {
     }
   });
 
-}
+};
 
-function getThreads(boardUri, boardData, callback) {
+exports.getThreads = function(boardUri, boardData, callback) {
 
   var cursor = threads.find({
     boardUri : boardUri,
   }, threadProjection);
 
-  iterateThreadsCursor(boardUri, boardData, cursor, callback);
+  exports.iterateThreadsCursor(boardUri, boardData, cursor, callback);
 
-}
+};
 
 exports.allThreads = function(boardUri, callback, boardData) {
 
@@ -534,7 +534,7 @@ exports.allThreads = function(boardUri, callback, boardData) {
     return;
   }
 
-  getThreads(boardUri, boardData, callback);
+  exports.getThreads(boardUri, boardData, callback);
 
 };
 
@@ -542,8 +542,8 @@ exports.allThreads = function(boardUri, callback, boardData) {
 
 // page creation start
 
-function getLatestPosts(boardUri, page, threadsArray, pageCount, boardData,
-    flagData, callback) {
+exports.getLatestPosts = function(boardUri, page, threadsArray, pageCount,
+    boardData, flagData, callback) {
 
   var postsToFetch = [];
 
@@ -602,11 +602,11 @@ function getLatestPosts(boardUri, page, threadsArray, pageCount, boardData,
     }
   });
 
-}
+};
 
 // pre-aggregates the page the thread is sitting in.
-function updateThreadsPage(boardUri, page, threadsArray, pageCount, boardData,
-    flagData, callback) {
+exports.updateThreadsPage = function(boardUri, page, threadsArray, pageCount,
+    boardData, flagData, callback) {
 
   var ids = [];
 
@@ -630,14 +630,14 @@ function updateThreadsPage(boardUri, page, threadsArray, pageCount, boardData,
       callback(error);
     } else {
 
-      getLatestPosts(boardUri, page, threadsArray, pageCount, boardData,
-          flagData, callback);
+      exports.getLatestPosts(boardUri, page, threadsArray, pageCount,
+          boardData, flagData, callback);
 
     }
 
   });
 
-}
+};
 
 exports.page = function(boardUri, page, callback, boardData, flagData) {
 
@@ -704,8 +704,8 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
           callback(error);
         } else {
 
-          updateThreadsPage(boardUri, page, threadsArray, pageCount, boardData,
-              flagData, callback);
+          exports.updateThreadsPage(boardUri, page, threadsArray, pageCount,
+              boardData, flagData, callback);
         }
       });
 
@@ -740,7 +740,7 @@ exports.catalog = function(boardUri, callback) {
 
 };
 
-function pageIteration(boardUri, currentPage, boardData, callback,
+exports.pageIteration = function(boardUri, currentPage, boardData, callback,
     rebuildThreadPages) {
 
   if (currentPage < 1) {
@@ -764,15 +764,14 @@ function pageIteration(boardUri, currentPage, boardData, callback,
     if (error) {
       callback(error);
     } else {
-      pageIteration(boardUri, --currentPage, boardData, callback,
+      exports.pageIteration(boardUri, --currentPage, boardData, callback,
           rebuildThreadPages);
     }
   }, boardData);
 
-}
+};
 
-exports.board = function(boardUri, reloadThreads, reloadRules, callback,
-    boardData) {
+exports.board = function(boardUri, reloadThreads, reloadRules, cb, boardData) {
 
   // we allow for the basic board data to be informed, but fetch if not sent.
   if (!boardData) {
@@ -785,11 +784,11 @@ exports.board = function(boardUri, reloadThreads, reloadRules, callback,
       boardUri : boardUri
     }, boardProjection, function gotBoard(error, board) {
       if (error) {
-        callback(error);
+        cb(error);
       } else if (!board) {
-        callback('Board not found');
+        cb('Board not found');
       } else {
-        exports.board(boardUri, reloadThreads, reloadRules, callback, board);
+        exports.board(boardUri, reloadThreads, reloadRules, cb, board);
       }
     });
 
@@ -799,9 +798,9 @@ exports.board = function(boardUri, reloadThreads, reloadRules, callback,
   if (reloadRules) {
     exports.rules(boardUri, function reloadedRules(error) {
       if (error) {
-        callback(error);
+        cb(error);
       } else {
-        exports.board(boardUri, reloadThreads, false, callback, boardData);
+        exports.board(boardUri, reloadThreads, false, cb, boardData);
       }
     });
 
@@ -821,10 +820,9 @@ exports.board = function(boardUri, reloadThreads, reloadRules, callback,
     boardUri : boardUri
   }).count(false, null, function gotCount(error, count) {
     if (error) {
-      callback(error);
+      cb(error);
     } else {
-
-      pageIteration(boardUri, pageCount, boardData, callback, reloadThreads);
+      exports.pageIteration(boardUri, pageCount, boardData, cb, reloadThreads);
     }
   });
 
@@ -832,7 +830,7 @@ exports.board = function(boardUri, reloadThreads, reloadRules, callback,
 
 // board creation end
 
-function iterateBoards(cursor, callback) {
+exports.iterateBoards = function(cursor, callback) {
 
   cursor.next(function gotResults(error, board) {
     if (error) {
@@ -849,7 +847,7 @@ function iterateBoards(cursor, callback) {
         if (error) {
           callback(error);
         } else {
-          iterateBoards(cursor, callback);
+          exports.iterateBoards(cursor, callback);
         }
 
       }, board);
@@ -859,7 +857,7 @@ function iterateBoards(cursor, callback) {
 
   });
 
-}
+};
 
 exports.boards = function(callback) {
 
@@ -869,6 +867,6 @@ exports.boards = function(callback) {
 
   var cursor = boards.find({}, boardProjection);
 
-  iterateBoards(cursor, callback);
+  exports.iterateBoards(cursor, callback);
 
 };

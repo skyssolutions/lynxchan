@@ -26,7 +26,7 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Hash bans {
-function getHashBans(parameters, callback) {
+exports.readHashBans = function(parameters, callback) {
 
   hashBans.find({
     boardUri : parameters.boardUri ? parameters.boardUri : {
@@ -39,8 +39,7 @@ function getHashBans(parameters, callback) {
   }).toArray(function gotBans(error, hashBans) {
     callback(error, hashBans);
   });
-}
-
+};
 exports.getHashBans = function(userData, parameters, callback) {
 
   var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
@@ -56,19 +55,19 @@ exports.getHashBans = function(userData, parameters, callback) {
       } else if (!common.isInBoardStaff(userData, board, 2)) {
         callback(lang.errDeniedBoardHashBansManagement);
       } else {
-        getHashBans(parameters, callback);
+        exports.readHashBans(parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
     callback(lang.errDeniedGlobalHashBansManagement);
   } else {
-    getHashBans(parameters, callback);
+    exports.getHashBans(parameters, callback);
   }
 };
 // } Section 1: Hash bans
 
 // Section 2: Hash ban {
-function placeHashBan(userData, parameters, callback) {
+exports.writeHashBan = function(userData, parameters, callback) {
   var hashBan = {
     md5 : parameters.hash
   };
@@ -116,7 +115,7 @@ function placeHashBan(userData, parameters, callback) {
 
     }
   });
-}
+};
 
 exports.placeHashBan = function(userData, parameters, callback) {
 
@@ -135,20 +134,20 @@ exports.placeHashBan = function(userData, parameters, callback) {
       } else if (!common.isInBoardStaff(userData, board, 2)) {
         callback(lang.errDeniedBoardHashBansManagement);
       } else {
-        placeHashBan(userData, parameters, callback);
+        exports.writeHashBan(userData, parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
     callback(lang.errDeniedGlobalHashBansManagement);
   } else {
-    placeHashBan(userData, parameters, callback);
+    exports.writeHashBan(userData, parameters, callback);
   }
 
 };
 // } Section 2: Hash ban
 
 // Section 3: Lift hash ban {
-function liftHashBan(hashBan, userData, callback) {
+exports.removeHashBan = function(hashBan, userData, callback) {
   hashBans.remove({
     _id : new ObjectID(hashBan._id)
   }, function hashBanRemoved(error) {
@@ -190,9 +189,10 @@ function liftHashBan(hashBan, userData, callback) {
     }
 
   });
-}
+};
 
-function checkForBoardHashBanLiftPermission(hashBan, userData, callback) {
+exports.checkForBoardHashBanLiftPermission = function(hashBan, userData,
+    callback) {
   boards.findOne({
     boardUri : hashBan.boardUri
   }, function gotBoard(error, board) {
@@ -203,15 +203,15 @@ function checkForBoardHashBanLiftPermission(hashBan, userData, callback) {
     } else {
 
       if (common.isInBoardStaff(userData, board, 2)) {
-        liftHashBan(hashBan, userData, callback);
+        exports.removeHashBan(hashBan, userData, callback);
       } else {
         callback(lang.errDeniedBoardHashBansManagement);
       }
     }
   });
-}
+};
 
-exports.liftHashBan = function(userData, parameters, callback) {
+exports.liftHashBan = function(userData, parameters, cb) {
   try {
     var globalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 
@@ -219,21 +219,21 @@ exports.liftHashBan = function(userData, parameters, callback) {
       _id : new ObjectID(parameters.hashBanId)
     }, function gotHashBan(error, hashBan) {
       if (error) {
-        callback(error);
+        cb(error);
       } else if (!hashBan) {
-        callback();
+        cb();
       } else if (hashBan.boardUri) {
 
-        checkForBoardHashBanLiftPermission(hashBan, userData, callback);
+        exports.checkForBoardHashBanLiftPermission(hashBan, userData, cb);
 
       } else if (!globalStaff) {
-        callback(lang.errDeniedGlobalHashBansManagement);
+        cb(lang.errDeniedGlobalHashBansManagement);
       } else {
-        liftHashBan(hashBan, userData, callback);
+        exports.removeHashBan(hashBan, userData, cb);
       }
     });
   } catch (error) {
-    callback(error);
+    cb(error);
   }
 };
 // } Section 3: Lift hash ban

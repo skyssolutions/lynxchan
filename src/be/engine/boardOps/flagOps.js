@@ -35,7 +35,7 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Flag creation {
-function processFlagFile(toInsert, file, callback) {
+exports.processFlagFile = function(toInsert, file, callback) {
 
   var newUrl = '/' + toInsert.boardUri + '/flags/' + toInsert._id;
 
@@ -63,7 +63,7 @@ function processFlagFile(toInsert, file, callback) {
     }
   });
 
-}
+};
 
 exports.createFlag = function(userData, parameters, callback) {
 
@@ -104,7 +104,7 @@ exports.createFlag = function(userData, parameters, callback) {
         } else if (error) {
           callback(error);
         } else {
-          processFlagFile(toInsert, parameters.files[0], callback);
+          exports.processFlagFile(toInsert, parameters.files[0], callback);
         }
       });
       // style exception, too simple
@@ -115,7 +115,7 @@ exports.createFlag = function(userData, parameters, callback) {
 // } Section 1: Flag creation
 
 // Section 2: Flag deletion {
-function cleanFlagFromPostings(flagUrl, boardUri, callback) {
+exports.cleanFlagFromPostings = function(flagUrl, boardUri, callback) {
 
   threads.updateMany({
     boardUri : boardUri,
@@ -148,9 +148,9 @@ function cleanFlagFromPostings(flagUrl, boardUri, callback) {
 
   });
 
-}
+};
 
-function removeFlag(flag, callback) {
+exports.removeFlag = function(flag, callback) {
 
   flags.removeOne({
     _id : new ObjectID(flag._id)
@@ -167,7 +167,7 @@ function removeFlag(flag, callback) {
         if (error) {
           callback(error);
         } else {
-          cleanFlagFromPostings(flagUrl, flag.boardUri, callback);
+          exports.cleanFlagFromPostings(flagUrl, flag.boardUri, callback);
         }
 
       });
@@ -176,7 +176,7 @@ function removeFlag(flag, callback) {
     }
   });
 
-}
+};
 
 exports.deleteFlag = function(userData, flagId, callback) {
 
@@ -202,7 +202,7 @@ exports.deleteFlag = function(userData, flagId, callback) {
         } else if (board.owner !== userData.login && !globallyAllowed) {
           callback(lang.deniedFlagManagement);
         } else {
-          removeFlag(flag, callback);
+          exports.removeFlag(flag, callback);
         }
       });
       // style exception, too simple

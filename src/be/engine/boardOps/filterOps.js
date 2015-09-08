@@ -27,7 +27,7 @@ var filterParameters = [ {
 } ];
 
 // Section 1: Filter creation {
-function setFilter(board, callback, parameters) {
+exports.setFilter = function(board, callback, parameters) {
   var existingFilters = board.filters || [];
 
   var found = false;
@@ -63,7 +63,7 @@ function setFilter(board, callback, parameters) {
     callback(error);
   });
 
-}
+};
 
 exports.createFilter = function(userData, parameters, callback) {
 
@@ -83,7 +83,7 @@ exports.createFilter = function(userData, parameters, callback) {
     } else if (board.filters && board.filters.length >= maxFiltersCount) {
       callback(lang.errMaxFiltersReached);
     } else {
-      setFilter(board, callback, parameters);
+      exports.setFilter(board, callback, parameters);
     }
   });
 

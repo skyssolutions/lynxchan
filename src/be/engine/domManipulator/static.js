@@ -60,7 +60,7 @@ exports.login = function(callback) {
 };
 
 // Section 1: Thread {
-function setThreadHiddenIdentifiers(document, boardUri, threadData) {
+exports.setThreadHiddenIdentifiers = function(document, boardUri, threadData) {
   var boardIdentifyInput = document.getElementById('boardIdentifier');
 
   boardIdentifyInput.setAttribute('value', boardUri);
@@ -68,10 +68,10 @@ function setThreadHiddenIdentifiers(document, boardUri, threadData) {
   var threadIdentifyInput = document.getElementById('threadIdentifier');
 
   threadIdentifyInput.setAttribute('value', threadData.threadId);
-}
+};
 
-function setModdingInformation(document, boardUri, boardData, threadData,
-    posts, callback) {
+exports.setModdingInformation = function(document, boardUri, boardData,
+    threadData, posts, callback) {
 
   if (threadData.locked) {
     document.getElementById('checkboxLock').setAttribute('checked', true);
@@ -92,17 +92,17 @@ function setModdingInformation(document, boardUri, boardData, threadData,
 
   callback(null, serializer(document));
 
-}
+};
 
-function hideModElements(document) {
+exports.hideModElements = function(document) {
 
   common.removeElement(document.getElementById('inputBan'));
   common.removeElement(document.getElementById('divBanInput'));
   common.removeElement(document.getElementById('divControls'));
 
-}
+};
 
-function setThreadTitle(document, boardUri, threadData) {
+exports.setThreadTitle = function(document, boardUri, threadData) {
   var title = '/' + boardUri + '/ - ';
 
   if (threadData.subject) {
@@ -112,18 +112,18 @@ function setThreadTitle(document, boardUri, threadData) {
   }
 
   document.title = title;
-}
+};
 
-function setModElements(modding, document, boardUri, boardData, threadData,
-    posts, callback) {
+exports.setModElements = function(modding, document, boardUri, boardData,
+    threadData, posts, callback) {
 
   if (modding) {
 
-    setModdingInformation(document, boardUri, boardData, threadData, posts,
-        callback);
+    exports.setModdingInformation(document, boardUri, boardData, threadData,
+        posts, callback);
 
   } else {
-    hideModElements(document);
+    exports.hideModElements(document);
     var ownName = 'res/' + threadData.threadId + '.html';
 
     gridFs.writeData(serializer(document), '/' + boardUri + '/' + ownName,
@@ -133,7 +133,7 @@ function setModElements(modding, document, boardUri, boardData, threadData,
           threadId : threadData.threadId
         }, callback, archive && boardData.settings.indexOf('archive') > -1);
   }
-}
+};
 
 exports.thread = function(boardUri, boardData, flagData, threadData, posts,
     callback, modding, userRole) {
@@ -141,7 +141,7 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
   try {
     var document = jsdom(templateHandler.threadPage);
 
-    setThreadTitle(document, boardUri, threadData);
+    exports.setThreadTitle(document, boardUri, threadData);
 
     var linkModeration = '/mod.js?boardUri=' + boardData.boardUri;
     linkModeration += '&threadId=' + threadData.threadId;
@@ -154,13 +154,13 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
 
     common.setHeader(document, boardUri, boardData, flagData);
 
-    setThreadHiddenIdentifiers(document, boardUri, threadData);
+    exports.setThreadHiddenIdentifiers(document, boardUri, threadData);
 
     common.addThread(document, threadData, posts, boardUri, true, modding,
         boardData, userRole);
 
-    setModElements(modding, document, boardUri, boardData, threadData, posts,
-        callback, userRole);
+    exports.setModElements(modding, document, boardUri, boardData, threadData,
+        posts, callback, userRole);
 
   } catch (error) {
     callback(error);
@@ -170,8 +170,8 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
 // } Section 1: Thread
 
 // Section 2: Board {
-function generateThreadListing(document, boardUri, page, threads, latestPosts,
-    callback) {
+exports.generateThreadListing = function(document, boardUri, page, threads,
+    latestPosts, callback) {
 
   var tempLatest = {};
 
@@ -196,9 +196,9 @@ function generateThreadListing(document, boardUri, page, threads, latestPosts,
         boardUri : boardUri,
         type : 'board'
       }, callback);
-}
+};
 
-function addPagesLinks(document, pageCount, currentPage) {
+exports.addPagesLinks = function(document, pageCount, currentPage) {
 
   var previous = document.getElementById('linkPrevious');
   if (currentPage === 1) {
@@ -227,7 +227,7 @@ function addPagesLinks(document, pageCount, currentPage) {
     pagesDiv.appendChild(link);
 
   }
-}
+};
 
 exports.page = function(board, page, threads, pageCount, boardData, flagData,
     latestPosts, cb) {
@@ -250,9 +250,10 @@ exports.page = function(board, page, threads, pageCount, boardData, flagData,
 
     common.setHeader(document, board, boardData, flagData);
 
-    addPagesLinks(document, pageCount, page);
+    exports.addPagesLinks(document, pageCount, page);
 
-    generateThreadListing(document, board, page, threads, latestPosts, cb);
+    exports.generateThreadListing(document, board, page, threads, latestPosts,
+        cb);
   } catch (error) {
     cb(error);
   }
@@ -261,7 +262,7 @@ exports.page = function(board, page, threads, pageCount, boardData, flagData,
 
 // Section 3: Catalog {
 
-function setCellThumb(thumbLink, boardUri, document, thread) {
+exports.setCellThumb = function(thumbLink, boardUri, document, thread) {
   thumbLink.href = '/' + boardUri + '/res/' + thread.threadId + '.html';
 
   if (thread.files && thread.files.length) {
@@ -272,12 +273,12 @@ function setCellThumb(thumbLink, boardUri, document, thread) {
   } else {
     thumbLink.innerHTML = lang.guiOpen;
   }
-}
+};
 
-function setCell(boardUri, document, cell, thread) {
+exports.setCell = function(boardUri, document, cell, thread) {
 
-  setCellThumb(cell.getElementsByClassName('linkThumb')[0], boardUri, document,
-      thread);
+  exports.setCellThumb(cell.getElementsByClassName('linkThumb')[0], boardUri,
+      document, thread);
 
   var labelReplies = cell.getElementsByClassName('labelReplies')[0];
   labelReplies.innerHTML = thread.postCount || 0;
@@ -298,7 +299,7 @@ function setCell(boardUri, document, cell, thread) {
 
   cell.getElementsByClassName('divMessage')[0].innerHTML = thread.markdown;
 
-}
+};
 
 exports.catalog = function(boardUri, threads, callback) {
 
@@ -319,7 +320,7 @@ exports.catalog = function(boardUri, threads, callback) {
       cell.innerHTML = templateHandler.catalogCell;
       cell.setAttribute('class', 'catalogCell');
 
-      setCell(boardUri, document, cell, thread);
+      exports.setCell(boardUri, document, cell, thread);
 
       threadsDiv.appendChild(cell);
     }
@@ -339,7 +340,7 @@ exports.catalog = function(boardUri, threads, callback) {
 // } Section 3: Catalog
 
 // Section 4: Front page {
-function setTopBoards(document, boards, boardsDiv) {
+exports.setTopBoards = function(document, boards, boardsDiv) {
 
   for (var i = 0; i < boards.length; i++) {
 
@@ -358,7 +359,7 @@ function setTopBoards(document, boards, boardsDiv) {
 
   }
 
-}
+};
 
 exports.frontPage = function(boards, callback) {
 
@@ -373,7 +374,7 @@ exports.frontPage = function(boards, callback) {
     if (!boards) {
       common.removeElement(boardsDiv);
     } else {
-      setTopBoards(document, boards, boardsDiv);
+      exports.setTopBoards(document, boards, boardsDiv);
     }
 
     gridFs.writeData(serializer(document), '/', 'text/html', {}, callback);

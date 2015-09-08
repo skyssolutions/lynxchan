@@ -21,7 +21,8 @@ exports.languagePack = function() {
   return languagePack;
 };
 
-function processArray(defaultObject, chosenObject, missingKeys, currentKey) {
+exports.processArray = function(defaultObject, chosenObject, missingKeys,
+    currentKey) {
 
   var missingElementsCount = defaultObject.length - chosenObject.length;
 
@@ -42,15 +43,18 @@ function processArray(defaultObject, chosenObject, missingKeys, currentKey) {
     var nextKey = currentKey + '.' + i;
 
     if (isArray) {
-      processArray(defaultObject[i], chosenObject[i], missingKeys, nextKey);
+      exports.processArray(defaultObject[i], chosenObject[i], missingKeys,
+          nextKey);
     } else if (typeof (defaultObject[i]) === 'object') {
-      processObject(defaultObject[i], chosenObject[i], missingKeys, nextKey);
+      exports.processObject(defaultObject[i], chosenObject[i], missingKeys,
+          nextKey);
     }
   }
 
-}
+};
 
-function processObject(defaultObject, chosenObject, missingKeys, currentKey) {
+exports.processObject = function(defaultObject, chosenObject, missingKeys,
+    currentKey) {
   for ( var key in defaultObject) {
 
     var isArray = Object.prototype.toString.call(defaultObject[key]);
@@ -63,20 +67,22 @@ function processObject(defaultObject, chosenObject, missingKeys, currentKey) {
       missingKeys.push(next);
       chosenObject[key] = defaultObject[key];
     } else if (isArray) {
-      processArray(defaultObject[key], chosenObject[key], missingKeys, next);
+      exports.processArray(defaultObject[key], chosenObject[key], missingKeys,
+          next);
     } else if (typeof (defaultObject[key]) === 'object') {
-      processObject(defaultObject[key], chosenObject[key], missingKeys, next);
+      exports.processObject(defaultObject[key], chosenObject[key], missingKeys,
+          next);
     }
   }
-}
+};
 
-function loadLanguagePack(defaultPack) {
+exports.loadLanguagePack = function(defaultPack) {
 
   var chosenPack = JSON.parse(fs.readFileSync(settings.languagePackPath));
 
   var missingKeys = [];
 
-  processObject(defaultPack, chosenPack, missingKeys);
+  exports.processObject(defaultPack, chosenPack, missingKeys);
 
   if (missingKeys.length) {
     console.log('There are missing keys from the chosen language pack.');
@@ -94,7 +100,7 @@ function loadLanguagePack(defaultPack) {
   }
 
   languagePack = chosenPack;
-}
+};
 
 exports.init = function() {
 
@@ -103,7 +109,7 @@ exports.init = function() {
   var defaultPack = JSON.parse(fs.readFileSync(defaultLanguagePath));
 
   if (settings.languagePackPath) {
-    loadLanguagePack(defaultPack);
+    exports.loadLanguagePack(defaultPack);
   } else {
     languagePack = defaultPack;
   }

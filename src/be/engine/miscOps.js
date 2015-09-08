@@ -183,7 +183,7 @@ exports.hashIpForDisplay = function(ip, salt, userRole) {
 // parameters must be an array of objects. each object must contain two keys:
 // one with a string with the name of the parameter, the other with a number
 // with its maximum length
-function sanitizeParameter(object, parameter) {
+exports.sanitizeParameter = function(object, parameter) {
 
   var hasProperty = object.hasOwnProperty(parameter.field);
 
@@ -208,7 +208,7 @@ function sanitizeParameter(object, parameter) {
 
     }
   }
-}
+};
 
 exports.sanitizeStrings = function(object, parameters) {
 
@@ -216,7 +216,7 @@ exports.sanitizeStrings = function(object, parameters) {
 
     var parameter = parameters[i];
 
-    sanitizeParameter(object, parameter);
+    exports.sanitizeParameter(object, parameter);
 
   }
 
@@ -307,7 +307,7 @@ exports.getRange = function(ip) {
 
 };
 
-function getParametersArray() {
+exports.getParametersArray = function() {
 
   return [ {
     param : 'address',
@@ -511,9 +511,9 @@ function getParametersArray() {
     setting : 'boardCreationRequirement',
     limit : 4
   } ];
-}
+};
 
-function arraysDif(defaultArray, processedArray) {
+exports.arraysDiff = function(defaultArray, processedArray) {
 
   if (defaultArray && defaultArray.length === processedArray.length) {
 
@@ -529,21 +529,23 @@ function arraysDif(defaultArray, processedArray) {
 
   return false;
 
-}
+};
 
-function processArraySetting(item, parameters, newSettings, defaultSettings) {
+exports.processArraySetting = function(item, parameters, newSettings,
+    defaultSettings) {
 
   var processedParameter = parameters[item.param];
 
-  if (processedParameter.length) {
+  if (processedParameter && processedParameter.length) {
 
-    if (arraysDif(defaultSettings[item.setting], processedParameter)) {
+    if (exports.arraysDiff(defaultSettings[item.setting], processedParameter)) {
       newSettings[item.setting] = processedParameter;
     }
   }
-}
+};
 
-function processStringSetting(item, parameters, defaultSettings, newSettings) {
+exports.processStringSetting = function(item, parameters, defaultSettings,
+    newSettings) {
 
   var processedParameter = parameters[item.param];
 
@@ -555,9 +557,10 @@ function processStringSetting(item, parameters, defaultSettings, newSettings) {
     }
   }
 
-}
+};
 
-function processRangeSetting(item, parameters, defaultSettings, newSettings) {
+exports.processRangeSetting = function(item, parameters, defaultSettings,
+    newSettings) {
 
   var processedParameter = +parameters[item.param];
 
@@ -567,9 +570,10 @@ function processRangeSetting(item, parameters, defaultSettings, newSettings) {
           : processedParameter;
     }
   }
-}
+};
 
-function processNumberSetting(parameters, defaultSettings, item, newSettings) {
+exports.processNumberSetting = function(parameters, defaultSettings, item,
+    newSettings) {
 
   var processedParameter = +parameters[item.param];
 
@@ -578,7 +582,7 @@ function processNumberSetting(parameters, defaultSettings, item, newSettings) {
       newSettings[item.setting] = processedParameter;
     }
   }
-}
+};
 
 exports.setGlobalSettings = function(userData, parameters, callback) {
 
@@ -588,7 +592,7 @@ exports.setGlobalSettings = function(userData, parameters, callback) {
     return;
   }
 
-  var parametersArray = getParametersArray();
+  var parametersArray = exports.getParametersArray();
 
   var newSettings = {};
 
@@ -601,11 +605,13 @@ exports.setGlobalSettings = function(userData, parameters, callback) {
 
     switch (item.type) {
     case 'string':
-      processStringSetting(item, parameters, defaultSettings, newSettings);
+      exports.processStringSetting(item, parameters, defaultSettings,
+          newSettings);
       break;
 
     case 'array':
-      processArraySetting(item, parameters, newSettings, defaultSettings);
+      exports.processArraySetting(item, parameters, newSettings,
+          defaultSettings);
       break;
 
     case 'boolean':
@@ -615,12 +621,14 @@ exports.setGlobalSettings = function(userData, parameters, callback) {
       break;
 
     case 'number':
-      processNumberSetting(parameters, defaultSettings, item, newSettings);
+      exports.processNumberSetting(parameters, defaultSettings, item,
+          newSettings);
 
       break;
 
     case 'range':
-      processRangeSetting(item, parameters, defaultSettings, newSettings);
+      exports.processRangeSetting(item, parameters, defaultSettings,
+          newSettings);
 
       break;
     }

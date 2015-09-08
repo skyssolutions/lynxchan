@@ -36,16 +36,16 @@ exports.loadDependencies = function() {
 
 };
 
-function cleanPostFiles(files, postId, callback) {
+exports.cleanPostFiles = function(files, postId, callback) {
 
   gsHandler.removeFiles(files, function removedFiles(error) {
     callback(error, postId);
   });
 
-}
+};
 
-function updateThreadAfterCleanUp(boardUri, threadId, removedPosts, postId,
-    removedFileCount, callback) {
+exports.updateThreadAfterCleanUp = function(boardUri, threadId, removedPosts,
+    postId, removedFileCount, callback) {
 
   threads.updateOne({
     boardUri : boardUri,
@@ -81,7 +81,7 @@ function updateThreadAfterCleanUp(boardUri, threadId, removedPosts, postId,
         } else if (!results.length) {
           callback(null, postId);
         } else {
-          cleanPostFiles(results[0].files, postId, callback);
+          exports.cleanPostFiles(results[0].files, postId, callback);
         }
 
       });
@@ -91,9 +91,9 @@ function updateThreadAfterCleanUp(boardUri, threadId, removedPosts, postId,
 
   });
 
-}
+};
 
-function cleanThreadPosts(boardUri, threadId, postId, callback) {
+exports.cleanThreadPosts = function(boardUri, threadId, postId, callback) {
 
   posts.aggregate([ {
     $match : {
@@ -138,8 +138,8 @@ function cleanThreadPosts(boardUri, threadId, postId, callback) {
         if (error) {
           callback(error);
         } else {
-          updateThreadAfterCleanUp(boardUri, threadId, postsToDelete, postId,
-              results[0].removedFileCount, callback);
+          exports.updateThreadAfterCleanUp(boardUri, threadId, postsToDelete,
+              postId, results[0].removedFileCount, callback);
         }
       });
       // style exception, too simple
@@ -147,10 +147,10 @@ function cleanThreadPosts(boardUri, threadId, postId, callback) {
 
   });
 
-}
+};
 
-function updateBoardForPostCreation(parameters, postId, thread, cleanPosts,
-    callback) {
+exports.updateBoardForPostCreation = function(parameters, postId, thread,
+    cleanPosts, callback) {
 
   if (parameters.email !== 'sage') {
 
@@ -187,17 +187,17 @@ function updateBoardForPostCreation(parameters, postId, thread, cleanPosts,
     }
 
     if (cleanPosts) {
-      cleanThreadPosts(parameters.boardUri, parameters.threadId, postId,
-          callback);
+      exports.cleanThreadPosts(parameters.boardUri, parameters.threadId,
+          postId, callback);
     } else {
       callback(error, postId);
     }
 
   });
 
-}
+};
 
-function getLatestPosts(thread, postId) {
+exports.getLatestPosts = function(thread, postId) {
   var latestPosts = thread.latestPosts || [];
 
   latestPosts.push(postId);
@@ -212,13 +212,13 @@ function getLatestPosts(thread, postId) {
 
   return latestPosts;
 
-}
+};
 
-function updateThread(parameters, postId, thread, callback, post) {
+exports.updateThread = function(parameters, postId, thread, callback, post) {
 
   var updateBlock = {
     $set : {
-      latestPosts : getLatestPosts(thread, postId)
+      latestPosts : exports.getLatestPosts(thread, postId)
     },
     $inc : {
       postCount : 1
@@ -263,8 +263,8 @@ function updateThread(parameters, postId, thread, callback, post) {
         if (error) {
           callback(error);
         } else {
-          updateBoardForPostCreation(parameters, postId, thread, cleanPosts,
-              callback);
+          exports.updateBoardForPostCreation(parameters, postId, thread,
+              cleanPosts, callback);
         }
       }, post);
       // style exception, too simple
@@ -273,9 +273,9 @@ function updateThread(parameters, postId, thread, callback, post) {
 
   });
 
-}
+};
 
-function createPost(req, parameters, userData, postId, thread, board,
+exports.createPost = function(req, parameters, userData, postId, thread, board,
     wishesToSign, cb) {
 
   var ip = logger.ip(req);
@@ -325,6 +325,7 @@ function createPost(req, parameters, userData, postId, thread, board,
       refuseFiles = refuseFiles || req.isProxy && refuseProxyFiles;
 
       if (!refuseFiles) {
+
         // style exception, too simple
         uploadHandler.saveUploads(board, parameters.threadId, postId,
             parameters, function savedFiles(error) {
@@ -337,21 +338,22 @@ function createPost(req, parameters, userData, postId, thread, board,
                   throw error;
                 }
               }
-              updateThread(parameters, postId, thread, cb, postToAdd);
+              exports.updateThread(parameters, postId, thread, cb, postToAdd);
 
             });
         // style exception, too simple
+
       } else {
-        updateThread(parameters, postId, thread, cb, postToAdd);
+        exports.updateThread(parameters, postId, thread, cb, postToAdd);
       }
 
     }
   });
 
-}
+};
 
-function getPostFlag(req, parameters, userData, postId, thread, board,
-    wishesToSign, cb) {
+exports.getPostFlag = function(req, parameters, userData, postId, thread,
+    board, wishesToSign, cb) {
 
   common.getFlagUrl(parameters.flag, parameters.boardUri, function gotFlagUrl(
       flagUrl, flagName) {
@@ -359,13 +361,14 @@ function getPostFlag(req, parameters, userData, postId, thread, board,
     parameters.flagName = flagName;
     parameters.flag = flagUrl;
 
-    createPost(req, parameters, userData, postId, thread, board, wishesToSign,
-        cb);
+    exports.createPost(req, parameters, userData, postId, thread, board,
+        wishesToSign, cb);
   });
 
-}
+};
 
-function getPostMarkdown(req, parameters, userData, thread, board, callback) {
+exports.getPostMarkdown = function(req, parameters, userData, thread, board,
+    callback) {
 
   var wishesToSign = common.doesUserWishesToSign(userData, parameters);
 
@@ -392,8 +395,9 @@ function getPostMarkdown(req, parameters, userData, thread, board, callback) {
         if (error) {
           callback(error);
         } else {
-          getPostFlag(req, parameters, userData, lastIdData.value.lastPostId,
-              thread, board, wishesToSign, callback);
+          exports.getPostFlag(req, parameters, userData,
+              lastIdData.value.lastPostId, thread, board, wishesToSign,
+              callback);
         }
       });
       // style exception, too simple
@@ -402,9 +406,9 @@ function getPostMarkdown(req, parameters, userData, thread, board, callback) {
 
   });
 
-}
+};
 
-function getThread(req, parameters, userData, board, callback) {
+exports.getThread = function(req, parameters, userData, board, callback) {
 
   threads.findOne({
     boardUri : parameters.boardUri,
@@ -441,7 +445,8 @@ function getThread(req, parameters, userData, board, callback) {
         if (error) {
           callback(error);
         } else {
-          getPostMarkdown(req, parameters, userData, thread, board, callback);
+          exports.getPostMarkdown(req, parameters, userData, thread, board,
+              callback);
         }
       });
       // style exception, too simple
@@ -449,7 +454,7 @@ function getThread(req, parameters, userData, board, callback) {
     }
   });
 
-}
+};
 
 exports.newPost = function(req, userData, parameters, captchaId, callback) {
 
@@ -480,7 +485,7 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
             if (error) {
               callback(error);
             } else {
-              getThread(req, parameters, userData, board, callback);
+              exports.getThread(req, parameters, userData, board, callback);
             }
 
           });

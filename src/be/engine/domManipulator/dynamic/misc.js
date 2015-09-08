@@ -162,7 +162,7 @@ exports.recoveryEmail = function(recoveryLink) {
 };
 
 // Section 1: Account {
-function fillOwnedBoardsDiv(document, boardList) {
+exports.fillOwnedBoardsDiv = function(document, boardList) {
   if (!boardList || !boardList.length) {
     return;
   }
@@ -183,18 +183,18 @@ function fillOwnedBoardsDiv(document, boardList) {
 
   }
 
-}
+};
 
-function setBoardCreationForm(userData, document) {
+exports.setBoardCreationForm = function(userData, document) {
 
   var allowed = userData.globalRole <= boardCreationRequirement;
 
   if (boardCreationRequirement <= miscOps.getMaxStaffRole() && !allowed) {
     common.removeElement(document.getElementById('boardCreationDiv'));
   }
-}
+};
 
-function setAccountSettingsCheckbox(settings, document) {
+exports.setAccountSettingsCheckbox = function(settings, document) {
 
   if (!settings || !settings.length) {
     return;
@@ -208,7 +208,7 @@ function setAccountSettingsCheckbox(settings, document) {
     checkbox.setAttribute('checked', true);
   }
 
-}
+};
 
 exports.account = function(userData) {
 
@@ -223,20 +223,20 @@ exports.account = function(userData) {
 
     var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
-    setBoardCreationForm(userData, document);
+    exports.setBoardCreationForm(userData, document);
 
     if (!globalStaff) {
       common.removeElement(document.getElementById('globalManagementLink'));
     }
 
-    setAccountSettingsCheckbox(userData.settings, document);
+    exports.setAccountSettingsCheckbox(userData.settings, document);
 
     if (userData.email && userData.email.length) {
       document.getElementById('emailField').setAttribute('value',
           userData.email);
     }
 
-    fillOwnedBoardsDiv(document, userData.ownedBoards);
+    exports.fillOwnedBoardsDiv(document, userData.ownedBoards);
 
     return serializer(document);
   } catch (error) {
@@ -255,7 +255,7 @@ exports.account = function(userData) {
 // } Section 1: Account
 
 // Section 2: Logs {
-function fillComboBox(document, parameters) {
+exports.fillComboBox = function(document, parameters) {
 
   var combobox = document.getElementById('comboboxType');
 
@@ -274,9 +274,9 @@ function fillComboBox(document, parameters) {
 
   }
 
-}
+};
 
-function fillSearchForm(parameters, document) {
+exports.fillSearchForm = function(parameters, document) {
 
   if (parameters.user) {
     document.getElementById('fieldUser').setAttribute('value', parameters.user);
@@ -301,9 +301,9 @@ function fillSearchForm(parameters, document) {
     document.getElementById('fieldBoard').setAttribute('value',
         parameters.boardUri);
   }
-}
+};
 
-function setLogEntry(logCell, log) {
+exports.setLogEntry = function(logCell, log) {
 
   if (!log.global) {
     common.removeElement(logCell.getElementsByClassName('indicatorGlobal')[0]);
@@ -324,9 +324,9 @@ function setLogEntry(logCell, log) {
   var labelDescription = logCell.getElementsByClassName('labelDescription')[0];
   labelDescription.innerHTML = log.description;
 
-}
+};
 
-function setLogPages(document, parameters, pageCount) {
+exports.setLogPages = function(document, parameters, pageCount) {
 
   var pagesDiv = document.getElementById('divPages');
 
@@ -362,7 +362,7 @@ function setLogPages(document, parameters, pageCount) {
 
   }
 
-}
+};
 
 exports.logs = function(logs, pageCount, parameters) {
   try {
@@ -371,9 +371,9 @@ exports.logs = function(logs, pageCount, parameters) {
 
     document.title = lang.titLogs;
 
-    fillSearchForm(parameters, document);
+    exports.fillSearchForm(parameters, document);
 
-    fillComboBox(document, parameters);
+    exports.fillComboBox(document, parameters);
 
     var divLogs = document.getElementById('divLogs');
 
@@ -384,12 +384,12 @@ exports.logs = function(logs, pageCount, parameters) {
       logCell.setAttribute('class', 'logCell');
       logCell.innerHTML = templateHandler.logCell;
 
-      setLogEntry(logCell, log);
+      exports.setLogEntry(logCell, log);
 
       divLogs.appendChild(logCell);
     }
 
-    setLogPages(document, parameters, pageCount);
+    exports.setLogPages(document, parameters, pageCount);
 
     return serializer(document);
 
@@ -447,7 +447,7 @@ exports.message = function(message, link) {
 };
 
 // Section 3: Board listing {
-function setBoardCell(board, boardCell) {
+exports.setBoardCell = function(board, boardCell) {
 
   var linkContent = '/' + board.boardUri + '/ - ' + board.boardName;
   var boardLink = boardCell.getElementsByClassName('linkBoard')[0];
@@ -470,9 +470,9 @@ function setBoardCell(board, boardCell) {
   } else {
     common.removeElement(labelTags);
   }
-}
+};
 
-function setPages(document, pageCount) {
+exports.setPages = function(document, pageCount) {
   var pagesDiv = document.getElementById('divPages');
 
   for (var j = 1; j <= pageCount; j++) {
@@ -483,7 +483,7 @@ function setPages(document, pageCount) {
 
     pagesDiv.appendChild(link);
   }
-}
+};
 
 exports.boards = function(boards, pageCount) {
   try {
@@ -500,12 +500,12 @@ exports.boards = function(boards, pageCount) {
       boardCell.innerHTML = templateHandler.boardsCell;
       boardCell.setAttribute('class', 'boardsCell');
 
-      setBoardCell(board, boardCell);
+      exports.setBoardCell(board, boardCell);
 
       divBoards.appendChild(boardCell);
     }
 
-    setPages(document, pageCount);
+    exports.setPages(document, pageCount);
 
     return serializer(document);
 

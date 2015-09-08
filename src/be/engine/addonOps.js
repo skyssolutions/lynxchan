@@ -9,7 +9,7 @@ var debug = boot.debug();
 exports.loadDependencies = function() {
 };
 
-function testVersion(addonName, addonVersion, engineVersion) {
+exports.testVersion = function(addonName, addonVersion, engineVersion) {
 
   if (addonVersion !== engineVersion) {
 
@@ -27,7 +27,7 @@ function testVersion(addonName, addonVersion, engineVersion) {
 
   }
 
-}
+};
 
 exports.startAddons = function() {
 
@@ -49,7 +49,8 @@ exports.startAddons = function() {
 
       if (verbose || debug) {
 
-        testVersion(addon, loadedAddon.engineVersion, engineInfo.version);
+        exports.testVersion(addon, loadedAddon.engineVersion,
+            engineInfo.version);
       }
 
     } catch (error) {

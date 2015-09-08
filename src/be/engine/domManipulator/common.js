@@ -54,7 +54,7 @@ exports.removeElement = function(element) {
   element.parentNode.removeChild(element);
 };
 
-function setRoleSignature(postingCell, posting) {
+exports.setRoleSignature = function(postingCell, posting) {
   var labelRole = postingCell.getElementsByClassName('labelRole')[0];
 
   if (posting.signedRole) {
@@ -62,7 +62,7 @@ function setRoleSignature(postingCell, posting) {
   } else {
     exports.removeElement(labelRole);
   }
-}
+};
 
 exports.getReportLink = function(report) {
   var link = '/' + report.boardUri + '/res/';
@@ -77,7 +77,7 @@ exports.getReportLink = function(report) {
   return link;
 };
 
-function setPostingIp(cell, postingData, boardData, userRole) {
+exports.setPostingIp = function(cell, postingData, boardData, userRole) {
 
   var labelRange = cell.getElementsByClassName('labelRange')[0];
   labelRange.innerHTML = miscOps.getRange(postingData.ip).join('.');
@@ -86,31 +86,31 @@ function setPostingIp(cell, postingData, boardData, userRole) {
   labelIp.innerHTML = miscOps.hashIpForDisplay(postingData.ip,
       boardData.ipSalt, userRole);
 
-}
+};
 
 // Section 1: Date formatting functions {
-function padDateField(value) {
+exports.padDateField = function(value) {
   if (value < 10) {
     value = '0' + value;
   }
 
   return value;
-}
+};
 
 exports.formatDateToDisplay = function(d) {
-  var day = padDateField(d.getUTCDate());
+  var day = exports.padDateField(d.getUTCDate());
 
-  var month = padDateField(d.getUTCMonth() + 1);
+  var month = exports.padDateField(d.getUTCMonth() + 1);
 
   var year = d.getUTCFullYear();
 
   var weekDay = lang.guiWeekDays[d.getUTCDay()];
 
-  var hour = padDateField(d.getUTCHours());
+  var hour = exports.padDateField(d.getUTCHours());
 
-  var minute = padDateField(d.getUTCMinutes());
+  var minute = exports.padDateField(d.getUTCMinutes());
 
-  var second = padDateField(d.getUTCSeconds());
+  var second = exports.padDateField(d.getUTCSeconds());
 
   var toReturn = lang.guiDateFormat.replace('{$month}', month).replace(
       '{$day}', day).replace('{$year}', year);
@@ -149,15 +149,15 @@ exports.setReportList = function(document, reports) {
 
 };
 
-function setCustomCss(board, document) {
+exports.setCustomCss = function(board, document) {
   var link = document.createElement('link');
   link.setAttribute('rel', 'stylesheet');
   link.setAttribute('type', 'text/css');
   link.setAttribute('href', '/' + board + '/custom.css');
   document.getElementsByTagName('head')[0].appendChild(link);
-}
+};
 
-function setFlags(document, board, flagData) {
+exports.setFlags = function(document, board, flagData) {
 
   if (!flagData || !flagData.length) {
     exports.removeElement(document.getElementById('flagsDiv'));
@@ -181,9 +181,9 @@ function setFlags(document, board, flagData) {
     combobox.appendChild(option);
   }
 
-}
+};
 
-function setBoardToggleableElements(boardData, document) {
+exports.setBoardToggleableElements = function(boardData, document) {
   var settings = boardData.settings;
 
   if (settings.indexOf('disableCaptcha') > -1) {
@@ -199,7 +199,7 @@ function setBoardToggleableElements(boardData, document) {
   } else {
     exports.removeElement(document.getElementById('panelMessage'));
   }
-}
+};
 
 exports.setHeader = function(document, board, boardData, flagData) {
 
@@ -212,19 +212,19 @@ exports.setHeader = function(document, board, boardData, flagData) {
   var linkBanner = '/randomBanner.js?boardUri=' + board;
   document.getElementById('bannerImage').src = linkBanner;
 
-  setBoardToggleableElements(boardData, document);
+  exports.setBoardToggleableElements(boardData, document);
 
   if (boardData.usesCustomCss) {
-    setCustomCss(board, document);
+    exports.setCustomCss(board, document);
   }
 
-  setFlags(document, board, flagData);
+  exports.setFlags(document, board, flagData);
 
   document.getElementById('labelMaxFileSize').innerHTML = displayMaxSize;
 
 };
 
-function setSharedHideableElements(posting, cell) {
+exports.setSharedHideableElements = function(posting, cell) {
 
   var editedLabel = cell.getElementsByClassName('labelLastEdit')[0];
 
@@ -248,11 +248,11 @@ function setSharedHideableElements(posting, cell) {
     exports.removeElement(imgFlag);
   }
 
-}
+};
 
 // Section 2: Thread content {
-function setThreadHiddeableElements(thread, cell, modding, boardUri, bData,
-    userRole) {
+exports.setThreadHiddeableElements = function(thread, cell, modding, boardUri,
+    bData, userRole) {
 
   for ( var key in exports.indicatorsRelation) {
     if (!thread[key]) {
@@ -277,14 +277,15 @@ function setThreadHiddeableElements(thread, cell, modding, boardUri, bData,
   }
 
   if (modding && thread.ip) {
-    setPostingIp(cell, thread, bData, userRole);
+    exports.setPostingIp(cell, thread, bData, userRole);
   } else {
     exports.removeElement(cell.getElementsByClassName('panelIp')[0]);
   }
 
-}
+};
 
-function assembleOmissionContent(thread, displayedImages, displayedPosts) {
+exports.assembleOmissionContent = function(thread, displayedImages,
+    displayedPosts) {
 
   var pieces = lang.guiOmmitedInfo;
   var postDifference = thread.postCount - displayedPosts;
@@ -304,9 +305,9 @@ function assembleOmissionContent(thread, displayedImages, displayedPosts) {
   content += pieces.finalPiece;
 
   return content;
-}
+};
 
-function setOmittedInformation(thread, threadCell, posts, innerPage) {
+exports.setOmittedInformation = function(thread, threadCell, posts, innerPage) {
 
   var omissionLabel = threadCell.getElementsByClassName('labelOmission')[0];
 
@@ -322,11 +323,11 @@ function setOmittedInformation(thread, threadCell, posts, innerPage) {
     }
   }
 
-  omissionLabel.innerHTML = assembleOmissionContent(thread, displayedImages,
-      displayedPosts);
-}
+  omissionLabel.innerHTML = exports.assembleOmissionContent(thread,
+      displayedImages, displayedPosts);
+};
 
-function getThreadCellBase(document, thread) {
+exports.getThreadCellBase = function(document, thread) {
 
   var threadCell = document.createElement('div');
   threadCell.innerHTML = templateHandler.opCell;
@@ -337,12 +338,12 @@ function getThreadCellBase(document, thread) {
   }
 
   return threadCell;
-}
+};
 
 exports.addThread = function(document, thread, posts, boardUri, innerPage,
     modding, boardData, userRole) {
 
-  var threadCell = getThreadCellBase(document, thread);
+  var threadCell = exports.getThreadCellBase(document, thread);
 
   var notEnougPosts = !thread.postCount;
   notEnougPosts = notEnougPosts || thread.postCount <= settings.latestPostCount;
@@ -351,31 +352,31 @@ exports.addThread = function(document, thread, posts, boardUri, innerPage,
     exports
         .removeElement(threadCell.getElementsByClassName('labelOmission')[0]);
   } else {
-    setOmittedInformation(thread, threadCell, posts, innerPage);
+    exports.setOmittedInformation(thread, threadCell, posts, innerPage);
   }
 
-  setSharedHideableElements(thread, threadCell);
+  exports.setSharedHideableElements(thread, threadCell);
 
-  setThreadLinks(threadCell, thread, boardUri, innerPage);
+  exports.setThreadLinks(threadCell, thread, boardUri, innerPage);
 
-  setThreadComplexElements(boardUri, thread, threadCell, innerPage);
+  exports.setThreadComplexElements(boardUri, thread, threadCell, innerPage);
 
-  setThreadHiddeableElements(thread, threadCell, modding, boardUri, boardData,
-      userRole);
+  exports.setThreadHiddeableElements(thread, threadCell, modding, boardUri,
+      boardData, userRole);
 
-  setThreadSimpleElements(threadCell, thread);
+  exports.setThreadSimpleElements(threadCell, thread);
 
-  setUploadCell(document, threadCell.getElementsByClassName('panelUploads')[0],
-      thread.files, modding);
+  exports.setUploadCell(document, threadCell
+      .getElementsByClassName('panelUploads')[0], thread.files, modding);
 
   document.getElementById('divThreads').appendChild(threadCell);
 
-  addPosts(document, posts || [], boardUri, thread.threadId, modding,
+  exports.addPosts(document, posts || [], boardUri, thread.threadId, modding,
       threadCell.getElementsByClassName('divPosts')[0], boardData, userRole);
 };
 
 // Section 2.1: Post content {
-function setPostHideableElements(postCell, post) {
+exports.setPostHideableElements = function(postCell, post) {
 
   var subjectLabel = postCell.getElementsByClassName('labelSubject')[0];
   if (post.subject) {
@@ -398,11 +399,11 @@ function setPostHideableElements(postCell, post) {
     banMessageLabel.innerHTML = post.banMessage;
   }
 
-  setSharedHideableElements(post, postCell);
-}
+  exports.setSharedHideableElements(post, postCell);
+};
 
-function setPostLinks(postCell, post, boardUri, link, threadId, linkQuote,
-    deletionCheckbox) {
+exports.setPostLinks = function(postCell, post, boardUri, link, threadId,
+    linkQuote, deletionCheckbox) {
 
   var linkStart = '/' + boardUri + '/res/' + threadId + '.html#';
   link.href = linkStart + post.postId;
@@ -414,12 +415,12 @@ function setPostLinks(postCell, post, boardUri, link, threadId, linkQuote,
   var linkPreview = '/' + boardUri + '/preview/' + post.postId + '.html';
 
   postCell.getElementsByClassName('linkPreview')[0].href = linkPreview;
-}
+};
 
-function setPostComplexElements(postCell, post, boardUri, threadId, document,
-    preview, modding) {
+exports.setPostComplexElements = function(postCell, post, boardUri, threadId,
+    document, preview, modding) {
 
-  setRoleSignature(postCell, post);
+  exports.setRoleSignature(postCell, post);
 
   var link = postCell.getElementsByClassName('linkSelf')[0];
 
@@ -429,22 +430,22 @@ function setPostComplexElements(postCell, post, boardUri, threadId, document,
   var deletionCheckbox = postCell.getElementsByClassName('deletionCheckBox')[0];
 
   if (!preview) {
-    setPostLinks(postCell, post, boardUri, link, threadId, linkQuote,
+    exports.setPostLinks(postCell, post, boardUri, link, threadId, linkQuote,
         deletionCheckbox);
   } else {
     exports.removeElement(deletionCheckbox);
     exports.removeElement(postCell.getElementsByClassName('linkPreview')[0]);
   }
 
-  setUploadCell(document, postCell.getElementsByClassName('panelUploads')[0],
-      post.files, modding);
-}
+  exports.setUploadCell(document, postCell
+      .getElementsByClassName('panelUploads')[0], post.files, modding);
+};
 
-function setPostModElements(post, modding, postCell, boardUri, threadId,
-    boardData, userRole) {
+exports.setPostModElements = function(post, modding, postCell, boardUri,
+    threadId, boardData, userRole) {
 
   if (modding && post.ip) {
-    setPostingIp(postCell, post, boardData, userRole);
+    exports.setPostingIp(postCell, post, boardData, userRole);
   } else {
     exports.removeElement(postCell.getElementsByClassName('panelIp')[0]);
   }
@@ -456,7 +457,7 @@ function setPostModElements(post, modding, postCell, boardUri, threadId,
   } else {
     exports.removeElement(postCell.getElementsByClassName('linkEdit')[0]);
   }
-}
+};
 
 exports.setPostInnerElements = function(document, boardUri, threadId, post,
     postCell, preview, modding, boardData, userRole) {
@@ -476,17 +477,17 @@ exports.setPostInnerElements = function(document, boardUri, threadId, post,
 
   postCell.getElementsByClassName('divMessage')[0].innerHTML = post.markdown;
 
-  setPostHideableElements(postCell, post);
+  exports.setPostHideableElements(postCell, post);
 
-  setPostModElements(post, modding, postCell, boardUri, threadId, boardData,
-      userRole);
+  exports.setPostModElements(post, modding, postCell, boardUri, threadId,
+      boardData, userRole);
 
-  setPostComplexElements(postCell, post, boardUri, threadId, document, preview,
-      modding);
+  exports.setPostComplexElements(postCell, post, boardUri, threadId, document,
+      preview, modding);
 };
 
-function addPosts(document, posts, boardUri, threadId, modding, divPosts,
-    boardData, userRole) {
+exports.addPosts = function(document, posts, boardUri, threadId, modding,
+    divPosts, boardData, userRole) {
 
   for (var i = 0; i < posts.length; i++) {
     var postCell = document.createElement('div');
@@ -505,10 +506,10 @@ function addPosts(document, posts, boardUri, threadId, modding, divPosts,
 
     divPosts.appendChild(postCell);
   }
-}
+};
 
 // } Section 2.1: Post content
-function setThreadLinks(threadCell, thread, boardUri, innerPage) {
+exports.setThreadLinks = function(threadCell, thread, boardUri, innerPage) {
 
   var linkReply = threadCell.getElementsByClassName('linkReply')[0];
   if (innerPage) {
@@ -529,11 +530,11 @@ function setThreadLinks(threadCell, thread, boardUri, innerPage) {
   var linkStart = '/' + boardUri + '/res/' + thread.threadId + '.html#';
   linkSelf.href = linkStart + thread.threadId;
   linkQuote.href = linkStart + 'q' + thread.threadId;
-}
+};
 
-function setThreadComplexElements(boardUri, thread, threadCell) {
+exports.setThreadComplexElements = function(boardUri, thread, threadCell) {
 
-  setRoleSignature(threadCell, thread);
+  exports.setRoleSignature(threadCell, thread);
 
   var banMessageLabel = threadCell.getElementsByClassName('divBanMessage')[0];
 
@@ -545,9 +546,9 @@ function setThreadComplexElements(boardUri, thread, threadCell) {
 
   threadCell.getElementsByClassName('deletionCheckBox')[0].setAttribute('name',
       boardUri + '-' + thread.threadId);
-}
+};
 
-function setThreadSimpleElements(threadCell, thread) {
+exports.setThreadSimpleElements = function(threadCell, thread) {
 
   var linkName = threadCell.getElementsByClassName('linkName')[0];
 
@@ -571,10 +572,10 @@ function setThreadSimpleElements(threadCell, thread) {
 
   var divMessage = threadCell.getElementsByClassName('divMessage')[0];
   divMessage.innerHTML = thread.markdown;
-}
+};
 
 // Section 2.2: Uploads {
-function setUploadAttributes(file, thumbLink) {
+exports.setUploadAttributes = function(file, thumbLink) {
 
   if (file.width) {
     thumbLink.setAttribute('data-filewidth', file.width);
@@ -582,14 +583,14 @@ function setUploadAttributes(file, thumbLink) {
   }
 
   thumbLink.setAttribute('data-filemime', file.mime);
-}
+};
 
-function setUploadLinks(document, cell, file) {
+exports.setUploadLinks = function(document, cell, file) {
 
   var thumbLink = cell.getElementsByClassName('imgLink')[0];
   thumbLink.href = file.path;
 
-  setUploadAttributes(file, thumbLink);
+  exports.setUploadAttributes(file, thumbLink);
 
   var img = document.createElement('img');
   img.src = file.thumb;
@@ -603,27 +604,27 @@ function setUploadLinks(document, cell, file) {
   var originalLink = cell.getElementsByClassName('originalNameLink')[0];
   originalLink.innerHTML = file.originalName;
   originalLink.href = file.path + '/alias/' + file.originalName;
-}
+};
 
-function setUploadModElements(modding, cell, file) {
+exports.setUploadModElements = function(modding, cell, file) {
 
   if (!modding) {
     exports.removeElement(cell.getElementsByClassName('divHash')[0]);
   } else {
     cell.getElementsByClassName('labelHash')[0].innerHTML = file.md5;
   }
-}
+};
 
-function getUploadCellBase(document) {
+exports.getUploadCellBase = function(document) {
 
   var cell = document.createElement('figure');
   cell.innerHTML = templateHandler.uploadCell;
   cell.setAttribute('class', 'uploadCell');
 
   return cell;
-}
+};
 
-function setUploadCell(document, node, files, modding) {
+exports.setUploadCell = function(document, node, files, modding) {
 
   if (!files) {
     return;
@@ -632,11 +633,11 @@ function setUploadCell(document, node, files, modding) {
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
 
-    var cell = getUploadCellBase(document);
+    var cell = exports.getUploadCellBase(document);
 
-    setUploadLinks(document, cell, file);
+    exports.setUploadLinks(document, cell, file);
 
-    setUploadModElements(modding, cell, file);
+    exports.setUploadModElements(modding, cell, file);
 
     var sizeString = exports.formatFileSize(file.size);
     cell.getElementsByClassName('sizeLabel')[0].innerHTML = sizeString;
@@ -651,7 +652,7 @@ function setUploadCell(document, node, files, modding) {
 
     node.appendChild(cell);
   }
-}
+};
 // } Section 2.2: Uploads
 
 // } Section 2: Thread content

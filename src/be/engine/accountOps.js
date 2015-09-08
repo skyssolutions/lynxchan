@@ -45,7 +45,7 @@ exports.validAccountSettings = function() {
 };
 
 // start of global role change
-function logRoleChange(operatorData, parameters, callback) {
+exports.logRoleChange = function(operatorData, parameters, callback) {
 
   var logMessage = '';
 
@@ -74,7 +74,7 @@ function logRoleChange(operatorData, parameters, callback) {
     callback();
   });
 
-}
+};
 
 exports.setGlobalRole = function(operatorData, parameters, callback, override) {
 
@@ -113,7 +113,7 @@ exports.setGlobalRole = function(operatorData, parameters, callback, override) {
         if (error) {
           callback(error);
         } else {
-          logRoleChange(operatorData, parameters, callback);
+          exports.logRoleChange(operatorData, parameters, callback);
 
         }
       });
@@ -126,7 +126,7 @@ exports.setGlobalRole = function(operatorData, parameters, callback, override) {
 // end of global role change
 
 // start of account creation
-function createAccount(parameters, role, callback) {
+exports.createAccount = function(parameters, role, callback) {
 
   bcrypt.hash(parameters.password, 8, function(error, hash) {
     if (error) {
@@ -139,7 +139,7 @@ function createAccount(parameters, role, callback) {
         password : hash
       };
 
-      if (role !== undefined) {
+      if (role !== undefined && role !== null) {
         newUser.globalRole = +role;
       }
 
@@ -160,7 +160,7 @@ function createAccount(parameters, role, callback) {
     }
   });
 
-}
+};
 
 exports.registerUser = function(parameters, cb, role, override, captchaId) {
 
@@ -177,13 +177,13 @@ exports.registerUser = function(parameters, cb, role, override, captchaId) {
   } else if (!parameters.password) {
     cb(lang.errNoPassword);
     return;
-  } else if (role !== undefined && isNaN(role)) {
+  } else if (role !== undefined && role !== null && isNaN(role)) {
     cb(lang.errInvalidRole);
     return;
   }
 
   if (override) {
-    createAccount(parameters, role, cb);
+    exports.createAccount(parameters, role, cb);
   } else {
     captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
         function solvedCaptcha(error) {
@@ -191,7 +191,7 @@ exports.registerUser = function(parameters, cb, role, override, captchaId) {
           if (error) {
             cb(error);
           } else {
-            createAccount(parameters, role, cb);
+            exports.createAccount(parameters, role, cb);
           }
 
         });
@@ -283,7 +283,7 @@ exports.validate = function(auth, callback) {
 };
 
 // start of reset request
-function emailUserOfRequest(domain, login, email, hash, callback) {
+exports.emailUserOfRequest = function(domain, login, email, hash, callback) {
 
   var recoveryLink = domain + '/recoverAccount.js?hash=' + hash + '&login=';
   recoveryLink += login;
@@ -299,9 +299,9 @@ function emailUserOfRequest(domain, login, email, hash, callback) {
     callback(error);
   });
 
-}
+};
 
-function generateRequest(domain, login, email, callback) {
+exports.generateRequest = function(domain, login, email, callback) {
 
   var requestHash = crypto.createHash('sha256').update(
       login + Math.random() + logger.timestamp()).digest('hex');
@@ -314,14 +314,14 @@ function generateRequest(domain, login, email, callback) {
     if (error) {
       callback(error);
     } else {
-      emailUserOfRequest(domain, login, email, requestHash, callback);
+      exports.emailUserOfRequest(domain, login, email, requestHash, callback);
     }
 
   });
 
-}
+};
 
-function lookForUserEmailOfRequest(domain, login, callback) {
+exports.lookForUserEmailOfRequest = function(domain, login, callback) {
 
   users.findOne({
     login : login
@@ -336,11 +336,11 @@ function lookForUserEmailOfRequest(domain, login, callback) {
     } else if (!user.email || !user.email.length) {
       callback(lang.errNoEmailForAccount);
     } else {
-      generateRequest(domain, login, user.email, callback);
+      exports.generateRequest(domain, login, user.email, callback);
     }
   });
 
-}
+};
 
 exports.requestRecovery = function(domain, parameters, captchaId, callback) {
 
@@ -368,7 +368,8 @@ exports.requestRecovery = function(domain, parameters, captchaId, callback) {
               callback(lang.errPendingRequest.replace('{$expiration}',
                   request.expiration.toString()));
             } else {
-              lookForUserEmailOfRequest(domain, parameters.login, callback);
+              exports.lookForUserEmailOfRequest(domain, parameters.login,
+                  callback);
             }
           });
           // style exception, too simple
@@ -381,7 +382,7 @@ exports.requestRecovery = function(domain, parameters, captchaId, callback) {
 // end of reset request
 
 // start of password reset
-function emailUserNewPassword(email, newPass, callback) {
+exports.emailUserNewPassword = function(email, newPass, callback) {
 
   var content = domManipulator.resetEmail(newPass);
 
@@ -394,9 +395,9 @@ function emailUserNewPassword(email, newPass, callback) {
     callback(error);
   });
 
-}
+};
 
-function generateNewPassword(login, callback) {
+exports.generateNewPassword = function(login, callback) {
 
   var newPass = crypto.createHash('sha256').update(
       login + Math.random() + logger.timestamp()).digest('hex').substring(0, 6);
@@ -408,7 +409,6 @@ function generateNewPassword(login, callback) {
     } else {
 
       // style exception, too simple
-
       users.findOneAndUpdate({
         login : login
       }, {
@@ -419,17 +419,16 @@ function generateNewPassword(login, callback) {
         if (error) {
           callback(error);
         } else {
-          emailUserNewPassword(user.value.email, newPass, callback);
+          exports.emailUserNewPassword(user.value.email, newPass, callback);
         }
       });
-
       // style exception, too simple
 
     }
 
   });
 
-}
+};
 
 exports.recoverAccount = function(parameters, callback) {
 
@@ -445,7 +444,7 @@ exports.recoverAccount = function(parameters, callback) {
     } else if (!request.value) {
       callback(lang.errInvalidRequest);
     } else {
-      generateNewPassword(parameters.login, callback);
+      exports.generateNewPassword(parameters.login, callback);
     }
   });
 };
@@ -470,7 +469,7 @@ exports.changeSettings = function(userData, parameters, callback) {
 };
 
 // start of password change
-function changePassword(userData, parameters, callback) {
+exports.updatePassword = function(userData, parameters, callback) {
 
   bcrypt.hash(parameters.newPassword, 8, function(error, hash) {
     if (error) {
@@ -491,12 +490,12 @@ function changePassword(userData, parameters, callback) {
           exports.createSession(userData.login, callback);
         }
       });
-
       // style exception, too simple
+
     }
   });
 
-}
+};
 
 exports.changePassword = function(userData, parameters, callback) {
 
@@ -514,7 +513,6 @@ exports.changePassword = function(userData, parameters, callback) {
     } else {
 
       // style exception, too simple
-
       bcrypt.compare(parameters.password, user.password, function(error,
           matches) {
 
@@ -523,10 +521,9 @@ exports.changePassword = function(userData, parameters, callback) {
         } else if (!matches) {
           callback(lang.errIncorrectPassword);
         } else {
-          changePassword(userData, parameters, callback);
+          exports.updatePassword(userData, parameters, callback);
         }
       });
-
       // style exception, too simple
 
     }

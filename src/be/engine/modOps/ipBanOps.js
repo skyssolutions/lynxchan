@@ -45,7 +45,7 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Bans {
-function getBans(parameters, callback) {
+exports.readBans = function(parameters, callback) {
   var queryBlock = {
     ip : {
       $exists : true
@@ -67,7 +67,7 @@ function getBans(parameters, callback) {
   }).toArray(function gotBans(error, bans) {
     callback(error, bans);
   });
-}
+};
 
 exports.getBans = function(userData, parameters, callback) {
 
@@ -84,20 +84,20 @@ exports.getBans = function(userData, parameters, callback) {
       } else if (!common.isInBoardStaff(userData, board, 2)) {
         callback(lang.errDeniedBoardBanManagement);
       } else {
-        getBans(parameters, callback);
+        exports.readBans(parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
     callback(lang.errDeniedGlobalBanManagement);
   } else {
-    getBans(parameters, callback);
+    exports.getBans(parameters, callback);
   }
 
 };
 // } Section 1: Bans
 
 // Section 2: Range bans {
-function getRangeBans(parameters, callback) {
+exports.readRangeBans = function(parameters, callback) {
   var queryBlock = {
     range : {
       $exists : true
@@ -114,8 +114,7 @@ function getRangeBans(parameters, callback) {
   }).toArray(function gotBans(error, rangeBans) {
     callback(error, rangeBans);
   });
-}
-
+};
 exports.getRangeBans = function(userData, parameters, callback) {
 
   var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
@@ -131,20 +130,20 @@ exports.getRangeBans = function(userData, parameters, callback) {
       } else if (!common.isInBoardStaff(userData, board, 2)) {
         callback(lang.errDeniedBoardRangeBanManagement);
       } else {
-        getRangeBans(parameters, callback);
+        exports.readRangeBans(parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
     callback(lang.errDeniedGlobalRangeBanManagement);
   } else {
-    getRangeBans(parameters, callback);
+    exports.getRangeBans(parameters, callback);
   }
 
 };
 // } Section 2: Range bans
 
 // Section 3: Ban check {
-function getActiveBan(ip, boardUri, callback) {
+exports.getActiveBan = function(ip, boardUri, callback) {
 
   var range = miscOps.getRange(ip);
 
@@ -180,7 +179,7 @@ function getActiveBan(ip, boardUri, callback) {
 
   bans.findOne(finalCondition, callback);
 
-}
+};
 
 exports.checkForBan = function(req, boardUri, callback) {
 
@@ -207,7 +206,7 @@ exports.checkForBan = function(req, boardUri, callback) {
         } else if (count && !disableFloodCheck) {
           callback(lang.errFlood);
         } else {
-          getActiveBan(ip, boardUri, callback);
+          exports.getActiveBan(ip, boardUri, callback);
         }
       });
       // style exception, too simple
@@ -220,7 +219,7 @@ exports.checkForBan = function(req, boardUri, callback) {
 // } Section 3: Ban check
 
 // Section 4: Ban {
-function appendThreadsToBanLog(informedThreads, pieces) {
+exports.appendThreadsToBanLog = function(informedThreads, pieces) {
 
   var logMessage = '';
 
@@ -241,9 +240,9 @@ function appendThreadsToBanLog(informedThreads, pieces) {
 
   return logMessage;
 
-}
+};
 
-function appendPostsToBanLog(informedPosts, informedThreads, pieces) {
+exports.appendPostsToBanLog = function(informedPosts, informedThreads, pieces) {
 
   var logMessage = '';
 
@@ -266,10 +265,10 @@ function appendPostsToBanLog(informedPosts, informedThreads, pieces) {
 
   return logMessage;
 
-}
+};
 
-function logBans(foundBoards, userData, board, informedPosts, informedThreads,
-    reportedObjects, parameters, callback) {
+exports.logBans = function(foundBoards, userData, board, informedPosts,
+    informedThreads, reportedObjects, parameters, callback) {
 
   var pieces = lang.logPostingBan;
 
@@ -281,8 +280,9 @@ function logBans(foundBoards, userData, board, informedPosts, informedThreads,
 
   logMessage += pieces.midPiece;
 
-  logMessage += appendThreadsToBanLog(informedThreads, pieces);
-  logMessage += appendPostsToBanLog(informedPosts, informedThreads, pieces);
+  logMessage += exports.appendThreadsToBanLog(informedThreads, pieces);
+  logMessage += exports.appendPostsToBanLog(informedPosts, informedThreads,
+      pieces);
 
   logMessage += pieces.endPiece.replace('{$board}', board).replace(
       '{$expiration}', parameters.expiration).replace('{$reason}',
@@ -295,23 +295,22 @@ function logBans(foundBoards, userData, board, informedPosts, informedThreads,
     global : parameters.global,
     boardUri : board,
     description : logMessage
-  },
-      function insertedLog(error) {
-        if (error) {
+  }, function insertedLog(error) {
+    if (error) {
 
-          logger.printLogError(logMessage, error);
-        }
+      logger.printLogError(logMessage, error);
+    }
 
-        iterateBoards(foundBoards, userData, reportedObjects, parameters,
-            callback);
+    exports.iterateBoards(foundBoards, userData, reportedObjects, parameters,
+        callback);
 
-      });
+  });
 
-}
+};
 
-function updateThreadsBanMessage(pages, parentThreads, foundBoards, userData,
-    reportedObjects, parameters, callback, informedThreads, informedPosts,
-    board) {
+exports.updateThreadsBanMessage = function(pages, parentThreads, foundBoards,
+    userData, reportedObjects, parameters, callback, informedThreads,
+    informedPosts, board) {
 
   threads.updateMany({
     boardUri : board,
@@ -377,8 +376,8 @@ function updateThreadsBanMessage(pages, parentThreads, foundBoards, userData,
             }
           }
 
-          logBans(foundBoards, userData, board, informedPosts, informedThreads,
-              reportedObjects, parameters, callback);
+          exports.logBans(foundBoards, userData, board, informedPosts,
+              informedThreads, reportedObjects, parameters, callback);
 
         }
 
@@ -389,10 +388,10 @@ function updateThreadsBanMessage(pages, parentThreads, foundBoards, userData,
 
   });
 
-}
+};
 
-function createBans(foundIps, parentThreads, pages, foundBoards, board,
-    userData, reportedObjects, parameters, callback, informedThreads,
+exports.createBans = function(foundIps, parentThreads, pages, foundBoards,
+    board, userData, reportedObjects, parameters, callback, informedThreads,
     informedPosts) {
 
   var operations = [];
@@ -428,16 +427,16 @@ function createBans(foundIps, parentThreads, pages, foundBoards, board,
     if (error) {
       callback(error);
     } else {
-      updateThreadsBanMessage(pages, parentThreads, foundBoards, userData,
-          reportedObjects, parameters, callback, informedThreads,
+      exports.updateThreadsBanMessage(pages, parentThreads, foundBoards,
+          userData, reportedObjects, parameters, callback, informedThreads,
           informedPosts, board);
     }
   });
 
-}
+};
 
-function getPostIps(foundIps, pages, foundBoards, informedPosts, board,
-    userData, reportedObjects, parameters, callback, informedThreads) {
+exports.getPostIps = function(foundIps, pages, foundBoards, informedPosts,
+    board, userData, reportedObjects, parameters, callback, informedThreads) {
 
   posts.aggregate([ {
     $match : {
@@ -460,55 +459,55 @@ function getPostIps(foundIps, pages, foundBoards, informedPosts, board,
         $addToSet : '$threadId'
       }
     }
-  } ],
-      function gotIps(error, results) {
+  } ], function gotIps(error, results) {
 
-        if (error) {
-          callback(error);
-        } else if (!results.length) {
+    if (error) {
+      callback(error);
+    } else if (!results.length) {
 
-          createBans(foundIps, [], pages, foundBoards, board, userData,
+      exports
+          .createBans(foundIps, [], pages, foundBoards, board, userData,
               reportedObjects, parameters, callback, informedThreads,
               informedPosts);
 
+    } else {
+
+      // style exception, too simple
+      threads.aggregate([ {
+        $match : {
+          threadId : {
+            $in : results[0].parents
+          }
+        }
+      }, {
+        $group : {
+          _id : 0,
+          pages : {
+            $addToSet : '$page'
+          },
+          parents : {
+            $addToSet : '$threadId'
+          }
+        }
+      } ], function gotPages(error, pageResults) {
+        if (error) {
+          callback(error);
         } else {
-
-          // style exception, too simple
-          threads.aggregate([ {
-            $match : {
-              threadId : {
-                $in : results[0].parents
-              }
-            }
-          }, {
-            $group : {
-              _id : 0,
-              pages : {
-                $addToSet : '$page'
-              },
-              parents : {
-                $addToSet : '$threadId'
-              }
-            }
-          } ], function gotPages(error, pageResults) {
-            if (error) {
-              callback(error);
-            } else {
-              createBans(foundIps.concat(results[0].ips),
-                  pageResults[0].parents, pages.concat(pageResults[0].pages),
-                  foundBoards, board, userData, reportedObjects, parameters,
-                  callback, informedThreads, informedPosts);
-
-            }
-          });
-          // style exception, too simple
+          exports.createBans(foundIps.concat(results[0].ips),
+              pageResults[0].parents, pages.concat(pageResults[0].pages),
+              foundBoards, board, userData, reportedObjects, parameters,
+              callback, informedThreads, informedPosts);
 
         }
       });
+      // style exception, too simple
 
-}
+    }
+  });
 
-function getThreadIps(board, foundBoards, userData, reportedObjects,
+};
+
+exports.getThreadIps = function(board, foundBoards, userData, reportedObjects,
     parameters, callback) {
 
   var informedThreads = [];
@@ -556,20 +555,20 @@ function getThreadIps(board, foundBoards, userData, reportedObjects,
     if (error) {
       callback(error);
     } else if (!results.length) {
-      getPostIps([], [], foundBoards, informedPosts, board, userData,
+      exports.getPostIps([], [], foundBoards, informedPosts, board, userData,
           reportedObjects, parameters, callback, informedThreads);
     } else {
-      getPostIps(results[0].ips, results[0].pages, foundBoards, informedPosts,
-          board, userData, reportedObjects, parameters, callback,
-          informedThreads);
+      exports.getPostIps(results[0].ips, results[0].pages, foundBoards,
+          informedPosts, board, userData, reportedObjects, parameters,
+          callback, informedThreads);
     }
 
   });
 
-}
+};
 
-function iterateBoards(foundBoards, userData, reportedObjects, parameters,
-    callback) {
+exports.iterateBoards = function(foundBoards, userData, reportedObjects,
+    parameters, callback) {
 
   if (!foundBoards.length) {
     callback();
@@ -584,18 +583,18 @@ function iterateBoards(foundBoards, userData, reportedObjects, parameters,
     if (error) {
       callback(error);
     } else if (!board) {
-      iterateBoards(foundBoards, userData, reportedObjects, parameters,
+      exports.iterateBoards(foundBoards, userData, reportedObjects, parameters,
           callback);
     } else if (!common.isInBoardStaff(userData, board) && !parameters.global) {
-      iterateBoards(foundBoards, userData, reportedObjects, parameters,
+      exports.iterateBoards(foundBoards, userData, reportedObjects, parameters,
           callback);
     } else {
-      getThreadIps(board.boardUri, foundBoards, userData, reportedObjects,
-          parameters, callback);
+      exports.getThreadIps(board.boardUri, foundBoards, userData,
+          reportedObjects, parameters, callback);
     }
   });
 
-}
+};
 
 exports.ban = function(userData, reportedObjects, parameters, callback) {
 
@@ -626,14 +625,15 @@ exports.ban = function(userData, reportedObjects, parameters, callback) {
       }
     }
 
-    iterateBoards(foundBoards, userData, reportedObjects, parameters, callback);
+    exports.iterateBoards(foundBoards, userData, reportedObjects, parameters,
+        callback);
   }
 
 };
 // } Section 4: Ban
 
 // Section 5: Lift ban {
-function getLiftedBanLogMessage(ban, userData) {
+exports.getLiftedBanLogMessage = function(ban, userData) {
 
   var pieces = lang.logBanLift;
 
@@ -664,9 +664,9 @@ function getLiftedBanLogMessage(ban, userData) {
   }
 
   return logMessage;
-}
+};
 
-function liftBan(ban, userData, callback) {
+exports.removeBan = function(ban, userData, callback) {
 
   bans.remove({
     _id : new ObjectID(ban._id)
@@ -677,7 +677,7 @@ function liftBan(ban, userData, callback) {
     } else {
       // style exception, too simple
 
-      var logMessage = getLiftedBanLogMessage(ban, userData);
+      var logMessage = exports.getLiftedBanLogMessage(ban, userData);
 
       logs.insert({
         user : userData.login,
@@ -700,9 +700,9 @@ function liftBan(ban, userData, callback) {
 
   });
 
-}
+};
 
-function checkForBoardBanLiftPermission(ban, userData, callback) {
+exports.checkForBoardBanLiftPermission = function(ban, userData, callback) {
 
   boards.findOne({
     boardUri : ban.boardUri
@@ -714,14 +714,14 @@ function checkForBoardBanLiftPermission(ban, userData, callback) {
     } else {
 
       if (common.isInBoardStaff(userData, board, 2)) {
-        liftBan(ban, userData, callback);
+        exports.removeBan(ban, userData, callback);
       } else {
         callback(lang.errDeniedBoardBanManagement);
       }
     }
   });
 
-}
+};
 
 exports.liftBan = function(userData, parameters, callback) {
 
@@ -736,13 +736,11 @@ exports.liftBan = function(userData, parameters, callback) {
       } else if (!ban) {
         callback();
       } else if (ban.boardUri) {
-
-        checkForBoardBanLiftPermission(ban, userData, callback);
-
+        exports.checkForBoardBanLiftPermission(ban, userData, callback);
       } else if (!globalStaff) {
         callback(lang.errDeniedGlobalBanManagement);
       } else {
-        liftBan(ban, userData, callback);
+        exports.removeBan(ban, userData, callback);
       }
     });
   } catch (error) {
@@ -753,7 +751,7 @@ exports.liftBan = function(userData, parameters, callback) {
 // } Section 5: Lift ban
 
 // Section 6: Range ban{
-function placeRangeBan(userData, parameters, callback) {
+exports.createRangeBan = function(userData, parameters, callback) {
 
   var processedRange = [];
 
@@ -819,7 +817,7 @@ function placeRangeBan(userData, parameters, callback) {
       // style exception,too simple
     }
   });
-}
+};
 
 exports.placeRangeBan = function(userData, parameters, callback) {
 
@@ -836,13 +834,13 @@ exports.placeRangeBan = function(userData, parameters, callback) {
       } else if (!common.isInBoardStaff(userData, board, 2)) {
         callback(lang.errDeniedBoardRangeBanManagement);
       } else {
-        placeRangeBan(userData, parameters, callback);
+        exports.createRangeBan(userData, parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
     callback(lang.errDeniedGlobalRangeBanManagement);
   } else {
-    placeRangeBan(userData, parameters, callback);
+    exports.createRangeBan(userData, parameters, callback);
   }
 
 };

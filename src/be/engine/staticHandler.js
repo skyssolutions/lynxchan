@@ -21,15 +21,15 @@ exports.loadDependencies = function() {
 
 };
 
-function respond(fileContent, header, res) {
+exports.respond = function(fileContent, header, res) {
 
   res.writeHead(200, header);
 
   res.end(fileContent, 'binary');
 
-}
+};
 
-function readAndRespond(pathName, modifiedTime, header, res, callback) {
+exports.readAndRespond = function(pathName, modifiedTime, header, res, cb) {
 
   header.push([ 'last-modified', modifiedTime.toString() ]);
   header.push([ 'expires', new Date().toString() ]);
@@ -37,7 +37,7 @@ function readAndRespond(pathName, modifiedTime, header, res, callback) {
   fs.readFile(fePath + '/static' + pathName, function(error, data) {
 
     if (error) {
-      callback(error);
+      cb(error);
       return;
     }
 
@@ -50,13 +50,13 @@ function readAndRespond(pathName, modifiedTime, header, res, callback) {
       filesCache[pathName] = file;
     }
 
-    respond(data, header, res);
+    exports.respond(data, header, res);
 
   });
-}
+};
 
 // reads file stats to find out if theres a new version
-function readFileStats(pathName, lastSeen, header, req, res, callback) {
+exports.readFileStats = function(pathName, lastSeen, header, req, res, cb) {
 
   fs.stat(boot.getFePath() + '/static' + pathName, function gotStats(error,
       stats) {
@@ -65,7 +65,7 @@ function readFileStats(pathName, lastSeen, header, req, res, callback) {
         console.log(error);
       }
 
-      gridFs.outputFile('/404.html', req, res, callback);
+      gridFs.outputFile('/404.html', req, res, cb);
 
     } else if (lastSeen === stats.mtime.toString() && !disable304) {
       if (verbose) {
@@ -75,11 +75,11 @@ function readFileStats(pathName, lastSeen, header, req, res, callback) {
       res.writeHead(304);
       res.end();
     } else {
-      readAndRespond(pathName, stats.mtime, header, res, callback);
+      exports.readAndRespond(pathName, stats.mtime, header, res, cb);
     }
   });
 
-}
+};
 
 exports.outputFile = function(req, res, callback) {
 
@@ -100,7 +100,7 @@ exports.outputFile = function(req, res, callback) {
   }
 
   if (!file) {
-    readFileStats(pathName, lastSeen, header, req, res, callback);
+    exports.readFileStats(pathName, lastSeen, header, req, res, callback);
   } else if (lastSeen === file.mtime.toString() && !disable304) {
 
     if (verbose) {
@@ -112,7 +112,7 @@ exports.outputFile = function(req, res, callback) {
     res.end();
 
   } else {
-    respond(file.content, header, res);
+    exports.respond(file.content, header, res);
   }
 
 };

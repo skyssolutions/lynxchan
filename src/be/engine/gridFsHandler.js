@@ -26,7 +26,7 @@ exports.loadDependencies = function() {
 };
 
 // start of writing data
-function writeDataOnOpenFile(gs, data, callback, archive, meta, mime,
+exports.writeDataOnOpenFile = function(gs, data, callback, archive, meta, mime,
     destination) {
 
   if (typeof (data) === 'string') {
@@ -43,7 +43,7 @@ function writeDataOnOpenFile(gs, data, callback, archive, meta, mime,
 
   });
 
-}
+};
 
 exports.writeData = function(data, dest, mime, meta, callback, archive) {
 
@@ -63,7 +63,8 @@ exports.writeData = function(data, dest, mime, meta, callback, archive) {
     if (error) {
       callback(error);
     } else {
-      writeDataOnOpenFile(gs, data, callback, archive, meta, mime, dest);
+      exports
+          .writeDataOnOpenFile(gs, data, callback, archive, meta, mime, dest);
     }
   });
 
@@ -71,8 +72,8 @@ exports.writeData = function(data, dest, mime, meta, callback, archive) {
 // end of writing data
 
 // start of transferring file to gridfs
-function writeFileOnOpenFile(gs, path, callback, archive, destination, meta,
-    mime) {
+exports.writeFileOnOpenFile = function(gs, path, callback, archive,
+    destination, meta, mime) {
   gs.writeFile(path, function wroteFile(error) {
 
     // style exception, too simple
@@ -87,7 +88,7 @@ function writeFileOnOpenFile(gs, path, callback, archive, destination, meta,
     // style exception, too simple
 
   });
-}
+};
 
 exports.writeFile = function(path, dest, mime, meta, callback, archive) {
 
@@ -109,7 +110,8 @@ exports.writeFile = function(path, dest, mime, meta, callback, archive) {
     if (error) {
       callback(error);
     } else {
-      writeFileOnOpenFile(gs, path, callback, archive, dest, meta, mime);
+      exports
+          .writeFileOnOpenFile(gs, path, callback, archive, dest, meta, mime);
     }
   });
 
@@ -127,7 +129,7 @@ exports.removeFiles = function(name, callback) {
 };
 
 // start of outputting file
-function setExpiration(header, stats) {
+exports.setExpiration = function(header, stats) {
   var expiration = new Date();
 
   if (permanentTypes.indexOf(stats.metadata.type) > -1) {
@@ -135,9 +137,9 @@ function setExpiration(header, stats) {
   }
 
   header.push([ 'expires', expiration.toString() ]);
-}
+};
 
-function setCookies(header, cookies) {
+exports.setCookies = function(header, cookies) {
   if (cookies) {
 
     for (var i = 0; i < cookies.length; i++) {
@@ -157,9 +159,9 @@ function setCookies(header, cookies) {
 
     }
   }
-}
+};
 
-function readRangeHeader(range, totalLength) {
+exports.readRangeHeader = function(range, totalLength) {
 
   if (!range || range.length === 0) {
     return null;
@@ -184,15 +186,15 @@ function readRangeHeader(range, totalLength) {
   }
 
   return result;
-}
+};
 
-function finishPartialStream(res, gs, callback) {
+exports.finishPartialStream = function(res, gs, callback) {
   res.end();
   gs.close();
   callback();
-}
+};
 
-function readParts(currentPosition, res, range, gs, callback) {
+exports.readParts = function(currentPosition, res, range, gs, callback) {
 
   var toRead = chunkSize;
 
@@ -227,22 +229,22 @@ function readParts(currentPosition, res, range, gs, callback) {
           console.log('Finished reading.');
         }
 
-        finishPartialStream(res, gs, callback);
+        exports.finishPartialStream(res, gs, callback);
 
       } else {
         if (verbose) {
           console.log(range.end - currentPosition + ' bytes left to read.');
         }
 
-        readParts(currentPosition, res, range, gs, callback);
+        exports.readParts(currentPosition, res, range, gs, callback);
       }
 
     }
   });
 
-}
+};
 
-function streamRange(range, gs, header, res, stats, callback) {
+exports.streamRange = function(range, gs, header, res, stats, callback) {
 
   if (verbose) {
     console.log('Outputting range ' + JSON.stringify(range, null, 2));
@@ -272,33 +274,33 @@ function streamRange(range, gs, header, res, stats, callback) {
       callback(error);
       gs.close();
     } else {
-      readParts(range.start, res, range, gs, callback);
+      exports.readParts(range.start, res, range, gs, callback);
 
     }
   });
 
-}
+};
 
-function getHeader(stats, req, cookies) {
+exports.getHeader = function(stats, req, cookies) {
   var header = miscOps.corsHeader(stats.contentType);
   var lastM = stats.metadata.lastModified || stats.uploadDate;
   header.push([ 'last-modified', lastM.toString() ]);
 
-  setExpiration(header, stats);
+  exports.setExpiration(header, stats);
 
-  setCookies(header, cookies);
+  exports.setCookies(header, cookies);
 
   return header;
-}
+};
 
 exports.streamFile = function(stats, req, callback, cookies, res, optCon) {
 
-  var header = getHeader(stats, req, cookies);
+  var header = exports.getHeader(stats, req, cookies);
 
   var range;
 
   if (streamableMimes.indexOf(stats.contentType) > -1) {
-    range = readRangeHeader(req.headers.range, stats.length);
+    range = exports.readRangeHeader(req.headers.range, stats.length);
     header.push([ 'Accept-Ranges', 'bytes' ]);
   }
 
@@ -331,7 +333,7 @@ exports.streamFile = function(stats, req, callback, cookies, res, optCon) {
         });
 
       } else {
-        streamRange(range, gs, header, res, stats, callback);
+        exports.streamRange(range, gs, header, res, stats, callback);
       }
     } else {
       callback(error);
@@ -340,14 +342,14 @@ exports.streamFile = function(stats, req, callback, cookies, res, optCon) {
 
 };
 
-function shouldOutput304(lastSeen, stats) {
+exports.shouldOutput304 = function(lastSeen, stats) {
 
   var lastM = stats.metadata.lastModified || stats.uploadDate;
 
   var mTimeMatches = lastSeen === lastM.toString();
 
   return mTimeMatches && !disable304 && !stats.metadata.status;
-}
+};
 
 // retry means it has already failed to get a page and now is trying to get the
 // 404 page. It prevents infinite recursion
@@ -382,7 +384,7 @@ exports.outputFile = function(file, req, res, callback, cookies, retry) {
         exports.outputFile('/404.html', req, res, callback, cookies, true);
       }
 
-    } else if (shouldOutput304(lastSeen, fileStats)) {
+    } else if (exports.shouldOutput304(lastSeen, fileStats)) {
       if (verbose) {
         console.log('304');
 

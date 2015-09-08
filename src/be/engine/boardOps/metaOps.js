@@ -61,7 +61,7 @@ exports.getValidSettings = function() {
 };
 
 // Section 1: Settings {
-function captchaOrAnonimityChanged(board, params) {
+exports.captchaOrAnonimityChanged = function(board, params) {
 
   var oldSettings = board.settings;
   var newSettings = params.settings;
@@ -78,9 +78,9 @@ function captchaOrAnonimityChanged(board, params) {
 
   return anonChanged || captchaChanged;
 
-}
+};
 
-function fieldsChanged(board, params) {
+exports.fieldsChanged = function(board, params) {
 
   for (var i = 0; i < boardFieldsToCheck.length; i++) {
     var field = boardFieldsToCheck[i];
@@ -93,13 +93,13 @@ function fieldsChanged(board, params) {
   }
 
   return false;
-}
+};
 
-function checkBoardRebuild(board, params) {
+exports.checkBoardRebuild = function(board, params) {
 
-  var didFieldsChanged = fieldsChanged(board, params);
+  var didFieldsChanged = exports.fieldsChanged(board, params);
 
-  var settingsChanged = captchaOrAnonimityChanged(board, params);
+  var settingsChanged = exports.captchaOrAnonimityChanged(board, params);
 
   if (didFieldsChanged || settingsChanged) {
 
@@ -116,9 +116,9 @@ function checkBoardRebuild(board, params) {
     });
   }
 
-}
+};
 
-function getMessageMarkdown(message) {
+exports.getMessageMarkdown = function(message) {
   if (!message) {
     return null;
   }
@@ -137,9 +137,10 @@ function getMessageMarkdown(message) {
 
   return ret;
 
-}
+};
 
-function setUpdateForAutoCaptcha(parameters, newSettings, updateBlock, board) {
+exports.setUpdateForAutoCaptcha = function(parameters, newSettings,
+    updateBlock, board) {
 
   var informedAutoCaptcha = +parameters.autoCaptchaLimit;
 
@@ -157,9 +158,9 @@ function setUpdateForAutoCaptcha(parameters, newSettings, updateBlock, board) {
     updateBlock.$unset.autoCaptchaThreshold = 1;
 
   }
-}
+};
 
-function sanitizeBoardTags(tags) {
+exports.sanitizeBoardTags = function(tags) {
 
   if (!tags || !tags.length) {
     return [];
@@ -183,18 +184,18 @@ function sanitizeBoardTags(tags) {
   }
 
   return toRet;
-}
+};
 
-function saveNewSettings(board, parameters, callback) {
+exports.saveNewSettings = function(board, parameters, callback) {
 
   var newSettings = {
     boardName : parameters.boardName,
     boardDescription : parameters.boardDescription,
     settings : parameters.settings,
     boardMessage : parameters.boardMessage,
-    boardMarkdown : getMessageMarkdown(parameters.boardMessage),
+    boardMarkdown : exports.getMessageMarkdown(parameters.boardMessage),
     anonymousName : parameters.anonymousName || '',
-    tags : sanitizeBoardTags(parameters.tags)
+    tags : exports.sanitizeBoardTags(parameters.tags)
   };
 
   var updateBlock = {
@@ -216,19 +217,19 @@ function saveNewSettings(board, parameters, callback) {
     };
   }
 
-  setUpdateForAutoCaptcha(parameters, newSettings, updateBlock, board);
+  exports.setUpdateForAutoCaptcha(parameters, newSettings, updateBlock, board);
 
   boards.updateOne({
     boardUri : parameters.boardUri
   }, updateBlock, function updatedBoard(error) {
 
-    checkBoardRebuild(board, parameters);
+    exports.checkBoardRebuild(board, parameters);
 
     callback(error);
 
   });
 
-}
+};
 
 exports.setSettings = function(userData, parameters, callback) {
 
@@ -247,7 +248,7 @@ exports.setSettings = function(userData, parameters, callback) {
     } else {
       miscOps.sanitizeStrings(parameters, boardParameters);
 
-      saveNewSettings(board, parameters, callback);
+      exports.saveNewSettings(board, parameters, callback);
 
     }
 
@@ -257,7 +258,7 @@ exports.setSettings = function(userData, parameters, callback) {
 // } Section 1: Settings
 
 // Section 2: Transfer {
-function updateUsersOwnedBoards(oldOwner, parameters, callback) {
+exports.updateUsersOwnedBoards = function(oldOwner, parameters, callback) {
 
   users.update({
     login : oldOwner
@@ -286,9 +287,9 @@ function updateUsersOwnedBoards(oldOwner, parameters, callback) {
     }
   });
 
-}
+};
 
-function performTransfer(oldOwner, userData, parameters, callback) {
+exports.performTransfer = function(oldOwner, userData, parameters, callback) {
 
   var message = lang.logTransferBoard.replace('{$actor}', userData.login)
       .replace('{$board}', parameters.boardUri).replace('{$login}',
@@ -320,14 +321,14 @@ function performTransfer(oldOwner, userData, parameters, callback) {
       if (error) {
         callback(error);
       } else {
-        updateUsersOwnedBoards(oldOwner, parameters, callback);
+        exports.updateUsersOwnedBoards(oldOwner, parameters, callback);
       }
 
     });
     // style exception, too simple
   });
 
-}
+};
 
 exports.transfer = function(userData, parameters, callback) {
 
@@ -358,7 +359,7 @@ exports.transfer = function(userData, parameters, callback) {
         } else if (!count) {
           callback(lang.errUserNotFound);
         } else {
-          performTransfer(board.owner, userData, parameters, callback);
+          exports.performTransfer(board.owner, userData, parameters, callback);
         }
       });
       // style exception, too simple
@@ -371,7 +372,7 @@ exports.transfer = function(userData, parameters, callback) {
 // } Section 2: Transfer
 
 // Section 3: Volunteer management {
-function manageVolunteer(currentVolunteers, parameters, callback) {
+exports.manageVolunteer = function(currentVolunteers, parameters, callback) {
 
   var isAVolunteer = currentVolunteers.indexOf(parameters.login) > -1;
 
@@ -417,7 +418,7 @@ function manageVolunteer(currentVolunteers, parameters, callback) {
 
   }
 
-}
+};
 
 exports.setVolunteer = function(userData, parameters, callback) {
 
@@ -439,7 +440,7 @@ exports.setVolunteer = function(userData, parameters, callback) {
     } else if (parameters.login === board.owner) {
       callback(lang.errOwnerVolunteer);
     } else {
-      manageVolunteer(board.volunteers || [], parameters, callback);
+      exports.manageVolunteer(board.volunteers || [], parameters, callback);
     }
   });
 
@@ -447,7 +448,7 @@ exports.setVolunteer = function(userData, parameters, callback) {
 // } Section 3: Volunteer management
 
 // Section 4: Custom CSS upload {
-function updateBoardAfterNewCss(board, callback) {
+exports.updateBoardAfterNewCss = function(board, callback) {
 
   if (!boards.usesCustomCss) {
     boards.updateOne({
@@ -473,7 +474,7 @@ function updateBoardAfterNewCss(board, callback) {
     callback();
   }
 
-}
+};
 
 exports.setCustomCss = function(userData, boardUri, file, callback) {
 
@@ -500,7 +501,7 @@ exports.setCustomCss = function(userData, boardUri, file, callback) {
             if (error) {
               callback(error);
             } else {
-              updateBoardAfterNewCss(board, callback);
+              exports.updateBoardAfterNewCss(board, callback);
             }
           });
       // style exception, too simple
@@ -512,7 +513,7 @@ exports.setCustomCss = function(userData, boardUri, file, callback) {
 // } Section 4: Custom CSS upload
 
 // Section 5: Custom CSS deletion {
-function updateBoardAfterDeleteCss(board, callback) {
+exports.updateBoardAfterDeleteCss = function(board, callback) {
 
   if (board.usesCustomCss) {
     boards.updateOne({
@@ -537,7 +538,7 @@ function updateBoardAfterDeleteCss(board, callback) {
     callback();
   }
 
-}
+};
 
 exports.deleteCustomCss = function(userData, boardUri, callback) {
 
@@ -560,7 +561,7 @@ exports.deleteCustomCss = function(userData, boardUri, callback) {
             if (error) {
               callback(error);
             } else {
-              updateBoardAfterDeleteCss(board, callback);
+              exports.updateBoardAfterDeleteCss(board, callback);
             }
           });
       // style exception, too simple
@@ -572,7 +573,7 @@ exports.deleteCustomCss = function(userData, boardUri, callback) {
 // } Section 5: Custom CSS deletion
 
 // Section 6: Creation {
-function insertBoard(parameters, userData, callback) {
+exports.insertBoard = function(parameters, userData, callback) {
 
   boards.insert({
     boardUri : parameters.boardUri,
@@ -610,7 +611,7 @@ function insertBoard(parameters, userData, callback) {
     }
   });
 
-}
+};
 
 exports.createBoard = function(captchaId, parameters, userData, callback) {
 
@@ -634,7 +635,7 @@ exports.createBoard = function(captchaId, parameters, userData, callback) {
         if (error) {
           callback(error);
         } else {
-          insertBoard(parameters, userData, callback);
+          exports.insertBoard(parameters, userData, callback);
         }
 
       });
@@ -725,7 +726,7 @@ exports.deleteCustomSpoiler = function(userData, boardUri, callback) {
 };
 
 // Section 7: Board management {
-function getBoardReports(boardData, callback) {
+exports.getBoardReports = function(boardData, callback) {
 
   reports.find({
     boardUri : boardData.boardUri,
@@ -747,7 +748,7 @@ function getBoardReports(boardData, callback) {
 
   });
 
-}
+};
 
 exports.getBoardManagementData = function(userData, board, callback) {
 
@@ -773,7 +774,7 @@ exports.getBoardManagementData = function(userData, board, callback) {
     } else if (!boardData) {
       callback(lang.errBoardNotFound);
     } else if (modCommonOps.isInBoardStaff(userData, boardData)) {
-      getBoardReports(boardData, callback);
+      exports.getBoardReports(boardData, callback);
     } else {
       callback(lang.errDeniedManageBoard);
     }

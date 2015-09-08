@@ -69,7 +69,7 @@ exports.loadDependencies = function() {
 
 };
 
-function getRandomColor() {
+exports.getRandomColor = function() {
   var red = miscOps.getRandomInt(minColor, maxColor).toString(16);
   var green = miscOps.getRandomInt(minColor, maxColor).toString(16);
   var blue = miscOps.getRandomInt(minColor, maxColor).toString(16);
@@ -88,12 +88,12 @@ function getRandomColor() {
 
   return '#' + red + green + blue;
 
-}
+};
 
 // start of generation
-function addLines(path, id, callback) {
+exports.addLines = function(path, id, callback) {
 
-  var image = im(path).stroke(getRandomColor(), lineWidth);
+  var image = im(path).stroke(exports.getRandomColor(), lineWidth);
 
   for (var i = 0; i < miscOps.getRandomInt(minLines, maxLines); i++) {
 
@@ -122,9 +122,9 @@ function addLines(path, id, callback) {
 
   });
 
-}
+};
 
-function distortImage(path, id, distorts, callback) {
+exports.distortImage = function(path, id, distorts, callback) {
 
   var command = 'mogrify -distort Shepards \'';
 
@@ -148,14 +148,14 @@ function distortImage(path, id, distorts, callback) {
     if (error) {
       callback(error);
     } else {
-      addLines(path, id, callback);
+      exports.addLines(path, id, callback);
     }
 
   });
 
-}
+};
 
-function getBaseDistorts() {
+exports.getBaseDistorts = function() {
   var distorts = [];
 
   distorts.push({
@@ -203,11 +203,11 @@ function getBaseDistorts() {
   });
 
   return distorts;
-}
+};
 
-function getDistorts() {
+exports.getDistorts = function() {
 
-  var distorts = getBaseDistorts(width, height);
+  var distorts = exports.getBaseDistorts(width, height);
 
   var amountOfDistorts = miscOps.getRandomInt(minDistorts, maxDistorts);
   var portionSize = width / amountOfDistorts;
@@ -239,9 +239,9 @@ function getDistorts() {
 
   return distorts;
 
-}
+};
 
-function generateImage(text, id, callback) {
+exports.generateImage = function(text, id, callback) {
 
   var path = tempDirectory + '/' + id + '.jpg';
 
@@ -270,7 +270,7 @@ function generateImage(text, id, callback) {
 
   }
 
-  image.stroke('transparent').fill(getRandomColor()).fontSize(fontSize)
+  image.stroke('transparent').fill(exports.getRandomColor()).fontSize(fontSize)
       .drawText(0, 0, text, 'center');
 
   if (noise) {
@@ -283,7 +283,7 @@ function generateImage(text, id, callback) {
     } else {
 
       // style exception, too simple
-      distortImage(path, id, getDistorts(width, height),
+      exports.distortImage(path, id, exports.getDistorts(width, height),
           function distoredImage(error) {
 
             uploadHandler.removeFromDisk(path);
@@ -296,7 +296,7 @@ function generateImage(text, id, callback) {
     }
   });
 
-}
+};
 
 exports.generateCaptcha = function(callback) {
 
@@ -313,7 +313,7 @@ exports.generateCaptcha = function(callback) {
     if (error) {
       callback(error);
     } else {
-      generateImage(text, toInsert._id, callback);
+      exports.generateImage(text, toInsert._id, callback);
     }
   });
 
@@ -352,13 +352,13 @@ exports.checkForCaptcha = function(req, callback) {
 
 // solves and invalidates a captcha
 // start of captcha attempt
-function isCaptchaSolved(captcha, input) {
+exports.isCaptchaSolved = function(captcha, input) {
 
   if (captcha.value) {
     return !captcha.value.answer || captcha.value.answer === input;
   }
 
-}
+};
 
 exports.attemptCaptcha = function(id, input, board, callback) {
 
@@ -397,7 +397,7 @@ exports.attemptCaptcha = function(id, input, board, callback) {
 
       if (error) {
         callback(error);
-      } else if (isCaptchaSolved(captcha, input)) {
+      } else if (exports.isCaptchaSolved(captcha, input)) {
         callback();
       } else if (!captcha.value) {
         callback(lang.errExpiredCaptcha);

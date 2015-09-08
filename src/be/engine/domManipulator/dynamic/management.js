@@ -331,7 +331,7 @@ exports.bannerManagement = function(boardUri, banners) {
 };
 
 // Section 1: Board control {
-function setBoardControlCheckBoxes(document, boardData) {
+exports.setBoardControlCheckBoxes = function(document, boardData) {
 
   var settings = boardData.settings;
 
@@ -341,9 +341,9 @@ function setBoardControlCheckBoxes(document, boardData) {
         'checked', true);
   }
 
-}
+};
 
-function setBoardFields(document, boardData) {
+exports.setBoardFields = function(document, boardData) {
 
   for ( var key in boardFieldsRelation) {
 
@@ -355,9 +355,9 @@ function setBoardFields(document, boardData) {
 
   document.getElementById('boardMessageField').defaultValue = messageContent;
 
-}
+};
 
-function setVolunteersDiv(document, boardData) {
+exports.setVolunteersDiv = function(document, boardData) {
   var volunteersDiv = document.getElementById('volunteersDiv');
 
   var volunteers = boardData.volunteers || [];
@@ -379,9 +379,9 @@ function setVolunteersDiv(document, boardData) {
 
     volunteersDiv.appendChild(cell);
   }
-}
+};
 
-function setBoardOwnerControls(document, boardData) {
+exports.setBoardOwnerControls = function(document, boardData) {
 
   for (var i = 0; i < boardControlIdentifiers.length; i++) {
     document.getElementById(boardControlIdentifiers[i]).setAttribute('value',
@@ -392,13 +392,13 @@ function setBoardOwnerControls(document, boardData) {
     common.removeElement(document.getElementById('customSpoilerIndicator'));
   }
 
-  setBoardControlCheckBoxes(document, boardData);
+  exports.setBoardControlCheckBoxes(document, boardData);
 
-  setVolunteersDiv(document, boardData);
+  exports.setVolunteersDiv(document, boardData);
 
-}
+};
 
-function setBoardManagementLinks(document, boardData) {
+exports.setBoardManagementLinks = function(document, boardData) {
 
   for (var i = 0; i < boardManagementLinks.length; i++) {
     var link = boardManagementLinks[i];
@@ -408,7 +408,7 @@ function setBoardManagementLinks(document, boardData) {
 
   }
 
-}
+};
 
 exports.boardManagement = function(userData, boardData, reports) {
 
@@ -419,9 +419,9 @@ exports.boardManagement = function(userData, boardData, reports) {
     document.title = lang.titBoardManagement.replace('{$board}',
         boardData.boardUri);
 
-    setBoardManagementLinks(document, boardData);
+    exports.setBoardManagementLinks(document, boardData);
 
-    setBoardFields(document, boardData);
+    exports.setBoardFields(document, boardData);
 
     var boardLabel = document.getElementById('boardLabel');
 
@@ -433,7 +433,7 @@ exports.boardManagement = function(userData, boardData, reports) {
     var globallyAllowed = globalBoardModeration && userData.globalRole <= 1;
 
     if (userData.login === boardData.owner || globallyAllowed) {
-      setBoardOwnerControls(document, boardData);
+      exports.setBoardOwnerControls(document, boardData);
     } else {
       common.removeElement(document.getElementById('ownerControlDiv'));
     }
@@ -456,7 +456,7 @@ exports.boardManagement = function(userData, boardData, reports) {
 // } Section 1: Board control
 
 // Section 2: Global Management {
-function setRoleComboBox(document, node, possibleRoles, user) {
+exports.setRoleComboBox = function(document, node, possibleRoles, user) {
   for (var k = 0; k < possibleRoles.length; k++) {
 
     var role = possibleRoles[k];
@@ -473,9 +473,9 @@ function setRoleComboBox(document, node, possibleRoles, user) {
 
   }
 
-}
+};
 
-function fillStaffDiv(document, possibleRoles, staff) {
+exports.fillStaffDiv = function(document, possibleRoles, staff) {
   var divStaff = document.getElementById('divStaff');
 
   for (var i = 0; i < staff.length; i++) {
@@ -492,15 +492,15 @@ function fillStaffDiv(document, possibleRoles, staff) {
 
     cell.getElementsByClassName('userLabel')[0].innerHTML = user.login + ': ';
 
-    setRoleComboBox(document, cell.getElementsByClassName('roleCombo')[0],
-        possibleRoles, user);
+    exports.setRoleComboBox(document,
+        cell.getElementsByClassName('roleCombo')[0], possibleRoles, user);
 
     divStaff.appendChild(cell);
 
   }
-}
+};
 
-function getPossibleRoles(role) {
+exports.getPossibleRoles = function(role) {
 
   var roles = [];
 
@@ -515,9 +515,9 @@ function getPossibleRoles(role) {
   }
 
   return roles;
-}
+};
 
-function setNewStaffComboBox(document, userRole) {
+exports.setNewStaffComboBox = function(document, userRole) {
 
   var comboBox = document.getElementById('newStaffCombo');
 
@@ -530,9 +530,9 @@ function setNewStaffComboBox(document, userRole) {
     comboBox.add(option);
   }
 
-}
+};
 
-function setGlobalManagementLinks(userRole, document) {
+exports.setGlobalManagementLinks = function(userRole, document) {
 
   var displayBans = userRole < miscOps.getMaxStaffRole();
 
@@ -551,12 +551,12 @@ function setGlobalManagementLinks(userRole, document) {
   if (!deleteArchive) {
     common.removeElement(document.getElementById('archiveDeletionLink'));
   }
-}
+};
 
-function processHideableForms(document, userRole) {
+exports.processHideableForms = function(document, userRole) {
 
   if (userRole < 2) {
-    setNewStaffComboBox(document, userRole);
+    exports.setNewStaffComboBox(document, userRole);
   } else {
     common.removeElement(document.getElementById('addStaffForm'));
   }
@@ -568,7 +568,7 @@ function processHideableForms(document, userRole) {
 
   }
 
-}
+};
 
 exports.globalManagement = function(userRole, userLogin, staff, reports) {
 
@@ -579,9 +579,9 @@ exports.globalManagement = function(userRole, userLogin, staff, reports) {
 
     common.setReportList(document, reports);
 
-    setGlobalManagementLinks(userRole, document);
+    exports.setGlobalManagementLinks(userRole, document);
 
-    processHideableForms(document, userRole);
+    exports.processHideableForms(document, userRole);
 
     var userLabel = document.getElementById('userLabel');
 
@@ -590,7 +590,7 @@ exports.globalManagement = function(userRole, userLogin, staff, reports) {
 
     userLabel.innerHTML = userLabelContent;
 
-    fillStaffDiv(document, getPossibleRoles(userRole), staff);
+    exports.fillStaffDiv(document, exports.getPossibleRoles(userRole), staff);
 
     return serializer(document);
   } catch (error) {
@@ -610,7 +610,7 @@ exports.globalManagement = function(userRole, userLogin, staff, reports) {
 
 // Section 3: Filter management {
 
-function setFilterCell(cell, boardUri, filter) {
+exports.setFilterCell = function(cell, boardUri, filter) {
 
   var labelOriginal = cell.getElementsByClassName('labelOriginal')[0];
   labelOriginal.innerHTML = filter.originalTerm;
@@ -623,7 +623,7 @@ function setFilterCell(cell, boardUri, filter) {
 
   var boardIdentifier = cell.getElementsByClassName('boardIdentifier')[0];
   boardIdentifier.setAttribute('value', boardUri);
-}
+};
 
 exports.filterManagement = function(boardUri, filters) {
 
@@ -647,7 +647,7 @@ exports.filterManagement = function(boardUri, filters) {
       common.setFormCellBoilerPlate(filterCell, '/deleteFilter.js',
           'filterCell');
 
-      setFilterCell(filterCell, boardUri, filter);
+      exports.setFilterCell(filterCell, boardUri, filter);
 
       filtersDiv.appendChild(filterCell);
     }
@@ -670,7 +670,7 @@ exports.filterManagement = function(boardUri, filters) {
 // } Section 3: Filter management
 
 // Section 4: Rule management {
-function setRuleManagementCells(document, boardUri, rules) {
+exports.setRuleManagementCells = function(document, boardUri, rules) {
   var rulesDiv = document.getElementById('divRules');
 
   for (var i = 0; i < rules.length; i++) {
@@ -687,7 +687,7 @@ function setRuleManagementCells(document, boardUri, rules) {
 
     rulesDiv.appendChild(cell);
   }
-}
+};
 
 exports.ruleManagement = function(boardUri, rules) {
 
@@ -701,7 +701,7 @@ exports.ruleManagement = function(boardUri, rules) {
 
     boardIdentifier.setAttribute('value', boardUri);
 
-    setRuleManagementCells(document, boardUri, rules);
+    exports.setRuleManagementCells(document, boardUri, rules);
 
     return serializer(document);
 
@@ -721,7 +721,7 @@ exports.ruleManagement = function(boardUri, rules) {
 // } Section 4: Rule management
 
 // Section 5: Flag management {
-function addFlagCells(document, flags, boardUri) {
+exports.addFlagCells = function(document, flags, boardUri) {
 
   var flagsDiv = document.getElementById('flagsDiv');
 
@@ -746,7 +746,7 @@ function addFlagCells(document, flags, boardUri) {
     flagsDiv.appendChild(cell);
   }
 
-}
+};
 
 exports.flagManagement = function(boardUri, flags, callback) {
   try {
@@ -759,7 +759,7 @@ exports.flagManagement = function(boardUri, flags, callback) {
 
     document.getElementById('boardIdentifier').setAttribute('value', boardUri);
 
-    addFlagCells(document, flags, boardUri);
+    exports.addFlagCells(document, flags, boardUri);
 
     return serializer(document);
   } catch (error) {
@@ -779,7 +779,7 @@ exports.flagManagement = function(boardUri, flags, callback) {
 // } Section 5: Flag management
 
 // Section 6: Global settings {
-function setComboSetting(document, element, setting) {
+exports.setComboSetting = function(document, element, setting) {
 
   var limit = setting.limit && setting.limit < setting.options.length;
 
@@ -797,7 +797,7 @@ function setComboSetting(document, element, setting) {
 
     element.appendChild(option);
   }
-}
+};
 
 exports.globalSettings = function(settings) {
 
@@ -826,7 +826,7 @@ exports.globalSettings = function(settings) {
             .toString());
         break;
       case 'combo':
-        setComboSetting(document, element, setting);
+        exports.setComboSetting(document, element, setting);
         break;
       }
 

@@ -59,12 +59,12 @@ exports.addBanner = function(userData, parameters, callback) {
 };
 
 // Section 1: Banner deletion {
-function removeBanner(banner, callback) {
+exports.removeBanner = function(banner, callback) {
   gridFsHandler.removeFiles(banner.filename, function removedFile(error) {
     callback(error, banner.metadata.boardUri);
   });
 
-}
+};
 
 exports.deleteBanner = function(userData, parameters, callback) {
 
@@ -92,7 +92,7 @@ exports.deleteBanner = function(userData, parameters, callback) {
           } else if (board.owner !== userData.login && !globallyAllowed) {
             callback(lang.errDeniedChangeBoardSettings);
           } else {
-            removeBanner(banner, callback);
+            exports.removeBanner(banner, callback);
           }
         });
         // style exception, too simple

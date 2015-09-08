@@ -59,8 +59,8 @@ exports.getCookies = function(req) {
   return parsedCookies;
 };
 
-function getGifDimensions(toPush, files, fields, cookies, callback, res,
-    exceptionalMimes) {
+exports.getGifDimensions = function(toPush, files, fields, cookies, callback,
+    res, exceptionalMimes) {
 
   uploadHandler.getGifBounds(toPush.pathInDisk, function gotBounds(error,
       width, height) {
@@ -71,14 +71,14 @@ function getGifDimensions(toPush, files, fields, cookies, callback, res,
       fields.files.push(toPush);
     }
 
-    transferFileInformation(files, fields, cookies, callback, res,
+    exports.transferFileInformation(files, fields, cookies, callback, res,
         exceptionalMimes);
   });
 
-}
+};
 
-function getImageDimensions(toPush, files, fields, cookies, callback, res,
-    exceptionalMimes) {
+exports.getImageDimensions = function(toPush, files, fields, cookies, callback,
+    res, exceptionalMimes) {
 
   uploadHandler.getImageBounds(toPush.pathInDisk, function gotBounds(error,
       width, height) {
@@ -89,14 +89,14 @@ function getImageDimensions(toPush, files, fields, cookies, callback, res,
       fields.files.push(toPush);
     }
 
-    transferFileInformation(files, fields, cookies, callback, res,
+    exports.transferFileInformation(files, fields, cookies, callback, res,
         exceptionalMimes);
   });
 
-}
+};
 
-function getVideoDimensions(toPush, files, fields, cookies, callback, res,
-    exceptionalMimes) {
+exports.getVideoDimensions = function(toPush, files, fields, cookies, callback,
+    res, exceptionalMimes) {
 
   uploadHandler.getVideoBounds(toPush,
       function gotBounds(error, width, height) {
@@ -107,13 +107,13 @@ function getVideoDimensions(toPush, files, fields, cookies, callback, res,
           fields.files.push(toPush);
         }
 
-        transferFileInformation(files, fields, cookies, callback, res,
+        exports.transferFileInformation(files, fields, cookies, callback, res,
             exceptionalMimes);
       });
 
-}
+};
 
-function getCheckSum(path, callback) {
+exports.getCheckSum = function(path, callback) {
 
   var stream = fs.createReadStream(path);
   var hash = crypto.createHash('md5');
@@ -126,16 +126,16 @@ function getCheckSum(path, callback) {
     callback(hash.digest('hex'));
   });
 
-}
+};
 
-function transferFileInformation(files, fields, parsedCookies, cb, res,
-    exceptionalMimes) {
+exports.transferFileInformation = function(files, fields, parsedCookies, cb,
+    res, exceptionalMimes) {
 
   if (files.files.length && fields.files.length < maxFiles) {
 
     var file = files.files.shift();
 
-    getCheckSum(file.path, function gotCheckSum(checkSum) {
+    exports.getCheckSum(file.path, function gotCheckSum(checkSum) {
       var mime = file.headers['content-type'];
 
       var acceptableSize = file.size && file.size < maxFileSize;
@@ -156,31 +156,32 @@ function transferFileInformation(files, fields, parsedCookies, cb, res,
 
         if (toPush.mime === 'image/gif') {
 
-          getGifDimensions(toPush, files, fields, parsedCookies, cb, res,
-              exceptionalMimes);
+          exports.getGifDimensions(toPush, files, fields, parsedCookies, cb,
+              res, exceptionalMimes);
 
         } else
 
         if (toPush.mime.indexOf('image/') > -1) {
 
-          getImageDimensions(toPush, files, fields, parsedCookies, cb, res,
-              exceptionalMimes);
+          exports.getImageDimensions(toPush, files, fields, parsedCookies, cb,
+              res, exceptionalMimes);
 
         } else if (video) {
 
-          getVideoDimensions(toPush, files, fields, parsedCookies, cb, res);
+          exports.getVideoDimensions(toPush, files, fields, parsedCookies, cb,
+              res);
 
         } else {
           fields.files.push(toPush);
 
-          transferFileInformation(files, fields, parsedCookies, cb, res,
-              exceptionalMimes);
+          exports.transferFileInformation(files, fields, parsedCookies, cb,
+              res, exceptionalMimes);
         }
 
       } else if (file.size) {
         exports.outputError(lang.errFileTooLarge, 500, res);
       } else {
-        transferFileInformation(files, fields, parsedCookies, cb, res,
+        exports.transferFileInformation(files, fields, parsedCookies, cb, res,
             exceptionalMimes);
       }
     });
@@ -193,10 +194,10 @@ function transferFileInformation(files, fields, parsedCookies, cb, res,
     cb(parsedCookies, fields);
   }
 
-}
+};
 
-function processParsedRequest(res, fields, files, callback, parsedCookies,
-    exceptionalMimes) {
+exports.processParsedRequest = function(res, fields, files, callback,
+    parsedCookies, exceptionalMimes) {
 
   for ( var key in fields) {
     if (fields.hasOwnProperty(key)) {
@@ -208,8 +209,8 @@ function processParsedRequest(res, fields, files, callback, parsedCookies,
 
   if (files.files) {
 
-    transferFileInformation(files, fields, parsedCookies, callback, res,
-        exceptionalMimes);
+    exports.transferFileInformation(files, fields, parsedCookies, callback,
+        res, exceptionalMimes);
 
   } else {
     if (verbose) {
@@ -219,16 +220,16 @@ function processParsedRequest(res, fields, files, callback, parsedCookies,
     callback(parsedCookies, fields);
   }
 
-}
+};
 
-function redirectToLogin(res) {
+exports.redirectToLogin = function(res) {
 
   var header = [ [ 'Location', '/login.html' ] ];
 
   res.writeHead(302, header);
 
   res.end();
-}
+};
 
 exports.getAuthenticatedPost = function(req, res, getParameters, callback,
     optionalAuth, exceptionalMimes) {
@@ -239,7 +240,7 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback,
 
       accountOps.validate(auth, function validated(error, newAuth, userData) {
         if (error && !optionalAuth) {
-          redirectToLogin(res);
+          exports.redirectToLogin(res);
         } else {
           callback(newAuth, userData, parameters);
         }
@@ -252,7 +253,7 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback,
         newAuth, userData) {
 
       if (error && !optionalAuth) {
-        redirectToLogin(res);
+        exports.redirectToLogin(res);
       } else {
         callback(newAuth, userData);
       }
@@ -301,7 +302,7 @@ exports.getPostData = function(req, res, callback, exceptionalMimes) {
       if (error) {
         exports.outputError(error, 500, res);
       } else {
-        processParsedRequest(res, fields, files, callback, exports
+        exports.processParsedRequest(res, fields, files, callback, exports
             .getCookies(req), exceptionalMimes);
 
       }
@@ -314,7 +315,7 @@ exports.getPostData = function(req, res, callback, exceptionalMimes) {
 
 };
 
-function setCookies(header, cookies) {
+exports.setCookies = function(header, cookies) {
 
   for (var i = 0; i < cookies.length; i++) {
     var cookie = cookies[i];
@@ -332,7 +333,7 @@ function setCookies(header, cookies) {
     header.push(toPush);
 
   }
-}
+};
 
 exports.outputResponse = function(message, redirect, res, cookies, authBlock) {
 
@@ -347,9 +348,7 @@ exports.outputResponse = function(message, redirect, res, cookies, authBlock) {
   }
 
   if (cookies) {
-
-    setCookies(header, cookies);
-
+    exports.setCookies(header, cookies);
   }
 
   res.writeHead(200, header);

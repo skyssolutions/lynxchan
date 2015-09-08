@@ -19,7 +19,7 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Bans {
-function setBanCell(ban, cell) {
+exports.setBanCell = function(ban, cell) {
 
   cell.getElementsByClassName('idLabel')[0].innerHTML = ban._id;
 
@@ -33,7 +33,7 @@ function setBanCell(ban, cell) {
 
   cell.getElementsByClassName('idIdentifier')[0].setAttribute('value', ban._id);
 
-}
+};
 
 exports.bans = function(bans) {
 
@@ -53,7 +53,7 @@ exports.bans = function(bans) {
 
       common.setFormCellBoilerPlate(cell, '/liftBan.js', 'banCell');
 
-      setBanCell(ban, cell);
+      exports.setBanCell(ban, cell);
       bansDiv.appendChild(cell);
     }
 
@@ -76,7 +76,7 @@ exports.bans = function(bans) {
 // } Section 1: Bans
 
 // Section 2: Closed reports {
-function setClosedReportCell(cell, report) {
+exports.setClosedReportCell = function(cell, report) {
 
   if (report.reason) {
     var reason = cell.getElementsByClassName('reasonLabel')[0];
@@ -91,7 +91,7 @@ function setClosedReportCell(cell, report) {
 
   var closedDate = cell.getElementsByClassName('closedDateLabel')[0];
   closedDate.innerHTML = report.closing;
-}
+};
 
 exports.closedReports = function(reports, callback) {
 
@@ -110,7 +110,7 @@ exports.closedReports = function(reports, callback) {
       cell.innerHTML = templateHandler.closedReportCell;
       cell.setAttribute('class', 'closedReportCell');
 
-      setClosedReportCell(cell, report);
+      exports.setClosedReportCell(cell, report);
 
       reportsDiv.appendChild(cell);
 
@@ -169,7 +169,7 @@ exports.boardModeration = function(boardData, ownerData) {
 };
 
 // Section 3: Range bans {
-function setRangeBanCells(document, rangeBans) {
+exports.setRangeBanCells = function(document, rangeBans) {
 
   var bansDiv = document.getElementById('rangeBansDiv');
 
@@ -189,7 +189,7 @@ function setRangeBanCells(document, rangeBans) {
 
   }
 
-}
+};
 
 exports.rangeBans = function(rangeBans, boardUri) {
 
@@ -207,7 +207,7 @@ exports.rangeBans = function(rangeBans, boardUri) {
       common.removeElement(boardIdentifier);
     }
 
-    setRangeBanCells(document, rangeBans);
+    exports.setRangeBanCells(document, rangeBans);
 
     return serializer(document);
 
@@ -227,7 +227,7 @@ exports.rangeBans = function(rangeBans, boardUri) {
 // } Section 3: Range bans
 
 // Section 4: Hash bans {
-function setHashBanCells(document, hashBans) {
+exports.setHashBanCells = function(document, hashBans) {
 
   var bansDiv = document.getElementById('hashBansDiv');
 
@@ -245,7 +245,7 @@ function setHashBanCells(document, hashBans) {
     bansDiv.appendChild(banCell);
   }
 
-}
+};
 
 exports.hashBans = function(hashBans, boardUri) {
 
@@ -263,7 +263,7 @@ exports.hashBans = function(hashBans, boardUri) {
       common.removeElement(boardIdentifier);
     }
 
-    setHashBanCells(document, hashBans);
+    exports.setHashBanCells(document, hashBans);
 
     return serializer(document);
 

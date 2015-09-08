@@ -16,7 +16,7 @@ exports.loadDependencies = function() {
 };
 
 // start of update
-function processData(data, callback) {
+exports.processData = function(data, callback) {
 
   var match = data.match(/\d+\.\d+\.\d+\.\d+/g);
 
@@ -66,7 +66,7 @@ function processData(data, callback) {
 
   torIps.bulkWrite(operations, callback);
 
-}
+};
 
 exports.updateIps = function(callback) {
 
@@ -82,7 +82,7 @@ exports.updateIps = function(callback) {
     });
 
     res.on('end', function() {
-      processData(data, callback);
+      exports.processData(data, callback);
     });
     // style exception, too simple
 
@@ -91,7 +91,7 @@ exports.updateIps = function(callback) {
 };
 
 // end of update
-function markAsProxy(req) {
+exports.markAsProxy = function(req) {
 
   if (req.headers && req.headers['x-forwarded-for']) {
     var proxy = req.headers['x-forwarded-for'];
@@ -101,7 +101,7 @@ function markAsProxy(req) {
     }
   }
 
-}
+};
 
 exports.markAsTor = function(req, callback) {
 
@@ -120,7 +120,7 @@ exports.markAsTor = function(req, callback) {
           console.log('Marked ip ' + ip + ' as TOR.');
         }
       } else {
-        markAsProxy(req);
+        exports.markAsProxy(req);
       }
       callback(null, req);
     }

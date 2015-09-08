@@ -17,7 +17,7 @@ exports.loadDependencies = function() {
 };
 
 // start of shared functions
-function getFilesArray(fileArray, modding) {
+exports.getFilesArray = function(fileArray, modding) {
 
   var toReturn = [];
 
@@ -47,9 +47,10 @@ function getFilesArray(fileArray, modding) {
 
   return toReturn;
 
-}
+};
 
-function getPostObject(post, preview, boardData, modding, userRole) {
+exports.getPostObject = function(post, preview, boardData, modding, userRole) {
+
   var toReturn = {
     name : post.name,
     signedRole : post.signedRole,
@@ -64,7 +65,7 @@ function getPostObject(post, preview, boardData, modding, userRole) {
     message : post.message,
     banMessage : post.banMessage,
     creation : post.creation,
-    files : getFilesArray(post.files, modding)
+    files : exports.getFilesArray(post.files, modding)
   };
 
   if (modding && post.ip) {
@@ -77,9 +78,10 @@ function getPostObject(post, preview, boardData, modding, userRole) {
   }
 
   return toReturn;
-}
+};
 
-function buildThreadPosts(posts, boardData, modding, userRole) {
+exports.buildThreadPosts = function(posts, boardData, modding, userRole) {
+  
   var threadPosts = [];
 
   if (posts) {
@@ -88,7 +90,8 @@ function buildThreadPosts(posts, boardData, modding, userRole) {
 
       var post = posts[i];
 
-      var postToAdd = getPostObject(post, false, boardData, modding, userRole);
+      var postToAdd = exports.getPostObject(post, false, boardData, modding,
+          userRole);
 
       threadPosts.push(postToAdd);
 
@@ -96,9 +99,9 @@ function buildThreadPosts(posts, boardData, modding, userRole) {
   }
 
   return threadPosts;
-}
+};
 
-function getThreadObject(thread, posts, boardData, modding, userRole) {
+exports.getThreadObject = function(thread, posts, board, modding, userRole) {
 
   var threadObject = {
     signedRole : thread.signedRole,
@@ -118,25 +121,25 @@ function getThreadObject(thread, posts, boardData, modding, userRole) {
     locked : thread.locked ? true : false,
     pinned : thread.pinned ? true : false,
     cyclic : thread.cyclic ? true : false,
-    files : getFilesArray(thread.files, modding),
-    posts : buildThreadPosts(posts, boardData, modding, userRole)
+    files : exports.getFilesArray(thread.files, modding),
+    posts : exports.buildThreadPosts(posts, board, modding, userRole)
   };
 
   if (modding && thread.ip) {
-    threadObject.ip = miscOps.hashIpForDisplay(thread.ip, boardData.ipSalt,
+    threadObject.ip = miscOps.hashIpForDisplay(thread.ip, board.ipSalt,
         userRole);
     threadObject.range = miscOps.getRange(thread.ip).join('.');
   }
 
   return threadObject;
-}
+};
 // end of shared functions
 
 exports.thread = function(boardUri, boardData, threadData, posts, callback,
     modding, userRole) {
 
-  var threadObject = getThreadObject(threadData, posts, boardData, modding,
-      userRole);
+  var threadObject = exports.getThreadObject(threadData, posts, boardData,
+      modding, userRole);
 
   if (modding) {
     return JSON.stringify(threadObject);
@@ -195,8 +198,8 @@ exports.preview = function(postingData, callback) {
 
   path += '.json';
 
-  gridFsHandler.writeData(JSON.stringify(getPostObject(postingData, true)),
-      path, 'application/json', metadata, callback);
+  gridFsHandler.writeData(JSON.stringify(exports.getPostObject(postingData,
+      true)), path, 'application/json', metadata, callback);
 
 };
 
@@ -219,7 +222,8 @@ exports.page = function(boardUri, page, threads, pageCount, boardData,
     for (i = 0; i < threads.length; i++) {
       var thread = threads[i];
 
-      threadsToAdd.push(getThreadObject(thread, latestPosts[thread.threadId]));
+      threadsToAdd.push(exports.getThreadObject(thread,
+          latestPosts[thread.threadId]));
 
     }
   }

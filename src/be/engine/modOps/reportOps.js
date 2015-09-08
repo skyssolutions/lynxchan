@@ -36,7 +36,7 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Closed reports {
-function getClosedReports(parameters, callback) {
+exports.readClosedReports = function(parameters, callback) {
 
   reports.find({
     closedBy : {
@@ -54,7 +54,7 @@ function getClosedReports(parameters, callback) {
     creation : -1
   }).toArray(callback);
 
-}
+};
 
 exports.getClosedReports = function(userData, parameters, callback) {
 
@@ -71,20 +71,21 @@ exports.getClosedReports = function(userData, parameters, callback) {
       } else if (!common.isInBoardStaff(userData, board)) {
         callback(lang.errDeniedBoardReportManagement);
       } else {
-        getClosedReports(parameters, callback);
+        exports.readClosedReports(parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
     callback(lang.errDeniedGlobalReportManagement);
   } else {
-    getClosedReports(parameters, callback);
+    exports.getClosedReports(parameters, callback);
   }
 
 };
 // } Section 1: Closed reports
 
 // Section 2: Create report {
-function createReport(req, report, reportedContent, parameters, callback) {
+exports.createReport = function(req, report, reportedContent, parameters,
+    callback) {
 
   var toAdd = {
     global : parameters.global,
@@ -105,13 +106,13 @@ function createReport(req, report, reportedContent, parameters, callback) {
     if (error && error.code !== 11000) {
       callback(error);
     } else {
-      iterateReports(req, reportedContent, parameters, callback);
+      exports.iterateReports(req, reportedContent, parameters, callback);
     }
   });
 
-}
+};
 
-function iterateReports(req, reportedContent, parameters, cb) {
+exports.iterateReports = function(req, reportedContent, parameters, cb) {
 
   if (!reportedContent.length) {
     cb();
@@ -138,9 +139,9 @@ function iterateReports(req, reportedContent, parameters, cb) {
           if (error) {
             cb(error);
           } else if (!count) {
-            iterateReports(req, reportedContent, parameters, cb);
+            exports.iterateReports(req, reportedContent, parameters, cb);
           } else {
-            createReport(req, report, reportedContent, parameters, cb);
+            exports.createReport(req, report, reportedContent, parameters, cb);
           }
 
         };
@@ -157,12 +158,9 @@ function iterateReports(req, reportedContent, parameters, cb) {
         // style exception, too simple
 
       }
-
     });
-
   }
-
-}
+};
 
 exports.report = function(req, reportedContent, parameters, captchaId, cb) {
 
@@ -173,7 +171,7 @@ exports.report = function(req, reportedContent, parameters, captchaId, cb) {
         if (error) {
           cb(error);
         } else {
-          iterateReports(req, reportedContent, parameters, cb);
+          exports.iterateReports(req, reportedContent, parameters, cb);
         }
 
       });
@@ -182,7 +180,7 @@ exports.report = function(req, reportedContent, parameters, captchaId, cb) {
 // } Section 2: Create report
 
 // Section 3: Close report {
-function closeReport(report, userData, callback) {
+exports.updateReport = function(report, userData, callback) {
   reports.updateOne({
     _id : new ObjectID(report._id)
   }, {
@@ -236,7 +234,7 @@ function closeReport(report, userData, callback) {
     }
 
   });
-}
+};
 
 exports.closeReport = function(userData, parameters, callback) {
 
@@ -267,14 +265,14 @@ exports.closeReport = function(userData, parameters, callback) {
           } else if (!common.isInBoardStaff(userData, board)) {
             callback(lang.errDeniedBoardReportManagement);
           } else {
-            closeReport(report, userData, callback);
+            exports.updateReport(report, userData, callback);
           }
 
         });
         // style exception, too simple
 
       } else {
-        closeReport(report, userData, callback);
+        exports.updateReport(report, userData, callback);
       }
 
     });

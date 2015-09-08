@@ -79,7 +79,7 @@ exports.getPostingToEdit = function(userData, parameters, callback) {
 };
 
 // Section 1: Thread settings {
-function setNewThreadSettings(parameters, thread, callback) {
+exports.setNewThreadSettings = function(parameters, thread, callback) {
 
   parameters.lock = parameters.lock ? true : false;
   parameters.pin = parameters.pin ? true : false;
@@ -131,9 +131,9 @@ function setNewThreadSettings(parameters, thread, callback) {
     callback(error);
 
   });
-}
+};
 
-function getThreadToChangeSettings(parameters, callback) {
+exports.getThreadToChangeSettings = function(parameters, callback) {
 
   threads.findOne({
     boardUri : parameters.boardUri,
@@ -145,11 +145,11 @@ function getThreadToChangeSettings(parameters, callback) {
       callback(lang.errThreadNotFound);
     } else {
 
-      setNewThreadSettings(parameters, thread, callback);
+      exports.setNewThreadSettings(parameters, thread, callback);
 
     }
   });
-}
+};
 
 exports.setThreadSettings = function(userData, parameters, callback) {
 
@@ -165,7 +165,7 @@ exports.setThreadSettings = function(userData, parameters, callback) {
     } else if (!common.isInBoardStaff(userData, board) && !globalStaff) {
       callback(lang.errDeniedThreadManagement);
     } else {
-      getThreadToChangeSettings(parameters, callback);
+      exports.getThreadToChangeSettings(parameters, callback);
     }
   });
 
@@ -173,7 +173,7 @@ exports.setThreadSettings = function(userData, parameters, callback) {
 // } Section 1: Thread settings
 
 // Section 2: Save edit {
-function queueRebuild(page, board, threadId, callback) {
+exports.queueRebuild = function(page, board, threadId, callback) {
   process.send({
     board : board,
     thread : threadId
@@ -185,9 +185,9 @@ function queueRebuild(page, board, threadId, callback) {
   });
 
   callback();
-}
+};
 
-function saveEdit(parameters, login, callback) {
+exports.recordEdit = function(parameters, login, callback) {
 
   var collectionToUse;
   var query;
@@ -231,18 +231,18 @@ function saveEdit(parameters, login, callback) {
         if (error) {
           callback(error);
         } else {
-          queueRebuild(thread.page, parameters.boardUri,
+          exports.queueRebuild(thread.page, parameters.boardUri,
               posting.value.threadId, callback);
         }
       });
       // style exception, too simple
 
     } else {
-      queueRebuild(posting.value.page, parameters.boardUri,
+      exports.queueRebuild(posting.value.page, parameters.boardUri,
           posting.value.threadId, callback);
     }
   });
-}
+};
 
 exports.saveEdit = function(userData, parameters, callback) {
 
@@ -269,7 +269,7 @@ exports.saveEdit = function(userData, parameters, callback) {
               callback(error);
             } else {
               parameters.markdown = markdown;
-              saveEdit(parameters, userData.login, callback);
+              exports.recordEdit(parameters, userData.login, callback);
             }
           });
       // style exception, too simple
