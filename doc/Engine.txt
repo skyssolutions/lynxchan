@@ -74,7 +74,7 @@ CHA_ID::3 - Generation queue
 	To reduce static files generation overhead, a queue in the master thread is in place to avoid double generation of files. It is reached by using process.send and sending an object with the correct parameters. Instructions of use can be found on the comment block at the beginning of generationQueue at src/be.
 
 CHA_ID::4 - Ip reading
-	Ips are read from the request.connection.remoteAddress. If a request is marked as being from TOR, the function ip from logger will return null.
+	Ips are read from the request.connection.remoteAddress. If a request is marked as being from TOR or a proxy, the function ip from logger will return null.
 
 CHA_ID::5 - Schedules
 	The module scheduleHandler is booted in the master thread and runs regular operations from time to time. Unless the application is set to run without starting a daemon.
@@ -83,4 +83,14 @@ CHA_ID::6 - Memory footprint
 	Currently, it can be expected it to use about 70 to 90MB per process. It will run at least two processes, one for the master thread and one worker. The number of workers is the number of cores in the CPU. This is because of the jsdom library. It not only uses quite some RAM by itself, but it uses a library named parse5 that uses 30mb on a single file. The guys think that using retarded amounts of RAM its A-OK, so its either using something else or forking and reducing it's memory footprint.
 
 CHA_ID::7 - Debug mode
-	Debug mode is meant to help development. It will cause crashes on any error, and will reload the templates and most of the code. It will reload the code on engine, api and form directories as well the settings and templates. It will reload it on every request that incomes to a worker and will reload on the master process on queues page generation. It will not detect changes and reload pages automatically. If you wish for changes on templates to be reflected immediatly on saved HTML on gridfs, the use of -r -nd is required.
+	Debug mode is meant to help development. It will cause crashes on any error, and will reload the templates and most of the code. It will reload the code on engine, addons, api and form directories as well the settings and templates. It will reload it on every request that incomes to a worker and will reload on the master process on queues page generation. It will not detect changes and reload pages automatically. If you wish for changes on templates to be reflected immediatly on saved HTML on gridfs, the use of -r -nd is required.
+
+CHA_ID::8 - Addons
+	Addons should be written as regular modules and be placed on the /src/be/addons directory. They can be either a single file or a directory. They should have 4 things on their exports:
+	engineVersion: string indicating the engine version the addon is designed for.
+	init: function that is run by the engine after the engine and all addons are loaded.
+	apiRequest: function that is called when a request to the api is done to this addon. Takes two parameters:
+		req: request provided by the io.js api.
+		res: response provided by the io.js. Reference for these two: https://iojs.org/api/http.html
+	formRequest: same as above, but for the form api.
+	Addons are expected to overwrite public properties of the engine's modules. For an addon to be used, it must be added to the global setting addons, an array with the name of the addons to be loaded. They will be loaded in the order they appear in the array. First they will be loaded in only after all of them are loaded, the function init() will be executed. Refer to the example addon.

@@ -15,7 +15,7 @@ var miscOps;
 var displayMaxBannerSize;
 var displayMaxFlagSize;
 
-var boardSettingsRelation = {
+exports.boardSettingsRelation = {
   disableIds : 'disableIdsCheckbox',
   disableCaptcha : 'disableCaptchaCheckbox',
   forceAnonymity : 'forceAnonymityCheckbox',
@@ -25,7 +25,7 @@ var boardSettingsRelation = {
   unindex : 'unindexCheckbox'
 };
 
-var boardFieldsRelation = {
+exports.boardFieldsRelation = {
   boardNameField : 'boardName',
   tagsField : 'tags',
   boardDescriptionField : 'boardDescription',
@@ -34,11 +34,11 @@ var boardFieldsRelation = {
   anonymousNameField : 'anonymousName'
 };
 
-var boardControlIdentifiers = [ 'addVolunteerBoardIdentifier',
+exports.boardControlIdentifiers = [ 'addVolunteerBoardIdentifier',
     'deletionIdentifier', 'transferBoardIdentifier', 'boardSettingsIdentifier',
     'customCssIdentifier', 'customSpoilerIdentifier' ];
 
-var boardManagementLinks = [ {
+exports.boardManagementLinks = [ {
   page : 'closedReports',
   element : 'closedReportsLink'
 }, {
@@ -66,17 +66,9 @@ var boardManagementLinks = [ {
 
 var siteSettingsRelation;
 
-exports.loadDependencies = function() {
+exports.getSiteSettingsRelation = function() {
 
-  common = require('..').common;
-  displayMaxBannerSize = common.formatFileSize(settings.maxBannerSizeB);
-  displayMaxFlagSize = common.formatFileSize(settings.maxFlagSizeB);
-  templateHandler = require('../../templateHandler');
-  lang = require('../../langOps').languagePack();
-  miscOps = require('../../miscOps');
-
-  siteSettingsRelation = {
-
+  return {
     fieldAddress : {
       setting : 'address',
       type : 'string'
@@ -283,6 +275,19 @@ exports.loadDependencies = function() {
 
 };
 
+exports.loadDependencies = function() {
+
+  common = require('..').common;
+  displayMaxBannerSize = common.formatFileSize(settings.maxBannerSizeB);
+  displayMaxFlagSize = common.formatFileSize(settings.maxFlagSizeB);
+  templateHandler = require('../../templateHandler');
+  lang = require('../../langOps').languagePack();
+  miscOps = require('../../miscOps');
+
+  siteSettingsRelation = exports.getSiteSettingsRelation();
+
+};
+
 exports.bannerManagement = function(boardUri, banners) {
 
   try {
@@ -337,18 +342,18 @@ exports.setBoardControlCheckBoxes = function(document, boardData) {
 
   for (var i = 0; i < settings.length; i++) {
     var setting = settings[i];
-    document.getElementById(boardSettingsRelation[setting]).setAttribute(
-        'checked', true);
+    document.getElementById(exports.boardSettingsRelation[setting])
+        .setAttribute('checked', true);
   }
 
 };
 
 exports.setBoardFields = function(document, boardData) {
 
-  for ( var key in boardFieldsRelation) {
+  for ( var key in exports.boardFieldsRelation) {
 
     document.getElementById(key).setAttribute('value',
-        boardData[boardFieldsRelation[key]] || '');
+        boardData[exports.boardFieldsRelation[key]] || '');
   }
 
   var messageContent = boardData.boardMessage || '';
@@ -383,9 +388,9 @@ exports.setVolunteersDiv = function(document, boardData) {
 
 exports.setBoardOwnerControls = function(document, boardData) {
 
-  for (var i = 0; i < boardControlIdentifiers.length; i++) {
-    document.getElementById(boardControlIdentifiers[i]).setAttribute('value',
-        boardData.boardUri);
+  for (var i = 0; i < exports.boardControlIdentifiers.length; i++) {
+    document.getElementById(exports.boardControlIdentifiers[i]).setAttribute(
+        'value', boardData.boardUri);
   }
 
   if (!boardData.usesCustomSpoiler) {
@@ -400,8 +405,8 @@ exports.setBoardOwnerControls = function(document, boardData) {
 
 exports.setBoardManagementLinks = function(document, boardData) {
 
-  for (var i = 0; i < boardManagementLinks.length; i++) {
-    var link = boardManagementLinks[i];
+  for (var i = 0; i < exports.boardManagementLinks.length; i++) {
+    var link = exports.boardManagementLinks[i];
 
     var url = '/' + link.page + '.js?boardUri=' + boardData.boardUri;
     document.getElementById(link.element).href = url;

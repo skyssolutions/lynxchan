@@ -13,7 +13,7 @@ var lang;
 
 var MAX_STAFF_ROLE = 3;
 
-var MIMETYPES = {
+exports.MIMETYPES = {
   a : 'application/octet-stream',
   ai : 'application/postscript',
   aif : 'audio/x-aiff',
@@ -161,7 +161,7 @@ exports.getMime = function(pathName) {
 
   if (pathParts.length) {
     var extension = pathParts[pathParts.length - 1];
-    mime = MIMETYPES[extension.toLowerCase()] || 'text/plain';
+    mime = exports.MIMETYPES[extension.toLowerCase()] || 'text/plain';
 
   } else {
     mime = 'text/plain';

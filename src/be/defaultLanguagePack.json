@@ -280,5 +280,6 @@
   "errDeniedIpDeletion": "You are now allowed to delete all posts from a single ip.",
   "msgDeletedFromIp": "Posts from ip deleted.",
   "errInvalidRange": "Invalid range informed.",
-  "errNoPassword": "No password provided."
+  "errNoPassword": "No password provided.",
+  "errUnloadedAddon": "The requested addon is not enabled."
 }

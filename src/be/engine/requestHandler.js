@@ -72,7 +72,17 @@ exports.processApiRequest = function(req, res) {
     if (maintenance) {
       apiOps.outputResponse(null, null, 'maintenance', res);
     } else {
-      require('../api' + pathName).process(req, res);
+
+      var modulePath;
+
+      if (pathName.indexOf('/addon.js', 0) !== -1) {
+        modulePath = '../api/addon.js';
+      } else {
+        modulePath = '../api' + pathName;
+      }
+
+      require(modulePath).process(req, res);
+
     }
 
   } catch (error) {
@@ -98,7 +108,15 @@ exports.processFormRequest = function(req, res) {
         }
       });
     } else {
-      require('../form' + pathName).process(req, res);
+      var modulePath;
+
+      if (pathName.indexOf('/addon.js', 0) !== -1) {
+        modulePath = '../form/addon.js';
+      } else {
+        modulePath = '../form' + pathName;
+      }
+
+      require(modulePath).process(req, res);
     }
 
   } catch (error) {
@@ -139,9 +157,11 @@ exports.outputGfsFile = function(req, res) {
 
   var splitArray = pathName.split('/');
 
+  var firstPart = splitArray[1];
+
   var gotSecondString = splitArray.length === 2 && splitArray[1].length;
 
-  if (pathName.indexOf('.js', pathName.length - 3) !== -1) {
+  if (firstPart.indexOf('.js', firstPart.length - 3) !== -1) {
 
     exports.processFormRequest(req, res);
 

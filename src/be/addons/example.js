@@ -1,7 +1,4 @@
-var msgLoading = 'Loading add-on, at this point its safe';
-msgLoading += ' to reference engine components.';
-
-console.log(msgLoading);
+//Loading add-on, at this point its safe to reference engine components
 
 var templateHandler = require('../engine/templateHandler');
 var lang = require('../engine/langOps').languagePack();
@@ -21,34 +18,11 @@ exports.engineVersion = '1.2.0';
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
 
-function setTopBoards(document, boards, boardsDiv) {
-
-  for (var i = 0; i < boards.length; i++) {
-
-    var board = boards[i];
-
-    var link = document.createElement('a');
-
-    link.href = '/' + board.boardUri + '/';
-    link.innerHTML = '/' + board.boardUri + '/ - ' + board.boardName;
-
-    if (i) {
-      boardsDiv.appendChild(document.createElement('br'));
-    }
-
-    boardsDiv.appendChild(link);
-
-  }
-
-}
-
 exports.init = function() {
 
-  var msgInit = 'Initializing addon. At this point its safe';
-  msgInit += ' to reference different addons.';
+  // Initializing addon. At this point its safe to reference different addons
 
-  console.log(msgInit);
-
+  // pick an exposed function of the module and replace it
   static.frontPage = function(boards, callback) {
 
     try {
@@ -67,7 +41,9 @@ exports.init = function() {
       if (!boards) {
         common.removeElement(boardsDiv);
       } else {
-        setTopBoards(document, boards, boardsDiv);
+        // you don't have to overwrite every thing, you can adapt the reference
+        // and keep using the module function, un this case, setTopBoards
+        static.setTopBoards(document, boards, boardsDiv);
       }
 
       gridFs.writeData(serializer(document), '/', 'text/html', {}, callback);
@@ -75,5 +51,21 @@ exports.init = function() {
       callback(error);
     }
   };
+
+};
+
+// called for requests to the api
+exports.apiRequest = function(req, res) {
+
+  res.end(JSON.stringify({
+    msg : 'Example addon api response.'
+  }, null, 2));
+
+};
+
+// called for form request
+exports.formRequest = function(req, res) {
+
+  res.end('Example addon form response.');
 
 };

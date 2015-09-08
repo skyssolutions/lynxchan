@@ -13,9 +13,9 @@ var miscOps;
 
 var boardCreationRequirement = settings.boardCreationRequirement;
 
-var optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
+exports.optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
 
-var accountSettingsRelation = {
+exports.accountSettingsRelation = {
   alwaysSignRole : 'checkboxAlwaysSign'
 };
 
@@ -203,7 +203,8 @@ exports.setAccountSettingsCheckbox = function(settings, document) {
   for (var i = 0; i < settings.length; i++) {
     var setting = settings[i];
 
-    var checkbox = document.getElementById(accountSettingsRelation[setting]);
+    var checkbox = document
+        .getElementById(exports.accountSettingsRelation[setting]);
 
     checkbox.setAttribute('checked', true);
   }
@@ -346,9 +347,9 @@ exports.setLogPages = function(document, parameters, pageCount) {
       url += '&type=' + parameters.type;
     }
 
-    for (var j = 0; j < optionalStringLogParameters.length; j++) {
+    for (var j = 0; j < exports.optionalStringLogParameters.length; j++) {
 
-      var parameter = optionalStringLogParameters[j];
+      var parameter = exports.optionalStringLogParameters[j];
 
       if (parameters[parameter]) {
         url += '&' + parameter + '=' + parameters[parameter];
