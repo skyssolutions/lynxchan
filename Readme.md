@@ -1,6 +1,3 @@
-# Status:
-Beta
-
 # About
 **LynxChan** is a chan engine designed with the following goals in mind:
 1. Support users not using javascript for the basic functions.
