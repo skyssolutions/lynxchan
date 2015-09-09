@@ -344,6 +344,8 @@ exports.streamFile = function(stats, req, callback, cookies, res, optCon) {
 
 exports.shouldOutput304 = function(lastSeen, stats) {
 
+  stats.metadata = stats.metadata || {};
+
   var lastM = stats.metadata.lastModified || stats.uploadDate;
 
   var mTimeMatches = lastSeen === lastM.toString();

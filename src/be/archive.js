@@ -206,6 +206,8 @@ exports.removeFiles = function(name, callback) {
 // start of outputting file
 function shouldOutput304(lastSeen, stats) {
 
+  stats.metadata = stats.metadata || {};
+
   var lastM = stats.metadata.lastModified || stats.uploadDate;
 
   var mTimeMatches = lastSeen === lastM.toString();

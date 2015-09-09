@@ -9,7 +9,7 @@ Beta
 4. Having a modular front-end so people can easily create and use different templates.
 
 # Required software
-* [Io.js](http://iojs.org), I suggest installing from source code. Just remember to checkout the latest tag instead of using the latest commit. I recommend using version 2.5.0 for production. I had random crashes with both 3.2.0 and 3.3.0.
+* [Io.js](http://iojs.org), I suggest installing from source code. Just remember to checkout a tag before building. I recommend using version 2.5.0 for production. I had random crashes with both 3.2.0 and 3.3.0. *WARNING*: they have just merged back into node. Installing from source at 4.0.0 onwards will NOT install iojs on your system, only node. Creating a soft link from node to iojs seemed to work fine. I will change everything to node.js once I feel 4.x is stable enough. 
 * [MongoDB](https://www.mongodb.org/)
 * [ImageMagick](http://www.imagemagick.org/script/index.php)
 * [ffmpeg](https://www.ffmpeg.org/) if mediaThumb setting is enabled. Requires zlib-devel on centOS.
