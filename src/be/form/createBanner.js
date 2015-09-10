@@ -2,11 +2,11 @@
 
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
-var boardOps = require('../engine/boardOps').banners;
+var bannerOps = require('../engine/bannerOps');
 
 function createBanner(parameters, userData, res) {
 
-  boardOps.addBanner(userData, parameters, function createdBanner(error) {
+  bannerOps.addBanner(userData, parameters, function createdBanner(error) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {

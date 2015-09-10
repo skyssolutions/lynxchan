@@ -281,5 +281,7 @@
   "msgDeletedFromIp": "Posts from ip deleted.",
   "errInvalidRange": "Invalid range informed.",
   "errNoPassword": "No password provided.",
-  "errUnloadedAddon": "The requested addon is not enabled."
+  "errUnloadedAddon": "The requested addon is not enabled.",
+  "titGlobalBanners": "Global banners",
+  "errDeniedGlobalBannerManagement": "You are not allowed to manage global banners."
 }

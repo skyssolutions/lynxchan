@@ -3,3 +3,5 @@
 /src/be/server.key
 /src/be/server.pem
 /src/fe
+/src/be/addons
+!/src/be/addons/example.js

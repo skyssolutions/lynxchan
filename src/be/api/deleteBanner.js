@@ -1,11 +1,11 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var boardOps = require('../engine/boardOps').banners;
+var bannerOps = require('../engine/bannerOps');
 
 function deleteBanner(parameters, userData, res) {
 
-  boardOps.deleteBanner(userData, parameters, function deletedBanner(error) {
+  bannerOps.deleteBanner(userData, parameters, function deletedBanner(error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {

@@ -255,3 +255,5 @@ msgDeletedFromIp: message displayed after deleting postings from an ip.
 errInvalidRange: error thrown when an invalid range is informed.
 errNoPassword: error thrown when no password is provided for account creation.
 errUnloadedAddon: error thrown when an user tries to request an addon that is not activated.
+titGlobalBanners: title of the global banners management page.
+errDeniedGlobalBannerManagement: error thrown when the user is not allowed to manage global banners.

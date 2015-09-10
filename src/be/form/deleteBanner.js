@@ -1,12 +1,12 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var boardOps = require('../engine/boardOps').banners;
+var bannerOps = require('../engine/bannerOps');
 var lang = require('../engine/langOps').languagePack();
 
 function deleteBanner(parameters, userData, res) {
 
-  boardOps.deleteBanner(userData, parameters, function deletedBanner(error,
+  bannerOps.deleteBanner(userData, parameters, function deletedBanner(error,
       board) {
     if (error) {
       formOps.outputError(error, 500, res);

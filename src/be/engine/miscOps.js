@@ -450,6 +450,10 @@ exports.getParametersArray = function() {
     type : 'boolean',
     setting : 'verbose'
   }, {
+    param : 'useGlobalBanners',
+    type : 'boolean',
+    setting : 'useGlobalBanners'
+  }, {
     param : 'torAccess',
     type : 'range',
     limit : 2,

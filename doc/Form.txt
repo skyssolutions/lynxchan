@@ -884,6 +884,7 @@ Json output(Object): object with the current global settings. It contains the fo
     allowGlobalBoardModeration(Boolean): indicates the global staff are allowed to moderate boards.
     boardCreationRequirement(Number): indicates the minimum global role required for board creation.
     addons(Array): array of loaded addons.
+    useGlobalBanners(Boolean): indicates that boards are using global banners.
 
 ------------------------------------------------------------------------------------------
 
@@ -942,6 +943,7 @@ Parameters:
     disableTopBoards(Boolean): disables the top boards listing on the front-page.
     allowGlobalBoardModeration(Boolean): allows global staff to moderate boards.
     addons(Array): array of addons to be loaded.
+    useGlobalBanners(Boolean): makes boards use the global banners.
 
 ------------------------------------------------------------------------------------------
 

@@ -81,7 +81,7 @@ exports.getPostObject = function(post, preview, boardData, modding, userRole) {
 };
 
 exports.buildThreadPosts = function(posts, boardData, modding, userRole) {
-  
+
   var threadPosts = [];
 
   if (posts) {
@@ -462,7 +462,8 @@ exports.globalSettings = function(globalSettings) {
     disableTopBoards : globalSettings.disableTopBoards,
     allowGlobalBoardModeration : globalSettings.allowGlobalBoardModeration,
     boardCreationRequirement : globalSettings.boardCreationRequirement,
-    addons : globalSettings.addons
+    addons : globalSettings.addons,
+    useGlobalBanners : globalSettings.useGlobalBanners
   });
 
 };

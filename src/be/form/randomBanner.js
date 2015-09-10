@@ -1,8 +1,10 @@
 'use strict';
 
 var url = require('url');
-var defaultBanner = require('../boot').defaultBanner();
+var boot = require('../boot');
+var defaultBanner = boot.defaultBanner();
 var files = require('../db').files();
+var settings = boot.getGeneralSettings();
 var gridFsHandler = require('../engine/gridFsHandler');
 var miscOps = require('../engine/miscOps');
 var formOps = require('../engine/formOps');
@@ -22,7 +24,9 @@ exports.process = function(req, res) {
   var parameters = url.parse(req.url, true).query;
 
   files.find({
-    'metadata.boardUri' : parameters.boardUri,
+    'metadata.boardUri' : settings.useGlobalBanners ? {
+      $exists : false
+    } : parameters.boardUri,
     'metadata.type' : 'banner'
   }).toArray(function(error, banners) {
     if (error) {

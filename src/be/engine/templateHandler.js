@@ -281,7 +281,8 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
         template : 'gManagement',
         fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
             'reportDiv', 'bansLink', 'rangeBansLink', 'hashBansLink',
-            'globalSettingsLink', 'archiveDeletionLink', 'ipDeletionForm' ]
+            'globalSettingsLink', 'archiveDeletionLink', 'ipDeletionForm',
+            'globalBannersLink' ]
       },
       {
         template : 'bManagement',
@@ -397,7 +398,8 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
             'comboBoardCreationRequirement', 'checkboxServeArchive',
             'fieldMaxTags', 'checkboxDisableFloodCheck', 'comboProxyAccess',
             'comboMinClearIpRole', 'fieldThumbExtension',
-            'checkboxDisableTopBoards', 'checkboxGlobalBoardModeration' ]
+            'checkboxDisableTopBoards', 'checkboxGlobalBoardModeration',
+            'checkboxGlobalBanners' ]
       }, {
         template : 'archiveDeletionPage',
         fields : []

@@ -1,11 +1,11 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var boardOps = require('../engine/boardOps').banners;
+var bannerOps = require('../engine/bannerOps');
 
 function createBanner(parameters, userData, res) {
 
-  boardOps.addBanner(userData, parameters, function createdBanner(error) {
+  bannerOps.addBanner(userData, parameters, function createdBanner(error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {

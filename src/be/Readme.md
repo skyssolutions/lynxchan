@@ -106,6 +106,7 @@ Settings files that goes into the settings directory:
 * `disableTopBoards`(Boolean): if true, the top boards will not be shown in the front-page.
 * `allowGlobalBoardModeration`(Boolean): if true, global staff will be allowed to act as board moderators too.
 * `addons`(Array): array of addons to be loaded. They will be loaded in the order they appear in this array.
+* `useGlobalBanners`(Boolean): indicates if boards should use global banners. 
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

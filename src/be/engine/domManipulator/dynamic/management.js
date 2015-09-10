@@ -217,6 +217,10 @@ exports.getSiteSettingsRelation = function() {
       setting : 'multipleReports',
       type : 'boolean'
     },
+    checkboxGlobalBanners : {
+      setting : 'useGlobalBanners',
+      type : 'boolean'
+    },
     checkboxDisableFloodCheck : {
       setting : 'disableFloodCheck',
       type : 'boolean'
@@ -285,53 +289,6 @@ exports.loadDependencies = function() {
   miscOps = require('../../miscOps');
 
   siteSettingsRelation = exports.getSiteSettingsRelation();
-
-};
-
-exports.bannerManagement = function(boardUri, banners) {
-
-  try {
-
-    var document = jsdom(templateHandler.bannerManagementPage);
-
-    document.title = lang.titBanners.replace('{$board}', boardUri);
-
-    document.getElementById('maxSizeLabel').innerHTML = displayMaxBannerSize;
-
-    document.getElementById('boardIdentifier').setAttribute('value', boardUri);
-
-    var bannerDiv = document.getElementById('bannersDiv');
-
-    for (var i = 0; i < banners.length; i++) {
-      var banner = banners[i];
-
-      var cell = document.createElement('form');
-      cell.innerHTML = templateHandler.bannerCell;
-
-      common.setFormCellBoilerPlate(cell, '/deleteBanner.js', 'bannerCell');
-
-      cell.getElementsByClassName('bannerImage')[0].src = banner.filename;
-
-      cell.getElementsByClassName('bannerIdentifier')[0].setAttribute('value',
-          banner._id);
-
-      bannerDiv.appendChild(cell);
-    }
-
-    return serializer(document);
-
-  } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
-    if (debug) {
-      throw error;
-    }
-
-    return error.toString();
-
-  }
 
 };
 
@@ -551,10 +508,11 @@ exports.setGlobalManagementLinks = function(userRole, document) {
     common.removeElement(document.getElementById('globalSettingsLink'));
   }
 
-  var deleteArchive = userRole < 2;
+  var admin = userRole < 2;
 
-  if (!deleteArchive) {
+  if (!admin) {
     common.removeElement(document.getElementById('archiveDeletionLink'));
+    common.removeElement(document.getElementById('globalBannersLink'));
   }
 };
 
@@ -854,3 +812,64 @@ exports.globalSettings = function(settings) {
   }
 };
 // } Section 6: Global settings
+
+// Section 7: Banners {
+exports.addBannerCells = function(document, banners) {
+
+  var bannerDiv = document.getElementById('bannersDiv');
+
+  for (var i = 0; i < banners.length; i++) {
+    var banner = banners[i];
+
+    var cell = document.createElement('form');
+    cell.innerHTML = templateHandler.bannerCell;
+
+    common.setFormCellBoilerPlate(cell, '/deleteBanner.js', 'bannerCell');
+
+    cell.getElementsByClassName('bannerImage')[0].src = banner.filename;
+
+    cell.getElementsByClassName('bannerIdentifier')[0].setAttribute('value',
+        banner._id);
+
+    bannerDiv.appendChild(cell);
+  }
+
+};
+
+exports.bannerManagement = function(boardUri, banners) {
+
+  try {
+
+    var document = jsdom(templateHandler.bannerManagementPage);
+
+    if (boardUri) {
+      document.title = lang.titBanners.replace('{$board}', boardUri);
+      document.getElementById('boardIdentifier')
+          .setAttribute('value', boardUri);
+
+    } else {
+      document.title = lang.titGlobalBanners;
+      common.removeElement(document.getElementById('boardIdentifier'));
+    }
+
+    document.getElementById('maxSizeLabel').innerHTML = displayMaxBannerSize;
+
+    exports.addBannerCells(document, banners);
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+
+  }
+
+};
+// } Section 7: Banners
