@@ -1645,6 +1645,32 @@ archiveDeletionPage:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::53
+
+hashBanPage:
+
+Elements:
+hashBansPanel:
+    use: have children appended to it.
+    description: panel where the banned uploaded files will be displayed.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::54
+
+hashBanCellDisplay*:
+Root element: div
+
+Elements:
+labelFile:
+    use: have it's innerHTML manipulated.
+    description: label where the name of the banned file is informed.
+
+labelBoard:
+    use: have it's innerHTML manipulated.
+    description: label where the board that applied the ban is informed.
+
+------------------------------------------------------------------------------------------
 
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.
 

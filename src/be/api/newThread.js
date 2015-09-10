@@ -4,7 +4,20 @@ var apiOps = require('../engine/apiOps');
 var postingOps = require('../engine/postingOps').thread;
 var mandatoryParameters = [ 'message', 'boardUri' ];
 
-function createThread(req, res, parameters, userData, captchaId) {
+function createThread(req, userData, parameters, captchaId, res) {
+
+  postingOps.newThread(req, userData, parameters, captchaId,
+      function threadCreated(error, id) {
+        if (error) {
+          apiOps.outputError(error, res);
+        } else {
+          apiOps.outputResponse(null, id, 'ok', res);
+        }
+      });
+
+}
+
+function checkBans(req, res, parameters, userData, captchaId) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -16,14 +29,13 @@ function createThread(req, res, parameters, userData, captchaId) {
     } else {
 
       // style exception, too simple
-      postingOps.newThread(req, userData, parameters, captchaId,
-          function threadCreated(error, id) {
-            if (error) {
-              apiOps.outputError(error, res);
-            } else {
-              apiOps.outputResponse(null, id, 'ok', res);
-            }
-          });
+      apiOps.checkForHashBan(parameters, res, function checkedHashBan(error) {
+        if (error) {
+          res.outputError(error, res);
+        } else {
+          createThread(req, userData, parameters, captchaId, res);
+        }
+      });
       // style exception, too simple
 
     }
@@ -34,6 +46,6 @@ exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters, captchaId) {
-    createThread(req, res, parameters, userData, captchaId);
+    checkBans(req, res, parameters, userData, captchaId);
   }, true);
 };

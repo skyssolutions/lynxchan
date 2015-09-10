@@ -6,7 +6,6 @@ var im = require('gm').subClass({
   imageMagick : true
 });
 var db = require('../db');
-var hashBans = db.hashBans();
 var threads = db.threads();
 var boards = db.boards();
 var exec = require('child_process').exec;
@@ -326,21 +325,6 @@ exports.transferFilesToGS = function(boardData, threadId, postId, file,
       });
 };
 
-exports.checkForHashBan = function(boardUri, md5, callback) {
-
-  hashBans.count({
-    md5 : md5,
-    $or : [ {
-      boardUri : {
-        $exists : false
-      }
-    }, {
-      boardUri : boardUri
-    } ]
-  }, callback);
-
-};
-
 exports.generateVideoThumb = function(boardData, threadId, postId, file,
     tooSmall, callback) {
 
@@ -511,29 +495,15 @@ exports.saveUploads = function(boardData, threadId, postId, parameters,
 
     var file = parameters.files[index];
 
-    exports.checkForHashBan(boardData.boardUri, file.md5, function isBanned(
-        error, banned) {
-      if (error) {
-        callback(error);
-      } else if (banned) {
-        exports.saveUploads(boardData, threadId, postId, parameters, callback,
-            index + 1);
-      } else {
-
-        // style exception, too simple
-        exports.processFile(boardData, threadId, postId, file, parameters,
-            function processedFile(error) {
-              if (error) {
-                callback(error);
-              } else {
-                exports.saveUploads(boardData, threadId, postId, parameters,
-                    callback, index + 1);
-              }
-            });
-        // style exception, too simple
-
-      }
-    });
+    exports.processFile(boardData, threadId, postId, file, parameters,
+        function processedFile(error) {
+          if (error) {
+            callback(error);
+          } else {
+            exports.saveUploads(boardData, threadId, postId, parameters,
+                callback, index + 1);
+          }
+        });
 
   } else {
     callback();

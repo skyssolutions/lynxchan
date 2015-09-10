@@ -33,6 +33,9 @@ The global status are:
     maintenance: site is going under maintenance.
     formatNotAllowed: an uploaded file has a format that is now allowed.
     banned: user is banned. In this case, data will contain and object with the following fields: reason, board, expiration.
+    hashBan: user tried to upload a banned file. In this case, data will contain an array where each object contains the following fields:
+        file: name provided for the file.
+        boardUri: board uri of the hash ban. If not informed, the file is banned globally.
 
 The back-end will truncate strings longer than the maximum length.
 Files should be sent in a parameter called 'files' containing an array where each object contains the following fields:

@@ -6,7 +6,23 @@ var captchaOps = require('../engine/captchaOps');
 var lang = require('../engine/langOps').languagePack();
 var mandatoryParameters = [ 'message', 'boardUri', 'threadId' ];
 
-function createPost(req, res, parameters, userData, captchaId) {
+function createPost(req, userData, parameters, captchaId, res) {
+
+  postingOps.newPost(req, userData, parameters, captchaId,
+      function postCreated(error, id) {
+        if (error) {
+          formOps.outputError(error, 500, res);
+        } else {
+          var redirectLink = '../' + parameters.boardUri;
+          redirectLink += '/res/' + parameters.threadId;
+          redirectLink += '.html#' + id;
+          formOps.outputResponse(lang.msgPostCreated, redirectLink, res);
+        }
+      });
+
+}
+
+function checkBans(req, res, parameters, userData, captchaId) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -20,18 +36,14 @@ function createPost(req, res, parameters, userData, captchaId) {
         } else {
 
           // style exception, too simple
-          postingOps.newPost(req, userData, parameters, captchaId,
-              function postCreated(error, id) {
-                if (error) {
-                  formOps.outputError(error, 500, res);
-                } else {
-                  var redirectLink = '../' + parameters.boardUri;
-                  redirectLink += '/res/' + parameters.threadId;
-                  redirectLink += '.html#' + id;
-                  formOps
-                      .outputResponse(lang.msgPostCreated, redirectLink, res);
-                }
-              });
+          formOps.checkForHashBan(parameters, res, function checkedHashBans(
+              error) {
+            if (error) {
+              formOps.outputError(error, 500, res);
+            } else {
+              createPost(req, userData, parameters, captchaId, res);
+            }
+          });
           // style exception, too simple
 
         }
@@ -46,7 +58,7 @@ exports.process = function(req, res) {
       parameters) {
 
     var cookies = formOps.getCookies(req);
-    createPost(req, res, parameters, userData, cookies.captchaid);
+    checkBans(req, res, parameters, userData, cookies.captchaid);
   }, true);
 
 };

@@ -283,5 +283,6 @@
   "errNoPassword": "No password provided.",
   "errUnloadedAddon": "The requested addon is not enabled.",
   "titGlobalBanners": "Global banners",
-  "errDeniedGlobalBannerManagement": "You are not allowed to manage global banners."
+  "errDeniedGlobalBannerManagement": "You are not allowed to manage global banners.",
+  "titHashBan": "Banned file"
 }

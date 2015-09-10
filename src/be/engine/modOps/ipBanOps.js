@@ -90,7 +90,7 @@ exports.getBans = function(userData, parameters, callback) {
   } else if (!isOnGlobalStaff) {
     callback(lang.errDeniedGlobalBanManagement);
   } else {
-    exports.getBans(parameters, callback);
+    exports.readBans(parameters, callback);
   }
 
 };
@@ -136,7 +136,7 @@ exports.getRangeBans = function(userData, parameters, callback) {
   } else if (!isOnGlobalStaff) {
     callback(lang.errDeniedGlobalRangeBanManagement);
   } else {
-    exports.getRangeBans(parameters, callback);
+    exports.readRangeBans(parameters, callback);
   }
 
 };

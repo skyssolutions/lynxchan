@@ -6,7 +6,21 @@ var captchaOps = require('../engine/captchaOps');
 var lang = require('../engine/langOps').languagePack();
 var mandatoryParameters = [ 'message', 'boardUri' ];
 
-function createThread(req, res, parameters, userData, captchaId) {
+function createThread(req, userData, parameters, captchaId, res) {
+  postingOps.newThread(req, userData, parameters, captchaId,
+      function threadCreated(error, id) {
+        if (error) {
+          formOps.outputError(error, 500, res);
+        } else {
+          var redirectLink = '../' + parameters.boardUri;
+          redirectLink += '/res/' + id + '.html';
+          formOps.outputResponse(lang.msgThreadCreated, redirectLink, res);
+        }
+      });
+
+}
+
+function checkBans(req, res, parameters, userData, captchaId) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -20,17 +34,14 @@ function createThread(req, res, parameters, userData, captchaId) {
         } else {
 
           // style exception, too simple
-          postingOps.newThread(req, userData, parameters, captchaId,
-              function threadCreated(error, id) {
-                if (error) {
-                  formOps.outputError(error, 500, res);
-                } else {
-                  var redirectLink = '../' + parameters.boardUri;
-                  redirectLink += '/res/' + id + '.html';
-                  formOps.outputResponse(lang.msgThreadCreated, redirectLink,
-                      res);
-                }
-              });
+          formOps.checkForHashBan(parameters, res, function checkedHashBans(
+              error) {
+            if (error) {
+              formOps.outputError(error, 500, res);
+            } else {
+              createThread(req, userData, parameters, captchaId, res);
+            }
+          });
           // style exception, too simple
 
         }
@@ -46,7 +57,7 @@ exports.process = function(req, res) {
 
     var cookies = formOps.getCookies(req);
 
-    createThread(req, res, parameters, userData, cookies.captchaid);
+    checkBans(req, res, parameters, userData, cookies.captchaid);
   }, true);
 
 };

@@ -708,3 +708,55 @@ exports.archiveDeletion = function() {
   }
 
 };
+
+// Section 4: Hash ban page {
+exports.setHashBanCells = function(document, hashBans) {
+
+  var panel = document.getElementById('hashBansPanel');
+
+  for (var i = 0; i < hashBans.length; i++) {
+
+    var hashBan = hashBans[i];
+
+    var cell = document.createElement('div');
+    cell.innerHTML = templateHandler.hashBanCellDisplay;
+    cell.setAttribute('class', 'hashBanCellDisplay');
+
+    cell.getElementsByClassName('labelFile')[0].innerHTML = hashBan.file;
+
+    var boardLabel = cell.getElementsByClassName('labelBoard')[0];
+
+    boardLabel.innerHTML = hashBan.boardUri || lang.miscAllBoards;
+
+    panel.appendChild(cell);
+
+  }
+
+};
+
+exports.hashBan = function(hashBans) {
+
+  try {
+
+    var document = jsdom(templateHandler.hashBanPage);
+
+    document.title = lang.titHashBan;
+
+    exports.setHashBanCells(document, hashBans);
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+
+};
+// } Section 4: Hash ban page

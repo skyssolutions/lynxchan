@@ -40,6 +40,7 @@ exports.readHashBans = function(parameters, callback) {
     callback(error, hashBans);
   });
 };
+
 exports.getHashBans = function(userData, parameters, callback) {
 
   var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
@@ -61,7 +62,7 @@ exports.getHashBans = function(userData, parameters, callback) {
   } else if (!isOnGlobalStaff) {
     callback(lang.errDeniedGlobalHashBansManagement);
   } else {
-    exports.getHashBans(parameters, callback);
+    exports.readHashBans(parameters, callback);
   }
 };
 // } Section 1: Hash bans
@@ -237,3 +238,75 @@ exports.liftHashBan = function(userData, parameters, cb) {
   }
 };
 // } Section 3: Lift hash ban
+
+// Section 4: Check for hash ban {
+exports.getProcessedBans = function(foundBans, files) {
+
+  var processedBans = [];
+
+  for (var i = 0; i < foundBans.length; i++) {
+
+    var foundBan = foundBans[i];
+
+    for (var j = 0; j < files.length; j++) {
+
+      var file = files[j];
+
+      if (file.md5 === foundBan.md5) {
+
+        processedBans.push({
+          file : file.title,
+          boardUri : foundBan.boardUri
+        });
+
+        break;
+      }
+
+    }
+
+  }
+
+  return processedBans;
+
+};
+
+exports.checkForHashBans = function(parameters, callback) {
+
+  var files = parameters.files;
+  var boardUri = parameters.boardUri;
+
+  if (!files.length) {
+    callback();
+    return;
+  }
+
+  var md5s = [];
+
+  for (var i = 0; i < files.length; i++) {
+    md5s.push(files[i].md5);
+  }
+
+  hashBans.find({
+    md5 : {
+      $in : md5s
+    },
+    $or : [ {
+      boardUri : {
+        $exists : false
+      }
+    }, {
+      boardUri : boardUri
+    } ]
+  }).toArray(function(error, foundBans) {
+    if (error) {
+      callback(error);
+    } else if (!foundBans.length) {
+      callback();
+    } else {
+      callback(null, exports.getProcessedBans(foundBans, files));
+    }
+
+  });
+
+};
+// } Section 4: Check for hash ban

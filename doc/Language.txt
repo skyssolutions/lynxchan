@@ -257,3 +257,4 @@ errNoPassword: error thrown when no password is provided for account creation.
 errUnloadedAddon: error thrown when an user tries to request an addon that is not activated.
 titGlobalBanners: title of the global banners management page.
 errDeniedGlobalBannerManagement: error thrown when the user is not allowed to manage global banners.
+titHashBan: title of the page that displays a hash ban when the user tries to upload a banned file.

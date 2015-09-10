@@ -32,7 +32,7 @@ exports.loadDependencies = function() {
 
   accountOps = require('./accountOps');
   miscOps = require('./miscOps');
-  modOps = require('./modOps').ipBan;
+  modOps = require('./modOps');
   uploadHandler = require('./uploadHandler');
   allowedMimes = uploadHandler.supportedMimes();
   videoMimes = uploadHandler.videoMimes();
@@ -370,9 +370,24 @@ exports.outputResponse = function(auth, data, status, res) {
   res.end(JSON.stringify(output));
 };
 
+exports.checkForHashBan = function(parameters, res, callback) {
+
+  modOps.hashBan.checkForHashBans(parameters,
+      function gotBans(error, hashBans) {
+        if (error) {
+          callback(error);
+        } else if (!hashBans) {
+          callback();
+        } else {
+          exports.outputResponse(null, hashBans, 'hashBan', res);
+        }
+      });
+
+};
+
 exports.checkForBan = function(req, boardUri, res, callback) {
 
-  modOps.checkForBan(req, boardUri, function gotBan(error, ban) {
+  modOps.ipBan.checkForBan(req, boardUri, function gotBan(error, ban) {
     if (error) {
       callback(error);
     } else if (ban) {

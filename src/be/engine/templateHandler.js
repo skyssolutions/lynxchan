@@ -215,6 +215,9 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       }, {
         template : 'boardArchiveCell',
         fields : [ 'linkThread' ]
+      }, {
+        template : 'hashBanCellDisplay',
+        fields : [ 'labelFile', 'labelBoard' ]
       } ];
 
   var pageTests = [
@@ -403,6 +406,9 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       }, {
         template : 'archiveDeletionPage',
         fields : []
+      }, {
+        template : 'hashBanPage',
+        fields : [ 'hashBansPanel' ]
       } ];
 
   var errors = [];

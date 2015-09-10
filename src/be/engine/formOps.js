@@ -28,7 +28,7 @@ exports.loadDependencies = function() {
 
   accountOps = require('./accountOps');
   uploadHandler = require('./uploadHandler');
-  modOps = require('./modOps').ipBan;
+  modOps = require('./modOps');
   miscOps = require('./miscOps');
   domManipulator = require('./domManipulator').dynamicPages.miscPages;
   lang = require('./langOps').languagePack();
@@ -431,7 +431,7 @@ exports.checkBlankParameters = function(object, parameters, res) {
 
 exports.checkForBan = function(req, boardUri, res, callback) {
 
-  modOps.checkForBan(req, boardUri, function gotBan(error, ban) {
+  modOps.ipBan.checkForBan(req, boardUri, function gotBan(error, ban) {
     if (error) {
       callback(error);
     } else if (ban) {
@@ -445,5 +445,20 @@ exports.checkForBan = function(req, boardUri, res, callback) {
       callback();
     }
   });
+
+};
+
+exports.checkForHashBan = function(parameters, res, callback) {
+
+  modOps.hashBan.checkForHashBans(parameters,
+      function gotBans(error, hashBans) {
+        if (error) {
+          callback(error);
+        } else if (!hashBans) {
+          callback();
+        } else {
+          res.end(domManipulator.hashBan(hashBans));
+        }
+      });
 
 };
