@@ -74,6 +74,7 @@ var boardProjection = {
   threadCount : 1,
   boardName : 1,
   boardMarkdown : 1,
+  usesCustomJs : 1,
   usesCustomCss : 1,
   settings : 1,
   boardDescription : 1

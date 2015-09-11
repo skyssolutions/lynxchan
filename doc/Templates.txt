@@ -535,6 +535,10 @@ TEM_ID::12
 bManagement:
 
 Elements:
+customJsForm:
+    use: might be removed.
+    description: form used to upload a custom javascript to the board.
+
 tagsField:
     use: have it's value manipulated.
     description: field that displays the current tags of the board.
@@ -542,6 +546,10 @@ tagsField:
 customSpoilerIdentifier:
     use: have it's value manipulated.
     description: hidden identifier used in the custom spoiler form.
+
+customJsIdentifier:
+    use: have it's value manipulated.
+    description: hidden identifier used in the custom javascript form.
 
 customSpoilerIndicator:
     use: might be removed.

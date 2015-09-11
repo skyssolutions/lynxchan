@@ -9,7 +9,6 @@ var reports = db.reports();
 var users = db.users();
 var logs = db.logs();
 var boards = db.boards();
-var gridFsHandler;
 var captchaOps;
 var postingOps;
 var miscOps;
@@ -46,7 +45,6 @@ var boardParameters = [ {
 
 exports.loadDependencies = function() {
 
-  gridFsHandler = require('../gridFsHandler');
   captchaOps = require('../captchaOps');
   postingOps = require('../postingOps').common;
   miscOps = require('../miscOps');
@@ -447,132 +445,7 @@ exports.setVolunteer = function(userData, parameters, callback) {
 };
 // } Section 3: Volunteer management
 
-// Section 4: Custom CSS upload {
-exports.updateBoardAfterNewCss = function(board, callback) {
-
-  if (!boards.usesCustomCss) {
-    boards.updateOne({
-      boardUri : board.boardUri
-    }, {
-      $set : {
-        usesCustomCss : true
-      }
-    }, function updatedBoard(error) {
-      if (error) {
-        callback(error);
-      } else {
-        process.send({
-          board : board.boardUri,
-          buildAll : true
-        });
-
-        callback();
-      }
-
-    });
-  } else {
-    callback();
-  }
-
-};
-
-exports.setCustomCss = function(userData, boardUri, file, callback) {
-
-  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
-
-  boards.findOne({
-    boardUri : boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.errDeniedCssManagement);
-    } else if (file.mime !== 'text/css') {
-      callback(lang.errOnlyCssAllowed);
-    } else {
-
-      // style exception, too simple
-      gridFsHandler.writeFile(file.pathInDisk, '/' + boardUri + '/custom.css',
-          file.mime, {
-            boardUri : boardUri
-          }, function savedFile(error) {
-            if (error) {
-              callback(error);
-            } else {
-              exports.updateBoardAfterNewCss(board, callback);
-            }
-          });
-      // style exception, too simple
-
-    }
-  });
-
-};
-// } Section 4: Custom CSS upload
-
-// Section 5: Custom CSS deletion {
-exports.updateBoardAfterDeleteCss = function(board, callback) {
-
-  if (board.usesCustomCss) {
-    boards.updateOne({
-      boardUri : board.boardUri
-    }, {
-      $set : {
-        usesCustomCss : false
-      }
-    }, function updatedBoard(error) {
-      if (error) {
-        callback(error);
-      } else {
-        process.send({
-          board : board.boardUri,
-          buildAll : true
-        });
-        callback();
-      }
-
-    });
-  } else {
-    callback();
-  }
-
-};
-
-exports.deleteCustomCss = function(userData, boardUri, callback) {
-
-  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
-
-  boards.findOne({
-    boardUri : boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.errDeniedCssManagement);
-    } else {
-
-      // style exception, too simple
-      gridFsHandler.removeFiles('/' + boardUri + '/custom.css',
-          function removedFile(error) {
-            if (error) {
-              callback(error);
-            } else {
-              exports.updateBoardAfterDeleteCss(board, callback);
-            }
-          });
-      // style exception, too simple
-
-    }
-  });
-
-};
-// } Section 5: Custom CSS deletion
-
-// Section 6: Creation {
+// Section 4: Creation {
 exports.insertBoard = function(parameters, userData, callback) {
 
   boards.insert({
@@ -641,91 +514,9 @@ exports.createBoard = function(captchaId, parameters, userData, callback) {
       });
 
 };
-// } Section 6: Creation
+// } Section 4: Creation
 
-exports.setCustomSpoiler = function(userData, boardUri, file, callback) {
-
-  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
-
-  boards.findOne({
-    boardUri : boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.errDeniedSpoilerManagement);
-    } else if (file.mime.indexOf('image/') === -1) {
-      callback(lang.errNotAnImage);
-    } else {
-
-      var newPath = '/' + boardUri + '/custom.spoiler';
-
-      // style exception, too simple
-      gridFsHandler.writeFile(file.pathInDisk, newPath, file.mime, {
-        boardUri : boardUri
-      }, function savedFile(error) {
-
-        if (error) {
-          callback(error);
-        } else if (!boards.usesCustomSpoiler) {
-          boards.updateOne({
-            boardUri : board.boardUri
-          }, {
-            $set : {
-              usesCustomSpoiler : true
-            }
-          }, callback);
-        } else {
-          callback();
-        }
-
-      });
-      // style exception, too simple
-
-    }
-  });
-};
-
-exports.deleteCustomSpoiler = function(userData, boardUri, callback) {
-
-  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
-
-  boards.findOne({
-    boardUri : boardUri
-  }, function gotBoard(error, board) {
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(lang.errBoardNotFound);
-    } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.errDeniedSpoilerManagement);
-    } else {
-
-      // style exception, too simple
-      gridFsHandler.removeFiles('/' + boardUri + '/custom.spoiler',
-          function removedFile(error) {
-            if (error) {
-              callback(error);
-            } else {
-              boards.updateOne({
-                boardUri : board.boardUri
-              }, {
-                $set : {
-                  usesCustomSpoiler : false
-                }
-              }, callback);
-            }
-          });
-      // style exception, too simple
-
-    }
-  });
-
-};
-
-// Section 7: Board management {
+// Section 5: Board management {
 exports.getBoardReports = function(boardData, callback) {
 
   reports.find({
@@ -781,7 +572,7 @@ exports.getBoardManagementData = function(userData, board, callback) {
   });
 
 };
-// } Section 7: Board management
+// } Section 5: Board management
 
 exports.getBoardModerationData = function(userData, boardUri, callback) {
 

@@ -258,3 +258,8 @@ errUnloadedAddon: error thrown when an user tries to request an addon that is no
 titGlobalBanners: title of the global banners management page.
 errDeniedGlobalBannerManagement: error thrown when the user is not allowed to manage global banners.
 titHashBan: title of the page that displays a hash ban when the user tries to upload a banned file.
+msgJsDeleted: message used when the custom javascript of a board is deleted.
+msgCssSet: message used when a custom javascript is uploaded for a board.
+errNoCustomJs: error throw when custom javascript is not allowed on boards.
+errDeniedJsManagement: error thrown when the user is not allowed to manage the custom css of a board.
+errOnlyJsAllowed: error thrown when an operation requires a javascript file.

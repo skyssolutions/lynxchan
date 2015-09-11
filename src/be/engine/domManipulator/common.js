@@ -157,6 +157,14 @@ exports.setCustomCss = function(board, document) {
   document.getElementsByTagName('head')[0].appendChild(link);
 };
 
+exports.setCustomJs = function(board, document) {
+
+  var script = document.createElement('script');
+  script.setAttribute('src', '/' + board + '/custom.js');
+
+  document.getElementsByTagName('body')[0].appendChild(script);
+};
+
 exports.setFlags = function(document, board, flagData) {
 
   if (!flagData || !flagData.length) {
@@ -216,6 +224,10 @@ exports.setHeader = function(document, board, boardData, flagData) {
 
   if (boardData.usesCustomCss) {
     exports.setCustomCss(board, document);
+  }
+
+  if (boardData.usesCustomJs) {
+    exports.setCustomJs(board, document);
   }
 
   exports.setFlags(document, board, flagData);

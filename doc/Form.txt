@@ -1015,4 +1015,15 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::60
+
+Name: setCustomJs
+
+Description: uploads a custom javascript for a board. Requires authentication. Reserved for board owners. If no file is sent, removes the custom js from the board.
+
+Parameters:
+    boardUri: uri of the board to have its's custom javascrip edited.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

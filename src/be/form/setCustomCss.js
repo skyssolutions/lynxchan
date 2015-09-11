@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var boardOps = require('../engine/boardOps').meta;
+var boardOps = require('../engine/boardOps').custom;
 var lang = require('../engine/langOps').languagePack();
 
 function setCustomCss(userData, parameters, res) {

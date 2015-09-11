@@ -284,5 +284,10 @@
   "errUnloadedAddon": "The requested addon is not enabled.",
   "titGlobalBanners": "Global banners",
   "errDeniedGlobalBannerManagement": "You are not allowed to manage global banners.",
-  "titHashBan": "Banned file"
+  "titHashBan": "Banned file",
+  "msgJsSet": "Custom javascript uploaded.",
+  "msgJsDeleted": "Custom javascript deleted.",
+  "errNoCustomJs": "Custom javascript is not enabled.",
+  "errDeniedJsManagement": "You are not allowed to manage the custom js of this board.",
+  "errOnlyJsAllowed": "Only javascript files are allowed."
 }

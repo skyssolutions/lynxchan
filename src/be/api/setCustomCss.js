@@ -1,7 +1,7 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var boardOps = require('../engine/boardOps').meta;
+var boardOps = require('../engine/boardOps').custom;
 
 function setCustomCss(parameters, userData, res) {
 

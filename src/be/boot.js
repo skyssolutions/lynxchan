@@ -116,6 +116,10 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
   }
 
   broadCastReload(reloadsToMake, callback);
+  
+  if (!settings.allowBoardCustomJs && generalSettings.allowBoardCustomJs) {
+    require('./engine/boardOps').custom.clearCstomJs();
+  }
 }
 
 function checkSettingsChanges(settings, callback) {
@@ -144,7 +148,7 @@ exports.setNewSettings = function(settings, callback) {
 
       var exceptionalFields = [ 'siteTitle', 'captchaFonts',
           'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage',
-          'disableTopBoards' ];
+          'disableTopBoards', 'allowBoardCustomJs' ];
 
       for ( var key in generalSettings) {
         if (!settings[key] && exceptionalFields.indexOf(key) === -1) {

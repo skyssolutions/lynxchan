@@ -7,6 +7,7 @@ var settings = boot.getGeneralSettings();
 var debug = boot.debug();
 var verbose = settings.verbose;
 var globalBoardModeration = settings.allowGlobalBoardModeration;
+var customJs = settings.allowBoardCustomJs;
 var common;
 var templateHandler;
 var lang;
@@ -352,6 +353,13 @@ exports.setBoardOwnerControls = function(document, boardData) {
   for (var i = 0; i < exports.boardControlIdentifiers.length; i++) {
     document.getElementById(exports.boardControlIdentifiers[i]).setAttribute(
         'value', boardData.boardUri);
+  }
+
+  if (customJs) {
+    document.getElementById('customJsIdentifier').setAttribute('value',
+        boardData.boardUri);
+  } else {
+    common.removeElement(document.getElementById('customJsForm'));
   }
 
   if (!boardData.usesCustomSpoiler) {

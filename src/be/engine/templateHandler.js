@@ -300,7 +300,8 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
             'customCssIdentifier', 'ruleManagementLink', 'allowCodeCheckbox',
             'flagManagementLink', 'enableArchiveCheckbox', 'early404Checkbox',
             'hourlyThreadLimitField', 'autoCaptchaThresholdField',
-            'hashBansLink', 'customSpoilerIndicator', 'tagsField' ]
+            'hashBansLink', 'customSpoilerIndicator', 'tagsField',
+            'customJsForm', 'customJsIdentifier' ]
       },
       {
         template : 'closedReportsPage',

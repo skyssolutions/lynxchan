@@ -1,6 +1,7 @@
 boards: stores boards.
     owner*: login of the board owner.
     boardUri**: url of the board. 32 characters. Only a-Z, _ and 0-9 allowed.
+    usesCustomJs(Boolean): pre-aggreated boolean indicating the board has a custom javascript.
     boardName: name of the board. 32 characters.
     boardDescription: description of the board. 128 characters.
     lastPostId: id of last post in this board.

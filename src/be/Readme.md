@@ -107,6 +107,7 @@ Settings files that goes into the settings directory:
 * `allowGlobalBoardModeration`(Boolean): if true, global staff will be allowed to act as board moderators too.
 * `addons`(Array): array of addons to be loaded. They will be loaded in the order they appear in this array.
 * `useGlobalBanners`(Boolean): indicates if boards should use global banners. 
+* `allowBoardCustomJs`(Boolean): if true, boards are allowed to have custom javascript.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.
