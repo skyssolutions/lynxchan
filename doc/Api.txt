@@ -553,6 +553,7 @@ Parameters:
     allowGlobalBoardModeration(Boolean): allows global staff to moderate boards.
     addons(Array): array of addons to be loaded.
     useGlobalBanners(Boolean): makes boards use the global banners.
+    allowBoardCustomJs(Boolean): allows for boards to have custom javascript.
 
 ------------------------------------------------------------------------------------------
 

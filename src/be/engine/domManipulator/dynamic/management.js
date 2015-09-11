@@ -217,6 +217,10 @@ exports.getSiteSettingsRelation = function() {
       setting : 'multipleReports',
       type : 'boolean'
     },
+    checkboxAllowCustomJs : {
+      setting : 'allowBoardCustomJs',
+      type : 'boolean'
+    },
     checkboxGlobalBanners : {
       setting : 'useGlobalBanners',
       type : 'boolean'

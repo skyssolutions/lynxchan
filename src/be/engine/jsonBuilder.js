@@ -463,7 +463,8 @@ exports.globalSettings = function(globalSettings) {
     allowGlobalBoardModeration : globalSettings.allowGlobalBoardModeration,
     boardCreationRequirement : globalSettings.boardCreationRequirement,
     addons : globalSettings.addons,
-    useGlobalBanners : globalSettings.useGlobalBanners
+    useGlobalBanners : globalSettings.useGlobalBanners,
+    allowBoardCustomJs : globalSettings.allowBoardCustomJs
   });
 
 };

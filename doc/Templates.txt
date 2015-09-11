@@ -1637,6 +1637,10 @@ fieldAddons:
     use: have it's value manipulated.
     description: field that displays the addons that should be loaded.
 
+checkboxAllowCustomJs:
+    use: might be turned on.
+    description: indicates that boards are allowed to use custom javascript.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::52

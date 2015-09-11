@@ -483,6 +483,10 @@ exports.getParametersArray = function() {
     type : 'boolean',
     setting : 'disableAccountCreation'
   }, {
+    param : 'allowBoardCustomJs',
+    type : 'boolean',
+    setting : 'allowBoardCustomJs'
+  }, {
     param : 'multipleReports',
     type : 'boolean',
     setting : 'multipleReports'

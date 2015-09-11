@@ -402,7 +402,7 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
             'fieldMaxTags', 'checkboxDisableFloodCheck', 'comboProxyAccess',
             'comboMinClearIpRole', 'fieldThumbExtension',
             'checkboxDisableTopBoards', 'checkboxGlobalBoardModeration',
-            'checkboxGlobalBanners' ]
+            'checkboxGlobalBanners', 'checkboxAllowCustomJs' ]
       }, {
         template : 'archiveDeletionPage',
         fields : []
