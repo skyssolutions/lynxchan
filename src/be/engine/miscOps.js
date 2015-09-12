@@ -244,7 +244,7 @@ exports.getGlobalSettingsData = function(userData, callback) {
   if (userData.globalRole !== 0) {
     callback(lang.errDeniedGlobalSettings);
   } else {
-    callback(null, settings);
+    callback();
   }
 
 };
@@ -310,214 +310,275 @@ exports.getRange = function(ip) {
 exports.getParametersArray = function() {
 
   return [ {
-    param : 'address',
-    type : 'string',
-    setting : 'address'
-  }, {
-    param : 'port',
-    type : 'number',
-    setting : 'port'
-  }, {
-    param : 'fePath',
-    type : 'string',
-    setting : 'fePath'
-  }, {
-    param : 'boardPageSize',
-    type : 'number',
-    setting : 'pageSize'
-  }, {
-    param : 'latestPostsCount',
-    type : 'number',
-    setting : 'latestPostCount'
-  }, {
-    param : 'autoSageLimit',
-    type : 'number',
-    setting : 'autoSageLimit'
-  }, {
-    param : 'threadLimit',
-    type : 'number',
-    setting : 'maxThreadCount'
-  }, {
-    param : 'tempDir',
-    type : 'string',
-    setting : 'tempDirectory'
-  }, {
-    param : 'senderEmail',
-    type : 'string',
-    setting : 'emailSender'
-  }, {
-    param : 'captchaExpiration',
-    type : 'number',
-    setting : 'captchaExpiration'
-  }, {
+    // array
     param : 'captchaFonts',
     type : 'array',
-    setting : 'captchaFonts'
+    setting : 'captchaFonts',
+    element : 'fieldCaptchaFonts'
   }, {
     param : 'addons',
     type : 'array',
-    setting : 'addons'
-  }, {
-    param : 'siteTitle',
-    type : 'string',
-    setting : 'siteTitle'
-  }, {
-    param : 'maxRequestSize',
-    type : 'number',
-    setting : 'maxRequestSizeMB'
-  }, {
-    param : 'maxFileSize',
-    type : 'number',
-    setting : 'maxFileSizeMB'
+    setting : 'addons',
+    element : 'fieldAddons'
   }, {
     param : 'acceptedMimes',
     type : 'array',
-    setting : 'acceptedMimes'
+    setting : 'acceptedMimes',
+    element : 'fieldAcceptedMimes'
   }, {
-    param : 'maxFiles',
-    type : 'number',
-    setting : 'maxFiles'
+    // string
+    param : 'address',
+    type : 'string',
+    setting : 'address',
+    element : 'fieldAddress'
+  }, {
+    param : 'fePath',
+    type : 'string',
+    setting : 'fePath',
+    element : 'fieldFePath'
+  }, {
+    param : 'tempDir',
+    type : 'string',
+    setting : 'tempDirectory',
+    element : 'fieldTempDir'
+  }, {
+    param : 'senderEmail',
+    type : 'string',
+    setting : 'emailSender',
+    element : 'fieldSenderEmail'
+  }, {
+    param : 'siteTitle',
+    type : 'string',
+    setting : 'siteTitle',
+    element : 'fieldSiteTitle'
   }, {
     param : 'banMessage',
     type : 'string',
-    setting : 'defaultBanMessage'
-  }, {
-    param : 'logPageSize',
-    type : 'number',
-    setting : 'logPageSize'
+    setting : 'defaultBanMessage',
+    element : 'fieldBanMessage'
   }, {
     param : 'anonymousName',
     type : 'string',
-    setting : 'defaultAnonymousName'
-  }, {
-    param : 'topBoardsCount',
-    type : 'number',
-    setting : 'topBoardsCount'
-  }, {
-    param : 'boardsPerPage',
-    type : 'number',
-    setting : 'boardsPerPage'
+    setting : 'defaultAnonymousName',
+    element : 'fieldAnonymousName'
   }, {
     param : 'torSource',
     type : 'string',
-    setting : 'torSource'
+    setting : 'torSource',
+    element : 'fieldTorSource'
   }, {
     param : 'languagePack',
     type : 'string',
-    setting : 'languagePackPath'
+    setting : 'languagePackPath',
+    element : 'fieldLanguagePack'
   }, {
     param : 'thumbExtension',
     type : 'string',
-    setting : 'thumbExtension'
+    setting : 'thumbExtension',
+    element : 'fieldThumbExtension'
+  }, {
+    // number
+    param : 'port',
+    type : 'number',
+    setting : 'port',
+    element : 'fieldPort'
+  }, {
+    param : 'captchaExpiration',
+    type : 'number',
+    setting : 'captchaExpiration',
+    element : 'fieldCaptchaExpiration'
+  }, {
+    param : 'boardPageSize',
+    type : 'number',
+    setting : 'pageSize',
+    element : 'fieldPageSize'
+  }, {
+    param : 'latestPostsCount',
+    type : 'number',
+    setting : 'latestPostCount',
+    element : 'fieldLatestPostsCount'
+  }, {
+    param : 'autoSageLimit',
+    type : 'number',
+    setting : 'autoSageLimit',
+    element : 'fieldAutoSageLimit'
+  }, {
+    param : 'threadLimit',
+    type : 'number',
+    setting : 'maxThreadCount',
+    element : 'fieldThreadLimit'
+  }, {
+    param : 'maxRequestSize',
+    type : 'number',
+    setting : 'maxRequestSizeMB',
+    element : 'fieldMaxRequestSize'
+  }, {
+    param : 'maxFileSize',
+    type : 'number',
+    setting : 'maxFileSizeMB',
+    element : 'fieldMaxFileSize'
+  }, {
+    param : 'maxFiles',
+    type : 'number',
+    setting : 'maxFiles',
+    element : 'fieldMaxFiles'
+  }, {
+    param : 'logPageSize',
+    type : 'number',
+    setting : 'logPageSize',
+    element : 'fieldLogPageSize'
+  }, {
+    param : 'topBoardsCount',
+    type : 'number',
+    setting : 'topBoardsCount',
+    element : 'fieldTopBoardsCount'
+  }, {
+    param : 'boardsPerPage',
+    type : 'number',
+    setting : 'boardsPerPage',
+    element : 'fieldBoardsPerPage'
   }, {
     param : 'thumbSize',
     type : 'number',
-    setting : 'thumbSize'
+    setting : 'thumbSize',
+    element : 'fieldThumbSize'
   }, {
     param : 'maxRules',
     type : 'number',
-    setting : 'maxBoardRules'
+    setting : 'maxBoardRules',
+    element : 'fieldMaxRules'
   }, {
     param : 'maxTags',
     type : 'number',
-    setting : 'maxBoardTags'
+    setting : 'maxBoardTags',
+    element : 'fieldMaxTags'
   }, {
     param : 'maxFilters',
     type : 'number',
-    setting : 'maxFilters'
+    setting : 'maxFilters',
+    element : 'fieldMaxFilters'
   }, {
     param : 'maxVolunteers',
     type : 'number',
-    setting : 'maxBoardVolunteers'
+    setting : 'maxBoardVolunteers',
+    element : 'fieldMaxVolunteers'
   }, {
     param : 'maxBannerSize',
     type : 'number',
-    setting : 'maxBannerSizeKB'
+    setting : 'maxBannerSizeKB',
+    element : 'fieldMaxBannerSize'
   }, {
     param : 'maxFlagSize',
     type : 'number',
-    setting : 'maxFlagSizeKB'
+    setting : 'maxFlagSizeKB',
+    element : 'fieldMaxFlagSize'
   }, {
     param : 'floodInterval',
     type : 'number',
-    setting : 'floodTimerSec'
+    setting : 'floodTimerSec',
+    element : 'fieldFloodInterval'
   }, {
+    // boolean
     param : 'disable304',
     type : 'boolean',
-    setting : 'disable304'
+    setting : 'disable304',
+    element : 'checkboxDisable304'
   }, {
     param : 'verbose',
     type : 'boolean',
-    setting : 'verbose'
+    setting : 'verbose',
+    element : 'checkboxVerbose'
   }, {
     param : 'useGlobalBanners',
     type : 'boolean',
-    setting : 'useGlobalBanners'
+    setting : 'useGlobalBanners',
+    element : 'checkboxGlobalBanners'
+  }, {
+    param : 'disableFloodCheck',
+    type : 'boolean',
+    setting : 'disableFloodCheck',
+    element : 'checkboxDisableFloodCheck'
+  }, {
+    param : 'mediaThumb',
+    type : 'boolean',
+    setting : 'mediaThumb',
+    element : 'checkboxMediaThumb'
+  }, {
+    param : 'allowGlobalBoardModeration',
+    type : 'boolean',
+    setting : 'allowGlobalBoardModeration',
+    element : 'checkboxGlobalBoardModeration'
+  }, {
+    param : 'maintenance',
+    type : 'boolean',
+    setting : 'maintenance',
+    element : 'checkboxMaintenance'
+  }, {
+    param : 'disableTopBoards',
+    type : 'boolean',
+    setting : 'disableTopBoards',
+    element : 'checkboxDisableTopBoards'
+  }, {
+    param : 'disableAccountCreation',
+    type : 'boolean',
+    setting : 'disableAccountCreation',
+    element : 'checkboxDisableAccountCreation'
+  }, {
+    param : 'allowBoardCustomJs',
+    type : 'boolean',
+    setting : 'allowBoardCustomJs',
+    element : 'checkboxAllowCustomJs'
+  }, {
+    param : 'multipleReports',
+    type : 'boolean',
+    setting : 'multipleReports',
+    element : 'checkboxMultipleReports'
+  }, {
+    param : 'serveArchive',
+    type : 'boolean',
+    setting : 'serveArchive',
+    element : 'checkboxServeArchive'
+  }, {
+    param : 'ssl',
+    type : 'boolean',
+    setting : 'ssl',
+    element : 'checkboxSsl'
+  }, {
+    // range
+    param : 'proxyAccess',
+    type : 'range',
+    limit : 2,
+    setting : 'proxyAccess',
+    element : 'comboProxyAccess',
+    options : lang.guiProxyLevels
   }, {
     param : 'torAccess',
     type : 'range',
     limit : 2,
-    setting : 'torAccess'
-  }, {
-    param : 'disableFloodCheck',
-    type : 'boolean',
-    setting : 'disableFloodCheck'
-  }, {
-    param : 'mediaThumb',
-    type : 'boolean',
-    setting : 'mediaThumb'
-  }, {
-    param : 'allowGlobalBoardModeration',
-    type : 'boolean',
-    setting : 'allowGlobalBoardModeration'
-  }, {
-    param : 'maintenance',
-    type : 'boolean',
-    setting : 'maintenance'
-  }, {
-    param : 'disableTopBoards',
-    type : 'boolean',
-    setting : 'disableTopBoards'
-  }, {
-    param : 'disableAccountCreation',
-    type : 'boolean',
-    setting : 'disableAccountCreation'
-  }, {
-    param : 'allowBoardCustomJs',
-    type : 'boolean',
-    setting : 'allowBoardCustomJs'
-  }, {
-    param : 'multipleReports',
-    type : 'boolean',
-    setting : 'multipleReports'
-  }, {
-    param : 'proxyAccess',
-    type : 'range',
-    limit : 2,
-    setting : 'proxyAccess'
-  }, {
-    param : 'ssl',
-    type : 'boolean',
-    setting : 'ssl'
-  }, {
-    param : 'serveArchive',
-    type : 'boolean',
-    setting : 'serveArchive'
+    setting : 'torAccess',
+    element : 'comboTorAccess',
+    options : lang.guiTorLevels
   }, {
     param : 'archiveLevel',
     type : 'range',
     setting : 'archiveLevel',
-    limit : 2
+    limit : 2,
+    element : 'comboArchive',
+    options : lang.guiArchiveLevels
   }, {
     param : 'clearIpMinRole',
     type : 'range',
     setting : 'clearIpMinRole',
-    limit : 3
+    limit : 3,
+    element : 'comboMinClearIpRole',
+    options : lang.miscRoles
   }, {
     param : 'boardCreationRequirement',
     type : 'range',
     setting : 'boardCreationRequirement',
-    limit : 4
+    limit : 4,
+    element : 'comboBoardCreationRequirement',
+    options : lang.miscRoles
   } ];
 };
 

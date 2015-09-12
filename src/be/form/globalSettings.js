@@ -8,8 +8,7 @@ var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
 function getGlobalSettings(userData, res, json) {
 
-  miscOps.getGlobalSettingsData(userData, function gotBannerData(error,
-      settings) {
+  miscOps.getGlobalSettingsData(userData, function gotBannerData(error) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
@@ -17,9 +16,9 @@ function getGlobalSettings(userData, res, json) {
           : 'text/html'));
 
       if (json) {
-        res.end(jsonBuilder.globalSettings(settings));
+        res.end(jsonBuilder.globalSettings());
       } else {
-        res.end(dom.globalSettings(settings));
+        res.end(dom.globalSettings());
       }
     }
   });

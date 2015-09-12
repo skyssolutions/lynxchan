@@ -419,52 +419,8 @@ exports.flagManagement = function(flags) {
 
 };
 
-exports.globalSettings = function(globalSettings) {
+exports.globalSettings = function() {
 
-  return JSON.stringify({
-    address : globalSettings.address,
-    port : globalSettings.port,
-    autoSageLimit : globalSettings.autoSageLimit,
-    tempDirectory : globalSettings.tempDirectory,
-    emailSender : globalSettings.emailSender,
-    siteTitle : globalSettings.siteTitle,
-    maxRequestSizeMB : globalSettings.maxRequestSizeMB,
-    maxBoardTags : globalSettings.maxBoardTags,
-    verbose : globalSettings.verbose,
-    disableFloodCheck : globalSettings.disableFloodCheck,
-    mediaThumb : globalSettings.mediaThumb,
-    serveArchive : globalSettings.serveArchive,
-    fePath : globalSettings.fePath,
-    pageSize : globalSettings.pageSize,
-    latestPostCount : globalSettings.latestPostCount,
-    maxFiles : globalSettings.maxFiles,
-    maxThreadCount : globalSettings.maxThreadCount,
-    captchaExpiration : globalSettings.captchaExpiration,
-    maxFileSizeMB : globalSettings.maxFileSizeMB,
-    acceptedMimes : globalSettings.acceptedMimes,
-    logPageSize : globalSettings.logPageSize,
-    topBoardsCount : globalSettings.topBoardsCount,
-    boardsPerPage : globalSettings.boardsPerPage,
-    torSource : globalSettings.torSource,
-    maxBoardRules : globalSettings.maxBoardRules,
-    thumbSize : globalSettings.thumbSize,
-    maxFilters : globalSettings.maxFilters,
-    maxBoardVolunteers : globalSettings.maxBoardVolunteers,
-    maxBannerSizeKB : globalSettings.maxBannerSizeKB,
-    maxFlagSizeKB : globalSettings.maxFlagSizeKB,
-    floodTimerSec : globalSettings.floodTimerSec,
-    archiveLevel : globalSettings.archiveLevel,
-    captchaFonts : globalSettings.captchaFonts,
-    torAccess : globalSettings.torAccess,
-    proxyAccess : globalSettings.proxyAccess,
-    clearIpMinRole : globalSettings.clearIpMinRole,
-    thumbExtension : globalSettings.thumbExtension,
-    disableTopBoards : globalSettings.disableTopBoards,
-    allowGlobalBoardModeration : globalSettings.allowGlobalBoardModeration,
-    boardCreationRequirement : globalSettings.boardCreationRequirement,
-    addons : globalSettings.addons,
-    useGlobalBanners : globalSettings.useGlobalBanners,
-    allowBoardCustomJs : globalSettings.allowBoardCustomJs
-  });
+  return JSON.stringify(settings);
 
 };

@@ -65,225 +65,6 @@ exports.boardManagementLinks = [ {
   element : 'flagManagementLink'
 } ];
 
-var siteSettingsRelation;
-
-exports.getSiteSettingsRelation = function() {
-
-  return {
-    fieldAddress : {
-      setting : 'address',
-      type : 'string'
-    },
-    fieldPort : {
-      setting : 'port',
-      type : 'string'
-    },
-    fieldFePath : {
-      setting : 'fePath',
-      type : 'string'
-    },
-    fieldPageSize : {
-      setting : 'pageSize',
-      type : 'string'
-    },
-    fieldLatestPostsCount : {
-      setting : 'latestPostCount',
-      type : 'string'
-    },
-    fieldAutoSageLimit : {
-      setting : 'autoSageLimit',
-      type : 'string'
-    },
-    fieldThreadLimit : {
-      setting : 'maxThreadCount',
-      type : 'string'
-    },
-    fieldSiteTitle : {
-      setting : 'siteTitle',
-      type : 'string'
-    },
-    fieldTempDir : {
-      setting : 'tempDirectory',
-      type : 'string'
-    },
-    fieldSenderEmail : {
-      setting : 'emailSender',
-      type : 'string'
-    },
-    fieldCaptchaExpiration : {
-      setting : 'captchaExpiration',
-      type : 'string'
-    },
-    fieldMaxRequestSize : {
-      setting : 'maxRequestSizeMB',
-      type : 'string'
-    },
-    fieldMaxFileSize : {
-      setting : 'maxFileSizeMB',
-      type : 'string'
-    },
-    fieldMaxFiles : {
-      setting : 'maxFiles',
-      type : 'string'
-    },
-    fieldBanMessage : {
-      setting : 'defaultBanMessage',
-      type : 'string'
-    },
-    fieldLogPageSize : {
-      setting : 'logPageSize',
-      type : 'string'
-    },
-    fieldAnonymousName : {
-      setting : 'defaultAnonymousName',
-      type : 'string'
-    },
-    fieldTopBoardsCount : {
-      setting : 'topBoardsCount',
-      type : 'string'
-    },
-    fieldBoardsPerPage : {
-      setting : 'boardsPerPage',
-      type : 'string'
-    },
-    fieldTorSource : {
-      setting : 'torSource',
-      type : 'string'
-    },
-    fieldLanguagePack : {
-      setting : 'languagePackPath',
-      type : 'string'
-    },
-    fieldMaxRules : {
-      setting : 'maxBoardRules',
-      type : 'string'
-    },
-    fieldThumbSize : {
-      setting : 'thumbSize',
-      type : 'string'
-    },
-    fieldMaxTags : {
-      setting : 'maxBoardTags',
-      type : 'string'
-    },
-    fieldMaxFilters : {
-      setting : 'maxFilters',
-      type : 'string'
-    },
-    fieldMaxVolunteers : {
-      setting : 'maxBoardVolunteers',
-      type : 'string'
-    },
-    fieldMaxBannerSize : {
-      setting : 'maxBannerSizeKB',
-      type : 'string'
-    },
-    fieldMaxFlagSize : {
-      setting : 'maxFlagSizeKB',
-      type : 'string'
-    },
-    fieldThumbExtension : {
-      setting : 'thumbExtension',
-      type : 'string'
-    },
-    fieldFloodInterval : {
-      setting : 'floodTimerSec',
-      type : 'string'
-    },
-    checkboxVerbose : {
-      setting : 'verbose',
-      type : 'boolean'
-    },
-    checkboxDisable304 : {
-      setting : 'disable304',
-      type : 'boolean'
-    },
-    checkboxDisableTopBoards : {
-      setting : 'disableTopBoards',
-      type : 'boolean'
-    },
-    checkboxSsl : {
-      setting : 'ssl',
-      type : 'boolean'
-    },
-    checkboxMediaThumb : {
-      setting : 'mediaThumb',
-      type : 'boolean'
-    },
-    checkboxMaintenance : {
-      setting : 'maintenance',
-      type : 'boolean'
-    },
-    checkboxMultipleReports : {
-      setting : 'multipleReports',
-      type : 'boolean'
-    },
-    checkboxAllowCustomJs : {
-      setting : 'allowBoardCustomJs',
-      type : 'boolean'
-    },
-    checkboxGlobalBanners : {
-      setting : 'useGlobalBanners',
-      type : 'boolean'
-    },
-    checkboxDisableFloodCheck : {
-      setting : 'disableFloodCheck',
-      type : 'boolean'
-    },
-    checkboxServeArchive : {
-      setting : 'serveArchive',
-      type : 'boolean'
-    },
-    checkboxGlobalBoardModeration : {
-      setting : 'allowGlobalBoardModeration',
-      type : 'boolean'
-    },
-    checkboxDisableAccountCreation : {
-      setting : 'disableAccountCreation',
-      type : 'boolean'
-    },
-    comboBoardCreationRequirement : {
-      setting : 'boardCreationRequirement',
-      type : 'combo',
-      options : lang.miscRoles
-    },
-    fieldCaptchaFonts : {
-      setting : 'captchaFonts',
-      type : 'array'
-    },
-    fieldAddons : {
-      setting : 'addons',
-      type : 'array'
-    },
-    fieldAcceptedMimes : {
-      setting : 'acceptedMimes',
-      type : 'array'
-    },
-    comboArchive : {
-      setting : 'archiveLevel',
-      type : 'combo',
-      options : lang.guiArchiveLevels
-    },
-    comboProxyAccess : {
-      setting : 'proxyAccess',
-      type : 'combo',
-      options : lang.guiProxyLevels
-    },
-    comboTorAccess : {
-      setting : 'torAccess',
-      type : 'combo',
-      options : lang.guiTorLevels
-    },
-    comboMinClearIpRole : {
-      setting : 'clearIpMinRole',
-      type : 'combo',
-      options : lang.miscRoles,
-      limit : 4
-    }
-  };
-
-};
-
 exports.loadDependencies = function() {
 
   common = require('..').common;
@@ -292,8 +73,6 @@ exports.loadDependencies = function() {
   templateHandler = require('../../templateHandler');
   lang = require('../../langOps').languagePack();
   miscOps = require('../../miscOps');
-
-  siteSettingsRelation = exports.getSiteSettingsRelation();
 
 };
 
@@ -758,7 +537,7 @@ exports.setComboSetting = function(document, element, setting) {
 
   var limit = setting.limit && setting.limit < setting.options.length;
 
-  limit = limit ? setting.limit : setting.options.length;
+  limit = limit ? setting.limit + 1 : setting.options.length;
 
   for (var i = 0; i < limit; i++) {
 
@@ -774,20 +553,23 @@ exports.setComboSetting = function(document, element, setting) {
   }
 };
 
-exports.globalSettings = function(settings) {
+exports.globalSettings = function() {
 
   try {
 
     var document = jsdom(templateHandler.globalSettingsPage);
 
-    for ( var key in siteSettingsRelation) {
+    var siteSettingsRelation = miscOps.getParametersArray();
 
-      var setting = siteSettingsRelation[key];
+    for (var i = 0; i < siteSettingsRelation.length; i++) {
 
-      var element = document.getElementById(key);
+      var setting = siteSettingsRelation[i];
+
+      var element = document.getElementById(setting.element);
 
       switch (setting.type) {
       case 'string':
+      case 'number':
         element.setAttribute('value', settings[setting.setting] || '');
         break;
       case 'boolean':
@@ -800,7 +582,7 @@ exports.globalSettings = function(settings) {
         element.setAttribute('value', (settings[setting.setting] || '')
             .toString());
         break;
-      case 'combo':
+      case 'range':
         exports.setComboSetting(document, element, setting);
         break;
       }
