@@ -20,6 +20,7 @@ var miscOps;
 var captchaOps;
 
 var threadLimit = settings.maxThreadCount;
+var globalLatestPosts = settings.globalLatestPosts;
 
 exports.loadDependencies = function() {
 
@@ -31,6 +32,24 @@ exports.loadDependencies = function() {
   miscOps = require('../miscOps');
   captchaOps = require('../captchaOps');
 
+};
+
+exports.addThreadToLatestPosts = function(thread, threadId, callback) {
+
+  if (!globalLatestPosts) {
+    callback(null, threadId);
+  } else {
+
+    common.addPostToLatestPosts(thread, function addedToLatest(error) {
+
+      if (error) {
+        console.log(error);
+      }
+
+      callback(null, threadId);
+
+    });
+  }
 };
 
 exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
@@ -62,8 +81,11 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
 
     // style exception, too simple
     generator.preview(null, null, null, function generatedPreview(error) {
-      callback(error, threadId);
+      if (error) {
+        console.log(error);
+      }
 
+      exports.addThreadToLatestPosts(thread, threadId, callback);
     }, thread);
     // style exception, too simple
 

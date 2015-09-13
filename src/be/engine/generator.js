@@ -7,9 +7,10 @@ var db = require('../db');
 var posts = db.posts();
 var threads = db.threads();
 var boards = db.boards();
-var boot = require('../boot');
 var flags = db.flags();
+var latestPostsCol = db.latestPosts();
 var stats = db.stats();
+var boot = require('../boot');
 var settings = boot.getGeneralSettings();
 var topBoardsCount = settings.topBoardsCount;
 var templateSettings = boot.getTemplateSettings();
@@ -258,7 +259,7 @@ exports.saveFrontPage = function(foundBoards, globalLatestPosts, callback) {
     if (error) {
       callback(error);
     } else {
-      jsonBuilder.frontPage(foundBoards, callback);
+      jsonBuilder.frontPage(foundBoards, globalLatestPosts, callback);
     }
 
   });
@@ -271,9 +272,25 @@ exports.fetchLatestGlobalPosts = function(foundBoards, callback) {
     exports.saveFrontPage(foundBoards, null, callback);
     return;
   }
-  // TODO get latest global posts
 
-  exports.saveFrontPage(foundBoards, null, callback);
+  latestPostsCol.find({}, {
+    _id : 0,
+    boardUri : 1,
+    threadId : 1,
+    postId : 1,
+    creation : 1,
+    previewText : 1
+  }).sort({
+    creation : -1
+  }).toArray(
+      function gotLatestPosts(error, posts) {
+        if (error) {
+          callback(error);
+        } else {
+          exports.saveFrontPage(foundBoards, posts.length ? posts : null,
+              callback);
+        }
+      });
 
 };
 
@@ -283,7 +300,7 @@ exports.frontPage = function(callback) {
     console.log('Generating front-page');
   }
 
-  if (settings.disableTopBoards) {
+  if (!topBoardsCount) {
     exports.fetchLatestGlobalPosts(null, callback);
     return;
   }
@@ -381,7 +398,7 @@ exports.preview = function(boardUri, threadId, postId, callback, postingData) {
     if (verbose) {
 
       var message = 'Generating preview for ' + postingData.boardUri + '/';
-      message += (postingData.postId || postingData.postId);
+      message += (postingData.threadId || postingData.postId);
 
       console.log(message);
     }

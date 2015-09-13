@@ -668,7 +668,7 @@ exports.getLiftedBanLogMessage = function(ban, userData) {
 
 exports.removeBan = function(ban, userData, callback) {
 
-  bans.remove({
+  bans.deleteOne({
     _id : new ObjectID(ban._id)
   }, function banRemoved(error) {
 

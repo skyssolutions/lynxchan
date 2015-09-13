@@ -103,7 +103,6 @@ Settings files that goes into the settings directory:
 * `proxyAccess`(Number): access allowed for proxy users. See torAccess.
 * `clearIpMinRole`(Number): minimum global role required for users to see non-hashed ips from posts and perform global deletions from ip.
 * `thumbExtension`: forces all thumbs to use this extension. Keeps gifs from being animated as a side-effect, even if `gif` is used.
-* `disableTopBoards`(Boolean): if true, the top boards will not be shown in the front-page.
 * `allowGlobalBoardModeration`(Boolean): if true, global staff will be allowed to act as board moderators too.
 * `addons`(Array): array of addons to be loaded. They will be loaded in the order they appear in this array.
 * `useGlobalBanners`(Boolean): indicates if boards should use global banners. 

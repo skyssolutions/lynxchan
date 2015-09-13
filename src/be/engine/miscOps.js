@@ -519,11 +519,6 @@ exports.getParametersArray = function() {
     setting : 'maintenance',
     element : 'checkboxMaintenance'
   }, {
-    param : 'disableTopBoards',
-    type : 'boolean',
-    setting : 'disableTopBoards',
-    element : 'checkboxDisableTopBoards'
-  }, {
     param : 'disableAccountCreation',
     type : 'boolean',
     setting : 'disableAccountCreation',

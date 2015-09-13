@@ -9,9 +9,14 @@ JSO_ID::01
 Path: /index.json
 
 Root(Object):
-    topBoards(Array): Array with the chan top boards. Each element is a document with the following fields:
+    topBoards(Array): Array with the chan top boards. Each element is an object with the following fields:
         boardUri: uri of the board.
         boardName: name of the board.
+    latestPosts(Array): Array with the global latest posts. Each element is an object with the following fields:
+        boardUri: uri of the board where the post was made.
+        threadId: id of the thread that either contains the post or that was posted.
+        postId: id of the post.
+        previewText: preview text of the post.
 
 ------------------------------------------------------------------------------------------
 

@@ -1601,10 +1601,6 @@ checkboxServeArchive:
     use: might be turned on.
     description: indicates the server is serving archives.
 
-checkboxDisableTopBoards:
-    use: might be turned on.
-    description: indicates the server is doesn't list the top boards on the front-page.    
-
 checkboxDisableAccountCreation:
     use: might be turned on.
     description: indicates that account creation is disabled.
@@ -1689,6 +1685,22 @@ labelFile:
 labelBoard:
     use: have it's innerHTML manipulated.
     description: label where the board that applied the ban is informed.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::55
+
+latestPostCell*:
+Root element: div
+
+Elements:
+labelPreview:
+    use: have it's innerHTML manipulated.
+    description: label with the preview text of the post.
+
+linkPost:
+    use: have it's innerHTML and href manipulated.
+    description: link to the post. 
 
 ------------------------------------------------------------------------------------------
 

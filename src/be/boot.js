@@ -55,7 +55,6 @@ exports.getDefaultSettings = function() {
         'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg', 'audio/ogg',
         'audio/webm' ],
     logPageSize : 50,
-    topBoardsCount : 25,
     boardsPerPage : 50,
     torSource : 'https://check.torproject.org/exit-addresses',
     maxBoardRules : 20,
@@ -92,10 +91,6 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
 
   var topChanged = generalSettings.topBoardsCount !== settings.topBoardsCount;
 
-  // was top boards enabled or disabled on this change?
-  var tDChange = generalSettings.disableTopBoards !== settings.disableTopBoards;
-  topChanged = topChanged || tDChange;
-
   rebuildFP = rebuildFP || topChanged;
 
   if (rebuildFP) {
@@ -116,7 +111,7 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
   }
 
   broadCastReload(reloadsToMake, callback);
-  
+
   if (!settings.allowBoardCustomJs && generalSettings.allowBoardCustomJs) {
     require('./engine/boardOps').custom.clearCstomJs();
   }
@@ -148,7 +143,7 @@ exports.setNewSettings = function(settings, callback) {
 
       var exceptionalFields = [ 'siteTitle', 'captchaFonts',
           'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage',
-          'disableTopBoards', 'allowBoardCustomJs' ];
+          'disableTopBoards', 'allowBoardCustomJs', 'topBoardsCount' ];
 
       for ( var key in generalSettings) {
         if (!settings[key] && exceptionalFields.indexOf(key) === -1) {

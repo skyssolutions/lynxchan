@@ -369,7 +369,19 @@ exports.setLatestPost = function(latestPosts, latestPostsDiv, document) {
     var cell = document.createElement('div');
     cell.innerHTML = templateHandler.latestPostCell;
 
-    // TODO
+    var previewLabel = cell.getElementsByClassName('labelPreview')[0];
+    previewLabel.innerHTML = post.previewText;
+
+    var link = cell.getElementsByClassName('linkPost')[0];
+
+    var postLink = '/' + post.boardUri + '/res/' + post.threadId + '.html';
+    postLink += '#' + (post.postId || post.threadId);
+
+    link.href = postLink;
+
+    var linkText = '>>/' + post.boardUri + '/' + (post.postId || post.threadId);
+
+    link.innerHTML = linkText;
 
     latestPostsDiv.appendChild(cell);
 
@@ -408,6 +420,22 @@ exports.frontPage = function(boards, latestPosts, callback) {
 };
 // } Section 4: Front page
 
+// Section 5: Preview {
+exports.setMetadata = function(metadata, postingData, path) {
+
+  if (postingData.postId) {
+    metadata.postId = postingData.postId;
+
+    path += postingData.postId;
+  } else {
+    postingData.postId = postingData.threadId;
+    path += postingData.threadId;
+  }
+
+  return path;
+
+};
+
 exports.preview = function(postingData, callback) {
   try {
 
@@ -421,14 +449,7 @@ exports.preview = function(postingData, callback) {
       type : 'preview'
     };
 
-    if (postingData.postId) {
-      metadata.postId = postingData.postId;
-
-      path += postingData.postId;
-    } else {
-      postingData.postId = postingData.threadId;
-      path += postingData.threadId;
-    }
+    path = exports.setMetadata(metadata, postingData, path);
 
     path += '.html';
 
@@ -440,6 +461,10 @@ exports.preview = function(postingData, callback) {
 
     document.getElementById('panelContent').appendChild(innerCell);
 
+    if (postingData.postId === postingData.threadId) {
+      delete postingData.postId;
+    }
+
     gridFs.writeData(serializer(document), path, 'text/html', metadata,
         callback);
 
@@ -447,6 +472,7 @@ exports.preview = function(postingData, callback) {
     callback(error);
   }
 };
+// } Section 5: Preview
 
 exports.rules = function(boardUri, rules, callback) {
   try {

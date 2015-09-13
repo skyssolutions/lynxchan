@@ -33,6 +33,7 @@ var cachedCaptchas;
 var cachedFiles;
 var cachedTripcodes;
 var cachedLog;
+var cachedLatestPosts;
 var cachedRecoveryRequests;
 var cachedStats;
 var cachedHashBans;
@@ -515,6 +516,10 @@ exports.stats = function() {
   return cachedStats;
 };
 
+exports.latestPosts = function() {
+  return cachedLatestPosts;
+};
+
 exports.logs = function() {
   return cachedLog;
 };
@@ -596,6 +601,8 @@ exports.init = function(callback) {
     } else {
 
       cachedDb = db;
+
+      cachedLatestPosts = db.collection('latestPosts');
 
       cachedFiles = db.collection('fs.files');
 

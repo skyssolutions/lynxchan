@@ -157,7 +157,7 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
   }
 };
 
-exports.frontPage = function(boards, callback) {
+exports.frontPage = function(boards, globalLatestPosts, callback) {
 
   var topBoards = [];
 
@@ -173,8 +173,23 @@ exports.frontPage = function(boards, callback) {
     }
   }
 
+  var latestPosts = [];
+  if (globalLatestPosts) {
+    for (i = 0; i < globalLatestPosts.length; i++) {
+      var post = globalLatestPosts[i];
+      latestPosts.push({
+        boardUri : post.boardUri,
+        threadId : post.threadId,
+        postId : post.postId,
+        previewText : post.previewText
+      });
+    }
+
+  }
+
   gridFsHandler.writeData(JSON.stringify({
-    topBoards : topBoards
+    topBoards : topBoards,
+    latestPosts : latestPosts
   }), '/index.json', 'application/json', {}, callback);
 
 };

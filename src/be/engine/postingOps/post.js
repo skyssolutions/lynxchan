@@ -22,6 +22,7 @@ var miscOps;
 var captchaOps;
 
 var latestPostsCount = settings.latestPostCount;
+var globalLatestPosts = settings.globalLatestPosts;
 var bumpLimit = settings.autoSageLimit;
 var autoLockLimit = bumpLimit * 2;
 
@@ -197,6 +198,27 @@ exports.updateBoardForPostCreation = function(parameters, postId, thread,
 
 };
 
+exports.addPostToGlobalLatest = function(post, thread, parameters, cleanPosts,
+    callback) {
+
+  if (!globalLatestPosts) {
+    exports.updateBoardForPostCreation(parameters, post.postId, thread,
+        cleanPosts, callback);
+
+  } else {
+
+    common.addPostToLatestPosts(post, function addedToLatestPosts(error) {
+      if (error) {
+        console.log(error);
+      }
+
+      exports.updateBoardForPostCreation(parameters, post.postId, thread,
+          cleanPosts, callback);
+
+    });
+  }
+};
+
 exports.getLatestPosts = function(thread, postId) {
   var latestPosts = thread.latestPosts || [];
 
@@ -261,11 +283,12 @@ exports.updateThread = function(parameters, postId, thread, callback, post) {
       // style exception, too simple
       generator.preview(null, null, null, function generatedPreview(error) {
         if (error) {
-          callback(error);
-        } else {
-          exports.updateBoardForPostCreation(parameters, postId, thread,
-              cleanPosts, callback);
+          console.log(error);
         }
+
+        exports.addPostToGlobalLatest(post, thread, parameters, cleanPosts,
+            callback);
+
       }, post);
       // style exception, too simple
 

@@ -218,6 +218,9 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       }, {
         template : 'hashBanCellDisplay',
         fields : [ 'labelFile', 'labelBoard' ]
+      }, {
+        template : 'latestPostCell',
+        fields : [ 'labelPreview', 'linkPost' ]
       } ];
 
   var pageTests = [
@@ -402,9 +405,8 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
             'comboBoardCreationRequirement', 'checkboxServeArchive',
             'fieldMaxTags', 'checkboxDisableFloodCheck', 'comboProxyAccess',
             'comboMinClearIpRole', 'fieldThumbExtension',
-            'checkboxDisableTopBoards', 'checkboxGlobalBoardModeration',
-            'checkboxGlobalBanners', 'checkboxAllowCustomJs',
-            'fieldGlobalLatestPosts' ]
+            'checkboxGlobalBoardModeration', 'checkboxGlobalBanners',
+            'checkboxAllowCustomJs', 'fieldGlobalLatestPosts' ]
       }, {
         template : 'archiveDeletionPage',
         fields : []

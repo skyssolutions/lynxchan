@@ -7,6 +7,7 @@ var db = require('../../db');
 var posts = db.posts();
 var stats = db.stats();
 var flags = db.flags();
+var latestPosts = db.latestPosts();
 var tripcodes = db.tripcodes();
 var flood = db.flood();
 var boot = require('../../boot');
@@ -16,6 +17,7 @@ var verbose = settings.verbose;
 var lang;
 var miscOps;
 
+var maxGlobalLatestPosts = settings.globalLatestPosts;
 var floodTimer = settings.floodTimerSec * 1000;
 
 exports.postingParameters = [ {
@@ -526,3 +528,100 @@ exports.getFlagUrl = function(flagId, boardUri, callback) {
   }
 
 };
+
+// Section 3: Global latest posts {
+exports.cleanGlobalLatestPosts = function(callback) {
+
+  latestPosts.aggregate([ {
+    $sort : {
+      creation : -1
+    }
+  }, {
+    $skip : maxGlobalLatestPosts
+  }, {
+    $group : {
+      _id : 0,
+      ids : {
+        $push : '$_id'
+      }
+    }
+  } ], function gotLatestPostsToClean(error, results) {
+    if (error) {
+      callback(error);
+    } else if (!results.length) {
+      process.send({
+        frontPage : true
+      });
+
+      callback();
+    } else {
+
+      var processedIds = [];
+
+      var rawIds = results[0].ids;
+      for (var i = 0; i < rawIds.length; i++) {
+        processedIds.push(new ObjectID(rawIds[i]));
+      }
+
+      // style exception, too simple
+      latestPosts.deleteMany({
+        _id : {
+          $in : processedIds
+        }
+      }, function cleanedLatestPosts(error) {
+        if (error) {
+          callback(error);
+        } else {
+          process.send({
+            frontPage : true
+          });
+
+          callback();
+        }
+      });
+      // style exception, too simple
+
+    }
+  });
+
+};
+
+exports.addPostToLatestPosts = function(posting, callback) {
+
+  latestPosts.insert({
+    boardUri : posting.boardUri,
+    threadId : posting.threadId,
+    creation : posting.creation,
+    postId : posting.postId,
+    previewText : posting.message.substring(0, 128).replace(/[<>]/g,
+        function replace(match) {
+          return miscOps.htmlReplaceTable[match];
+        })
+  }, function addedPost(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      latestPosts.count({}, function counted(error, count) {
+        if (error) {
+          callback(error);
+        } else if (count > maxGlobalLatestPosts) {
+          exports.cleanGlobalLatestPosts(callback);
+        } else {
+          process.send({
+            frontPage : true
+          });
+
+          callback();
+        }
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+// } Section 3: Global latest posts

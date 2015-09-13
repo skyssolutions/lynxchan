@@ -32,7 +32,7 @@ exports.loadDependencies = function() {
 // Section 1: Thread cleanup {
 exports.removeThreads = function(boardUri, threadsToDelete, callback) {
 
-  threads.remove({
+  threads.deleteMany({
     boardUri : boardUri,
     threadId : {
       $in : threadsToDelete
@@ -143,7 +143,7 @@ exports.deleteBoardContent = function(board, callback, index) {
 
   if (index < collectionsToClean.length) {
 
-    collectionsToClean[index].remove({
+    collectionsToClean[index].deleteMany({
       boardUri : board
     }, function removedData(error) {
       exports.deleteBoardContent(board, callback, index + 1);
@@ -220,7 +220,7 @@ exports.logBoardDeletion = function(board, user, callback) {
 
 exports.deleteBoard = function(board, user, callback) {
 
-  boards.remove({
+  boards.deleteOne({
     boardUri : board.boardUri
   }, function removedBoard(error) {
     if (error) {

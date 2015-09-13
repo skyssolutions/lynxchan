@@ -149,7 +149,7 @@ exports.placeHashBan = function(userData, parameters, callback) {
 
 // Section 3: Lift hash ban {
 exports.removeHashBan = function(hashBan, userData, callback) {
-  hashBans.remove({
+  hashBans.deleteOne({
     _id : new ObjectID(hashBan._id)
   }, function hashBanRemoved(error) {
 

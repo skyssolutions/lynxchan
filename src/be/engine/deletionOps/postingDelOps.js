@@ -437,7 +437,7 @@ exports.removeFoundContent = function(userData, board, threadsToDelete,
 
   } else {
 
-    threads.remove({
+    threads.deleteMany({
       boardUri : board.boardUri,
       threadId : {
         $in : foundThreads
@@ -448,7 +448,7 @@ exports.removeFoundContent = function(userData, board, threadsToDelete,
       } else {
 
         // style exception, too simple
-        posts.remove({
+        posts.deleteMany({
           boardUri : board.boardUri,
           postId : {
             $in : foundPosts

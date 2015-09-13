@@ -231,6 +231,15 @@ floodRecord: stores the time when ips will be allowed to post again.
 
 ----------------------------------------------------------------------------------------
 
+latestPosts: stores metadata from global latest posts.
+    boardUri: uri of the board where the post was made.
+    threadId(Number): id of the thread posted or that contains the post.
+    postId(Number): id of the post.
+    previewText: text to be displayed on the list of latest posts. 128 characters.
+    creation(Date): date when the post was made.
+
+----------------------------------------------------------------------------------------
+
 *: duplicated data, foreign key.
 **: unique key
 ***:part of a unique key combination.
