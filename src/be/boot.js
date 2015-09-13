@@ -10,6 +10,8 @@ var cluster = require('cluster');
 var db;
 var fs = require('fs');
 var logger = require('./logger');
+var settingsHandler = require('./settingsHandler');
+var verbose;
 var generator;
 
 var reloadDirectories = [ 'engine', 'form', 'api', 'addons' ];
@@ -23,139 +25,10 @@ var defaultImages = [ 'thumb', 'audioThumb', 'defaultBanner', 'spoiler' ];
 
 var defaultFilesRelation;
 
-var archiveSettings;
-var dbSettings;
-var generalSettings;
-var templateSettings;
 var genericThumb;
 var defaultBanner;
 var genericAudioThumb;
 var spoilerImage;
-var fePath;
-var tempDirectory;
-
-exports.getDefaultSettings = function() {
-
-  return {
-    address : '0.0.0.0',
-    port : 80,
-    fePath : __dirname + '/../fe',
-    tempDirectory : '/tmp',
-    pageSize : 10,
-    latestPostCount : 5,
-    maxBoardTags : 5,
-    autoSageLimit : 500,
-    maxFiles : 3,
-    maxThreadCount : 50,
-    emailSender : 'noreply@mychan.com',
-    captchaExpiration : 5,
-    maxRequestSizeMB : 2,
-    maxFileSizeMB : Infinity,
-    acceptedMimes : [ 'image/png', 'image/jpeg', 'image/gif', 'image/bmp',
-        'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg', 'audio/ogg',
-        'audio/webm' ],
-    logPageSize : 50,
-    boardsPerPage : 50,
-    torSource : 'https://check.torproject.org/exit-addresses',
-    maxBoardRules : 20,
-    thumbSize : 128,
-    maxFilters : 20,
-    maxBoardVolunteers : 20,
-    maxBannerSizeKB : 200,
-    maxFlagSizeKB : 32,
-    floodTimerSec : 10,
-    archiveLevel : 0,
-    torAccess : 0,
-    proxyAccess : 0,
-    clearIpMinRole : 0,
-    boardCreationRequirement : 4
-  };
-
-};
-
-function broadCastReload(reloadsToMake, callback) {
-
-  process.send({
-    upStream : true,
-    reload : true,
-    rebuilds : reloadsToMake
-  });
-
-  callback();
-
-}
-
-function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
-
-  var rebuildFP = generalSettings.siteTitle !== settings.siteTitle;
-
-  var topChanged = generalSettings.topBoardsCount !== settings.topBoardsCount;
-
-  rebuildFP = rebuildFP || topChanged;
-
-  if (rebuildFP) {
-    reloadsToMake.push({
-      frontPage : true
-    });
-  }
-
-  var rebuildBoards = generalSettings.pageSize !== settings.pageSize;
-  var fileSizeDelta = generalSettings.maxFileSizeMB !== settings.maxFileSizeMB;
-
-  rebuildBoards = rebuildBoards || fileSizeDelta;
-
-  if (rebuildBoards) {
-    reloadsToMake.push({
-      allBoards : true
-    });
-  }
-
-  broadCastReload(reloadsToMake, callback);
-
-  if (!settings.allowBoardCustomJs && generalSettings.allowBoardCustomJs) {
-    require('./engine/boardOps').custom.clearCstomJs();
-  }
-}
-
-function checkSettingsChanges(settings, callback) {
-  var reloadsToMake = [];
-
-  if (generalSettings.fePath !== settings.fePath) {
-    reloadsToMake.push({
-      globalRebuild : true
-    });
-
-    broadCastReload(reloadsToMake, callback);
-    return;
-  }
-
-  checkGeneralSettingsChanged(settings, reloadsToMake, callback);
-
-}
-
-exports.setNewSettings = function(settings, callback) {
-
-  fs.writeFile(__dirname + '/settings/general.json', new Buffer(JSON.stringify(
-      settings, null, 2), 'utf-8'), function wroteFile(error) {
-    if (error) {
-      callback(error);
-    } else {
-
-      var exceptionalFields = [ 'siteTitle', 'captchaFonts',
-          'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage',
-          'disableTopBoards', 'allowBoardCustomJs', 'topBoardsCount' ];
-
-      for ( var key in generalSettings) {
-        if (!settings[key] && exceptionalFields.indexOf(key) === -1) {
-          settings[key] = generalSettings[key];
-        }
-      }
-
-      checkSettingsChanges(settings, callback);
-    }
-  });
-
-};
 
 function reloadDirectory(directory) {
 
@@ -189,7 +62,13 @@ exports.reload = function() {
 
   }
 
-  exports.loadSettings();
+  settingsHandler.loadSettings();
+
+  checkImagesSet();
+
+  setDefaultImages();
+
+  verbose = settingsHandler.getGeneralSettings().verbose;
 
   exports.startEngine();
 
@@ -356,50 +235,34 @@ exports.torDebug = function() {
 
 exports.getDbSettings = function() {
 
-  return dbSettings;
+  return settingsHandler.getDbSettings();
 };
 
 exports.getArchiveSettings = function() {
-  return archiveSettings;
+  return settingsHandler.getArchiveSettings();
 };
 
 exports.getGeneralSettings = function() {
-  return generalSettings;
+  return settingsHandler.getGeneralSettings();
 };
 
 exports.getTemplateSettings = function() {
-  return templateSettings;
+  return settingsHandler.getTemplateSettings();
 };
 
 exports.getFePath = function() {
-  return fePath;
+  return settingsHandler.getFePath();
 };
 
 exports.tempDir = function() {
 
-  return tempDirectory;
+  return settingsHandler.tempDir();
 
 };
 
-function setMaxSizes() {
-  if (generalSettings.maxFileSizeMB !== Infinity) {
-    generalSettings.maxFileSizeB = generalSettings.maxFileSizeMB * 1024 * 1024;
-  } else {
-    generalSettings.maxFileSizeB = Infinity;
-  }
-
-  var requestSizeB = generalSettings.maxRequestSizeMB * 1024 * 1024;
-  generalSettings.maxRequestSizeB = requestSizeB;
-
-  var bannerSizeB = generalSettings.maxBannerSizeKB * 1024;
-  generalSettings.maxBannerSizeB = bannerSizeB;
-
-  var flagSizeB = generalSettings.maxFlagSizeKB * 1024;
-  generalSettings.maxFlagSizeB = flagSizeB;
-
-}
-
 function checkImagesSet() {
+
+  var templateSettings = settingsHandler.getTemplateSettings();
 
   for (var i = 0; i < defaultImages.length; i++) {
 
@@ -414,6 +277,8 @@ function checkImagesSet() {
 }
 
 function setDefaultImages() {
+
+  var templateSettings = settingsHandler.getTemplateSettings();
 
   var thumbExt = templateSettings.thumb.split('.');
 
@@ -484,62 +349,6 @@ function composeDefaultFiles() {
   };
 
 }
-
-function loadDatabasesSettings() {
-  var dbSettingsPath = __dirname + '/settings/db.json';
-
-  dbSettings = JSON.parse(fs.readFileSync(dbSettingsPath));
-
-  try {
-    var archivePath = __dirname + '/settings/archive.json';
-
-    archiveSettings = JSON.parse(fs.readFileSync(archivePath));
-  } catch (error) {
-
-  }
-}
-
-function loadGeneralSettings() {
-
-  var defaultSettings = exports.getDefaultSettings();
-
-  var generalSettingsPath = __dirname + '/settings/general.json';
-
-  generalSettings = JSON.parse(fs.readFileSync(generalSettingsPath));
-
-  for ( var key in defaultSettings) {
-    if (!generalSettings[key]) {
-      generalSettings[key] = defaultSettings[key];
-    }
-  }
-
-}
-
-exports.loadSettings = function() {
-
-  loadDatabasesSettings();
-
-  loadGeneralSettings();
-
-  fePath = generalSettings.fePath;
-
-  tempDirectory = generalSettings.tempDirectory || '/tmp';
-
-  setMaxSizes();
-
-  var templateSettingsPath = fePath + '/templateSettings.json';
-
-  templateSettings = JSON.parse(fs.readFileSync(templateSettingsPath));
-
-  checkImagesSet();
-
-  setDefaultImages();
-
-  composeDefaultFiles();
-
-  require('./engine/langOps').init();
-
-};
 
 exports.noDaemon = function() {
   return noDaemon;
@@ -618,7 +427,7 @@ function regenerateAll() {
   generator.all(function regeneratedAll(error) {
     if (error) {
 
-      if (generalSettings.verbose) {
+      if (verbose) {
         console.log(error);
       }
 
@@ -650,7 +459,7 @@ function iterateDefaultPages(foundFiles, index) {
   if (foundFiles.indexOf(fileToCheck) === -1 || fileData.command) {
     generator[fileData.generatorFunction](function generated(error) {
       if (error) {
-        if (generalSettings.verbose) {
+        if (verbose) {
           console.log(error);
         }
 
@@ -700,7 +509,7 @@ function checkForDefaultPages() {
     }
   }, function gotFiles(error, files) {
     if (error) {
-      if (generalSettings.verbose) {
+      if (verbose) {
         console.log(error);
       }
 
@@ -716,7 +525,15 @@ function checkForDefaultPages() {
 
 }
 
-exports.loadSettings();
+settingsHandler.loadSettings();
+
+checkImagesSet();
+
+setDefaultImages();
+
+composeDefaultFiles();
+
+verbose = settingsHandler.getGeneralSettings().verbose;
 
 db = require('./db');
 

@@ -6,7 +6,7 @@ var verbose = settings.verbose;
 var db = require('../db');
 var crypto = require('crypto');
 var users = db.users();
-var boot = require('../boot');
+var settingsHandler = require('../settingsHandler');
 var reports = db.reports();
 var formOps;
 var lang;
@@ -665,7 +665,7 @@ exports.setGlobalSettings = function(userData, parameters, callback) {
 
   var newSettings = {};
 
-  var defaultSettings = boot.getDefaultSettings();
+  var defaultSettings = settingsHandler.getDefaultSettings();
 
   for (var i = 0; i < parametersArray.length; i++) {
     var item = parametersArray[i];
@@ -707,6 +707,6 @@ exports.setGlobalSettings = function(userData, parameters, callback) {
     console.log('New settings: ' + JSON.stringify(newSettings, null, 2));
   }
 
-  boot.setNewSettings(newSettings, callback);
+  settingsHandler.setNewSettings(newSettings, callback);
 
 };
