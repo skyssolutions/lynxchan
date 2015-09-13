@@ -886,6 +886,7 @@ Json output(Object): object with the current global settings. It contains the fo
     addons(Array): array of loaded addons.
     useGlobalBanners(Boolean): indicates that boards are using global banners.
     allowBoardCustomJs(Boolean): indicates that boards are allowed to have custom javascript.
+    globalLatestPosts(Number): amount of latest global latest posts that show appear on the front-page.
 
 ------------------------------------------------------------------------------------------
 
@@ -946,6 +947,7 @@ Parameters:
     addons(Array): array of addons to be loaded.
     useGlobalBanners(Boolean): makes boards use the global banners.
     allowBoardCustomJs(Boolean): allows for boards to have custom javascript.
+    globalLatestPosts(Number): amount of latest global latest posts that show appear on the front-page.
 
 ------------------------------------------------------------------------------------------
 

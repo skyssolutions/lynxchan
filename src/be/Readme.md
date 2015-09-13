@@ -108,6 +108,7 @@ Settings files that goes into the settings directory:
 * `addons`(Array): array of addons to be loaded. They will be loaded in the order they appear in this array.
 * `useGlobalBanners`(Boolean): indicates if boards should use global banners. 
 * `allowBoardCustomJs`(Boolean): if true, boards are allowed to have custom javascript.
+* `globalLatestPosts`(Number): amount of global latest posts to be displayed on the front-page.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

@@ -34,7 +34,7 @@ You can find all the information you need at the documents in `doc`.
 # Front-end
 The front end are static files and templates. They are handled as a separate project and you can use them on any location in the system. But the path to its files will default to `src/fe`.
 Note that the front-end directory is in the ignore. I am designing this project to have a modular front-end, so theres no point in having a default front-end in the repository. 
-* [Definitive front-end](https://github.com/lleaff/LynxChanFront) is the definitive version developed by lleaff. It is prettier and has more features. Requires gulp to be built.
+* [Definitive front-end](https://github.com/lleaff/LynxChanFront) is the definitive version developed by lleaff. It is prettier and has more features. Requires gulp to be built. Discontinued, left at 0.4.2 version of the engine.
 * [Placeholder front-end](https://gitlab.com/mrseth/LynxChanFront-Placeholder) is usually more up to date, but has less features and is kind of rough.
 
 # Back-end

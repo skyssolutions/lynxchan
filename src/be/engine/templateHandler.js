@@ -247,7 +247,7 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       },
       {
         template : 'index',
-        fields : [ 'divBoards' ]
+        fields : [ 'divBoards', 'divLatestPosts' ]
       },
       {
         template : 'boardPage',
@@ -403,7 +403,8 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
             'fieldMaxTags', 'checkboxDisableFloodCheck', 'comboProxyAccess',
             'comboMinClearIpRole', 'fieldThumbExtension',
             'checkboxDisableTopBoards', 'checkboxGlobalBoardModeration',
-            'checkboxGlobalBanners', 'checkboxAllowCustomJs' ]
+            'checkboxGlobalBanners', 'checkboxAllowCustomJs',
+            'fieldGlobalLatestPosts' ]
       }, {
         template : 'archiveDeletionPage',
         fields : []

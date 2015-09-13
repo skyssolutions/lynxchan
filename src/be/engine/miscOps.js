@@ -478,6 +478,11 @@ exports.getParametersArray = function() {
     setting : 'floodTimerSec',
     element : 'fieldFloodInterval'
   }, {
+    param : 'globalLatestPosts',
+    type : 'number',
+    setting : 'globalLatestPosts',
+    element : 'fieldGlobalLatestPosts'
+  }, {
     // boolean
     param : 'disable304',
     type : 'boolean',

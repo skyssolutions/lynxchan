@@ -23,7 +23,7 @@ exports.init = function() {
   // Initializing addon. At this point its safe to reference different addons
 
   // pick an exposed function of the module and replace it
-  static.frontPage = function(boards, callback) {
+  static.frontPage = function(boards, latestPosts, callback) {
 
     try {
 
@@ -44,6 +44,14 @@ exports.init = function() {
         // you don't have to overwrite every thing, you can adapt the reference
         // and keep using the module function, un this case, setTopBoards
         static.setTopBoards(document, boards, boardsDiv);
+      }
+
+      var latestPostsDiv = document.getElementById('divLatestPosts');
+
+      if (!latestPosts) {
+        common.removeElement(latestPostsDiv);
+      } else {
+        static.setLatestPost(latestPosts, latestPostsDiv, document);
       }
 
       gridFs.writeData(serializer(document), '/', 'text/html', {}, callback);

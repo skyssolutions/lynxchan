@@ -15,6 +15,10 @@ divBoards:
     use: have children appended to it or might be removed.
     description: contains the listing of boards.
 
+divLatestPosts:
+    use: have children appended to it or might be removed.
+    description: contains the latest posts made on the whole site.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::02
@@ -1644,6 +1648,10 @@ checkboxGlobalBanners:
 fieldAddons:
     use: have it's value manipulated.
     description: field that displays the addons that should be loaded.
+
+fieldGlobalLatestPosts:
+    use: have it's value manipulated.
+    description: field that displays the amount of global latest posts to be displayed on the front-page.
 
 checkboxAllowCustomJs:
     use: might be turned on.

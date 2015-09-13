@@ -361,7 +361,23 @@ exports.setTopBoards = function(document, boards, boardsDiv) {
 
 };
 
-exports.frontPage = function(boards, callback) {
+exports.setLatestPost = function(latestPosts, latestPostsDiv, document) {
+
+  for (var i = 0; i < latestPosts.length; i++) {
+    var post = latestPosts[i];
+
+    var cell = document.createElement('div');
+    cell.innerHTML = templateHandler.latestPostCell;
+
+    // TODO
+
+    latestPostsDiv.appendChild(cell);
+
+  }
+
+};
+
+exports.frontPage = function(boards, latestPosts, callback) {
 
   try {
 
@@ -375,6 +391,14 @@ exports.frontPage = function(boards, callback) {
       common.removeElement(boardsDiv);
     } else {
       exports.setTopBoards(document, boards, boardsDiv);
+    }
+
+    var latestPostsDiv = document.getElementById('divLatestPosts');
+
+    if (!latestPosts) {
+      common.removeElement(latestPostsDiv);
+    } else {
+      exports.setLatestPost(latestPosts, latestPostsDiv, document);
     }
 
     gridFs.writeData(serializer(document), '/', 'text/html', {}, callback);

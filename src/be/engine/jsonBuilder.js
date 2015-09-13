@@ -421,6 +421,15 @@ exports.flagManagement = function(flags) {
 
 exports.globalSettings = function() {
 
-  return JSON.stringify(settings);
+  var toOutput = {};
+
+  var settingsRelation = miscOps.getParametersArray();
+
+  for (var i = 0; i < settingsRelation.length; i++) {
+    var setting = settingsRelation[i];
+    toOutput[setting.setting] = settings[setting.setting];
+  }
+
+  return JSON.stringify(toOutput);
 
 };

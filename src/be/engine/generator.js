@@ -15,6 +15,7 @@ var topBoardsCount = settings.topBoardsCount;
 var templateSettings = boot.getTemplateSettings();
 var pageSize = settings.pageSize;
 var verbose = settings.verbose;
+var globalLatestPosts = settings.globalLatestPosts;
 var domManipulator;
 var boardOps;
 var miscOps;
@@ -250,9 +251,10 @@ exports.notFound = function(callback) {
 };
 
 // start of front-page generation
-exports.saveFrontPage = function(foundBoards, callback) {
+exports.saveFrontPage = function(foundBoards, globalLatestPosts, callback) {
 
-  domManipulator.frontPage(foundBoards, function savedHtml(error) {
+  domManipulator.frontPage(foundBoards, globalLatestPosts, function savedHtml(
+      error) {
     if (error) {
       callback(error);
     } else {
@@ -263,6 +265,18 @@ exports.saveFrontPage = function(foundBoards, callback) {
 
 };
 
+exports.fetchLatestGlobalPosts = function(foundBoards, callback) {
+
+  if (!globalLatestPosts) {
+    exports.saveFrontPage(foundBoards, null, callback);
+    return;
+  }
+  // TODO get latest global posts
+
+  exports.saveFrontPage(foundBoards, null, callback);
+
+};
+
 exports.frontPage = function(callback) {
 
   if (verbose) {
@@ -270,7 +284,7 @@ exports.frontPage = function(callback) {
   }
 
   if (settings.disableTopBoards) {
-    exports.saveFrontPage(null, callback);
+    exports.fetchLatestGlobalPosts(null, callback);
     return;
   }
 
@@ -294,7 +308,7 @@ exports.frontPage = function(callback) {
     if (error) {
       callback(error);
     } else {
-      exports.saveFrontPage(foundBoards, callback);
+      exports.fetchLatestGlobalPosts(foundBoards, callback);
     }
   });
 
