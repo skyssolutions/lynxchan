@@ -106,67 +106,65 @@ exports.checkBlankParameters = function(object, parameters, res) {
 
 };
 
-exports.getGifBounds = function(toPush, parsedData, res, finalArray, toRemove,
-    callback, exceptionalMimes) {
+// Section 1: Request parsing {
 
-  uploadHandler.getGifBounds(toPush.pathInDisk, function gotBounds(error,
-      width, height) {
-    if (!error) {
-      toPush.width = width;
-      toPush.height = height;
+// Section 1.1: Upload handling {
+exports.getFileData = function(matches, res, stats, file, location, content,
+    exceptionalMimes, finalArray, callback) {
 
-      finalArray.push(toPush);
+  var mime = matches[1];
+
+  if (stats.size > maxFileSize) {
+    exports.outputResponse(null, null, 'fileTooLarge', res);
+  } else if (allowedMimes.indexOf(mime) === -1 && !exceptionalMimes) {
+    exports.outputResponse(null, null, 'formatNotAllowed', res);
+  } else {
+
+    var toPush = {
+      title : file.name,
+      md5 : crypto.createHash('md5').update(content, 'base64').digest('hex'),
+      size : stats.size,
+      mime : mime,
+      pathInDisk : location
+    };
+
+    var video = videoMimes.indexOf(toPush.mime) > -1;
+
+    var measureFunction;
+
+    if (toPush.mime === 'image/gif') {
+      measureFunction = uploadHandler.getGifBounds;
+    } else if (toPush.mime.indexOf('image/') > -1) {
+      measureFunction = uploadHandler.getImageBounds;
+    } else if (video && settings.mediaThumb) {
+      measureFunction = uploadHandler.getVideoBounds;
     }
 
-    exports.storeImages(parsedData, res, finalArray, toRemove, callback,
-        exceptionalMimes);
-  });
+    if (measureFunction) {
 
-};
-
-exports.getImageBounds = function(toPush, parsedData, res, finalArray,
-    toRemove, cb, exceptionalMimes) {
-
-  uploadHandler.getImageBounds(toPush.pathInDisk, function gotBounds(error,
-      width, height) {
-    if (!error) {
-      toPush.width = width;
-      toPush.height = height;
-
-      finalArray.push(toPush);
-    }
-
-    exports.storeImages(parsedData, res, finalArray, toRemove, cb,
-        exceptionalMimes);
-  });
-
-};
-
-exports.getVideoBounds = function(toPush, parsedData, res, finalArray,
-    toRemove, cb, exceptionalMimes) {
-
-  uploadHandler.getVideoBounds(toPush,
-      function gotBounds(error, width, height) {
-
+      measureFunction(toPush, function gotDimensions(error, width, height) {
         if (!error) {
-
           toPush.width = width;
           toPush.height = height;
 
           finalArray.push(toPush);
-        } else if (verbose) {
-          console.log(error);
         }
 
-        exports.storeImages(parsedData, res, finalArray, toRemove, cb,
-            exceptionalMimes);
+        callback(error);
+
       });
+
+    } else {
+      finalArray.push(toPush);
+
+      callback();
+    }
+  }
 
 };
 
-exports.processFile = function(parsedData, res, finalArray, toRemove, callback,
-    exceptionalMimes) {
-  var file = parsedData.parameters.files.shift();
+exports.processFile = function(file, res, finalArray, toRemove,
+    exceptionalMimes, callback) {
 
   var matches = file.content.match(/^data:([0-9A-Za-z-+\/]+);base64,(.+)$/);
 
@@ -188,59 +186,17 @@ exports.processFile = function(parsedData, res, finalArray, toRemove, callback,
       // style exception, too simple
       fs.stat(location, function gotStats(error, stats) {
         if (error) {
-          exports.storeImages(parsedData, res, finalArray, toRemove, callback,
-              exceptionalMimes);
+          callback(error);
         } else {
-
-          var mime = matches[1];
-
-          if (stats.size > maxFileSize) {
-            exports.outputResponse(null, null, 'fileTooLarge', res);
-          } else if (allowedMimes.indexOf(mime) === -1 && !exceptionalMimes) {
-            exports.outputResponse(null, null, 'formatNotAllowed', res);
-          } else {
-
-            var toPush = {
-              title : file.name,
-              md5 : crypto.createHash('md5').update(content, 'base64').digest(
-                  'hex'),
-              size : stats.size,
-              mime : mime,
-              pathInDisk : location
-            };
-
-            var video = videoMimes.indexOf(toPush.mime) > -1;
-
-            if (toPush.mime === 'image/gif') {
-
-              exports.getGifBounds(toPush, parsedData, res, finalArray,
-                  toRemove, callback, exceptionalMimes);
-
-            } else if (toPush.mime.indexOf('image/') > -1) {
-
-              exports.getImageBounds(toPush, parsedData, res, finalArray,
-                  toRemove, callback, exceptionalMimes);
-
-            } else if (video && settings.mediaThumb) {
-
-              exports.getVideoBounds(toPush, parsedData, res, finalArray,
-                  toRemove, callback, exceptionalMimes);
-            } else {
-
-              finalArray.push(toPush);
-
-              exports.storeImages(parsedData, res, finalArray, toRemove,
-                  callback, exceptionalMimes);
-            }
-          }
+          exports.getFileData(matches, res, stats, file, location, content,
+              exceptionalMimes, finalArray, callback);
         }
 
       });
       // style exception, too simple
 
     } else {
-      exports.storeImages(parsedData, res, finalArray, toRemove, callback,
-          exceptionalMimes);
+      callback(error);
     }
 
   });
@@ -255,8 +211,24 @@ exports.storeImages = function(parsedData, res, finalArray, toRemove, callback,
   var tooManyFiles = finalArray.length === maxFiles;
 
   if (!tooManyFiles && hasFilesField && parsedData.parameters.files.length) {
-    exports.processFile(parsedData, res, finalArray, toRemove, callback,
-        exceptionalMimes);
+    exports.processFile(parsedData.parameters.files.shift(), res, finalArray,
+        toRemove, exceptionalMimes, function processedFile(error) {
+
+          if (error) {
+
+            if (error) {
+              console.log(error);
+            }
+
+            if (debug) {
+              throw error;
+            }
+          }
+
+          exports.storeImages(parsedData, res, finalArray, toRemove, callback,
+              exceptionalMimes);
+
+        });
 
   } else {
     var parameters = parsedData.parameters || {};
@@ -282,6 +254,7 @@ exports.storeImages = function(parsedData, res, finalArray, toRemove, callback,
   }
 
 };
+// } Section 1.1: Upload handling
 
 exports.getAuthenticatedData = function(req, res, callback, optionalAuth,
     exceptionalMimes) {
@@ -334,6 +307,7 @@ exports.getAnonJsonData = function(req, res, callback, exceptionalMimes) {
   });
 
 };
+// } Section 1: Request parsing
 
 exports.outputError = function(error, res) {
 

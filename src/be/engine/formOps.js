@@ -59,60 +59,9 @@ exports.getCookies = function(req) {
   return parsedCookies;
 };
 
-exports.getGifDimensions = function(toPush, files, fields, cookies, callback,
-    res, exceptionalMimes) {
+// Section 1: Request parsing {
 
-  uploadHandler.getGifBounds(toPush.pathInDisk, function gotBounds(error,
-      width, height) {
-    if (!error) {
-      toPush.width = width;
-      toPush.height = height;
-
-      fields.files.push(toPush);
-    }
-
-    exports.transferFileInformation(files, fields, cookies, callback, res,
-        exceptionalMimes);
-  });
-
-};
-
-exports.getImageDimensions = function(toPush, files, fields, cookies, callback,
-    res, exceptionalMimes) {
-
-  uploadHandler.getImageBounds(toPush.pathInDisk, function gotBounds(error,
-      width, height) {
-    if (!error) {
-      toPush.width = width;
-      toPush.height = height;
-
-      fields.files.push(toPush);
-    }
-
-    exports.transferFileInformation(files, fields, cookies, callback, res,
-        exceptionalMimes);
-  });
-
-};
-
-exports.getVideoDimensions = function(toPush, files, fields, cookies, callback,
-    res, exceptionalMimes) {
-
-  uploadHandler.getVideoBounds(toPush,
-      function gotBounds(error, width, height) {
-        if (!error) {
-          toPush.width = width;
-          toPush.height = height;
-
-          fields.files.push(toPush);
-        }
-
-        exports.transferFileInformation(files, fields, cookies, callback, res,
-            exceptionalMimes);
-      });
-
-};
-
+// Section 1.1: File processing {
 exports.getCheckSum = function(path, callback) {
 
   var stream = fs.createReadStream(path);
@@ -128,6 +77,54 @@ exports.getCheckSum = function(path, callback) {
 
 };
 
+exports.getFileData = function(file, fields, mime, callback) {
+
+  exports.getCheckSum(file.path, function gotCheckSum(checkSum) {
+
+    var toPush = {
+      size : file.size,
+      md5 : checkSum,
+      title : file.originalFilename,
+      pathInDisk : file.path,
+      mime : mime
+    };
+
+    var video = videoMimes.indexOf(toPush.mime) > -1;
+    video = video && settings.mediaThumb;
+
+    var measureFunction;
+
+    if (toPush.mime === 'image/gif') {
+      measureFunction = uploadHandler.getGifBounds;
+    } else if (toPush.mime.indexOf('image/') > -1) {
+      measureFunction = uploadHandler.getImageBounds;
+    } else if (video && settings.mediaThumb) {
+      measureFunction = uploadHandler.getVideoBounds;
+    }
+
+    if (measureFunction) {
+
+      // style exception, too simple
+      measureFunction(toPush, function gotDimensions(error, width, height) {
+        if (!error) {
+          toPush.width = width;
+          toPush.height = height;
+
+          fields.files.push(toPush);
+        }
+
+        callback(error);
+      });
+      // style exception, too simple
+
+    } else {
+      fields.files.push(toPush);
+
+      callback();
+    }
+  });
+};
+
 exports.transferFileInformation = function(files, fields, parsedCookies, cb,
     res, exceptionalMimes) {
 
@@ -135,56 +132,36 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
 
     var file = files.files.shift();
 
-    exports.getCheckSum(file.path, function gotCheckSum(checkSum) {
-      var mime = file.headers['content-type'];
+    var mime = file.headers['content-type'];
 
-      var acceptableSize = file.size && file.size < maxFileSize;
+    var acceptableSize = file.size && file.size < maxFileSize;
 
-      if (validMimes.indexOf(mime) === -1 && !exceptionalMimes && file.size) {
-        exports.outputError(lang.errFormatNotAllowed, 500, res);
-      } else if (acceptableSize) {
-        var toPush = {
-          size : file.size,
-          md5 : checkSum,
-          title : file.originalFilename,
-          pathInDisk : file.path,
-          mime : mime
-        };
+    if (validMimes.indexOf(mime) === -1 && !exceptionalMimes && file.size) {
+      exports.outputError(lang.errFormatNotAllowed, 500, res);
+    } else if (acceptableSize) {
 
-        var video = videoMimes.indexOf(toPush.mime) > -1;
-        video = video && settings.mediaThumb;
+      exports.getFileData(file, fields, mime, function gotFileData(error) {
+        if (error) {
+          if (verbose) {
+            console.log(error);
+          }
 
-        if (toPush.mime === 'image/gif') {
+          if (debug) {
+            throw error;
+          }
 
-          exports.getGifDimensions(toPush, files, fields, parsedCookies, cb,
-              res, exceptionalMimes);
-
-        } else
-
-        if (toPush.mime.indexOf('image/') > -1) {
-
-          exports.getImageDimensions(toPush, files, fields, parsedCookies, cb,
-              res, exceptionalMimes);
-
-        } else if (video) {
-
-          exports.getVideoDimensions(toPush, files, fields, parsedCookies, cb,
-              res);
-
-        } else {
-          fields.files.push(toPush);
-
-          exports.transferFileInformation(files, fields, parsedCookies, cb,
-              res, exceptionalMimes);
         }
 
-      } else if (file.size) {
-        exports.outputError(lang.errFileTooLarge, 500, res);
-      } else {
         exports.transferFileInformation(files, fields, parsedCookies, cb, res,
             exceptionalMimes);
-      }
-    });
+
+      });
+    } else if (file.size) {
+      exports.outputError(lang.errFileTooLarge, 500, res);
+    } else {
+      exports.transferFileInformation(files, fields, parsedCookies, cb, res,
+          exceptionalMimes);
+    }
 
   } else {
     if (verbose) {
@@ -195,6 +172,7 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
   }
 
 };
+// } Section 1.1: File processing
 
 exports.processParsedRequest = function(res, fields, files, callback,
     parsedCookies, exceptionalMimes) {
@@ -218,46 +196,6 @@ exports.processParsedRequest = function(res, fields, files, callback,
     }
 
     callback(parsedCookies, fields);
-  }
-
-};
-
-exports.redirectToLogin = function(res) {
-
-  var header = [ [ 'Location', '/login.html' ] ];
-
-  res.writeHead(302, header);
-
-  res.end();
-};
-
-exports.getAuthenticatedPost = function(req, res, getParameters, callback,
-    optionalAuth, exceptionalMimes) {
-
-  if (getParameters) {
-
-    exports.getPostData(req, res, function(auth, parameters) {
-
-      accountOps.validate(auth, function validated(error, newAuth, userData) {
-        if (error && !optionalAuth) {
-          exports.redirectToLogin(res);
-        } else {
-          callback(newAuth, userData, parameters);
-        }
-
-      });
-    }, exceptionalMimes);
-  } else {
-
-    accountOps.validate(exports.getCookies(req), function validated(error,
-        newAuth, userData) {
-
-      if (error && !optionalAuth) {
-        exports.redirectToLogin(res);
-      } else {
-        callback(newAuth, userData);
-      }
-    });
   }
 
 };
@@ -313,6 +251,47 @@ exports.getPostData = function(req, res, callback, exceptionalMimes) {
     exports.outputError(error, 500, res);
   }
 
+};
+
+exports.getAuthenticatedPost = function(req, res, getParameters, callback,
+    optionalAuth, exceptionalMimes) {
+
+  if (getParameters) {
+
+    exports.getPostData(req, res, function(auth, parameters) {
+
+      accountOps.validate(auth, function validated(error, newAuth, userData) {
+        if (error && !optionalAuth) {
+          exports.redirectToLogin(res);
+        } else {
+          callback(newAuth, userData, parameters);
+        }
+
+      });
+    }, exceptionalMimes);
+  } else {
+
+    accountOps.validate(exports.getCookies(req), function validated(error,
+        newAuth, userData) {
+
+      if (error && !optionalAuth) {
+        exports.redirectToLogin(res);
+      } else {
+        callback(newAuth, userData);
+      }
+    });
+  }
+
+};
+// } Section 1: Request parsing
+
+exports.redirectToLogin = function(res) {
+
+  var header = [ [ 'Location', '/login.html' ] ];
+
+  res.writeHead(302, header);
+
+  res.end();
 };
 
 exports.setCookies = function(header, cookies) {

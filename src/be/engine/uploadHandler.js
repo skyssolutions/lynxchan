@@ -52,7 +52,9 @@ exports.supportedMimes = function() {
   return supportedMimes;
 };
 
-exports.getImageBounds = function(path, callback) {
+exports.getImageBounds = function(file, callback) {
+
+  var path = file.pathInDisk;
 
   im(path).identify(function(error, stats) {
 
@@ -66,7 +68,9 @@ exports.getImageBounds = function(path, callback) {
 
 };
 
-exports.getGifBounds = function(path, callback) {
+exports.getGifBounds = function(file, callback) {
+
+  var path = file.pathInDisk;
 
   exec('identify ' + path, function(error, results) {
     if (error) {

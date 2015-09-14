@@ -251,7 +251,7 @@ exports.notFound = function(callback) {
 
 };
 
-// start of front-page generation
+// Section 1: Front-page {
 exports.saveFrontPage = function(foundBoards, globalLatestPosts, callback) {
 
   domManipulator.frontPage(foundBoards, globalLatestPosts, function savedHtml(
@@ -330,7 +330,7 @@ exports.frontPage = function(callback) {
   });
 
 };
-// end of front-page generation
+// } Section 1: Front-page
 
 exports.defaultPages = function(callback) {
 
@@ -415,9 +415,11 @@ exports.preview = function(boardUri, threadId, postId, callback, postingData) {
   }
 };
 
-// board creation start
-// thread pages start
+// Section 2: Boards {
 
+// Section 2.1: Board {
+
+// Section 2.1.1: Thread {
 exports.thread = function(boardUri, threadId, callback, boardData, threadData,
     flagData) {
 
@@ -569,11 +571,9 @@ exports.allThreads = function(boardUri, callback, boardData) {
   exports.getThreads(boardUri, boardData, callback);
 
 };
+// } Section 2.1.1: Thread
 
-// thread pages end
-
-// page creation start
-
+// Section 2.1.2: Board page {
 exports.getLatestPosts = function(boardUri, page, threadsArray, pageCount,
     boardData, flagData, callback) {
 
@@ -742,8 +742,7 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
       });
 
 };
-
-// page creation end
+// } Section 2.1.2: Board page
 
 exports.catalog = function(boardUri, callback) {
 
@@ -859,8 +858,7 @@ exports.board = function(boardUri, reloadThreads, reloadRules, cb, boardData) {
   });
 
 };
-
-// board creation end
+// } Section 2.1: Board
 
 exports.iterateBoards = function(cursor, callback) {
 
@@ -902,3 +900,4 @@ exports.boards = function(callback) {
   exports.iterateBoards(cursor, callback);
 
 };
+// } Section 2: Boards
