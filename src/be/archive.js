@@ -11,9 +11,8 @@ var lang;
 var logs;
 var miscOps;
 var domManipulator;
-var boot = require('./boot');
-var verbose = boot.getGeneralSettings().verbose;
-var debug = boot.debug();
+var verbose = require('./settingsHandler').getGeneralSettings().verbose;
+var debug = require('./boot').debug();
 var loaded = false;
 
 exports.loaded = function() {
@@ -22,7 +21,7 @@ exports.loaded = function() {
 
 exports.reload = function() {
 
-  verbose = boot.getGeneralSettings().verbose;
+  verbose = require('./settingsHandler').getGeneralSettings().verbose;
   formOps = require('./engine/formOps');
   gridFsHandler = require('./engine/gridFsHandler');
   domManipulator = require('./engine/domManipulator').dynamicPages.miscPages;
@@ -76,7 +75,7 @@ function assembleConnectString(dbSettings) {
 
 exports.init = function(callback) {
 
-  var dbSettings = require('./boot').getArchiveSettings();
+  var dbSettings = require('./settingsHandler').getArchiveSettings();
 
   if (!dbSettings) {
     handleNoSettingsError(callback);
@@ -84,7 +83,7 @@ exports.init = function(callback) {
     return;
   }
 
-  var mainDbSettings = require('./boot').getDbSettings();
+  var mainDbSettings = require('./settingsHandler').getDbSettings();
 
   var equalAddress = mainDbSettings.address === dbSettings.address;
 

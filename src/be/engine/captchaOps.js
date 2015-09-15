@@ -2,8 +2,7 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
-var boot = require('../boot');
-var settings = boot.getGeneralSettings();
+var settings = require('../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var logger = require('../logger');
 var exec = require('child_process').exec;
@@ -13,7 +12,6 @@ var im = require('gm').subClass({
 var captchas = require('../db').captchas();
 var crypto = require('crypto');
 var boot = require('../boot');
-var settings = boot.getGeneralSettings();
 var captchaExpiration = settings.captchaExpiration;
 var tempDirectory = settings.tempDirectory;
 var url = require('url');

@@ -1,6 +1,6 @@
 'use strict';
 
-var settings = require('../../boot').getGeneralSettings();
+var settings = require('../../settingsHandler').getGeneralSettings();
 var db = require('../../db');
 var boards = db.boards();
 var miscOps;

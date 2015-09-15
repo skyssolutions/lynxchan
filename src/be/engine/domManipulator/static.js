@@ -2,8 +2,7 @@
 
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
-var boot = require('../../boot');
-var settings = boot.getGeneralSettings();
+var settings = require('../../settingsHandler').getGeneralSettings();
 var archive = settings.archiveLevel > 0 && require('../../archive').loaded();
 var common;
 var templateHandler;

@@ -7,7 +7,7 @@ var threads = db.threads();
 var logs = db.logs();
 var boards = db.boards();
 var files = db.files();
-var settings = require('../../boot').getGeneralSettings();
+var settings = require('../../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var latestPosts = settings.latestPostCount;
 var gridFs;

@@ -3,7 +3,8 @@
 var fs = require('fs');
 var logger = require('./logger');
 var boot = require('./boot');
-var settings = boot.getGeneralSettings();
+var settingsHandler = require('./settingsHandler');
+var settings = settingsHandler.getGeneralSettings();
 var verbose = settings.verbose;
 var tempDirectory = settings.tempDirectory;
 var captchaExpiration = settings.captchaExpiration;
@@ -23,7 +24,7 @@ var torHandler = require('./engine/torOps');
 
 exports.reload = function() {
 
-  settings = boot.getGeneralSettings();
+  settings = settingsHandler.getGeneralSettings();
 
   verbose = settings.verbose;
   tempDirectory = settings.tempDirectory;

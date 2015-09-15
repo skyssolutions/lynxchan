@@ -2,10 +2,9 @@
 
 // Handles language
 var fs = require('fs');
-var boot = require('../boot');
-var settings = boot.getGeneralSettings();
+var settings = require('../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
-var debug = boot.debug();
+var debug = require('../boot').debug();
 
 var languagePack = {};
 

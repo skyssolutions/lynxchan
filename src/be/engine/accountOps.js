@@ -8,7 +8,7 @@ var logger = require('../logger');
 var logs = db.logs();
 var crypto = require('crypto');
 var mailer = require('nodemailer').createTransport();
-var settings = require('../boot').getGeneralSettings();
+var settings = require('../settingsHandler').getGeneralSettings();
 var sender = settings.emailSender || 'noreply@mychan.com';
 var creationDisabled = settings.disableAccountCreation;
 var miscOps;

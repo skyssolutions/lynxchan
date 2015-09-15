@@ -1,7 +1,8 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var loadedAddons = require('../boot').getGeneralSettings().addons || [];
+var generalSettings = require('../settingsHandler').getGeneralSettings();
+var loadedAddons = generalSettings.addons || [];
 var lang = require('../engine/langOps').languagePack();
 var url = require('url');
 

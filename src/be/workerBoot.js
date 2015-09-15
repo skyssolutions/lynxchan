@@ -6,7 +6,8 @@
 
 var logger = require('./logger');
 var boot = require('./boot');
-var verbose = boot.getGeneralSettings().verbose;
+var settingsHandler = require('./settingsHandler');
+var verbose = settingsHandler.getGeneralSettings().verbose;
 var cluster = require('cluster');
 var fs = require('fs');
 var requestHandler;
@@ -20,7 +21,7 @@ var debug = boot.debug();
 
 exports.reload = function() {
 
-  verbose = boot.getGeneralSettings().verbose;
+  verbose = settingsHandler.getGeneralSettings().verbose;
   requestHandler = require('./engine/requestHandler');
 };
 
@@ -54,7 +55,7 @@ function startListening() {
   try {
     require('./engine/templateHandler').loadTemplates();
 
-    if (boot.getGeneralSettings().ssl) {
+    if (settingsHandler.getGeneralSettings().ssl) {
 
       try {
 
@@ -65,7 +66,7 @@ function startListening() {
 
         require('https').createServer(options, function(req, res) {
           main(req, res);
-        }).listen(443, boot.getGeneralSettings().address);
+        }).listen(443, settingsHandler.getGeneralSettings().address);
 
       } catch (error) {
         console.log(error);
@@ -76,9 +77,8 @@ function startListening() {
     require('http').createServer(function(req, res) {
       main(req, res);
 
-    })
-        .listen(boot.getGeneralSettings().port,
-            boot.getGeneralSettings().address);
+    }).listen(settingsHandler.getGeneralSettings().port,
+        settingsHandler.getGeneralSettings().address);
 
     booted = true;
 

@@ -9,7 +9,7 @@ var archive = require('./archive');
 var mongo = require('mongodb');
 var boot = require('./boot');
 var migrations;
-var settings = boot.getGeneralSettings();
+var settings = require('./settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var noDaemon = boot.noDaemon();
 var debug = boot.debug();
@@ -581,7 +581,7 @@ exports.init = function(callback) {
 
   indexesSet = 0;
 
-  var dbSettings = require('./boot').getDbSettings();
+  var dbSettings = require('./settingsHandler').getDbSettings();
 
   var client = mongo.MongoClient;
 

@@ -2,7 +2,7 @@
 
 var db = require('../../db');
 var boards = db.boards();
-var settings = require('../../boot').getGeneralSettings();
+var settings = require('../../settingsHandler').getGeneralSettings();
 var maxRulesCount = settings.maxBoardRules;
 var lang;
 var miscOps;

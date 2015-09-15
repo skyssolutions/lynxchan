@@ -1,12 +1,11 @@
 'use strict';
 
 // general operations for the form api
-var boot = require('../boot');
-var settings = boot.getGeneralSettings();
+var settings = require('../settingsHandler').getGeneralSettings();
 var bans = require('../db').bans();
 var fs = require('fs');
 var crypto = require('crypto');
-var debug = boot.debug();
+var debug = require('../boot').debug();
 var verbose = settings.verbose;
 var multiParty = require('multiparty');
 var jsdom = require('jsdom').jsdom;

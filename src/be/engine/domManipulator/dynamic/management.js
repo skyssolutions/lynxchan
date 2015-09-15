@@ -2,9 +2,8 @@
 
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
-var boot = require('../../../boot');
-var settings = boot.getGeneralSettings();
-var debug = boot.debug();
+var settings = require('../../../settingsHandler').getGeneralSettings();
+var debug = require('../../../boot').debug();
 var verbose = settings.verbose;
 var globalBoardModeration = settings.allowGlobalBoardModeration;
 var customJs = settings.allowBoardCustomJs;

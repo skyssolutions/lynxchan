@@ -5,7 +5,7 @@
 
 var indexString = 'index.html';
 var url = require('url');
-var settings = require('../boot').getGeneralSettings();
+var settings = require('../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var maintenance = settings.maintenance;
 var archive = require('../archive');

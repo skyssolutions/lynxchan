@@ -13,7 +13,7 @@ var reports = db.reports();
 var logs = db.logs();
 var posts = db.posts();
 var boards = db.boards();
-var settings = require('../../boot').getGeneralSettings();
+var settings = require('../../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var threadLimit = settings.maxThreadCount;
 var lang;

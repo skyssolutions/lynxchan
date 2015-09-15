@@ -1,10 +1,9 @@
 'use strict';
 
 var torIps = require('../db').torIps();
-var boot = require('../boot');
 var logger = require('../logger');
-var torDebug = boot.torDebug();
-var settings = boot.getGeneralSettings();
+var torDebug = require('../boot').torDebug();
+var settings = require('../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var ipSource = settings.torSource;
 var https = require('https');

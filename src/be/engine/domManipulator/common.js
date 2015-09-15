@@ -1,7 +1,6 @@
 'use strict';
 
-var boot = require('../../boot');
-var settings = boot.getGeneralSettings();
+var settings = require('../../settingsHandler').getGeneralSettings();
 var lang;
 var templateHandler;
 var miscOps;

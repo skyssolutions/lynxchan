@@ -7,11 +7,10 @@ var archiveHandler = require('../archive');
 var files = db.files();
 var conn = db.conn();
 var mongo = require('mongodb');
-var boot = require('../boot');
-var settings = boot.getGeneralSettings();
+var settings = require('../settingsHandler').getGeneralSettings();
 var disable304 = settings.disable304;
 var verbose = settings.verbose;
-var noDaemon = boot.noDaemon();
+var noDaemon = require('../boot').noDaemon();
 var miscOps;
 
 var chunkSize = 1024 * 255;

@@ -233,33 +233,6 @@ exports.torDebug = function() {
   return informedArguments.torDebug.informed;
 };
 
-exports.getDbSettings = function() {
-
-  return settingsHandler.getDbSettings();
-};
-
-exports.getArchiveSettings = function() {
-  return settingsHandler.getArchiveSettings();
-};
-
-exports.getGeneralSettings = function() {
-  return settingsHandler.getGeneralSettings();
-};
-
-exports.getTemplateSettings = function() {
-  return settingsHandler.getTemplateSettings();
-};
-
-exports.getFePath = function() {
-  return settingsHandler.getFePath();
-};
-
-exports.tempDir = function() {
-
-  return settingsHandler.tempDir();
-
-};
-
 function checkImagesSet() {
 
   var templateSettings = settingsHandler.getTemplateSettings();

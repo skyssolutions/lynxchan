@@ -11,9 +11,10 @@ var flags = db.flags();
 var latestPostsCol = db.latestPosts();
 var stats = db.stats();
 var boot = require('../boot');
-var settings = boot.getGeneralSettings();
+var settingsHandler = require('../settingsHandler');
+var settings = settingsHandler.getGeneralSettings();
 var topBoardsCount = settings.topBoardsCount;
-var templateSettings = boot.getTemplateSettings();
+var templateSettings = settingsHandler.getTemplateSettings();
 var pageSize = settings.pageSize;
 var verbose = settings.verbose;
 var globalLatestPosts = settings.globalLatestPosts;
@@ -192,7 +193,7 @@ exports.audioThumb = function(callback) {
     console.log('Saving audio thumb image');
   }
 
-  var filePath = boot.getFePath() + '/templates/';
+  var filePath = settingsHandler.getFePath() + '/templates/';
   filePath += templateSettings.audioThumb;
 
   gfsHandler.writeFile(filePath, boot.genericAudioThumb(), miscOps.getMime(boot
@@ -206,7 +207,7 @@ exports.spoiler = function(callback) {
     console.log('Saving spoiler image');
   }
 
-  var filePath = boot.getFePath() + '/templates/';
+  var filePath = settingsHandler.getFePath() + '/templates/';
   filePath += templateSettings.spoiler;
 
   gfsHandler.writeFile(filePath, boot.spoilerImage(), miscOps.getMime(boot
@@ -220,7 +221,7 @@ exports.defaultBanner = function(callback) {
     console.log('Saving default banner');
   }
 
-  var filePath = boot.getFePath() + '/templates/';
+  var filePath = settingsHandler.getFePath() + '/templates/';
   filePath += templateSettings.defaultBanner;
 
   gfsHandler.writeFile(filePath, boot.defaultBanner(), miscOps.getMime(boot
@@ -235,7 +236,8 @@ exports.thumb = function(callback) {
     console.log('Saving generic thumbnail');
   }
 
-  var filePath = boot.getFePath() + '/templates/' + templateSettings.thumb;
+  var filePath = settingsHandler.getFePath() + '/templates/';
+  filePath += templateSettings.thumb;
 
   gfsHandler.writeFile(filePath, boot.genericThumb(), miscOps.getMime(boot
       .genericThumb()), {}, callback);

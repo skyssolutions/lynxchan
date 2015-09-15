@@ -1,12 +1,12 @@
 'use strict';
 
 // miscellaneous
-var settings = require('../boot').getGeneralSettings();
+var settingsHandler = require('../settingsHandler');
+var settings = settingsHandler.getGeneralSettings();
 var verbose = settings.verbose;
 var db = require('../db');
 var crypto = require('crypto');
 var users = db.users();
-var settingsHandler = require('../settingsHandler');
 var reports = db.reports();
 var formOps;
 var lang;

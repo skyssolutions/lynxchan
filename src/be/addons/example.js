@@ -3,9 +3,8 @@
 var templateHandler = require('../engine/templateHandler');
 var lang = require('../engine/langOps').languagePack();
 var domManipulator = require('../engine/domManipulator');
-var boot = require('../boot');
 var gridFs = require('../engine/gridFsHandler');
-var settings = boot.getGeneralSettings();
+var settings = require('../settingsHandler').getGeneralSettings();
 var siteTitle = settings.siteTitle || lang.titDefaultChanTitle;
 
 var common = domManipulator.common;

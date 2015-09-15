@@ -3,7 +3,7 @@
 var crypto = require('crypto');
 var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
 var logger = require('../../logger');
-var settings = require('../../boot').getGeneralSettings();
+var settings = require('../../settingsHandler').getGeneralSettings();
 var db = require('../../db');
 var reports = db.reports();
 var users = db.users();

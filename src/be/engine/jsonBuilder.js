@@ -3,7 +3,7 @@
 // builds static JSON
 // json counterpart of domManipulator
 
-var settings = require('../boot').getGeneralSettings();
+var settings = require('../settingsHandler').getGeneralSettings();
 var gridFsHandler;
 var miscOps;
 

@@ -51,11 +51,12 @@ var working = false;
 var boot = require('./boot');
 var debug = boot.debug();
 var generator = require('./engine/generator');
-var verbose = boot.getGeneralSettings().verbose;
+var settingsHandler = require('./settingsHandler');
+var verbose = settingsHandler.getGeneralSettings().verbose;
 
 exports.reload = function() {
   generator = require('./engine/generator');
-  verbose = boot.getGeneralSettings().verbose;
+  verbose = settingsHandler.getGeneralSettings().verbose;
 };
 
 function checkForGlobalClearing(message) {

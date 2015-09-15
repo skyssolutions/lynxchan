@@ -1,9 +1,8 @@
 'use strict';
 
 // general operations for the json api
-var boot = require('../boot');
-var settings = boot.getGeneralSettings();
-var debug = boot.debug();
+var settings = require('../settingsHandler').getGeneralSettings();
+var debug = require('../boot').debug();
 var verbose = settings.verbose;
 var bans = require('../db').bans();
 var fs = require('fs');

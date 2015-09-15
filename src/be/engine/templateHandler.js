@@ -1,9 +1,8 @@
 'use strict';
 
-var boot = require('../boot');
-var debug = boot.debug();
-var settings = boot.getGeneralSettings();
-var verbose = settings.verbose;
+var debug = require('../boot').debug();
+var settingsHandler = require('../settingsHandler');
+var verbose = settingsHandler.getGeneralSettings().verbose;
 var fs = require('fs');
 var jsdom = require('jsdom').jsdom;
 
@@ -447,8 +446,8 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
 
 exports.loadTemplates = function() {
 
-  var fePath = boot.getFePath() + '/templates/';
-  var templateSettings = boot.getTemplateSettings();
+  var fePath = settingsHandler.getFePath() + '/templates/';
+  var templateSettings = settingsHandler.getTemplateSettings();
 
   exports.loadAndTestTemplates(fePath, templateSettings);
 };

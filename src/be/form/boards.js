@@ -5,7 +5,7 @@ var miscOps = require('../engine/miscOps');
 var formOps = require('../engine/formOps');
 var jsonBuilder = require('../engine/jsonBuilder');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
-var settings = require('../boot').getGeneralSettings();
+var settings = require('../settingsHandler').getGeneralSettings();
 var pageSize = settings.boardsPerPage || 50;
 var url = require('url');
 

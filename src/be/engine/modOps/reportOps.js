@@ -8,7 +8,7 @@ var threads = db.threads();
 var logs = db.logs();
 var posts = db.posts();
 var reports = db.reports();
-var settings = require('../../boot').getGeneralSettings();
+var settings = require('../../settingsHandler').getGeneralSettings();
 var logger = require('../../logger');
 var multipleReports = settings.multipleReports;
 var miscOps;

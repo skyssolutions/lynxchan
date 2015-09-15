@@ -1,7 +1,8 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var loadedAddons = require('../boot').getGeneralSettings().addons || [];
+var settings = require('../settingsHandler').getGeneralSettings();
+var loadedAddons = settings.addons || [];
 var lang = require('../engine/langOps').languagePack();
 var url = require('url');
 

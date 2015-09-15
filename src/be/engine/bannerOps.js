@@ -2,7 +2,7 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
-var settings = require('../boot').getGeneralSettings();
+var settings = require('../settingsHandler').getGeneralSettings();
 var maxBannerSize = settings.maxBannerSizeB;
 var db = require('../db');
 var boards = db.boards();

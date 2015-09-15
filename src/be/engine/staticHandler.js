@@ -3,9 +3,11 @@
 // handles request for static files
 
 var boot = require('../boot');
-var fePath = boot.getFePath();
-var verbose = boot.getGeneralSettings().verbose;
-var disable304 = boot.getGeneralSettings().disable304;
+var settingsHandler = require('../settingsHandler');
+var settings = settingsHandler.getGeneralSettings();
+var fePath = settingsHandler.getFePath();
+var verbose = settings.verbose;
+var disable304 = settings.disable304;
 var debug = boot.debug();
 var fs = require('fs');
 var url = require('url');
@@ -58,26 +60,26 @@ exports.readAndRespond = function(pathName, modifiedTime, header, res, cb) {
 // reads file stats to find out if theres a new version
 exports.readFileStats = function(pathName, lastSeen, header, req, res, cb) {
 
-  fs.stat(boot.getFePath() + '/static' + pathName, function gotStats(error,
-      stats) {
-    if (error) {
-      if (debug) {
-        console.log(error);
-      }
+  fs.stat(settingsHandler.getFePath() + '/static' + pathName,
+      function gotStats(error, stats) {
+        if (error) {
+          if (debug) {
+            console.log(error);
+          }
 
-      gridFs.outputFile('/404.html', req, res, cb);
+          gridFs.outputFile('/404.html', req, res, cb);
 
-    } else if (lastSeen === stats.mtime.toString() && !disable304) {
-      if (verbose) {
-        console.log('304');
-      }
+        } else if (lastSeen === stats.mtime.toString() && !disable304) {
+          if (verbose) {
+            console.log('304');
+          }
 
-      res.writeHead(304);
-      res.end();
-    } else {
-      exports.readAndRespond(pathName, stats.mtime, header, res, cb);
-    }
-  });
+          res.writeHead(304);
+          res.end();
+        } else {
+          exports.readAndRespond(pathName, stats.mtime, header, res, cb);
+        }
+      });
 
 };
 

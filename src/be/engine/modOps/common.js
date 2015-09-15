@@ -1,6 +1,6 @@
 'use strict';
 
-var settings = require('../../boot').getGeneralSettings();
+var settings = require('../../settingsHandler').getGeneralSettings();
 var globalBoardModeration = settings.allowGlobalBoardModeration;
 var maxRoleStaff;
 
