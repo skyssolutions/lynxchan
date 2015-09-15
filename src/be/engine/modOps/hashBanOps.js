@@ -3,6 +3,9 @@
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var logger = require('../../logger');
+var settings = require('../../settingsHandler').getGeneralSettings();
+var torBlocked = settings.torAccess < 2;
+var proxyBlocked = settings.proxyAccess < 2;
 var db = require('../../db');
 var boards = db.boards();
 var logs = db.logs();
@@ -270,13 +273,21 @@ exports.getProcessedBans = function(foundBans, files) {
 
 };
 
-exports.checkForHashBans = function(parameters, callback) {
+exports.checkForHashBans = function(parameters, req, callback) {
 
   var files = parameters.files;
   var boardUri = parameters.boardUri;
 
   if (!files.length) {
     callback();
+    return;
+  } else if (torBlocked && req.isTor) {
+
+    callback(lang.errTorFilesBlocked);
+    return;
+  } else if (proxyBlocked && req.isProxy) {
+
+    callback(lang.errProxyFilesBlocked);
     return;
   }
 

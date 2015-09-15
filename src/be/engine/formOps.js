@@ -426,17 +426,17 @@ exports.checkForBan = function(req, boardUri, res, callback) {
 
 };
 
-exports.checkForHashBan = function(parameters, res, callback) {
+exports.checkForHashBan = function(parameters, req, res, callback) {
 
-  modOps.hashBan.checkForHashBans(parameters,
-      function gotBans(error, hashBans) {
-        if (error) {
-          callback(error);
-        } else if (!hashBans) {
-          callback();
-        } else {
-          res.end(domManipulator.hashBan(hashBans));
-        }
-      });
+  modOps.hashBan.checkForHashBans(parameters, req, function gotBans(error,
+      hashBans) {
+    if (error) {
+      callback(error);
+    } else if (!hashBans) {
+      callback();
+    } else {
+      res.end(domManipulator.hashBan(hashBans));
+    }
+  });
 
 };

@@ -343,18 +343,18 @@ exports.outputResponse = function(auth, data, status, res) {
   res.end(JSON.stringify(output));
 };
 
-exports.checkForHashBan = function(parameters, res, callback) {
+exports.checkForHashBan = function(parameters, req, res, callback) {
 
-  modOps.hashBan.checkForHashBans(parameters,
-      function gotBans(error, hashBans) {
-        if (error) {
-          callback(error);
-        } else if (!hashBans) {
-          callback();
-        } else {
-          exports.outputResponse(null, hashBans, 'hashBan', res);
-        }
-      });
+  modOps.hashBan.checkForHashBans(parameters, req, function gotBans(error,
+      hashBans) {
+    if (error) {
+      callback(error);
+    } else if (!hashBans) {
+      callback();
+    } else {
+      exports.outputResponse(null, hashBans, 'hashBan', res);
+    }
+  });
 
 };
 

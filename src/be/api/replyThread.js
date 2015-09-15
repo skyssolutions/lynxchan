@@ -29,9 +29,10 @@ function checkBans(req, res, parameters, userData, captchaId) {
     } else {
 
       // style exception, too simple
-      apiOps.checkForHashBan(parameters, res, function checkedHashBan(error) {
+      apiOps.checkForHashBan(parameters, req, res, function checkedHashBan(
+          error) {
         if (error) {
-          res.outputError(error, res);
+          apiOps.outputError(error, res);
         } else {
           createPost(req, userData, parameters, captchaId, res);
         }

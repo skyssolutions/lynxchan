@@ -11,8 +11,6 @@ var settings = require('../../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var bumpLimit = settings.autoSageLimit;
 var common = require('.').common;
-var refuseTorFiles = settings.torAccess < 2;
-var refuseProxyFiles = settings.proxyAccess < 2;
 var gsHandler;
 var generator;
 var uploadHandler;
@@ -343,31 +341,22 @@ exports.createPost = function(req, parameters, userData, postId, thread, board,
         common.recordFlood(ip);
       }
 
-      var refuseFiles = req.isTor && refuseTorFiles;
-      refuseFiles = refuseFiles || req.isProxy && refuseProxyFiles;
-
-      if (!refuseFiles) {
-
-        // style exception, too simple
-        uploadHandler.saveUploads(board, parameters.threadId, postId,
-            parameters, function savedFiles(error) {
-              if (error) {
-                if (verbose) {
-                  console.log(error);
-                }
-
-                if (debug) {
-                  throw error;
-                }
+      // style exception, too simple
+      uploadHandler.saveUploads(board, parameters.threadId, postId, parameters,
+          function savedFiles(error) {
+            if (error) {
+              if (verbose) {
+                console.log(error);
               }
-              exports.updateThread(parameters, postId, thread, cb, postToAdd);
 
-            });
-        // style exception, too simple
+              if (debug) {
+                throw error;
+              }
+            }
+            exports.updateThread(parameters, postId, thread, cb, postToAdd);
 
-      } else {
-        exports.updateThread(parameters, postId, thread, cb, postToAdd);
-      }
+          });
+      // style exception, too simple
 
     }
   });

@@ -8,8 +8,6 @@ var debug = require('../../boot').debug();
 var settings = require('../../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var logger = require('../../logger');
-var refuseTorFiles = settings.torAccess < 2;
-var refuseProxyFiles = settings.proxyAccess < 2;
 var common;
 var delOps;
 var generator;
@@ -185,34 +183,25 @@ exports.createThread = function(req, userData, parameters, board, threadId,
         common.recordFlood(ip);
       }
 
-      var refuseFiles = req.isTor && refuseTorFiles;
-      refuseFiles = refuseFiles || req.isProxy && refuseProxyFiles;
-
-      if (!refuseFiles) {
-
-        // style exception, too simple
-        uploadHandler.saveUploads(board, threadId, null, parameters,
-            function savedUploads(error) {
-              if (error) {
-                if (verbose) {
-                  console.log(error);
-                }
-
-                if (debug) {
-                  throw error;
-                }
+      // style exception, too simple
+      uploadHandler.saveUploads(board, threadId, null, parameters,
+          function savedUploads(error) {
+            if (error) {
+              if (verbose) {
+                console.log(error);
               }
 
-              exports.updateBoardForThreadCreation(parameters.boardUri,
-                  threadId, enabledCaptcha, callback, threadToAdd);
+              if (debug) {
+                throw error;
+              }
+            }
 
-            });
-        // style exception, too simple
+            exports.updateBoardForThreadCreation(parameters.boardUri, threadId,
+                enabledCaptcha, callback, threadToAdd);
 
-      } else {
-        exports.updateBoardForThreadCreation(parameters.boardUri, threadId,
-            enabledCaptcha, callback, threadToAdd);
-      }
+          });
+      // style exception, too simple
+
     }
   });
 

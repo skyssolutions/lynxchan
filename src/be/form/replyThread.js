@@ -36,14 +36,14 @@ function checkBans(req, res, parameters, userData, captchaId) {
         } else {
 
           // style exception, too simple
-          formOps.checkForHashBan(parameters, res, function checkedHashBans(
-              error) {
-            if (error) {
-              formOps.outputError(error, 500, res);
-            } else {
-              createPost(req, userData, parameters, captchaId, res);
-            }
-          });
+          formOps.checkForHashBan(parameters, req, res,
+              function checkedHashBans(error) {
+                if (error) {
+                  formOps.outputError(error, 500, res);
+                } else {
+                  createPost(req, userData, parameters, captchaId, res);
+                }
+              });
           // style exception, too simple
 
         }

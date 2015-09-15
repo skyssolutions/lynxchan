@@ -263,3 +263,5 @@ msgCssSet: message used when a custom javascript is uploaded for a board.
 errNoCustomJs: error throw when custom javascript is not allowed on boards.
 errDeniedJsManagement: error thrown when the user is not allowed to manage the custom css of a board.
 errOnlyJsAllowed: error thrown when an operation requires a javascript file.
+errProxyFilesBlocked: error thrown when proxy users are not allowed to post files.
+errTorFilesBlocked: error thrown when TOR users are not allowed to post files.
