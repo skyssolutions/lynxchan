@@ -193,6 +193,18 @@ labelMaxFileSize:
     use: have it's innerHTML manipulated.
     description: holds the maximum allowed file size for uploads.
 
+formTransfer:
+    use: might be removed.
+    description: form used to transfer the thread to a different board.
+
+transferBoardIdentifier:
+    use: have it's value manipulated.
+    description: hidden identifier that identifies the origin board of the thread when transferring it.
+
+transferThreadIdentifier:
+    use: have it's value manipulated.
+    description: hidden identifier that identifies the thread being transferred.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::04
@@ -210,6 +222,7 @@ linkRedirect:
 
 Required tags:
 head
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::05

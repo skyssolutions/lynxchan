@@ -1026,4 +1026,17 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::61
+
+Name: transferThread
+
+Description: transfers a thread from a board to another. Requires authentication. Reserved for global staff.
+
+Parameters:
+    boardUri: uri of the board that contains the thread to be transferred.
+    threadId: id of the thread to be transferred.
+    boardUriDestination: uri of the board that will receive the thread.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

@@ -291,5 +291,9 @@
   "errDeniedJsManagement": "You are not allowed to manage the custom js of this board.",
   "errOnlyJsAllowed": "Only javascript files are allowed.",
   "errProxyFilesBlocked": "Proxy users are not allowed to post files.",
-  "errTorFilesBlocked": "TOR users are not allowed to post files."
+  "errTorFilesBlocked": "TOR users are not allowed to post files.",
+  "msgThreadTransferred": "Thread transferred.",
+  "errDeniedThreadTransfer": "You are not allowed to transfer a thread between boards.",
+  "logThreadTransfer": "User {$login} transferred thread {$thread} from /{$board}/ to /{$boardDestination}/.",
+  "guiTypeThreadTransfer": "Thread transfer"
 }

@@ -61,12 +61,17 @@ exports.login = function(callback) {
 // Section 1: Thread {
 exports.setThreadHiddenIdentifiers = function(document, boardUri, threadData) {
   var boardIdentifyInput = document.getElementById('boardIdentifier');
-
   boardIdentifyInput.setAttribute('value', boardUri);
 
   var threadIdentifyInput = document.getElementById('threadIdentifier');
-
   threadIdentifyInput.setAttribute('value', threadData.threadId);
+
+  var threadTransferInput = document.getElementById('transferThreadIdentifier');
+  threadTransferInput.setAttribute('value', threadData.threadId);
+
+  var boardTransferInput = document.getElementById('transferBoardIdentifier');
+  boardTransferInput.setAttribute('value', boardUri);
+
 };
 
 exports.setModdingInformation = function(document, boardUri, boardData,
@@ -98,6 +103,7 @@ exports.hideModElements = function(document) {
   common.removeElement(document.getElementById('inputBan'));
   common.removeElement(document.getElementById('divBanInput'));
   common.removeElement(document.getElementById('divControls'));
+  common.removeElement(document.getElementById('formTransfer'));
 
 };
 
