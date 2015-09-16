@@ -1,0 +1,485 @@
+'use strict';
+
+var mongo = require('mongodb');
+var ObjectID = mongo.ObjectID;
+var db = require('../../db');
+var boards = db.boards();
+var threads = db.threads();
+var files = db.files();
+var posts = db.posts();
+var miscOps;
+var lang;
+
+exports.loadDependencies = function() {
+
+  miscOps = require('../miscOps');
+  lang = require('../langOps').languagePack();
+
+};
+
+exports.getAdjustedFiles = function(newBoard, originalThread, files) {
+
+  if (!files || !files.length) {
+    return files;
+  }
+
+  var newFiles = [];
+
+  for (var i = 0; i < files.length; i++) {
+
+    var file = files[i];
+
+    var cp = JSON.parse(JSON.stringify(file));
+
+    if (cp.name.indexOf('-') === -1) {
+      // only rename the file if its the first time it is being transferred
+      cp.name = originalThread.boardUri + '-' + cp.name;
+    }
+
+    cp.path = '/' + newBoard.boardUri + '/media/' + cp.name;
+
+    // we got an actual thumbnail?
+    if (cp.thumb === '/' + originalThread.boardUri + '/media/t_' + file.name) {
+      cp.thumb = '/' + newBoard.boardUri + '/media/t_' + cp.name;
+    } else if (cp.thumb.indexOf('spoiler.') > -1) {
+      // we got a spoilered file AND the new board uses custom spoiler?
+      if (newBoard.usesCustomSpoiler) {
+        cp.thumb = '/' + newBoard.boardUri + '/custom.spoiler';
+      }
+
+    }
+
+    newFiles.push(cp);
+
+  }
+
+  return newFiles;
+
+};
+
+// data reverting
+exports.revertPosts = function(revertOps, originalError, callback) {
+
+  posts.bulkWrite(revertOps, function revertedPosts(error) {
+    if (error) {
+      console.log(error);
+    }
+
+    callback(originalError);
+
+  });
+
+};
+
+exports.revertThread = function(thread, originalError, callback) {
+
+  threads.updateOne({
+    _id : new ObjectID(thread._id)
+  }, {
+    boardUri : thread.boardUri,
+    threadId : thread.threadId,
+    files : thread.files,
+    flag : thread.flag,
+    flagName : thread.flagName
+  }, function revertedThread(error) {
+
+    if (error) {
+      console.log(error);
+    }
+
+    callback(originalError);
+
+  });
+
+};
+// data reverting
+
+// file updating
+exports.getNewMeta = function(file, newThreadId, newBoard, newPostId) {
+
+  var newMeta = JSON.parse(JSON.stringify(file.metadata));
+  newMeta.lastModified = new Date();
+  newMeta.threadId = newThreadId;
+  newMeta.boardUri = newBoard.boardUri;
+  newMeta.postId = newPostId;
+
+  return newMeta;
+
+};
+
+exports.getMediaNewPath = function(newBoard, name, originalThread) {
+
+  if (name.indexOf('-') === -1) {
+    if (name.indexOf('t_') === -1) {
+      var trimmedName = name.substring(2);
+      name = 't_' + originalThread.boardUri + '-' + trimmedName;
+
+    } else {
+      name = originalThread.boardUri + '-' + name;
+    }
+  }
+
+  return '/' + newBoard.boardUri + '/media/' + name;
+
+};
+
+exports.getPreviewNewPath = function(newBoard, newPostingId, name) {
+
+  var newPath = '/' + newBoard.boardUri + '/preview/' + newPostingId + '.';
+
+  if (name.indexOf('html') > -1) {
+    newPath += 'html';
+  } else {
+    newPath += 'json';
+  }
+
+  return newPath;
+};
+
+exports.getThreadNewPath = function(newBoard, newThreadId, name) {
+
+  var newPath = '/' + newBoard.boardUri + '/res/' + newThreadId + '.';
+
+  if (name.indexOf('html') > -1) {
+    newPath += 'html';
+  } else {
+    newPath += 'json';
+  }
+
+  return newPath;
+};
+
+exports.getNewPath = function(newBoard, name, thread, newThreadId, newPostId,
+    file) {
+
+  switch (file.metadata.type) {
+  case 'media':
+    return exports.getMediaNewPath(newBoard, name, thread);
+
+  case 'thread':
+    return exports.getThreadNewPath(newBoard, newThreadId, name);
+
+  case 'preview':
+    return exports.getPreviewNewPath(newBoard, newPostId || newThreadId, name);
+
+  }
+
+};
+
+exports.getFileUpdateOps = function(newPostIdRelation, originalThread,
+    newBoard, newThreadId, foundFiles) {
+
+  var updateOps = [];
+
+  for (var i = 0; i < foundFiles.length; i++) {
+    var file = foundFiles[i];
+
+    var newPostId = newPostIdRelation[file.metadata.postId];
+
+    var newMeta = exports.getNewMeta(file, newThreadId, newBoard, newPostId);
+
+    var newPath = exports.getNewPath(newBoard, file.filename.split('/')[3],
+        originalThread, newThreadId, newPostId, file);
+
+    updateOps.push({
+      updateOne : {
+        filter : {
+          _id : new ObjectID(file._id)
+        },
+        update : {
+          $set : {
+            metadata : newMeta,
+            filename : newPath
+          }
+        }
+      }
+    });
+
+  }
+
+  return updateOps;
+
+};
+
+exports.updateFiles = function(newBoard, newThreadId, originalThread, userData,
+    updateOps, callback) {
+
+  files.bulkWrite(updateOps, function updatedFiles(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      // update both boards and new thread page
+      process.send({
+        board : newBoard.boardUri
+
+      });
+
+      process.send({
+        board : originalThread.boardUri
+
+      });
+
+      process.send({
+        board : newBoard.boardUri,
+        thread : newThreadId
+
+      });
+
+      // TODO log operation
+      callback();
+
+    }
+
+  });
+
+};
+
+exports.findFiles = function(newPostIdRelation, userData, newBoard,
+    originalThread, newThreadId, cb) {
+
+  files.find({
+    'metadata.boardUri' : originalThread.boardUri,
+    'metadata.threadId' : originalThread.threadId
+  }, {
+    filename : 1,
+    metadata : 1
+  }).toArray(
+      function gotFiles(error, foundFiles) {
+        if (error) {
+          cb(error);
+        } else {
+
+          var updateOps = exports.getFileUpdateOps(newPostIdRelation,
+              originalThread, newBoard, newThreadId, foundFiles);
+
+          exports.updateFiles(newBoard, newThreadId, originalThread, userData,
+              updateOps, cb);
+
+        }
+
+      });
+
+};
+// file updating
+
+// post updating
+exports.getPostsOps = function(newPostIdRelation, newBoard, foundPosts,
+    updateOps, revertOps, newThreadId, originalThread) {
+
+  for (var i = 0; i < foundPosts.length; i++) {
+    var post = foundPosts[i];
+
+    revertOps.push({
+      updateOne : {
+        filter : {
+          _id : new ObjectID(post._id)
+        },
+        update : {
+          $set : {
+            boardUri : originalThread.boardUri,
+            postId : post.postId,
+            threadId : originalThread.threadId,
+            files : post.files,
+            flag : post.flag,
+            flagName : post.flagName
+          }
+        }
+      }
+    });
+
+    var newPostId = newThreadId + 1 + i;
+
+    newPostIdRelation[post.postId] = newPostId;
+
+    updateOps.push({
+      updateOne : {
+        filter : {
+          _id : new ObjectID(post._id)
+        },
+        update : {
+          $set : {
+            boardUri : newBoard.boardUri,
+            threadId : newThreadId,
+            postId : newPostId,
+            files : exports.getAdjustedFiles(newBoard, originalThread,
+                post.files)
+          },
+          $unset : {
+            flag : 1,
+            flagName : 1
+          }
+        }
+      }
+    });
+
+  }
+
+};
+
+exports.updatePosts = function(newBoard, userData, foundPosts, newThreadId,
+    originalThread, callback) {
+
+  var updateOps = [];
+  var revertOps = [];
+  var newPostIdRelation = {};
+
+  exports.getPostsOps(newPostIdRelation, newBoard, foundPosts, updateOps,
+      revertOps, newThreadId, originalThread);
+
+  if (!updateOps.length) {
+    // no posts, skip to file update and let it execute the callback
+    exports.findFiles(newPostIdRelation, userData, newBoard, originalThread,
+        newThreadId, callback);
+
+    return;
+  }
+
+  posts.bulkWrite(updateOps, function updatedPosts(error) {
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      exports.findFiles(newPostIdRelation, userData, newBoard, originalThread,
+          newThreadId, function updatedFiles(error) {
+
+            if (error) {
+              exports.revertPosts(revertOps, error, callback);
+
+            } else {
+              callback();
+            }
+            // style exception, too simple
+
+          });
+
+    }
+  });
+
+};
+
+exports.findPosts = function(newBoard, userData, originalThread, newThreadId,
+    cb) {
+
+  posts.find({
+    boardUri : originalThread.boardUri,
+    threadId : originalThread.threadId
+  }, {
+    postId : 1,
+    files : 1
+  }).sort({
+    postId : 1
+  }).toArray(
+      function gotPosts(error, foundPosts) {
+        if (error) {
+          cb(error);
+        } else {
+          exports.updatePosts(newBoard, userData, foundPosts, newThreadId,
+              originalThread, cb);
+        }
+      });
+
+};
+// post updating
+
+// from here, each part should send a different callback to the next part, so if
+// a part fails, each part can perform its failure action to guarantee data
+// integrity
+exports.updateThread = function(userData, parameters, originalThread, newBoard,
+    cb) {
+
+  var lastId = newBoard.lastPostId;
+
+  var newThreadId = lastId - originalThread.postCount;
+
+  threads.updateOne({
+    _id : new ObjectID(originalThread._id)
+  }, {
+    $set : {
+      boardUri : parameters.boardUriDestination,
+      threadId : newThreadId,
+      files : exports.getAdjustedFiles(newBoard, originalThread,
+          originalThread.files)
+    // TODO set latest posts
+    },
+    $unset : {
+      flag : 1,
+      flagName : 1
+    }
+  }, function updatedThread(error) {
+    if (error) {
+      cb(error);
+    } else {
+
+      // style exception, too simple
+      exports.findPosts(newBoard, userData, originalThread, newThreadId,
+          function updatedPosts(error) {
+            if (error) {
+              exports.revertThread(originalThread, error, cb);
+            } else {
+              cb();
+            }
+          });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.transfer = function(userData, parameters, callback) {
+
+  var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+
+  if (!globalStaff) {
+    callback(lang.errDeniedThreadTransfer);
+
+    return;
+  }
+
+  parameters.threadId = +parameters.threadId;
+
+  threads.findOne({
+    threadId : parameters.threadId,
+    boardUri : parameters.boardUri
+  }, {
+    postCount : 1,
+    files : 1,
+    boardUri : 1,
+    threadId : 1
+  }, function gotThread(error, thread) {
+    if (error) {
+      callback(error);
+    } else if (!thread) {
+      callback(lang.errThreadNotFound);
+    } else {
+
+      thread.postCount = thread.postCount || 0;
+
+      // style exception, too simple
+      boards.findOneAndUpdate({
+        boardUri : parameters.boardUriDestination
+      }, {
+        $inc : {
+          lastPostId : thread.postCount + 1
+        }
+      }, {
+        returnOriginal : false
+      }, function gotDestination(error, result) {
+        if (error) {
+          callback(error);
+        } else if (!result.value) {
+          callback(lang.errBoardNotFound);
+        } else {
+          exports.updateThread(userData, parameters, thread, result.value,
+              callback);
+        }
+      });
+      // style exception, too simple
+
+    }
+  });
+};
