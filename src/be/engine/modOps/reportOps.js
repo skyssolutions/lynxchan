@@ -77,7 +77,7 @@ exports.getClosedReports = function(userData, parameters, callback) {
   } else if (!isOnGlobalStaff) {
     callback(lang.errDeniedGlobalReportManagement);
   } else {
-    exports.getClosedReports(parameters, callback);
+    exports.readClosedReports(parameters, callback);
   }
 
 };
