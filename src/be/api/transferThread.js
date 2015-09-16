@@ -10,12 +10,13 @@ function transferThread(userData, parameters, res) {
     return;
   }
 
-  transferOps.transfer(userData, parameters, function transferredThread(error) {
+  transferOps.transfer(userData, parameters, function transferredThread(error,
+      newThreadId) {
 
     if (error) {
       apiOps.outputError(error, res);
     } else {
-      apiOps.outputResponse(null, null, 'ok', res);
+      apiOps.outputResponse(null, newThreadId, 'ok', res);
     }
 
   });

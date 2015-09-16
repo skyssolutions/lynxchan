@@ -2,8 +2,10 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
+var logger = require('../../logger');
 var db = require('../../db');
 var boards = db.boards();
+var logs = db.logs();
 var threads = db.threads();
 var files = db.files();
 var posts = db.posts();
@@ -17,6 +19,7 @@ exports.loadDependencies = function() {
 
 };
 
+// adjusts the file array of both threads and posts
 exports.getAdjustedFiles = function(newBoard, originalThread, files) {
 
   if (!files || !files.length) {
@@ -57,7 +60,7 @@ exports.getAdjustedFiles = function(newBoard, originalThread, files) {
 
 };
 
-// data reverting
+// Section 1: Reverts {
 exports.revertPosts = function(revertOps, originalError, callback) {
 
   posts.bulkWrite(revertOps, function revertedPosts(error) {
@@ -80,6 +83,7 @@ exports.revertThread = function(thread, originalError, callback) {
     threadId : thread.threadId,
     files : thread.files,
     flag : thread.flag,
+    latestPosts : thread.latestPosts,
     flagName : thread.flagName
   }, function revertedThread(error) {
 
@@ -92,9 +96,36 @@ exports.revertThread = function(thread, originalError, callback) {
   });
 
 };
-// data reverting
+// } Section 1: Reverts
 
-// file updating
+exports.logTransfer = function(newBoard, userData, newThreadId, originalThread,
+    callback) {
+
+  var message = lang.logThreadTransfer.replace('{$login}', userData.login)
+      .replace('{$thread}', originalThread.threadId).replace('{$board}',
+          originalThread.boardUri).replace('{$boardDestination}',
+          newBoard.boardUri);
+
+  logs.insert({
+    user : userData.login,
+    type : 'threadTransfer',
+    time : new Date(),
+    boardUri : originalThread.boardUri,
+    global : true,
+    description : message
+  }, function addedLog(error) {
+
+    if (error) {
+      logger.printLogError(message, error);
+    }
+
+    callback(null);
+
+  });
+
+};
+
+// Section 2: Files update {
 exports.getNewMeta = function(file, newThreadId, newBoard, newPostId) {
 
   var newMeta = JSON.parse(JSON.stringify(file.metadata));
@@ -107,13 +138,12 @@ exports.getNewMeta = function(file, newThreadId, newBoard, newPostId) {
 
 };
 
+// Section 2.1: New path generation {
 exports.getMediaNewPath = function(newBoard, name, originalThread) {
 
   if (name.indexOf('-') === -1) {
-    if (name.indexOf('t_') === -1) {
-      var trimmedName = name.substring(2);
-      name = 't_' + originalThread.boardUri + '-' + trimmedName;
-
+    if (name.indexOf('t_') > -1) {
+      name = 't_' + originalThread.boardUri + '-' + name.substring(2);
     } else {
       name = originalThread.boardUri + '-' + name;
     }
@@ -165,6 +195,7 @@ exports.getNewPath = function(newBoard, name, thread, newThreadId, newPostId,
   }
 
 };
+// } Section 2.1: New path generation
 
 exports.getFileUpdateOps = function(newPostIdRelation, originalThread,
     newBoard, newThreadId, foundFiles) {
@@ -227,9 +258,8 @@ exports.updateFiles = function(newBoard, newThreadId, originalThread, userData,
 
       });
 
-      // TODO log operation
-      callback();
-
+      exports.logTransfer(newBoard, userData, newThreadId, originalThread,
+          callback);
     }
 
   });
@@ -262,9 +292,9 @@ exports.findFiles = function(newPostIdRelation, userData, newBoard,
       });
 
 };
-// file updating
+// Section 2: Files update {
 
-// post updating
+// Section 3: Posts update {
 exports.getPostsOps = function(newPostIdRelation, newBoard, foundPosts,
     updateOps, revertOps, newThreadId, originalThread) {
 
@@ -382,10 +412,10 @@ exports.findPosts = function(newBoard, userData, originalThread, newThreadId,
       });
 
 };
-// post updating
+// }Section 3: Posts update
 
 // from here, each part should send a different callback to the next part, so if
-// a part fails, each part can perform its failure action to guarantee data
+// a part fails, each part can perform its reversal action to guarantee data
 // integrity
 exports.updateThread = function(userData, parameters, originalThread, newBoard,
     cb) {
@@ -394,15 +424,23 @@ exports.updateThread = function(userData, parameters, originalThread, newBoard,
 
   var newThreadId = lastId - originalThread.postCount;
 
+  var newLatestPosts = [];
+
+  var startingPoint = lastId - originalThread.latestPosts.length + 1;
+
+  for (var i = startingPoint; i <= lastId; i++) {
+    newLatestPosts.push(i);
+  }
+
   threads.updateOne({
     _id : new ObjectID(originalThread._id)
   }, {
     $set : {
       boardUri : parameters.boardUriDestination,
       threadId : newThreadId,
+      latestPosts : newLatestPosts,
       files : exports.getAdjustedFiles(newBoard, originalThread,
           originalThread.files)
-    // TODO set latest posts
     },
     $unset : {
       flag : 1,
@@ -419,7 +457,7 @@ exports.updateThread = function(userData, parameters, originalThread, newBoard,
             if (error) {
               exports.revertThread(originalThread, error, cb);
             } else {
-              cb();
+              cb(null, newThreadId);
             }
           });
       // style exception, too simple
@@ -448,6 +486,7 @@ exports.transfer = function(userData, parameters, callback) {
   }, {
     postCount : 1,
     files : 1,
+    latestPosts : 1,
     boardUri : 1,
     threadId : 1
   }, function gotThread(error, thread) {
@@ -457,6 +496,7 @@ exports.transfer = function(userData, parameters, callback) {
       callback(lang.errThreadNotFound);
     } else {
 
+      thread.latestPosts = thread.latestPosts || [];
       thread.postCount = thread.postCount || 0;
 
       // style exception, too simple

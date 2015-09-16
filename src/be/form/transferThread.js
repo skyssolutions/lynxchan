@@ -11,13 +11,16 @@ function transferThread(userData, parameters, res) {
     return;
   }
 
-  transferOps.transfer(userData, parameters, function transferredThread(error) {
+  transferOps.transfer(userData, parameters, function transferredThread(error,
+      newThreadId) {
 
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
 
-      var redirect = '/' + parameters.boardUri + '/';
+      var redirect = '/' + parameters.boardUriDestination + '/res/';
+      redirect += newThreadId + '.html';
+      
       formOps.outputResponse(lang.msgThreadTransferred, redirect, res);
     }
 

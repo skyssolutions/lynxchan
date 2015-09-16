@@ -637,6 +637,8 @@ Parameters:
     threadId: id of the thread to be transferred.
     boardUriDestination: uri of the board that will receive the thread.
 
+Output: new id of the thread.
+
 ------------------------------------------------------------------------------------------
 
 *: mandatory parameters

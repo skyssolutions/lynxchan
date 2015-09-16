@@ -267,5 +267,5 @@ errProxyFilesBlocked: error thrown when proxy users are not allowed to post file
 errTorFilesBlocked: error thrown when TOR users are not allowed to post files.
 msgThreadTransferred: message used after moving a thread between boards.
 errDeniedThreadTransfer: error thrown when the user is not allowed to move a thread between boards.
-logThreadTransfer: log message for thread movings. Replaces: {$user}, {$board}, {$thread}, {$boardDestination}
+logThreadTransfer: log message for thread movings. Replaces: {$login}, {$board}, {$thread}, {$boardDestination}
 guiTypeThreadTransfer: label used to select logs of thread transfers.
