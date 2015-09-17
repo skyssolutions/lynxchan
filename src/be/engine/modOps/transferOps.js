@@ -1,6 +1,7 @@
 'use strict';
 
 var mongo = require('mongodb');
+var spoilerPath = require('../../boot').spoilerImage();
 var ObjectID = mongo.ObjectID;
 var logger = require('../../logger');
 var db = require('../../db');
@@ -19,7 +20,27 @@ exports.loadDependencies = function() {
 
 };
 
-// adjusts the file array of both threads and posts
+// Section 1: Posting files update {
+exports.adjustFileThumbPath = function(cp, newBoard, originalThread, file) {
+
+  var spoilered = cp.thumb.indexOf('spoiler.') > -1;
+  var customSpolier = cp.thumb.indexOf('.spoiler') > -1;
+
+  spoilered = spoilered || customSpolier;
+
+  if (cp.thumb === '/' + originalThread.boardUri + '/media/t_' + file.name) {
+    // we got an actual thumbnail?
+    cp.thumb = '/' + newBoard.boardUri + '/media/t_' + cp.name;
+  } else if (spoilered && newBoard.usesCustomSpoiler) {
+    // we got a spoilered file AND the new board uses custom spoiler?
+    cp.thumb = '/' + newBoard.boardUri + '/custom.spoiler';
+  } else if (customSpolier) {
+    // it uses a custom spoiler but the new board doesn`t have one?
+    cp.thumb = spoilerPath;
+  }
+
+};
+
 exports.getAdjustedFiles = function(newBoard, originalThread, files) {
 
   if (!files || !files.length) {
@@ -41,16 +62,7 @@ exports.getAdjustedFiles = function(newBoard, originalThread, files) {
 
     cp.path = '/' + newBoard.boardUri + '/media/' + cp.name;
 
-    // we got an actual thumbnail?
-    if (cp.thumb === '/' + originalThread.boardUri + '/media/t_' + file.name) {
-      cp.thumb = '/' + newBoard.boardUri + '/media/t_' + cp.name;
-    } else if (cp.thumb.indexOf('spoiler.') > -1) {
-      // we got a spoilered file AND the new board uses custom spoiler?
-      if (newBoard.usesCustomSpoiler) {
-        cp.thumb = '/' + newBoard.boardUri + '/custom.spoiler';
-      }
-
-    }
+    exports.adjustFileThumbPath(cp, newBoard, originalThread, file);
 
     newFiles.push(cp);
 
@@ -59,8 +71,9 @@ exports.getAdjustedFiles = function(newBoard, originalThread, files) {
   return newFiles;
 
 };
+// } Section 1: Posting files update
 
-// Section 1: Reverts {
+// Section 2: Reverts {
 exports.revertPosts = function(revertOps, originalError, callback) {
 
   posts.bulkWrite(revertOps, function revertedPosts(error) {
@@ -96,7 +109,7 @@ exports.revertThread = function(thread, originalError, callback) {
   });
 
 };
-// } Section 1: Reverts
+// } Section 2: Reverts
 
 exports.logTransfer = function(newBoard, userData, newThreadId, originalThread,
     callback) {
@@ -125,7 +138,7 @@ exports.logTransfer = function(newBoard, userData, newThreadId, originalThread,
 
 };
 
-// Section 2: Files update {
+// Section 3: Files update {
 exports.getNewMeta = function(file, newThreadId, newBoard, newPostId) {
 
   var newMeta = JSON.parse(JSON.stringify(file.metadata));
@@ -138,7 +151,7 @@ exports.getNewMeta = function(file, newThreadId, newBoard, newPostId) {
 
 };
 
-// Section 2.1: New path generation {
+// Section 3.1: New path generation {
 exports.getMediaNewPath = function(newBoard, name, originalThread) {
 
   if (name.indexOf('-') === -1) {
@@ -195,7 +208,7 @@ exports.getNewPath = function(newBoard, name, thread, newThreadId, newPostId,
   }
 
 };
-// } Section 2.1: New path generation
+// } Section 3.1: New path generation
 
 exports.getFileUpdateOps = function(newPostIdRelation, originalThread,
     newBoard, newThreadId, foundFiles) {
@@ -292,9 +305,9 @@ exports.findFiles = function(newPostIdRelation, userData, newBoard,
       });
 
 };
-// Section 2: Files update {
+// Section 3: Files update {
 
-// Section 3: Posts update {
+// Section 4: Posts update {
 exports.getPostsOps = function(newPostIdRelation, newBoard, foundPosts,
     updateOps, revertOps, newThreadId, originalThread) {
 
@@ -412,7 +425,7 @@ exports.findPosts = function(newBoard, userData, originalThread, newThreadId,
       });
 
 };
-// }Section 3: Posts update
+// }Section 4: Posts update
 
 // from here, each part should send a different callback to the next part, so if
 // a part fails, each part can perform its reversal action to guarantee data
