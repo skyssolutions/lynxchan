@@ -124,7 +124,7 @@ Settings files must contain a json object where each key defined here will have 
 # GridFS
 Meta-data of files on gridfs will have the following values:
 * `boardUri`: board to which the file belongs to. If undefined, file is a default site file.
-* `expiration`: time of when the file is expired and no longer valid.
+* `lastModified`(Date): date of the last modification of the file.
 * `threadId`(Number): id of the thread the file belongs to.
 * `postId`(Number): id of the post the file belongs to.
 * `status`(Number): http status to be used when outputting this page. Defaults to 200 when outputting.
