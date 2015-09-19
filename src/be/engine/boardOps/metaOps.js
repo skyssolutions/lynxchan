@@ -4,6 +4,7 @@ var crypto = require('crypto');
 var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
 var logger = require('../../logger');
 var settings = require('../../settingsHandler').getGeneralSettings();
+var forcedCaptcha = settings.forceCaptcha;
 var db = require('../../db');
 var reports = db.reports();
 var users = db.users();
@@ -67,7 +68,7 @@ exports.captchaOrAnonimityChanged = function(board, params) {
   var hadCaptcha = oldSettings.indexOf('disableCaptcha') === -1;
   var hasCaptcha = newSettings.indexOf('disableCaptcha') === -1;
 
-  var captchaChanged = hadCaptcha !== hasCaptcha;
+  var captchaChanged = hadCaptcha !== hasCaptcha && !forcedCaptcha;
 
   var hadAnon = oldSettings.indexOf('forceAnonymity') === -1;
   var hasAnon = newSettings.indexOf('forceAnonymity') === -1;

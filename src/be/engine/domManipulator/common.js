@@ -1,6 +1,8 @@
 'use strict';
 
 var settings = require('../../settingsHandler').getGeneralSettings();
+var allowedJs = settings.allowBoardCustomJs;
+var forceCaptcha = settings.forceCaptcha;
 var lang;
 var templateHandler;
 var miscOps;
@@ -193,7 +195,7 @@ exports.setFlags = function(document, board, flagData) {
 exports.setBoardToggleableElements = function(boardData, document) {
   var settings = boardData.settings;
 
-  if (settings.indexOf('disableCaptcha') > -1) {
+  if (settings.indexOf('disableCaptcha') > -1 && !forceCaptcha) {
     exports.removeElement(document.getElementById('captchaDiv'));
   }
 
@@ -225,7 +227,7 @@ exports.setHeader = function(document, board, boardData, flagData) {
     exports.setCustomCss(board, document);
   }
 
-  if (boardData.usesCustomJs) {
+  if (boardData.usesCustomJs && allowedJs) {
     exports.setCustomJs(board, document);
   }
 

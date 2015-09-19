@@ -1666,6 +1666,10 @@ checkboxAllowCustomJs:
     use: might be turned on.
     description: indicates that boards are allowed to use custom javascript.
 
+checkboxGlobalCaptcha:
+    use: might be turned on.
+    description: indicates if all boards are forced to use captcha.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::52

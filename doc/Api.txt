@@ -554,6 +554,7 @@ Parameters:
     useGlobalBanners(Boolean): makes boards use the global banners.
     allowBoardCustomJs(Boolean): allows for boards to have custom javascript.
     globalLatestPosts(Number): amount of latest global latest posts that show appear on the front-page.
+    forceCaptcha(Boolean): makes all boards use captcha.
 
 ------------------------------------------------------------------------------------------
 

@@ -494,6 +494,11 @@ exports.getParametersArray = function() {
     setting : 'verbose',
     element : 'checkboxVerbose'
   }, {
+    param : 'forceCaptcha',
+    type : 'boolean',
+    setting : 'forceCaptcha',
+    element : 'checkboxGlobalCaptcha'
+  }, {
     param : 'useGlobalBanners',
     type : 'boolean',
     setting : 'useGlobalBanners',

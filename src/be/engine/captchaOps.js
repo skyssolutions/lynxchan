@@ -4,6 +4,7 @@ var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var settings = require('../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
+var forceCaptcha = settings.forceCaptcha;
 var logger = require('../logger');
 var exec = require('child_process').exec;
 var im = require('gm').subClass({
@@ -360,7 +361,7 @@ exports.isCaptchaSolved = function(captcha, input) {
 
 exports.attemptCaptcha = function(id, input, board, callback) {
 
-  if (board && board.settings.indexOf('disableCaptcha') > -1) {
+  if (board && board.settings.indexOf('disableCaptcha') > -1 && !forceCaptcha) {
     if (verbose) {
       console.log('Captcha disabled');
     }

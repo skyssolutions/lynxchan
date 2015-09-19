@@ -886,6 +886,7 @@ Json output(Object): object with the current global settings. It contains the fo
     useGlobalBanners(Boolean): indicates that boards are using global banners.
     allowBoardCustomJs(Boolean): indicates that boards are allowed to have custom javascript.
     globalLatestPosts(Number): amount of latest global latest posts that show appear on the front-page.
+    forceCaptcha(Boolean): indicates if all boards are forced to use captcha.
 
 ------------------------------------------------------------------------------------------
 
@@ -946,6 +947,7 @@ Parameters:
     useGlobalBanners(Boolean): makes boards use the global banners.
     allowBoardCustomJs(Boolean): allows for boards to have custom javascript.
     globalLatestPosts(Number): amount of latest global latest posts that show appear on the front-page.
+    forceCaptcha(Boolean): makes all boards use captcha.
 
 ------------------------------------------------------------------------------------------
 

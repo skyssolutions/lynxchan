@@ -22,6 +22,18 @@ function broadCastReload(reloadsToMake, callback) {
 
 }
 
+function getRebuildBoards(settings) {
+
+  var rebuildBoards = generalSettings.pageSize !== settings.pageSize;
+  var fileSizeDelta = generalSettings.maxFileSizeMB !== settings.maxFileSizeMB;
+  var globalCTurnedOn = !generalSettings.forceCaptcha && settings.forceCaptcha;
+  var globalCTurnedOff = generalSettings.forceCaptcha && !settings.forceCaptcha;
+  var globalCChanged = globalCTurnedOn || globalCTurnedOff;
+
+  return rebuildBoards || fileSizeDelta || globalCChanged;
+
+}
+
 function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
 
   var rebuildFP = generalSettings.siteTitle !== settings.siteTitle;
@@ -39,12 +51,7 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
     });
   }
 
-  var rebuildBoards = generalSettings.pageSize !== settings.pageSize;
-  var fileSizeDelta = generalSettings.maxFileSizeMB !== settings.maxFileSizeMB;
-
-  rebuildBoards = rebuildBoards || fileSizeDelta;
-
-  if (rebuildBoards) {
+  if (getRebuildBoards(settings)) {
     reloadsToMake.push({
       allBoards : true
     });
@@ -84,7 +91,7 @@ exports.setNewSettings = function(settings, callback) {
       var exceptionalFields = [ 'siteTitle', 'captchaFonts',
           'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage',
           'disableTopBoards', 'allowBoardCustomJs', 'topBoardsCount',
-          'globalLatestPosts' ];
+          'globalLatestPosts', 'forceCaptcha' ];
 
       for ( var key in generalSettings) {
         if (!settings[key] && exceptionalFields.indexOf(key) === -1) {
