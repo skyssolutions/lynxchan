@@ -135,9 +135,8 @@ exports.reaggregateThread = function(board, parentThreads, callback, index) {
 
 };
 
-exports.signalAndLoop = function(parentThreads, board, userData, parameters,
-    threadsToDelete, postsToDelete, foundBoards, foundThreads, foundPosts,
-    callback) {
+exports.signalAndLoop = function(parentThreads, board, parameters,
+    foundThreads, foundPosts, callback) {
 
   for (var i = 0; i < parentThreads.length; i++) {
     var parentThread = parentThreads[i];
@@ -166,13 +165,11 @@ exports.signalAndLoop = function(parentThreads, board, userData, parameters,
     });
   }
 
-  exports.iterateBoardsToDelete(userData, parameters, threadsToDelete,
-      postsToDelete, foundBoards, callback);
+  callback();
 };
 
-exports.updateBoardAndThreads = function(userData, board, threadsToDelete,
-    postsToDelete, parameters, foundBoards, cb, foundThreads, foundPosts,
-    parentThreads) {
+exports.updateBoardAndThreads = function(board, parameters, cb, foundThreads,
+    foundPosts, parentThreads) {
 
   if (!parameters.deleteUploads) {
 
@@ -193,9 +190,8 @@ exports.updateBoardAndThreads = function(userData, board, threadsToDelete,
           if (error) {
             cb(error);
           } else {
-            exports.signalAndLoop(parentThreads, board, userData, parameters,
-                threadsToDelete, postsToDelete, foundBoards, foundThreads,
-                foundPosts, cb);
+            exports.signalAndLoop(parentThreads, board, parameters,
+                foundThreads, foundPosts, cb);
 
           }
         });
@@ -205,16 +201,14 @@ exports.updateBoardAndThreads = function(userData, board, threadsToDelete,
 
     });
   } else {
-    exports.signalAndLoop(parentThreads, board, userData, parameters,
-        threadsToDelete, postsToDelete, foundBoards, foundThreads, foundPosts,
-        cb);
+    exports.signalAndLoop(parentThreads, board, parameters, foundThreads,
+        foundPosts, cb);
   }
 
 };
 
-exports.removeContentFiles = function(userData, board, threadsToDelete,
-    postsToDelete, parameters, foundBoards, cb, foundThreads, foundPosts,
-    parentThreads) {
+exports.removeContentFiles = function(board, parameters, cb, foundThreads,
+    foundPosts, parentThreads) {
 
   var matchBlock = {
     'metadata.boardUri' : board.boardUri,
@@ -257,16 +251,14 @@ exports.removeContentFiles = function(userData, board, threadsToDelete,
           if (error) {
             cb(error);
           } else {
-            exports.updateBoardAndThreads(userData, board, threadsToDelete,
-                postsToDelete, parameters, foundBoards, cb, foundThreads,
+            exports.updateBoardAndThreads(board, parameters, cb, foundThreads,
                 foundPosts, parentThreads);
           }
         });
         // style exception, too simple
 
       } else {
-        exports.updateBoardAndThreads(userData, board, threadsToDelete,
-            postsToDelete, parameters, foundBoards, cb, foundThreads,
+        exports.updateBoardAndThreads(board, parameters, cb, foundThreads,
             foundPosts, parentThreads);
       }
     }
@@ -351,12 +343,12 @@ exports.getLogMessage = function(parameters, foundThreads, foundPosts,
 
 };
 
-exports.logRemoval = function(userData, board, threadsToDelete, postsToDelete,
-    parameters, foundBoards, cb, foundThreads, foundPosts, parentThreads) {
+exports.logRemoval = function(userData, board, parameters, cb, foundThreads,
+    foundPosts, parentThreads) {
 
   if (!foundThreads.length && !foundPosts.length) {
-    exports.removeContentFiles(userData, board, threadsToDelete, postsToDelete,
-        parameters, foundBoards, cb, foundThreads, foundPosts, parentThreads);
+    exports.removeContentFiles(board, parameters, cb, foundThreads, foundPosts,
+        parentThreads);
 
     return;
   }
@@ -378,14 +370,13 @@ exports.logRemoval = function(userData, board, threadsToDelete, postsToDelete,
       logger.printLogError(logMessage, error);
     }
 
-    exports.removeContentFiles(userData, board, threadsToDelete, postsToDelete,
-        parameters, foundBoards, cb, foundThreads, foundPosts, parentThreads);
+    exports.removeContentFiles(board, parameters, cb, foundThreads, foundPosts,
+        parentThreads);
   });
 };
 
-exports.removeFoundContent = function(userData, board, threadsToDelete,
-    postsToDelete, parameters, foundBoards, cb, foundThreads, foundPosts,
-    parentThreads) {
+exports.removeFoundContent = function(userData, board, parameters, cb,
+    foundThreads, foundPosts, parentThreads) {
 
   if (parameters.deleteUploads) {
     threads.updateMany({
@@ -418,14 +409,12 @@ exports.removeFoundContent = function(userData, board, threadsToDelete,
           } else {
             if (userData) {
 
-              exports.logRemoval(userData, board, threadsToDelete,
-                  postsToDelete, parameters, foundBoards, cb, foundThreads,
-                  foundPosts, parentThreads, userData);
+              exports.logRemoval(userData, board, parameters, cb, foundThreads,
+                  foundPosts, parentThreads);
 
             } else {
 
-              exports.removeContentFiles(userData, board, threadsToDelete,
-                  postsToDelete, parameters, foundBoards, cb, foundThreads,
+              exports.removeContentFiles(board, parameters, cb, foundThreads,
                   foundPosts, parentThreads);
             }
           }
@@ -459,14 +448,12 @@ exports.removeFoundContent = function(userData, board, threadsToDelete,
           } else {
             if (userData) {
 
-              exports.logRemoval(userData, board, threadsToDelete,
-                  postsToDelete, parameters, foundBoards, cb, foundThreads,
-                  foundPosts, parentThreads, userData);
+              exports.logRemoval(userData, board, parameters, cb, foundThreads,
+                  foundPosts, parentThreads);
 
             } else {
 
-              exports.removeContentFiles(userData, board, threadsToDelete,
-                  postsToDelete, parameters, foundBoards, cb, foundThreads,
+              exports.removeContentFiles(board, parameters, cb, foundThreads,
                   foundPosts, parentThreads);
             }
           }
@@ -544,8 +531,8 @@ exports.sanitizeParentThreads = function(foundThreads, rawParents) {
 
 };
 
-exports.getPostsToDelete = function(userData, board, threadsToDelete,
-    postsToDelete, parameters, foundBoards, cb, foundThreads, queryBlock) {
+exports.getPostsToDelete = function(userData, board, postsToDelete, parameters,
+    cb, foundThreads, queryBlock) {
 
   if (parameters.deleteUploads) {
 
@@ -600,23 +587,22 @@ exports.getPostsToDelete = function(userData, board, threadsToDelete,
       var parentThreads = results.length ? exports.sanitizeParentThreads(
           foundThreads, results[0].parentThreads) : [];
 
-      exports.removeFoundContent(userData, board, threadsToDelete,
-          postsToDelete, parameters, foundBoards, cb, foundThreads, foundPosts,
-          parentThreads);
+      exports.removeFoundContent(userData, board, parameters, cb, foundThreads,
+          foundPosts, parentThreads);
+
     }
   });
 
 };
 
 exports.getThreadsToDelete = function(userData, board, threadsToDelete,
-    postsToDelete, parameters, foundBoards, callback) {
+    postsToDelete, parameters, callback) {
 
   var threadQueryBlock = exports.composeQueryBlock(board, threadsToDelete,
       userData, parameters);
 
   if (!threadQueryBlock) {
-    exports.iterateBoardsToDelete(userData, parameters, threadsToDelete,
-        postsToDelete, foundBoards, callback);
+    callback();
     return;
   }
 
@@ -641,8 +627,8 @@ exports.getThreadsToDelete = function(userData, board, threadsToDelete,
 
       var foundThreads = results.length ? results[0].threads : [];
 
-      exports.getPostsToDelete(userData, board, threadsToDelete, postsToDelete,
-          parameters, foundBoards, callback, foundThreads, threadQueryBlock);
+      exports.getPostsToDelete(userData, board, postsToDelete, parameters,
+          callback, foundThreads, threadQueryBlock);
     }
   });
 
@@ -662,6 +648,7 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
     boardUri : 1,
     owner : 1,
     _id : 0,
+    settings : 1,
     volunteers : 1
   }, function gotBoard(error, board) {
 
@@ -670,8 +657,25 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
     } else if (!board) {
       callback(lang.errBoardNotFound);
     } else {
+      var settings = board.settings || [];
+
+      if (!userData && settings.indexOf('blockDeletion') > -1) {
+        exports.iterateBoardsToDelete(userData, parameters, threadsToDelete,
+            postsToDelete, foundBoards, callback);
+
+        return;
+      }
+
       exports.getThreadsToDelete(userData, board, threadsToDelete,
-          postsToDelete, parameters, foundBoards, callback);
+          postsToDelete, parameters, function removedBoardPostings(error) {
+            if (error) {
+              callback(error);
+
+            } else {
+              exports.iterateBoardsToDelete(userData, parameters,
+                  threadsToDelete, postsToDelete, foundBoards, callback);
+            }
+          });
     }
 
   });

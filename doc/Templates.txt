@@ -552,6 +552,10 @@ TEM_ID::12
 bManagement:
 
 Elements:
+blockDeletionCheckbox:
+    use: might be turned on.
+    description: checkbox that indicates if use deletion of content is blocked.
+
 customJsForm:
     use: might be removed.
     description: form used to upload a custom javascript to the board.

@@ -22,7 +22,8 @@ exports.boardSettingsRelation = {
   allowCode : 'allowCodeCheckbox',
   archive : 'enableArchiveCheckbox',
   early404 : 'early404Checkbox',
-  unindex : 'unindexCheckbox'
+  unindex : 'unindexCheckbox',
+  blockDeletion : 'blockDeletionCheckbox'
 };
 
 exports.boardFieldsRelation = {

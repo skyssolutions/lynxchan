@@ -197,6 +197,7 @@ Json output(Object): object with data used to manage the board. Contains the fol
         allowCode: allows the usage of [code] on postings.
         archive: archives content if the site owner has enabled archiving.
         early404: makes threads with less than 5 replies to be deleted after an hour.
+        blockDeletion: makes it impossible for users to delete their own posts.
     tags(Array): array of tags for the board.
     boardMessage: message displayed on the board header.
     isOwner(Boolean): indicates if the user owns the board.
@@ -511,6 +512,8 @@ Parameters:
     early404: will delete threads after one hour if they do not receive at least 5 replies.
     tags(Array): array of tags to be used on this board.
     unindex: if any value is passed, the board will not be displayed on the top boards or the boards list.
+    archive: enables archiving of content, if the site allows archiving.
+    blockDeletion: disables user deletion of content.
 
 ------------------------------------------------------------------------------------------
 
