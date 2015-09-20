@@ -97,7 +97,17 @@ function processParameters(req, userData, parameters, res, captchaId) {
 
   parameters.global = parameters.hasOwnProperty('global');
 
-  if (parameters.action.toLowerCase() === 'report') {
+  if (parameters.action.toLowerCase() === 'spoil') {
+
+    modOps.spoiler.spoiler(userData, reportedObjects, function(error) {
+      if (error) {
+        formOps.outputError(error, 500, res);
+      } else {
+        formOps.outputResponse(lang.msgContentSpoilered, '/', res);
+      }
+    });
+
+  } else if (parameters.action.toLowerCase() === 'report') {
 
     modOps.report.report(req, reportedObjects, parameters, captchaId,
         function createdReports(error, ban) {

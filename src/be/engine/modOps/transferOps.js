@@ -87,6 +87,20 @@ exports.revertPosts = function(revertOps, originalError, callback) {
 
 };
 
+exports.revertThreadCount = function(revertOps, originalError, callback) {
+
+  boards.bulkWrite(revertOps, function revertedThreadCounts(error) {
+
+    if (error) {
+      console.log(error);
+    }
+
+    callback(originalError);
+
+  });
+
+};
+
 exports.revertThread = function(thread, originalError, callback) {
 
   threads.updateOne({
@@ -427,6 +441,96 @@ exports.findPosts = function(newBoard, userData, originalThread, newThreadId,
 };
 // }Section 4: Posts update
 
+// Section 5: Thread count update {
+exports.getThreadCountOps = function(updateOps, revertOps, newBoard,
+    originalThread) {
+
+  revertOps.push({
+    updateOne : {
+      filter : {
+        boardUri : newBoard.boardUri
+      },
+      update : {
+        $inc : {
+          threadCount : -1
+        }
+      }
+    }
+  });
+
+  revertOps.push({
+    updateOne : {
+      filter : {
+        boardUri : originalThread.boardUri
+      },
+      update : {
+        $inc : {
+          threadCount : 1
+        }
+      }
+    }
+  });
+
+  updateOps.push({
+    updateOne : {
+      filter : {
+        boardUri : newBoard.boardUri
+      },
+      update : {
+        $inc : {
+          threadCount : 1
+        }
+      }
+    }
+  });
+
+  updateOps.push({
+    updateOne : {
+      filter : {
+        boardUri : originalThread.boardUri
+      },
+      update : {
+        $inc : {
+          threadCount : -1
+        }
+      }
+    }
+  });
+
+};
+
+exports.updateThreadCount = function(newBoard, userData, originalThread,
+    newThreadId, callback) {
+
+  var updateOps = [];
+
+  var revertOps = [];
+
+  exports.getThreadCountOps(updateOps, revertOps, newBoard, originalThread);
+
+  boards.bulkWrite(updateOps, function updatedThreadCount(error) {
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      exports.findPosts(newBoard, userData, originalThread, newThreadId,
+          function updatedPosts(error) {
+            if (error) {
+              exports.revertThreadCount(revertOps, error, callback);
+            } else {
+              callback();
+            }
+          });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+// } Section 5: Thread count update
+
 // from here, each part should send a different callback to the next part, so if
 // a part fails, each part can perform its reversal action to guarantee data
 // integrity
@@ -465,8 +569,8 @@ exports.updateThread = function(userData, parameters, originalThread, newBoard,
     } else {
 
       // style exception, too simple
-      exports.findPosts(newBoard, userData, originalThread, newThreadId,
-          function updatedPosts(error) {
+      exports.updateThreadCount(newBoard, userData, originalThread,
+          newThreadId, function updatedThreadCount(error) {
             if (error) {
               exports.revertThread(originalThread, error, cb);
             } else {

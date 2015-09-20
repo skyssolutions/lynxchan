@@ -644,5 +644,19 @@ Output: new id of the thread.
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::45
+
+Name: spoilFiles
+
+Description: ban the ips of the selected posts and/or threads.
+
+Parameters:
+    postings(Array): array of content to be spoiled. Contains objects with the following fields:
+        board: board to which the content belongs.
+        thread: thread to be banned or that contains the post to be spoiled.
+        post: post to be spoiled.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters
 **: exclusive funcionality to the json api.

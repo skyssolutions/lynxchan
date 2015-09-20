@@ -6,6 +6,7 @@ exports.hashBan = require('./hashBanOps');
 exports.edit = require('./editOps');
 exports.report = require('./reportOps');
 exports.transfer = require('./transferOps');
+exports.spoiler = require('./spoilerOps');
 
 exports.loadDependencies = function() {
 
@@ -15,5 +16,6 @@ exports.loadDependencies = function() {
   exports.edit.loadDependencies();
   exports.report.loadDependencies();
   exports.transfer.loadDependencies();
+  exports.spoiler.loadDependencies();
 
 };

@@ -149,6 +149,10 @@ inputBan:
     use: might be removed.
     description: submit input used to ban users.
 
+inputSpoil:
+    use: might be removed.
+    description: submit input used to spoil files.
+
 divBanInput:
     use: might be removed.
     description: area to input information specific to bans.

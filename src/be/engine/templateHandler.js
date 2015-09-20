@@ -268,7 +268,7 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
             'bannerImage', 'captchaDiv', 'divName', 'labelMaxFileSize',
             'checkboxCyclic', 'flagsDiv', 'flagCombobox', 'panelMessage',
             'divMessage', 'formTransfer', 'transferBoardIdentifier',
-            'transferThreadIdentifier' ]
+            'transferThreadIdentifier', 'inputSpoil' ]
       },
       {
         template : 'messagePage',

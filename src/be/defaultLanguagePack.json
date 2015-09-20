@@ -295,5 +295,7 @@
   "msgThreadTransferred": "Thread transferred.",
   "errDeniedThreadTransfer": "You are not allowed to transfer a thread between boards.",
   "logThreadTransfer": "User {$login} transferred thread {$thread} from /{$board}/ to /{$boardDestination}/.",
-  "guiTypeThreadTransfer": "Thread transfer"
+  "guiTypeThreadTransfer": "Thread transfer",
+  "msgContentSpoilered": "Files spoilered.",
+  "errDeniedSpoilered": "You are not allowed to spoil existing files."
 }
