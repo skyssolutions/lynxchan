@@ -1,6 +1,6 @@
 'use strict';
 
-var dbVersion = 4;
+var dbVersion = 5;
 
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
@@ -92,6 +92,10 @@ function upgrade(version, callback) {
 
   case 3:
     migrations.migrateThreadIps(callback);
+    break;
+
+  case 4:
+    migrations.removeBannerStatus(callback);
     break;
 
   default:

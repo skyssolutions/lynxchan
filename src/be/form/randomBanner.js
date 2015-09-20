@@ -9,13 +9,13 @@ var gridFsHandler = require('../engine/gridFsHandler');
 var miscOps = require('../engine/miscOps');
 var formOps = require('../engine/formOps');
 
-function outputFile(file, req, res) {
+function outputFile(file, res) {
 
-  gridFsHandler.outputFile(file, req, res, function streamed(error) {
-    if (error) {
-      formOps.outputError(error, 500, res);
-    }
+  res.writeHead(302, {
+    'Location' : file
+
   });
+  res.end();
 
 }
 
@@ -32,11 +32,11 @@ exports.process = function(req, res) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else if (!banners.length) {
-      outputFile(defaultBanner, req, res);
+      outputFile(defaultBanner, res);
     } else {
 
       var file = banners[miscOps.getRandomInt(0, banners.length - 1)];
-      outputFile(file.filename, req, res);
+      outputFile(file.filename, res);
     }
   });
 };

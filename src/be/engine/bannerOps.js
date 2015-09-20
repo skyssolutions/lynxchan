@@ -87,7 +87,6 @@ exports.writeNewBanner = function(parameters, callback) {
 
   gridFsHandler.writeFile(file.pathInDisk, bannerPath, file.mime, {
     boardUri : parameters.boardUri,
-    status : 200,
     type : 'banner'
   }, callback);
 

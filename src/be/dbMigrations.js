@@ -416,3 +416,18 @@ exports.migrateThreadIps = function(callback) {
   });
 };
 // } Section 3: Ip conversion from strings to array of ints
+
+// Added on 1.3.0
+// Section 4: Remove status from banners metadata {
+exports.removeBannerStatus = function(callback) {
+
+  cachedFiles.updateMany({
+    'metadata.type' : 'banner'
+  }, {
+    $unset : {
+      'metadata.status' : true
+    }
+  }, callback);
+
+};
+// } Section 4: Remove status from banners metadata
