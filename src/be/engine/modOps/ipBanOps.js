@@ -625,6 +625,7 @@ exports.ban = function(userData, reportedObjects, parameters, callback) {
       }
     }
 
+    // TODO apply async recursion
     exports.iterateBoards(foundBoards, userData, reportedObjects, parameters,
         callback);
   }

@@ -5,7 +5,8 @@ var modOps = require('../engine/modOps').spoiler;
 
 function spoilFiles(userData, parameters, res) {
 
-  modOps.spoiler(userData, parameters.postings, function spoiledFiles(error) {
+  modOps.spoiler(userData, parameters.postings || [], function spoiledFiles(
+      error) {
 
     if (error) {
       apiOps.outputError(error, res);

@@ -169,7 +169,9 @@ exports.process = function(req, res) {
 
       var deleting = action === 'delete';
       var banning = action === 'ban';
+      var spoiling = action === 'spoil';
       var authenticate = banning || (!parameters.password && deleting);
+      authenticate = authenticate || spoiling;
 
       if (authenticate) {
 
