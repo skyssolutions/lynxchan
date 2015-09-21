@@ -580,6 +580,8 @@ exports.startEngine = function() {
 
 };
 
+var tcpPort = settingsHandler.getGeneralSettings().tcpPort;
+
 function checkMaintenanceMode() {
 
   var parsedValue = JSON.parse(informedArguments.maintenance.value) ? true
@@ -590,10 +592,14 @@ function checkMaintenanceMode() {
   var changed = parsedValue !== current;
 
   if (changed) {
-    db.tasks().insert({
-      creation : new Date(),
-      type : 'maintenance',
-      value : parsedValue
+    var client = new require('net').Socket();
+
+    client.connect(tcpPort, '127.0.0.1', function() {
+      client.write(JSON.stringify({
+        type : 'maintenance',
+        value : parsedValue
+      }));
+      client.destroy();
     });
 
   }
@@ -666,7 +672,7 @@ if (cluster.isMaster) {
 
 exports.broadCastTopDownReload = function() {
   exports.reload();
-  
+
   for ( var id in cluster.workers) {
     cluster.workers[id].send({
       reload : true

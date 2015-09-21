@@ -1,8 +1,8 @@
 'use strict';
 
-var db = require('./db');
-var taskQueue = db.tasks();
+var net = require('net');
 var settingsHandler = require('./settingsHandler');
+var tcpPort = settingsHandler.getGeneralSettings().tcpPort;
 
 function processTask(task) {
 
@@ -16,23 +16,20 @@ function processTask(task) {
 
 exports.start = function() {
 
-  var limitDate = new Date();
+  var server = net.createServer(function(socket) {
 
-  var stream = taskQueue.find({}, {
-    tailable : true,
-    noCursorTimeout : true,
-    awaitdata : true
-  }).stream();
+    var buffer = '';
 
-  stream.on('data', function(document) {
-    if (document.creation > limitDate) {
-      processTask(document);
-    }
+    socket.on('data', function(data) {
+      buffer += data;
+    });
 
-  });
+    socket.on('end', function() {
 
-  stream.on('end', function() {
-    exports.start();
-  });
+      processTask(JSON.parse(buffer));
+
+    });
+
+  }).listen(tcpPort, '127.0.0.1');
 
 };

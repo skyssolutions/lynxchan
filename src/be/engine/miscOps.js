@@ -438,6 +438,11 @@ exports.getParametersArray = function() {
     setting : 'boardsPerPage',
     element : 'fieldBoardsPerPage'
   }, {
+    param : 'tcpPort',
+    type : 'number',
+    setting : 'tcpPort',
+    element : 'fieldTcpPort'
+  }, {
     param : 'thumbSize',
     type : 'number',
     setting : 'thumbSize',

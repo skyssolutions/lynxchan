@@ -110,6 +110,7 @@ Settings files that goes into the settings directory:
 * `allowBoardCustomJs`(Boolean): if true, boards are allowed to have custom javascript.
 * `globalLatestPosts`(Number): amount of global latest posts to be displayed on the front-page.
 * `forceCaptcha`(Boolean): makes all boards use captcha.
+* `tcpPort`(Boolean): port to be used to listen to TCP. Defaults to 8081.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

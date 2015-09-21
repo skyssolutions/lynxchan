@@ -21,7 +21,6 @@ var cachedDb;
 
 var maxIndexesSet = 13;
 
-var cachedTasks;
 var cachedFlood;
 var cachedVersions;
 var cachedPosts;
@@ -477,10 +476,6 @@ exports.conn = function() {
   return cachedDb;
 };
 
-exports.tasks = function() {
-  return cachedTasks;
-};
-
 exports.recoveryRequests = function() {
   return cachedRecoveryRequests;
 };
@@ -580,57 +575,6 @@ function initCollections(db, callback) {
 
 }
 
-function createTasksQueue(db, callback) {
-
-  db.createCollection('tasks', {
-    capped : true,
-    size : 1024,
-    max : 10
-  }, function createdTasksQueue(error, newCollection) {
-
-    if (error) {
-      callback(error);
-    } else {
-      cachedTasks = newCollection;
-
-      initCollections(db, callback);
-    }
-
-  });
-
-}
-
-function checkTaskQueue(db, callback) {
-
-  cachedTasks.isCapped(function isCapped(error, capped) {
-    if (error) {
-      if (error.toString().indexOf('.tasks not found') > -1) {
-        createTasksQueue(db, callback);
-      } else {
-        callback(error);
-      }
-    } else {
-
-      if (!capped) {
-
-        cachedTasks.drop(function dropped(error) {
-          if (error) {
-            callback(error);
-          } else {
-            createTasksQueue(db, callback);
-          }
-
-        });
-
-      } else {
-        initCollections(db, callback);
-      }
-    }
-
-  });
-
-}
-
 exports.init = function(callback) {
 
   if (loading) {
@@ -662,8 +606,6 @@ exports.init = function(callback) {
 
       cachedDb = db;
 
-      cachedTasks = db.collection('tasks');
-
       cachedLatestPosts = db.collection('latestPosts');
 
       cachedFiles = db.collection('fs.files');
@@ -672,7 +614,7 @@ exports.init = function(callback) {
 
       cachedStats = db.collection('boardStats');
 
-      checkTaskQueue(db, callback);
+      initCollections(db, callback);
     }
 
   });
