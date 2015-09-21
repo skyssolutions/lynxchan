@@ -1,7 +1,7 @@
 'use strict';
 
 var fs = require('fs');
-
+var boot = require('./boot');
 var archiveSettings;
 var fePath;
 var dbSettings;
@@ -234,4 +234,19 @@ exports.getGeneralSettings = function() {
 
 exports.getTemplateSettings = function() {
   return templateSettings;
+};
+
+exports.changeMaintenanceMode = function(newMode) {
+
+  generalSettings.maintenance = newMode;
+
+  fs.writeFile(__dirname + '/settings/general.json', new Buffer(JSON.stringify(
+      generalSettings, null, 2), 'utf-8'), function wroteFile(error) {
+    if (error) {
+      console.log(error);
+    } else {
+      boot.broadCastTopDownReload();
+    }
+  });
+
 };

@@ -242,6 +242,14 @@ latestPosts: stores metadata from global latest posts.
 
 ----------------------------------------------------------------------------------------
 
+tasks: capped collection that stores tasks.
+    type: type of the task. May hold one of the following values:
+        maintenance: indicates to set maintenance mode to a new value.
+    value: value to be used by the task. May hold anything.
+    creation(Date): time of when the task was added to the queue.
+
+----------------------------------------------------------------------------------------
+
 *: duplicated data, foreign key.
 **: unique key
 ***:part of a unique key combination.

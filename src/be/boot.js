@@ -77,6 +77,7 @@ exports.reload = function() {
 
   if (cluster.isMaster) {
     require('./scheduleHandler').reload();
+    require('./generationQueue').reload();
   } else {
     require('./workerBoot').reload();
   }
@@ -93,6 +94,11 @@ var informedArguments = {
     short : '-td',
     long : '--tor-debug',
     type : 'boolean'
+  },
+  maintenance : {
+    short : '-m',
+    long : '--maintenance',
+    type : 'value'
   },
   noDaemon : {
     short : '-nd',
@@ -363,8 +369,6 @@ function bootWorkers() {
         if (message.reload) {
           exports.reload();
 
-          genQueue.reload();
-
           for (var i = 0; i < message.rebuilds.length; i++) {
             genQueue.queue(message.rebuilds[i]);
           }
@@ -576,6 +580,25 @@ exports.startEngine = function() {
 
 };
 
+function checkMaintenanceMode() {
+
+  var parsedValue = JSON.parse(informedArguments.maintenance.value) ? true
+      : false;
+
+  var current = settingsHandler.getGeneralSettings().maintenance ? true : false;
+
+  var changed = parsedValue !== current;
+
+  if (changed) {
+    db.tasks().insert({
+      creation : new Date(),
+      type : 'maintenance',
+      value : parsedValue
+    });
+
+  }
+}
+
 function initTorControl() {
 
   require('./engine/torOps').init(function initializedTorControl(error) {
@@ -583,7 +606,10 @@ function initTorControl() {
       throw error;
     } else {
       if (!noDaemon) {
+        require('./taskListener').start();
         require('./scheduleHandler').start();
+      } else if (informedArguments.maintenance.value) {
+        checkMaintenanceMode();
       }
 
       if (createAccount) {
@@ -637,3 +663,13 @@ if (cluster.isMaster) {
 
   require('./workerBoot').boot();
 }
+
+exports.broadCastTopDownReload = function() {
+  exports.reload();
+  
+  for ( var id in cluster.workers) {
+    cluster.workers[id].send({
+      reload : true
+    });
+  }
+};

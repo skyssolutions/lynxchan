@@ -32,6 +32,7 @@ It accepts the following arguments:
 * `--password`, `-p`: informs a password.
 * `--global-role`, `-gr`: informs a role.
 * `--set-role`, `-sr`: set a new role for an existing account. Will not be used if `-ca` is used.
+* `--maintenace`, `-m`: indicates a new value for maintenance mode. The value will be parsed as JSON, so informing `true` or `false` will work, so as informing numbers that evaluate to false or true. 
 
 Arguments that are meant to inform values should be used in the following manner:
 `argument value`
