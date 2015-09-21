@@ -659,5 +659,17 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::46
+
+Name: solveCaptcha
+
+Description: solves a captcha without invalidating it.
+
+Parameters:
+    captchaId: id of the captcha to be solved.
+    answer: answer to the captcha.    
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters
 **: exclusive funcionality to the json api.

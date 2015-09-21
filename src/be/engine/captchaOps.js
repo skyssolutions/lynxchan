@@ -426,6 +426,9 @@ exports.solveCaptcha = function(parameters, callback) {
     }, {
       $unset : {
         answer : true
+      },
+      $set : {
+        expiration : new Date(new Date().getTime() + 1000 * 60 * 60)
       }
     }, function gotCaptcha(error, captcha) {
 

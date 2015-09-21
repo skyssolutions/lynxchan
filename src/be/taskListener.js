@@ -26,8 +26,11 @@ exports.start = function() {
 
     socket.on('end', function() {
 
-      processTask(JSON.parse(buffer));
-
+      try {
+        processTask(JSON.parse(buffer));
+      } catch (error) {
+        console.log(error);
+      }
     });
 
   }).listen(tcpPort, '127.0.0.1');
