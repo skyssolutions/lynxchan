@@ -124,6 +124,7 @@ exports.getFileData = function(matches, res, stats, file, location, content,
       md5 : crypto.createHash('md5').update(content, 'base64').digest('hex'),
       size : stats.size,
       mime : mime,
+      spoiler : file.spoiler,
       pathInDisk : location
     };
 

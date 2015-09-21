@@ -39,6 +39,7 @@ The global status are:
 
 The back-end will truncate strings longer than the maximum length.
 Files should be sent in a parameter called 'files' containing an array where each object contains the following fields:
+spoiler: indicates that the individual file should be spoiled without making all files in the post spoilered. Only used for posting threads or replies.
 name: original name of the file.
 content: content of the file using base64 encoding. Example of content: 
 data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAECAIAAAAiZtkUAAAAA3NCSVQICAjb4U/gAAAAGXRFWHRTb2Z0d2FyZQBnbm9tZS1zY3JlZW5zaG907wO/PgAAABVJREFUCJlj/P//PwMqYGLAAMQJAQDengMFOtjosAAAAABJRU5ErkJggg==

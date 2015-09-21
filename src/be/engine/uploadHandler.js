@@ -459,7 +459,7 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
 
   var gifCondition = settings.thumbExtension || tooSmall;
 
-  if (parameters.spoiler) {
+  if (parameters.spoiler || file.spoiler) {
 
     exports.processSpoilerThumb(boardData, threadId, postId, file, callback);
   } else if (file.mime === 'image/gif' && gifCondition) {
