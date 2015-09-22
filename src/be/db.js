@@ -49,13 +49,13 @@ function registerLatestVersion(callback) {
     console.log('Checking if latest version is ' + dbVersion);
   }
 
-  cachedVersions.count({
+  cachedVersions.findOne({
     version : dbVersion,
     active : true
-  }, function gotVersion(error, count) {
+  }, function gotVersion(error, version) {
     if (error) {
       callback(error);
-    } else if (count) {
+    } else if (version) {
       callback();
     } else {
 

@@ -106,14 +106,14 @@ exports.markAsTor = function(req, callback) {
 
   var ip = logger.convertIpToArray(req.connection.remoteAddress);
 
-  torIps.count({
+  torIps.findOne({
     ip : ip
-  }, function gotCount(error, count) {
+  }, function gotIp(error, torIp) {
     if (error) {
       callback(error);
     } else {
 
-      if (count || torDebug) {
+      if (torIp || torDebug) {
         req.isTor = true;
         if (verbose) {
           console.log('Marked ip ' + ip + ' as TOR.');
@@ -129,10 +129,10 @@ exports.markAsTor = function(req, callback) {
 
 exports.init = function(callback) {
 
-  torIps.count(function gotCount(error, count) {
+  torIps.findOne({}, function gotIp(error, torIp) {
     if (error) {
       callback(error);
-    } else if (!count) {
+    } else if (!torIp) {
       exports.updateIps(callback);
     } else {
       callback();

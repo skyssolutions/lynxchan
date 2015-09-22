@@ -195,15 +195,15 @@ exports.checkForBan = function(req, boardUri, callback) {
       var ip = logger.ip(req);
 
       // style exception, too simple
-      flood.count({
+      flood.findOne({
         ip : ip,
         expiration : {
           $gt : new Date()
         }
-      }, function gotCount(error, count) {
+      }, function gotFlood(error, flood) {
         if (error) {
           callback(error);
-        } else if (count && !disableFloodCheck) {
+        } else if (flood && !disableFloodCheck) {
           callback(lang.errFlood);
         } else {
           exports.getActiveBan(ip, boardUri, callback);

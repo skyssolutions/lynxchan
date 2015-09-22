@@ -135,10 +135,10 @@ exports.iterateReports = function(req, reportedContent, parameters, cb) {
           threadId : +report.thread
         };
 
-        var countCb = function(error, count) {
+        var checkCb = function(error, posting) {
           if (error) {
             cb(error);
-          } else if (!count) {
+          } else if (!posting) {
             exports.iterateReports(req, reportedContent, parameters, cb);
           } else {
             exports.createReport(req, report, reportedContent, parameters, cb);
@@ -150,10 +150,10 @@ exports.iterateReports = function(req, reportedContent, parameters, cb) {
 
           queryBlock.postId = +report.post;
 
-          posts.count(queryBlock, countCb);
+          posts.findOne(queryBlock, checkCb);
 
         } else {
-          threads.count(queryBlock, countCb);
+          threads.findOne(queryBlock, checkCb);
         }
         // style exception, too simple
 

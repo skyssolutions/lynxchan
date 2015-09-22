@@ -350,12 +350,12 @@ exports.transfer = function(userData, parameters, callback) {
     } else {
 
       // style exception, too simple
-      users.count({
+      users.findOne({
         login : parameters.login
-      }, function gotCount(error, count) {
+      }, function gotUser(error, user) {
         if (error) {
           callback(error);
-        } else if (!count) {
+        } else if (!user) {
           callback(lang.errUserNotFound);
         } else {
           exports.performTransfer(board.owner, userData, parameters, callback);
@@ -397,14 +397,15 @@ exports.manageVolunteer = function(currentVolunteers, parameters, callback) {
       };
     }
 
-    users.count({
+    users.findOne({
       login : parameters.login
-    }, function gotCount(error, count) {
+    }, function gotUser(error, user) {
       if (error) {
         callback(error);
-      } else if (!count && !isAVolunteer) {
+      } else if (!user && !isAVolunteer) {
         callback(lang.errUserNotFound);
       } else {
+
         // style exception, too simple
         boards.update({
           boardUri : parameters.boardUri
@@ -412,6 +413,7 @@ exports.manageVolunteer = function(currentVolunteers, parameters, callback) {
           callback(error);
         });
         // style exception, too simple
+
       }
     });
 

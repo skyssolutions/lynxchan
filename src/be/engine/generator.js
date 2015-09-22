@@ -849,15 +849,7 @@ exports.board = function(boardUri, reloadThreads, reloadRules, cb, boardData) {
 
   pageCount = pageCount || 1;
 
-  threads.find({
-    boardUri : boardUri
-  }).count(false, null, function gotCount(error, count) {
-    if (error) {
-      cb(error);
-    } else {
-      exports.pageIteration(boardUri, pageCount, boardData, cb, reloadThreads);
-    }
-  });
+  exports.pageIteration(boardUri, pageCount, boardData, cb, reloadThreads);
 
 };
 // } Section 2.1: Board
