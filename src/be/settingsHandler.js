@@ -40,7 +40,7 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
 
   var topChanged = generalSettings.topBoardsCount !== settings.topBoardsCount;
 
-  // did the amount of latest posts appearing on the front page changes?
+  // did the amount of latest posts appearing on the front page changed?
   var lPC = generalSettings.globalLatestPosts !== settings.globalLatestPosts;
 
   rebuildFP = rebuildFP || topChanged || lPC;
@@ -239,10 +239,13 @@ exports.getTemplateSettings = function() {
 
 exports.changeMaintenanceMode = function(newMode) {
 
-  generalSettings.maintenance = newMode;
+  var path = __dirname + '/settings/general.json';
+  var currentSettings = JSON.parse(fs.readFileSync(path));
+
+  currentSettings.maintenance = newMode;
 
   fs.writeFile(__dirname + '/settings/general.json', new Buffer(JSON.stringify(
-      generalSettings, null, 2), 'utf-8'), function wroteFile(error) {
+      currentSettings, null, 2), 'utf-8'), function wroteFile(error) {
     if (error) {
       console.log(error);
     } else {
