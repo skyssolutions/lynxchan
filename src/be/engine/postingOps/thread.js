@@ -71,6 +71,12 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
     });
   }
 
+  if (settings.overboard) {
+    process.send({
+      overboard : true
+    });
+  }
+
   common.addPostToStats(boardUri, function updatedStats(error) {
     if (error) {
       console.log(error.toString());

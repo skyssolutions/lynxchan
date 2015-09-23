@@ -601,7 +601,6 @@ function checkMaintenanceMode() {
       }));
       client.destroy();
     });
-
   }
 }
 
@@ -626,9 +625,7 @@ function initTorControl() {
         checkForDefaultPages();
       }
     }
-
   });
-
 }
 
 function checkDbVersions() {
@@ -638,11 +635,31 @@ function checkDbVersions() {
     if (error) {
       throw error;
     } else {
-      initTorControl();
+
+      var overboard = settingsHandler.getGeneralSettings().overboard;
+
+      if (overboard) {
+
+        db.boards().findOne({
+          boardUri : overboard
+        }, function(error, board) {
+          if (error) {
+            throw error;
+          } else if (board) {
+            var toThrow = 'You will have to change your overboard uri';
+            toThrow += ', there is already a board with this uri';
+
+            throw toThrow;
+          } else {
+            initTorControl();
+          }
+        });
+
+      } else {
+        initTorControl();
+      }
     }
-
   });
-
 }
 
 if (cluster.isMaster) {

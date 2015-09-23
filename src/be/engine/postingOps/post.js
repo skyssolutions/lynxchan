@@ -179,6 +179,12 @@ exports.updateBoardForPostCreation = function(parameters, postId, thread,
     catalog : true
   });
 
+  if (settings.overboard) {
+    process.send({
+      overboard : true
+    });
+  }
+
   common.addPostToStats(parameters.boardUri, function updatedStats(error) {
     if (error) {
       console.log(error.toString());

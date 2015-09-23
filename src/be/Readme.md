@@ -111,6 +111,8 @@ Settings files that goes into the settings directory:
 * `globalLatestPosts`(Number): amount of global latest posts to be displayed on the front-page.
 * `forceCaptcha`(Boolean): makes all boards use captcha.
 * `tcpPort`(Boolean): port to be used to listen to TCP. Defaults to 8081.
+* `overboard`: uri of the overboard.
+* `overBoardThreadCount`(Number): amount of threads that should be shown at the overboard. Defaults to 50. 
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

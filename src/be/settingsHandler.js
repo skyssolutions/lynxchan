@@ -80,7 +80,7 @@ function checkSettingsChanges(settings, callback) {
 
 }
 
-exports.setNewSettings = function(settings, callback) {
+function writeNewSettings(settings, callback) {
 
   fs.writeFile(__dirname + '/settings/general.json', new Buffer(JSON.stringify(
       settings, null, 2), 'utf-8'), function wroteFile(error) {
@@ -102,6 +102,35 @@ exports.setNewSettings = function(settings, callback) {
       checkSettingsChanges(settings, callback);
     }
   });
+
+}
+
+exports.setNewSettings = function(settings, callback) {
+
+  if (settings.overboard) {
+
+    var lang = require('./engine/langOps').languagePack();
+
+    if (/\W/.test(settings.overboard)) {
+      callback(lang.errInvalidUri);
+      return;
+    }
+
+    require('./db').boards().findOne({
+      boardUri : settings.overboard
+    }, function gotBoard(error, board) {
+      if (error) {
+        callback(error);
+      } else if (board) {
+        callback(lang.errUriInUse);
+      } else {
+        writeNewSettings(settings, callback);
+      }
+    });
+
+  } else {
+    writeNewSettings(settings, callback);
+  }
 
 };
 // } Section 1: New settings
@@ -211,7 +240,8 @@ exports.getDefaultSettings = function() {
     torAccess : 0,
     proxyAccess : 0,
     clearIpMinRole : 0,
-    boardCreationRequirement : 4
+    boardCreationRequirement : 4,
+    overBoardThreadCount : 50
   };
 
 };

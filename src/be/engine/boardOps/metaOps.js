@@ -503,6 +503,9 @@ exports.createBoard = function(captchaId, parameters, userData, callback) {
   if (/\W/.test(parameters.boardUri)) {
     callback(lang.errInvalidUri);
     return;
+  } else if (settings.overboard === parameters.boardUri) {
+    callback(lang.errUriInUse);
+    return;
   }
 
   captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,

@@ -6,6 +6,7 @@
 
 // messages can have the following keys:
 // globalRebuild (Boolean): rebuilds every single page.
+// overboard (Boolean): rebuilds the overboard.
 // defaultPages (Boolean): rebuilds default pages.
 // allBoards (Boolean): rebuilds all boards.
 // frontPage (Boolean): rebuilds the front-page.
@@ -43,6 +44,7 @@ var rebuildingAll = false;
 
 var rebuildingAllBoards = false;
 
+var rebuildingOverboard = false;
 // so we can tell its rebuilding default pages
 var rebuildingDefaultPages = false;
 // so we can tell its rebuilding the front-page
@@ -59,13 +61,23 @@ exports.reload = function() {
   verbose = settingsHandler.getGeneralSettings().verbose;
 };
 
+function clearGlobalRebuilding() {
+
+  rebuildingAll = false;
+  rebuildingOverboard = false;
+  rebuildingAllBoards = false;
+  rebuildingDefaultPages = false;
+  rebuildingFrontPage = false;
+  return true;
+
+}
+
 function checkForGlobalClearing(message) {
 
   if (message.globalRebuild) {
-    rebuildingAll = false;
-    rebuildingAllBoards = false;
-    rebuildingDefaultPages = false;
-    rebuildingFrontPage = false;
+    return clearGlobalRebuilding();
+  } else if (message.overboard) {
+    rebuildingOverboard = false;
     return true;
   } else if (message.allBoards) {
     rebuildingAllBoards = false;
@@ -152,6 +164,8 @@ function processMessage(message) {
 
   if (message.globalRebuild) {
     generator.all(generationCallback);
+  } else if (message.overboard) {
+    generator.overboard(generationCallback);
   } else if (message.allBoards) {
     generator.boards(generationCallback);
   } else if (message.defaultPages) {
@@ -326,6 +340,22 @@ function checkForDefaultAndFrontPages(message) {
 
 }
 
+function checkForFullBoardRebuild(message) {
+
+  if ((message.boardUri || message.allBoards) && rebuildingAllBoards) {
+    return;
+  }
+
+  if (message.allBoards) {
+    rebuildingAllBoards = true;
+    putInQueue(message);
+    return;
+  }
+
+  checkForDefaultAndFrontPages(message);
+
+}
+
 exports.queue = function(message) {
 
   if (verbose) {
@@ -342,16 +372,17 @@ exports.queue = function(message) {
     return;
   }
 
-  if ((message.boardUri || message.allBoards) && rebuildingAllBoards) {
+  if (rebuildingOverboard && message.overboard) {
     return;
   }
 
-  if (message.allBoards) {
-    rebuildingAllBoards = true;
+  if (message.overboard) {
+    rebuildingOverboard = true;
+
     putInQueue(message);
+
     return;
   }
 
-  checkForDefaultAndFrontPages(message);
-
+  checkForFullBoardRebuild(message);
 };

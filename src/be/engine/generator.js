@@ -895,3 +895,11 @@ exports.boards = function(callback) {
 
 };
 // } Section 2: Boards
+
+// Section 3: Overboard {
+exports.overboard = function(callback) {
+
+  callback();
+
+};
+// } Section 3: Overboard

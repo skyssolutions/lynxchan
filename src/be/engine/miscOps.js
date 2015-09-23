@@ -372,6 +372,11 @@ exports.getParametersArray = function() {
     setting : 'languagePackPath',
     element : 'fieldLanguagePack'
   }, {
+    param : 'overboard',
+    type : 'string',
+    setting : 'overboard',
+    element : 'fieldOverboard'
+  }, {
     param : 'thumbExtension',
     type : 'string',
     setting : 'thumbExtension',
@@ -387,6 +392,11 @@ exports.getParametersArray = function() {
     type : 'number',
     setting : 'captchaExpiration',
     element : 'fieldCaptchaExpiration'
+  }, {
+    param : 'overBoardThreadCount',
+    type : 'number',
+    setting : 'overBoardThreadCount',
+    element : 'fieldOverBoardThreads'
   }, {
     param : 'boardPageSize',
     type : 'number',
@@ -592,6 +602,7 @@ exports.getParametersArray = function() {
   } ];
 };
 
+// start of new settings sanitization
 exports.arraysDiff = function(defaultArray, processedArray) {
 
   if (defaultArray && defaultArray.length === processedArray.length) {
@@ -720,3 +731,4 @@ exports.setGlobalSettings = function(userData, parameters, callback) {
   settingsHandler.setNewSettings(newSettings, callback);
 
 };
+// end of new settings sanitization

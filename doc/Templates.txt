@@ -1682,6 +1682,14 @@ checkboxGlobalCaptcha:
     use: might be turned on.
     description: indicates if all boards are forced to use captcha.
 
+fieldOverboard:
+    use: have it's value manipulated.
+    description: indicates the uri of the overboard.
+
+fieldOverBoardThreads:
+    use: have it's value manipulated.
+    description: indicates how many threads are to be displayed on the overboard.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::52
