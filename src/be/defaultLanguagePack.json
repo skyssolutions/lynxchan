@@ -298,5 +298,6 @@
   "guiTypeThreadTransfer": "Thread transfer",
   "msgContentSpoilered": "Files spoilered.",
   "errDeniedSpoilered": "You are not allowed to spoil existing files.",
-  "msgErrThreadFileRequired": "This board requires at least one file when creating threads."
+  "msgErrThreadFileRequired": "This board requires at least one file when creating threads.",
+  "errBoardDelConfirmation": "You must confirm that you wish to delete this board."
 }

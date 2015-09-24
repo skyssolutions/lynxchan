@@ -9,14 +9,13 @@ function deleteBoard(userData, parameters, res) {
     return;
   }
 
-  deletionOps.board(userData, parameters.boardUri,
-      function deletedBoard(error) {
-        if (error) {
-          apiOps.outputError(error, res);
-        } else {
-          apiOps.outputResponse(null, null, 'ok', res);
-        }
-      });
+  deletionOps.board(userData, parameters, function deletedBoard(error) {
+    if (error) {
+      apiOps.outputError(error, res);
+    } else {
+      apiOps.outputResponse(null, null, 'ok', res);
+    }
+  });
 }
 
 exports.process = function(req, res) {

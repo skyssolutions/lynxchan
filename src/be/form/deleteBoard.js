@@ -10,14 +10,13 @@ function deleteBoard(userData, parameters, res) {
     return;
   }
 
-  deletionOps.board(userData, parameters.boardUri,
-      function deletedBoard(error) {
-        if (error) {
-          formOps.outputError(error, 500, res);
-        } else {
-          formOps.outputResponse(lang.msgBoardDeleted, '/', res);
-        }
-      });
+  deletionOps.board(userData, parameters, function deletedBoard(error) {
+    if (error) {
+      formOps.outputError(error, 500, res);
+    } else {
+      formOps.outputResponse(lang.msgBoardDeleted, '/', res);
+    }
+  });
 
 }
 

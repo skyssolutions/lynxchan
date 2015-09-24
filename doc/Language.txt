@@ -272,3 +272,4 @@ guiTypeThreadTransfer: label used to select logs of thread transfers.
 msgContentSpoilered: message displayed after making files spoilered.
 errDeniedSpoilered: error thrown when the user is not allowed to spoil existing files.
 msgErrThreadFileRequired: error thrown when a board requires a file to create a thread.
+errBoardDelConfirmation: error thrown when the user fails to send the confirmation to delete a board.

@@ -218,6 +218,7 @@ Description: deletes a board. Requires validation. Allowed for board owners and 
 
 Parameters:
     boardUri: uri of the board to be deleted.
+    confirmDeletion(Boolean): confirmation that the board should be deleted.
 
 ------------------------------------------------------------------------------------------
 

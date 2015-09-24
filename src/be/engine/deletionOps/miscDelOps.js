@@ -248,12 +248,18 @@ exports.deleteBoard = function(board, user, callback) {
 
 };
 
-exports.board = function(userData, boardUri, callback) {
+exports.board = function(userData, parameters, callback) {
+
+  if (!parameters.confirmDeletion) {
+    callback(lang.errBoardDelConfirmation);
+
+    return;
+  }
 
   var admin = userData.globalRole < 2;
 
   boards.findOne({
-    boardUri : boardUri
+    boardUri : parameters.boardUri
   }, {
     _id : 0,
     boardUri : 1,
