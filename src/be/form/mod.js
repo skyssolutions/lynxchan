@@ -47,6 +47,7 @@ function getPostingData(boardData, flagData, parameters, res, json, userRole) {
     subject : 1,
     threadId : 1,
     flag : 1,
+    boardUri : 1,
     locked : 1,
     cyclic : 1,
     flagName : 1,

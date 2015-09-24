@@ -1741,5 +1741,20 @@ linkPost:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::56
+
+overboard:
+
+Elements:
+bannerImage:
+    use: have it's src manipulated.
+    description: banner of the overboard.
+
+divThreads:
+    use: have children appended to it.
+    description: div containing the threads.
+
+------------------------------------------------------------------------------------------
+
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.
 

@@ -448,3 +448,28 @@ exports.globalSettings = function() {
   return JSON.stringify(toOutput);
 
 };
+
+exports.overboard = function(foundThreads, previewRelation, callback) {
+
+  var threadsToAdd = [];
+
+  for (var i = 0; i < foundThreads.length; i++) {
+
+    var thread = foundThreads[i];
+
+    var posts = [];
+
+    if (previewRelation[thread.boardUri]) {
+      posts = previewRelation[thread.boardUri][thread.threadId];
+    }
+
+    threadsToAdd.push(exports.getThreadObject(thread, posts));
+
+  }
+
+  var url = '/' + settings.overboard + '/1.json';
+
+  gridFsHandler.writeData(JSON.stringify(threadsToAdd), url,
+      'application/json', {}, callback);
+
+};

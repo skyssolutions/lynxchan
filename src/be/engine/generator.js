@@ -3,7 +3,10 @@
 // handles logic of static pages generation.
 // will not actually handle the dom, that happens at domManipulator
 
+var mongo = require('mongodb');
+var ObjectID = mongo.ObjectID;
 var db = require('../db');
+var overboard = db.overboardThreads();
 var posts = db.posts();
 var threads = db.threads();
 var boards = db.boards();
@@ -29,6 +32,7 @@ var postProjection = {
   subject : 1,
   creation : 1,
   threadId : 1,
+  boardUri : 1,
   postId : 1,
   name : 1,
   flag : 1,
@@ -53,6 +57,7 @@ var threadProjection = {
   flagName : 1,
   cyclic : 1,
   lastEditTime : 1,
+  boardUri : 1,
   lastEditLogin : 1,
   threadId : 1,
   creation : 1,
@@ -897,7 +902,120 @@ exports.boards = function(callback) {
 // } Section 2: Boards
 
 // Section 3: Overboard {
+exports.getOverboardPosts = function(foundThreads, callback) {
+
+  var previewRelation = {};
+
+  for (var i = 0; i < foundThreads.length; i++) {
+
+    var thread = foundThreads[i];
+
+    var boardUri = thread.boardUri;
+
+    var previewArray = previewRelation[boardUri] || [];
+
+    previewArray = previewArray.concat(thread.latestPosts);
+
+    previewRelation[boardUri] = previewArray;
+  }
+
+  var orArray = [];
+
+  for ( var key in previewRelation) {
+
+    orArray.push({
+      boardUri : key,
+      postId : {
+        $in : previewRelation[key]
+      }
+    });
+  }
+
+  posts.find({
+    $or : orArray
+  }, postProjection).sort({
+    creation : 1
+  }).toArray(
+      function gotPosts(error, foundPosts) {
+        if (error) {
+          callback(error);
+        } else {
+
+          var previewRelation = {};
+
+          for (var i = 0; i < foundPosts.length; i++) {
+
+            var post = foundPosts[i];
+
+            var boardElement = previewRelation[post.boardUri] || {};
+
+            previewRelation[post.boardUri] = boardElement;
+
+            var threadArray = boardElement[post.threadId] || [];
+
+            threadArray.push(post);
+
+            boardElement[post.threadId] = threadArray;
+
+          }
+
+          // style exception, too simple
+          domManipulator.overboard(foundThreads, previewRelation,
+              function rebuildHtml(error) {
+                if (error) {
+                  callback(error);
+                } else {
+                  jsonBuilder
+                      .overboard(foundThreads, previewRelation, callback);
+                }
+              });
+          // style exception, too simple
+
+        }
+
+      });
+
+};
+
+exports.getOverboardThreads = function(ids, callback) {
+
+  threads.find({
+    _id : {
+      $in : ids
+    }
+  }, threadProjection).sort({
+    lastBump : -1
+  }).limit(settings.overBoardThreadCount).toArray(
+      function gotThreads(error, foundThreads) {
+        if (error) {
+          callback(error);
+        } else {
+          exports.getOverboardPosts(foundThreads, callback);
+        }
+      });
+
+};
+
 exports.overboard = function(callback) {
+
+  overboard.find({}, {
+    _id : 0,
+    thread : 1
+  }).toArray(function gotOverBoardThreads(error, foundOverboardThreads) {
+    if (error) {
+      callback(error);
+    } else {
+
+      var ids = [];
+
+      for (var i = 0; i < foundOverboardThreads.length; i++) {
+        ids.push(new ObjectID(foundOverboardThreads[i].thread));
+      }
+
+      exports.getOverboardThreads(ids, callback);
+
+    }
+  });
 
   callback();
 

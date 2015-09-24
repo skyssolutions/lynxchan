@@ -242,6 +242,12 @@ latestPosts: stores metadata from global latest posts.
 
 ----------------------------------------------------------------------------------------
 
+overboardThreads: stores aggregated data of threads on the overboard.
+    thread: _id of the document of the thread.
+
+----------------------------------------------------------------------------------------
+
+
 *: duplicated data, foreign key.
 **: unique key
 ***:part of a unique key combination.

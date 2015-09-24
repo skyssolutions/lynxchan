@@ -85,10 +85,19 @@ exports.writeNewBanner = function(parameters, callback) {
 
   var file = parameters.files[0];
 
-  gridFsHandler.writeFile(file.pathInDisk, bannerPath, file.mime, {
-    boardUri : parameters.boardUri,
+  var metadata = {
     type : 'banner'
-  }, callback);
+  };
+
+  if (parameters.boardUri) {
+    {
+      metadata.boardUri = parameters.boardUri;
+
+    }
+  }
+
+  gridFsHandler.writeFile(file.pathInDisk, bannerPath, file.mime, metadata,
+      callback);
 
 };
 

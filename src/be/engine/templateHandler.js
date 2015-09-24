@@ -414,6 +414,9 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       }, {
         template : 'hashBanPage',
         fields : [ 'hashBansPanel' ]
+      }, {
+        template : 'overboard',
+        fields : [ 'bannerImage', 'divThreads' ]
       } ];
 
   var errors = [];

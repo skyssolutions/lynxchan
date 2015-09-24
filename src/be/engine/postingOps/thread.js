@@ -73,7 +73,8 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
 
   if (settings.overboard) {
     process.send({
-      overboard : true
+      overboard : true,
+      _id : thread._id
     });
   }
 

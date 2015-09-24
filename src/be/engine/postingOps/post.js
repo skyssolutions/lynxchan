@@ -148,7 +148,7 @@ exports.cleanThreadPosts = function(boardUri, threadId, postId, callback) {
 };
 
 exports.updateBoardForPostCreation = function(parameters, postId, thread,
-    cleanPosts, callback) {
+    cleanPosts, bump, callback) {
 
   if (parameters.email !== 'sage') {
 
@@ -181,7 +181,10 @@ exports.updateBoardForPostCreation = function(parameters, postId, thread,
 
   if (settings.overboard) {
     process.send({
-      overboard : true
+      overboard : true,
+      _id : thread._id,
+      post : true,
+      bump : bump
     });
   }
 
@@ -202,11 +205,11 @@ exports.updateBoardForPostCreation = function(parameters, postId, thread,
 };
 
 exports.addPostToGlobalLatest = function(post, thread, parameters, cleanPosts,
-    callback) {
+    bump, callback) {
 
   if (!globalLatestPosts) {
     exports.updateBoardForPostCreation(parameters, post.postId, thread,
-        cleanPosts, callback);
+        cleanPosts, bump, callback);
 
   } else {
 
@@ -216,7 +219,7 @@ exports.addPostToGlobalLatest = function(post, thread, parameters, cleanPosts,
       }
 
       exports.updateBoardForPostCreation(parameters, post.postId, thread,
-          cleanPosts, callback);
+          cleanPosts, bump, callback);
 
     });
   }
@@ -260,18 +263,18 @@ exports.updateThread = function(parameters, postId, thread, callback, post) {
 
       if (thread.cyclic) {
         cleanPosts = true;
-        bump = true;
+        bump = !saged;
       } else {
         updateBlock.$set.autoSage = true;
       }
 
     } else {
-      bump = true;
+      bump = !saged;
     }
 
   }
 
-  if (!saged && bump) {
+  if (bump) {
     updateBlock.$set.lastBump = new Date();
   }
 
@@ -290,7 +293,7 @@ exports.updateThread = function(parameters, postId, thread, callback, post) {
         }
 
         exports.addPostToGlobalLatest(post, thread, parameters, cleanPosts,
-            callback);
+            bump, callback);
 
       }, post);
       // style exception, too simple

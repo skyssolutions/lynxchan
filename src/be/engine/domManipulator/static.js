@@ -162,8 +162,8 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
 
     exports.setThreadHiddenIdentifiers(document, boardUri, threadData);
 
-    common.addThread(document, threadData, posts, boardUri, true, modding,
-        boardData, userRole);
+    common.addThread(document, threadData, posts, true, modding, boardData,
+        userRole);
 
     exports.setModElements(modding, document, boardUri, boardData, threadData,
         posts, callback, userRole);
@@ -191,7 +191,7 @@ exports.generateThreadListing = function(document, boardUri, page, threads,
   for (i = 0; i < threads.length; i++) {
     var thread = threads[i];
 
-    common.addThread(document, thread, latestPosts[thread.threadId], boardUri);
+    common.addThread(document, thread, latestPosts[thread.threadId]);
 
   }
 
@@ -520,6 +520,39 @@ exports.maintenance = function(callback) {
     gridFs.writeData(serializer(document), '/maintenance.html', 'text/html', {
       status : 200
     }, callback);
+
+  } catch (error) {
+    callback(error);
+  }
+};
+
+exports.overboard = function(foundThreads, previewRelation, callback) {
+
+  try {
+
+    var document = jsdom(templateHandler.overboard);
+
+    document.title = '/' + settings.overboard + '/';
+
+    var img = document.getElementById('bannerImage');
+
+    img.src = '/randomBanner.js?boardUri=' + settings.overboard;
+
+    for (var i = 0; i < foundThreads.length; i++) {
+      var thread = foundThreads[i];
+
+      var previews = [];
+
+      if (previewRelation[thread.boardUri]) {
+
+        previews = previewRelation[thread.boardUri][thread.threadId];
+      }
+
+      common.addThread(document, thread, previews);
+    }
+
+    gridFs.writeData(serializer(document), document.title, 'text/html', {},
+        callback);
 
   } catch (error) {
     callback(error);

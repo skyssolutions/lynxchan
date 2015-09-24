@@ -353,8 +353,10 @@ exports.getThreadCellBase = function(document, thread) {
   return threadCell;
 };
 
-exports.addThread = function(document, thread, posts, boardUri, innerPage,
-    modding, boardData, userRole) {
+exports.addThread = function(document, thread, posts, innerPage, modding,
+    boardData, userRole) {
+
+  var boardUri = thread.boardUri;
 
   var threadCell = exports.getThreadCellBase(document, thread);
 
@@ -528,7 +530,7 @@ exports.setThreadLinks = function(threadCell, thread, boardUri, innerPage) {
   if (innerPage) {
     exports.removeElement(linkReply);
   } else {
-    linkReply.href = 'res/' + thread.threadId + '.html';
+    linkReply.href = '/' + boardUri + '/res/' + thread.threadId + '.html';
   }
 
   var linkPreview = '/' + boardUri + '/preview/' + thread.threadId + '.html';
