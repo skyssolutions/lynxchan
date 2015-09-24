@@ -469,7 +469,8 @@ exports.overboard = function(foundThreads, previewRelation, callback) {
 
   var url = '/' + settings.overboard + '/1.json';
 
-  gridFsHandler.writeData(JSON.stringify(threadsToAdd), url,
-      'application/json', {}, callback);
+  gridFsHandler.writeData(JSON.stringify({
+    threads : threadsToAdd
+  }), url, 'application/json', {}, callback);
 
 };

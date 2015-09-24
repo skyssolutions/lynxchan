@@ -304,7 +304,8 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
             'flagManagementLink', 'enableArchiveCheckbox', 'early404Checkbox',
             'hourlyThreadLimitField', 'autoCaptchaThresholdField',
             'hashBansLink', 'customSpoilerIndicator', 'tagsField',
-            'customJsForm', 'customJsIdentifier', 'blockDeletionCheckbox' ]
+            'customJsForm', 'customJsIdentifier', 'blockDeletionCheckbox',
+            'requireFileCheckbox' ]
       },
       {
         template : 'closedReportsPage',
@@ -335,7 +336,7 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       },
       {
         template : 'boardsPage',
-        fields : [ 'divBoards', 'divPages' ]
+        fields : [ 'divBoards', 'divPages', 'linkOverboard' ]
       },
       {
         template : 'noCookieCaptchaPage',

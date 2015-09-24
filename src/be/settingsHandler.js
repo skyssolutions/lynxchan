@@ -34,7 +34,7 @@ function getRebuildBoards(settings) {
 
 }
 
-function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
+function rebuildFp(settings) {
 
   var rebuildFP = generalSettings.siteTitle !== settings.siteTitle;
 
@@ -43,9 +43,30 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
   // did the amount of latest posts appearing on the front page changed?
   var lPC = generalSettings.globalLatestPosts !== settings.globalLatestPosts;
 
-  rebuildFP = rebuildFP || topChanged || lPC;
+  return rebuildFP || topChanged || lPC;
 
-  if (rebuildFP) {
+}
+
+function checkOverboardChanged(settings) {
+
+  var overboardChanged = settings.overboard !== generalSettings.overboard;
+
+  var overboardReduced = settings.overBoardThreadCount;
+  overboardReduced = overboardReduced < generalSettings.overBoardThreadCount;
+
+  return overboardChanged || overboardReduced;
+
+}
+
+function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
+
+  if (checkOverboardChanged(settings)) {
+    reloadsToMake.push({
+      overboard : true
+    });
+  }
+
+  if (rebuildFp(settings)) {
     reloadsToMake.push({
       frontPage : true
     });
@@ -91,7 +112,7 @@ function writeNewSettings(settings, callback) {
       var exceptionalFields = [ 'siteTitle', 'captchaFonts',
           'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage',
           'disableTopBoards', 'allowBoardCustomJs', 'topBoardsCount',
-          'globalLatestPosts', 'forceCaptcha' ];
+          'globalLatestPosts', 'forceCaptcha', 'overboard' ];
 
       for ( var key in generalSettings) {
         if (!settings[key] && exceptionalFields.indexOf(key) === -1) {

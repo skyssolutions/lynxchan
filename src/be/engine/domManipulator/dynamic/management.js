@@ -23,7 +23,8 @@ exports.boardSettingsRelation = {
   archive : 'enableArchiveCheckbox',
   early404 : 'early404Checkbox',
   unindex : 'unindexCheckbox',
-  blockDeletion : 'blockDeletionCheckbox'
+  blockDeletion : 'blockDeletionCheckbox',
+  requireThreadFile : 'requireFileCheckbox'
 };
 
 exports.boardFieldsRelation = {

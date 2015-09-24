@@ -422,6 +422,8 @@ exports.checkMarkdownForThread = function(req, userData, parameters, board,
 
 exports.newThread = function(req, userData, parameters, captchaId, cb) {
 
+  var noFiles = !parameters.files.length;
+
   boards.findOne({
     boardUri : parameters.boardUri
   }, {
@@ -447,6 +449,8 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
       cb(lang.errBoardNotFound);
     } else if (board.lockedUntil > new Date()) {
       cb(lang.errBoardLocked);
+    } else if (board.settings.indexOf('requireThreadFile') > -1 && noFiles) {
+      cb(lang.msgErrThreadFileRequired);
     } else {
 
       if (board.settings.indexOf('forceAnonymity') > -1) {

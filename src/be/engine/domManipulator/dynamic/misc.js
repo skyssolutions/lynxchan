@@ -486,25 +486,39 @@ exports.setPages = function(document, pageCount) {
   }
 };
 
+exports.setBoards = function(boards, document) {
+
+  var divBoards = document.getElementById('divBoards');
+
+  for (var i = 0; i < boards.length; i++) {
+    var board = boards[i];
+
+    var boardCell = document.createElement('div');
+    boardCell.innerHTML = templateHandler.boardsCell;
+    boardCell.setAttribute('class', 'boardsCell');
+
+    exports.setBoardCell(board, boardCell);
+
+    divBoards.appendChild(boardCell);
+  }
+
+};
+
 exports.boards = function(boards, pageCount) {
   try {
     var document = jsdom(templateHandler.boardsPage);
 
     document.title = lang.titBoards;
 
-    var divBoards = document.getElementById('divBoards');
+    var linkOverboard = document.getElementById('linkOverboard');
 
-    for (var i = 0; i < boards.length; i++) {
-      var board = boards[i];
-
-      var boardCell = document.createElement('div');
-      boardCell.innerHTML = templateHandler.boardsCell;
-      boardCell.setAttribute('class', 'boardsCell');
-
-      exports.setBoardCell(board, boardCell);
-
-      divBoards.appendChild(boardCell);
+    if (settings.overboard) {
+      linkOverboard.href = '/' + settings.overboard + '/';
+    } else {
+      common.removeElement(linkOverboard);
     }
+
+    exports.setBoards(boards, document);
 
     exports.setPages(document, pageCount);
 

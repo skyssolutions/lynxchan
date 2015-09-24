@@ -297,5 +297,6 @@
   "logThreadTransfer": "User {$login} transferred thread {$thread} from /{$board}/ to /{$boardDestination}/.",
   "guiTypeThreadTransfer": "Thread transfer",
   "msgContentSpoilered": "Files spoilered.",
-  "errDeniedSpoilered": "You are not allowed to spoil existing files."
+  "errDeniedSpoilered": "You are not allowed to spoil existing files.",
+  "msgErrThreadFileRequired": "This board requires at least one file when creating threads."
 }

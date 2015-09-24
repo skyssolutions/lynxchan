@@ -20,6 +20,7 @@ boards: stores boards.
         disableCaptcha: disable captchas for posting in the board.
         forceAnonymity: disables the name input.
         unindex: removes board from index.
+        requireThreadFile: threads can only be created with a file.
         allowCode: allows the usage of [code] on postings.
         archive: archives content if the site owner has enabled archiving.
         early404: makes threads with less than 5 replies to be deleted after an hour.

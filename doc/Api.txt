@@ -365,6 +365,7 @@ Parameters:
         unindex: the board will not be displayed on the top boards or the boards list.
         archive: enables archiving of content, if the site allows archiving.
         blockDeletion: disables user deletion of content.
+        requireThreadFile: requires at least one file when creating a thread.
 
 ------------------------------------------------------------------------------------------
 
