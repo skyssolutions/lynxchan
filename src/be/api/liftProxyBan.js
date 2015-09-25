@@ -1,23 +1,27 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var modOps = require('../engine/modOps').ipBan.versatile;
+var modOps = require('../engine/modOps').ipBan.general;
 
-function liftBan(userData, parameters, res) {
+function liftProxyBan(userData, parameters, res) {
 
-  modOps.liftBan(userData, parameters, function banLifted(error) {
+  modOps.liftProxyBan(userData, parameters, function proxyBanLifted(error,
+      boardUri) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
+
       apiOps.outputResponse(null, null, 'ok', res);
     }
   });
+
 }
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-    liftBan(userData, parameters, res);
+    liftProxyBan(userData, parameters, res);
   });
+
 };

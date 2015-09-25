@@ -423,8 +423,11 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
         template : 'overboard',
         fields : [ 'bannerImage', 'divThreads' ]
       }, {
-        template : 'proxyBanPage',
+        template : 'proxyBansPage',
         fields : [ 'proxyBansDiv', 'boardIdentifier' ]
+      }, {
+        template : 'proxyBanPage',
+        fields : [ 'boardLabel' ]
       } ];
 
   var errors = [];

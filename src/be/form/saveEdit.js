@@ -3,7 +3,7 @@
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var url = require('url');
-var modOps = require('../engine/modOps').ipBan;
+var modOps = require('../engine/modOps').edit;
 var mandatoryParameters = [ 'message' ];
 
 function saveEdit(parameters, userData, res) {

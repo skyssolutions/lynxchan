@@ -409,20 +409,21 @@ exports.checkBlankParameters = function(object, parameters, res) {
 
 exports.checkForBan = function(req, boardUri, res, callback) {
 
-  modOps.ipBan.checkForBan(req, boardUri, function gotBan(error, ban) {
-    if (error) {
-      callback(error);
-    } else if (ban) {
-      res.writeHead(200, miscOps.corsHeader('text/html'));
+  modOps.ipBan.versatile.checkForBan(req, boardUri,
+      function gotBan(error, ban) {
+        if (error) {
+          callback(error);
+        } else if (ban) {
+          res.writeHead(200, miscOps.corsHeader('text/html'));
 
-      var board = ban.boardUri ? '/' + ban.boardUri + '/' : lang.miscAllBoards
-          .toLowerCase();
+          var board = ban.boardUri ? '/' + ban.boardUri + '/'
+              : lang.miscAllBoards.toLowerCase();
 
-      res.end(domManipulator.ban(ban, board));
-    } else {
-      callback();
-    }
-  });
+          res.end(domManipulator.ban(ban, board));
+        } else {
+          callback();
+        }
+      });
 
 };
 

@@ -676,5 +676,16 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::47
+
+Name: liftProxyBan
+
+Description: deletes a proxy ban.
+
+Parameters:
+    proxyBanId: id of the proxy ban to be removed    
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters
 **: exclusive funcionality to the json api.

@@ -1,28 +1,31 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var mandatoryParameters = [ 'range' ];
 var modOps = require('../engine/modOps').ipBan.general;
+var mandatoryParameters = [ 'proxyIp' ];
 
-function placeRangeBan(userData, parameters, res) {
+function placeProxyBan(userData, parameters, res) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
   }
 
-  modOps.placeRangeBan(userData, parameters, function rangeBanPlaced(error) {
+  modOps.placeProxyBan(userData, parameters, function proxyBanPlaced(error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
+
       apiOps.outputResponse(null, null, 'ok', res);
     }
   });
+
 }
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-    placeRangeBan(userData, parameters, res);
+    placeProxyBan(userData, parameters, res);
   });
+
 };

@@ -28,7 +28,7 @@ exports.loadDependencies = function() {
 
   miscOps = require('../miscOps');
   moduleRoot = require('.');
-  ipBan = moduleRoot.ipBan;
+  ipBan = moduleRoot.ipBan.versatile;
   common = moduleRoot.common;
   captchaOps = require('../captchaOps');
   lang = require('../langOps').languagePack();

@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var modOps = require('../engine/modOps').ipBan;
+var modOps = require('../engine/modOps').ipBan.versatile;
 var lang = require('../engine/langOps').languagePack();
 
 function liftBan(userData, parameters, res) {

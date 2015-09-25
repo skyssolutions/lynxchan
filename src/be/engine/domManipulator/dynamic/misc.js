@@ -47,45 +47,6 @@ exports.loadDependencies = function() {
 
 };
 
-exports.ban = function(ban, board) {
-
-  try {
-
-    var document = jsdom(ban.range ? templateHandler.rangeBanPage
-        : templateHandler.banPage);
-
-    document.title = lang.titBan;
-
-    document.getElementById('boardLabel').innerHTML = board;
-
-    if (ban.range) {
-      document.getElementById('rangeLabel').innerHTML = ban.range.join('.');
-    } else {
-      document.getElementById('reasonLabel').innerHTML = ban.reason;
-
-      document.getElementById('idLabel').innerHTML = ban._id;
-
-      ban.expiration = common.formatDateToDisplay(ban.expiration);
-      document.getElementById('expirationLabel').innerHTML = ban.expiration;
-    }
-
-    return serializer(document);
-
-  } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
-    if (debug) {
-      throw error;
-    }
-
-    return error.toString();
-
-  }
-
-};
-
 exports.error = function(code, message) {
 
   try {
@@ -725,7 +686,64 @@ exports.archiveDeletion = function() {
 
 };
 
-// Section 4: Hash ban page {
+// Section 4: Ban {
+exports.setBanPage = function(document, ban, board) {
+
+  document.getElementById('boardLabel').innerHTML = board;
+
+  if (ban.range) {
+    document.getElementById('rangeLabel').innerHTML = ban.range.join('.');
+  } else if (!ban.proxyIp) {
+
+    document.getElementById('reasonLabel').innerHTML = ban.reason;
+
+    document.getElementById('idLabel').innerHTML = ban._id;
+
+    ban.expiration = common.formatDateToDisplay(ban.expiration);
+    document.getElementById('expirationLabel').innerHTML = ban.expiration;
+  }
+
+};
+
+exports.ban = function(ban, board) {
+
+  try {
+
+    var templateToUse;
+
+    if (ban.range) {
+      templateToUse = templateHandler.rangeBanPage;
+    } else if (!ban.proxyIp) {
+      templateToUse = templateHandler.banPage;
+    } else {
+      templateToUse = templateHandler.proxyBanPage;
+    }
+
+    var document = jsdom(templateToUse);
+
+    document.title = lang.titBan;
+
+    exports.setBanPage(document, ban, board);
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+
+  }
+
+};
+// } Section 4: Ban
+
+// Section 5: Hash ban page {
 exports.setHashBanCells = function(document, hashBans) {
 
   var panel = document.getElementById('hashBansPanel');
@@ -775,4 +793,4 @@ exports.hashBan = function(hashBans) {
   }
 
 };
-// } Section 4: Hash ban page
+// } Section 5: Hash ban page

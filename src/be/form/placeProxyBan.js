@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
-var modOps = require('../engine/modOps').ipBan;
+var modOps = require('../engine/modOps').ipBan.general;
 var mandatoryParameters = [ 'proxyIp' ];
 
 function placeProxyBan(userData, parameters, res) {

@@ -1786,7 +1786,7 @@ divThreads:
 
 TEM_ID::57
 
-proxyBanPage:
+proxyBansPage:
 
 Elements:
 proxyBansDiv:
@@ -1812,6 +1812,17 @@ ipLabel:
 idIdentifier:
     use: have it's value manipulated.
     description: hidden input that identifies the ban.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::59
+
+proxyBanPage:
+
+Elements:
+boardLabel:
+    use: have it's innerHTML manipulated.
+    description: label that holds the board where the proxy has been banned from.
 
 ------------------------------------------------------------------------------------------
 

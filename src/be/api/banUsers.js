@@ -1,7 +1,7 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var modOps = require('../engine/modOps').ipBan;
+var modOps = require('../engine/modOps').ipBan.specific;
 
 function reportContent(userData, parameters, res) {
 

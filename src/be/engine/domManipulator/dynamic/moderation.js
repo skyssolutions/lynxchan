@@ -310,7 +310,7 @@ exports.proxyBans = function(proxyBans, boardUri) {
 
   try {
 
-    var document = jsdom(templateHandler.proxyBanPage);
+    var document = jsdom(templateHandler.proxyBansPage);
 
     document.title = lang.titProxyBans;
 
