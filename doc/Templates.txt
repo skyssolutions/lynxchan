@@ -497,6 +497,10 @@ TEM_ID::10
 gManagement:
 
 Elements:
+proxyBansLink:
+    use: might be removed.
+    description: link to the page used for global proxy bans.
+
 archiveDeletionLink:
     use: might be removed.
     description: link to the page that contains the archive deletion tools.
@@ -510,7 +514,7 @@ globalSettingsLink:
     description: link to the global settings page.
 
 divStaff:
-    use: have children appended to it.
+    use: have children appended to it or might be removed.
     description: contains the list of the staff of the site.
 
 userLabel:
@@ -572,6 +576,10 @@ TEM_ID::12
 bManagement:
 
 Elements:
+proxyBansLink:
+    use: have it's href manipulated.
+    description: link to the page used for board proxy bans.
+
 blockDeletionCheckbox:
     use: might be turned on.
     description: checkbox that indicates if use deletion of content is blocked.

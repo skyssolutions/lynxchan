@@ -6,6 +6,7 @@ var db = require('../../db');
 var bans = db.bans();
 var flood = db.flood();
 var boards = db.boards();
+var proxyBans = db.proxyBans();
 var logs = db.logs();
 var threads = db.threads();
 var posts = db.posts();
@@ -754,18 +755,7 @@ exports.liftBan = function(userData, parameters, callback) {
 // Section 6: Range ban{
 exports.createRangeBan = function(userData, parameters, callback) {
 
-  var processedRange = [];
-
-  var informedRange = parameters.range.toString().trim().split('.');
-
-  for (var i = 0; i < informedRange.length && i < 8; i++) {
-
-    var part = +informedRange[i];
-
-    if (!isNaN(part) && part <= 255 && part >= 0) {
-      processedRange.push(part);
-    }
-  }
+  var processedRange = miscOps.sanitizeIp(parameters.range);
 
   if (!processedRange.length) {
     callback(lang.errInvalidRange);
@@ -821,7 +811,7 @@ exports.createRangeBan = function(userData, parameters, callback) {
 };
 
 exports.placeRangeBan = function(userData, parameters, callback) {
-
+  // TODO check for duplicate
   var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 
   if (parameters.boardUri) {
@@ -846,3 +836,222 @@ exports.placeRangeBan = function(userData, parameters, callback) {
 
 };
 // } Section 6: Range ban
+
+// Section 7: Proxy ban reading {
+exports.readProxyBans = function(parameters, callback) {
+
+  proxyBans.find({
+    boardUri : parameters.boardUri || null
+  }).toArray(callback);
+
+};
+
+exports.getProxyBans = function(userData, parameters, callback) {
+
+  var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
+
+  if (parameters.boardUri) {
+    boards.findOne({
+      boardUri : parameters.boardUri
+    }, function gotBoard(error, board) {
+      if (error) {
+        callback(error);
+      } else if (!board) {
+        callback(lang.errBoardNotFound);
+      } else if (!common.isInBoardStaff(userData, board, 2)) {
+        callback(lang.errDeniedBoardProxyBanManagement);
+      } else {
+        exports.readProxyBans(parameters, callback);
+      }
+    });
+  } else if (!isOnGlobalStaff) {
+    callback(lang.errDeniedGlobalProxyBansManagement);
+  } else {
+    exports.readProxyBans(parameters, callback);
+  }
+
+};
+// } Section 7: Proxy ban reading
+
+// Section 8: Proxy ban creation {
+exports.logProxyBan = function(login, board, ip, callback) {
+
+  var msg = lang.logProxyBan.replace('{$login}', login).replace('{$ip}', ip)
+      .replace('{$board}', board || lang.miscAllBoards.toLowerCase());
+
+  logs.insert({
+    user : login,
+    boardUri : board,
+    type : 'proxyBan',
+    time : new Date(),
+    description : msg,
+    global : board ? false : true
+  }, function loggedOperation(error) {
+
+    if (error) {
+      logger.printLogError(error, msg);
+    }
+
+    callback();
+
+  });
+
+};
+
+exports.createProxyBan = function(userData, parameters, callback) {
+
+  var processedIp = miscOps.sanitizeIp(parameters.proxyIp);
+
+  if (!processedIp.length) {
+    callback(lang.errInvalidIp);
+    return;
+  }
+
+  proxyBans.findOne({
+    boardUri : parameters.boardUri || null,
+    proxyIp : processedIp
+  }, function gotProxy(error, ban) {
+    if (error) {
+      callback(error);
+    } else if (ban) {
+      callback();
+    } else {
+
+      // style exception, too simple
+      proxyBans.insert({
+        boardUri : parameters.boardUri || null,
+        proxyIp : processedIp
+      }, function createdBan(error) {
+        if (error) {
+          callback(error);
+        } else {
+          exports.logProxyBan(userData.login, parameters.boardUri, processedIp,
+              callback);
+        }
+      });
+      // style exception, too simple
+
+    }
+  });
+};
+
+exports.placeProxyBan = function(userData, parameters, callback) {
+
+  var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
+
+  if (parameters.boardUri) {
+    boards.findOne({
+      boardUri : parameters.boardUri
+    }, function gotBoard(error, board) {
+      if (error) {
+        callback(error);
+      } else if (!board) {
+        callback(lang.errBoardNotFound);
+      } else if (!common.isInBoardStaff(userData, board, 2)) {
+        callback(lang.errDeniedBoardProxyBanManagement);
+      } else {
+        exports.createProxyBan(userData, parameters, callback);
+      }
+    });
+  } else if (!isOnGlobalStaff) {
+    callback(lang.errDeniedGlobalProxyBansManagement);
+  } else {
+    exports.createProxyBan(userData, parameters, callback);
+  }
+
+};
+// } Section 8: Proxy ban creation
+
+// Section 9: Proxy ban lift
+exports.removeProxyBan = function(userData, ban, callback) {
+
+  proxyBans.deleteOne({
+    _id : new ObjectID(ban._id)
+  }, function removedBan(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      var msg = lang.logProxyBanLift.replace('{$login}', userData.login)
+          .replace('{$ip}', ban.proxyIp.join('.')).replace('{$board}',
+              ban.boardUri || lang.miscAllBoards.toLowerCase());
+
+      // style exception, too simple
+      logs.insert({
+        type : 'proxyBanLift',
+        user : userData.login,
+        time : new Date(),
+        description : msg,
+        global : ban.global,
+        boardUri : ban.boardUri
+      }, function logged(error) {
+
+        if (error) {
+          logger.printLogError(error, msg);
+        }
+
+        callback();
+
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.checkForProxyBanLiftPermission = function(userData, ban, callback) {
+
+  boards.findOne({
+    boardUri : ban.boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback();
+    } else {
+
+      if (common.isInBoardStaff(userData, board, 2)) {
+        exports.removeProxyBan(userData, ban, callback);
+      } else {
+        callback(lang.errDeniedBoardProxyBanManagement);
+      }
+    }
+  });
+
+};
+
+exports.liftProxyBan = function(userData, parameters, callback) {
+
+  var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
+
+  try {
+
+    proxyBans.findOne({
+      _id : new ObjectID(parameters.proxyBanId)
+    }, function gotBan(error, ban) {
+
+      if (error) {
+        callback(error);
+      } else if (!ban) {
+        callback();
+      } else if (!ban.boardUri && !isOnGlobalStaff) {
+        callback(lang.errDeniedGlobalProxyBansManagement);
+      } else if (!ban.boardUri) {
+        exports.removeProxyBan(userData, ban, callback);
+      } else {
+        exports.checkForProxyBanLiftPermission(userData, ban, callback);
+      }
+
+    });
+
+  } catch (error) {
+    callback(error);
+  }
+
+};
+// Section 9: Proxy ban lift
+
+// TODO split into multiple files

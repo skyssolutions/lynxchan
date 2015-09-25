@@ -273,3 +273,13 @@ msgContentSpoilered: message displayed after making files spoilered.
 errDeniedSpoilered: error thrown when the user is not allowed to spoil existing files.
 msgErrThreadFileRequired: error thrown when a board requires a file to create a thread.
 errBoardDelConfirmation: error thrown when the user fails to send the confirmation to delete a board.
+errDeniedGlobalProxyBansManagement: error thrown when the user is denied management of the global proxy bans.
+errDeniedBoardProxyBanManagement: error thrown when the user is denied management of a board's proxy bans.
+titProxyBans: title of the proxy ban management page.
+msgProxyBanCreated: message displayed when a proxy ban is placed.
+errInvalidIp: error thrown when an invalid ip is informed.
+guiTypeProxyBan: option to select logs of proxy bans.
+logProxyBan: log entry for proxy ban creation. Replaces: {$login}, {$board}, {$ip}
+logProxyBanLift: log entry for proxy ban lift. Replaces: {$login}, {$board}, {$ip}
+guiTypeProxyBanLift: option to select logs of proxy ban lifts.
+msgProxyBanLifted: message displayed after lifting a proxy ban.

@@ -482,3 +482,20 @@ exports.overboard = function(foundThreads, previewRelation, callback) {
   }), url, 'application/json', {}, callback);
 
 };
+
+exports.proxyBans = function(proxyBans) {
+
+  var toReturn = [];
+
+  for (var i = 0; i < proxyBans.length; i++) {
+    var ban = proxyBans[i];
+
+    toReturn.push({
+      proxyIp : ban.proxyIp.join('.'),
+      _id : ban._id
+    });
+  }
+
+  return JSON.stringify(toReturn);
+
+};

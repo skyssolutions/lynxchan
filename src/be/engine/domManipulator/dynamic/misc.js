@@ -38,7 +38,9 @@ exports.loadDependencies = function() {
     boardTransfer : lang.guiTypeBoardTransfer,
     hashBan : lang.guiTypeHashBan,
     hashBanLift : lang.guiTypeHashBanLift,
-    threadTransfer : lang.guiTypeThreadTransfer
+    threadTransfer : lang.guiTypeThreadTransfer,
+    proxyBan : lang.guiTypeProxyBan,
+    proxyBanLift : lang.guiTypeProxyBanLift
   };
   common = require('..').common;
   miscOps = require('../../miscOps');

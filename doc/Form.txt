@@ -1055,4 +1055,42 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::62
+
+Name: proxyBans
+
+Description: page that displays the proxy ban management.
+
+Parameters:
+    boardUri: uri of the board to be managed. If not informed, global proxy bans will be managed.
+    
+Json output(Array): array with the proxy bans. Each object contains the following fields:
+    _id: id of the ban.
+    ip: banned proxy ip.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::63
+
+Name: placeProxyBan
+
+Description: creates a new proxy ban.
+
+Parameters:
+    boardUri: uri of the board where the proxy will be banned from. If not informed, will place a global proxy ban.
+    proxyIp: ip of the proxy to be banned.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::64
+
+Name: liftProxyBan
+
+Description: deletes a proxy ban.
+
+Parameters:
+    proxyBanId: id of the proxy ban to be removed    
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

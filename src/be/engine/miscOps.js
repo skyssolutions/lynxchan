@@ -602,6 +602,25 @@ exports.getParametersArray = function() {
   } ];
 };
 
+exports.sanitizeIp = function(ip) {
+
+  var processedIp = [];
+
+  var informedIp = ip.toString().trim().split('.');
+
+  for (var i = 0; i < informedIp.length && i < 8; i++) {
+
+    var part = +informedIp[i];
+
+    if (!isNaN(part) && part <= 255 && part >= 0) {
+      processedIp.push(part);
+    }
+  }
+
+  return processedIp;
+
+};
+
 // start of new settings sanitization
 exports.arraysDiff = function(defaultArray, processedArray) {
 

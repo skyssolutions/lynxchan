@@ -198,6 +198,8 @@ staffLogs: stores log activity from staff.
         archiveDeletion
         fileDeletion
         threadTransfer
+        proxyBan
+        proxyBanLift
     time(Date): date and time of when the event occurred.
     boardUri*: board related to the event.
     description: string describing the event.
@@ -252,7 +254,7 @@ overboardThreads: stores aggregated data of threads on the overboard.
 
 proxyBans: stores banned proxies.
     proxyIp(Array): ip of the banned proxy.
-    boardUri: uri of the board that banned the proxy. Undefined if global.
+    boardUri: uri of the board that banned the proxy. null if global.
 
 ----------------------------------------------------------------------------------------
 

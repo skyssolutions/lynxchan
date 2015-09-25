@@ -292,7 +292,7 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
         fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
             'reportDiv', 'bansLink', 'rangeBansLink', 'hashBansLink',
             'globalSettingsLink', 'archiveDeletionLink', 'ipDeletionForm',
-            'globalBannersLink' ]
+            'globalBannersLink', 'proxyBansLink' ]
       },
       {
         template : 'bManagement',
@@ -309,7 +309,7 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
             'hourlyThreadLimitField', 'autoCaptchaThresholdField',
             'hashBansLink', 'customSpoilerIndicator', 'tagsField',
             'customJsForm', 'customJsIdentifier', 'blockDeletionCheckbox',
-            'requireFileCheckbox' ]
+            'requireFileCheckbox', 'proxyBansLink' ]
       },
       {
         template : 'closedReportsPage',

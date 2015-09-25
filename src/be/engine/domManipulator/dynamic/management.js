@@ -64,6 +64,9 @@ exports.boardManagementLinks = [ {
 }, {
   page : 'flags',
   element : 'flagManagementLink'
+}, {
+  page : 'proxyBans',
+  element : 'proxyBansLink'
 } ];
 
 exports.loadDependencies = function() {
@@ -230,6 +233,7 @@ exports.setRoleComboBox = function(document, node, possibleRoles, user) {
 };
 
 exports.fillStaffDiv = function(document, possibleRoles, staff) {
+
   var divStaff = document.getElementById('divStaff');
 
   for (var i = 0; i < staff.length; i++) {
@@ -294,6 +298,7 @@ exports.setGlobalManagementLinks = function(userRole, document) {
     common.removeElement(document.getElementById('hashBansLink'));
     common.removeElement(document.getElementById('rangeBansLink'));
     common.removeElement(document.getElementById('bansLink'));
+    common.removeElement(document.getElementById('proxyBansLink'));
   }
 
   if (userRole !== 0) {
@@ -345,7 +350,11 @@ exports.globalManagement = function(userRole, userLogin, staff, reports) {
 
     userLabel.innerHTML = userLabelContent;
 
-    exports.fillStaffDiv(document, exports.getPossibleRoles(userRole), staff);
+    if (userRole < 2) {
+      exports.fillStaffDiv(document, exports.getPossibleRoles(userRole), staff);
+    } else {
+      common.removeElement(document.getElementById('divStaff'));
+    }
 
     return serializer(document);
   } catch (error) {
