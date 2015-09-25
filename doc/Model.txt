@@ -45,6 +45,7 @@ threads: stores board's threads.
     signedRole: role of the user that posted the thread.
     password: password used to delete the thread. 8 characters.
     ip(Array): ip of the poster. Null if poster used TOR or a proxy.
+    proxyIp(Array): ip of the transparent proxy used by the poster.
     flag: url of this thread's flag.
     banMessage: message to be displayed indicating this message was a cause to a ban. 128 characters.
     salt: thread's salt used for id generation.
@@ -90,6 +91,7 @@ posts: stores posts.
     flagName: name of the flag used.
     subject: subject of the thread. 128 characters.
     ip(Array): ip of the poster. Null if poster used TOR or a proxy.
+    proxyIp(Array): ip of the transparent proxy used by the poster.
     message: text of the post. 2048 characters.
     markdown: text of the post after markdown.
     banMessage: message to be displayed indicating this message was a cause to a ban. 128 characters.
@@ -218,7 +220,7 @@ hashBans: stores bans on files.
 ----------------------------------------------------------------------------------------
 
 torIps: stores known TOR ips.
-    ip(Array)**: ip of the exit node.
+    ip(Array): ip of the exit node.
 
 ----------------------------------------------------------------------------------------
 
@@ -245,6 +247,12 @@ latestPosts: stores metadata from global latest posts.
 
 overboardThreads: stores aggregated data of threads on the overboard.
     thread: _id of the document of the thread.
+
+----------------------------------------------------------------------------------------
+
+proxyBans: stores banned proxies.
+    proxyIp(Array): ip of the banned proxy.
+    boardUri: uri of the board that banned the proxy. Undefined if global.
 
 ----------------------------------------------------------------------------------------
 

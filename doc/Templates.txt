@@ -236,6 +236,14 @@ Root element: form
 Observation: will have the class "multipleUploads" added to it if contains more than one upload.
 
 Elements:
+panelProxyIp:
+    use: might be removed.
+    description: panel containing the label of the proxy ip.
+
+labelProxyIp:
+    use: have it's innerHTML manipulated.
+    description: label with the proxy ip.
+
 labelIp:
     use: have it's innerHTML manipulated or might be removed.
     description: label used to display the hashed ip of the poster to the staff.
@@ -348,6 +356,14 @@ Elements:
 labelIp:
     use: have it's innerHTML manipulated or might be removed.
     description: label used to display the hashed ip of the poster to the staff.
+
+panelProxyIp:
+    use: might be removed.
+    description: panel containing the label of the proxy ip.
+
+labelProxyIp:
+    use: have it's innerHTML manipulated.
+    description: label with the proxy ip.
 
 divBanMessage:
     use: have it's innerHTML manipulated or might be removed. 
@@ -1757,6 +1773,37 @@ bannerImage:
 divThreads:
     use: have children appended to it.
     description: div containing the threads.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::57
+
+proxyBanPage:
+
+Elements:
+proxyBansDiv:
+    use: have children appended to it.
+    description: panel where the banned uploaded files will be displayed.
+
+boardIdentifier:
+    use: might be removed or have it's value manipulated.
+    description: hidden identifier used to create new proxy bans on boards.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::58
+
+proxyBanCell*:
+Root element: form
+
+Elements:
+ipLabel:
+    use: have it's innerHTML manipulated.
+    description: label that holds banned proxy.
+
+idIdentifier:
+    use: have it's value manipulated.
+    description: hidden input that identifies the ban.
 
 ------------------------------------------------------------------------------------------
 

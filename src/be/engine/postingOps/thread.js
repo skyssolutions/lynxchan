@@ -169,6 +169,10 @@ exports.createThread = function(req, userData, parameters, board, threadId,
     email : parameters.email
   };
 
+  if (req.isProxy) {
+    threadToAdd.proxyIp = logger.ip(req, true);
+  }
+
   if (parameters.flag) {
     threadToAdd.flagName = parameters.flagName;
     threadToAdd.flag = parameters.flag;

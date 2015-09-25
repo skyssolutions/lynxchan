@@ -39,6 +39,7 @@ var cachedStats;
 var cachedHashBans;
 var cachedTorIps;
 var cachedFlags;
+var cachedProxyBans;
 var cachedOverboard;
 
 var loading;
@@ -539,6 +540,10 @@ exports.hashBans = function() {
   return cachedHashBans;
 };
 
+exports.proxyBans = function() {
+  return cachedProxyBans;
+};
+
 exports.torIps = function() {
   return cachedTorIps;
 };
@@ -612,6 +617,8 @@ exports.init = function(callback) {
     } else {
 
       cachedDb = db;
+
+      cachedProxyBans = db.collection('proxyBans');
 
       cachedOverboard = db.collection('overboardThreads');
 

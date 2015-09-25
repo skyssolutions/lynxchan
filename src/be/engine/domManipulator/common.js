@@ -264,6 +264,33 @@ exports.setSharedHideableElements = function(posting, cell) {
 };
 
 // Section 2: Thread content {
+exports.setThreadModdingElements = function(modding, boardUri, thread, cell,
+    bData, userRole) {
+
+  if (modding) {
+    var editLink = '/edit.js?boardUri=' + boardUri;
+    editLink += '&threadId=' + thread.threadId;
+
+    cell.getElementsByClassName('linkEdit')[0].href = editLink;
+  } else {
+    exports.removeElement(cell.getElementsByClassName('linkEdit')[0]);
+  }
+
+  if (modding && thread.ip) {
+    exports.setPostingIp(cell, thread, bData, userRole);
+  } else {
+    exports.removeElement(cell.getElementsByClassName('panelIp')[0]);
+  }
+
+  if (modding && thread.proxyIp) {
+    cell.getElementsByClassName('labelProxyIp')[0].innerHTML = thread.proxyIp
+        .join('.');
+  } else {
+    exports.removeElement(cell.getElementsByClassName('panelProxyIp')[0]);
+  }
+
+};
+
 exports.setThreadHiddeableElements = function(thread, cell, modding, boardUri,
     bData, userRole) {
 
@@ -280,20 +307,8 @@ exports.setThreadHiddeableElements = function(thread, cell, modding, boardUri,
     exports.removeElement(cell.getElementsByClassName('spanId')[0]);
   }
 
-  if (modding) {
-    var editLink = '/edit.js?boardUri=' + boardUri;
-    editLink += '&threadId=' + thread.threadId;
-
-    cell.getElementsByClassName('linkEdit')[0].href = editLink;
-  } else {
-    exports.removeElement(cell.getElementsByClassName('linkEdit')[0]);
-  }
-
-  if (modding && thread.ip) {
-    exports.setPostingIp(cell, thread, bData, userRole);
-  } else {
-    exports.removeElement(cell.getElementsByClassName('panelIp')[0]);
-  }
+  exports.setThreadModdingElements(modding, boardUri, thread, cell, bData,
+      userRole);
 
 };
 
@@ -463,6 +478,13 @@ exports.setPostModElements = function(post, modding, postCell, boardUri,
     exports.setPostingIp(postCell, post, boardData, userRole);
   } else {
     exports.removeElement(postCell.getElementsByClassName('panelIp')[0]);
+  }
+
+  if (modding && post.proxyIp) {
+    postCell.getElementsByClassName('labelProxyIp')[0].innerHTML = post.proxyIp
+        .join('.');
+  } else {
+    exports.removeElement(postCell.getElementsByClassName('panelProxyIp')[0]);
   }
 
   if (modding) {

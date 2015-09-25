@@ -69,9 +69,18 @@ exports.convertIpToArray = function convertIpToArray(ip) {
   }
 };
 
-exports.ip = function(req) {
-  return req.isTor || req.isProxy ? null : exports
-      .convertIpToArray(req.connection.remoteAddress);
+exports.ip = function(req, proxyIp) {
+
+  if (req.isTor || (req.isProxy && !proxyIp)) {
+    return null;
+  } else if (req.cachedIp) {
+    return req.cachedIp;
+  } else {
+    req.cachedIp = exports.convertIpToArray(req.connection.remoteAddress);
+
+    return req.cachedIp;
+  }
+
 };
 
 // It just gets the formated date and put the formated time after it with an

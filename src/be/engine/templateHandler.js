@@ -141,7 +141,8 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
             'lockIndicator', 'pinIndicator', 'labelId', 'labelRole',
             'divBanMessage', 'spanId', 'panelIp', 'labelRange',
             'cyclicIndicator', 'linkQuote', 'divPosts', 'labelOmission',
-            'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag', 'labelIp' ]
+            'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag', 'labelIp',
+            'labelProxyIp', 'panelProxyIp' ]
       },
       {
         template : 'postCell',
@@ -149,7 +150,7 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
             'divMessage', 'linkSelf', 'deletionCheckBox', 'labelId',
             'labelRole', 'divBanMessage', 'spanId', 'panelIp', 'labelRange',
             'linkQuote', 'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag',
-            'labelIp' ]
+            'labelIp', 'labelProxyIp', 'panelProxyIp' ]
       },
       {
         template : 'staffCell',
@@ -220,6 +221,9 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       }, {
         template : 'latestPostCell',
         fields : [ 'labelPreview', 'linkPost' ]
+      }, {
+        template : 'proxyBanCell',
+        fields : [ 'ipLabel', 'idIdentifier' ]
       } ];
 
   var pageTests = [
@@ -418,6 +422,9 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       }, {
         template : 'overboard',
         fields : [ 'bannerImage', 'divThreads' ]
+      }, {
+        template : 'proxyBanPage',
+        fields : [ 'proxyBansDiv', 'boardIdentifier' ]
       } ];
 
   var errors = [];
