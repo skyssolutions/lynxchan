@@ -1,5 +1,7 @@
 'use strict';
 
+// handles replies to threads
+
 var db = require('../../db');
 var boards = db.boards();
 var files = db.files();
@@ -26,7 +28,7 @@ var autoLockLimit = bumpLimit * 2;
 exports.loadDependencies = function() {
 
   gsHandler = require('../gridFsHandler');
-  generator = require('../generator');
+  generator = require('../generator').board;
   uploadHandler = require('../uploadHandler');
   lang = require('../langOps').languagePack();
   miscOps = require('../miscOps');

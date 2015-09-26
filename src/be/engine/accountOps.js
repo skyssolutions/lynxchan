@@ -1,5 +1,7 @@
 'use strict';
 
+// operations regarding user accounts
+
 var db = require('../db');
 var users = db.users();
 var requests = db.recoveryRequests();

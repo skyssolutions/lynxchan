@@ -11,7 +11,7 @@ var captchaExpiration = settings.captchaExpiration;
 var debug = boot.debug();
 var gridFsHandler = require('./engine/gridFsHandler');
 var db = require('./db');
-var generator = require('./engine/generator');
+var generator = require('./engine/generator').global;
 var delOps = require('./engine/deletionOps').miscDeletions;
 var boards = db.boards();
 var stats = db.stats();
@@ -30,7 +30,7 @@ exports.reload = function() {
   tempDirectory = settings.tempDirectory;
   captchaExpiration = settings.captchaExpiration;
   gridFsHandler = require('./engine/gridFsHandler');
-  generator = require('./engine/generator');
+  generator = require('./engine/generator').global;
   delOps = require('./engine/deletionOps').miscDeletions;
   torHandler = require('./engine/torOps');
 };

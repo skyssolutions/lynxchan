@@ -215,6 +215,7 @@ for ( var key in informedArguments) {
 
 var optionalReloads = [ {
   generatorFunction : 'overboard',
+  generatorModule : 'global',
   command : informedArguments.reloadOverboard.informed
 } ];
 
@@ -302,18 +303,22 @@ function composeDefaultFiles() {
 
   defaultFilesRelation = {
     '/' : {
+      generatorModule : 'global',
       generatorFunction : 'frontPage',
       command : informedArguments.reloadFront.informed
     },
     '/404.html' : {
+      generatorModule : 'global',
       generatorFunction : 'notFound',
       command : informedArguments.reloadNotFound.informed
     },
     '/login.html' : {
+      generatorModule : 'global',
       generatorFunction : 'login',
       command : informedArguments.reloadLogin.informed
     },
     '/maintenance.html' : {
+      generatorModule : 'global',
       generatorFunction : 'maintenance',
       command : informedArguments.reloadMaintenance.informed
     }
@@ -321,21 +326,25 @@ function composeDefaultFiles() {
 
   defaultFilesRelation[genericThumb] = {
     generatorFunction : 'thumb',
+    generatorModule : 'global',
     command : informedArguments.reloadThumb.informed
   };
 
   defaultFilesRelation[spoilerImage] = {
     generatorFunction : 'spoiler',
+    generatorModule : 'global',
     command : informedArguments.reloadSpoiler.informed
   };
 
   defaultFilesRelation[defaultBanner] = {
     generatorFunction : 'defaultBanner',
+    generatorModule : 'global',
     command : informedArguments.reloadBanner.informed
   };
 
   defaultFilesRelation[genericAudioThumb] = {
     generatorFunction : 'audioThumb',
+    generatorModule : 'global',
     command : informedArguments.reloadAudio.informed
   };
 
@@ -446,26 +455,27 @@ function iterateOptionalReloads(index) {
   var toCheck = optionalReloads[index];
 
   if (!toCheck.command) {
-    iterateOptionalReloads(index++);
+    iterateOptionalReloads(index + 1);
   } else {
 
-    generator[toCheck.generatorFunction](function generated(error) {
+    generator[toCheck.generatorModule][toCheck.generatorFunction]
+        (function generated(error) {
 
-      if (error) {
+          if (error) {
 
-        if (verbose) {
-          console.log(error);
-        }
+            if (verbose) {
+              console.log(error);
+            }
 
-        if (debug) {
-          throw error;
-        }
+            if (debug) {
+              throw error;
+            }
 
-      }
+          }
 
-      iterateOptionalReloads(index + 1);
+          iterateOptionalReloads(index + 1);
 
-    });
+        });
 
   }
 
@@ -486,19 +496,20 @@ function iterateDefaultPages(foundFiles, index) {
   var fileData = defaultFilesRelation[fileToCheck];
 
   if (foundFiles.indexOf(fileToCheck) === -1 || fileData.command) {
-    generator[fileData.generatorFunction](function generated(error) {
-      if (error) {
-        if (verbose) {
-          console.log(error);
-        }
+    generator[fileData.generatorModule][fileData.generatorFunction]
+        (function generated(error) {
+          if (error) {
+            if (verbose) {
+              console.log(error);
+            }
 
-        if (debug) {
-          throw error;
-        }
-      } else {
-        iterateDefaultPages(foundFiles, index + 1);
-      }
-    });
+            if (debug) {
+              throw error;
+            }
+          } else {
+            iterateDefaultPages(foundFiles, index + 1);
+          }
+        });
   } else {
     iterateDefaultPages(foundFiles, index + 1);
   }

@@ -1,5 +1,7 @@
 'use strict';
 
+// handles operations related to spoiling existing files
+
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var spoilerPath = require('../../boot').spoilerImage();

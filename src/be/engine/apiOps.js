@@ -1,6 +1,7 @@
 'use strict';
 
 // general operations for the json api
+
 var settings = require('../settingsHandler').getGeneralSettings();
 var debug = require('../boot').debug();
 var verbose = settings.verbose;

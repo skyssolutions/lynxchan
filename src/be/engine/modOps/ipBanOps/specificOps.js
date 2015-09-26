@@ -30,6 +30,10 @@ exports.loadDependencies = function() {
   logger = require('../../../logger');
   miscOps = require('../../miscOps');
   lang = require('../../langOps').languagePack();
+  
+  if (!defaultBanMessage) {
+    defaultBanMessage = lang.miscDefaultBanMessage;
+  }
 
 };
 

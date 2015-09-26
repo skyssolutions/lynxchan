@@ -1,5 +1,7 @@
 'use strict';
 
+// handles operations related to the transfer of threads between boards
+
 var mongo = require('mongodb');
 var spoilerPath = require('../../boot').spoilerImage();
 var ObjectID = mongo.ObjectID;

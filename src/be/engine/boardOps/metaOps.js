@@ -1,5 +1,7 @@
 'use strict';
 
+// handles board operations on the board themselves
+
 var crypto = require('crypto');
 var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
 var logger = require('../../logger');
@@ -59,7 +61,7 @@ exports.getValidSettings = function() {
       'archive', 'early404', 'unindex', 'blockDeletion', 'requireThreadFile' ];
 };
 
-// Section 1: Settings {
+// Section 1: New settings {
 exports.captchaOrAnonimityChanged = function(board, params) {
 
   var oldSettings = board.settings;
@@ -254,7 +256,7 @@ exports.setSettings = function(userData, parameters, callback) {
   });
 
 };
-// } Section 1: Settings
+// } Section 1: New settings
 
 // Section 2: Transfer {
 exports.updateUsersOwnedBoards = function(oldOwner, parameters, callback) {

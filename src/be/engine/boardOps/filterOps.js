@@ -1,5 +1,7 @@
 'use strict';
 
+// handle board filter operations
+
 var settings = require('../../settingsHandler').getGeneralSettings();
 var db = require('../../db');
 var boards = db.boards();

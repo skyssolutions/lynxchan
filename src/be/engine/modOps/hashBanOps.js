@@ -1,5 +1,7 @@
 'use strict';
 
+// handles hash ban operations
+
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var logger = require('../../logger');

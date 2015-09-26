@@ -1,5 +1,7 @@
 'use strict';
 
+// handles creation of new threads
+
 var crypto = require('crypto');
 var db = require('../../db');
 var threads = db.threads();
@@ -23,7 +25,7 @@ exports.loadDependencies = function() {
 
   common = require('.').common;
   delOps = require('../deletionOps').miscDeletions;
-  generator = require('../generator');
+  generator = require('../generator').board;
   uploadHandler = require('../uploadHandler');
   lang = require('../langOps').languagePack();
   miscOps = require('../miscOps');

@@ -1,5 +1,7 @@
 'use strict';
 
+// handle editing operations
+
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var db = require('../../db');

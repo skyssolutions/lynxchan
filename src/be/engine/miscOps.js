@@ -1,6 +1,7 @@
 'use strict';
 
-// miscellaneous
+// miscellaneous operations
+
 var settingsHandler = require('../settingsHandler');
 var settings = settingsHandler.getGeneralSettings();
 var verbose = settings.verbose;

@@ -1,7 +1,6 @@
 'use strict';
 
-// builds static JSON
-// json counterpart of domManipulator
+// builds JSON versions of pages
 
 var settings = require('../settingsHandler').getGeneralSettings();
 var gridFsHandler;

@@ -1,5 +1,7 @@
 'use strict';
 
+// handles management pages in general
+
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
 var settings = require('../../../settingsHandler').getGeneralSettings();

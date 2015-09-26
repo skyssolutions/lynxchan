@@ -1,5 +1,7 @@
 'use strict';
 
+// contains operations common to multiple parts of modOps
+
 var settings = require('../../settingsHandler').getGeneralSettings();
 var globalBoardModeration = settings.allowGlobalBoardModeration;
 var maxRoleStaff;

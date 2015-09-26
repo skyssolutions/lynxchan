@@ -1,5 +1,8 @@
 'use strict';
 
+// handles moderation pages. The difference between moderation and management is
+// that moderation is focused on restricting users
+
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
 var settings = require('../../../settingsHandler').getGeneralSettings();

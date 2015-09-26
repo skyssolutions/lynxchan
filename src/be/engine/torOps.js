@@ -1,5 +1,7 @@
 'use strict';
 
+// Handles anything related to TOR and some transparent proxy operations
+
 var torIps = require('../db').torIps();
 var logger = require('../logger');
 var torDebug = require('../boot').torDebug();
@@ -8,8 +10,6 @@ var verbose = settings.verbose;
 var ipSource = settings.torSource;
 var https = require('https');
 var http = require('http');
-
-// Handles anything related to TOR
 
 exports.loadDependencies = function() {
 };

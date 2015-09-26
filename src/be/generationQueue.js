@@ -7,7 +7,6 @@
 // messages can have the following keys:
 // globalRebuild (Boolean): rebuilds every single page.
 // overboard (Boolean): rebuilds the overboard.
-// defaultPages (Boolean): rebuilds default pages.
 // allBoards (Boolean): rebuilds all boards.
 // frontPage (Boolean): rebuilds the front-page.
 // board: boardUri that will be rebuilt.
@@ -45,8 +44,6 @@ var rebuildingAll = false;
 var rebuildingAllBoards = false;
 
 var rebuildingOverboard = false;
-// so we can tell its rebuilding default pages
-var rebuildingDefaultPages = false;
 // so we can tell its rebuilding the front-page
 var rebuildingFrontPage = false;
 var working = false;
@@ -66,7 +63,6 @@ function clearGlobalRebuilding() {
   rebuildingAll = false;
   rebuildingOverboard = false;
   rebuildingAllBoards = false;
-  rebuildingDefaultPages = false;
   rebuildingFrontPage = false;
   return true;
 
@@ -81,10 +77,6 @@ function checkForGlobalClearing(message) {
     return true;
   } else if (message.allBoards) {
     rebuildingAllBoards = false;
-    return true;
-  } else if (message.defaultPages) {
-    rebuildingDefaultPages = false;
-    rebuildingFrontPage = false;
     return true;
   } else if (message.frontPage) {
     rebuildingFrontPage = false;
@@ -165,25 +157,23 @@ function processMessage(message) {
   if (message.globalRebuild) {
     generator.all(generationCallback);
   } else if (message.overboard) {
-    generator.overboard(generationCallback);
+    generator.global.overboard(generationCallback);
   } else if (message.allBoards) {
-    generator.boards(generationCallback);
-  } else if (message.defaultPages) {
-    generator.defaultPages(generationCallback);
+    generator.board.boards(generationCallback);
   } else if (message.frontPage) {
-    generator.frontPage(generationCallback);
+    generator.global.frontPage(generationCallback);
   } else if (message.buildAll) {
-    generator.board(message.board, true, true, generationCallback);
+    generator.board.board(message.board, true, true, generationCallback);
   } else if (message.catalog) {
-    generator.catalog(message.board, generationCallback);
+    generator.board.catalog(message.board, generationCallback);
   } else if (message.rules) {
-    generator.rules(message.board, generationCallback);
+    generator.board.rules(message.board, generationCallback);
   } else if (!message.page && !message.thread) {
-    generator.board(message.board, false, false, generationCallback);
+    generator.board.board(message.board, false, false, generationCallback);
   } else if (message.page) {
-    generator.page(message.board, message.page, generationCallback);
+    generator.board.page(message.board, message.page, generationCallback);
   } else {
-    generator.thread(message.board, message.thread, generationCallback);
+    generator.board.thread(message.board, message.thread, generationCallback);
   }
 
 }
@@ -312,15 +302,14 @@ function checkForBoardRebuild(message) {
   checkBoardSpecialPages(message, boardInformation);
 }
 
-function checkForDefaultAndFrontPages(message) {
+function checkForFullBoardRebuild(message) {
 
-  if (rebuildingDefaultPages && message.defaultPages) {
+  if ((message.boardUri || message.allBoards) && rebuildingAllBoards) {
     return;
   }
 
-  if (message.defaultPages) {
-    rebuildingDefaultPages = true;
-
+  if (message.allBoards) {
+    rebuildingAllBoards = true;
     putInQueue(message);
     return;
   }
@@ -337,22 +326,6 @@ function checkForDefaultAndFrontPages(message) {
   }
 
   checkForBoardRebuild(message);
-
-}
-
-function checkForFullBoardRebuild(message) {
-
-  if ((message.boardUri || message.allBoards) && rebuildingAllBoards) {
-    return;
-  }
-
-  if (message.allBoards) {
-    rebuildingAllBoards = true;
-    putInQueue(message);
-    return;
-  }
-
-  checkForDefaultAndFrontPages(message);
 
 }
 

@@ -1,6 +1,7 @@
 'use strict';
 
-// handles any action regarding user uploads
+// handles any action regarding user uploads on posting
+
 var fs = require('fs');
 var im = require('gm').subClass({
   imageMagick : true

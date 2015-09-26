@@ -1,5 +1,7 @@
 'use strict';
 
+// handles flag management operations on boards
+
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var settings = require('../../settingsHandler').getGeneralSettings();

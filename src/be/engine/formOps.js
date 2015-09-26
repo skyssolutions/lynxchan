@@ -1,6 +1,7 @@
 'use strict';
 
 // general operations for the form api
+
 var settings = require('../settingsHandler').getGeneralSettings();
 var bans = require('../db').bans();
 var fs = require('fs');

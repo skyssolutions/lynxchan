@@ -1,5 +1,7 @@
 'use strict';
 
+// contains common operations to the multiple parts of the domManipulator module
+
 var settings = require('../../settingsHandler').getGeneralSettings();
 var allowedJs = settings.allowBoardCustomJs;
 var forceCaptcha = settings.forceCaptcha;

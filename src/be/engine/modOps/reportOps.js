@@ -1,5 +1,7 @@
 'use strict';
 
+// handles report operations
+
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var db = require('../../db');

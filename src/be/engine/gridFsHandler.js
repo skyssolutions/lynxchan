@@ -1,6 +1,6 @@
 'use strict';
+
 // handles every gridfs operation.
-// writing, deleting, outputting files
 
 var db = require('../db');
 var archiveHandler = require('../archive');

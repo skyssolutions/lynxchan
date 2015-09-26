@@ -1,6 +1,7 @@
 'use strict';
 
-// Handles language
+// Handles the language package
+
 var fs = require('fs');
 var settings = require('../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;

@@ -1,5 +1,7 @@
 'use strict';
 
+// handles operations common to user posting
+
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var crypto = require('crypto');

@@ -1,5 +1,7 @@
 'use strict';
 
+// operations regarding addons
+
 var fs = require('fs');
 var settings = require('../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;

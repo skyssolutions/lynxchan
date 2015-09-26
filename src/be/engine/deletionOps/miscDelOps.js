@@ -1,5 +1,7 @@
 'use strict';
 
+// handles automatic deletions and board deletion
+
 var logger = require('../../logger');
 var db = require('../../db');
 var threads = db.threads();

@@ -1,5 +1,7 @@
 'use strict';
 
+// handles manual postings deletion
+
 var logger = require('../../logger');
 var db = require('../../db');
 var posts = db.posts();

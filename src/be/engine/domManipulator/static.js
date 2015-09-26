@@ -1,5 +1,8 @@
 'use strict';
 
+// handles static pages. Note: thread pages can also be output as a dynamic
+// page by form/mod.js
+
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
 var settings = require('../../settingsHandler').getGeneralSettings();

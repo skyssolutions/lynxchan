@@ -1,5 +1,7 @@
 'use strict';
 
+// operations for banner management
+
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var settings = require('../settingsHandler').getGeneralSettings();
