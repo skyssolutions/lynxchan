@@ -743,18 +743,14 @@ exports.deleteFromIp = function(parameters, userData, callback) {
     return;
   }
 
-  var ip = parameters.ip.toString().trim().split('.');
-
-  var processedIp = [];
-
-  for (var i = 0; i < ip.length; i++) {
-
-    processedIp.push(+ip[i]);
-
-  }
+  var processedIp = miscOps.sanitizeIp(parameters.ip);
 
   var queryBlock = {
-    ip : processedIp
+    $or : [ {
+      ip : processedIp
+    }, {
+      proxyIp : processedIp
+    } ]
   };
 
   if (parameters.boards) {

@@ -89,7 +89,7 @@ var boardProjection = {
 };
 
 var toGenerate;
-var MAX_TO_GENERATE = 9;
+var MAX_TO_GENERATE = 10;
 var reloading;
 
 exports.loadDependencies = function() {
@@ -168,6 +168,10 @@ exports.all = function(callback) {
   });
 
   exports.audioThumb(function reloaded(error) {
+    fullReloadCallback(error, callback);
+  });
+
+  exports.overboard(function reloaded(error) {
     fullReloadCallback(error, callback);
   });
 
@@ -989,6 +993,8 @@ exports.getOverboardThreads = function(ids, callback) {
       function gotThreads(error, foundThreads) {
         if (error) {
           callback(error);
+        } else if (!foundThreads.length) {
+          callback();
         } else {
           exports.getOverboardPosts(foundThreads, callback);
         }
@@ -997,6 +1003,15 @@ exports.getOverboardThreads = function(ids, callback) {
 };
 
 exports.overboard = function(callback) {
+
+  if (!settings.overboard) {
+    callback();
+    return;
+  }
+
+  if (verbose) {
+    console.log('Building overboard');
+  }
 
   overboard.find({}, {
     _id : 0,
@@ -1016,8 +1031,6 @@ exports.overboard = function(callback) {
 
     }
   });
-
-  callback();
 
 };
 // } Section 3: Overboard

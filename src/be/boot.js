@@ -137,6 +137,11 @@ var informedArguments = {
     long : '--reload-front',
     type : 'boolean'
   },
+  reloadOverboard : {
+    short : '-ro',
+    long : '--reload-overboard',
+    type : 'boolean'
+  },
   reloadNotFound : {
     short : '-rn',
     long : '--reload-notfound',
@@ -207,6 +212,11 @@ for ( var key in informedArguments) {
   }
 
 }
+
+var optionalReloads = [ {
+  generatorFunction : 'overboard',
+  command : informedArguments.reloadOverboard.informed
+} ];
 
 var debug = informedArguments.debug.informed;
 var noDaemon = informedArguments.noDaemon.informed;
@@ -423,12 +433,50 @@ function regenerateAll() {
 
 }
 
+function iterateOptionalReloads(index) {
+
+  index = index || 0;
+
+  if (index >= optionalReloads.length) {
+    bootWorkers();
+
+    return;
+  }
+
+  var toCheck = optionalReloads[index];
+
+  if (!toCheck.command) {
+    iterateOptionalReloads(index++);
+  } else {
+
+    generator[toCheck.generatorFunction](function generated(error) {
+
+      if (error) {
+
+        if (verbose) {
+          console.log(error);
+        }
+
+        if (debug) {
+          throw error;
+        }
+
+      }
+
+      iterateOptionalReloads(index + 1);
+
+    });
+
+  }
+
+}
+
 function iterateDefaultPages(foundFiles, index) {
 
   index = index || 0;
 
   if (index >= defaultFilesArray.length) {
-    bootWorkers();
+    iterateOptionalReloads();
     return;
 
   }
@@ -497,10 +545,8 @@ function checkForDefaultPages() {
       if (debug) {
         throw error;
       }
-    } else if (files.length) {
-      iterateDefaultPages(files[0].pages);
     } else {
-      regenerateAll();
+      iterateDefaultPages(files[0].pages);
     }
   });
 
