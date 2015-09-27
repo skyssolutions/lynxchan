@@ -30,7 +30,7 @@ exports.loadDependencies = function() {
   logger = require('../../../logger');
   miscOps = require('../../miscOps');
   lang = require('../../langOps').languagePack();
-  
+
   if (!defaultBanMessage) {
     defaultBanMessage = lang.miscDefaultBanMessage;
   }
@@ -48,7 +48,7 @@ exports.appendThreadsToBanLog = function(informedThreads, pieces) {
     for (var i = 0; i < informedThreads.length; i++) {
 
       if (i) {
-        logMessage += ',';
+        logMessage += ', ';
       }
 
       logMessage += ' ' + informedThreads[i];
@@ -74,7 +74,7 @@ exports.appendPostsToBanLog = function(informedPosts, informedThreads, pieces) {
 
     for (var i = 0; i < informedPosts.length; i++) {
       if (i) {
-        logMessage += ',';
+        logMessage += ', ';
       }
 
       logMessage += ' ' + informedPosts[i];

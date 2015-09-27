@@ -9,6 +9,11 @@ read answerLibs
 echo "Do you wish to install the default settings from the example? (127.0.0.1:8080 to listen to requests, expects a database at localhost:27017) (y,n)"
 read answerSettings
 
+echo "Do you wish to change to the latest stable version? (y,n)"
+echo "Warning: if you have already started the server and inserted data, the server might not work after you change to the latest stable version. You can fix this by dropping the db and starting it again or using a different db."
+echo "Smaller warning: this operation will try to also checkout the respective tag on the front-end for this version, this part of the operation will only work if you have installed the placeholder front-end at /src/fe, like this scripts installs it."
+read answerStable
+
 if [ "$answerFrontEnd" == "y" ]; then
   git clone https://gitlab.com/mrseth/LynxChanFront-Placeholder.git ../src/fe
   cd ../src/fe
@@ -35,5 +40,21 @@ if [ "$answerSettings" == "y" ]; then
 
   cd ../../aux
 
-  echo "Default settings installed. The server will listen on 127.0.0.1:8080 and expects the database to be acessible at localhost:27017.  If you wish to change the settings, look for them at src/be/settings."
+  echo "Default settings installed. The server will listen on 0.0.0.0:8080 and expects the database to be acessible at localhost:27017.  If you wish to change the settings, look for them at src/be/settings."
+fi
+
+if [ "$answerStable" == "y" ]; then
+
+  cd ..
+ 
+  git checkout 1.2.x
+   
+  cd src/fe
+   
+  git checkout 1.2.0
+
+  cd ../../aux
+
+  echo "Changed to latest stable version: 1.2.x"
+
 fi

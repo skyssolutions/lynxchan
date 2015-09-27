@@ -352,10 +352,8 @@ exports.createPost = function(req, parameters, userData, postId, thread, board,
       cb(error);
     } else {
 
-      if (!req.isTor && !req.isProxy) {
-        common.recordFlood(ip);
-      }
-
+      common.recordFlood(req);
+      
       // style exception, too simple
       uploadHandler.saveUploads(board, parameters.threadId, postId, parameters,
           function savedFiles(error) {

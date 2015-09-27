@@ -192,9 +192,7 @@ exports.createThread = function(req, userData, parameters, board, threadId,
       callback(error);
     } else {
 
-      if (!req.isTor && !req.isProxy) {
-        common.recordFlood(ip);
-      }
+      common.recordFlood(req);
 
       // style exception, too simple
       uploadHandler.saveUploads(board, threadId, null, parameters,

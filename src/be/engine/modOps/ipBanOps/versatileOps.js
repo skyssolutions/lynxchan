@@ -119,6 +119,29 @@ exports.getActiveBan = function(ip, boardUri, callback) {
 
 };
 
+exports.checkForFlood = function(req, boardUri, callback) {
+
+  var ip = logger.ip(req, true);
+
+  flood.findOne({
+    ip : ip,
+    expiration : {
+      $gt : new Date()
+    }
+  }, function gotFlood(error, flood) {
+    if (error) {
+      callback(error);
+    } else if (flood && !disableFloodCheck) {
+      callback(lang.errFlood);
+    } else if (!req.isProxy) {
+      exports.getActiveBan(ip, boardUri, callback);
+    } else {
+      callback();
+    }
+  });
+
+};
+
 exports.checkForBan = function(req, boardUri, callback) {
 
   torOps.markAsTor(req, function markedAsTor(error) {
@@ -131,35 +154,25 @@ exports.checkForBan = function(req, boardUri, callback) {
         callback(lang.errBlockedProxy);
       } else {
 
+        // style exception, too simple
         proxyBans.findOne({
           proxyIp : logger.ip(req, true),
           boardUri : {
             $in : [ boardUri, null ]
           }
-        }, callback);
+        }, function gotProxyBan(error, ban) {
+          if (error || ban) {
+            callback(error, ban);
+          } else {
+            exports.checkForFlood(req, boardUri, callback);
+
+          }
+        });
+        // style exception, too simple
       }
 
     } else {
-
-      var ip = logger.ip(req);
-
-      // style exception, too simple
-      flood.findOne({
-        ip : ip,
-        expiration : {
-          $gt : new Date()
-        }
-      }, function gotFlood(error, flood) {
-        if (error) {
-          callback(error);
-        } else if (flood && !disableFloodCheck) {
-          callback(lang.errFlood);
-        } else {
-          exports.getActiveBan(ip, boardUri, callback);
-        }
-      });
-      // style exception, too simple
-
+      exports.checkForFlood(req, boardUri, callback);
     }
 
   });

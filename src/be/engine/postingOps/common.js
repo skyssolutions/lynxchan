@@ -5,6 +5,7 @@
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var crypto = require('crypto');
+var logger = require('../../logger');
 var db = require('../../db');
 var posts = db.posts();
 var stats = db.stats();
@@ -106,10 +107,14 @@ exports.getSignedRole = function(userData, wishesToSign, board) {
 
 };
 
-exports.recordFlood = function(ip) {
+exports.recordFlood = function(req) {
+
+  if (req.isTor) {
+    return;
+  }
 
   flood.insertOne({
-    ip : ip,
+    ip : logger.ip(req, true),
     expiration : new Date(new Date().getTime() + floodTimer)
   }, function addedFloodRecord(error) {
     if (error) {
