@@ -21,6 +21,7 @@ var cachedDb;
 
 var maxIndexesSet = 13;
 
+var cachedBypasses;
 var cachedFlood;
 var cachedVersions;
 var cachedPosts;
@@ -478,6 +479,10 @@ exports.conn = function() {
   return cachedDb;
 };
 
+exports.bypasses = function() {
+  return cachedBypasses;
+};
+
 exports.recoveryRequests = function() {
   return cachedRecoveryRequests;
 };
@@ -617,6 +622,8 @@ exports.init = function(callback) {
     } else {
 
       cachedDb = db;
+
+      cachedBypasses = db.collection('blockBypasses');
 
       cachedProxyBans = db.collection('proxyBans');
 

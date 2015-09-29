@@ -283,3 +283,4 @@ logProxyBan: log entry for proxy ban creation. Replaces: {$login}, {$board}, {$i
 logProxyBanLift: log entry for proxy ban lift. Replaces: {$login}, {$board}, {$ip}
 guiTypeProxyBanLift: option to select logs of proxy ban lifts.
 msgProxyBanLifted: message displayed after lifting a proxy ban.
+guiBypassModes: array with the bypass mode options. The first element is the one for bypass disabled. The second is for bypass enabled. The third is for mandatory use of block bypass.

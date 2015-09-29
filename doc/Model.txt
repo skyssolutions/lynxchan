@@ -258,6 +258,12 @@ proxyBans: stores banned proxies.
 
 ----------------------------------------------------------------------------------------
 
+blockBypasses: stores data about bypassing tokens.
+    usesLeft(Number): how many uses are left in this token.
+    expiration(Date): time of when the token will expire.
+
+----------------------------------------------------------------------------------------
+
 
 *: duplicated data, foreign key.
 **: unique key

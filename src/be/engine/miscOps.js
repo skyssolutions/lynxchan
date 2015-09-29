@@ -439,6 +439,16 @@ exports.getParametersArray = function() {
     setting : 'logPageSize',
     element : 'fieldLogPageSize'
   }, {
+    param : 'bypassDurationHours',
+    type : 'number',
+    setting : 'bypassDurationHours',
+    element : 'fieldBypassHours'
+  }, {
+    param : 'bypassMaxPosts',
+    type : 'number',
+    setting : 'bypassMaxPosts',
+    element : 'fieldBypassPosts'
+  }, {
     param : 'topBoardsCount',
     type : 'number',
     setting : 'topBoardsCount',
@@ -572,6 +582,13 @@ exports.getParametersArray = function() {
     setting : 'proxyAccess',
     element : 'comboProxyAccess',
     options : lang.guiProxyLevels
+  }, {
+    param : 'bypassMode',
+    type : 'range',
+    limit : 2,
+    options : lang.guiBypassModes,
+    setting : 'bypassMode',
+    element : 'comboBypassMode'
   }, {
     param : 'torAccess',
     type : 'range',

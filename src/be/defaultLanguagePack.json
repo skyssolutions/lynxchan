@@ -309,5 +309,10 @@
   "guiTypeProxyBan": "Proxy ban",
   "guiTypeProxyBanLift": "Proxy ban lift",
   "msgProxyBanLifted": "Proxy ban lifted.",
-  "logProxyBanLift": "User {$login} lifted a ban for proxy {$ip} from {$board}."
+  "logProxyBanLift": "User {$login} lifted a ban for proxy {$ip} from {$board}.",
+  "guiBypassModes": [
+    "Disabled",
+    "Enabled",
+    "Mandatory"
+  ]
 }

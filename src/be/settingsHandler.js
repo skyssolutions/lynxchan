@@ -262,7 +262,10 @@ exports.getDefaultSettings = function() {
     proxyAccess : 0,
     clearIpMinRole : 0,
     boardCreationRequirement : 4,
-    overBoardThreadCount : 50
+    overBoardThreadCount : 50,
+    bypassMaxPosts : 30,
+    bypassDurationHours : 24,
+    bypassMode : 0
   };
 
 };

@@ -1718,6 +1718,18 @@ fieldOverBoardThreads:
     use: have it's value manipulated.
     description: indicates how many threads are to be displayed on the overboard.
 
+comboBypassMode:
+    use:  have children appended to it.
+    description: indicates the bypass mode selected.
+
+fieldBypassHours:
+    use: have it's value manipulated.
+    description: indicates how many hours a block bypass lasts.
+
+fieldBypassPosts:
+    use: have it's value manipulated.
+    description: indicates how many posts a block bypass lasts.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::52
