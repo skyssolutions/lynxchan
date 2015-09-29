@@ -898,6 +898,9 @@ Json output(Object): object with the current global settings. It contains the fo
     tcpPort(Number): port being used for TCP.
     overboard: uri of the overboard.
     overBoardThreadCount(Number): amount of threads displayed on the overboard.
+    bypassDurationHours(Number): amount of hours a block bypass lasts.
+    bypassMaxPosts(Number): amount of uses a block bypass lasts.
+    bypassMode(Number): mode for block bypass.
 
 ------------------------------------------------------------------------------------------
 
@@ -962,6 +965,9 @@ Parameters:
     tcpPort(Number): port to be used for TCP.
     overboard: uri of the overboard.
     overBoardThreadCount(Number): amount of threads displayed on the overboard.
+    bypassDurationHours(Number): amount of hours a block bypass lasts.
+    bypassMaxPosts(Number): amount of uses a block bypass lasts.
+    bypassMode(Number): mode for block bypass.
 
 ------------------------------------------------------------------------------------------
 
@@ -1090,6 +1096,25 @@ Description: deletes a proxy ban.
 
 Parameters:
     proxyBanId: id of the proxy ban to be removed    
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::65
+
+Name: blockBypass
+
+Description: displays the page that allows the user to renew a block bypass and indicates if he has a valid block bypass token. 
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::66
+
+Name: renewBypass
+
+Description: allows the user to renew his block bypass.
+
+Parameters:
+    captcha: captcha input. 
 
 ------------------------------------------------------------------------------------------
 

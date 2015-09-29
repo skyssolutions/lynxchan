@@ -314,5 +314,8 @@
     "Disabled",
     "Enabled",
     "Mandatory"
-  ]
+  ],
+  "titBlockbypass": "Block bypass",
+  "errDisabledBypass": "Block bypass is not enabled.",
+  "msgBypassRenewed": "Block bypass renewed."
 }

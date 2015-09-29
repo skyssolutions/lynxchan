@@ -9,6 +9,7 @@ var optionalParameters = [ 'type', 'before', 'after', 'user', 'boardUri' ];
 var settings = require('../settingsHandler').getGeneralSettings();
 var pageSize = settings.logPageSize;
 var url = require('url');
+var waitingList = [];
 
 function getParameters(req) {
 
@@ -50,9 +51,7 @@ function processDates(queryBlock, parameters) {
   }
 }
 
-exports.process = function(req, res) {
-
-  var parameters = getParameters(req);
+function getQueryBlock(parameters) {
 
   var queryBlock = {};
 
@@ -74,52 +73,93 @@ exports.process = function(req, res) {
 
   processDates(queryBlock, parameters);
 
+  return queryBlock;
+
+}
+
+function clearIp(ip) {
+
+  waitingList.splice(waitingList.indexOf(ip, 1));
+
+}
+
+function getLogs(req, res, parameters, queryBlock, count) {
+
+  var pageCount = Math.floor(count / pageSize);
+  pageCount += (count % pageSize ? 1 : 0);
+
+  pageCount = pageCount || 1;
+
+  var toSkip = (parameters.page - 1) * pageSize;
+
+  logs.find(queryBlock, {
+    user : 1,
+    _id : 0,
+    type : 1,
+    time : 1,
+    boardUri : 1,
+    description : 1,
+    global : 1
+  }).sort({
+    time : -1
+  }).skip(toSkip).limit(pageSize).toArray(
+      function gotLogs(error, logs) {
+
+        if (error) {
+          formOps.outputError(error, 500, res);
+        } else {
+          var json = parameters.json;
+
+          res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+              : 'text/html'));
+
+          if (json) {
+            res.end(jsonBuilder.logs(logs, pageCount));
+          } else {
+            res.end(domManipulator.logs(logs, pageCount, parameters));
+          }
+
+        }
+      });
+
+}
+
+function getCount(req, res) {
+
+  var parameters = getParameters(req);
+
   parameters.page = parameters.page || 1;
 
+  var queryBlock = getQueryBlock(parameters);
+
   logs.count(queryBlock, function counted(error, count) {
+
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
-
-      var pageCount = Math.floor(count / pageSize);
-      pageCount += (count % pageSize ? 1 : 0);
-
-      pageCount = pageCount || 1;
-
-      var toSkip = (parameters.page - 1) * pageSize;
-
-      // style exception, too simple
-      logs.find(queryBlock, {
-        user : 1,
-        _id : 0,
-        type : 1,
-        time : 1,
-        boardUri : 1,
-        description : 1,
-        global : 1
-      }).sort({
-        time : -1
-      }).skip(toSkip).limit(pageSize).toArray(
-          function gotLogs(error, logs) {
-            if (error) {
-              formOps.outputError(error, 500, res);
-            } else {
-              var json = parameters.json;
-
-              res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-                  : 'text/html'));
-
-              if (json) {
-                res.end(jsonBuilder.logs(logs, pageCount));
-              } else {
-                res.end(domManipulator.logs(logs, pageCount, parameters));
-              }
-
-            }
-          });
-      // style exception, too simple
+      getLogs(req, res, parameters, queryBlock, count);
     }
-
   });
+}
+
+exports.process = function(req, res) {
+
+  var rawIp = req.connection.remoteAddress;
+
+  if (waitingList.indexOf(rawIp) > -1) {
+    req.connection.destroy();
+  } else {
+    waitingList.push(rawIp);
+
+    res.on('close', function() {
+      clearIp(rawIp);
+    });
+
+    res.on('finish', function() {
+      clearIp(rawIp);
+    });
+
+    getCount(req, res);
+  }
 
 };

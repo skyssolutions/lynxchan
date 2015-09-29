@@ -251,7 +251,8 @@ exports.storeImages = function(parsedData, res, finalArray, toRemove, callback,
       console.log('Api input: ' + JSON.stringify(parameters, null, 2));
     }
 
-    callback(parsedData.auth, parameters, parsedData.captchaId);
+    callback(parsedData.auth, parameters, parsedData.captchaId,
+        parsedData.bypassId);
   }
 
 };
@@ -261,7 +262,7 @@ exports.getAuthenticatedData = function(req, res, callback, optionalAuth,
     exceptionalMimes) {
 
   exports.getAnonJsonData(req, res, function gotData(auth, parameters,
-      captchaId) {
+      captchaId, bypassId) {
 
     accountOps.validate(auth, function validatedRequest(error, newAuth,
         userData) {
@@ -269,7 +270,7 @@ exports.getAuthenticatedData = function(req, res, callback, optionalAuth,
       if (error && !optionalAuth) {
         exports.outputError(error, res);
       } else {
-        callback(newAuth, userData, parameters, captchaId);
+        callback(newAuth, userData, parameters, captchaId, bypassId);
       }
 
     });

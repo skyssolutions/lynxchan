@@ -796,3 +796,30 @@ exports.hashBan = function(hashBans) {
 
 };
 // } Section 5: Hash ban page
+
+exports.blockBypass = function(valid) {
+
+  try {
+
+    var document = jsdom(templateHandler.bypassPage);
+
+    document.title = lang.titBlockbypass;
+
+    if (!valid) {
+      common.removeElement(document.getElementById('indicatorValidBypass'));
+    }
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+};

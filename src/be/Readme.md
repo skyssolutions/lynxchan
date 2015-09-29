@@ -116,7 +116,7 @@ Settings files that goes into the settings directory:
 * `overBoardThreadCount`(Number): amount of threads that should be shown at the overboard. Defaults to 50.
 * `bypassMaxPosts`(Number): how many uses a block bypass will have before expires. Defaults to 30.
 * `bypassDurationHours`(Number): how many hours a block bypass will last. Defaults to 24
-* `bypassMode`(Number): mode used for bypass. 0 means that it won`t be enabled. 1 means that users caught in range bans, TOR and proxy users (if TOR or proxy are blocked) and users caught in proxy bans will be able to post if they get a bypass token. 2 means that anyone will only be able to post if they get a bypass token. Defaults to 0.
+* `bypassMode`(Number): mode used for bypass. 0 means that it won`t be enabled. 1 means that users caught in range bans, TOR users (if TOR is blocked) and users caught in proxy bans will be able to post if they get a bypass token. 2 means that anyone will only be able to post if they get a bypass token. Defaults to 0.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

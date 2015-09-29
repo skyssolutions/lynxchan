@@ -5,7 +5,8 @@ The json api expects serialized json objects with the following structure on req
         user:"User login goes here",
         hash:"User hash goes here"},
     parameters:{keys and values to be sent},
-    captchaId: "Id of current captcha"
+    captchaId: "Id of current captcha",
+    bypassId: "Id of the current block bypass"
 }
 
 And will respond with serialized json objects with the following structure:
@@ -563,6 +564,9 @@ Parameters:
     tcpPort(Number): port to be used for TCP.
     overboard: uri of the overboard.
     overBoardThreadCount(Number): amount of threads displayed on the overboard.
+    bypassDurationHours(Number): amount of hours a block bypass lasts.
+    bypassMaxPosts(Number): amount of uses a block bypass lasts.
+    bypassMode(Number): mode for block bypass.
 
 ------------------------------------------------------------------------------------------
 
@@ -684,6 +688,19 @@ Description: deletes a proxy ban.
 
 Parameters:
     proxyBanId: id of the proxy ban to be removed    
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::48
+
+Name: renewBypass
+
+Description: allows the user to renew his block bypass.
+
+Parameters:
+    captcha: captcha input. 
+
+Output: id of the new block bypass.
 
 ------------------------------------------------------------------------------------------
 

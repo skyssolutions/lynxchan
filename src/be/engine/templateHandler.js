@@ -431,6 +431,9 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       }, {
         template : 'proxyBanPage',
         fields : [ 'boardLabel' ]
+      }, {
+        template : 'bypassPage',
+        fields : [ 'indicatorValidBypass' ]
       } ];
 
   var errors = [];

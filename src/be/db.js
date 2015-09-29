@@ -19,7 +19,7 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 13;
+var maxIndexesSet = 14;
 
 var cachedBypasses;
 var cachedFlood;
@@ -472,6 +472,27 @@ function initBoards(callback) {
 
 }
 
+function initBypasses(callback) {
+
+  cachedBypasses = cachedDb.collection('blockBypasses');
+
+  cachedBypasses.ensureIndex({
+    expiration : 1
+  }, {
+    expireAfterSeconds : 0
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+}
+
 // end of index initialization
 
 // start of getters
@@ -564,6 +585,8 @@ exports.flood = function() {
 
 function initCollections(db, callback) {
 
+  initBypasses(callback);
+
   initBoards(callback);
 
   initThreads(callback);
@@ -622,8 +645,6 @@ exports.init = function(callback) {
     } else {
 
       cachedDb = db;
-
-      cachedBypasses = db.collection('blockBypasses');
 
       cachedProxyBans = db.collection('proxyBans');
 

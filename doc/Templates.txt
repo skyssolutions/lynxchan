@@ -1838,5 +1838,16 @@ boardLabel:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::60
+
+bypassPage:
+
+Elements:
+indicatorValidBypass:
+    use: might be removed.
+    description: element that indicates if the user has a valid block bypass.
+
+------------------------------------------------------------------------------------------
+
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.
 
