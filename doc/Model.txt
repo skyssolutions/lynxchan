@@ -203,7 +203,7 @@ staffLogs: stores log activity from staff.
     time(Date): date and time of when the event occurred.
     boardUri*: board related to the event.
     description: string describing the event.
-    global(Boolean): indicates if the even was global. 
+    global(Boolean): indicates if the event was global. 
 
 ----------------------------------------------------------------------------------------
 
@@ -261,6 +261,12 @@ proxyBans: stores banned proxies.
 blockBypasses: stores data about bypassing tokens.
     usesLeft(Number): how many uses are left in this token.
     expiration(Date): time of when the token will expire.
+
+----------------------------------------------------------------------------------------
+
+aggregatedLogs: stores pre-aggregated log data by day.
+    logs(Array): array with ids of logs of this day.
+    date(Date): date indicating the day of this aggregated information.
 
 ----------------------------------------------------------------------------------------
 

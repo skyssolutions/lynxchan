@@ -317,5 +317,6 @@
   ],
   "titBlockbypass": "Block bypass",
   "errDisabledBypass": "Block bypass is not enabled.",
-  "msgBypassRenewed": "Block bypass renewed."
+  "msgBypassRenewed": "Block bypass renewed.",
+  "titLogPage": "Logs for {$date}"
 }

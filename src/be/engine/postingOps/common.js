@@ -135,7 +135,7 @@ exports.generateSecureTripcode = function(name, password, parameters, cb) {
   var tripcode = crypto.createHash('sha256').update(password + Math.random())
       .digest('base64').substring(0, 6);
 
-  tripcodes.insert({
+  tripcodes.insertOne({
     password : password,
     tripcode : tripcode
   }, function createdTripcode(error) {
@@ -594,7 +594,7 @@ exports.cleanGlobalLatestPosts = function(callback) {
 
 exports.addPostToLatestPosts = function(posting, callback) {
 
-  latestPosts.insert({
+  latestPosts.insertOne({
     boardUri : posting.boardUri,
     threadId : posting.threadId,
     creation : posting.creation,

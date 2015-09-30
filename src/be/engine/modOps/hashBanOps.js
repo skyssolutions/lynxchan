@@ -10,8 +10,8 @@ var torBlocked = settings.torAccess < 2;
 var proxyBlocked = settings.proxyAccess < 2;
 var db = require('../../db');
 var boards = db.boards();
-var logs = db.logs();
 var hashBans = db.hashBans();
+var logOps;
 var lang;
 var common;
 var miscOps;
@@ -24,6 +24,7 @@ var hashBanArguments = [ {
 
 exports.loadDependencies = function() {
 
+  logOps = require('../logOps');
   lang = require('../langOps').languagePack();
   common = require('.').common;
   miscOps = require('../miscOps');
@@ -82,7 +83,7 @@ exports.writeHashBan = function(userData, parameters, callback) {
     hashBan.boardUri = parameters.boardUri;
   }
 
-  hashBans.insert(hashBan, function insertedBan(error) {
+  hashBans.insertOne(hashBan, function insertedBan(error) {
     if (error && error.code !== 11000) {
       callback(error);
     } else if (error) {
@@ -102,21 +103,14 @@ exports.writeHashBan = function(userData, parameters, callback) {
       logMessage += pieces.finalPiece.replace('{$hash}', parameters.hash);
 
       // style exception,too simple
-      logs.insert({
+      logOps.insertLog({
         user : userData.login,
         global : parameters.boardUri ? false : true,
         time : new Date(),
         description : logMessage,
         type : 'hashBan',
         boardUri : parameters.boardUri
-      }, function insertedLog(error) {
-        if (error) {
-
-          logger.printLogError(logMessage, error);
-        }
-
-        callback();
-      });
+      }, callback);
       // style exception,too simple
 
     }
@@ -175,18 +169,14 @@ exports.removeHashBan = function(hashBan, userData, callback) {
 
       logMessage += pieces.finalPiece.replace('{$hash}', hashBan.md5);
 
-      logs.insert({
+      logOps.insertLog({
         user : userData.login,
         global : hashBan.boardUri ? false : true,
         time : new Date(),
         description : logMessage,
         type : 'hashBanLift',
         boardUri : hashBan.boardUri
-      }, function insertedLog(error) {
-        if (error) {
-
-          logger.printLogError(logMessage, error);
-        }
+      }, function insertedLog() {
 
         callback(null, hashBan.boardUri);
       });

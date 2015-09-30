@@ -3,17 +3,18 @@
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var db = require('../../../db');
-var logs = db.logs();
 var bans = db.bans();
 var proxyBans = db.proxyBans();
 var boards = db.boards();
 var miscOps;
 var common;
 var logger;
+var logOps;
 var lang;
 
 exports.loadDependencies = function() {
 
+  logOps = require('../../logOps');
   common = require('..').common;
   logger = require('../../../logger');
   miscOps = require('../../miscOps');
@@ -83,21 +84,14 @@ exports.logRangeBanCreation = function(userData, parameters, callback) {
 
   logMessage += pieces.finalPiece.replace('{$range}', parameters.range);
 
-  logs.insert({
+  logOps.insertLog({
     user : userData.login,
     global : parameters.boardUri ? false : true,
     time : new Date(),
     description : logMessage,
     type : 'rangeBan',
     boardUri : parameters.boardUri
-  }, function insertedLog(error) {
-    if (error) {
-
-      logger.printLogError(logMessage, error);
-    }
-
-    callback();
-  });
+  }, callback);
 
 };
 
@@ -218,22 +212,14 @@ exports.logProxyBan = function(login, board, ip, callback) {
   var msg = lang.logProxyBan.replace('{$login}', login).replace('{$ip}', ip)
       .replace('{$board}', board || lang.miscAllBoards.toLowerCase());
 
-  logs.insert({
+  logOps.insertLog({
     user : login,
     boardUri : board,
     type : 'proxyBan',
     time : new Date(),
     description : msg,
     global : board ? false : true
-  }, function loggedOperation(error) {
-
-    if (error) {
-      logger.printLogError(error, msg);
-    }
-
-    callback();
-
-  });
+  }, callback);
 
 };
 
@@ -317,18 +303,14 @@ exports.removeProxyBan = function(userData, ban, callback) {
               ban.boardUri || lang.miscAllBoards.toLowerCase());
 
       // style exception, too simple
-      logs.insert({
+      logOps.insertLog({
         type : 'proxyBanLift',
         user : userData.login,
         time : new Date(),
         description : msg,
         global : ban.global,
         boardUri : ban.boardUri
-      }, function logged(error) {
-
-        if (error) {
-          logger.printLogError(error, msg);
-        }
+      }, function logged() {
 
         callback(null, ban.boardUri);
 

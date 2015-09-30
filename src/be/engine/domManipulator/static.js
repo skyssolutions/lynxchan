@@ -5,15 +5,17 @@
 
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
+var logger = require('../../logger');
 var settings = require('../../settingsHandler').getGeneralSettings();
 var archive = settings.archiveLevel > 0 && require('../../archive').loaded();
+var accountCreationDisabled = settings.disableAccountCreation;
 var common;
 var templateHandler;
 var lang;
 var gridFs;
 var siteTitle;
 
-var accountCreationDisabled = settings.disableAccountCreation;
+var availableLogTypes;
 
 exports.loadDependencies = function() {
 
@@ -22,6 +24,24 @@ exports.loadDependencies = function() {
   lang = require('../langOps').languagePack();
   gridFs = require('../gridFsHandler');
   siteTitle = settings.siteTitle || lang.titDefaultChanTitle;
+  availableLogTypes = {
+    '' : lang.guiAllTypes,
+    archiveDeletion : lang.guiTypeArchiveDeletion,
+    ban : lang.guiTypeBan,
+    rangeBan : lang.guiTypeRange,
+    banLift : lang.guiTypeBanLift,
+    deletion : lang.guiTypeDeletion,
+    fileDeletion : lang.guiTypeFileDeletion,
+    reportClosure : lang.guiTypeReportClosure,
+    globalRoleChange : lang.guiTypeGlobalRoleChange,
+    boardDeletion : lang.guiTypeBoardDeletion,
+    boardTransfer : lang.guiTypeBoardTransfer,
+    hashBan : lang.guiTypeHashBan,
+    hashBanLift : lang.guiTypeHashBanLift,
+    threadTransfer : lang.guiTypeThreadTransfer,
+    proxyBan : lang.guiTypeProxyBan,
+    proxyBanLift : lang.guiTypeProxyBanLift
+  };
 
 };
 
@@ -561,3 +581,62 @@ exports.overboard = function(foundThreads, previewRelation, callback) {
     callback(error);
   }
 };
+
+// Section 6: Log page {
+exports.setLogEntry = function(logCell, log) {
+
+  if (!log.global) {
+    common.removeElement(logCell.getElementsByClassName('indicatorGlobal')[0]);
+  }
+
+  var labelType = logCell.getElementsByClassName('labelType')[0];
+  labelType.innerHTML = availableLogTypes[log.type];
+
+  var labelTime = logCell.getElementsByClassName('labelTime')[0];
+  labelTime.innerHTML = common.formatDateToDisplay(log.time);
+
+  var labelBoard = logCell.getElementsByClassName('labelBoard')[0];
+  labelBoard.innerHTML = log.boardUri || '';
+
+  var labelUser = logCell.getElementsByClassName('labelUser')[0];
+  labelUser.innerHTML = log.user;
+
+  var labelDescription = logCell.getElementsByClassName('labelDescription')[0];
+  labelDescription.innerHTML = log.description;
+
+};
+
+exports.log = function(date, logs, callback) {
+
+  try {
+
+    var document = jsdom(templateHandler.logsPage);
+
+    document.title = lang.titLogPage.replace('{$date}', common
+        .formatDateToDisplay(date, true));
+
+    var div = document.getElementById('divLogs');
+
+    for (var i = 0; i < logs.length; i++) {
+      var logCell = document.createElement('div');
+      logCell.innerHTML = templateHandler.logCell;
+      logCell.setAttribute('class', 'logCell');
+
+      exports.setLogEntry(logCell, logs[i]);
+
+      div.appendChild(logCell);
+    }
+
+    var path = '/.global/logs/';
+    path += logger.formatedDate(date) + '.html';
+
+    gridFs.writeData(serializer(document), path, 'text/html', {
+      type : 'log'
+    }, callback);
+
+  } catch (error) {
+    callback(error);
+  }
+
+};
+// Section 6: Log page {

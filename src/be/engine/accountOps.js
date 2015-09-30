@@ -7,12 +7,12 @@ var users = db.users();
 var requests = db.recoveryRequests();
 var bcrypt = require('bcrypt');
 var logger = require('../logger');
-var logs = db.logs();
 var crypto = require('crypto');
 var mailer = require('nodemailer').createTransport();
 var settings = require('../settingsHandler').getGeneralSettings();
 var sender = settings.emailSender || 'noreply@mychan.com';
 var creationDisabled = settings.disableAccountCreation;
+var logOps;
 var miscOps;
 var captchaOps;
 var domManipulator;
@@ -35,6 +35,7 @@ var changeSettingsParameters = [ {
 
 exports.loadDependencies = function() {
 
+  logOps = require('./logOps');
   miscOps = require('./miscOps');
   captchaOps = require('./captchaOps');
   domManipulator = require('./domManipulator').dynamicPages.miscPages;
@@ -62,19 +63,13 @@ exports.logRoleChange = function(operatorData, parameters, callback) {
       parameters.login).replace('{$role}',
       miscOps.getGlobalRoleLabel(parameters.role));
 
-  logs.insert({
+  logOps.insertLog({
     user : operatorData ? operatorData.login : null,
     type : 'globalRoleChange',
     time : new Date(),
     description : logMessage,
     global : true
-  }, function insertedLog(error) {
-    if (error) {
-      logger.printLogError(logMessage, error);
-    }
-
-    callback();
-  });
+  }, callback);
 
 };
 
@@ -148,7 +143,7 @@ exports.createAccount = function(parameters, role, callback) {
       if (parameters.email) {
         newUser.email = parameters.email;
       }
-      users.insert(newUser, function createdUser(error) {
+      users.insertOne(newUser, function createdUser(error) {
         if (error && error.code !== 11000) {
           callback(error);
         } else if (error) {
@@ -308,7 +303,7 @@ exports.generateRequest = function(domain, login, email, callback) {
   var requestHash = crypto.createHash('sha256').update(
       login + Math.random() + logger.timestamp()).digest('hex');
 
-  requests.insert({
+  requests.insertOne({
     login : login,
     recoveryToken : requestHash,
     expiration : logger.addMinutes(new Date(), 24 * 60)

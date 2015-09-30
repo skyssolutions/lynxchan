@@ -4,6 +4,7 @@
 
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
+var logger = require('../../../logger');
 var settings = require('../../../settingsHandler').getGeneralSettings();
 var debug = require('../../../boot').debug();
 var verbose = settings.verbose;
@@ -20,30 +21,11 @@ exports.accountSettingsRelation = {
   alwaysSignRole : 'checkboxAlwaysSign'
 };
 
-var availableLogTypes;
-
 exports.loadDependencies = function() {
 
   templateHandler = require('../../templateHandler');
   lang = require('../../langOps').languagePack();
-  availableLogTypes = {
-    '' : lang.guiAllTypes,
-    archiveDeletion : lang.guiTypeArchiveDeletion,
-    ban : lang.guiTypeBan,
-    rangeBan : lang.guiTypeRange,
-    banLift : lang.guiTypeBanLift,
-    deletion : lang.guiTypeDeletion,
-    fileDeletion : lang.guiTypeFileDeletion,
-    reportClosure : lang.guiTypeReportClosure,
-    globalRoleChange : lang.guiTypeGlobalRoleChange,
-    boardDeletion : lang.guiTypeBoardDeletion,
-    boardTransfer : lang.guiTypeBoardTransfer,
-    hashBan : lang.guiTypeHashBan,
-    hashBanLift : lang.guiTypeHashBanLift,
-    threadTransfer : lang.guiTypeThreadTransfer,
-    proxyBan : lang.guiTypeProxyBan,
-    proxyBanLift : lang.guiTypeProxyBanLift
-  };
+
   common = require('..').common;
   miscOps = require('../../miscOps');
 
@@ -221,141 +203,35 @@ exports.account = function(userData) {
 // } Section 1: Account
 
 // Section 2: Logs {
-exports.fillComboBox = function(document, parameters) {
+exports.setLogIndexCell = function(dateCell, date) {
 
-  var combobox = document.getElementById('comboboxType');
+  var link = dateCell.getElementsByClassName('dateLink')[0];
+  link.innerHTML = common.formatDateToDisplay(date, true);
 
-  for ( var type in availableLogTypes) {
-
-    var option = document.createElement('option');
-
-    option.innerHTML = availableLogTypes[type];
-    option.value = type;
-
-    if (parameters.type === type) {
-      option.setAttribute('selected', true);
-    }
-
-    combobox.appendChild(option);
-
-  }
+  link.href = '/.global/logs/' + logger.formatedDate(date) + '.html';
 
 };
 
-exports.fillSearchForm = function(parameters, document) {
+exports.logs = function(dates) {
 
-  if (parameters.user) {
-    document.getElementById('fieldUser').setAttribute('value', parameters.user);
-  }
-
-  if (parameters.excludeGlobals) {
-    document.getElementById('checkboxExcludeGlobals').setAttribute('checked',
-        true);
-  }
-
-  if (parameters.after) {
-    document.getElementById('fieldAfter').setAttribute('value',
-        parameters.after);
-  }
-
-  if (parameters.before) {
-    document.getElementById('fieldBefore').setAttribute('value',
-        parameters.before);
-  }
-
-  if (parameters.boardUri) {
-    document.getElementById('fieldBoard').setAttribute('value',
-        parameters.boardUri);
-  }
-};
-
-exports.setLogEntry = function(logCell, log) {
-
-  if (!log.global) {
-    common.removeElement(logCell.getElementsByClassName('indicatorGlobal')[0]);
-  }
-
-  var labelType = logCell.getElementsByClassName('labelType')[0];
-  labelType.innerHTML = availableLogTypes[log.type];
-
-  var labelTime = logCell.getElementsByClassName('labelTime')[0];
-  labelTime.innerHTML = common.formatDateToDisplay(log.time);
-
-  var labelBoard = logCell.getElementsByClassName('labelBoard')[0];
-  labelBoard.innerHTML = log.boardUri || '';
-
-  var labelUser = logCell.getElementsByClassName('labelUser')[0];
-  labelUser.innerHTML = log.user;
-
-  var labelDescription = logCell.getElementsByClassName('labelDescription')[0];
-  labelDescription.innerHTML = log.description;
-
-};
-
-exports.setLogPages = function(document, parameters, pageCount) {
-
-  var pagesDiv = document.getElementById('divPages');
-
-  for (var i = 1; i <= pageCount; i++) {
-
-    var pageLink = document.createElement('a');
-
-    pageLink.innerHTML = i;
-
-    var url = '/logs.js?page=' + i;
-
-    if (parameters.excludeGlobals) {
-      url += '&excludeGlobals=on';
-    }
-
-    if (parameters.type && parameters.type.length) {
-      url += '&type=' + parameters.type;
-    }
-
-    for (var j = 0; j < exports.optionalStringLogParameters.length; j++) {
-
-      var parameter = exports.optionalStringLogParameters[j];
-
-      if (parameters[parameter]) {
-        url += '&' + parameter + '=' + parameters[parameter];
-      }
-
-    }
-
-    pageLink.href = url;
-
-    pagesDiv.appendChild(pageLink);
-
-  }
-
-};
-
-exports.logs = function(logs, pageCount, parameters) {
   try {
 
-    var document = jsdom(templateHandler.logsPage);
+    var document = jsdom(templateHandler.logIndexPage);
 
     document.title = lang.titLogs;
 
-    exports.fillSearchForm(parameters, document);
+    var divDates = document.getElementById('divDates');
 
-    exports.fillComboBox(document, parameters);
+    for (var i = 0; i < dates.length; i++) {
 
-    var divLogs = document.getElementById('divLogs');
+      var dateCell = document.createElement('div');
+      dateCell.setAttribute('class', 'logIndexCell');
+      dateCell.innerHTML = templateHandler.logIndexCell;
 
-    for (var i = 0; i < logs.length; i++) {
-      var log = logs[i];
+      exports.setLogIndexCell(dateCell, dates[i]);
 
-      var logCell = document.createElement('div');
-      logCell.setAttribute('class', 'logCell');
-      logCell.innerHTML = templateHandler.logCell;
-
-      exports.setLogEntry(logCell, log);
-
-      divLogs.appendChild(logCell);
+      divDates.appendChild(dateCell);
     }
-
-    exports.setLogPages(document, parameters, pageCount);
 
     return serializer(document);
 

@@ -6,7 +6,6 @@ var logger = require('../../logger');
 var db = require('../../db');
 var posts = db.posts();
 var threads = db.threads();
-var logs = db.logs();
 var boards = db.boards();
 var files = db.files();
 var settings = require('../../settingsHandler').getGeneralSettings();
@@ -15,9 +14,11 @@ var latestPosts = settings.latestPostCount;
 var gridFs;
 var lang;
 var miscOps;
+var logOps;
 
 exports.loadDependencies = function() {
 
+  logOps = require('../logOps');
   gridFs = require('../gridFsHandler');
   lang = require('../langOps').languagePack();
   miscOps = require('../miscOps');
@@ -358,19 +359,14 @@ exports.logRemoval = function(userData, board, parameters, cb, foundThreads,
   var logMessage = exports.getLogMessage(parameters, foundThreads, foundPosts,
       userData, board);
 
-  logs.insert({
+  logOps.insertLog({
     user : userData.login,
     type : parameters.deleteUploads ? 'fileDeletion' : 'deletion',
     time : new Date(),
     boardUri : board.boardUri,
     description : logMessage,
     global : userData.globalRole <= miscOps.getMaxStaffRole()
-  }, function insertedLog(error) {
-
-    if (error) {
-
-      logger.printLogError(logMessage, error);
-    }
+  }, function insertedLog() {
 
     exports.removeContentFiles(board, parameters, cb, foundThreads, foundPosts,
         parentThreads);

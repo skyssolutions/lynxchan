@@ -2,6 +2,7 @@
 
 // builds JSON versions of pages
 
+var logger = require('../logger');
 var settings = require('../settingsHandler').getGeneralSettings();
 var gridFsHandler;
 var miscOps;
@@ -373,12 +374,9 @@ exports.bannerManagement = function(boardUri, banners) {
 
 };
 
-exports.logs = function(logs, pageCount) {
+exports.logs = function(dates) {
 
-  return JSON.stringify({
-    pageCount : pageCount,
-    logs : logs
-  });
+  return JSON.stringify(dates);
 
 };
 
@@ -496,5 +494,16 @@ exports.proxyBans = function(proxyBans) {
   }
 
   return JSON.stringify(toReturn);
+
+};
+
+exports.log = function(date, logs, callback) {
+
+  var path = '/.global/logs/';
+  path += logger.formatedDate(date) + '.json';
+
+  gridFsHandler.writeData(JSON.stringify(logs), path, 'application/json', {
+    type : 'log'
+  }, callback);
 
 };

@@ -6,6 +6,8 @@
 
 // messages can have the following keys:
 // globalRebuild (Boolean): rebuilds every single page.
+// log(Boolean): rebuild log pages.
+// date(Date): indicates to rebuild only a specific date for logs.
 // overboard (Boolean): rebuilds the overboard.
 // allBoards (Boolean): rebuilds all boards.
 // frontPage (Boolean): rebuilds the front-page.
@@ -21,6 +23,8 @@
 
 // so we can know the order we will process the objects
 var queueArray = [];
+
+var logDates = [];
 
 // so we can know more easily what we are going to rebuild,
 // its structure is the following:
@@ -40,9 +44,8 @@ var queueTree = {};
 // so we can just tell it is rebuilding everything and ignore any incoming
 // requests
 var rebuildingAll = false;
-
 var rebuildingAllBoards = false;
-
+var rebuildingAllLogs = false;
 var rebuildingOverboard = false;
 // so we can tell its rebuilding the front-page
 var rebuildingFrontPage = false;
@@ -60,6 +63,7 @@ exports.reload = function() {
 
 function clearGlobalRebuilding() {
 
+  rebuildingAllLogs = false;
   rebuildingAll = false;
   rebuildingOverboard = false;
   rebuildingAllBoards = false;
@@ -72,6 +76,17 @@ function checkForGlobalClearing(message) {
 
   if (message.globalRebuild) {
     return clearGlobalRebuilding();
+  } else if (message.log) {
+
+    if (message.date) {
+      logDates.splice(logDates.indexOf(message.date), 1);
+    } else {
+      logDates = [];
+      rebuildingAllLogs = false;
+    }
+
+    return true;
+
   } else if (message.overboard) {
     rebuildingOverboard = false;
     return true;
@@ -144,6 +159,24 @@ function debugPreGeneration() {
   }
 }
 
+function processMessageForBoards(generationCallback, message) {
+
+  if (message.buildAll) {
+    generator.board.board(message.board, true, true, generationCallback);
+  } else if (message.catalog) {
+    generator.board.catalog(message.board, generationCallback);
+  } else if (message.rules) {
+    generator.board.rules(message.board, generationCallback);
+  } else if (!message.page && !message.thread) {
+    generator.board.board(message.board, false, false, generationCallback);
+  } else if (message.page) {
+    generator.board.page(message.board, message.page, generationCallback);
+  } else {
+    generator.board.thread(message.board, message.thread, generationCallback);
+  }
+
+}
+
 function processMessage(message) {
 
   var generationCallback = function(error) {
@@ -156,24 +189,22 @@ function processMessage(message) {
 
   if (message.globalRebuild) {
     generator.all(generationCallback);
+  } else if (message.log) {
+
+    if (message.date) {
+      generator.global.log(new Date(message.date), generationCallback);
+    } else {
+      generator.global.logs(generationCallback);
+    }
+
   } else if (message.overboard) {
     generator.global.overboard(generationCallback);
   } else if (message.allBoards) {
     generator.board.boards(generationCallback);
   } else if (message.frontPage) {
     generator.global.frontPage(generationCallback);
-  } else if (message.buildAll) {
-    generator.board.board(message.board, true, true, generationCallback);
-  } else if (message.catalog) {
-    generator.board.catalog(message.board, generationCallback);
-  } else if (message.rules) {
-    generator.board.rules(message.board, generationCallback);
-  } else if (!message.page && !message.thread) {
-    generator.board.board(message.board, false, false, generationCallback);
-  } else if (message.page) {
-    generator.board.page(message.board, message.page, generationCallback);
   } else {
-    generator.board.thread(message.board, message.thread, generationCallback);
+    processMessageForBoards(generationCallback, message);
   }
 
 }
@@ -329,6 +360,48 @@ function checkForFullBoardRebuild(message) {
 
 }
 
+exports.checkForOverBoard = function(message) {
+
+  if (rebuildingOverboard && message.overboard) {
+    return;
+  }
+
+  if (message.overboard) {
+    rebuildingOverboard = true;
+
+    putInQueue(message);
+
+    return;
+  }
+
+  checkForFullBoardRebuild(message);
+
+};
+
+exports.checkForLog = function(message) {
+
+  var containsDate = message.date && logDates.indexOf(message.date) > -1;
+
+  if (message.log && (rebuildingAllLogs || containsDate)) {
+    return;
+  }
+
+  if (message.log) {
+
+    if (message.date) {
+      logDates.push(message.date);
+    } else {
+      rebuildingAllLogs = true;
+    }
+
+    putInQueue(message);
+
+    return;
+  }
+
+  exports.checkForOverBoard(message);
+};
+
 exports.queue = function(message) {
 
   if (verbose) {
@@ -345,17 +418,6 @@ exports.queue = function(message) {
     return;
   }
 
-  if (rebuildingOverboard && message.overboard) {
-    return;
-  }
+  exports.checkForLog(message);
 
-  if (message.overboard) {
-    rebuildingOverboard = true;
-
-    putInQueue(message);
-
-    return;
-  }
-
-  checkForFullBoardRebuild(message);
 };

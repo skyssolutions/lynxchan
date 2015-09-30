@@ -8,15 +8,16 @@ var ObjectID = mongo.ObjectID;
 var logger = require('../../logger');
 var db = require('../../db');
 var boards = db.boards();
-var logs = db.logs();
 var threads = db.threads();
 var files = db.files();
 var posts = db.posts();
+var logOps;
 var miscOps;
 var lang;
 
 exports.loadDependencies = function() {
 
+  logOps = require('../logOps');
   miscOps = require('../miscOps');
   lang = require('../langOps').languagePack();
 
@@ -135,22 +136,14 @@ exports.logTransfer = function(newBoard, userData, newThreadId, originalThread,
           originalThread.boardUri).replace('{$boardDestination}',
           newBoard.boardUri);
 
-  logs.insert({
+  logOps.insertLog({
     user : userData.login,
     type : 'threadTransfer',
     time : new Date(),
     boardUri : originalThread.boardUri,
     global : true,
     description : message
-  }, function addedLog(error) {
-
-    if (error) {
-      logger.printLogError(message, error);
-    }
-
-    callback(null);
-
-  });
+  }, callback);
 
 };
 

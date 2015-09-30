@@ -1,7 +1,6 @@
 'use strict';
 
 var db = require('../../../db');
-var logs = db.logs();
 var boards = db.boards();
 var bans = db.bans();
 var posts = db.posts();
@@ -9,6 +8,7 @@ var threads = db.threads();
 var settings = require('../../../settingsHandler').getGeneralSettings();
 var defaultBanMessage = settings.defaultBanMessage;
 var logger;
+var logOps;
 var miscOps;
 var common;
 
@@ -26,6 +26,7 @@ var banArguments = [ {
 
 exports.loadDependencies = function() {
 
+  logOps = require('../../logOps');
   common = require('..').common;
   logger = require('../../../logger');
   miscOps = require('../../miscOps');
@@ -107,22 +108,14 @@ exports.logBans = function(userData, board, informedPosts, informedThreads,
       '{$expiration}', parameters.expiration).replace('{$reason}',
       parameters.reason);
 
-  logs.insert({
+  logOps.insertLog({
     user : userData.login,
     type : 'ban',
     time : new Date(),
     global : parameters.global,
     boardUri : board,
     description : logMessage
-  }, function insertedLog(error) {
-    if (error) {
-
-      logger.printLogError(logMessage, error);
-    }
-
-    callback();
-
-  });
+  }, callback);
 
 };
 

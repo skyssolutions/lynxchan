@@ -1,6 +1,6 @@
 'use strict';
 
-var dbVersion = 5;
+var dbVersion = 6;
 
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
@@ -21,6 +21,7 @@ var cachedDb;
 
 var maxIndexesSet = 14;
 
+var cachedAggregatedLogs;
 var cachedBypasses;
 var cachedFlood;
 var cachedVersions;
@@ -67,7 +68,7 @@ function registerLatestVersion(callback) {
         console.log('Registering current version as ' + dbVersion);
       }
 
-      cachedVersions.insert({
+      cachedVersions.insertOne({
         version : dbVersion,
         deploy : new Date(),
         active : true,
@@ -99,6 +100,10 @@ function upgrade(version, callback) {
 
   case 4:
     migrations.removeBannerStatus(callback);
+    break;
+
+  case 5:
+    migrations.aggregateLogs(callback);
     break;
 
   default:
@@ -557,9 +562,7 @@ exports.logs = function() {
 };
 
 exports.overboardThreads = function() {
-
   return cachedOverboard;
-
 };
 
 exports.hashBans = function() {
@@ -580,6 +583,10 @@ exports.flags = function() {
 
 exports.flood = function() {
   return cachedFlood;
+};
+
+exports.aggregatedLogs = function() {
+  return cachedAggregatedLogs;
 };
 // end of getters
 
@@ -645,6 +652,8 @@ exports.init = function(callback) {
     } else {
 
       cachedDb = db;
+
+      cachedAggregatedLogs = db.collection('aggregatedLogs');
 
       cachedProxyBans = db.collection('proxyBans');
 

@@ -8,7 +8,7 @@ var logger = require('./logger');
 var gridFsHandler;
 var formOps;
 var lang;
-var logs;
+var logOps;
 var miscOps;
 var domManipulator;
 var verbose = require('./settingsHandler').getGeneralSettings().verbose;
@@ -21,6 +21,7 @@ exports.loaded = function() {
 
 exports.reload = function() {
 
+  logOps = require('./engine/logOps');
   verbose = require('./settingsHandler').getGeneralSettings().verbose;
   formOps = require('./engine/formOps');
   gridFsHandler = require('./engine/gridFsHandler');
@@ -101,7 +102,7 @@ exports.init = function(callback) {
 
           loaded = true;
 
-          logs = require('./db').logs();
+          logOps = require('./engine/logOps');
           formOps = require('./engine/formOps');
           gridFsHandler = require('./engine/gridFsHandler');
           domManipulator = require('./engine/domManipulator').dynamicPages;
@@ -365,21 +366,14 @@ function logArchiveDeletion(userData, parameters, callback) {
 
   msg = msg.replace('{$board}', parameters.boardUri);
 
-  logs.insertOne({
+  logOps.insertLog({
     user : userData.login,
     type : 'archiveDeletion',
     time : new Date(),
     description : msg,
     global : true,
     boardUri : parameters.boardUri
-  }, function insertedLog(error) {
-
-    if (error) {
-      logger.printLogError(msg, error);
-    }
-
-    callback();
-  });
+  }, callback);
 }
 
 exports.deleteBoard = function(userData, parameters, callback) {

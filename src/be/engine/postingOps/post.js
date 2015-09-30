@@ -347,7 +347,7 @@ exports.createPost = function(req, parameters, userData, postId, thread, board,
     postToAdd.password = parameters.password;
   }
 
-  posts.insert(postToAdd, function createdPost(error) {
+  posts.insertOne(postToAdd, function createdPost(error) {
     if (error) {
       cb(error);
     } else {

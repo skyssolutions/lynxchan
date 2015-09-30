@@ -2,6 +2,8 @@
 
 var crypto = require('crypto');
 var db = require('./db');
+var aggregatedLogs = db.aggregatedLogs();
+var logs = db.logs();
 var cachedFiles = db.files();
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
@@ -431,3 +433,97 @@ exports.removeBannerStatus = function(callback) {
 
 };
 // } Section 4: Remove status from banners metadata
+
+// Section 5: Aggregate log information {
+exports.iterateDays = function(date, callback, foundResults) {
+
+  foundResults = foundResults || [];
+
+  if (date >= new Date()) {
+    aggregatedLogs.deleteMany({}, function clearedCollection(error) {
+
+      if (error) {
+        callback(error);
+      } else {
+        aggregatedLogs.insertMany(foundResults, callback);
+      }
+
+    });
+
+    return;
+  }
+
+  var next = new Date(date);
+  next.setDate(next.getDate() + 1);
+
+  logs.aggregate([ {
+    $match : {
+      time : {
+        $gte : date,
+        $lt : next
+      }
+    }
+  }, {
+    $project : {
+      time : 1
+    }
+  }, {
+    $group : {
+      _id : 0,
+      ids : {
+        $push : '$_id'
+      }
+    }
+  } ], function gotLogs(error, results) {
+
+    if (error) {
+      callback();
+    } else {
+
+      if (results.length) {
+        foundResults.push({
+          logs : results[0].ids,
+          date : date
+        });
+      }
+
+      exports.iterateDays(next, callback, foundResults);
+
+    }
+
+  });
+
+};
+
+exports.aggregateLogs = function(callback) {
+
+  logs.aggregate([ {
+    $project : {
+      time : 1,
+      _id : 0
+    }
+  }, {
+    $group : {
+      _id : 0,
+      time : {
+        $min : '$time'
+      }
+    }
+  } ], function gotOldestLog(error, results) {
+
+    if (error) {
+      callback(error);
+    } else {
+      var earliest = results[0].time;
+
+      earliest.setHours(0);
+      earliest.setMinutes(0);
+      earliest.setSeconds(0);
+      earliest.setMilliseconds(0);
+
+      exports.iterateDays(earliest, callback);
+    }
+
+  });
+};
+// } Section 5: Aggregate log information

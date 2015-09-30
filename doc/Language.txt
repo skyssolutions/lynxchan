@@ -287,3 +287,4 @@ guiBypassModes: array with the bypass mode options. The first element is the one
 titBlockbypass: title of the page used to renew the block bypass.
 errDisabledBypass: error thrown when block bypass is not enabled.
 msgBypassRenewed: message displayed after renewing block bypass.
+titLogPage: title for log pages. Replaces: {$date}

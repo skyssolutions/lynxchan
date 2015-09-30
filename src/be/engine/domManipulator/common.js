@@ -100,12 +100,19 @@ exports.padDateField = function(value) {
   return value;
 };
 
-exports.formatDateToDisplay = function(d) {
+exports.formatDateToDisplay = function(d, noTime) {
   var day = exports.padDateField(d.getUTCDate());
 
   var month = exports.padDateField(d.getUTCMonth() + 1);
 
   var year = d.getUTCFullYear();
+
+  var toReturn = lang.guiDateFormat.replace('{$month}', month).replace(
+      '{$day}', day).replace('{$year}', year);
+
+  if (noTime) {
+    return toReturn;
+  }
 
   var weekDay = lang.guiWeekDays[d.getUTCDay()];
 
@@ -114,9 +121,6 @@ exports.formatDateToDisplay = function(d) {
   var minute = exports.padDateField(d.getUTCMinutes());
 
   var second = exports.padDateField(d.getUTCSeconds());
-
-  var toReturn = lang.guiDateFormat.replace('{$month}', month).replace(
-      '{$day}', day).replace('{$year}', year);
 
   return toReturn + ' (' + weekDay + ') ' + hour + ':' + minute + ':' + second;
 };

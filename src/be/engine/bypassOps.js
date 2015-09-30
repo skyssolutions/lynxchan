@@ -29,7 +29,7 @@ exports.renewBypass = function(captchaId, captchaInput, callback) {
       };
 
       // style exception, too simple
-      bypasses.insert(newBypass, function inserted(error) {
+      bypasses.insertOne(newBypass, function inserted(error) {
         if (error) {
           callback(error);
         } else {

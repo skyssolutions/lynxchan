@@ -127,6 +127,11 @@ var informedArguments = {
     long : '--reload-login',
     type : 'boolean'
   },
+  reloadLogs : {
+    short : '-rlog',
+    long : '--reload-logs',
+    type : 'boolean'
+  },
   reloadBanner : {
     short : '-rb',
     long : '--reload-banner',
@@ -217,6 +222,10 @@ var optionalReloads = [ {
   generatorFunction : 'overboard',
   generatorModule : 'global',
   command : informedArguments.reloadOverboard.informed
+}, {
+  generatorFunction : 'logs',
+  generatorModule : 'global',
+  command : informedArguments.reloadLogs.informed
 } ];
 
 var debug = informedArguments.debug.informed;

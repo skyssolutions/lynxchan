@@ -226,6 +226,9 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       }, {
         template : 'proxyBanCell',
         fields : [ 'ipLabel', 'idIdentifier' ]
+      }, {
+        template : 'logIndexCell',
+        fields : [ 'dateLink' ]
       } ];
 
   var pageTests = [
@@ -323,9 +326,7 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       },
       {
         template : 'logsPage',
-        fields : [ 'divLogs', 'divPages', 'checkboxExcludeGlobals',
-            'fieldBoard', 'comboboxType', 'fieldBefore', 'fieldAfter',
-            'fieldUser' ]
+        fields : [ 'divLogs' ]
       },
       {
         template : 'previewPage',
@@ -434,6 +435,9 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       }, {
         template : 'bypassPage',
         fields : [ 'indicatorValidBypass' ]
+      }, {
+        template : 'logIndexPage',
+        fields : [ 'divDates' ]
       } ];
 
   var errors = [];

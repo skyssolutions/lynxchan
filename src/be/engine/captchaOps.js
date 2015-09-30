@@ -309,7 +309,7 @@ exports.generateCaptcha = function(callback) {
     expiration : logger.addMinutes(new Date(), captchaExpiration)
   };
 
-  captchas.insert(toInsert, function(error) {
+  captchas.insertOne(toInsert, function(error) {
 
     if (error) {
       callback(error);

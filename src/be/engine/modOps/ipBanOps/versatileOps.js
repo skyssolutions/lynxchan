@@ -3,7 +3,6 @@
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var db = require('../../../db');
-var logs = db.logs();
 var bans = db.bans();
 var flood = db.flood();
 var boards = db.boards();
@@ -14,6 +13,7 @@ var bypassAllowed = settings.bypassMode > 0;
 var bypassMandatory = settings.bypassMode > 1;
 var blockProxy = settings.proxyAccess < 1;
 var disableFloodCheck = settings.disableFloodCheck;
+var logOps;
 var lang;
 var logger;
 var miscOps;
@@ -22,6 +22,7 @@ var common;
 
 exports.loadDependencies = function() {
 
+  logOps = require('../../logOps');
   common = require('..').common;
   torOps = require('../../torOps');
   logger = require('../../../logger');
@@ -247,23 +248,19 @@ exports.removeBan = function(ban, userData, callback) {
 
       var logMessage = exports.getLiftedBanLogMessage(ban, userData);
 
-      logs.insert({
+      logOps.insertLog({
         user : userData.login,
         global : ban.boardUri ? false : true,
         time : new Date(),
         description : logMessage,
         type : 'banLift',
         boardUri : ban.boardUri
-      }, function insertedLog(error) {
-        if (error) {
-
-          logger.printLogError(logMessage, error);
-        }
+      }, function insertedLog() {
 
         callback(null, ban.range ? true : false, ban.boardUri);
       });
-
       // style exception, too simple
+
     }
 
   });

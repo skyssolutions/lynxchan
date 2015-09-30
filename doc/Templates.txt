@@ -1024,34 +1024,6 @@ divLogs:
     use: have children appended to it.
     description: holds the logs.
 
-divPages:
-    use: have children appended to it.
-    description: holds the available pages.
-
-checkboxExcludeGlobals:
-    use: might be turned on.
-    description: check-box that indicates if global logs are to be excluded.
-
-fieldUser:
-    use: have it's value manipulated.
-    description: field that indicated which user is to have its logs shown.
-
-fieldBoard:
-    use: have it's value manipulated.
-    description: text field that indicates the board that is to have its logs shown.
-
-comboboxType:
-    use: might be turned on.
-    description: combo-box that indicates what type of logs are to be shown.
-
-fieldBefore:
-    use: have it's value manipulated.
-    description: field that indicates what date is to be used to retrieve logs only before the specified date.
-
-fieldAfter:
-    use: have it's value manipulated.
-    description: field that indicates what date is to be used to retrieve logs only after the specified date.
-
 ------------------------------------------------------------------------------------------
 
 TEM_ID::28
@@ -1846,6 +1818,29 @@ Elements:
 indicatorValidBypass:
     use: might be removed.
     description: element that indicates if the user has a valid block bypass.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::61
+
+logIndexPage:
+
+Elements:
+divDates:
+    use: have children appended to it.
+    description: div that holds the days that got logs on them.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::62
+
+logIndexCell*:
+Root element: div
+
+Elements:
+dateLink:
+    use: have it's href and innerHTML manipulated.
+    description: link that leads to the log page.
 
 ------------------------------------------------------------------------------------------
 

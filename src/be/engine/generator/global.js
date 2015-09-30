@@ -5,6 +5,8 @@
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var db = require('../../db');
+var logs = db.logs();
+var aggregatedLogs = db.aggregatedLogs();
 var overboard = db.overboardThreads();
 var threads = db.threads();
 var posts = db.posts();
@@ -331,3 +333,128 @@ exports.overboard = function(callback) {
 
 };
 // } Section 2: Overboard
+
+// Section 3: Logs {
+exports.createLogPage = function(date, foundLogs, callback) {
+
+  domManipulator.log(date, foundLogs, function createdPage(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      jsonBuilder.log(date, foundLogs, callback);
+    }
+
+  });
+
+};
+
+exports.log = function(date, callback, logData) {
+
+  if (!logData) {
+
+    if (!date) {
+      if (settings.verbose) {
+
+        console.log('Could not build log page, no data.');
+      }
+
+      callback();
+      return;
+    }
+
+    aggregatedLogs.findOne({
+      date : date
+    }, function gotLogData(error, data) {
+
+      if (error) {
+        callback(error);
+      } else if (!data) {
+
+        if (verbose) {
+          console.log('Could not find logs for ' + date);
+        }
+
+        callback();
+      } else {
+        exports.log(null, callback, data);
+      }
+
+    });
+
+    return;
+  }
+
+  if (verbose) {
+    console.log('Building log page for ' + logData.date);
+  }
+
+  var toFind = [];
+
+  for (var i = 0; i < logData.logs.length; i++) {
+    toFind.push(new ObjectID(logData.logs[i]));
+  }
+
+  logs.find({
+    _id : {
+      $in : toFind
+    }
+  }, {
+    _id : 0,
+    type : 1,
+    user : 1,
+    time : 1,
+    boardUri : 1,
+    description : 1,
+    global : 1
+  }).sort({
+    time : 1
+  }).toArray(function gotLogs(error, foundLogs) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.createLogPage(logData.date, foundLogs, callback);
+    }
+
+  });
+
+};
+
+exports.iterateLogs = function(foundAggregatedLogs, callback) {
+
+  if (!foundAggregatedLogs.length) {
+    callback();
+    return;
+  }
+
+  exports.log(null, function generatedLog(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.iterateLogs(foundAggregatedLogs, callback);
+    }
+
+  }, foundAggregatedLogs.pop());
+
+};
+
+exports.logs = function(callback) {
+
+  aggregatedLogs.find({}, {
+    _id : 0,
+    logs : 1,
+    date : 1
+  }).toArray(function gotLogs(error, foundAggregatedLogs) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.iterateLogs(foundAggregatedLogs, callback);
+    }
+
+  });
+
+};
+// } Section 3: Logs

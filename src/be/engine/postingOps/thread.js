@@ -184,7 +184,7 @@ exports.createThread = function(req, userData, parameters, board, threadId,
     threadToAdd.password = parameters.password;
   }
 
-  threads.insert(threadToAdd, function createdThread(error) {
+  threads.insertOne(threadToAdd, function createdThread(error) {
     if (error && error.code === 11000) {
       exports.createThread(req, userData, parameters, board, threadId + 1,
           wishesToSign, enabledCaptcha, callback);

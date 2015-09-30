@@ -10,9 +10,9 @@ var forcedCaptcha = settings.forceCaptcha;
 var db = require('../../db');
 var reports = db.reports();
 var users = db.users();
-var logs = db.logs();
 var boards = db.boards();
 var captchaOps;
+var logOps;
 var postingOps;
 var miscOps;
 var modCommonOps;
@@ -48,6 +48,7 @@ var boardParameters = [ {
 
 exports.loadDependencies = function() {
 
+  logOps = require('../logOps');
   captchaOps = require('../captchaOps');
   postingOps = require('../postingOps').common;
   miscOps = require('../miscOps');
@@ -296,17 +297,14 @@ exports.performTransfer = function(oldOwner, userData, parameters, callback) {
       .replace('{$board}', parameters.boardUri).replace('{$login}',
           parameters.login);
 
-  logs.insert({
+  logOps.insertLog({
     user : userData.login,
     time : new Date(),
     global : true,
     boardUri : parameters.boardUri,
     type : 'boardTransfer',
     description : message
-  }, function createdLog(error) {
-    if (error) {
-      logger.printLogError(message, error);
-    }
+  }, function createdLog() {
 
     // style exception, too simple
     boards.update({
@@ -327,6 +325,7 @@ exports.performTransfer = function(oldOwner, userData, parameters, callback) {
 
     });
     // style exception, too simple
+
   });
 
 };
@@ -453,7 +452,7 @@ exports.setVolunteer = function(userData, parameters, callback) {
 // Section 4: Creation {
 exports.insertBoard = function(parameters, userData, callback) {
 
-  boards.insert({
+  boards.insertOne({
     boardUri : parameters.boardUri,
     boardName : parameters.boardName,
     ipSalt : crypto.createHash('sha256').update(

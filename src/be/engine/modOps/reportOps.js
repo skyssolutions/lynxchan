@@ -7,12 +7,12 @@ var ObjectID = mongo.ObjectID;
 var db = require('../../db');
 var boards = db.boards();
 var threads = db.threads();
-var logs = db.logs();
 var posts = db.posts();
 var reports = db.reports();
 var settings = require('../../settingsHandler').getGeneralSettings();
 var logger = require('../../logger');
 var multipleReports = settings.multipleReports;
+var logOps;
 var miscOps;
 var moduleRoot;
 var ipBan;
@@ -28,6 +28,7 @@ var reportArguments = [ {
 
 exports.loadDependencies = function() {
 
+  logOps = require('../logOps');
   miscOps = require('../miscOps');
   moduleRoot = require('.');
   ipBan = moduleRoot.ipBan.versatile;
@@ -104,7 +105,7 @@ exports.createReport = function(req, report, reportedContent, parameters,
     toAdd.postId = +report.post;
   }
 
-  reports.insert(toAdd, function createdReport(error) {
+  reports.insertOne(toAdd, function createdReport(error) {
     if (error && error.code !== 11000) {
       callback(error);
     } else {
@@ -216,18 +217,14 @@ exports.updateReport = function(report, userData, callback) {
           .replace('{$board}', report.boardUri).replace('{$reason}',
               report.reason);
 
-      logs.insert({
+      logOps.insertLog({
         user : userData.login,
         global : report.global,
         description : logMessage,
         time : new Date(),
         boardUri : report.boardUri,
         type : 'reportClosure'
-      }, function insertedLog(error) {
-        if (error) {
-
-          logger.printLogError(logMessage, error);
-        }
+      }, function insertedLog() {
 
         callback(null, report.global, report.boardUri);
       });

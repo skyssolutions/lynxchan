@@ -12,13 +12,13 @@ var boardStats = db.stats();
 var bans = db.bans();
 var hashBans = db.hashBans();
 var reports = db.reports();
-var logs = db.logs();
 var posts = db.posts();
 var boards = db.boards();
 var settings = require('../../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var threadLimit = settings.maxThreadCount;
 var lang;
+var logOps;
 var gridFs;
 
 var collectionsToClean = [ reports, posts, threads, flags, hashBans,
@@ -26,6 +26,7 @@ var collectionsToClean = [ reports, posts, threads, flags, hashBans,
 
 exports.loadDependencies = function() {
 
+  logOps = require('../logOps');
   lang = require('../langOps').languagePack();
   gridFs = require('../gridFsHandler');
 
@@ -202,18 +203,14 @@ exports.logBoardDeletion = function(board, user, callback) {
   var message = lang.logBoardDeletion.replace('{$board}', board.boardUri)
       .replace('{$login}', user);
 
-  logs.insert({
+  logOps.insertLog({
     type : 'boardDeletion',
     user : user,
     time : new Date(),
     boardUri : board.boardUri,
     description : message,
     global : true
-  }, function insertedLog(error) {
-
-    if (error) {
-      logger.printLogError(message, error);
-    }
+  }, function insertedLog() {
 
     exports.deleteBoardFiles(board, callback);
 
