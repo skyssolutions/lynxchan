@@ -1,6 +1,7 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
+var bypassOps = require('../engine/bypassOps');
 var postingOps = require('../engine/postingOps').post;
 var mandatoryParameters = [ 'message', 'boardUri', 'threadId' ];
 
@@ -43,10 +44,22 @@ function checkBans(req, res, parameters, userData, captchaId) {
   });
 }
 
+function useBypass(req, res, parameters, userData, captchaId, bypassId) {
+
+  bypassOps.useBypass(bypassId, req, function usedBypass(error) {
+
+    if (error) {
+      apiOps.outputError(error, res);
+    } else {
+      checkBans(req, res, parameters, userData, captchaId);
+    }
+  });
+}
+
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
-      parameters, captchaId) {
-    checkBans(req, res, parameters, userData, captchaId);
+      parameters, captchaId, bypassId) {
+    useBypass(req, res, parameters, userData, captchaId, bypassId);
   }, true);
 };

@@ -5,7 +5,7 @@ var ObjectID = mongo.ObjectID;
 var db = require('../db');
 var bypasses = db.bypasses();
 var settings = require('../settingsHandler').getGeneralSettings();
-var expirationToAdd = 1000 * 60 * settings.bypassDurationHours;
+var expirationToAdd = 1000 * 60 * 60 * settings.bypassDurationHours;
 var captchaOps;
 
 exports.loadDependencies = function() {
@@ -66,4 +66,52 @@ exports.checkBypass = function(bypassId, callback) {
   } catch (error) {
     callback(error);
   }
+};
+
+exports.useBypass = function(bypassId, req, callback) {
+
+  if (!settings.bypassMode) {
+    callback();
+    return;
+  }
+
+  if (!bypassId || !bypassId.length) {
+    callback();
+    return;
+  }
+
+  try {
+
+    bypasses.findOneAndUpdate({
+      _id : new ObjectID(bypassId),
+      usesLeft : {
+        $gt : 0
+      },
+      expiration : {
+        $gt : new Date()
+      }
+    }, {
+      $inc : {
+        usesLeft : -1
+      }
+    }, function updatedPass(error, result) {
+
+      if (error) {
+        callback(error);
+      } else {
+
+        if (result.value) {
+          req.bypassed = true;
+        }
+
+        callback(null, req);
+
+      }
+
+    });
+
+  } catch (error) {
+    callback(error);
+  }
+
 };

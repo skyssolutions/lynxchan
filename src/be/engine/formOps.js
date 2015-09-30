@@ -410,21 +410,35 @@ exports.checkBlankParameters = function(object, parameters, res) {
 
 exports.checkForBan = function(req, boardUri, res, callback) {
 
-  modOps.ipBan.versatile.checkForBan(req, boardUri,
-      function gotBan(error, ban) {
-        if (error) {
-          callback(error);
-        } else if (ban) {
-          res.writeHead(200, miscOps.corsHeader('text/html'));
+  modOps.ipBan.versatile.checkForBan(req, boardUri, function gotBan(error, ban,
+      bypassable) {
 
-          var board = ban.boardUri ? '/' + ban.boardUri + '/'
-              : lang.miscAllBoards.toLowerCase();
+    if (bypassable && !req.bypassed) {
 
-          res.end(domManipulator.ban(ban, board));
-        } else {
-          callback();
-        }
-      });
+      var header = [ [ 'Location', '/blockBypass.js' ] ];
+
+      res.writeHead(302, header);
+
+      res.end();
+
+    } else if (error) {
+      callback(error);
+    } else if (ban) {
+      if (ban.range && req.bypassed) {
+        callback();
+        return;
+      }
+
+      res.writeHead(200, miscOps.corsHeader('text/html'));
+
+      var board = ban.boardUri ? '/' + ban.boardUri + '/' : lang.miscAllBoards
+          .toLowerCase();
+
+      res.end(domManipulator.ban(ban, board));
+    } else {
+      callback();
+    }
+  });
 
 };
 

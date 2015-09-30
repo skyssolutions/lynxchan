@@ -363,27 +363,36 @@ exports.checkForHashBan = function(parameters, req, res, callback) {
 
 exports.checkForBan = function(req, boardUri, res, callback) {
 
-  modOps.ipBan.versatile.checkForBan(req, boardUri,
-      function gotBan(error, ban) {
-        if (error) {
-          callback(error);
-        } else if (ban) {
-          if (ban.range) {
-            ban.range = ban.range.join('.');
-          }
+  modOps.ipBan.versatile.checkForBan(req, boardUri, function gotBan(error, ban,
+      bypassable) {
 
-          exports.outputResponse(null, {
-            reason : ban.reason,
-            proxyIp : ban.proxyIp,
-            range : ban.range,
-            banId : ban._id,
-            expiration : ban.expiration,
-            board : ban.boardUri ? '/' + ban.boardUri + '/'
-                : lang.miscAllBoards.toLowerCase()
-          }, 'banned', res);
-        } else {
+    if (bypassable && !req.bypassed) {
+      exports.outputResponse(null, null, 'bypassable', res);
+    } else if (error) {
+      callback(error);
+    } else if (ban) {
+      if (ban.range) {
+
+        if (req.bypassed) {
           callback();
+          return;
         }
-      });
+
+        ban.range = ban.range.join('.');
+      }
+
+      exports.outputResponse(null, {
+        reason : ban.reason,
+        proxyIp : ban.proxyIp,
+        range : ban.range,
+        banId : ban._id,
+        expiration : ban.expiration,
+        board : ban.boardUri ? '/' + ban.boardUri + '/' : lang.miscAllBoards
+            .toLowerCase()
+      }, 'banned', res);
+    } else {
+      callback();
+    }
+  });
 
 };

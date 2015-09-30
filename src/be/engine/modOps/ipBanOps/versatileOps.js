@@ -10,6 +10,8 @@ var boards = db.boards();
 var proxyBans = db.proxyBans();
 var settings = require('../../../settingsHandler').getGeneralSettings();
 var blockTor = settings.torAccess < 1;
+var bypassAllowed = settings.bypassMode > 0;
+var bypassMandatory = settings.bypassMode > 1;
 var blockProxy = settings.proxyAccess < 1;
 var disableFloodCheck = settings.disableFloodCheck;
 var lang;
@@ -115,7 +117,14 @@ exports.getActiveBan = function(ip, boardUri, callback) {
     } ]
   };
 
-  bans.findOne(finalCondition, callback);
+  bans.findOne(finalCondition, function gotBan(error, ban) {
+    if (error) {
+      callback(error);
+    } else {
+      callback(null, ban, bypassAllowed && ban && ban.range);
+    }
+
+  });
 
 };
 
@@ -144,11 +153,22 @@ exports.checkForFlood = function(req, boardUri, callback) {
 
 exports.checkForBan = function(req, boardUri, callback) {
 
+  if (bypassMandatory && !req.bypassed) {
+    callback(null, null, true);
+
+    return;
+  }
+
   torOps.markAsTor(req, function markedAsTor(error) {
     if (error) {
       callback(error);
     } else if (req.isTor) {
-      callback(blockTor ? lang.errBlockedTor : null);
+      if (req.bypassed) {
+        callback();
+      } else {
+        callback(blockTor ? lang.errBlockedTor : null, null, bypassAllowed);
+      }
+
     } else if (req.isProxy) {
       if (blockProxy) {
         callback(lang.errBlockedProxy);

@@ -1,6 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
+var bypassOps = require('../engine/bypassOps');
 var postingOps = require('../engine/postingOps').thread;
 var captchaOps = require('../engine/captchaOps');
 var lang = require('../engine/langOps').languagePack();
@@ -50,14 +51,27 @@ function checkBans(req, res, parameters, userData, captchaId) {
 
 }
 
+function useBypass(req, res, parameters, userData, captchaId, bypassId) {
+
+  bypassOps.useBypass(bypassId, req, function usedBypass(error) {
+
+    if (error) {
+      formOps.outputError(error, 500, res);
+    } else {
+      checkBans(req, res, parameters, userData, captchaId);
+    }
+  });
+}
+
 exports.process = function(req, res) {
 
-  formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
-      parameters) {
+  formOps.getAuthenticatedPost(req, res, true,
+      function gotData(auth, userData, parameters) {
 
-    var cookies = formOps.getCookies(req);
+        var cookies = formOps.getCookies(req);
 
-    checkBans(req, res, parameters, userData, cookies.captchaid);
-  }, true);
+        useBypass(req, res, parameters, userData, cookies.captchaid,
+            cookies.bypass);
+      }, true);
 
 };

@@ -22,6 +22,7 @@ And will respond with serialized json objects with the following structure:
 The authstatus can be either 'ok' or 'expired', in which case the user hash must be replaced by the content of 'newHash'.
 
 The global status are:
+    bypassable: use has been prevented from posting but its possible for him to use the block bypass to post.
     error: internal server occurred. The error string will be on the data field.
     blank: parameter was sent in blank. The parameter will be on the data field.
     tooLarge: request body is too large.
