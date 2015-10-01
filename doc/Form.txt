@@ -838,7 +838,6 @@ Json output(Object): object with the current global settings. It contains the fo
     captchaExpiration(Number): how many minutes must pass before captchas expire.
     maxFileSizeMB(Number): maximum size allowed for files in megabytes.
     acceptedMimes(Array): array of valid mimes for uploads on posts.
-    logPageSize(Number): how many log entries should be displayed on the logs page.
     topBoardsCount(Number): how many boards should be picked for top boards.
     boardsPerPage(Number): how many boards should be displayed on the boards page.
     torSource: url to be used to fetch ips of tor exit nodes.
@@ -895,7 +894,6 @@ Parameters:
     acceptedMimes(Array): array of mimetypes allowed for uploads.
     maxFiles(Number): maximum amount of files to be uploaded at once.
     banMessage: message to be displayed on banned posts.
-    logPageSize(Number): amount of entries shown on log pages.
     anonymousName: name to be used by default when the user does not input a name and the board owner didn't set one.
     topBoardsCount(Number): amount of boards to be picked as top boards.
     boardsPerPage(Number): amount of boards to be displayed on each page of the board listing.

@@ -528,7 +528,6 @@ Parameters:
     acceptedMimes(Array): array of mimetypes allowed for uploads.
     maxFiles(Number): maximum amount of files to be uploaded at once.
     banMessage: message to be displayed on banned posts.
-    logPageSize(Number): amount of entries shown on log pages.
     anonymousName: name to be used by default when the user does not input a name and the board owner didn't set one.
     topBoardsCount(Number): amount of boards to be picked as top boards.
     boardsPerPage(Number): amount of boards to be displayed on each page of the board listing.

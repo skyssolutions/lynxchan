@@ -1538,10 +1538,6 @@ fieldBanMessage:
     use: have it's value manipulated.
     description: field that displays the default ban message to be displayed on posts.
 
-fieldLogPageSize:
-    use: have it's value manipulated.
-    description: field that displays the maximum amount of log entries to be displayed on each page of the logs.
-
 fieldAnonymousName:
     use: have it's value manipulated.
     description: field that displays the name used for anonymous posters by default.

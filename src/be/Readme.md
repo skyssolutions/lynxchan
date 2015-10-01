@@ -82,7 +82,6 @@ Settings files that goes into the settings directory:
 * `defaultBanMessage`: default ban message to be used for banned content when the person applying the ban does not submit a message. Defaults to the `miscDefaultBanMessage` entry on the language pack.
 * `disableAccountCreation`(Boolean): disables account creation for users.
 * `boardCreationRequirement`(Number): minimum global role required for board creation.
-* `logPageSize`(Number): amount of log entries to be displayed at once. Defaults to 50.
 * `defaultAnonymousName`: Default anonymous name if none is set for the board. Defaults to the `miscDefaultAnonymous` entry on the language pack.
 * `topBoardsCount`(Number): amount of boards to be listed in the top boards. Defaults to 25. 
 * `boardsPerPage`(Number): amount of boards to be listed in boards.js. Defaults to 50.

@@ -247,7 +247,6 @@ exports.getDefaultSettings = function() {
     acceptedMimes : [ 'image/png', 'image/jpeg', 'image/gif', 'image/bmp',
         'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg', 'audio/ogg',
         'audio/webm' ],
-    logPageSize : 50,
     boardsPerPage : 50,
     torSource : 'https://check.torproject.org/exit-addresses',
     maxBoardRules : 20,

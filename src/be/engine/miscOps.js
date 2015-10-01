@@ -434,11 +434,6 @@ exports.getParametersArray = function() {
     setting : 'maxFiles',
     element : 'fieldMaxFiles'
   }, {
-    param : 'logPageSize',
-    type : 'number',
-    setting : 'logPageSize',
-    element : 'fieldLogPageSize'
-  }, {
     param : 'bypassDurationHours',
     type : 'number',
     setting : 'bypassDurationHours',

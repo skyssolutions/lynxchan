@@ -186,4 +186,18 @@ Root(Array): array of strings, each one being a rule of the board.
 
 ------------------------------------------------------------------------------------------
 
+JSO_ID::07
+
+Path:/.global/logs/<yyyy-MM-dd>.json
+
+Root(Array): array with the logs of the day. Each object contains the following fields:
+    user: login of the user that performed the action.
+    type: type of action performed.
+    time(Date): date and time of when the event occurred.
+    boardUri: board related to the event.
+    description: string describing the event.
+    global(Boolean): indicates if the event was global. 
+
+------------------------------------------------------------------------------------------
+
 
