@@ -4,13 +4,14 @@ var apiOps = require('../engine/apiOps');
 var mandatoryParameters = [ 'hash' ];
 var modOps = require('../engine/modOps').hashBan;
 
-function placeHashBan(userData, parameters, res) {
+function placeHashBan(userData, parameters, captchaId, res) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
   }
 
-  modOps.placeHashBan(userData, parameters, function hashBanPlaced(error) {
+  modOps.placeHashBan(userData, parameters, captchaId, function hashBanPlaced(
+      error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
@@ -22,7 +23,7 @@ function placeHashBan(userData, parameters, res) {
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
-      parameters) {
-    placeHashBan(userData, parameters, res);
+      parameters, captchaId) {
+    placeHashBan(userData, parameters, captchaId, res);
   });
 };

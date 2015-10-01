@@ -14,6 +14,7 @@ var hashBans = db.hashBans();
 var logOps;
 var lang;
 var common;
+var captchaOps;
 var miscOps;
 
 var hashBanArguments = [ {
@@ -24,6 +25,7 @@ var hashBanArguments = [ {
 
 exports.loadDependencies = function() {
 
+  captchaOps = require('../captchaOps');
   logOps = require('../logOps');
   lang = require('../langOps').languagePack();
   common = require('.').common;
@@ -117,7 +119,7 @@ exports.writeHashBan = function(userData, parameters, callback) {
   });
 };
 
-exports.placeHashBan = function(userData, parameters, callback) {
+exports.checkForHashBanPermission = function(userData, parameters, callback) {
 
   miscOps.sanitizeStrings(parameters, hashBanArguments);
 
@@ -142,6 +144,21 @@ exports.placeHashBan = function(userData, parameters, callback) {
   } else {
     exports.writeHashBan(userData, parameters, callback);
   }
+
+};
+
+exports.placeHashBan = function(userData, parameters, captchaId, callback) {
+
+  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
+      function solvedCaptcha(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.checkForHashBanPermission(userData, parameters, callback);
+        }
+
+      });
 
 };
 // } Section 2: Hash ban

@@ -28,6 +28,7 @@ It accepts the following arguments:
 * `--reload-maintenance`, `-rm`: will rebuild maintenance page on boot.
 * `--reload-overboard`, `-ro`: reloads the overboard.
 * `--reload-logs`, `-rlog`: reloads logs.
+* `--reload-boards`, `-rboard`: reloads boards.
 * `--no-daemon`, `-nd`: will not start listening. For rebuilding pages while having a server running.
 * `--create-account`, `-ca`: will create a new account. Require the use of the login, role and password parameters.
 * `--login`, `-l`: informs a login.

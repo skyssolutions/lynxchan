@@ -291,7 +291,7 @@ exports.updateUsersOwnedBoards = function(oldOwner, parameters, callback) {
 
 };
 
-exports.performTransfer = function(oldOwner, userData, parameters, callback) {
+exports.logTransfer = function(userData, parameters, oldOwner, callback) {
 
   var message = lang.logTransferBoard.replace('{$actor}', userData.login)
       .replace('{$board}', parameters.boardUri).replace('{$login}',
@@ -305,26 +305,30 @@ exports.performTransfer = function(oldOwner, userData, parameters, callback) {
     type : 'boardTransfer',
     description : message
   }, function createdLog() {
+    exports.updateUsersOwnedBoards(oldOwner, parameters, callback);
+  });
 
-    // style exception, too simple
-    boards.update({
-      boardUri : parameters.boardUri
-    }, {
-      $set : {
-        owner : parameters.login
-      },
-      $pull : {
-        volunteers : parameters.login
-      }
-    }, function transferedBoard(error) {
-      if (error) {
-        callback(error);
-      } else {
-        exports.updateUsersOwnedBoards(oldOwner, parameters, callback);
-      }
+};
 
-    });
-    // style exception, too simple
+exports.performTransfer = function(oldOwner, userData, parameters, callback) {
+
+  boards.update({
+    boardUri : parameters.boardUri
+  }, {
+    $set : {
+      owner : parameters.login
+    },
+    $pull : {
+      volunteers : parameters.login
+    }
+  }, function transferedBoard(error) {
+    if (error) {
+      callback(error);
+    } else if (oldOwner !== userData.login) {
+      exports.logTransfer(userData, parameters, oldOwner, callback);
+    } else {
+      exports.updateUsersOwnedBoards(oldOwner, parameters, callback);
+    }
 
   });
 

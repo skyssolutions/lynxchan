@@ -10,10 +10,12 @@ var miscOps;
 var common;
 var logger;
 var logOps;
+var captchaOps;
 var lang;
 
 exports.loadDependencies = function() {
 
+  captchaOps = require('../../captchaOps');
   logOps = require('../../logOps');
   common = require('..').common;
   logger = require('../../../logger');
@@ -143,7 +145,7 @@ exports.createRangeBan = function(userData, parameters, callback) {
 
 };
 
-exports.placeRangeBan = function(userData, parameters, callback) {
+exports.checkRangeBanPermission = function(userData, parameters, callback) {
 
   var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 
@@ -166,6 +168,19 @@ exports.placeRangeBan = function(userData, parameters, callback) {
   } else {
     exports.createRangeBan(userData, parameters, callback);
   }
+
+};
+
+exports.placeRangeBan = function(userData, parameters, captchaId, callback) {
+
+  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
+      function solvedCaptcha(error) {
+        if (error) {
+          callback(error);
+        } else {
+          exports.checkRangeBanPermission(userData, parameters, callback);
+        }
+      });
 
 };
 // } Section 2: Create range ban
@@ -260,7 +275,7 @@ exports.createProxyBan = function(userData, parameters, callback) {
   });
 };
 
-exports.placeProxyBan = function(userData, parameters, callback) {
+exports.checkProxyBanPermission = function(userData, parameters, callback) {
 
   var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 
@@ -283,6 +298,19 @@ exports.placeProxyBan = function(userData, parameters, callback) {
   } else {
     exports.createProxyBan(userData, parameters, callback);
   }
+
+};
+
+exports.placeProxyBan = function(userData, parameters, captchaId, callback) {
+
+  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
+      function solvedCaptcha(error) {
+        if (error) {
+          callback(error);
+        } else {
+          exports.checkProxyBanPermission(userData, parameters, callback);
+        }
+      });
 
 };
 // } Section 4: Proxy ban creation

@@ -250,7 +250,7 @@ Parameters:
     action: action to be performed. 'ban', 'spoil', 'delete' and 'report' may be used, case insensitive.
     global: if any value is passed, indicates the reports are global.
     expiration: date able to be converted to a new Date of when the bans should expire.    
-    captcha: captcha input. Used only for reporting.
+    captcha: captcha input. Used for banning and reporting.
     deleteUploads: if informed, only the uploads and not the posts and threads will be deleted.
 
 ------------------------------------------------------------------------------------------
@@ -652,6 +652,7 @@ Name: placeRangeBan
 Description: creates a range ban. Requires authentication. Global range bans are restricted to users with global role lower than 3.
 
 Parameters:
+    captcha: captcha input.
     boardUri: if not informed, the range ban will be global.
     range: range to be banned.    
 
@@ -1050,6 +1051,7 @@ Description: creates a new proxy ban.
 Parameters:
     boardUri: uri of the board where the proxy will be banned from. If not informed, will place a global proxy ban.
     proxyIp: ip of the proxy to be banned.
+    captcha: captcha input.
 
 ------------------------------------------------------------------------------------------
 

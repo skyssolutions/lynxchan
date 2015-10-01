@@ -127,14 +127,14 @@ function processParameters(req, userData, parameters, res, captchaId) {
         });
   } else if (parameters.action.toLowerCase() === 'ban') {
 
-    modOps.ipBan.specific.ban(userData, reportedObjects, parameters, function(
-        error) {
-      if (error) {
-        formOps.outputError(error, 500, res);
-      } else {
-        formOps.outputResponse(lang.msgUsersBanned, '/', res);
-      }
-    });
+    modOps.ipBan.specific.ban(userData, reportedObjects, parameters, captchaId,
+        function(error) {
+          if (error) {
+            formOps.outputError(error, 500, res);
+          } else {
+            formOps.outputResponse(lang.msgUsersBanned, '/', res);
+          }
+        });
 
   } else {
 

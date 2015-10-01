@@ -10,6 +10,7 @@ var defaultBanMessage = settings.defaultBanMessage;
 var logger;
 var logOps;
 var miscOps;
+var captchaOps;
 var common;
 
 var lang;
@@ -26,6 +27,7 @@ var banArguments = [ {
 
 exports.loadDependencies = function() {
 
+  captchaOps = require('../../captchaOps');
   logOps = require('../../logOps');
   common = require('..').common;
   logger = require('../../../logger');
@@ -412,7 +414,8 @@ exports.iterateBoards = function(foundBoards, userData, reportedObjects,
 
 };
 
-exports.ban = function(userData, reportedObjects, parameters, callback) {
+exports.isolateBoards = function(userData, reportedObjects, parameters,
+    callback) {
 
   miscOps.sanitizeStrings(parameters, banArguments);
 
@@ -444,6 +447,21 @@ exports.ban = function(userData, reportedObjects, parameters, callback) {
     exports.iterateBoards(foundBoards, userData, reportedObjects, parameters,
         callback);
   }
+
+};
+
+exports.ban = function(userData, reportedObjects, parameters, captchaId,
+    callback) {
+
+  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
+      function solvedCaptcha(error) {
+        if (error) {
+          callback(error);
+        } else {
+          exports
+              .isolateBoards(userData, reportedObjects, parameters, callback);
+        }
+      });
 
 };
 // } Section 1: Ban

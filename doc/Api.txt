@@ -274,6 +274,7 @@ Name: banUsers
 Description: ban the ips of the selected posts and/or threads.
 
 Parameters:
+    captcha: captcha input.
     reason: reason of the report. 256 characters.  
     expiration: date able to be converted to a new Date of when the bans should expire.
     global(Boolean): indicates if the bans are global.
@@ -404,6 +405,7 @@ Name: placeRangeBan
 Description: creates a range ban. Requires authentication. Global range bans are restricted to users with global role lower than 3.
 
 Parameters:
+    captcha: captcha input.
     boardUri: if not informed, the range ban will be global.
     range: range to be banned.    
 
@@ -701,6 +703,19 @@ Parameters:
     captcha: captcha input. 
 
 Output: id of the new block bypass.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::49
+
+Name: placeProxyBan
+
+Description: allows the user to renew his block bypass.
+
+Parameters:
+    captcha: captcha input.
+    proxyIp: ip of the proxy to be banned.
+    boardUri: specific board to ban the proxy. If not informed, the ban will be global.
 
 ------------------------------------------------------------------------------------------
 
