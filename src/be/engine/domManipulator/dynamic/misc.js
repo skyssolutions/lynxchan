@@ -18,7 +18,8 @@ var boardCreationRequirement = settings.boardCreationRequirement;
 exports.optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
 
 exports.accountSettingsRelation = {
-  alwaysSignRole : 'checkboxAlwaysSign'
+  alwaysSignRole : 'checkboxAlwaysSign',
+  lockEnabled : 'checkboxLock'
 };
 
 exports.loadDependencies = function() {
@@ -698,4 +699,29 @@ exports.blockBypass = function(valid) {
 
     return error.toString();
   }
+};
+
+exports.lockEmail = function(link) {
+
+  try {
+
+    var document = jsdom(templateHandler.unlockEmail);
+
+    var unlockLink = document.getElementById('unlockLink');
+    unlockLink.href = link;
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+
 };

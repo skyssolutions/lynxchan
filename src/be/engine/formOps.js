@@ -38,6 +38,10 @@ exports.loadDependencies = function() {
 
 };
 
+exports.getDomain = function(req) {
+  return 'http://' + req.headers.host;
+};
+
 exports.getCookies = function(req) {
   var parsedCookies = {};
 

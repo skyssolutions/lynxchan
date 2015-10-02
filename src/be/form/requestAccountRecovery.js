@@ -23,12 +23,13 @@ function requestRecovery(domain, parameters, res, captchaId) {
 
 exports.process = function(req, res) {
 
-  formOps.getPostData(req, res, function gotData(auth, parameters) {
+  formOps.getPostData(req, res,
+      function gotData(auth, parameters) {
 
-    var cookies = formOps.getCookies(req);
+        var cookies = formOps.getCookies(req);
 
-    requestRecovery('http://' + req.headers.host, parameters, res,
-        cookies.captchaid);
+        requestRecovery(formOps.getDomain(req), parameters, res,
+            cookies.captchaid);
 
-  });
+      });
 };

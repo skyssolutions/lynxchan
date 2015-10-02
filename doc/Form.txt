@@ -63,6 +63,7 @@ Json output(Object): object with the account data. Contains the following fields
     ownedBoards(Array): array with the list of uri of boards owned by the user.
     settings(Array): array of account settings. May contain the following values:
         alwaysSignRole: user wishes to always use his role signature when posting.
+        lockEnabled: uses wishes to have his account locked on too many failed logins.
 
 ------------------------------------------------------------------------------------------
 
@@ -431,6 +432,7 @@ Description: changes general account settings.
 Parameters:
     email: new e-mail of the account. 64 characters.
     alwaysSignRole: any value indicates the user wishes to always use his role signature on posts.
+    lockEnabled: any value indicates the user wishes to lock his account on too many failed logins.
 
 ------------------------------------------------------------------------------------------
 
@@ -1082,6 +1084,18 @@ Description: allows the user to renew his block bypass.
 
 Parameters:
     captcha: captcha input. 
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::67
+
+Name: unlockAccount
+
+Description: allows the user to unlock his account. Uses get parameters.
+
+Parameters:
+    login: account to be unlocked.
+    token: unlock token. 
 
 ------------------------------------------------------------------------------------------
 

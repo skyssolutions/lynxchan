@@ -318,5 +318,9 @@
   "titBlockbypass": "Block bypass",
   "errDisabledBypass": "Block bypass is not enabled.",
   "msgBypassRenewed": "Block bypass renewed.",
-  "titLogPage": "Logs for {$date}"
+  "titLogPage": "Logs for {$date}",
+  "errAccountLocked": "This account is locked due to too many failed logins.",
+  "subLockedAccount": "Account locked",
+  "msgAccountUnlocked": "Account unlocked.",
+  "errInvalidToken": "Invalid unlock token."
 }

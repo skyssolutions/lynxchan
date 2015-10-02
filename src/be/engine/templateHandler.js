@@ -286,7 +286,8 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       {
         template : 'accountPage',
         fields : [ 'labelLogin', 'boardsDiv', 'emailField',
-            'globalManagementLink', 'boardCreationDiv', 'checkboxAlwaysSign' ]
+            'globalManagementLink', 'boardCreationDiv', 'checkboxAlwaysSign',
+            'checkboxLock' ]
       },
       {
         template : 'banPage',
@@ -438,6 +439,9 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       }, {
         template : 'logIndexPage',
         fields : [ 'divDates' ]
+      }, {
+        template : 'unlockEmail',
+        fields : [ 'unlockLink' ]
       } ];
 
   var errors = [];

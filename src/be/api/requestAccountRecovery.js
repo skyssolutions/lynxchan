@@ -23,7 +23,6 @@ exports.process = function(req, res) {
 
   apiOps.getAnonJsonData(req, res,
       function gotData(auth, parameters, captchaId) {
-        recoverAccount('http://' + req.headers.host.substring(4), parameters,
-            res, captchaId);
+        recoverAccount(apiOps.getDomain(req), parameters, res, captchaId);
       });
 };

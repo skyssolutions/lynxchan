@@ -288,3 +288,7 @@ titBlockbypass: title of the page used to renew the block bypass.
 errDisabledBypass: error thrown when block bypass is not enabled.
 msgBypassRenewed: message displayed after renewing block bypass.
 titLogPage: title for log pages. Replaces: {$date}
+errAccountLocked: error thrown when the user tries to login with a locked account.
+subLockedAccount: subject of the e-mail used when the user got his account locked.
+msgAccountUnlocked: message displayed when the user's account is unlocked.
+errInvalidToken: error thrown when the specified unlock token is not valid.

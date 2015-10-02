@@ -5,13 +5,13 @@ var accountOps = require('../engine/accountOps');
 var mandatoryParameters = [ 'login' ];
 var lang = require('../engine/langOps').languagePack();
 
-function login(res, parameters) {
+function login(domain, res, parameters) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
   }
 
-  accountOps.login(parameters, function loggedIn(error, hash) {
+  accountOps.login(domain, parameters, function loggedIn(error, hash) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
@@ -31,7 +31,7 @@ exports.process = function(req, res) {
 
   formOps.getPostData(req, res, function gotData(auth, parameters) {
 
-    login(res, parameters);
+    login(formOps.getDomain(req), res, parameters);
 
   });
 

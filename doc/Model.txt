@@ -117,6 +117,8 @@ users: stores users.
     login**: login of the user. 16 characters. Only a-Z, _ and 0-9 allowed.
     email: e-mail of the user. 64 characters.
     password: hashed password of the user.
+    failedLogins(Number): amount of consecutive failed login attempts.
+    lockExpiration(Date): time when the account will unlock.
     ownedBoards(Array): list of the uri's of the boards owned by this user.
     hash: current hash of the user.
     globalRole (Number): global role of the user. 
@@ -127,6 +129,7 @@ users: stores users.
         0 means root. All power of admins plus is able to assign global admins.
     settings(Array): array with the account settings. May hold the following values:
         alwaysSignRole: indicates the user wishes to always use his role signature on posts.
+        lockEnabled: indicates the user wishes to have it's account locked after 10 consecutive failed login attempts.
 
 ----------------------------------------------------------------------------------------
 
@@ -267,6 +270,13 @@ blockBypasses: stores data about bypassing tokens.
 aggregatedLogs: stores pre-aggregated log data by day.
     logs(Array): array with ids of logs of this day.
     date(Date): date indicating the day of this aggregated information.
+
+----------------------------------------------------------------------------------------
+
+unlockTokens: stores tokens used to unlock accounts.
+    login*: login of the account.
+    expiration: expiration of the token.
+    unlockToken: token that unlocks the account.
 
 ----------------------------------------------------------------------------------------
 
