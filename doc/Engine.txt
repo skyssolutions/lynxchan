@@ -100,3 +100,6 @@ CHA_ID::9 - Cluster messaging
 	First we have generation queue messages. These messages are the most common and go from a worker to the master thread. They only have the data of the rebuild to be performed.
 	Then we have messages to be broadcast. These messages have a field named "upStream" and will also be broadcast to other workers.
 	Finally we have any other kind of message that have their own unique fields that are interpreted by the master process, like the message informing the master that the overboard threads must be re-aggregated.
+
+CHA_ID::10 - Multi-board
+	If any amount is set to how many threads should be displayed on the multi-board, users will be able to format urls like '/a+b/' to see a page with the latest threads of both boards 'a' and 'b'. The final slash is optional and any amount of boards can be selected.

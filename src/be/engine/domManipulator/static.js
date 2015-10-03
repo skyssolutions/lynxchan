@@ -549,40 +549,57 @@ exports.maintenance = function(callback) {
   }
 };
 
-exports.overboard = function(foundThreads, previewRelation, callback) {
+// Section 6: Overboard {
+exports.addOverBoardThreads = function(foundThreads, previewRelation, doc) {
+
+  for (var i = 0; i < foundThreads.length; i++) {
+    var thread = foundThreads[i];
+
+    var previews = [];
+
+    if (previewRelation[thread.boardUri]) {
+
+      previews = previewRelation[thread.boardUri][thread.threadId];
+    }
+
+    common.addThread(doc, thread, previews);
+  }
+
+};
+
+exports.overboard = function(foundThreads, previewRelation, callback,
+    multiBoard) {
 
   try {
 
     var document = jsdom(templateHandler.overboard);
 
-    document.title = '/' + settings.overboard + '/';
+    var tit = multiBoard ? lang.titMultiboard : '/' + settings.overboard + '/';
+    document.title = tit;
 
     var img = document.getElementById('bannerImage');
 
-    img.src = '/randomBanner.js?boardUri=' + settings.overboard;
+    var bannerSrc = '/randomBanner.js?boardUri=';
+    bannerSrc += multiBoard ? '.multiBoard' : settings.overboard;
 
-    for (var i = 0; i < foundThreads.length; i++) {
-      var thread = foundThreads[i];
+    img.src = bannerSrc;
 
-      var previews = [];
+    exports.addOverBoardThreads(foundThreads, previewRelation, document);
 
-      if (previewRelation[thread.boardUri]) {
-
-        previews = previewRelation[thread.boardUri][thread.threadId];
-      }
-
-      common.addThread(document, thread, previews);
+    if (multiBoard) {
+      callback(null, serializer(document));
+    } else {
+      gridFs.writeData(serializer(document), document.title, 'text/html', {},
+          callback);
     }
-
-    gridFs.writeData(serializer(document), document.title, 'text/html', {},
-        callback);
 
   } catch (error) {
     callback(error);
   }
 };
+// } Section 6: Overboard
 
-// Section 6: Log page {
+// Section 7: Log page {
 exports.setLogEntry = function(logCell, log) {
 
   if (!log.global) {
@@ -639,4 +656,4 @@ exports.log = function(date, logs, callback) {
   }
 
 };
-// Section 6: Log page {
+// Section 7: Log page {

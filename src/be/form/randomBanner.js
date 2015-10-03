@@ -24,9 +24,12 @@ exports.process = function(req, res) {
   var parameters = url.parse(req.url, true).query;
 
   var overboard = parameters.boardUri === settings.overboard;
+  var multiBoard = parameters.boardUri === '.multiBoard';
+  var global = overboard || multiBoard || settings.useGlobalBanners;
+  
 
   files.find({
-    'metadata.boardUri' : settings.useGlobalBanners || overboard ? {
+    'metadata.boardUri' : global ? {
       $exists : false
     } : parameters.boardUri,
     'metadata.type' : 'banner'

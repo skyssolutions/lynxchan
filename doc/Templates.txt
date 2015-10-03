@@ -1702,6 +1702,10 @@ fieldBypassPosts:
     use: have it's value manipulated.
     description: indicates how many posts a block bypass lasts.
 
+fieldMultiBoardThreadCount:
+    use: have it's value manipulated.
+    description: indicates how threads should be displayed on the multi-board.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::52

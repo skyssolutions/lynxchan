@@ -414,6 +414,11 @@ exports.getParametersArray = function() {
     setting : 'autoSageLimit',
     element : 'fieldAutoSageLimit'
   }, {
+    param : 'multiboardThreadCount',
+    type : 'number',
+    setting : 'multiboardThreadCount',
+    element : 'fieldMultiBoardThreadCount'
+  }, {
     param : 'threadLimit',
     type : 'number',
     setting : 'maxThreadCount',

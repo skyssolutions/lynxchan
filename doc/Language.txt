@@ -292,3 +292,4 @@ errAccountLocked: error thrown when the user tries to login with a locked accoun
 subLockedAccount: subject of the e-mail used when the user got his account locked.
 msgAccountUnlocked: message displayed when the user's account is unlocked.
 errInvalidToken: error thrown when the specified unlock token is not valid.
+titMultiboard: title of the multi-board.

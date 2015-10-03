@@ -6,6 +6,8 @@
 var indexString = 'index.html';
 var url = require('url');
 var settings = require('../settingsHandler').getGeneralSettings();
+var multiBoardAllowed = settings.multiboardThreadCount;
+var multiBoard = require('./multiBoardHandler');
 var verbose = settings.verbose;
 var maintenance = settings.maintenance;
 var archive = require('../archive');
@@ -151,6 +153,37 @@ exports.getPathNameForGfs = function(req) {
   return pathName;
 };
 
+exports.testForMultiBoard = function(pathName, boardsToReturn) {
+
+  if (!multiBoardAllowed) {
+    return;
+  }
+
+  var amountToRemove = pathName.substring(pathName.length - 1) === '/' ? 1 : 0;
+
+  var trimmedPath = pathName.substring(1, pathName.length - amountToRemove);
+
+  var boards = trimmedPath.split('+');
+
+  if (boards.length < 2) {
+    return false;
+  }
+
+  for (var i = 0; i < boards.length; i++) {
+
+    var piece = boards[i];
+
+    boardsToReturn.push(piece);
+
+    if (/\W/.test(piece)) {
+      return false;
+    }
+  }
+
+  return true;
+
+};
+
 exports.outputGfsFile = function(req, res) {
 
   var pathName = exports.getPathNameForGfs(req);
@@ -161,27 +194,33 @@ exports.outputGfsFile = function(req, res) {
 
   var gotSecondString = splitArray.length === 2 && splitArray[1].length;
 
+  var selectedBoards = [];
+
   if (firstPart.indexOf('.js', firstPart.length - 3) !== -1) {
 
     exports.processFormRequest(req, res);
 
-    return;
   } else if (gotSecondString && !/\W/.test(splitArray[1])) {
-    // redirects after cutting the index.html
+
+    // redirects if we missed the slash
     res.writeHead(302, {
       'Location' : '/' + splitArray[1] + '/'
 
     });
     res.end();
-    return;
 
+  } else if (exports.testForMultiBoard(pathName, selectedBoards)) {
+
+    multiBoard.outputBoards(selectedBoards, res);
+
+  } else {
+
+    gridFs.outputFile(pathName, req, res, function streamedFile(error) {
+      if (error) {
+        exports.outputError(error, res);
+      }
+    });
   }
-
-  gridFs.outputFile(pathName, req, res, function streamedFile(error) {
-    if (error) {
-      exports.outputError(error, res);
-    }
-  });
 
 };
 

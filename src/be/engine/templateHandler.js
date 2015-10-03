@@ -417,7 +417,8 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
             'checkboxGlobalBoardModeration', 'checkboxGlobalBanners',
             'checkboxAllowCustomJs', 'fieldGlobalLatestPosts',
             'checkboxGlobalCaptcha', 'fieldTcpPort', 'fieldOverboard',
-            'comboBypassMode', 'fieldBypassHours', 'fieldBypassPosts' ]
+            'comboBypassMode', 'fieldBypassHours', 'fieldBypassPosts',
+            'fieldMultiBoardThreadCount' ]
       }, {
         template : 'archiveDeletionPage',
         fields : []

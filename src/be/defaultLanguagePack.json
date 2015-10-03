@@ -322,5 +322,6 @@
   "errAccountLocked": "This account is locked due to too many failed logins.",
   "subLockedAccount": "Account locked",
   "msgAccountUnlocked": "Account unlocked.",
-  "errInvalidToken": "Invalid unlock token."
+  "errInvalidToken": "Invalid unlock token.",
+  "titMultiboard": "Multi-board"
 }

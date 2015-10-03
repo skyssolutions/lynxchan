@@ -870,6 +870,7 @@ Json output(Object): object with the current global settings. It contains the fo
     bypassDurationHours(Number): amount of hours a block bypass lasts.
     bypassMaxPosts(Number): amount of uses a block bypass lasts.
     bypassMode(Number): mode for block bypass.
+    multiboardThreadCount(Number): amount of threads to be displayed on the multi-board.
 
 ------------------------------------------------------------------------------------------
 
@@ -936,6 +937,7 @@ Parameters:
     bypassDurationHours(Number): amount of hours a block bypass lasts.
     bypassMaxPosts(Number): amount of uses a block bypass lasts.
     bypassMode(Number): mode for block bypass.
+    multiboardThreadCount(Number): amount of threads to be displayed on the multi-board.
 
 ------------------------------------------------------------------------------------------
 
