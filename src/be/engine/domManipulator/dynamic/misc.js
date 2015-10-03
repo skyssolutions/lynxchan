@@ -315,14 +315,25 @@ exports.setBoardCell = function(board, boardCell) {
   }
 };
 
-exports.setPages = function(document, pageCount) {
+exports.setPages = function(parameters, document, pageCount) {
   var pagesDiv = document.getElementById('divPages');
 
   for (var j = 1; j <= pageCount; j++) {
 
     var link = document.createElement('a');
     link.innerHTML = j;
-    link.href = '/boards.js?page=' + j;
+
+    var href = '/boards.js?page=' + j;
+
+    if (parameters.boardUri) {
+      href += '&boardUri=' + parameters.boardUri;
+    }
+
+    if (parameters.tags) {
+      href += '&tags=' + parameters.tags;
+    }
+
+    link.href = href;
 
     pagesDiv.appendChild(link);
   }
@@ -346,7 +357,7 @@ exports.setBoards = function(boards, document) {
 
 };
 
-exports.boards = function(boards, pageCount) {
+exports.boards = function(parameters, boards, pageCount) {
   try {
     var document = jsdom(templateHandler.boardsPage);
 
@@ -362,7 +373,7 @@ exports.boards = function(boards, pageCount) {
 
     exports.setBoards(boards, document);
 
-    exports.setPages(document, pageCount);
+    exports.setPages(parameters, document, pageCount);
 
     return serializer(document);
 

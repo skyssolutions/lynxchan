@@ -9,13 +9,53 @@ var settings = require('../settingsHandler').getGeneralSettings();
 var pageSize = settings.boardsPerPage || 50;
 var url = require('url');
 
+function getQueryBlock(parameters) {
+
+  var queryBlock = {};
+
+  if (parameters.boardUri && parameters.boardUri.length) {
+    queryBlock.boardUri = {
+      $regex : parameters.boardUri
+    };
+  } else {
+    delete parameters.boardUri;
+  }
+
+  if (parameters.tags && parameters.tags.length) {
+
+    var tags = [];
+
+    var rawTags = parameters.tags.split(',');
+
+    for (var i = 0; i < rawTags.length; i++) {
+      var tag = rawTags[i].trim();
+
+      if (tag.length) {
+        tags.push(tag);
+      }
+    }
+
+    queryBlock.tags = {
+      $all : tags
+    };
+
+  } else {
+    delete parameters.tags;
+  }
+
+  return queryBlock;
+
+}
+
 exports.process = function(req, res) {
 
   var parameters = url.parse(req.url, true).query;
 
   var page = parameters.page || 1;
 
-  boards.count(function(error, count) {
+  var queryBlock = getQueryBlock(parameters);
+
+  boards.count(queryBlock, function(error, count) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
@@ -26,16 +66,16 @@ exports.process = function(req, res) {
 
       var toSkip = (parameters.page - 1) * pageSize;
 
-      // style exception, too simple
-      boards.find({
-        settings : {
-          $not : {
-            $elemMatch : {
-              $in : [ 'unindex' ]
-            }
+      queryBlock.settings = {
+        $not : {
+          $elemMatch : {
+            $in : [ 'unindex' ]
           }
         }
-      }, {
+      };
+
+      // style exception, too simple
+      boards.find(queryBlock, {
         _id : 0,
         boardName : 1,
         boardUri : 1,
@@ -60,7 +100,8 @@ exports.process = function(req, res) {
               if (json) {
                 res.end(jsonBuilder.boards(pageCount, foundBoards));
               } else {
-                res.end(domManipulator.boards(foundBoards, pageCount));
+                res.end(domManipulator.boards(parameters, foundBoards,
+                    pageCount));
               }
 
             }

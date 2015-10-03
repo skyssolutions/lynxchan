@@ -596,6 +596,8 @@ Description: displays all existing boards. Uses get parameters.
 
 Parameters:
     page: page to be viewed.
+    boardUri: uri to be searched partially.
+    tags(Array): tags to be searched. Only boards with all tags will be returned.
 
 Json output(Object): object with data regarding the available boards. Contains the following fields:
     pageCount: total amount of available pages.
