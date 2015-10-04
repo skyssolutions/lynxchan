@@ -47,6 +47,7 @@ exports.readBans = function(parameters, callback) {
 
   bans.find(queryBlock, {
     reason : 1,
+    appeal : 1,
     expiration : 1,
     appliedBy : 1
   }).sort({
@@ -244,8 +245,8 @@ exports.removeBan = function(ban, userData, callback) {
     if (error) {
       callback(error);
     } else {
-      // style exception, too simple
 
+      // style exception, too simple
       var logMessage = exports.getLiftedBanLogMessage(ban, userData);
 
       logOps.insertLog({

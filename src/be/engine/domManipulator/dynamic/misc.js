@@ -390,7 +390,6 @@ exports.boards = function(parameters, boards, pageCount) {
   }
 
 };
-
 // } Section 3: Board listing
 
 exports.edit = function(parameters, message) {
@@ -591,6 +590,16 @@ exports.setBanPage = function(document, ban, board) {
 
     ban.expiration = common.formatDateToDisplay(ban.expiration);
     document.getElementById('expirationLabel').innerHTML = ban.expiration;
+
+    if (ban.appeal) {
+      common.removeElement(document.getElementById('formAppeal'));
+    } else {
+
+      var identifier = document.getElementById('idIdentifier');
+      identifier.setAttribute('value', ban._id);
+
+    }
+
   }
 
 };

@@ -387,6 +387,7 @@ exports.checkForBan = function(req, boardUri, res, callback) {
 
       exports.outputResponse(null, {
         reason : ban.reason,
+        appealled : ban.appeal ? true : false,
         proxyIp : ban.proxyIp,
         range : ban.range,
         banId : ban._id,

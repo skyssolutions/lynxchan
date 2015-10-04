@@ -34,7 +34,7 @@ The global status are:
     ok: operation successful.
     maintenance: site is going under maintenance.
     formatNotAllowed: an uploaded file has a format that is now allowed.
-    banned: user is banned. In this case, data will contain and object with the following fields: reason, board, expiration.
+    banned: user is banned. In this case, data will contain and object with the following fields: reason, board, expiration and appealled.
     hashBan: user tried to upload a banned file. In this case, data will contain an array where each object contains the following fields:
         file: name provided for the file.
         boardUri: board uri of the hash ban. If not informed, the file is banned globally.
@@ -718,6 +718,18 @@ Parameters:
     captcha: captcha input.
     proxyIp: ip of the proxy to be banned.
     boardUri: specific board to ban the proxy. If not informed, the ban will be global.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::50
+
+Name: appealBan
+
+Description: appeals a ban.
+
+Parameters:
+    banId: id of the ban being appealed.
+    appeal: appeal. 
 
 ------------------------------------------------------------------------------------------
 

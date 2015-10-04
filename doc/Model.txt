@@ -161,6 +161,7 @@ bans: stores bans.
     reason: reason of the ban. 256 characters.
     ip(Array): banned ip.
     boardUri*: board of the ban. If not set, the ban is global.
+    appeal: appeal sent by the user. 512 characters.
 
 ----------------------------------------------------------------------------------------
 

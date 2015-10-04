@@ -173,7 +173,7 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       {
         template : 'banCell',
         fields : [ 'reasonLabel', 'expirationLabel', 'appliedByLabel',
-            'idLabel' ]
+            'idLabel', 'appealLabel', 'appealPanel' ]
       },
       {
         template : 'logCell',
@@ -291,7 +291,8 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       },
       {
         template : 'banPage',
-        fields : [ 'boardLabel', 'reasonLabel', 'expirationLabel', 'idLabel' ]
+        fields : [ 'boardLabel', 'reasonLabel', 'expirationLabel', 'idLabel',
+            'formAppeal', 'idIdentifier' ]
       },
       {
         template : 'gManagement',

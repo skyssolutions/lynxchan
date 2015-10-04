@@ -93,7 +93,7 @@ CHA_ID::8 - Addons
 		req: request provided by the io.js api.
 		res: response provided by the io.js. Reference for these two: https://iojs.org/api/http.html
 	formRequest: same as above, but for the form api.
-	Addons are expected to overwrite public properties of the engine's modules. For an addon to be used, it must be added to the global setting addons, an array with the name of the addons to be loaded. They will be loaded in the order they appear in the array. First they will be loaded in only after all of them are loaded, the function init() will be executed. Refer to the example addon. To perform requests to be caught by the addon, the path must be formated in the following manner: "/addon.js/addonnamegoeshere".
+	Addons are expected to overwrite public properties of the engine's modules. For an addon to be used, it must be added to the global setting addons, an array with the name of the addons to be loaded. They will be loaded in the order they appear in the array. First they will be loaded and only after all of them are loaded, the function init() will be executed. Refer to the example addon. To perform requests to be caught by the addon, the path must be formated in the following manner: "/addon.js/addonnamegoeshere".
 
 CHA_ID::9 - Cluster messaging
 	Process messages are used to communicate between the worker and the master process. These messages can be used in some different manners.

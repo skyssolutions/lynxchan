@@ -834,6 +834,14 @@ expirationLabel:
     use: have it's innerHTML manipulated.
     description: holds the expiration of the ban.
     
+appealPanel:
+    use: might be removed.
+    description: panel used to display the appeal, if any.
+
+appealLabel:
+    use: have it's innerHTML manipulated.
+    description: holds the appeal of the ban.
+
 appliedByLabel:
     use: have it's innerHTML manipulated.
     description: holds the login of the user that applied the ban.
@@ -911,6 +919,14 @@ expirationLabel:
 idLabel:
     use: have it's innerHTML manipulated.
     description: holds the id of the ban.
+
+formAppeal: 
+    use: might be removed.
+    description: form used to appeal the ban.
+
+idIdentifier:
+    use: have it's value manipulated.
+    description: hidden input used to identify the ban on the appeal.
 
 ------------------------------------------------------------------------------------------
 

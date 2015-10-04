@@ -23,6 +23,13 @@ exports.loadDependencies = function() {
 // Section 1: Bans {
 exports.setBanCell = function(ban, cell) {
 
+  if (ban.appeal) {
+    var label = cell.getElementsByClassName('appealLabel')[0];
+    label.innerHTML = ban.appeal;
+  } else {
+    common.removeElement(cell.getElementsByClassName('appealPanel')[0]);
+  }
+
   cell.getElementsByClassName('idLabel')[0].innerHTML = ban._id;
 
   cell.getElementsByClassName('reasonLabel')[0].innerHTML = ban.reason;

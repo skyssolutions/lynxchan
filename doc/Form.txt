@@ -1103,4 +1103,16 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::68
+
+Name: appealBan
+
+Description: appeals a ban.
+
+Parameters:
+    banId: id of the ban being appealed.
+    appeal: appeal. 
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.

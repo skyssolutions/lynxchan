@@ -1,5 +1,7 @@
 'use strict';
 
+var mongo = require('mongodb');
+var ObjectID = mongo.ObjectID;
 var db = require('../../../db');
 var boards = db.boards();
 var bans = db.bans();
@@ -14,6 +16,12 @@ var captchaOps;
 var common;
 
 var lang;
+
+var appealArguments = [ {
+  length : 512,
+  field : 'appeal',
+  removeHTML : true
+} ];
 
 var banArguments = [ {
   field : 'reason',
@@ -465,3 +473,39 @@ exports.ban = function(userData, reportedObjects, parameters, captchaId,
 
 };
 // } Section 1: Ban
+
+// Section 2: Appeal {
+exports.appealBan = function(ip, parameters, callback) {
+
+  try {
+
+    miscOps.sanitizeStrings(parameters, appealArguments);
+
+    bans.findOneAndUpdate({
+      _id : new ObjectID(parameters.banId),
+      ip : ip,
+      appeal : {
+        $exists : false
+      }
+    }, {
+      $set : {
+        appeal : parameters.appeal
+      }
+    }, function gotBan(error, result) {
+
+      if (error) {
+        callback(error);
+      } else if (!result.value) {
+        callback(lang.errBanNotFound);
+      } else {
+        callback();
+      }
+
+    });
+
+  } catch (error) {
+    callback(error);
+  }
+
+};
+// } Section 2: Appeal
