@@ -112,7 +112,7 @@ function writeNewSettings(settings, callback) {
       var exceptionalFields = [ 'siteTitle', 'captchaFonts',
           'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage',
           'disableTopBoards', 'allowBoardCustomJs', 'topBoardsCount',
-          'globalLatestPosts', 'forceCaptcha', 'overboard' ];
+          'globalLatestPosts', 'forceCaptcha', 'overboard', 'pageSize' ];
 
       for ( var key in generalSettings) {
         if (!settings[key] && exceptionalFields.indexOf(key) === -1) {

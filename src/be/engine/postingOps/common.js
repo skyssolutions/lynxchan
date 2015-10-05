@@ -286,25 +286,32 @@ exports.applyFilters = function(filters, message) {
 };
 
 // Section 2: Markdown {
+exports.processLine = function(split, replaceCode) {
+
+  split = split.replace(/\=\=.+\=\=/g, redTextFunction);
+  split = split.replace(/\'\'\'.+\'\'\'/g, boldFunction);
+  split = split.replace(/\'\'.+\'\'/g, italicFunction);
+  split = split.replace(/\_\_.+\_\_/g, underlineFunction);
+  split = split.replace(/\~\~.+\~\~/g, strikeFunction);
+  split = split.replace(/\[spoiler\].+\[\/spoiler\]/g, spoilerFunction);
+  split = split.replace(/\[aa\]/g, '<span class="aa">');
+  split = split.replace(/\[\/aa\]/g, '</span>');
+
+  if (replaceCode) {
+    split = split.replace(/\[code\]/g, '<code>');
+    split = split.replace(/\[\/code\]/g, '</code>');
+  }
+
+  return split;
+
+};
+
 exports.replaceStyleMarkdown = function(message, replaceCode) {
 
   var split = message.split('\n');
 
   for (var i = 0; i < split.length; i++) {
-
-    split[i] = split[i].replace(/^>[^\&].+/g, greenTextFunction);
-    split[i] = split[i].replace(/\=\=.+\=\=/g, redTextFunction);
-    split[i] = split[i].replace(/\'\'\'.+\'\'\'/g, boldFunction);
-    split[i] = split[i].replace(/\'\'.+\'\'/g, italicFunction);
-    split[i] = split[i].replace(/\_\_.+\_\_/g, underlineFunction);
-    split[i] = split[i].replace(/\~\~.+\~\~/g, strikeFunction);
-    split[i] = split[i].replace(/\[spoiler\].+\[\/spoiler\]/g, spoilerFunction);
-
-    if (replaceCode) {
-      split[i] = split[i].replace(/\[code\]/g, '<code>');
-      split[i] = split[i].replace(/\[\/code\]/g, '</code>');
-    }
-
+    split[i] = exports.processLine(split[i], replaceCode);
   }
 
   message = split.join('<br>');
