@@ -323,13 +323,6 @@ exports.processHideableForms = function(document, userRole) {
     common.removeElement(document.getElementById('addStaffForm'));
   }
 
-  var allowedToDeleteFromIp = userRole <= settings.clearIpMinRole;
-
-  if (!allowedToDeleteFromIp) {
-    common.removeElement(document.getElementById('ipDeletionForm'));
-
-  }
-
 };
 
 exports.globalManagement = function(userRole, userLogin, staff, reports) {

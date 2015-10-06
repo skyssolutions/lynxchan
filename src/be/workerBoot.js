@@ -53,7 +53,6 @@ function main(req, res) {
 function startListening() {
 
   try {
-    require('./engine/templateHandler').loadTemplates();
 
     if (settingsHandler.getGeneralSettings().ssl) {
 

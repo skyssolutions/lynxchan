@@ -1,5 +1,6 @@
 'use strict';
 
+var master = require('cluster').isMaster;
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var db = require('../db');
@@ -8,9 +9,7 @@ var logs = db.logs();
 var generator;
 
 exports.loadDependencies = function() {
-
   generator = require('./generator').global;
-
 };
 
 // Section 1: Log insertion {
@@ -40,12 +39,16 @@ exports.aggregateLog = function(entry, callback) {
       console.log('Failed to aggregate log: ' + error.toString());
     }
 
-    process.send({
-      log : true,
-      date : entryTime
-    });
+    if (!master) {
+      process.send({
+        log : true,
+        date : entryTime
+      });
+      callback();
+    } else {
+      generator.log(entryTime, callback);
+    }
 
-    callback();
   });
 };
 

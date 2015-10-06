@@ -13,12 +13,14 @@ var common;
 var templateHandler;
 var lang;
 var gridFs;
+var miscOps;
 var siteTitle;
 
 var availableLogTypes;
 
 exports.loadDependencies = function() {
 
+  miscOps = require('../miscOps');
   common = require('.').common;
   templateHandler = require('../templateHandler');
   lang = require('../langOps').languagePack();
@@ -144,7 +146,18 @@ exports.setThreadTitle = function(document, boardUri, threadData) {
 };
 
 exports.setModElements = function(modding, document, boardUri, boardData,
-    threadData, posts, callback) {
+    threadData, posts, userRole, callback) {
+
+  var globalStaff = userRole <= miscOps.getMaxStaffRole();
+  if (!globalStaff) {
+    common.removeElement(document.getElementById('formTransfer'));
+  }
+
+  var allowedToDeleteFromIp = userRole <= settings.clearIpMinRole;
+
+  if (!modding || !allowedToDeleteFromIp) {
+    common.removeElement(document.getElementById('ipDeletionForm'));
+  }
 
   if (modding) {
 
@@ -189,7 +202,7 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
         userRole);
 
     exports.setModElements(modding, document, boardUri, boardData, threadData,
-        posts, callback, userRole);
+        posts, userRole, callback);
 
   } catch (error) {
     callback(error);

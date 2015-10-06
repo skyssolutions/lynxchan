@@ -9,7 +9,7 @@
 See other branches named like `1.1.x` for stable versions. They will receive only critical bug fixes and as long as they live, they will be maintained.
 
 # Required software
-* [Io.js](http://iojs.org), I suggest installing from source code. Just remember to checkout a tag before building. I recommend using version 2.5.0 for production. I had random crashes with both 3.2.0 and 3.3.0. *WARNING*: they have just merged back into node. Installing from source at 4.0.0 onwards will NOT install iojs on your system, only node. Creating a soft link from node to iojs seemed to work fine. I will change everything to node.js once I feel 4.x is stable enough. 
+* [Node.js](http://nodejs.org), I suggest installing from source code. Just remember to checkout a tag before building.
 * [MongoDB](https://www.mongodb.org/)
 * [ImageMagick](http://www.imagemagick.org/script/index.php)
 * [ffmpeg](https://www.ffmpeg.org/) if mediaThumb setting is enabled. Requires zlib-devel on centOS.
@@ -17,7 +17,7 @@ See other branches named like `1.1.x` for stable versions. They will receive onl
 
 # Automatic install
 1. Required: browse to `aux` and run the script `setup.sh` that will prompt for the install of a front-end, default settings and libraries. Browsing to the `aux` directory is required because the scripts use relative paths to this directory.
-2. Optional: run the script `root-setup.sh` that will prompt for the install of a command using a soft-link to `src/be/boot.js`. This script must be run as root. It will also try to install a service if you provide the argument `systemd` or `upstart` and have an user called `iojs`.
+2. Optional: run the script `root-setup.sh` that will prompt for the install of a command using a soft-link to `src/be/boot.js`. This script must be run as root. It will also try to install a service if you provide the argument `systemd` or `upstart` and have an user called `node`.
   
 # Manual install
 1. Create the required settings file in the `src/be/settings` directory. Instructions can be found at `src/be/readme.md`. There is also a directory called settings.example with a set of functional settings.
@@ -25,7 +25,7 @@ See other branches named like `1.1.x` for stable versions. They will receive onl
 3. Clone a front-end to the `src/fe` directory or clone to anywhere and set it's correct location on `src/be/settings/general.json`.
 
 # Running
-You can either run the `lynxchan` command or start the `lynxchan` service if you ran the `aux/root-setup.sh` script. You could just run the `src/be/boot.js` file. Run ``` sudo setcap 'cap_net_bind_service=+ep' `which iojs` ``` to be able to run it on port 80 without root access.
+You can either run the `lynxchan` command or start the `lynxchan` service if you ran the `aux/root-setup.sh` script. You could just run the `src/be/boot.js` file. Run ``` sudo setcap 'cap_net_bind_service=+ep' `which node` ``` to be able to run it on port 80 without root access.
 
 # Documentation
 As in many things, I am very anal about documentation.

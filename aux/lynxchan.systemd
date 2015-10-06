@@ -4,7 +4,7 @@ After=mongod.service
 
 [Service]
 ExecStart=/usr/bin/lynxchan --daemon
-User=iojs
+User=node
 StandardOutput=syslog                  
 Restart=on-abort
 

@@ -277,7 +277,7 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
             'bannerImage', 'captchaDiv', 'divName', 'labelMaxFileSize',
             'checkboxCyclic', 'flagsDiv', 'flagCombobox', 'panelMessage',
             'divMessage', 'formTransfer', 'transferBoardIdentifier',
-            'transferThreadIdentifier', 'inputSpoil' ]
+            'transferThreadIdentifier', 'inputSpoil', 'ipDeletionForm' ]
       },
       {
         template : 'messagePage',
@@ -298,8 +298,8 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
         template : 'gManagement',
         fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
             'reportDiv', 'bansLink', 'rangeBansLink', 'hashBansLink',
-            'globalSettingsLink', 'archiveDeletionLink', 'ipDeletionForm',
-            'globalBannersLink', 'proxyBansLink' ]
+            'globalSettingsLink', 'archiveDeletionLink', 'globalBannersLink',
+            'proxyBansLink' ]
       },
       {
         template : 'bManagement',

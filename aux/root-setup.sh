@@ -8,7 +8,7 @@ read answerInit
 
 if [ -n "$answerInit" ]; then
 
-  if getent passwd iojs  > /dev/null; then
+  if getent passwd node  > /dev/null; then
 
     if [ $answerInit == "upstart" ]; then
 
@@ -18,11 +18,11 @@ if [ -n "$answerInit" ]; then
       rm -rf /etc/init/lynxchan.conf
       cp ./lynxchan.conf /etc/init/lynxchan.conf
 
-      if [ ! -d /home/iojs ]; then
-        echo "Creating iojs's home folder for logs."
-        mkdir /home/iojs
-        chown node /home/iojs 
-        chmod 600 /home/iojs
+      if [ ! -d /home/node ]; then
+        echo "Creating node's home folder for logs."
+        mkdir /home/node
+        chown node /home/node 
+        chmod 600 /home/node
       fi
 
       echo "Upstart daemon installed at /etc/init"
@@ -34,7 +34,7 @@ if [ -n "$answerInit" ]; then
     fi 
 
   else
-    echo "User iojs does not exist. Add it to the system and run this script again to be able to install a service."
+    echo "User node does not exist. Add it to the system and run this script again to be able to install a service."
   fi
 fi
 

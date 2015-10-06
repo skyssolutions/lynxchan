@@ -1,4 +1,4 @@
-#!/usr/bin/env iojs
+#!/usr/bin/env node
 
 'use strict';
 
@@ -73,7 +73,6 @@ exports.reload = function() {
 
   exports.startEngine();
 
-  require('./engine/templateHandler').loadTemplates();
   require('./archive').reload();
 
   if (cluster.isMaster) {
@@ -538,7 +537,6 @@ function iterateDefaultPages(foundFiles, index) {
 function checkForDefaultPages() {
 
   generator = require('./engine/generator');
-  require('./engine/templateHandler').loadTemplates();
 
   if (informedArguments.reload.informed) {
     regenerateAll();
@@ -656,6 +654,8 @@ exports.startEngine = function() {
   }
 
   require('./engine/addonOps').startAddons();
+
+  require('./engine/templateHandler').loadTemplates();
 
 };
 
