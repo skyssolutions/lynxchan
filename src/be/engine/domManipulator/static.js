@@ -129,7 +129,6 @@ exports.hideModElements = function(document) {
   common.removeElement(document.getElementById('inputSpoil'));
   common.removeElement(document.getElementById('divBanInput'));
   common.removeElement(document.getElementById('divControls'));
-  common.removeElement(document.getElementById('formTransfer'));
 
 };
 
@@ -149,7 +148,7 @@ exports.setModElements = function(modding, document, boardUri, boardData,
     threadData, posts, userRole, callback) {
 
   var globalStaff = userRole <= miscOps.getMaxStaffRole();
-  if (!globalStaff) {
+  if (!globalStaff || !modding) {
     common.removeElement(document.getElementById('formTransfer'));
   }
 

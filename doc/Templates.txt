@@ -1722,6 +1722,10 @@ fieldMultiBoardThreadCount:
     use: have it's value manipulated.
     description: indicates how threads should be displayed on the multi-board.
 
+fieldConcurrentRebuildMessages:
+    use: have it's value manipulated.
+    description: indicates how many maximum concurrent messages should be handled concurrently.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::52

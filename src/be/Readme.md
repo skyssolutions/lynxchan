@@ -119,6 +119,7 @@ Settings files that goes into the settings directory:
 * `bypassDurationHours`(Number): how many hours a block bypass will last. Defaults to 24
 * `bypassMode`(Number): mode used for bypass. 0 means that it won`t be enabled. 1 means that users caught in range bans, TOR users (if TOR is blocked) and users caught in proxy bans will be able to post if they get a bypass token. 2 means that anyone will only be able to post if they get a bypass token. Defaults to 0.
 * `multiboardThreadCount`(Number): amount of threads to be displayed on the multi-board. If none is set, multi-board will not be enabled.
+* `concurrentRebuildMessages`(Number): maximum amount of concurrent rebuild queue messages being processed.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

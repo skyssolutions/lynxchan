@@ -509,6 +509,11 @@ exports.getParametersArray = function() {
     setting : 'globalLatestPosts',
     element : 'fieldGlobalLatestPosts'
   }, {
+    param : 'concurrentRebuildMessages',
+    type : 'number',
+    setting : 'concurrentRebuildMessages',
+    element : 'fieldConcurrentRebuildMessages'
+  }, {
     // boolean
     param : 'disable304',
     type : 'boolean',

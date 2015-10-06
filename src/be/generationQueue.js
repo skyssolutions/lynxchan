@@ -49,16 +49,19 @@ var rebuildingAllLogs = false;
 var rebuildingOverboard = false;
 // so we can tell its rebuilding the front-page
 var rebuildingFrontPage = false;
-var working = false;
 var boot = require('./boot');
 var debug = boot.debug();
 var generator = require('./engine/generator');
-var settingsHandler = require('./settingsHandler');
-var verbose = settingsHandler.getGeneralSettings().verbose;
+var settings = require('./settingsHandler').getGeneralSettings();
+var verbose = settings.verbose;
+var concurrentMessages = 0;
+var maxConcurrentMessages = settings.concurrentRebuildMessages;
 
 exports.reload = function() {
   generator = require('./engine/generator');
-  verbose = settingsHandler.getGeneralSettings().verbose;
+  settings = require('./settingsHandler').getGeneralSettings();
+  verbose = settings.verbose;
+  maxConcurrentMessages = settings.concurrentRebuildMessages;
 };
 
 function clearGlobalRebuilding() {
@@ -101,29 +104,36 @@ function checkForGlobalClearing(message) {
   return false;
 }
 
+function clearBoardTree(message) {
+
+  if (message.buildAll) {
+    delete queueTree[message.board];
+  } else if (message.catalog) {
+    queueTree[message.board].buildingCatalog = false;
+  } else if (message.rules) {
+    queueTree[message.board].buildingRules = false;
+  } else if (!message.page && !message.thread) {
+    queueTree[message.board].buildingPages = false;
+    queueTree[message.board].buildingCatalog = false;
+  } else if (message.page) {
+    queueTree[message.board].pages.splice(queueTree[message.board].pages
+        .indexOf(message.page), 1);
+
+  } else {
+    queueTree[message.board].threads.splice(queueTree[message.board].threads
+        .indexOf(message.thread), 1);
+
+  }
+
+}
+
 function clearTree(error, message) {
 
   if (!checkForGlobalClearing(message)) {
-
-    if (message.buildAll) {
-      delete queueTree[message.board];
-    } else if (message.catalog) {
-      queueTree[message.board].buildingCatalog = false;
-    } else if (message.rules) {
-      queueTree[message.board].buildingRules = false;
-    } else if (!message.page && !message.thread) {
-      queueTree[message.board].buildingPages = false;
-      queueTree[message.board].buildingCatalog = false;
-    } else if (message.page) {
-      queueTree[message.board].pages.splice(queueTree[message.board].pages
-          .indexOf(message.page), 1);
-
-    } else {
-      queueTree[message.board].threads.splice(queueTree[message.board].threads
-          .indexOf(message.thread), 1);
-
-    }
+    clearBoardTree(message);
   }
+
+  concurrentMessages--;
 
   processQueue();
 
@@ -212,11 +222,10 @@ function processMessage(message) {
 function processQueue() {
   if (!queueArray.length) {
 
-    working = false;
     return;
   }
 
-  working = true;
+  concurrentMessages++;
 
   var message = queueArray.shift();
 
@@ -242,7 +251,7 @@ function putInQueue(message, boardInformation) {
         .log('Current queue array :\n' + JSON.stringify(queueArray, null, 2));
   }
 
-  if (!working) {
+  if (concurrentMessages < maxConcurrentMessages) {
     if (verbose) {
       console.log('Idle, running processQueue');
     }

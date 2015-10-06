@@ -232,6 +232,7 @@ exports.getDefaultSettings = function() {
     address : '0.0.0.0',
     port : 80,
     tcpPort : 8081,
+    concurrentRebuildMessages : 1,
     fePath : __dirname + '/../fe',
     tempDirectory : '/tmp',
     pageSize : 10,

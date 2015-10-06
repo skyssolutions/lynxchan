@@ -571,6 +571,7 @@ Parameters:
     bypassMaxPosts(Number): amount of uses a block bypass lasts.
     bypassMode(Number): mode for block bypass.
     multiboardThreadCount(Number): amount of threads to be displayed on the multi-board.
+    concurrentRebuildMessages(Number: amount of concurrent rebuild messages.
 
 ------------------------------------------------------------------------------------------
 
