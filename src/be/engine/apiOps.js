@@ -2,6 +2,7 @@
 
 // general operations for the json api
 
+var cluster = require('cluster');
 var settings = require('../settingsHandler').getGeneralSettings();
 var debug = require('../boot').debug();
 var verbose = settings.verbose;
@@ -20,6 +21,8 @@ var uploadHandler;
 var allowedMimes;
 var videoMimes;
 var lang;
+var workerId = cluster.isMaster ? null : cluster.worker.id;
+var reqCount = 0;
 
 var FILE_EXT_RE = /(\.[_\-a-zA-Z0-9]{0,16}).*/;
 // replace base64 characters with safe-for-filename characters
@@ -110,7 +113,7 @@ exports.checkBlankParameters = function(object, parameters, res) {
 
 };
 
-// Section 1: Request parsing {
+// Section 1: Request handling {
 
 // Section 1.1: Upload handling {
 exports.getFileData = function(matches, res, stats, file, location, content,
@@ -283,14 +286,41 @@ exports.getAuthenticatedData = function(req, res, callback, optionalAuth,
 
 };
 
+// Section 1.2: Parsing data {
+exports.handleWrittenData = function(res, path, exceptionalMimes, cb) {
+
+  fs.readFile(path, function readData(error, data) {
+
+    uploadHandler.removeFromDisk(path);
+
+    if (error) {
+      exports.outputError(error, res);
+    } else {
+      try {
+        var parsedData = JSON.parse(data);
+
+        exports.storeImages(parsedData, res, [], [], cb, exceptionalMimes);
+
+      } catch (error) {
+        exports.outputResponse(null, error.toString(), 'parseError', res);
+      }
+    }
+
+  });
+
+};
+
 exports.getAnonJsonData = function(req, res, callback, exceptionalMimes) {
 
-  var body = '';
+  var path = tempDir + '/' + workerId + '-' + reqCount++;
+
+  var stream = fs.createWriteStream(path);
 
   var totalLength = 0;
 
   req.on('data', function dataReceived(data) {
-    body += data;
+
+    stream.write(data);
 
     totalLength += data.length;
 
@@ -301,19 +331,16 @@ exports.getAnonJsonData = function(req, res, callback, exceptionalMimes) {
 
   req.on('end', function dataEnded() {
 
-    try {
-      var parsedData = JSON.parse(body);
-
-      exports.storeImages(parsedData, res, [], [], callback, exceptionalMimes);
-
-    } catch (error) {
-      exports.outputResponse(null, error.toString(), 'parseError', res);
-    }
+    stream.end(function closedStream() {
+      exports.handleWrittenData(res, path, exceptionalMimes, callback);
+    });
 
   });
 
 };
-// } Section 1: Request parsing
+// } Section 1.2: Parsing data
+
+// } Section 1: Request handling
 
 exports.outputError = function(error, res) {
 
