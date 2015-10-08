@@ -444,6 +444,8 @@ exports.getQuotes = function(message, board, postsToFindObject) {
 
 exports.markdownText = function(message, board, replaceCode, callback) {
 
+  message = message.replace(/&/g, '&amp;');
+
   message = message.replace(/</g, '&lt');
 
   var postsToFindObject = {};

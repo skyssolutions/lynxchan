@@ -296,14 +296,20 @@ exports.handleWrittenData = function(res, path, exceptionalMimes, cb) {
     if (error) {
       exports.outputError(error, res);
     } else {
-      try {
-        var parsedData = JSON.parse(data);
 
-        exports.storeImages(parsedData, res, [], [], cb, exceptionalMimes);
+      var parsedData;
+
+      try {
+        parsedData = JSON.parse(data);
 
       } catch (error) {
         exports.outputResponse(null, error.toString(), 'parseError', res);
       }
+
+      if (parsedData) {
+        exports.storeImages(parsedData, res, [], [], cb, exceptionalMimes);
+      }
+
     }
 
   });
@@ -312,28 +318,58 @@ exports.handleWrittenData = function(res, path, exceptionalMimes, cb) {
 
 exports.getAnonJsonData = function(req, res, callback, exceptionalMimes) {
 
-  var path = tempDir + '/' + workerId + '-' + reqCount++;
+  // Use a temporary file to store incoming data and then read it back.
+
+  // While it might add some overhead, RAM could be abused by a client sending
+  // large amounts of data and throttling it's own speed.
+
+  // The uniqueness of the temporary file is based on the combination of the
+  // worker ID plus an incrementing number.
+  var path = tempDir + '/API.REQ-' + workerId + '-' + reqCount++;
+
+  // After a while (1M) we just reset the counter, there is no way to have this
+  // many concurrent connections still sending us data.
+  if (reqCount > 1000000) {
+    reqCount = 0;
+  }
 
   var stream = fs.createWriteStream(path);
+
+  var ended = false;
 
   var totalLength = 0;
 
   req.on('data', function dataReceived(data) {
+
+    if (ended) {
+      return;
+    }
 
     stream.write(data);
 
     totalLength += data.length;
 
     if (totalLength > maxRequestSize) {
+      ended = true;
+
+      // style exception, too simple
+      stream.end(function closedStream() {
+        uploadHandler.removeFromDisk(path);
+      });
+
       req.connection.destroy();
+      // style exception, too simple
+
     }
   });
 
   req.on('end', function dataEnded() {
 
-    stream.end(function closedStream() {
-      exports.handleWrittenData(res, path, exceptionalMimes, callback);
-    });
+    if (!ended) {
+      stream.end(function closedStream() {
+        exports.handleWrittenData(res, path, exceptionalMimes, callback);
+      });
+    }
 
   });
 
