@@ -160,13 +160,33 @@ exports.setNewSettings = function(settings, callback) {
 function loadDatabasesSettings() {
   var dbSettingsPath = __dirname + '/settings/db.json';
 
-  dbSettings = JSON.parse(fs.readFileSync(dbSettingsPath));
+  try {
+    dbSettings = JSON.parse(fs.readFileSync(dbSettingsPath));
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+
+      dbSettings = {
+        address : 'mongodb',
+        port : 27017,
+        db : 'lynxchan'
+      };
+
+      fs.writeFileSync(dbSettingsPath, JSON.stringify(dbSettings, null, 2));
+
+    } else {
+      throw error;
+    }
+  }
 
   try {
     var archivePath = __dirname + '/settings/archive.json';
 
     archiveSettings = JSON.parse(fs.readFileSync(archivePath));
   } catch (error) {
+
+    if (error.code !== 'ENOENT') {
+      throw error;
+    }
 
   }
 }
@@ -177,7 +197,23 @@ function loadGeneralSettings() {
 
   var generalSettingsPath = __dirname + '/settings/general.json';
 
-  generalSettings = JSON.parse(fs.readFileSync(generalSettingsPath));
+  try {
+    generalSettings = JSON.parse(fs.readFileSync(generalSettingsPath));
+  } catch (error) {
+
+    // Resilience, if there is no file for settings, create a new one empty so
+    // we just use the default settings
+    if (error.code === 'ENOENT') {
+
+      generalSettings = {};
+
+      fs.writeFileSync(generalSettingsPath, JSON.stringify(generalSettings,
+          null, 2));
+
+    } else {
+      throw error;
+    }
+  }
 
   for ( var key in defaultSettings) {
     if (!generalSettings[key]) {

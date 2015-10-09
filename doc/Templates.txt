@@ -240,6 +240,14 @@ Root element: form
 Observation: will have the class "multipleUploads" added to it if contains more than one upload.
 
 Elements:
+contentOmissionIndicator:
+    use: might be removed.
+    description: element indicating the original text was too long to be displayed.
+
+linkFullText:
+    use: have it's href manipulated.
+    description: link to the post if the message is too long and had its original text trimmed.
+
 panelProxyIp:
     use: might be removed.
     description: panel containing the label of the proxy ip.
@@ -357,6 +365,14 @@ Root element: form
 Observation: will have the class "multipleUploads" added to it if contains more than one upload.
 
 Elements:
+contentOmissionIndicator:
+    use: might be removed.
+    description: element indicating the original text was too long to be displayed.
+
+linkFullText:
+    use: have it's href manipulated.
+    description: link to the post if the message is too long and had its original text trimmed.
+
 labelIp:
     use: have it's innerHTML manipulated or might be removed.
     description: label used to display the hashed ip of the poster to the staff.

@@ -17,6 +17,7 @@ exports.indicatorsRelation = {
 
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 var displayMaxSize;
+var maxPreviewBreaks = 16;
 
 exports.loadDependencies = function() {
 
@@ -269,6 +270,31 @@ exports.setSharedHideableElements = function(posting, cell) {
 
 };
 
+exports.addMessage = function(innerPage, cell, markdown, boardUri, threadId,
+    postId) {
+
+  if (!innerPage && (markdown.match(/<br>/g) || []).length > maxPreviewBreaks) {
+    markdown = markdown.split('<br>', maxPreviewBreaks + 1).join('<br>');
+
+    var link = cell.getElementsByClassName('linkFullText')[0];
+
+    var href = '/' + boardUri + '/res/' + threadId + '.html';
+
+    if (postId) {
+      href += '#' + (postId || threadId);
+    }
+
+    link.href = href;
+
+  } else {
+    exports.removeElement(cell
+        .getElementsByClassName('contentOmissionIndicator')[0]);
+  }
+
+  cell.getElementsByClassName('divMessage')[0].innerHTML = markdown;
+
+};
+
 // Section 2: Thread content {
 exports.setThreadModdingElements = function(modding, boardUri, thread, cell,
     bData, userRole) {
@@ -400,7 +426,7 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
   exports.setThreadHiddeableElements(thread, threadCell, modding, boardUri,
       boardData, userRole);
 
-  exports.setThreadSimpleElements(threadCell, thread);
+  exports.setThreadSimpleElements(threadCell, thread, innerPage);
 
   exports.setUploadCell(document, threadCell
       .getElementsByClassName('panelUploads')[0], thread.files, modding);
@@ -408,7 +434,8 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
   document.getElementById('divThreads').appendChild(threadCell);
 
   exports.addPosts(document, posts || [], boardUri, thread.threadId, modding,
-      threadCell.getElementsByClassName('divPosts')[0], boardData, userRole);
+      threadCell.getElementsByClassName('divPosts')[0], boardData, userRole,
+      innerPage);
 };
 
 // Section 2.1: Post content {
@@ -503,7 +530,7 @@ exports.setPostModElements = function(post, modding, postCell, boardUri,
 };
 
 exports.setPostInnerElements = function(document, boardUri, threadId, post,
-    postCell, preview, modding, boardData, userRole) {
+    postCell, preview, modding, boardData, userRole, innerPage) {
 
   var linkName = postCell.getElementsByClassName('linkName')[0];
 
@@ -518,7 +545,8 @@ exports.setPostInnerElements = function(document, boardUri, threadId, post,
   var labelCreated = postCell.getElementsByClassName('labelCreated')[0];
   labelCreated.innerHTML = exports.formatDateToDisplay(post.creation);
 
-  postCell.getElementsByClassName('divMessage')[0].innerHTML = post.markdown;
+  exports.addMessage(innerPage, postCell, post.markdown, boardUri, threadId,
+      post.postId);
 
   exports.setPostHideableElements(postCell, post);
 
@@ -530,7 +558,7 @@ exports.setPostInnerElements = function(document, boardUri, threadId, post,
 };
 
 exports.addPosts = function(document, posts, boardUri, threadId, modding,
-    divPosts, boardData, userRole) {
+    divPosts, boardData, userRole, innerPage) {
 
   for (var i = 0; i < posts.length; i++) {
     var postCell = document.createElement('div');
@@ -545,7 +573,7 @@ exports.addPosts = function(document, posts, boardUri, threadId, modding,
     postCell.id = post.postId;
 
     exports.setPostInnerElements(document, boardUri, threadId, post, postCell,
-        false, modding, boardData, userRole);
+        false, modding, boardData, userRole, innerPage);
 
     divPosts.appendChild(postCell);
   }
@@ -591,7 +619,7 @@ exports.setThreadComplexElements = function(boardUri, thread, threadCell) {
       boardUri + '-' + thread.threadId);
 };
 
-exports.setThreadSimpleElements = function(threadCell, thread) {
+exports.setThreadSimpleElements = function(threadCell, thread, innerPage) {
 
   var linkName = threadCell.getElementsByClassName('linkName')[0];
 
@@ -613,8 +641,9 @@ exports.setThreadSimpleElements = function(threadCell, thread) {
   var labelCreation = threadCell.getElementsByClassName('labelCreated')[0];
   labelCreation.innerHTML = exports.formatDateToDisplay(thread.creation);
 
-  var divMessage = threadCell.getElementsByClassName('divMessage')[0];
-  divMessage.innerHTML = thread.markdown;
+  exports.addMessage(innerPage, threadCell, thread.markdown, thread.boardUri,
+      thread.threadId);
+
 };
 
 // Section 2.2: Uploads {

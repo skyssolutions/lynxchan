@@ -144,7 +144,8 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
             'divBanMessage', 'spanId', 'panelIp', 'labelRange',
             'cyclicIndicator', 'linkQuote', 'divPosts', 'labelOmission',
             'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag', 'labelIp',
-            'labelProxyIp', 'panelProxyIp' ]
+            'labelProxyIp', 'panelProxyIp', 'contentOmissionIndicator',
+            'linkFullText' ]
       },
       {
         template : 'postCell',
@@ -152,7 +153,8 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
             'divMessage', 'linkSelf', 'deletionCheckBox', 'labelId',
             'labelRole', 'divBanMessage', 'spanId', 'panelIp', 'labelRange',
             'linkQuote', 'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag',
-            'labelIp', 'labelProxyIp', 'panelProxyIp' ]
+            'labelIp', 'labelProxyIp', 'panelProxyIp',
+            'contentOmissionIndicator', 'linkFullText' ]
       },
       {
         template : 'staffCell',
