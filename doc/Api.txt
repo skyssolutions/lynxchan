@@ -734,5 +734,16 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::51
+
+Name: denyAppeal
+
+Description: denied the appeal of a ban.
+
+Parameters:
+    banId: id of the ban being having it's appeal denied.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters
 **: exclusive funcionality to the json api.

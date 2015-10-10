@@ -162,6 +162,7 @@ bans: stores bans.
     ip(Array): banned ip.
     boardUri*: board of the ban. If not set, the ban is global.
     appeal: appeal sent by the user. 512 characters.
+    denied(Boolean): indicates if the appeal was denied.
 
 ----------------------------------------------------------------------------------------
 
@@ -204,6 +205,7 @@ staffLogs: stores log activity from staff.
         threadTransfer
         proxyBan
         proxyBanLift
+        appealDeny
     time(Date): date and time of when the event occurred.
     boardUri*: board related to the event.
     description: string describing the event.

@@ -151,6 +151,13 @@ Json output(Object): object with data used in global management. Contains the fo
     staff(Array): array with the global staff of the site the user is allowed to manage. Contains objects each with the following fields:
         login: login of the user.
         globalRole: global role of the user.
+    appealedBans(Array): array of bans that were appealed and not denied. Each object contains the following fields: 
+        _id: unique id of the ban.
+        reason: reason of the ban.
+        expiration: when the ban expires.
+        appliedBy: login of the user that applied the ban.
+        appeal: appeal of the bans.
+        denied(Boolean): indicates if the appeal was denied.
     reports(Array): array with the global reports. Contains objects each with the following fields:
         _id: unique id of the report.
         threadId(Number): id of the thread either reported or containing the reported post.
@@ -210,6 +217,13 @@ Json output(Object): object with data used to manage the board. Contains the fol
         postId(Number): reported post.
         reason: reason of the report.
         creation: when the content was reported.
+    appealedBans(Array) array of appealed bans that weren't denied. Each object contains the following fields:
+        _id: unique id of the ban.
+        reason: reason of the ban.
+        expiration: when the ban expires.
+        appliedBy: login of the user that applied the ban.
+        appeal: appeal of the bans.
+        denied(Boolean): indicates if the appeal was denied.
 
 ------------------------------------------------------------------------------------------
 
@@ -383,6 +397,8 @@ Json output(Array): array with the bans. Each object contains the following valu
     reason: reason of the ban.
     expiration: when the ban expires.
     appliedBy: login of the user that applied the ban.
+    appeal: appeal of the bans.
+    denied(Boolean): indicates if the appeal was denied.
 
 ------------------------------------------------------------------------------------------
 
@@ -1114,6 +1130,17 @@ Description: appeals a ban.
 Parameters:
     banId: id of the ban being appealed.
     appeal: appeal. 
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::69
+
+Name: denyAppeal
+
+Description: denied the appeal of a ban. Requires authentication
+
+Parameters:
+    banId: id of the ban being having it's appeal denied.
 
 ------------------------------------------------------------------------------------------
 

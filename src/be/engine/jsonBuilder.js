@@ -326,18 +326,20 @@ exports.account = function(userData) {
 
 };
 
-exports.globalManagement = function(userRole, userLogin, staff, reports) {
+exports.globalManagement = function(userRole, userLogin, staff, reports,
+    appealedBans) {
 
   return JSON.stringify({
     login : userLogin,
     globalRole : isNaN(userRole) ? 4 : userRole,
     staff : staff || [],
+    appealedBans : appealedBans || [],
     reports : reports || []
   });
 
 };
 
-exports.boardManagement = function(userData, boardData, reports) {
+exports.boardManagement = function(userData, boardData, reports, bans) {
 
   return JSON.stringify({
     usesCustomSpoiler : boardData.usesCustomSpoiler,
@@ -351,7 +353,8 @@ exports.boardManagement = function(userData, boardData, reports) {
     tags : boardData.tags || [],
     boardMessage : boardData.boardMessage,
     isOwner : userData.login === boardData.owner,
-    openReports : reports || reports
+    openReports : reports || [],
+    appealedBans : bans || []
   });
 
 };

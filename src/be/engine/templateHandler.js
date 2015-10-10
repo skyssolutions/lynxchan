@@ -175,7 +175,8 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       {
         template : 'banCell',
         fields : [ 'reasonLabel', 'expirationLabel', 'appliedByLabel',
-            'idLabel', 'appealLabel', 'appealPanel' ]
+            'idLabel', 'appealLabel', 'appealPanel', 'liftIdentifier',
+            'denyIdentifier', 'denyForm' ]
       },
       {
         template : 'logCell',
@@ -301,7 +302,7 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
         fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
             'reportDiv', 'bansLink', 'rangeBansLink', 'hashBansLink',
             'globalSettingsLink', 'archiveDeletionLink', 'globalBannersLink',
-            'proxyBansLink' ]
+            'proxyBansLink', 'appealedBansPanel' ]
       },
       {
         template : 'bManagement',
@@ -318,7 +319,7 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
             'hourlyThreadLimitField', 'autoCaptchaThresholdField',
             'hashBansLink', 'customSpoilerIndicator', 'tagsField',
             'customJsForm', 'customJsIdentifier', 'blockDeletionCheckbox',
-            'requireFileCheckbox', 'proxyBansLink' ]
+            'requireFileCheckbox', 'proxyBansLink', 'appealedBansPanel' ]
       },
       {
         template : 'closedReportsPage',

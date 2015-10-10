@@ -169,7 +169,7 @@ exports.setBoardManagementLinks = function(document, boardData) {
 
 };
 
-exports.boardManagement = function(userData, boardData, reports) {
+exports.boardManagement = function(userData, boardData, reports, bans) {
 
   try {
 
@@ -186,6 +186,9 @@ exports.boardManagement = function(userData, boardData, reports) {
 
     var label = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
     boardLabel.innerHTML = label;
+
+    common.setBanList(document, document.getElementById('appealedBansPanel'),
+        bans);
 
     common.setReportList(document, reports);
 
@@ -325,14 +328,29 @@ exports.processHideableForms = function(document, userRole) {
 
 };
 
-exports.globalManagement = function(userRole, userLogin, staff, reports) {
+exports.setGlobalManagementList = function(document, reports, appealedBans) {
+
+  common.setReportList(document, reports);
+
+  var banDiv = document.getElementById('appealedBansPanel');
+
+  if (appealedBans) {
+    common.setBanList(document, banDiv, appealedBans);
+  } else {
+    common.removeElement(banDiv);
+  }
+
+};
+
+exports.globalManagement = function(userRole, userLogin, staff, reports,
+    appealedBans) {
 
   try {
     var document = jsdom(templateHandler.gManagement);
 
     document.title = lang.titGlobalManagement;
 
-    common.setReportList(document, reports);
+    exports.setGlobalManagementList(document, reports, appealedBans);
 
     exports.setGlobalManagementLinks(userRole, document);
 

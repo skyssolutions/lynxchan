@@ -521,6 +521,10 @@ TEM_ID::10
 gManagement:
 
 Elements:
+appealedBansPanel:
+    use: have children appended to it or might be removed.
+    panel containing the appealed bans that weren't denied.
+
 proxyBansLink:
     use: might be removed.
     description: link to the page used for global proxy bans.
@@ -596,6 +600,10 @@ TEM_ID::12
 bManagement:
 
 Elements:
+appealedBansPanel:
+    use: have children appended to it.
+    panel containing the appealed bans that weren't denied.
+
 proxyBansLink:
     use: have it's href manipulated.
     description: link to the page used for board proxy bans.
@@ -835,9 +843,17 @@ bansDiv:
 TEM_ID::18
 
 banCell*:
-Root element: form
+Root element: div
 
 Elements:
+denyForm:
+    use: might be removed.
+    description: form used to deny a ban's appeal.
+
+denyIdentifier:
+    use: have it's value manipulated.
+    description: hidden identifier to deny the ban's appeal.
+
 idLabel:
     use: have it's innerHTML manipulated.
     description: holds the id of the ban.
@@ -861,6 +877,10 @@ appealLabel:
 appliedByLabel:
     use: have it's innerHTML manipulated.
     description: holds the login of the user that applied the ban.
+
+liftIdentifier:
+    use: have it's value manipulated.
+    description: hidden identifier to lift the ban.
 
 ------------------------------------------------------------------------------------------
 

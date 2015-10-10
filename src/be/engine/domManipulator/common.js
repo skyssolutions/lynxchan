@@ -728,3 +728,52 @@ exports.setUploadCell = function(document, node, files, modding) {
 // } Section 2.2: Uploads
 
 // } Section 2: Thread content
+
+// Section 3: Ban div {
+exports.setBanCell = function(ban, cell) {
+
+  if (ban.appeal) {
+    var label = cell.getElementsByClassName('appealLabel')[0];
+    label.innerHTML = ban.appeal;
+  } else {
+    exports.removeElement(cell.getElementsByClassName('appealPanel')[0]);
+  }
+
+  if (!ban.denied && ban.appeal) {
+    cell.getElementsByClassName('denyIdentifier')[0].setAttribute('value',
+        ban._id);
+  } else {
+    exports.removeElement(cell.getElementsByClassName('denyForm')[0]);
+  }
+
+  cell.getElementsByClassName('idLabel')[0].innerHTML = ban._id;
+
+  cell.getElementsByClassName('reasonLabel')[0].innerHTML = ban.reason;
+
+  var expirationLabel = cell.getElementsByClassName('expirationLabel')[0];
+  expirationLabel.innerHTML = exports.formatDateToDisplay(ban.expiration);
+
+  var appliedByLabel = cell.getElementsByClassName('appliedByLabel')[0];
+  appliedByLabel.innerHTML = ban.appliedBy;
+
+  cell.getElementsByClassName('liftIdentifier')[0].setAttribute('value',
+      ban._id);
+
+};
+
+exports.setBanList = function(document, div, bans) {
+
+  for (var i = 0; i < bans.length; i++) {
+
+    var ban = bans[i];
+    var cell = document.createElement('div');
+    cell.innerHTML = templateHandler.banCell;
+
+    cell.setAttribute('class', 'banCell');
+
+    exports.setBanCell(ban, cell);
+    div.appendChild(cell);
+  }
+
+};
+// } Section 3: Ban div

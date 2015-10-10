@@ -509,3 +509,88 @@ exports.appealBan = function(ip, parameters, callback) {
 
 };
 // } Section 2: Appeal
+
+// Section 3: Deny appeal {
+exports.writeDeniedAppeal = function(userData, ban, callback) {
+
+  bans.updateOne({
+    _id : new ObjectID(ban._id)
+  }, {
+    $set : {
+      denied : true
+    }
+  }, function deniedAppeal(error) {
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      logOps.insertLog({
+        user : userData.login,
+        type : 'appealDeny',
+        time : new Date(),
+        boardUri : ban.boardUri,
+        global : ban.boardUri ? false : true,
+        description : lang.logAppealDenied.replace('{$login}', userData.login)
+            .replace('{$id}', ban._id)
+      }, function logged() {
+        callback(null, ban.boardUri);
+      });
+      // style exception, too simple
+
+    }
+  });
+
+};
+
+exports.checkAppealDenyBoardPermission = function(userData, ban, callback) {
+
+  boards.findOne({
+    boardUri : ban.boardUri
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang.errBoardNotFound);
+    } else if (!common.isInBoardStaff(userData, board, 2)) {
+      callback(lang.errDeniedBoardBanManagement);
+    } else {
+      exports.writeDeniedAppeal(userData, ban, callback);
+    }
+  });
+
+};
+
+exports.denyAppeal = function(userData, banId, callback) {
+
+  var globalStaff = userData.globalRole < miscOps.getMaxStaffRole();
+
+  try {
+
+    bans.findOne({
+      _id : new ObjectID(banId),
+      appeal : {
+        $exists : true
+      },
+      denied : {
+        $exists : false
+      }
+    }, function gotBan(error, ban) {
+      if (error) {
+        callback(error);
+      } else if (!ban) {
+        callback(lang.errBanNotFound);
+      } else if (!ban.boardUri && !globalStaff) {
+        callback(lang.errDeniedGlobalBanManagement);
+      } else if (ban.boardUri) {
+        exports.checkAppealDenyBoardPermission(userData, ban, callback);
+      } else {
+        exports.writeDeniedAppeal(userData, ban, callback);
+      }
+    });
+  } catch (error) {
+    callback(error);
+  }
+
+};
+// } Section 3: Deny appeal

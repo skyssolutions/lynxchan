@@ -42,7 +42,8 @@ exports.loadDependencies = function() {
     hashBanLift : lang.guiTypeHashBanLift,
     threadTransfer : lang.guiTypeThreadTransfer,
     proxyBan : lang.guiTypeProxyBan,
-    proxyBanLift : lang.guiTypeProxyBanLift
+    proxyBanLift : lang.guiTypeProxyBanLift,
+    appealDeny : lang.guiTypeAppealDeny
   };
 
 };

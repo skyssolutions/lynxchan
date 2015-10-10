@@ -325,5 +325,8 @@
   "errInvalidToken": "Invalid unlock token.",
   "titMultiboard": "Multi-board",
   "msgBanAppealed": "Ban appealed.",
-  "errBanNotFound": "The ban could not be found."
+  "errBanNotFound": "The ban could not be found.",
+  "logAppealDenied": "User {$login} denied an appeal for ban {$id}.",
+  "msgAppealDenied": "Appeal denied.",
+  "guiTypeAppealDeny": "Appeal deny"
 }

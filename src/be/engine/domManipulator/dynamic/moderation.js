@@ -21,29 +21,6 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Bans {
-exports.setBanCell = function(ban, cell) {
-
-  if (ban.appeal) {
-    var label = cell.getElementsByClassName('appealLabel')[0];
-    label.innerHTML = ban.appeal;
-  } else {
-    common.removeElement(cell.getElementsByClassName('appealPanel')[0]);
-  }
-
-  cell.getElementsByClassName('idLabel')[0].innerHTML = ban._id;
-
-  cell.getElementsByClassName('reasonLabel')[0].innerHTML = ban.reason;
-
-  var expirationLabel = cell.getElementsByClassName('expirationLabel')[0];
-  expirationLabel.innerHTML = common.formatDateToDisplay(ban.expiration);
-
-  var appliedByLabel = cell.getElementsByClassName('appliedByLabel')[0];
-  appliedByLabel.innerHTML = ban.appliedBy;
-
-  cell.getElementsByClassName('idIdentifier')[0].setAttribute('value', ban._id);
-
-};
-
 exports.bans = function(bans) {
 
   try {
@@ -52,19 +29,7 @@ exports.bans = function(bans) {
 
     document.title = lang.titBansManagement;
 
-    var bansDiv = document.getElementById('bansDiv');
-
-    for (var i = 0; i < bans.length; i++) {
-
-      var ban = bans[i];
-      var cell = document.createElement('form');
-      cell.innerHTML = templateHandler.banCell;
-
-      common.setFormCellBoilerPlate(cell, '/liftBan.js', 'banCell');
-
-      exports.setBanCell(ban, cell);
-      bansDiv.appendChild(cell);
-    }
+    common.setBanList(document, document.getElementById('bansDiv'), bans);
 
     return serializer(document);
 

@@ -9,7 +9,7 @@ var miscOps = require('../engine/miscOps');
 function getManagementData(userData, res, json) {
 
   miscOps.getManagementData(userData.globalRole, userData.login,
-      function gotData(error, globalStaff, globalReports) {
+      function gotData(error, globalStaff, globalReports, appealedBans) {
         if (error) {
           formOps.outputError(error, 500, res);
         } else {
@@ -19,11 +19,11 @@ function getManagementData(userData, res, json) {
 
           if (json) {
             res.end(jsonBuilder.globalManagement(userData.globalRole,
-                userData.login, globalStaff, globalReports));
+                userData.login, globalStaff, globalReports, appealedBans));
           } else {
 
             res.end(dom.globalManagement(userData.globalRole, userData.login,
-                globalStaff, globalReports));
+                globalStaff, globalReports, appealedBans));
           }
 
         }

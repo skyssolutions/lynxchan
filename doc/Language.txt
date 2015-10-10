@@ -63,15 +63,15 @@ logBoardDeletion: log entry for board deletion. Replaces: {$login}, {$board}.
 errDeniedBoardDeletion: error thrown when the user is not allowed to delete a board.
 titDefaultChanTitle: title of the front-page.
 guiAllTypes: option to select all types of logs.
-guiTypeBan: option to select logs of bans.
-guiTypeRange: option to select logs of range bans.
-guiTypeBanLift: option to select logs of ban lifts.
-guiTypeDeletion: option to select logs of deletions.
-guiTypeReportClosure: option to select logs of report closures.
-guiGlobalRoleChange: option to select logs of global role changes.
-guiTypeBoardDeletion: option to select logs of board deletions.
-guiTypeBoardTransfer: option to select logs of board ownership transfers.
-guiTypeHashBan: option to select logs of hash bans.
+guiTypeBan: label used for logs of bans.
+guiTypeRange: label used for logs of range bans.
+guiTypeBanLift: label used for logs of ban lifts.
+guiTypeDeletion: label used for logs of deletions.
+guiTypeReportClosure: label used for logs of report closures.
+guiTypeGlobalRoleChange: label used for logs of global role changes.
+guiTypeBoardDeletion: label used for logs of board deletions.
+guiTypeBoardTransfer: label used for logs of board ownership transfers.
+guiTypeHashBan: label used for logs of hash bans.
 guiWeekDays: array containing labels of weekdays starting on sunday.
 guiDateFormat: format of dates. Replaces: {$day}, {$month}, {$year}.
 titBanners: title for the banner management page. Replaces: {$board}.
@@ -241,7 +241,7 @@ errBlockedProxy: error throw when proxy users are blocked.
 titArchiveDeletion: title of the archive deletion page.
 errDeniedArchiveDeletion: error thrown when the user is not allowed to delete content from the archive.
 msgArchiveRemoved: message displayed after removing content from the archives.
-guiTypeArchiveDeletion: label used to select logs of archive deletion.
+guiTypeArchiveDeletion: label used for logs of archive deletion.
 logArchiveDeletion: object containing the pieces used for the log message when deleting something from the archives. Contains the following fields:
     startPiece: piece used at the start of the message. Replaces: {$login}
     boardPiece: piece used when a board is being deleted whole from the archives. Replaces: {$board}
@@ -268,7 +268,7 @@ errTorFilesBlocked: error thrown when TOR users are not allowed to post files.
 msgThreadTransferred: message used after moving a thread between boards.
 errDeniedThreadTransfer: error thrown when the user is not allowed to move a thread between boards.
 logThreadTransfer: log message for thread movings. Replaces: {$login}, {$board}, {$thread}, {$boardDestination}
-guiTypeThreadTransfer: label used to select logs of thread transfers.
+guiTypeThreadTransfer: label used for logs of thread transfers.
 msgContentSpoilered: message displayed after making files spoilered.
 errDeniedSpoilered: error thrown when the user is not allowed to spoil existing files.
 msgErrThreadFileRequired: error thrown when a board requires a file to create a thread.
@@ -278,10 +278,10 @@ errDeniedBoardProxyBanManagement: error thrown when the user is denied managemen
 titProxyBans: title of the proxy ban management page.
 msgProxyBanCreated: message displayed when a proxy ban is placed.
 errInvalidIp: error thrown when an invalid ip is informed.
-guiTypeProxyBan: option to select logs of proxy bans.
+guiTypeProxyBan: label used for logs of proxy bans.
 logProxyBan: log entry for proxy ban creation. Replaces: {$login}, {$board}, {$ip}
 logProxyBanLift: log entry for proxy ban lift. Replaces: {$login}, {$board}, {$ip}
-guiTypeProxyBanLift: option to select logs of proxy ban lifts.
+guiTypeProxyBanLift: label used for logs of proxy ban lifts.
 msgProxyBanLifted: message displayed after lifting a proxy ban.
 guiBypassModes: array with the bypass mode options. The first element is the one for bypass disabled. The second is for bypass enabled. The third is for mandatory use of block bypass.
 titBlockbypass: title of the page used to renew the block bypass.
@@ -295,3 +295,6 @@ errInvalidToken: error thrown when the specified unlock token is not valid.
 titMultiboard: title of the multi-board.
 msgBanAppealed: message displayed after appealing a ban.
 errBanNotFound: error thrown when the specified ban can't be found.
+logAppealDenied: log entry for appeal deny. Replaces: {$login}, {$id}
+guiTypeAppealDeny: label used for logs of denied appeals.
+msgAppealDenied: message displayed after denying an appeal.

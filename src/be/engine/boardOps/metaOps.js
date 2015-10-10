@@ -9,6 +9,7 @@ var settings = require('../../settingsHandler').getGeneralSettings();
 var forcedCaptcha = settings.forceCaptcha;
 var db = require('../../db');
 var reports = db.reports();
+var bans = db.bans();
 var users = db.users();
 var boards = db.boards();
 var captchaOps;
@@ -528,6 +529,28 @@ exports.createBoard = function(captchaId, parameters, userData, callback) {
 // } Section 4: Creation
 
 // Section 5: Board management {
+exports.getAppealedBans = function(boardData, reports, callback) {
+
+  bans.find({
+    boardUri : boardData.boardUri,
+    appeal : {
+      $exists : true
+    },
+    denied : {
+      $exists : false
+    }
+  }, {
+    reason : 1,
+    appeal : 1,
+    denied : 1,
+    expiration : 1,
+    appliedBy : 1
+  }).toArray(function gotBans(error, foundBans) {
+    callback(error, boardData, reports, foundBans);
+  });
+
+};
+
 exports.getBoardReports = function(boardData, callback) {
 
   reports.find({
@@ -544,9 +567,13 @@ exports.getBoardReports = function(boardData, callback) {
     reason : 1
   }).sort({
     creation : -1
-  }).toArray(function(error, reports) {
+  }).toArray(function(error, foundReports) {
 
-    callback(error, boardData, reports);
+    if (error) {
+      callback(error);
+    } else {
+      exports.getAppealedBans(boardData, foundReports, callback);
+    }
 
   });
 

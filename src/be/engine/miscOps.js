@@ -6,6 +6,7 @@ var settingsHandler = require('../settingsHandler');
 var settings = settingsHandler.getGeneralSettings();
 var verbose = settings.verbose;
 var db = require('../db');
+var bans = db.bans();
 var crypto = require('crypto');
 var users = db.users();
 var reports = db.reports();
@@ -250,9 +251,38 @@ exports.getGlobalSettingsData = function(userData, callback) {
 
 };
 
+// Section 1: Global management data {
+exports.getAppealedBans = function(users, reports, callback) {
+
+  bans.find({
+    boardUri : {
+      $exists : false
+    },
+    appeal : {
+      $exists : true
+    },
+    denied : {
+      $exists : false
+    }
+  }, {
+    reason : 1,
+    appeal : 1,
+    denied : 1,
+    expiration : 1,
+    appliedBy : 1
+  }).toArray(function gotBans(error, foundBans) {
+
+    callback(error, users, reports, foundBans);
+
+  });
+
+};
+
 exports.getManagementData = function(userRole, userLogin, callback) {
 
-  if (userRole > MAX_STAFF_ROLE) {
+  var globalStaff = userRole <= MAX_STAFF_ROLE;
+
+  if (!globalStaff) {
 
     callback(lang.errDeniedGlobalManagement);
 
@@ -293,7 +323,17 @@ exports.getManagementData = function(userRole, userLogin, callback) {
         }).sort({
           creation : -1
         }).toArray(function(gotReportserror, reports) {
-          callback(error, users, reports);
+          if (error) {
+            callback(error);
+          } else {
+
+            if (userRole < 3) {
+              exports.getAppealedBans(users, reports, callback);
+            } else {
+              callback(null, users, reports);
+
+            }
+          }
         });
       }
       // style exception, too simple
@@ -301,6 +341,7 @@ exports.getManagementData = function(userRole, userLogin, callback) {
     });
   }
 };
+// } Section 1: Global management data
 
 exports.getRange = function(ip) {
 

@@ -48,6 +48,7 @@ exports.readBans = function(parameters, callback) {
   bans.find(queryBlock, {
     reason : 1,
     appeal : 1,
+    denied : 1,
     expiration : 1,
     appliedBy : 1
   }).sort({
