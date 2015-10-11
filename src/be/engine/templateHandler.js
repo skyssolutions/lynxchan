@@ -18,114 +18,9 @@ require('jsdom').defaultDocumentFeatures = {
 exports.loadDependencies = function() {
 };
 
-exports.testPageFields = function(document, page, errors) {
+exports.getCellTests = function() {
 
-  var error = '';
-
-  for (var j = 0; j < page.fields.length; j++) {
-
-    var field = page.fields[j];
-
-    if (!document.getElementById(field)) {
-      error += '\nError, missing element with id ' + field;
-    }
-
-  }
-
-  return error;
-};
-
-exports.loadPages = function(errors, templatesPath, templateSettings, pages) {
-
-  for (var i = 0; i < pages.length; i++) {
-
-    var page = pages[i];
-
-    var fullPath = templatesPath + templateSettings[page.template];
-
-    try {
-      var template = fs.readFileSync(fullPath);
-    } catch (error) {
-      console.log('Error loading ' + page.template + '.');
-      throw error;
-    }
-
-    exports[page.template] = template;
-
-    var document = jsdom(template);
-
-    var error = exports.testPageFields(document, page, errors);
-
-    if (error.length) {
-
-      errors.push('\nPage ' + page.template + error);
-    }
-  }
-};
-
-exports.getTestCell = function(document, name, fePath, templateSettings) {
-
-  var toReturn = document.createElement('div');
-
-  var fullPath = fePath + templateSettings[name];
-
-  try {
-    var template = fs.readFileSync(fullPath);
-  } catch (error) {
-    console.log('Error loading ' + name + '.');
-    throw error;
-  }
-
-  exports[name] = template;
-
-  toReturn.innerHTML = template;
-
-  return toReturn;
-};
-
-exports.testCell = function(document, templatesPath, templateSettings, cell) {
-  var error = '';
-
-  var cellElement = exports.getTestCell(document, cell.template, templatesPath,
-      templateSettings);
-
-  for (var j = 0; j < cell.fields.length; j++) {
-
-    var field = cell.fields[j];
-
-    if (!cellElement.getElementsByClassName(field).length) {
-      error += '\nError, missing element with class ' + field;
-    } else if (cellElement.getElementsByClassName(field).length > 1) {
-      error += '\nWarning, more than one element with class ' + field;
-    }
-
-  }
-
-  return error;
-};
-
-exports.loadCells = function(errors, templatesPath, templateSettings, cells) {
-
-  var document = jsdom('<html></html>');
-
-  for (var i = 0; i < cells.length; i++) {
-
-    var cell = cells[i];
-
-    var errorFound = false;
-
-    var error = exports.testCell(document, templatesPath, templateSettings,
-        cell);
-
-    if (error.length) {
-      errors.push('\nCell ' + cell.template + error);
-    }
-  }
-};
-
-exports.loadAndTestTemplates = function(path, templateSettings) {
-
-  var cellTests = [
+  return [
       {
         template : 'catalogCell',
         fields : [ 'linkThumb', 'labelReplies', 'labelImages', 'labelPage',
@@ -234,7 +129,11 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
         fields : [ 'dateLink' ]
       } ];
 
-  var pageTests = [
+};
+
+exports.getPageTests = function() {
+
+  return [
       {
         template : 'loginPage',
         fields : [ 'divCreation' ]
@@ -344,7 +243,7 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
       {
         template : 'boardModerationPage',
         fields : [ 'boardTransferIdentifier', 'boardDeletionIdentifier',
-            'labelTitle', 'labelOwner' ]
+            'labelTitle', 'labelOwner', 'labelLastSeen' ]
       },
       {
         template : 'boardsPage',
@@ -448,6 +347,119 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
         template : 'unlockEmail',
         fields : [ 'unlockLink' ]
       } ];
+
+};
+
+exports.testPageFields = function(document, page, errors) {
+
+  var error = '';
+
+  for (var j = 0; j < page.fields.length; j++) {
+
+    var field = page.fields[j];
+
+    if (!document.getElementById(field)) {
+      error += '\nError, missing element with id ' + field;
+    }
+
+  }
+
+  return error;
+};
+
+exports.loadPages = function(errors, templatesPath, templateSettings, pages) {
+
+  for (var i = 0; i < pages.length; i++) {
+
+    var page = pages[i];
+
+    var fullPath = templatesPath + templateSettings[page.template];
+
+    try {
+      var template = fs.readFileSync(fullPath);
+    } catch (error) {
+      console.log('Error loading ' + page.template + '.');
+      throw error;
+    }
+
+    exports[page.template] = template;
+
+    var document = jsdom(template);
+
+    var error = exports.testPageFields(document, page, errors);
+
+    if (error.length) {
+
+      errors.push('\nPage ' + page.template + error);
+    }
+  }
+};
+
+exports.getTestCell = function(document, name, fePath, templateSettings) {
+
+  var toReturn = document.createElement('div');
+
+  var fullPath = fePath + templateSettings[name];
+
+  try {
+    var template = fs.readFileSync(fullPath);
+  } catch (error) {
+    console.log('Error loading ' + name + '.');
+    throw error;
+  }
+
+  exports[name] = template;
+
+  toReturn.innerHTML = template;
+
+  return toReturn;
+};
+
+exports.testCell = function(document, templatesPath, templateSettings, cell) {
+  var error = '';
+
+  var cellElement = exports.getTestCell(document, cell.template, templatesPath,
+      templateSettings);
+
+  for (var j = 0; j < cell.fields.length; j++) {
+
+    var field = cell.fields[j];
+
+    if (!cellElement.getElementsByClassName(field).length) {
+      error += '\nError, missing element with class ' + field;
+    } else if (cellElement.getElementsByClassName(field).length > 1) {
+      error += '\nWarning, more than one element with class ' + field;
+    }
+
+  }
+
+  return error;
+};
+
+exports.loadCells = function(errors, templatesPath, templateSettings, cells) {
+
+  var document = jsdom('<html></html>');
+
+  for (var i = 0; i < cells.length; i++) {
+
+    var cell = cells[i];
+
+    var errorFound = false;
+
+    var error = exports.testCell(document, templatesPath, templateSettings,
+        cell);
+
+    if (error.length) {
+      errors.push('\nCell ' + cell.template + error);
+    }
+  }
+};
+
+exports.loadAndTestTemplates = function(path, templateSettings) {
+
+  var cellTests = exports.getCellTests();
+
+  var pageTests = exports.getPageTests();
 
   var errors = [];
 

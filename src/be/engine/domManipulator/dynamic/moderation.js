@@ -123,6 +123,8 @@ exports.boardModeration = function(boardData, ownerData) {
 
     document.getElementById('labelOwner').innerHTML = ownerData.login;
 
+    document.getElementById('labelLastSeen').innerHTML = ownerData.lastSeen;
+
     var title = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
     document.getElementById('labelTitle').innerHTML = title;
 

@@ -1185,6 +1185,10 @@ labelOwner:
     use: have it's innerHTML manipulated.
     description: displays the login of the board owner.
 
+labelLastSeen:
+    use: have it's innerHTML manipulated.
+    description: displays the last time the owner of the board was seen.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::33

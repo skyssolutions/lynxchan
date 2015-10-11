@@ -77,7 +77,7 @@ threads: stores board's threads.
         md5: file hash.
         mime: mimetype of the file.
         width(Number): width of the file, if image or video.
-        height(Number): size of the file, if image or video.
+        height(Number): height of the file, if image or video.
 
 ----------------------------------------------------------------------------------------
 
@@ -109,13 +109,14 @@ posts: stores posts.
         size(Number) size in bytes of the file.
         mime: mimetype of the file.
         width(Number): width of the file, if image or video.
-        height(Number): size of the file, if image or video.
+        height(Number): height of the file, if image or video.
  
 ----------------------------------------------------------------------------------------
 
 users: stores users.
     login**: login of the user. 16 characters. Only a-Z, _ and 0-9 allowed.
     email: e-mail of the user. 64 characters.
+    lastSeen(Date): last time this user validated his account on the system.
     password: hashed password of the user.
     failedLogins(Number): amount of consecutive failed login attempts.
     lockExpiration(Date): time when the account will unlock.

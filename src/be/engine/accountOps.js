@@ -19,7 +19,7 @@ var captchaOps;
 var domManipulator;
 var lang;
 
-var maxFailedLogins = 10;
+var maxFailedLogins = 8;
 var validAccountSettings = [ 'alwaysSignRole', 'lockEnabled' ];
 
 var newAccountParameters = [ {
@@ -351,26 +351,22 @@ exports.validate = function(auth, callback) {
     return;
   }
 
-  users.findOne({
+  users.findOneAndUpdate({
     login : auth.login,
     hash : auth.hash.toString()
   }, {
-    _id : 0,
-    login : 1,
-    hash : 1,
-    ownedBoards : 1,
-    settings : 1,
-    globalRole : 1,
-    email : 1
-  }, function foundUser(error, user) {
+    $set : {
+      lastSeen : new Date()
+    }
+  }, function foundUser(error, result) {
     if (error) {
       callback(error);
-    } else if (!user) {
+    } else if (!result.value) {
       callback(lang.errInvalidAccount);
     } else {
       callback(null, {
         authStatus : 'ok'
-      }, user);
+      }, result.value);
     }
   });
 };
