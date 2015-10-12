@@ -218,7 +218,8 @@ exports.getPageTests = function() {
             'hourlyThreadLimitField', 'autoCaptchaThresholdField',
             'hashBansLink', 'customSpoilerIndicator', 'tagsField',
             'customJsForm', 'customJsIdentifier', 'blockDeletionCheckbox',
-            'requireFileCheckbox', 'proxyBansLink', 'appealedBansPanel' ]
+            'requireFileCheckbox', 'proxyBansLink', 'appealedBansPanel',
+            'linkSelf' ]
       },
       {
         template : 'closedReportsPage',

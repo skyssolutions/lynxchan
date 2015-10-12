@@ -600,6 +600,10 @@ TEM_ID::12
 bManagement:
 
 Elements:
+linkSelf:
+    use: have it's href manipulated.
+    description: link that leads to the board front-page.
+
 appealedBansPanel:
     use: have children appended to it.
     panel containing the appealed bans that weren't denied.

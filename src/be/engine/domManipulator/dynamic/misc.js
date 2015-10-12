@@ -125,7 +125,7 @@ exports.fillOwnedBoardsDiv = function(document, boardList) {
     }
 
     link.innerHTML = '/' + boardList[i] + '/';
-    link.href = link.innerHTML;
+    link.href = '/boardManagement.js?boardUri=' + boardList[i];
 
     boardDiv.appendChild(link);
 

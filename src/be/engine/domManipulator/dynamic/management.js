@@ -169,6 +169,27 @@ exports.setBoardManagementLinks = function(document, boardData) {
 
 };
 
+exports.setContent = function(document, boardData, userData, bans, reports) {
+
+  exports.setBoardManagementLinks(document, boardData);
+
+  exports.setBoardFields(document, boardData);
+
+  var globallyAllowed = globalBoardModeration && userData.globalRole <= 1;
+
+  if (userData.login === boardData.owner || globallyAllowed) {
+    exports.setBoardOwnerControls(document, boardData);
+  } else {
+    common.removeElement(document.getElementById('ownerControlDiv'));
+  }
+
+  common.setBanList(document, document.getElementById('appealedBansPanel'),
+      bans);
+
+  common.setReportList(document, reports);
+
+};
+
 exports.boardManagement = function(userData, boardData, reports, bans) {
 
   try {
@@ -178,27 +199,14 @@ exports.boardManagement = function(userData, boardData, reports, bans) {
     document.title = lang.titBoardManagement.replace('{$board}',
         boardData.boardUri);
 
-    exports.setBoardManagementLinks(document, boardData);
-
-    exports.setBoardFields(document, boardData);
+    document.getElementById('linkSelf').href = '/' + boardData.boardUri + '/';
 
     var boardLabel = document.getElementById('boardLabel');
 
     var label = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
     boardLabel.innerHTML = label;
 
-    common.setBanList(document, document.getElementById('appealedBansPanel'),
-        bans);
-
-    common.setReportList(document, reports);
-
-    var globallyAllowed = globalBoardModeration && userData.globalRole <= 1;
-
-    if (userData.login === boardData.owner || globallyAllowed) {
-      exports.setBoardOwnerControls(document, boardData);
-    } else {
-      common.removeElement(document.getElementById('ownerControlDiv'));
-    }
+    exports.setContent(document, boardData, userData, bans, reports);
 
     return serializer(document);
 
