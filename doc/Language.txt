@@ -298,3 +298,4 @@ errBanNotFound: error thrown when the specified ban can't be found.
 logAppealDenied: log entry for appeal deny. Replaces: {$login}, {$id}
 guiTypeAppealDeny: label used for logs of denied appeals.
 msgAppealDenied: message displayed after denying an appeal.
+errCouldNotMeasureImage: error thrown when the engine can't measure an image's dimensions.

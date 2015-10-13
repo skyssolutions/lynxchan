@@ -3,9 +3,6 @@
 // handles any action regarding user uploads on posting
 
 var fs = require('fs');
-var im = require('gm').subClass({
-  imageMagick : true
-});
 var db = require('../db');
 var threads = db.threads();
 var boards = db.boards();
@@ -57,10 +54,17 @@ exports.getImageBounds = function(file, callback) {
 
   var path = file.pathInDisk;
 
-  im(path).identify(function(error, stats) {
+  exec('identify ' + path, function(error, stats) {
 
     if (!error) {
-      callback(null, stats.size.width, stats.size.height);
+      var matches = stats.match(/\s(\d+)x(\d+)\s/);
+
+      if (!matches) {
+        callback(lang.errCouldNotMeasureImage);
+      } else {
+        callback(null, matches[1], matches[2]);
+      }
+
     } else {
       callback(error);
     }
@@ -423,17 +427,16 @@ exports.generateImageThumb = function(boardData, threadId, postId, file,
   file.thumbOnDisk = thumbDestination;
   file.thumbMime = file.mime;
 
-  im(file.pathInDisk).resize(thumbSize, thumbSize).noProfile().write(
-      thumbDestination,
-      function(error) {
-        if (error) {
-          callback(error);
-        } else {
-          exports
-              .transferFilesToGS(boardData, threadId, postId, file, callback);
+  var command = 'convert ' + file.pathInDisk + ' -resize ' + thumbSize + 'x';
+  command += thumbSize + ' ' + thumbDestination;
 
-        }
-      });
+  exec(command, function(error) {
+    if (error) {
+      callback(error);
+    } else {
+      exports.transferFilesToGS(boardData, threadId, postId, file, callback);
+    }
+  });
 
 };
 

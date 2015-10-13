@@ -1574,10 +1574,6 @@ fieldCaptchaExpiration:
     use: have it's value manipulated.
     description: field that displays the expiration of captchas in minutes.
 
-fieldCaptchaFonts:
-    use: have it's value manipulated.
-    description: field that displays the fonts being used by the captcha.
-
 fieldSiteTitle:
     use: have it's value manipulated.
     description: field that displays the title of the site.

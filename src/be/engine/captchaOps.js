@@ -9,9 +9,6 @@ var verbose = settings.verbose;
 var forceCaptcha = settings.forceCaptcha;
 var logger = require('../logger');
 var exec = require('child_process').exec;
-var im = require('gm').subClass({
-  imageMagick : true
-});
 var captchas = require('../db').captchas();
 var crypto = require('crypto');
 var boot = require('../boot');
@@ -25,20 +22,9 @@ var formOps;
 var gridFsHandler;
 
 // captcha settings
-var fonts = settings.captchaFonts || [];
-var bgColor = '#ffffff';
 var fontSize = 70;
-
-// color range so they are not too clear in the white background
-var minColor = 125;
-var maxColor = 175;
-
 var height = 100;
 var width = 300;
-
-// used so lines will always run across the captcha
-var minLineX = width / 4;
-var maxLineX = width - minLineX;
 
 // used so distortion doesn't pull points too hard
 var distortLimiter = 30;
@@ -47,18 +33,13 @@ var distortLimiter = 30;
 var minDistorts = 3;
 var maxDistorts = 5;
 
-// used to control how many circles are draw on the background
-var minCircles = 10;
-var maxCircles = 15;
+// used to control how many circles are turned negative
+var minCircles = 5;
+var maxCircles = 10;
 
 // used to control how large the circles can be
-var minCircleSize = 25;
-var maxCircleSize = 50;
-
-var minLines = 1;
-var maxLines = 3;
-var lineWidth = 2;
-var noise = 'multiplicative';
+var minCircleSize = 15;
+var maxCircleSize = 30;
 
 exports.loadDependencies = function() {
 
@@ -70,92 +51,7 @@ exports.loadDependencies = function() {
 
 };
 
-exports.getRandomColor = function() {
-  var red = miscOps.getRandomInt(minColor, maxColor).toString(16);
-  var green = miscOps.getRandomInt(minColor, maxColor).toString(16);
-  var blue = miscOps.getRandomInt(minColor, maxColor).toString(16);
-
-  if (red.length === 1) {
-    red = '0' + red;
-  }
-
-  if (green.length === 1) {
-    green = '0' + green;
-  }
-
-  if (blue.length === 1) {
-    blue = '0' + blue;
-  }
-
-  return '#' + red + green + blue;
-
-};
-
-// start of generation
-exports.addLines = function(path, id, callback) {
-
-  var image = im(path).stroke(exports.getRandomColor(), lineWidth);
-
-  for (var i = 0; i < miscOps.getRandomInt(minLines, maxLines); i++) {
-
-    image.drawLine(miscOps.getRandomInt(0, minLineX), miscOps.getRandomInt(0,
-        height), miscOps.getRandomInt(maxLineX, width), miscOps.getRandomInt(0,
-        height));
-
-  }
-
-  image.write(path, function wrote(error) {
-
-    if (error) {
-      callback(error);
-    } else {
-
-      // style exception, too simple
-      gridFsHandler.writeFile(path, id + '.jpg', 'image/jpeg', {
-        type : 'captcha',
-        expiration : logger.addMinutes(new Date(), captchaExpiration)
-      }, function wroteToGfs(error) {
-        callback(error);
-
-      });
-      // style exception, too simple
-    }
-
-  });
-
-};
-
-exports.distortImage = function(path, id, distorts, callback) {
-
-  var command = 'mogrify -distort Shepards \'';
-
-  for (var i = 0; i < distorts.length; i++) {
-
-    var distort = distorts[i];
-
-    if (i) {
-      command += '  ';
-    }
-
-    command += distort.origin.x + ',' + distort.origin.y + ' ';
-    command += distort.destiny.x + ',' + distort.destiny.y;
-
-  }
-
-  command += '\' ' + path;
-
-  exec(command, function distorted(error) {
-
-    if (error) {
-      callback(error);
-    } else {
-      exports.addLines(path, id, callback);
-    }
-
-  });
-
-};
-
+// Section 1: Captcha generation {
 exports.getBaseDistorts = function() {
   var distorts = [];
 
@@ -242,11 +138,47 @@ exports.getDistorts = function() {
 
 };
 
-exports.generateImage = function(text, id, callback) {
+exports.distortImage = function() {
 
-  var path = tempDirectory + '/' + id + '.jpg';
+  var distorts = exports.getDistorts();
 
-  var image = im(width, height, bgColor).stroke('black').fill('transparent');
+  var command = '-distort Shepards \'';
+
+  for (var i = 0; i < distorts.length; i++) {
+
+    var distort = distorts[i];
+
+    if (i) {
+      command += '  ';
+    }
+
+    command += distort.origin.x + ',' + distort.origin.y + ' ';
+    command += distort.destiny.x + ',' + distort.destiny.y;
+
+  }
+
+  return command + '\' ';
+
+};
+
+exports.transferToGfs = function(path, id, callback) {
+
+  gridFsHandler.writeFile(path, id + '.jpg', 'image/jpeg', {
+    type : 'captcha',
+    expiration : logger.addMinutes(new Date(), captchaExpiration)
+  }, function saved(error) {
+
+    uploadHandler.removeFromDisk(path);
+
+    callback(error);
+
+  });
+
+};
+
+exports.createMask = function(text) {
+
+  var command = 'convert -size 300x100 xc: -draw \"';
 
   for (var i = 0; i < miscOps.getRandomInt(minCircles, maxCircles); i++) {
 
@@ -262,39 +194,46 @@ exports.generateImage = function(text, id, callback) {
       y : miscOps.getRandomInt(start.y, start.y + size),
     };
 
-    image.drawCircle(start.x, start.y, end.x, end.y);
+    if (i) {
+      command += ' ';
+    }
+
+    command += 'circle ' + start.x + ',' + start.y + ' ' + end.x + ',' + end.y;
+
   }
 
-  if (fonts.length) {
-    var font = fonts[miscOps.getRandomInt(0, fonts.length - 1)];
-    image.font(font);
+  return command;
 
-  }
+};
 
-  image.stroke('transparent').fill(exports.getRandomColor()).fontSize(fontSize)
-      .drawText(0, 0, text, 'center');
+exports.generateImage = function(text, id, callback) {
 
-  if (noise) {
-    image.noise(noise);
-  }
+  var path = tempDirectory + '/' + id + '.jpg';
 
-  image.write(path, function wrote(error) {
+  var command = exports.createMask() + '\" -write mpr:mask +delete ';
+
+  command += 'xc: -pointsize 70 -gravity center -draw ';
+  command += '\"text 0,0 \'' + text + '\'\" -write mpr:original +delete ';
+
+  command += 'mpr:original -negate -write mpr:negated +delete';
+
+  command += ' mpr:negated mpr:original mpr:mask -composite ';
+  command += exports.distortImage() + '+noise multiplicative ' + path;
+
+  exec(command, function generatedImage(error) {
+
     if (error) {
       callback(error);
     } else {
 
-      // style exception, too simple
-      exports.distortImage(path, id, exports.getDistorts(width, height),
-          function distoredImage(error) {
-
-            uploadHandler.removeFromDisk(path);
-
-            callback(error, id);
-
-          });
-      // style exception, too simple
+      // style exceptiom, too simple
+      exports.transferToGfs(path, id, function saved(error) {
+        callback(error, id);
+      });
+      // style exceptiom, too simple
 
     }
+
   });
 
 };
@@ -319,7 +258,7 @@ exports.generateCaptcha = function(callback) {
   });
 
 };
-// end of generation
+// } Section 1: Captcha generation
 
 exports.checkForCaptcha = function(req, callback) {
 
@@ -351,8 +290,8 @@ exports.checkForCaptcha = function(req, callback) {
   }
 };
 
+// Section 2: Captcha consumption {
 // solves and invalidates a captcha
-// start of captcha attempt
 exports.isCaptchaSolved = function(captcha, input) {
 
   if (captcha.value) {
@@ -410,7 +349,7 @@ exports.attemptCaptcha = function(id, input, board, callback) {
   }
 
 };
-// end of captcha attempt
+// } Section 2: Captcha consumption
 
 // solves a captcha without invalidating it
 exports.solveCaptcha = function(parameters, callback) {

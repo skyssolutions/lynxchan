@@ -353,11 +353,6 @@ exports.getParametersArray = function() {
 
   return [ {
     // array
-    param : 'captchaFonts',
-    type : 'array',
-    setting : 'captchaFonts',
-    element : 'fieldCaptchaFonts'
-  }, {
     param : 'addons',
     type : 'array',
     setting : 'addons',

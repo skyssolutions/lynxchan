@@ -328,5 +328,6 @@
   "errBanNotFound": "The ban could not be found.",
   "logAppealDenied": "User {$login} denied an appeal for ban {$id}.",
   "msgAppealDenied": "Appeal denied.",
-  "guiTypeAppealDeny": "Appeal deny"
+  "guiTypeAppealDeny": "Appeal deny",
+  "errCouldNotMeasureImage": "Could not get image's dimensions."
 }
