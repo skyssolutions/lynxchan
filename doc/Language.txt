@@ -2,11 +2,11 @@ Optional language packs are a single file with a json object.
 Replaces are strings that will be replaced by some other value in the system.
 Prefixes of the keys are as follows:
 err: error.
-log: log entry.
-sub: e-mail subject.
-misc: miscellaneous
 gui: used in the GUI.
+log: log entry.
+misc: miscellaneous
 msg: messages used in the form api.
+sub: e-mail subject.
 tit: page titles.
 
 The structure of this json is as follows:
@@ -14,10 +14,6 @@ The structure of this json is as follows:
 errExpiredCaptcha: error thrown when the attempted captcha is expired.
 errWrongCaptcha: error thrown when the attempted captcha is wrong.
 errExpiredOrWrongCaptcha: error thrown when the attempted captcha might be expired or wrong.
-logGlobalRoleChange: object containing pieces used to compose the message added to the log on a global role change. Contains the following fields:
-    userPiece: piece used for the start of the message indicating which user changed the global role of the subject. Replaces: {$login}.
-    adminPiece: piece used for the start indicating the role was changed from the terminal.
-    mainPiece: rest of the message saying which user has its role changed and what role is it. Replaces: {$login}, {$role}.
 errInvalidRole: error thrown when an invalid value is provided as a global role for a global role change.
 errDeniedPermissionLevel: error throw when the user tries to give another user a level of permission that isn't lower than his own.
 errSelfRoleChange: error thrown when the user tries to change his own global role.
@@ -29,18 +25,14 @@ errInvalidRole: error thrown when the provided global role for an operation is i
 errLoginInUse: error thrown when the provided login for a new account is already being used.
 errLoginFailed: error thrown when the user fails to login.
 errInvalidAccount: error thrown when the user tries to perform an operation but the credentials fail to validate.
-subPasswordRequest: subject of the e-mail of a password reset request.
 errAccountNotFound: error thrown when the account of the password reset request can't be found.
 errNoEmailForAccount: error thrown when the account doesn't have an e-mail and the user tries to request a password reset for it.
 errPendingRequest: error thrown when the user tries to request a password reset with another one still pending. Replaces: {$expiration}.
-subPasswordReset: subject of the e-mail informing the new password of the user's account.
 errInvalidRequest: error thrown when the user tries to reset his password with an invalid password reset request.
 errPasswordMismatch: error thrown when the user tries to change his password but the new password doesn't match with its confirmation.
 errIncorrectPassword: error thrown when the user tries to change his password but the current password is incorrect.
-miscAllBoards: string meaning "all boards" to be used when something refers to all boards.
 errBoardNotFound: error thrown when the board for an operation can't be found.
 errDeniedChangeBoardSettings: error thrown when the user is not allowed to change a board's settings.
-logTransferBoard: log entry for board ownership transfer. Replaces: {$actor}, {$board}, {$login}.
 errDeniedBoardTransfer: error thrown when the user is not allowed to transfer ownership of a board.
 errOwnerVolunteer: error thrown when the user tries to assign the board owner as a volunteer.
 errDeniedSetVolunteer: error thrown when the user is not allowed to assign volunteers on a board.
@@ -52,16 +44,71 @@ errNoFiles: error thrown when the operation requires at least a file but none ar
 errNotAnImage: error thrown when the operation requires an image but the file is not an image.
 errBannerNotFound: error thrown when the specified banner could not be found.
 errDeniedBoardMod: error thrown when the user is not allowed to moderate boards.
-logPostingDeletion: object containing pieces used to compose the message added to the log on posting deletion. Contains the following fields:
-    uploadStartPiece: piece used at the beginning of the message when only files are to be deleted. Replaces: {$login}.
-    startPiece: piece used at the beginning of the message. Replaces: {$login}.
-    threadPiece: piece used to indicate the threads that will be deleted.
-    threadAndPostPiece: piece used to indicate posts that will be deleted in addition to threads being deleted.
-    postPiece: piece used to indicate posts being deleted.
-    endPiece: piece used at the end of the message. Replaces: {$board}.
-logBoardDeletion: log entry for board deletion. Replaces: {$login}, {$board}.
 errDeniedBoardDeletion: error thrown when the user is not allowed to delete a board.
-titDefaultChanTitle: title of the front-page.
+errBlankParameter: error sent to the user if a mandatory parameter is not sent on a form operation. Replaces: {$parameter}, {$reason}.
+errDeniedGlobalManagement: error throw when the user is not allowed to view global management data.
+errThreadNotFound: error thrown when the specified thread of an operation cannot be found.
+errThreadLocked: error thrown when the user tries to reply to a locked thread.
+errDeniedBoardBanManagement: error thrown when the user is not allowed to manage bans for a board.
+errDeniedGlobalBanManagement: error thrown when the user is not allowed to manage global bans.
+errDeniedBoardRangeBanManagement: error thrown when the user is not allowed to manage range bans for a board.
+errDeniedGlobalRangeBanManagement: error thrown when the user is not allowed to manage global range bans.
+errDeniedBoardHashBansManagement: error thrown when the user is not allowed to manage hash bans for a board.
+errDeniedEdit: error thrown when the user is not allowed to edit a posting.
+errDeniedGlobalHashBansManagement: error thrown when the user is not allowed to manage global hash bans.
+errDeniedBoardReportManagement: error thrown when the user is not allowed to manage reports for a board.
+errDeniedGlobalReportManagement: error thrown when the user is not allowed to manage global reports.
+errBlockedTor: error thrown to TOR users when TOR is blocked on the chan.
+errReportNotFound: error thrown when the specified report can't be found.
+errReportAlreadyClosed: error thrown when the user is trying to close a report that has been already closed.
+errInvalidExpiration: erro thrown when the informed expiration of a date is invalid.
+errDeniedThreadManagement: error thrown when the user is not allowed to manage a thread.
+errOnlyCssAllowed: error thrown on custom CSS selection when the user tries to upload something that is not a CSS.
+errDeniedCssManagement: error thrown when the user is not allowed to manage CSS for a board.
+errFileTooLarge: error thrown when a file sent is too large.
+errDeniedRuleManagement: error thrown when the user is not allowed to manage rules for a board.
+errRuleLimitReached: error thrown when the user tries to add a rule to a board that has already reached the maximum amount of rules allowed.
+errInvalidIndex: error thrown when the index of a specified rule is invalid.
+errDeniedMultipleReports: error thrown when the user is not allowed to report multiple postings at once.
+errThreadAutoLocked: error thrown when the user tries to post on an auto-locked thread.
+errMaxFiltersReached: error thrown when the board owner tries to add a filter after the board has already reached the maximum amount of filters allowed.
+errMaxBoardVolunteers: error thrown when the board owner tries to add a volunteer after the board has already reached the maximum amount of volunteers allowed.
+errPostingNotFound: error thrown when the specified posting can not be found.
+errBannerTooLarge: error thrown when a banner is too large to be used.
+errRepeatedFlag: error thrown when there is already a flag with the specified name in the board.
+errFlagNotFound: error thrown when the specified flag for an operation can't be found.
+errNotServingArchives: error thrown when the instance is not set to serve archives.
+errFormatNotAllowed: error thrown when an uploaded file uses a format disallowed by the server.
+errDeniedGlobalSettings: error thrown when the user is not allowed to edit global settings.
+errArchiveNotLoaded: error thrown when the the user tries to access the archives, they were enabled but the server haven't been restarted yet.
+errBoardLocked: error thrown when the board is locked for thread creation.
+errDeniedSpoilerManagement: error thrown when the user is not allowed to manage the custom spoiler of a board.
+errDeniedArchiveDeletion: error thrown when the user is not allowed to delete content from the archive.
+errBlockedProxy: error throw when proxy users are blocked.
+errDeniedIpDeletion: error thrown when the user is not allowed to delete posts from a single ip.
+errInvalidRange: error thrown when an invalid range is informed.
+errDeniedFlagManagement: error thrown when the user is not allowed to manage a board's flags.
+errNoPassword: error thrown when no password is provided for account creation.
+errUnloadedAddon: error thrown when an user tries to request an addon that is not activated.
+errDeniedGlobalBannerManagement: error thrown when the user is not allowed to manage global banners.
+errNoCustomJs: error throw when custom javascript is not allowed on boards.
+errDeniedJsManagement: error thrown when the user is not allowed to manage the custom css of a board.
+errOnlyJsAllowed: error thrown when an operation requires a javascript file.
+errProxyFilesBlocked: error thrown when proxy users are not allowed to post files.
+errTorFilesBlocked: error thrown when TOR users are not allowed to post files.
+errDeniedThreadTransfer: error thrown when the user is not allowed to move a thread between boards.
+errDeniedSpoilered: error thrown when the user is not allowed to spoil existing files.
+errBoardDelConfirmation: error thrown when the user fails to send the confirmation to delete a board.
+errDeniedGlobalProxyBansManagement: error thrown when the user is denied management of the global proxy bans.
+errDeniedBoardProxyBanManagement: error thrown when the user is denied management of a board's proxy bans.
+errInvalidIp: error thrown when an invalid ip is informed.
+errDisabledBypass: error thrown when block bypass is not enabled.
+errAccountLocked: error thrown when the user tries to login with a locked account.
+errInvalidToken: error thrown when the specified unlock token is not valid.
+errBanNotFound: error thrown when the specified ban can't be found.
+errCouldNotMeasureImage: error thrown when the engine can't measure an image's dimensions.
+errUnknownExtension: error thrown when the extension of the file being saved to mongo cannot be understood.
+errFlood: error thrown when flood is detected.
 guiAllTypes: option to select all types of logs.
 guiTypeBan: label used for logs of bans.
 guiTypeRange: label used for logs of range bans.
@@ -74,53 +121,44 @@ guiTypeBoardTransfer: label used for logs of board ownership transfers.
 guiTypeHashBan: label used for logs of hash bans.
 guiWeekDays: array containing labels of weekdays starting on sunday.
 guiDateFormat: format of dates. Replaces: {$day}, {$month}, {$year}.
-titBanners: title for the banner management page. Replaces: {$board}.
-titBan: title for the page displaying the user ban.
-titError: title for the error page.
-titBansManagement: title for the bans management page.
-titClosedReports: title for the closed reports page.
-titGlobalManagement: title for global management page.
-titAccount: title for account page. Replaces: {$login}.
-titLogs: title for logs page.
-titFilters: title for filter management page. Replaces: {$board}.
-titBoardModeration: title for board moderation page. Replaces: {$board}.
-titBoards: title for the boards page.
-titNoCookieCaptcha: title for the no cookie captcha page.
-titRangeBans: title for the range bans page.
-titHashBans: title for hash bans page.
-titNotFound: title for the 404 page.
-titLogin: title for the login page.
-titCatalog: title for the board's catalog. Replaces: {$board}.
-errBlankParameter: error sent to the user if a mandatory parameter is not sent on a form operation. Replaces: {$parameter}, {$reason}.
-miscReasonNotPresent: reason for blank parameter error when it is not informed.
-miscReasonNnull: reason for blank parameter when it is null.
-miscReasonUndefined: reason for blank parameter when it is undefined.
-miscReasonNoLength: reason for blank parameter when it has no length.
-errUnknownExtension: error thrown when the extension of the file being saved to mongo cannot be understood.
-errDeniedGlobalManagement: error throw when the user is not allowed to view global management data.
-miscDefaultBanMessage: default ban message.
-miscDefaultAnonymous: default name to be used for anonymous posts.
-miscBoardOwner: label for board owner.
-miscBoardVolunteer: label for board volunteer.
-errThreadNotFound: error thrown when the specified thread of an operation cannot be found.
-errThreadLocked: error thrown when the user tries to reply to a locked thread.
-errDeniedBoardBanManagement: error thrown when the user is not allowed to manage bans for a board.
-errDeniedGlobalBanManagement: error thrown when the user is not allowed to manage global bans.
-errDeniedBoardRangeBanManagement: error thrown when the user is not allowed to manage range bans for a board.
-errDeniedGlobalRangeBanManagement: error thrown when the user is not allowed to manage global range bans.
-errDeniedBoardHashBansManagement: error thrown when the user is not allowed to manage hash bans for a board.
-errDeniedGlobalHashBansManagement: error thrown when the user is not allowed to manage global hash bans.
-errDeniedBoardReportManagement: error thrown when the user is not allowed to manage reports for a board.
-errDeniedGlobalReportManagement: error thrown when the user is not allowed to manage global reports.
-errBlockedTor: error thrown to TOR users when TOR is blocked on the chan.
+guiOmmitedInfo: object containing the pieces used to inform how much stuff has been omitted from a thread when showing it on a board page. Contains the following fields:
+    startPiece: first piece used when a post is omitted. Replaces: {$postAmount}.
+    startPiecePlural: first piece used when multiple posts are omitted. Replaces: {$postAmount}.
+    filesPiece: piece used when a file is omitted. Replaces: {$imageAmount}.
+    filesPiecePlural: piece used when multiple files are omitted. Replaces: {$imageAmount}.
+    finalPiece: piece appended at the end of the text.
+guiEditInfo: string used to inform the last time a posting was edited. Replaces: {$login}, {$date}.
+guiTypeAppealDeny: label used for logs of denied appeals.
+guiOpen: string used on the catalog on the link to open the thread when it doesn't have a file.
+guiUnlimited: label used when a file size limit for an operation is limitless.
+guiNoFlag: label used for the first option on a flag combobox.
+guiArchiveLevels: array with the labels to be shown to archive options in this order: no archive, only pages, pages and images.
+guiTypeArchiveDeletion: label used for logs of archive deletion.
+guiProxyLevels: array containing the posting levels for proxy users. First element indicates no posting, second posting without files, third posting with files.
+guiTorLevels: array containing the posting levels for proxy users. First element indicates no posting, second posting without files, third posting with files.
+guiTypeThreadTransfer: label used for logs of thread transfers.
+guiTypeProxyBan: label used for logs of proxy bans.
+guiTypeProxyBanLift: label used for logs of proxy ban lifts.
+guiBypassModes: array with the bypass mode options. The first element is the one for bypass disabled. The second is for bypass enabled. The third is for mandatory use of block bypass.
+logGlobalRoleChange: object containing pieces used to compose the message added to the log on a global role change. Contains the following fields:
+    userPiece: piece used for the start of the message indicating which user changed the global role of the subject. Replaces: {$login}.
+    adminPiece: piece used for the start indicating the role was changed from the terminal.
+    mainPiece: rest of the message saying which user has its role changed and what role is it. Replaces: {$login}, {$role}.
+logTransferBoard: log entry for board ownership transfer. Replaces: {$actor}, {$board}, {$login}.
+logPostingDeletion: object containing pieces used to compose the message added to the log on posting deletion. Contains the following fields:
+    uploadStartPiece: piece used at the beginning of the message when only files are to be deleted. Replaces: {$login}.
+    startPiece: piece used at the beginning of the message. Replaces: {$login}.
+    threadPiece: piece used to indicate the threads that will be deleted.
+    threadAndPostPiece: piece used to indicate posts that will be deleted in addition to threads being deleted.
+    postPiece: piece used to indicate posts being deleted.
+    endPiece: piece used at the end of the message. Replaces: {$board}.
+logBoardDeletion: log entry for board deletion. Replaces: {$login}, {$board}.
 logReportClosure: object containing the pieces for the log used when someone closes a report. It contains the following fields:
     startPiece: starting piece of the message. Replaces: {$login}.
     globalPiece: piece containing the part that indicates the report was global.
     midPiece: piece that comes after either the start or global piece.
     postPiece: piece that might be used if the report was for a post. Replaces: {$post}.
     finalPiece: final piece of the log. Replaces: {$thread}, {$board}, {$reason}.
-errReportNotFound: error thrown when the specified report can't be found.
-errReportAlreadyClosed: error thrown when the user is trying to close a report that has been already closed.
 logPostingBan: object containing the pieces for the log used when an user bans posters. Contains the following fields:
     startPiece: piece used in the beginning of the message. Replaces: {$login}.
     globalPiece: piece used to indicate the bans were global.
@@ -129,7 +167,6 @@ logPostingBan: object containing the pieces for the log used when an user bans p
     threadAndPostPiece: piece used to indicate the banned posts if any thred were banned.
     postPiece: piece used to indicate the banned posts.
     endPiece: finishing piece. Replaces: {$board}, {$expiration}, {$reason}.
-errInvalidExpiration: erro thrown when the informed expiration of a date is invalid.
 logBanLift: object with the pieces used on the log of ban lift. Contains the following fields:
     startPiece: piece used at the beginning. Replaces: {$login}.
     globalBanPiece: piece used to indicate it is a global ban.
@@ -139,7 +176,6 @@ logBanLift: object with the pieces used on the log of ban lift. Contains the fol
     boardRangeBanPiece: piece used to indicate the board of the range ban. Replaces: {$board}.
     finalRangeBanPIece: final piece used for range bans. Replaces: {$range}.
     unknownPiece: piece used for bans which type could not be identififed. Replaces: {$ban}.
-errDeniedThreadManagement: error thrown when the user is not allowed to manage a thread.
 logRangeBan: object containing the pieces used for logs of range bans. Contains the following fields:
     startPiece: piece used at the beginning. Replaces: {$login}.
     globalPiece: piece used to indicate it is a global range ban.
@@ -155,6 +191,25 @@ logLiftHashBan: object containing the pieces used for logs of hash ban lifts. Co
     globalPiece: piece used to indicate it is a global hash ban.
     boardPiece: piece used to indicate the board of the hash ban. Replaces: {$board}.
     finalPiece: final piece. Replaces: {$hash}.
+logArchiveDeletion: object containing the pieces used for the log message when deleting something from the archives. Contains the following fields:
+    startPiece: piece used at the start of the message. Replaces: {$login}
+    boardPiece: piece used when a board is being deleted whole from the archives. Replaces: {$board}
+    threadPiece: piece used when a thread is being deleted from the archives. Replaces: {$board}, {$thread}
+    filesPiece: piece used when files are being deleted from the archives. Replaces: {$board}, {$files}
+logThreadTransfer: log message for thread movings. Replaces: {$login}, {$board}, {$thread}, {$boardDestination}
+logProxyBan: log entry for proxy ban creation. Replaces: {$login}, {$board}, {$ip}
+logProxyBanLift: log entry for proxy ban lift. Replaces: {$login}, {$board}, {$ip}
+logAppealDenied: log entry for appeal deny. Replaces: {$login}, {$id}
+miscAllBoards: string meaning "all boards" to be used when something refers to all boards.
+miscReasonNotPresent: reason for blank parameter error when it is not informed.
+miscReasonNnull: reason for blank parameter when it is null.
+miscReasonUndefined: reason for blank parameter when it is undefined.
+miscReasonNoLength: reason for blank parameter when it has no length.
+miscDefaultBanMessage: default ban message.
+miscDefaultAnonymous: default name to be used for anonymous posts.
+miscBoardOwner: label for board owner.
+miscBoardVolunteer: label for board volunteer.
+miscRoles: array with the global roles. First element is for the root role, second for admin, third for global volunteer, fourth for global janitor, fifth for regular users.
 msgChangedPassword: message used after a password change.
 msgAccountSettingsSaved: message used after saving the account settings.
 msgThreadSettingsSaved: message used after saving a thread's settings.
@@ -185,117 +240,62 @@ msgVolunteerAdded: message used after adding a new volunteer to a board.
 msgVolunteerRemoved: message used after removing a volunteer from a board.
 msgCaptchaSolved: message used after solving a captcha.
 msgBoardTransferred: message used after transferring a board to another used.
-errOnlyCssAllowed: error thrown on custom CSS selection when the user tries to upload something that is not a CSS.
-errDeniedCssManagement: error thrown when the user is not allowed to manage CSS for a board.
 msgCssSet: message used after a new custom CSS is uploaded.
 msgCssDeleted: message used after a custom CSS is deleted.
-errFileTooLarge: error thrown when a file sent is too large.
-guiOmmitedInfo: object containing the pieces used to inform how much stuff has been omitted from a thread when showing it on a board page. Contains the following fields:
-    startPiece: first piece used when a post is omitted. Replaces: {$postAmount}.
-    startPiecePlural: first piece used when multiple posts are omitted. Replaces: {$postAmount}.
-    filesPiece: piece used when a file is omitted. Replaces: {$imageAmount}.
-    filesPiecePlural: piece used when multiple files are omitted. Replaces: {$imageAmount}.
-    finalPiece: piece appended at the end of the text.
-errDeniedRuleManagement: error thrown when the user is not allowed to manage rules for a board.
-titRuleManagement: title for the board rule management page.
-errRuleLimitReached: error thrown when the user tries to add a rule to a board that has already reached the maximum amount of rules allowed.
 msgRuleCreated: message used after adding a new rule to a board.
 msgRuleDeleted: message used after deleting a rule from a board.
-errInvalidIndex: error thrown when the index of a specified rule is invalid.
-titRules: title of the rules page of a board. Replaces: {$board}.
-titMaintenance: title of the maintenance page.
-errDeniedMultipleReports: error thrown when the user is not allowed to report multiple postings at once.
-errThreadAutoLocked: error thrown when the user tries to post on an auto-locked thread.
-errMaxFiltersReached: error thrown when the board owner tries to add a filter after the board has already reached the maximum amount of filters allowed.
-errMaxBoardVolunteers: error thrown when the board owner tries to add a volunteer after the board has already reached the maximum amount of volunteers allowed.
-deniedEdit: error thrown when the user is not allowed to edit a posting.
 msgPostingEdited: message used after editing a posting.
-errPostingNotFound: error thrown when the specified posting can not be found.
-titEdit: title of the edit page.
-guiEditInfo: string used to inform the last time a posting was edited. Replaces: {$login}, {$date}.
-guiOpen: string used on the catalog on the link to open the thread when it doesn't have a file.
-errBannerTooLarge: error thrown when a banner is too large to be used.
-titFlagManagement: title of the flag management page.
-deniedFlagManagement: error thrown when the user is not allowed to manage a board's flags.
 msgFlagCreated: message used after a new flag is created.
-errRepeatedFlag: error thrown when there is already a flag with the specified name in the board.
-errFlagNotFound: error thrown when the specified flag for an operation can't be found.
 msgFlagDeleted: message used after deleting a flag.
-guiUnlimited: label used when a file size limit for an operation is limitless.
-guiNoFlag: label used for the first option on a flag combobox.
-errFlood: error thrown when flood is detected.
-titMainArchive: title of the main archive page.
-titBoardArchive: title of the board archive page. Replaces: {$board}.
-errNotServingArchives: error thrown when the instance is not set to serve archives.
-errFormatNotAllowed: error thrown when an uploaded file uses a format disallowed by the server.
-titGlobalSettings: title of the global settings page.
-errDeniedGlobalSettings: error thrown when the user is not allowed to edit global settings.
-guiArchiveLevels: array with the labels to be shown to archive options in this order: no archive, only pages, pages and images.
 msgSavedGlobalSettings: message used after saving global settings.
-errArchiveNotLoaded: error thrown when the the user tries to access the archives, they were enabled but the server haven't been restarted yet.
-errBoardLocked: error thrown when the board is locked for thread creation.
-errDeniedSpoilerManagement: error thrown when the user is not allowed to manage the custom spoiler of a board.
 msgSpoilerSet: message displayed after setting a custom spoiler on a board.
 msgSpoilerDeleted: message displayed after deleting a custom spoiler on a board.
-errBlockedProxy: error throw when proxy users are blocked.
-titArchiveDeletion: title of the archive deletion page.
-errDeniedArchiveDeletion: error thrown when the user is not allowed to delete content from the archive.
 msgArchiveRemoved: message displayed after removing content from the archives.
-guiTypeArchiveDeletion: label used for logs of archive deletion.
-logArchiveDeletion: object containing the pieces used for the log message when deleting something from the archives. Contains the following fields:
-    startPiece: piece used at the start of the message. Replaces: {$login}
-    boardPiece: piece used when a board is being deleted whole from the archives. Replaces: {$board}
-    threadPiece: piece used when a thread is being deleted from the archives. Replaces: {$board}, {$thread}
-    filesPiece: piece used when files are being deleted from the archives. Replaces: {$board}, {$files}
-guiProxyLevels: array containing the posting levels for proxy users. First element indicates no posting, second posting without files, third posting with files.
-guiTorLevels: array containing the posting levels for proxy users. First element indicates no posting, second posting without files, third posting with files.
-miscRoles: array with the global roles. First element is for the root role, second for admin, third for global volunteer, fourth for global janitor, fifth for regular users.
-errDeniedIpDeletion: error thrown when the user is not allowed to delete posts from a single ip.
 msgDeletedFromIp: message displayed after deleting postings from an ip.
-errInvalidRange: error thrown when an invalid range is informed.
-errNoPassword: error thrown when no password is provided for account creation.
-errUnloadedAddon: error thrown when an user tries to request an addon that is not activated.
-titGlobalBanners: title of the global banners management page.
-errDeniedGlobalBannerManagement: error thrown when the user is not allowed to manage global banners.
-titHashBan: title of the page that displays a hash ban when the user tries to upload a banned file.
 msgJsDeleted: message used when the custom javascript of a board is deleted.
 msgCssSet: message used when a custom javascript is uploaded for a board.
-errNoCustomJs: error throw when custom javascript is not allowed on boards.
-errDeniedJsManagement: error thrown when the user is not allowed to manage the custom css of a board.
-errOnlyJsAllowed: error thrown when an operation requires a javascript file.
-errProxyFilesBlocked: error thrown when proxy users are not allowed to post files.
-errTorFilesBlocked: error thrown when TOR users are not allowed to post files.
 msgThreadTransferred: message used after moving a thread between boards.
-errDeniedThreadTransfer: error thrown when the user is not allowed to move a thread between boards.
-logThreadTransfer: log message for thread movings. Replaces: {$login}, {$board}, {$thread}, {$boardDestination}
-guiTypeThreadTransfer: label used for logs of thread transfers.
 msgContentSpoilered: message displayed after making files spoilered.
-errDeniedSpoilered: error thrown when the user is not allowed to spoil existing files.
 msgErrThreadFileRequired: error thrown when a board requires a file to create a thread.
-errBoardDelConfirmation: error thrown when the user fails to send the confirmation to delete a board.
-errDeniedGlobalProxyBansManagement: error thrown when the user is denied management of the global proxy bans.
-errDeniedBoardProxyBanManagement: error thrown when the user is denied management of a board's proxy bans.
-titProxyBans: title of the proxy ban management page.
 msgProxyBanCreated: message displayed when a proxy ban is placed.
-errInvalidIp: error thrown when an invalid ip is informed.
-guiTypeProxyBan: label used for logs of proxy bans.
-logProxyBan: log entry for proxy ban creation. Replaces: {$login}, {$board}, {$ip}
-logProxyBanLift: log entry for proxy ban lift. Replaces: {$login}, {$board}, {$ip}
-guiTypeProxyBanLift: label used for logs of proxy ban lifts.
 msgProxyBanLifted: message displayed after lifting a proxy ban.
-guiBypassModes: array with the bypass mode options. The first element is the one for bypass disabled. The second is for bypass enabled. The third is for mandatory use of block bypass.
-titBlockbypass: title of the page used to renew the block bypass.
-errDisabledBypass: error thrown when block bypass is not enabled.
 msgBypassRenewed: message displayed after renewing block bypass.
-titLogPage: title for log pages. Replaces: {$date}
-errAccountLocked: error thrown when the user tries to login with a locked account.
-subLockedAccount: subject of the e-mail used when the user got his account locked.
 msgAccountUnlocked: message displayed when the user's account is unlocked.
-errInvalidToken: error thrown when the specified unlock token is not valid.
-titMultiboard: title of the multi-board.
 msgBanAppealed: message displayed after appealing a ban.
-errBanNotFound: error thrown when the specified ban can't be found.
-logAppealDenied: log entry for appeal deny. Replaces: {$login}, {$id}
-guiTypeAppealDeny: label used for logs of denied appeals.
 msgAppealDenied: message displayed after denying an appeal.
-errCouldNotMeasureImage: error thrown when the engine can't measure an image's dimensions.
+subPasswordReset: subject of the e-mail informing the new password of the user's account.
+subPasswordRequest: subject of the e-mail of a password reset request.
+subLockedAccount: subject of the e-mail used when the user got his account locked.
+titDefaultChanTitle: title of the front-page.
+titBanners: title for the banner management page. Replaces: {$board}.
+titBan: title for the page displaying the user ban.
+titError: title for the error page.
+titBansManagement: title for the bans management page.
+titClosedReports: title for the closed reports page.
+titGlobalManagement: title for global management page.
+titAccount: title for account page. Replaces: {$login}.
+titLogs: title for logs page.
+titFilters: title for filter management page. Replaces: {$board}.
+titBoardModeration: title for board moderation page. Replaces: {$board}.
+titBoards: title for the boards page.
+titNoCookieCaptcha: title for the no cookie captcha page.
+titRangeBans: title for the range bans page.
+titHashBans: title for hash bans page.
+titNotFound: title for the 404 page.
+titLogin: title for the login page.
+titCatalog: title for the board's catalog. Replaces: {$board}.
+titRuleManagement: title for the board rule management page.
+titRules: title of the rules page of a board. Replaces: {$board}.
+titMaintenance: title of the maintenance page.
+titEdit: title of the edit page.
+titFlagManagement: title of the flag management page.
+titMainArchive: title of the main archive page.
+titBoardArchive: title of the board archive page. Replaces: {$board}.
+titGlobalSettings: title of the global settings page.
+titArchiveDeletion: title of the archive deletion page.
+titGlobalBanners: title of the global banners management page.
+titHashBan: title of the page that displays a hash ban when the user tries to upload a banned file.
+titProxyBans: title of the proxy ban management page.
+titBlockbypass: title of the page used to renew the block bypass.
+titLogPage: title for log pages. Replaces: {$date}
+titMultiboard: title of the multi-board.

@@ -75,16 +75,18 @@ function processSplitKeyForGeneralUse(splitKey, reportedObjects) {
   }
 }
 
-function processParameters(req, userData, parameters, res, captchaId) {
+function getProcessedObjects(parameters, threads, posts, reportedObjects) {
 
-  var reportedObjects = [];
-  var threads = {};
-  var posts = {};
+  var redirectBoard;
 
   for ( var key in parameters) {
     if (parameters.hasOwnProperty(key)) {
 
       var splitKey = key.split('-');
+
+      if (!redirectBoard) {
+        redirectBoard = splitKey[0];
+      }
 
       if (parameters.action.toLowerCase() === 'delete') {
         processSplitKeyForDeletion(splitKey, threads, posts,
@@ -95,6 +97,20 @@ function processParameters(req, userData, parameters, res, captchaId) {
     }
   }
 
+  return redirectBoard;
+
+}
+
+function processParameters(req, userData, parameters, res, captchaId) {
+
+  var reportedObjects = [];
+  var threads = {};
+  var posts = {};
+  var redirectBoard = getProcessedObjects(parameters, threads, posts,
+      reportedObjects);
+
+  redirectBoard = redirectBoard ? '/' + redirectBoard + '/' : '/';
+
   parameters.global = parameters.hasOwnProperty('global');
 
   if (parameters.action.toLowerCase() === 'spoil') {
@@ -103,28 +119,30 @@ function processParameters(req, userData, parameters, res, captchaId) {
       if (error) {
         formOps.outputError(error, 500, res);
       } else {
-        formOps.outputResponse(lang.msgContentSpoilered, '/', res);
+        formOps.outputResponse(lang.msgContentSpoilered, redirectBoard, res);
       }
     });
 
   } else if (parameters.action.toLowerCase() === 'report') {
 
-    modOps.report.report(req, reportedObjects, parameters, captchaId,
-        function createdReports(error, ban) {
-          if (error) {
-            formOps.outputError(error, 500, res);
-          } else if (ban) {
-            res.writeHead(200, miscOps.corsHeader('text/html'));
+    modOps.report
+        .report(req, reportedObjects, parameters, captchaId,
+            function createdReports(error, ban) {
+              if (error) {
+                formOps.outputError(error, 500, res);
+              } else if (ban) {
+                res.writeHead(200, miscOps.corsHeader('text/html'));
 
-            var board = ban.boardUri ? '/' + ban.boardUri + '/'
-                : lang.miscAllBoards.toLowerCase();
+                var board = ban.boardUri ? '/' + ban.boardUri + '/'
+                    : lang.miscAllBoards.toLowerCase();
 
-            res.end(domManipulator.ban(ban, board));
-          } else {
-            formOps.outputResponse(lang.msgContentReported, '/', res);
-          }
+                res.end(domManipulator.ban(ban, board));
+              } else {
+                formOps.outputResponse(lang.msgContentReported, redirectBoard,
+                    res);
+              }
 
-        });
+            });
   } else if (parameters.action.toLowerCase() === 'ban') {
 
     modOps.ipBan.specific.ban(userData, reportedObjects, parameters, captchaId,
@@ -132,7 +150,7 @@ function processParameters(req, userData, parameters, res, captchaId) {
           if (error) {
             formOps.outputError(error, 500, res);
           } else {
-            formOps.outputResponse(lang.msgUsersBanned, '/', res);
+            formOps.outputResponse(lang.msgUsersBanned, redirectBoard, res);
           }
         });
 
@@ -144,7 +162,8 @@ function processParameters(req, userData, parameters, res, captchaId) {
           if (error) {
             formOps.outputError(error, 500, res);
           } else {
-            formOps.outputResponse(lang.msgContentDeleted, '/', res);
+
+            formOps.outputResponse(lang.msgContentDeleted, redirectBoard, res);
           }
 
         });

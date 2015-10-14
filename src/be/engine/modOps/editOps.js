@@ -40,7 +40,7 @@ exports.getPostingToEdit = function(userData, parameters, callback) {
     } else if (!board) {
       callback(lang.errBoardNotFound);
     } else if (!globalStaff && !common.isInBoardStaff(userData, board)) {
-      callback(callback(lang.deniedEdit));
+      callback(callback(lang.errDeniedEdit));
     } else {
 
       var collectionToUse;
@@ -260,7 +260,7 @@ exports.saveEdit = function(userData, parameters, callback) {
     } else if (!board) {
       callback(lang.errBoardNotFound);
     } else if (!globalStaff && !common.isInBoardStaff(userData, board)) {
-      callback(callback(lang.deniedEdit));
+      callback(callback(lang.errDeniedEdit));
     } else {
 
       // style exception, too simple

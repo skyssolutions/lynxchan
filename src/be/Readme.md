@@ -1,7 +1,6 @@
 # Dependencies
 Required modules:
 * mongodb: database driver.
-* gm: used for creating thumbnails.
 * jsdom: used for handling DOM to create HTML from the templates.
 * multiparty: used when parsing requests to the form api.
 * bcrypt: used for encrypting passwords.

@@ -183,8 +183,8 @@ exports.createMask = function(text) {
   for (var i = 0; i < miscOps.getRandomInt(minCircles, maxCircles); i++) {
 
     var start = {
-      x : miscOps.getRandomInt(0, width),
-      y : miscOps.getRandomInt(0, height)
+      x : miscOps.getRandomInt(width * 0.1, width * 0.9),
+      y : miscOps.getRandomInt(height * 0.1, height * 0.9)
     };
 
     var size = miscOps.getRandomInt(minCircleSize, maxCircleSize);
@@ -202,6 +202,8 @@ exports.createMask = function(text) {
 
   }
 
+  command += '\" -write mpr:mask +delete ';
+
   return command;
 
 };
@@ -210,7 +212,7 @@ exports.generateImage = function(text, id, callback) {
 
   var path = tempDirectory + '/' + id + '.jpg';
 
-  var command = exports.createMask() + '\" -write mpr:mask +delete ';
+  var command = exports.createMask();
 
   command += 'xc: -pointsize 70 -gravity center -draw ';
   command += '\"text 0,0 \'' + text + '\'\" -write mpr:original +delete ';
@@ -218,7 +220,7 @@ exports.generateImage = function(text, id, callback) {
   command += 'mpr:original -negate -write mpr:negated +delete';
 
   command += ' mpr:negated mpr:original mpr:mask -composite ';
-  command += exports.distortImage() + '+noise multiplicative ' + path;
+  command += exports.distortImage() + ' -blur 0x1 ' + path;
 
   exec(command, function generatedImage(error) {
 

@@ -91,7 +91,7 @@ exports.createFlag = function(userData, parameters, callback) {
     } else if (!board) {
       callback(lang.errBoardNotFound);
     } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.deniedFlagManagement);
+      callback(lang.errDeniedFlagManagement);
     } else {
 
       var toInsert = {
@@ -204,7 +204,7 @@ exports.deleteFlag = function(userData, flagId, callback) {
           } else if (!board) {
             callback(lang.errBoardNotFound);
           } else if (board.owner !== userData.login && !globallyAllowed) {
-            callback(lang.deniedFlagManagement);
+            callback(lang.errDeniedFlagManagement);
           } else {
             exports.removeFlag(flag, callback);
           }
@@ -232,7 +232,7 @@ exports.getFlagsData = function(userData, boardUri, callback) {
     } else if (!board) {
       callback(lang.errBoardNotFound);
     } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.deniedFlagManagement);
+      callback(lang.errDeniedFlagManagement);
     } else {
 
       flags.find({
