@@ -674,6 +674,10 @@ exports.init = function(callback) {
   connectString += dbSettings.address + ':';
   connectString += dbSettings.port + '/' + dbSettings.db;
 
+  if (dbSettings.ssl) {
+    connectString += '?ssl=true';
+  }
+
   client.connect(connectString, function connectedDb(error, db) {
 
     if (error) {

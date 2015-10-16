@@ -125,6 +125,7 @@ Settings files that goes into the settings directory:
 * `database`: database to use.
 * `login`: login to use on the database.
 * `password`: password to use on the database.
+* `ssl`(Boolean): will connect to the database using SSL.
 `login` is optional and `password` will only be used if login is informed.
 
 `archive.json`: archive database information. Same fields than `db.json`.

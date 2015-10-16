@@ -1,0 +1,16 @@
+#!/sbin/runscript
+ # $Header: $
+
+ depend() {
+  after mongod 
+ }
+
+ start() {
+  start-stop-daemon -b -S -x /usr/bin/lynxchan -u node -m -p /home/node/lynxchan.pid
+  eend $?
+ }
+
+ stop() {
+  start-stop-daemon -K -x /usr/bin/lynxchan -p /home/node/lynxchan.pid
+  eend $?
+ }

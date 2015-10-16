@@ -71,6 +71,10 @@ function assembleConnectString(dbSettings) {
   connectString += dbSettings.address + ':';
   connectString += dbSettings.port + '/' + dbSettings.db;
 
+  if (dbSettings.ssl) {
+    connectString += '?ssl=true';
+  }
+
   return connectString;
 }
 

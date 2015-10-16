@@ -3,12 +3,14 @@
 echo "Do you wish to install the command lynxchan for all users using a soft-link? (y,n)"
 read answerCommand
 
-echo "Do you wish to install a init script? Requires install it as a command. (systemd,upstart, blank for none)"
+echo "Do you wish to install a init script? Requires install it as a command. (systemd, upstart, openrc, blank for none)"
 read answerInit
 
 if [ -n "$answerInit" ]; then
 
   if getent passwd node  > /dev/null; then
+
+    echo "Installing lynxchan service."
 
     if [ $answerInit == "upstart" ]; then
 
@@ -22,10 +24,25 @@ if [ -n "$answerInit" ]; then
         echo "Creating node's home folder for logs."
         mkdir /home/node
         chown node /home/node 
-        chmod 600 /home/node
+        chmod 700 /home/node
       fi
 
       echo "Upstart daemon installed at /etc/init"
+
+    elif [ $answerInit == "openrc" ]; then
+
+      rm -rf /etc/init.d/lynxchan
+      cp ./lynxchan.rc /etc/init.d/lynxchan
+
+      if [ ! -d /home/node ]; then
+        echo "Creating node's home folder for logs."
+        mkdir /home/node
+        chown node /home/node 
+        chmod 700 /home/node
+      fi
+
+      echo "OpenRC service installed at /etc/init.d"
+
     elif [ $answerInit == "systemd" ]; then
 
       rm -rf /etc/systemd/system/lynxchan.service
