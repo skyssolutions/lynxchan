@@ -329,5 +329,6 @@
   "logAppealDenied": "User {$login} denied an appeal for ban {$id}.",
   "msgAppealDenied": "Appeal denied.",
   "guiTypeAppealDeny": "Appeal deny",
-  "errCouldNotMeasureImage": "Could not get image's dimensions."
+  "errCouldNotMeasureImage": "Could not get image's dimensions.",
+  "errNoFileAndMessage": "Either a message or a file is required."
 }

@@ -461,6 +461,8 @@ exports.getThread = function(req, parameters, userData, board, callback) {
 
       miscOps.sanitizeStrings(parameters, common.postingParameters);
 
+      parameters.message = parameters.message || '';
+
       var wishesToSign = common.doesUserWishesToSign(userData, parameters);
 
       // style exception, too simple
@@ -483,6 +485,11 @@ exports.getThread = function(req, parameters, userData, board, callback) {
 exports.newPost = function(req, userData, parameters, captchaId, callback) {
 
   parameters.threadId = +parameters.threadId;
+
+  if (!parameters.message && !parameters.files.length) {
+    callback(lang.errNoFileAndMessage);
+    return;
+  }
 
   boards.findOne({
     boardUri : parameters.boardUri

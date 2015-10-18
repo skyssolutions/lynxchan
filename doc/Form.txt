@@ -39,7 +39,7 @@ Description: post a reply to a thread. Accepts files.
 Parameters:
     name: name of the poster. 32 characters.
     email: e-mail of the poster. 64 characters.
-    message*: message to be posted. 2048 characters.
+    message: message to be posted. 2048 characters. Mandatory if no files are sent.
     subject: subject of the thread. 128 characters.
     password: password to be used for deletion. 8 characters.
     boardUri*: URI of the board.

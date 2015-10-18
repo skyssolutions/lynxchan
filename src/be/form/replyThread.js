@@ -5,7 +5,7 @@ var bypassOps = require('../engine/bypassOps');
 var postingOps = require('../engine/postingOps').post;
 var captchaOps = require('../engine/captchaOps');
 var lang = require('../engine/langOps').languagePack();
-var mandatoryParameters = [ 'message', 'boardUri', 'threadId' ];
+var mandatoryParameters = [ 'boardUri', 'threadId' ];
 
 function createPost(req, userData, parameters, captchaId, res) {
 

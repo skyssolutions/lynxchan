@@ -96,6 +96,7 @@ errDeniedJsManagement: error thrown when the user is not allowed to manage the c
 errOnlyJsAllowed: error thrown when an operation requires a javascript file.
 errProxyFilesBlocked: error thrown when proxy users are not allowed to post files.
 errTorFilesBlocked: error thrown when TOR users are not allowed to post files.
+errNoFileAndMessage: error thrown when an operation requires either a message or files uploaded. Used when replying a thread.
 errDeniedThreadTransfer: error thrown when the user is not allowed to move a thread between boards.
 errDeniedSpoilered: error thrown when the user is not allowed to spoil existing files.
 errBoardDelConfirmation: error thrown when the user fails to send the confirmation to delete a board.
