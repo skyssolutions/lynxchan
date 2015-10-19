@@ -328,6 +328,9 @@ Json output(Object): object with the data of the thread.
     banMessage: message to be displayed indicating this message was a cause to a ban.
     id: thread-wise id of the poster.
     email: email of the poster.
+    flagData(Array): array with the available flags for the board. Each element contains the following fields:
+        _id: id of the flag.
+        name: name of the flag.
     markdown: message with html markdown applied.
     flag: url of the used flag.
     flagName: name of the used flag.

@@ -195,7 +195,7 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
                   callback(error);
                 } else {
                   jsonBuilder.thread(boardUri, boardData, threadData, posts,
-                      callback);
+                      callback, null, null, flagData);
                 }
               });
           // style exception, too simple

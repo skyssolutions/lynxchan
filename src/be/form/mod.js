@@ -19,7 +19,7 @@ function outputModData(bData, flagData, thread, posts, res, json, userRole) {
     res.writeHead(200, miscOps.corsHeader('application/json'));
 
     res.end(jsonBuilder.thread(bData.boardUri, bData, thread, posts, null,
-        true, userRole));
+        true, userRole, flagData));
 
   } else {
 
@@ -118,24 +118,19 @@ function getPostingData(boardData, flagData, parameters, res, json, userRole) {
 
 function getFlags(board, parameters, res, json, userRole) {
 
-  if (json) {
-    getPostingData(board, null, parameters, res, true, userRole);
-  } else {
-
-    flags.find({
-      boardUri : parameters.boardUri
-    }, {
-      name : 1
-    }).sort({
-      name : 1
-    }).toArray(function gotFlags(error, flagData) {
-      if (error) {
-        formOps.outputError(error, 500, res);
-      } else {
-        getPostingData(board, flagData, parameters, res, false, userRole);
-      }
-    });
-  }
+  flags.find({
+    boardUri : parameters.boardUri
+  }, {
+    name : 1
+  }).sort({
+    name : 1
+  }).toArray(function gotFlags(error, flagData) {
+    if (error) {
+      formOps.outputError(error, 500, res);
+    } else {
+      getPostingData(board, flagData, parameters, res, json, userRole);
+    }
+  });
 
 }
 

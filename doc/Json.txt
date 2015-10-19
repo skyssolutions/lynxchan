@@ -31,10 +31,13 @@ Root(Object):
     email: email of the poster.
     markdown: message with html markdown applied.
     flag: url of the used flag.
-    flagName: name of the used flag.
+    flagData(Array): array with the available flags for the board. Each element contains the following fields:
+        _id: id of the flag.
+        name: name of the flag.
     threadId(Number): unique id of the thread inside the board.
     subject: subject of the thread.
     lastEditTime(Date): date of the last time the message of the thread message was edited.
+    flagName: name of the used flag.
     lastEditLogin: Login of the last user to edit the thread message.
     message: text of the post.
     name: name of the poster.
@@ -104,6 +107,9 @@ Path:/<board>/<page>.json
 Root(Object):
     pageCount(Number): amount of pages this board has.
     boardName: name of the board.
+    flagData(Array): array with the available flags for the board. Each element contains the following fields:
+        _id: id of the flag.
+        name: name of the flag.
     boardDescription: description of the board.
     settings: settings enabled in the board.
     threads(Array): threads in this page. Each object contains the following fields:

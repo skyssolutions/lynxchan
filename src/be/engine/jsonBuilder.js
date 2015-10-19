@@ -16,7 +16,7 @@ exports.loadDependencies = function() {
 
 };
 
-// start of shared functions
+// Section 1: Shared functions {
 exports.getFilesArray = function(fileArray, modding) {
 
   var toReturn = [];
@@ -141,13 +141,17 @@ exports.getThreadObject = function(thread, posts, board, modding, userRole) {
 
   return threadObject;
 };
-// end of shared functions
+// } Section 1: Shared functions
 
 exports.thread = function(boardUri, boardData, threadData, posts, callback,
-    modding, userRole) {
+    modding, userRole, flagData) {
 
   var threadObject = exports.getThreadObject(threadData, posts, boardData,
       modding, userRole);
+
+  if (flagData && flagData.length) {
+    threadObject.flagData = flagData;
+  }
 
   if (modding) {
     return JSON.stringify(threadObject);
@@ -253,16 +257,23 @@ exports.page = function(boardUri, page, threads, pageCount, boardData,
 
   var ownName = '/' + boardUri + '/' + page + '.json';
 
-  gridFsHandler.writeData(JSON.stringify({
+  var toWrite = {
     pageCount : pageCount,
     boardName : boardData.boardName,
     boardDescription : boardData.boardDescription,
     settings : boardData.settings,
     threads : threadsToAdd
-  }), ownName, 'application/json', {
-    boardUri : boardUri,
-    type : 'board'
-  }, callback);
+  };
+
+  if (flagData && flagData.length) {
+    toWrite.flagData = flagData;
+  }
+
+  gridFsHandler.writeData(JSON.stringify(toWrite), ownName, 'application/json',
+      {
+        boardUri : boardUri,
+        type : 'board'
+      }, callback);
 
 };
 
