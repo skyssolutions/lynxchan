@@ -60,7 +60,6 @@ exports.reaggregateLatestPosts = function(countData, board, parentThreads,
       var foundPosts = results.length ? results[0].ids : [];
 
       // style exception, too simple
-
       threads.update({
         boardUri : board.boardUri,
         threadId : parentThreads[index]
@@ -78,7 +77,6 @@ exports.reaggregateLatestPosts = function(countData, board, parentThreads,
         }
 
       });
-
       // style exception, too simple
 
     }
@@ -636,6 +634,14 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
     postsToDelete, foundBoards, callback) {
 
   if (!foundBoards.length) {
+
+    if (settings.overboard) {
+      process.send({
+        overboard : true,
+        reaggregate : threadsToDelete && threadsToDelete.length
+      });
+    }
+
     callback();
     return;
   }

@@ -8,6 +8,7 @@ var overboardSize = settings.overBoardThreadCount;
 var db = require('./db');
 var overboardThreads = db.overboardThreads();
 var threads = db.threads();
+var reaggregating;
 
 exports.reload = function() {
   settings = require('./settingsHandler').getGeneralSettings();
@@ -132,9 +133,84 @@ function checkForExistance(message, insert) {
 
 }
 
+function fullReaggregate(message) {
+
+  if (reaggregating) {
+    return;
+  }
+
+  reaggregating = true;
+
+  threads.aggregate([ {
+    $project : {
+      threadId : 1
+    }
+  }, {
+    $sort : {
+      lastBump : -1
+    }
+  }, {
+    $limit : overboardSize
+  }, {
+    $group : {
+      _id : 0,
+      ids : {
+        $push : '$_id'
+      }
+    }
+  } ], function gotThreads(error, results) {
+
+    if (error) {
+      reaggregating = false;
+      console.log(error);
+    } else if (results.length) {
+      var ids = results[0].ids;
+
+      var operations = [];
+
+      for (var i = 0; i < ids.length; i++) {
+
+        operations.push({
+          insertOne : {
+            thread : ids[i]
+          }
+        });
+
+      }
+
+      operations.push({
+        deleteMany : {
+          filter : {
+            thread : {
+              $nin : ids
+            }
+          }
+        }
+      });
+
+      // style exception, too simple
+      overboardThreads.bulkWrite(operations, function reaggregated(error) {
+        reaggregating = false;
+        if (error) {
+          console.log(error);
+        } else {
+          genQueue.queue(message);
+        }
+
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+}
+
 exports.reaggregate = function(message) {
 
-  if (!message.post) {
+  if (message.reaggregate) {
+    fullReaggregate(message);
+  } else if (!message.post) {
     addThread(message);
   } else {
     checkForExistance(message, message.bump);

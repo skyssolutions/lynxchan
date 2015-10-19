@@ -62,8 +62,10 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
 
   if (checkOverboardChanged(settings)) {
     reloadsToMake.push({
-      overboard : true
+      overboard : true,
+      reaggregate : settings.overboard && !generalSettings.overboard
     });
+
   }
 
   if (rebuildFp(settings)) {

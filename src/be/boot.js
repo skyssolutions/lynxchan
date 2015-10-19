@@ -371,6 +371,23 @@ exports.noDaemon = function() {
   return noDaemon;
 };
 
+function processBulkRebuild(message, genQueue) {
+  exports.reload();
+
+  for (var i = 0; i < message.rebuilds.length; i++) {
+
+    var rebuild = message.rebuilds[i];
+
+    if (rebuild.overboard) {
+      overboard.reaggregate(rebuild);
+    } else {
+      genQueue.queue(rebuild);
+
+    }
+
+  }
+}
+
 // after everything is all right, call this function to start the workers
 function bootWorkers() {
 
@@ -405,12 +422,7 @@ function bootWorkers() {
         message.upStream = false;
 
         if (message.reload) {
-          exports.reload();
-
-          for (var i = 0; i < message.rebuilds.length; i++) {
-            genQueue.queue(message.rebuilds[i]);
-          }
-
+          processBulkRebuild(message, genQueue);
         }
 
         for ( var id in cluster.workers) {
