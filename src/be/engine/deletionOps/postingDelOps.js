@@ -638,7 +638,7 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
     if (settings.overboard) {
       process.send({
         overboard : true,
-        reaggregate : threadsToDelete && threadsToDelete.length
+        reaggregate : true
       });
     }
 

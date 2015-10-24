@@ -143,7 +143,7 @@ function fullReaggregate(message) {
 
   threads.aggregate([ {
     $project : {
-      threadId : 1
+      lastBump : 1
     }
   }, {
     $sort : {
@@ -171,8 +171,16 @@ function fullReaggregate(message) {
       for (var i = 0; i < ids.length; i++) {
 
         operations.push({
-          insertOne : {
-            thread : ids[i]
+          updateOne : {
+            filter : {
+              thread : ids[i]
+            },
+            update : {
+              $set : {
+                thread : ids[i]
+              }
+            },
+            upsert : true
           }
         });
 
