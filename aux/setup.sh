@@ -57,14 +57,14 @@ if [ "$answerStable" == "y" ]; then
 
   cd ..
  
-  git checkout 1.2.x
+  git checkout 1.3.x
    
   cd src/fe
    
-  git checkout 1.2.0
+  git checkout 1.3.0
 
   cd ../../aux
 
-  echo "Changed to latest stable version: 1.2.x"
+  echo "Changed to latest stable version: 1.3.x"
 
 fi
