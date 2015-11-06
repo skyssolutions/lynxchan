@@ -16,7 +16,7 @@ var common;
 var editArguments = [ {
   field : 'message',
   length : 2048,
-  removeHTML : true
+  removeHTML : false
 } ];
 
 exports.loadDependencies = function() {

@@ -288,6 +288,7 @@ exports.applyFilters = function(filters, message) {
 // Section 2: Markdown {
 exports.processLine = function(split, replaceCode) {
 
+  split = split.replace(/^>[^\&].+/g, greenTextFunction);
   split = split.replace(/\=\=.+\=\=/g, redTextFunction);
   split = split.replace(/\'\'\'.+\'\'\'/g, boldFunction);
   split = split.replace(/\'\'.+\'\'/g, italicFunction);
