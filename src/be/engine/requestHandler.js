@@ -211,7 +211,14 @@ exports.outputGfsFile = function(req, res) {
 
   } else if (exports.testForMultiBoard(pathName, selectedBoards)) {
 
-    multiBoard.outputBoards(selectedBoards, res);
+    multiBoard.outputBoards(selectedBoards, req, res, function outputComplete(
+        error) {
+
+      if (error) {
+        formOps.outputError(error, 500, res);
+      }
+
+    });
 
   } else {
 

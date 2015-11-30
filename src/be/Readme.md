@@ -128,7 +128,7 @@ Settings files that goes into the settings directory:
 * `ssl`(Boolean): will connect to the database using SSL.
 `login` is optional and `password` will only be used if login is informed.
 
-`archive.json`: archive database information. Same fields than `db.json`.
+`archive.json`: archive database information. Same fields as `db.json`.
 
 Settings files must contain a json object where each key defined here will have its corresponding value.
 
@@ -136,6 +136,7 @@ Settings files must contain a json object where each key defined here will have 
 Meta-data of files on gridfs will have the following values:
 * `boardUri`: board to which the file belongs to. If undefined, file is a default site file.
 * `lastModified`(Date): date of the last modification of the file.
+* `boards`(Array): array of boards present on the multi-board page cache.
 * `expiration`(Date): date of the expiration of the file, marking it to be removed.
 * `threadId`(Number): id of the thread the file belongs to.
 * `postId`(Number): id of the post the file belongs to.
@@ -151,3 +152,4 @@ Meta-data of files on gridfs will have the following values:
   * `rules`
   * `flag`
   * `log`
+  * `multiboard`

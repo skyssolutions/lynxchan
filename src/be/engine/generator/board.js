@@ -14,6 +14,7 @@ var verbose = settings.verbose;
 var domManipulator;
 var postProjection;
 var threadProjection;
+var mbHandler;
 var boardOps;
 var jsonBuilder;
 
@@ -32,6 +33,7 @@ var boardProjection = {
 exports.loadDependencies = function() {
 
   var rootModule = require('.');
+  mbHandler = require('../multiBoardHandler');
   postProjection = rootModule.postProjection;
   threadProjection = rootModule.threadProjection;
   boardOps = require('../boardOps').rules;
@@ -194,6 +196,8 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
                 if (error) {
                   callback(error);
                 } else {
+                  mbHandler.clearCache(boardUri);
+
                   jsonBuilder.thread(boardUri, boardData, threadData, posts,
                       callback, null, null, flagData);
                 }

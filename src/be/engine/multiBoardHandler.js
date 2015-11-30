@@ -1,11 +1,15 @@
 'use strict';
 
 var db = require('../db');
-var formOps = require('./formOps');
+var gfsHandler = require('./gridFsHandler');
 var settings = require('../settingsHandler').getGeneralSettings();
 var threadCount = settings.multiboardThreadCount;
+var debug = require('../boot').debug();
+var verbose = settings.verbose;
 var threads = db.threads();
 var posts = db.posts();
+var boards = db.boards();
+var files = db.files();
 var domManipulator;
 var miscOps;
 var generator;
@@ -18,7 +22,26 @@ exports.loadDependencies = function() {
 
 };
 
-exports.generatePage = function(foundPosts, foundThreads, res) {
+// Section 1: multi-board page request {
+exports.saveCache = function(boardList, html, req, res, callback) {
+
+  var cacheName = boardList.join('_');
+
+  gfsHandler.writeData(html, cacheName, 'text/html', {
+    type : 'multiboard',
+    boards : boardList
+  }, function savedCache(error) {
+    if (error) {
+      callback(error);
+    } else {
+      gfsHandler.outputFile(cacheName, req, res, callback);
+    }
+  });
+
+};
+
+exports.generatePage = function(boardList, foundPosts, foundThreads, req, res,
+    callback) {
 
   var previewRelation = {};
 
@@ -41,19 +64,15 @@ exports.generatePage = function(foundPosts, foundThreads, res) {
   domManipulator.overboard(foundThreads, previewRelation, function gotHtml(
       error, html) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      callback(error);
     } else {
-
-      res.writeHead(200, miscOps.corsHeader('text/html'));
-
-      res.end(html);
-
+      exports.saveCache(boardList, html, req, res, callback);
     }
   }, true);
 
 };
 
-exports.getPosts = function(foundThreads, res) {
+exports.getPosts = function(boardList, foundThreads, req, res, callback) {
 
   var previewRelation = {};
 
@@ -84,7 +103,7 @@ exports.getPosts = function(foundThreads, res) {
 
   if (!orArray.length) {
 
-    exports.generatePage([], foundThreads, res);
+    exports.generatePage(boardList, [], foundThreads, req, res, callback);
     return;
   }
 
@@ -92,33 +111,127 @@ exports.getPosts = function(foundThreads, res) {
     $or : orArray
   }, generator.postProjection).sort({
     creation : 1
-  }).toArray(function gotPosts(error, foundPosts) {
-    if (error) {
-      formOps.outputError(error, 500, res);
-    } else {
-      exports.generatePage(foundPosts, foundThreads, res);
-    }
+  }).toArray(
+      function gotPosts(error, foundPosts) {
+        if (error) {
+          callback(error);
+        } else {
+          exports.generatePage(boardList, foundPosts, foundThreads, req, res,
+              callback);
+        }
 
-  });
+      });
 
 };
 
-exports.outputBoards = function(boards, res) {
+exports.getThreads = function(boardList, req, res, callback) {
 
   threads.find({
     boardUri : {
-      $in : boards
+      $in : boardList
     }
   }, generator.threadProjection).sort({
     lastBump : -1
   }).limit(threadCount).toArray(function gotThreads(error, foundThreads) {
 
     if (error) {
-      formOps.outputError(error, 500, res);
+      callback(error);
     } else {
+      exports.getPosts(boardList, foundThreads, req, res, callback);
+    }
+  });
 
-      exports.getPosts(foundThreads, res);
+};
 
+exports.checkCache = function(boardList, req, res, callback) {
+
+  var cacheName = boardList.join('_');
+
+  files.findOne({
+    filename : cacheName
+  }, function gotCache(error, result) {
+    if (error) {
+      callback(error);
+    } else if (result) {
+      gfsHandler.outputFile(cacheName, req, res, callback);
+    } else {
+      exports.getThreads(boardList, req, res, callback);
+    }
+  });
+
+};
+
+exports.outputBoards = function(boardList, req, res, callback) {
+
+  boards.aggregate([ {
+    $match : {
+      boardUri : {
+        $in : boardList
+      }
+    }
+  }, {
+    $project : {
+      boardUri : 1,
+      _id : 0
+    }
+  }, {
+    $group : {
+      _id : 0,
+      boards : {
+        $push : '$boardUri'
+      }
+    }
+  } ], function gotExistingBoards(error, results) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.checkCache(results.length ? results[0].boards.sort() : [], req,
+          res, callback);
+    }
+
+  });
+
+};
+// } Section 1: multi-board page request
+
+exports.clearCache = function(board) {
+
+  if (!settings.multiboardThreadCount) {
+    return;
+  }
+
+  files.aggregate([ {
+    $match : {
+      'metadata.type' : 'multiboard',
+      'metadata.boards' : board
+    }
+  }, {
+    $project : {
+      filename : 1,
+      _id : 0
+    }
+  }, {
+    $group : {
+      _id : 0,
+      files : {
+        $push : '$filename'
+      }
+    }
+  } ], function gotPages(error, results) {
+
+    if (error) {
+
+      if (verbose) {
+        console.log(error);
+      }
+
+      if (debug) {
+        throw error;
+      }
+
+    } else if (results.length) {
+      gfsHandler.removeFiles(results[0].files);
     }
 
   });

@@ -8,7 +8,7 @@ var captchaOps = require('../engine/captchaOps');
 var formOps = require('../engine/formOps');
 var gridFsHandler = require('../engine/gridFsHandler');
 
-function showCaptch(req, id, res, cookies) {
+function showCaptcha(req, id, res, cookies) {
   gridFsHandler.outputFile(id + '.jpg', req, res, function streamedFile(error) {
     if (error) {
 
@@ -60,7 +60,7 @@ exports.process = function(req, res) {
 
           formOps.outputError(error, 500, res);
         } else {
-          showCaptch(req, id, res, [ {
+          showCaptcha(req, id, res, [ {
             field : 'captchaid',
             value : id,
             path : '/'
@@ -68,7 +68,7 @@ exports.process = function(req, res) {
         }
       });
     } else {
-      showCaptch(req, id, res);
+      showCaptcha(req, id, res);
     }
   });
 };
