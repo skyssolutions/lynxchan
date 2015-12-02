@@ -213,7 +213,7 @@ exports.updateThreadsBanMessage = function(pages, parentThreads, userData,
 exports.createBans = function(foundIps, parentThreads, pages, board, userData,
     parameters, callback, informedThreads, informedPosts) {
 
-  var operations = [];
+  var newBans = [];
 
   for (var i = 0; i < foundIps.length; i++) {
 
@@ -228,21 +228,16 @@ exports.createBans = function(foundIps, parentThreads, pages, board, userData,
       ban.boardUri = board;
     }
 
-    operations.push({
-      insertOne : {
-        document : ban
-      }
-    });
-
+    newBans.push(ban);
   }
 
-  if (!operations.length) {
+  if (!newBans.length) {
     callback();
 
     return;
   }
 
-  bans.bulkWrite(operations, function createdBans(error, result) {
+  bans.insertMany(newBans, function createdBans(error, result) {
     if (error) {
       callback(error);
     } else {

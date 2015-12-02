@@ -113,6 +113,7 @@ exports.getThreadObject = function(thread, posts, board, modding, userRole) {
     id : thread.id,
     name : thread.name,
     email : thread.email,
+    boardUri : thread.boardUri,
     threadId : thread.threadId,
     flag : thread.flag,
     flagName : thread.flagName,
@@ -468,7 +469,8 @@ exports.globalSettings = function() {
 
 };
 
-exports.overboard = function(foundThreads, previewRelation, callback) {
+exports.overboard = function(foundThreads, previewRelation, callback,
+    multiboard) {
 
   var threadsToAdd = [];
 
@@ -486,11 +488,17 @@ exports.overboard = function(foundThreads, previewRelation, callback) {
 
   }
 
-  var url = '/' + settings.overboard + '/1.json';
+  if (multiboard) {
+    callback(null, JSON.stringify({
+      threads : threadsToAdd
+    }));
+  } else {
+    var url = '/' + settings.overboard + '/1.json';
 
-  gridFsHandler.writeData(JSON.stringify({
-    threads : threadsToAdd
-  }), url, 'application/json', {}, callback);
+    gridFsHandler.writeData(JSON.stringify({
+      threads : threadsToAdd
+    }), url, 'application/json', {}, callback);
+  }
 
 };
 

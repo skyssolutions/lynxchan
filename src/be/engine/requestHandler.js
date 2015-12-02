@@ -1,6 +1,6 @@
 'use strict';
 
-// decides what to do with an incoming request and will output errors if they
+// Decides what to do with an incoming request and will output errors if they
 // are not handled
 
 var indexString = 'index.html';
@@ -159,11 +159,13 @@ exports.testForMultiBoard = function(pathName, boardsToReturn) {
     return;
   }
 
-  var amountToRemove = pathName.substring(pathName.length - 1) === '/' ? 1 : 0;
+  var parts = pathName.split('/');
 
-  var trimmedPath = pathName.substring(1, pathName.length - amountToRemove);
+  if (parts.length < 2) {
+    return false;
+  }
 
-  var boards = trimmedPath.split('+');
+  var boards = parts[1].split('+');
 
   if (boards.length < 2) {
     return false;

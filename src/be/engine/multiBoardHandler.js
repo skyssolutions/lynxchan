@@ -1,6 +1,8 @@
 'use strict';
 
+var url = require('url');
 var db = require('../db');
+var jsonBuilder = require('./jsonBuilder');
 var gfsHandler = require('./gridFsHandler');
 var settings = require('../settingsHandler').getGeneralSettings();
 var threadCount = settings.multiboardThreadCount;
@@ -23,11 +25,16 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: multi-board page request {
-exports.saveCache = function(boardList, html, req, res, callback) {
+exports.saveCache = function(boardList, content, req, res, json, callback) {
 
   var cacheName = boardList.join('_');
 
-  gfsHandler.writeData(html, cacheName, 'text/html', {
+  if (json) {
+    cacheName += '.json';
+  }
+
+  gfsHandler.writeData(content, cacheName, json ? 'application/json'
+      : 'text/html', {
     type : 'multiboard',
     boards : boardList
   }, function savedCache(error) {
@@ -61,14 +68,20 @@ exports.generatePage = function(boardList, foundPosts, foundThreads, req, res,
 
   }
 
-  domManipulator.overboard(foundThreads, previewRelation, function gotHtml(
-      error, html) {
-    if (error) {
-      callback(error);
-    } else {
-      exports.saveCache(boardList, html, req, res, callback);
-    }
-  }, true);
+  var path = url.parse(req.url).pathname;
+
+  var json = path.indexOf('/1.json') >= 0;
+
+  (json ? jsonBuilder : domManipulator).overboard(foundThreads,
+      previewRelation, function gotContent(error, content) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.saveCache(boardList, content, req, res, json, callback);
+        }
+
+      }, true);
 
 };
 
@@ -146,6 +159,12 @@ exports.getThreads = function(boardList, req, res, callback) {
 exports.checkCache = function(boardList, req, res, callback) {
 
   var cacheName = boardList.join('_');
+
+  var path = url.parse(req.url).pathname;
+
+  if (path.indexOf('/1.json') >= 0) {
+    cacheName += '.json';
+  }
 
   files.findOne({
     filename : cacheName

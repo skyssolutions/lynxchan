@@ -1,5 +1,6 @@
 Some data is also stored as static json files.
 Items inside '<>' are dynamic.
+To access the json version of overboard, multi-board and first page of boards, use 1.json as the file name and the board as the directory. Example: domain/a+b/1.json.
 These are as follows:
 
 ------------------------------------------------------------------------------------------
@@ -28,6 +29,7 @@ Root(Object):
     signedRole: role of the user that posted the thread.
     banMessage: message to be displayed indicating this message was a cause to a ban.
     id: thread-wise id of the poster.
+    boardUri: uri of the board where the thread belongs to.
     email: email of the poster.
     markdown: message with html markdown applied.
     flag: url of the used flag.
@@ -114,6 +116,7 @@ Root(Object):
     settings: settings enabled in the board.
     threads(Array): threads in this page. Each object contains the following fields:
         signedRole: role of the user that posted the thread.
+        boardUri: uri of the board where the thread belongs to.
         banMessage: message to be displayed indicating this message was a cause to a ban.
         id: thread-wise id of the poster.
         email: email of the poster.
