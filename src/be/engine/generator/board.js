@@ -16,6 +16,7 @@ var postProjection;
 var threadProjection;
 var mbHandler;
 var boardOps;
+var rssBuilder;
 var jsonBuilder;
 
 var boardProjection = {
@@ -39,6 +40,7 @@ exports.loadDependencies = function() {
   boardOps = require('../boardOps').rules;
   domManipulator = require('../domManipulator').staticPages;
   jsonBuilder = require('../jsonBuilder');
+  rssBuilder = require('../rssBuilder');
 
 };
 
@@ -272,6 +274,21 @@ exports.allThreads = function(boardUri, callback, boardData) {
 // } Section 1.1.1: Thread
 
 // Section 1.1.2: Board page {
+exports.buildRssAndJsonPages = function(boardUri, page, threadsArray,
+    pageCount, boardData, flagData, latestPosts, callback) {
+
+  jsonBuilder.page(boardUri, page, threadsArray, pageCount, boardData,
+      flagData, latestPosts, function builtJson(error) {
+
+        if (error || page > 1) {
+          callback(error);
+        } else {
+          rssBuilder.board(boardData, threadsArray, callback);
+        }
+      });
+
+};
+
 exports.getLatestPosts = function(boardUri, page, threadsArray, pageCount,
     boardData, flagData, callback) {
 
@@ -318,17 +335,19 @@ exports.getLatestPosts = function(boardUri, page, threadsArray, pageCount,
     if (error) {
       callback(error);
     } else {
+
       // style exception, too simple
       domManipulator.page(boardUri, page, threadsArray, pageCount, boardData,
           flagData, latestPosts, function savedHTML(error) {
             if (error) {
               callback(error);
             } else {
-              jsonBuilder.page(boardUri, page, threadsArray, pageCount,
-                  boardData, flagData, latestPosts, callback);
+              exports.buildRssAndJsonPages(boardUri, page, threadsArray,
+                  pageCount, boardData, flagData, latestPosts, callback);
             }
           });
       // style exception, too simple
+
     }
   });
 

@@ -303,7 +303,8 @@ exports.getDefaultSettings = function() {
     overBoardThreadCount : 50,
     bypassMaxPosts : 30,
     bypassDurationHours : 24,
-    bypassMode : 0
+    bypassMode : 0,
+    rssDomain : ''
   };
 
 };

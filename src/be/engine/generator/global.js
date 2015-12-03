@@ -24,7 +24,9 @@ var postProjection;
 var threadProjection;
 var jsonBuilder;
 var gfsHandler;
+var jsonBuilder;
 var miscOps;
+var rssBuilder;
 
 exports.loadDependencies = function() {
 
@@ -35,6 +37,7 @@ exports.loadDependencies = function() {
   gfsHandler = require('../gridFsHandler');
   miscOps = require('../miscOps');
   jsonBuilder = require('../jsonBuilder');
+  rssBuilder = require('../rssBuilder');
 
 };
 
@@ -205,6 +208,24 @@ exports.frontPage = function(callback) {
 // } Section 1: Front-page
 
 // Section 2: Overboard {
+exports.buildJsonAndRssOverboard = function(foundThreads, previewRelation,
+    callback) {
+
+  jsonBuilder.overboard(foundThreads, previewRelation,
+      function builtJsonOverboard(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          rssBuilder.board({
+            boardUri : settings.overboard
+          }, foundThreads, callback);
+        }
+
+      });
+
+};
+
 exports.getOverboardPosts = function(foundThreads, callback) {
 
   var previewRelation = {};
@@ -268,8 +289,9 @@ exports.getOverboardPosts = function(foundThreads, callback) {
                 if (error) {
                   callback(error);
                 } else {
-                  jsonBuilder
-                      .overboard(foundThreads, previewRelation, callback);
+                  exports.buildJsonAndRssOverboard(foundThreads,
+                      previewRelation, callback);
+
                 }
               });
           // style exception, too simple

@@ -3,7 +3,7 @@
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var miscOps = require('../engine/miscOps');
-var toSanitize = [ 'captchaFonts', 'acceptedMimes' ];
+var toSanitize = [ 'captchaFonts', 'acceptedMimes', 'addons' ];
 
 function changeGlobalSettings(userData, parameters, res) {
 

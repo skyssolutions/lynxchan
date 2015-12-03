@@ -379,6 +379,11 @@ exports.getParametersArray = function() {
     setting : 'tempDirectory',
     element : 'fieldTempDir'
   }, {
+    param : 'rssDomain',
+    type : 'string',
+    setting : 'rssDomain',
+    element : 'fieldRssDomain'
+  }, {
     param : 'senderEmail',
     type : 'string',
     setting : 'emailSender',

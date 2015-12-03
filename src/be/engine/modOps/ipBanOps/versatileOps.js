@@ -169,7 +169,9 @@ exports.checkForBan = function(req, boardUri, callback) {
       if (req.bypassed) {
         callback();
       } else {
-        callback(blockTor ? lang.errBlockedTor : null, null, bypassAllowed);
+        var errorToReturn = blockTor ? lang.errBlockedTor : null;
+
+        callback(errorToReturn, null, bypassAllowed && blockTor);
       }
 
     } else if (req.isProxy) {
