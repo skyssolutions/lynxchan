@@ -19,11 +19,11 @@ exports.getThreads = function(threads) {
 
     var thread = threads[i];
 
-    rssContent += '<item>';
+    rssContent += '<item><title>';
 
-    rssContent += '<title>' + (thread.subject || thread.message) + '</title>';
+    rssContent += thread.subject || thread.message.substring(0, 256);
 
-    rssContent += '<link>' + settings.rssDomain + '/' + thread.boardUri;
+    rssContent += '</title><link>' + settings.rssDomain + '/' + thread.boardUri;
     rssContent += '/res/' + thread.threadId + '.html</link>';
 
     rssContent += '<description>' + thread.message + '</description>';

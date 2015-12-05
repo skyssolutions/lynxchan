@@ -954,7 +954,6 @@ Parameters:
     allowBoardCustomJs(Boolean): allows for boards to have custom javascript.
     globalLatestPosts(Number): amount of latest global latest posts that show appear on the front-page.
     forceCaptcha(Boolean): makes all boards use captcha.
-    tcpPort(Number): port to be used for TCP.
     overboard: uri of the overboard.
     overBoardThreadCount(Number): amount of threads displayed on the overboard.
     bypassDurationHours(Number): amount of hours a block bypass lasts.

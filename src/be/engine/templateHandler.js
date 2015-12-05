@@ -320,7 +320,7 @@ exports.getPageTests = function() {
             'comboMinClearIpRole', 'fieldThumbExtension',
             'checkboxGlobalBoardModeration', 'checkboxGlobalBanners',
             'checkboxAllowCustomJs', 'fieldGlobalLatestPosts',
-            'checkboxGlobalCaptcha', 'fieldTcpPort', 'fieldOverboard',
+            'checkboxGlobalCaptcha', 'fieldRssDomain', 'fieldOverboard',
             'comboBypassMode', 'fieldBypassHours', 'fieldBypassPosts',
             'fieldMultiBoardThreadCount', 'fieldConcurrentRebuildMessages' ]
       }, {

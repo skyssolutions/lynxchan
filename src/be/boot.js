@@ -671,7 +671,8 @@ exports.startEngine = function() {
 
 };
 
-var tcpPort = settingsHandler.getGeneralSettings().tcpPort;
+var socketLocation = settingsHandler.getGeneralSettings().tempDirectory;
+socketLocation += '/unix.socket';
 
 function checkMaintenanceMode() {
 
@@ -685,7 +686,7 @@ function checkMaintenanceMode() {
   if (changed) {
     var client = new require('net').Socket();
 
-    client.connect(tcpPort, '127.0.0.1', function() {
+    client.connect(socketLocation, function() {
       client.write(JSON.stringify({
         type : 'maintenance',
         value : parsedValue

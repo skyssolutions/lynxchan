@@ -1,8 +1,13 @@
 'use strict';
 
+// handles the incoming data from another process that received commands from
+// terminal
+
+var fs = require('fs');
 var net = require('net');
 var settingsHandler = require('./settingsHandler');
-var tcpPort = settingsHandler.getGeneralSettings().tcpPort;
+var socketLocation = settingsHandler.getGeneralSettings().tempDirectory;
+socketLocation += '/unix.socket';
 
 function processTask(task) {
 
@@ -14,25 +19,37 @@ function processTask(task) {
 
 }
 
+exports.handleSocket = function(socket) {
+
+  var buffer = '';
+
+  socket.on('data', function(data) {
+    buffer += data;
+  });
+
+  socket.on('end', function() {
+
+    try {
+      processTask(JSON.parse(buffer));
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+};
+
 exports.start = function() {
 
-  var server = net.createServer(function(socket) {
+  fs.unlink(socketLocation, function removedFile(error) {
 
-    var buffer = '';
+    // style exception, too simple
+    var server = net.createServer(function(socket) {
 
-    socket.on('data', function(data) {
-      buffer += data;
-    });
+      exports.handleSocket(socket);
 
-    socket.on('end', function() {
+    }).listen(socketLocation);
+    // style exception, too simple
 
-      try {
-        processTask(JSON.parse(buffer));
-      } catch (error) {
-        console.log(error);
-      }
-    });
-
-  }).listen(tcpPort, '127.0.0.1');
+  });
 
 };

@@ -1,6 +1,6 @@
 'use strict';
 
-var ipv6 = require('ip-address').v6;
+var ipv6 = require('ip-address');
 
 exports.addMinutes = function(date, amount) {
   return new Date(date.getTime() + amount * 60000);
@@ -54,9 +54,9 @@ exports.formatedTime = function(time) {
 exports.convertIpToArray = function convertIpToArray(ip) {
 
   if (ip.match(/\d+.\d+.\d+.\d+/)) {
-    return ipv6.Address.fromAddress4(ip).toUnsignedByteArray().slice(-4);
+    return ipv6.Address6.fromAddress4(ip).toUnsignedByteArray().slice(-4);
   } else {
-    return new ipv6.Address(ip).toUnsignedByteArray();
+    return new ipv6.Address6(ip).toUnsignedByteArray();
   }
 };
 
