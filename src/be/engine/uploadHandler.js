@@ -226,6 +226,10 @@ exports.transferMediaToGfs = function(boardData, threadId, postId, fileId,
   var fileName = fileId + '.' + extension;
   fileName = '/' + boardData.boardUri + '/media/' + fileName;
 
+  if (!file.thumbPath) {
+    file.thumbPath = fileName;
+  }
+
   file.path = fileName;
   file.gfsName = fileId + '.' + extension;
 
@@ -470,7 +474,7 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
 
     exports.generateGifThumb(boardData, threadId, postId, file, callback);
 
-  } else if (file.mime.indexOf('image/') !== -1 && !tooSmall) {
+  } else if (file.mime.indexOf('image/') > -1 && !tooSmall) {
 
     exports.generateImageThumb(boardData, threadId, postId, file, callback);
 
@@ -486,7 +490,7 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
 
     if (thumbAudioMimes.indexOf(file.mime) > -1) {
       file.thumbPath = genericAudioThumb;
-    } else {
+    } else if (file.mime.indexOf('image/') < 0) {
       file.thumbPath = genericThumb;
     }
 
