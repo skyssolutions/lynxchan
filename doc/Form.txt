@@ -547,7 +547,10 @@ PAG_ID::31
 
 Name: logs
 
-Description: displays available dates for logs.
+Description: displays available dates for logs. It uses get parameters.
+
+Parameters:
+    date: date in format MM/YYYY to specify a month and year to fetch available dates. Defaults to current month and year.
 
 Json output(Array): array with the available dates.
     
@@ -651,7 +654,7 @@ Description: solves a captcha without invalidating it.
 
 Parameters:
     captchaId: id of the captcha to be solved.
-    answer: answer to the captcha.    
+    answer: answer to the captcha.
 
 ------------------------------------------------------------------------------------------
 
@@ -679,7 +682,7 @@ Description: creates a range ban. Requires authentication. Global range bans are
 Parameters:
     captcha: captcha input.
     boardUri: if not informed, the range ban will be global.
-    range: range to be banned.    
+    range: range to be banned.
 
 ------------------------------------------------------------------------------------------
 
@@ -738,7 +741,7 @@ Name: rules
 
 Description: displays the page used to manage a board rule's. Requires authentication. Restricted to the board owner. Uses get parameters.
 
-Parameters: 
+Parameters:
     boardUri: URI of the board the user wishes to manage it's rules.
 
 Json output(Array): array with the board rules.
@@ -947,7 +950,7 @@ Parameters:
     maxTags(Number): maximum amount of tags per board.
     disableFloodCheck(Boolean): disables flood checks.
     torAccess(Number): access for tor users.
-    proxyAccess(Number): access for proxy users.    
+    proxyAccess(Number): access for proxy users.
     clearIpMinRole(Number): minimum global role required so an user must be able to see non-hashed ips from users.
     thumbExtension: extension to be used on thumbnails.
     allowGlobalBoardModeration(Boolean): allows global staff to moderate boards.
@@ -1091,7 +1094,7 @@ Name: liftProxyBan
 Description: deletes a proxy ban.
 
 Parameters:
-    proxyBanId: id of the proxy ban to be removed    
+    proxyBanId: id of the proxy ban to be removed
 
 ------------------------------------------------------------------------------------------
 
@@ -1099,7 +1102,7 @@ PAG_ID::66
 
 Name: blockBypass
 
-Description: displays the page that allows the user to renew a block bypass and indicates if he has a valid block bypass token. 
+Description: displays the page that allows the user to renew a block bypass and indicates if he has a valid block bypass token.
 
 ------------------------------------------------------------------------------------------
 
@@ -1110,7 +1113,7 @@ Name: renewBypass
 Description: allows the user to renew his block bypass.
 
 Parameters:
-    captcha: captcha input. 
+    captcha: captcha input.
 
 ------------------------------------------------------------------------------------------
 
@@ -1122,7 +1125,7 @@ Description: allows the user to unlock his account. Uses get parameters.
 
 Parameters:
     login: account to be unlocked.
-    token: unlock token. 
+    token: unlock token.
 
 ------------------------------------------------------------------------------------------
 
@@ -1134,7 +1137,7 @@ Description: appeals a ban.
 
 Parameters:
     banId: id of the ban being appealed.
-    appeal: appeal. 
+    appeal: appeal.
 
 ------------------------------------------------------------------------------------------
 

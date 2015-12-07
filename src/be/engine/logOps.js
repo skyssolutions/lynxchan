@@ -17,10 +17,10 @@ exports.aggregateLog = function(entry, callback) {
 
   var entryTime = new Date(entry.time);
 
-  entryTime.setHours(0);
-  entryTime.setMinutes(0);
-  entryTime.setSeconds(0);
-  entryTime.setMilliseconds(0);
+  entryTime.setUTCHours(0);
+  entryTime.setUTCMinutes(0);
+  entryTime.setUTCSeconds(0);
+  entryTime.setUTCMilliseconds(0);
 
   aggregatedLogs.updateOne({
     date : entryTime
