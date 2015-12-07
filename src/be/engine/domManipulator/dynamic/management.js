@@ -408,6 +408,10 @@ exports.setFilterCell = function(cell, boardUri, filter) {
 
   var boardIdentifier = cell.getElementsByClassName('boardIdentifier')[0];
   boardIdentifier.setAttribute('value', boardUri);
+
+  if (!filter.caseInsensitive) {
+    common.removeElement(cell.getElementsByClassName('labelCaseIsensitive')[0]);
+  }
 };
 
 exports.filterManagement = function(boardUri, filters) {

@@ -81,7 +81,7 @@ exports.getCellTests = function() {
       {
         template : 'filterCell',
         fields : [ 'labelOriginal', 'labelReplacement', 'boardIdentifier',
-            'filterIdentifier' ]
+            'filterIdentifier', 'labelCaseIsensitive' ]
       },
       {
         template : 'boardsCell',
@@ -239,7 +239,7 @@ exports.getPageTests = function() {
       },
       {
         template : 'filterManagement',
-        fields : [ 'divFilters', 'boardIdentifier' ]
+        fields : [ 'divFilters', 'boardIdentifier', 'checkboxCaseInsensitive' ]
       },
       {
         template : 'boardModerationPage',

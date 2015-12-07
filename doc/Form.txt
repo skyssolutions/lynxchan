@@ -565,6 +565,7 @@ Parameters:
 Json output(Array): array with filters of the board. Each object contains the following fields:
     originalTerm: term to be replaced.
     replacementTerm: term that will replace the original one.
+    caseInsensitive(Boolean): indicates the filter is case-insensitive.
 
 ------------------------------------------------------------------------------------------
 
@@ -578,6 +579,7 @@ Parameters:
     boardUri: URI of the board to have its filters managed.
     originalTerm: word to be filtered. 32 characters.
     replacementTerm: world to be filtered to. 32 characters.
+    caseInsensitive(Boolean): indicates the filter is case-insensitive.
 
 ------------------------------------------------------------------------------------------
 

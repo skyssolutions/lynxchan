@@ -372,6 +372,7 @@ Parameters:
     boardUri: uri of the board to have its filters managed.
     originalTerm: word to be filtered. 32 characters.
     replacementTerm: world to be filtered to. 32 characters.
+    caseInsensitive(Boolean): indicates the filter is case-insensitive.
 
 ------------------------------------------------------------------------------------------
 
