@@ -31,13 +31,19 @@ if [ "$answerFrontEnd" == "y" ]; then
 
 fi
 
-if [ "$answerLibs" == "y" ]; then
+if [ "$answerStable" == "y" ]; then
 
-  cd ../src/be
-  npm install
+  cd ..
+ 
+  git checkout 1.3.x
+   
+  cd src/fe
+   
+  git checkout 1.3.0
+
   cd ../../aux
 
-echo "Libraries installed."
+  echo "Changed to latest stable version: 1.3.x"
 
 fi
 
@@ -53,18 +59,12 @@ if [ "$answerSettings" == "y" ]; then
 
 fi
 
-if [ "$answerStable" == "y" ]; then
+if [ "$answerLibs" == "y" ]; then
 
-  cd ..
- 
-  git checkout 1.3.x
-   
-  cd src/fe
-   
-  git checkout 1.3.0
-
+  cd ../src/be
+  npm install
   cd ../../aux
 
-  echo "Changed to latest stable version: 1.3.x"
+  echo "Libraries installed."
 
 fi
