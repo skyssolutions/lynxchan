@@ -104,7 +104,6 @@ errDeniedGlobalProxyBansManagement: error thrown when the user is denied managem
 errDeniedBoardProxyBanManagement: error thrown when the user is denied management of a board's proxy bans.
 errInvalidIp: error thrown when an invalid ip is informed.
 errDisabledBypass: error thrown when block bypass is not enabled.
-errAccountLocked: error thrown when the user tries to login with a locked account.
 errInvalidToken: error thrown when the specified unlock token is not valid.
 errBanNotFound: error thrown when the specified ban can't be found.
 errCouldNotMeasureImage: error thrown when the engine can't measure an image's dimensions.

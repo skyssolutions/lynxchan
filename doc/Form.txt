@@ -1119,18 +1119,6 @@ Parameters:
 
 PAG_ID::68
 
-Name: unlockAccount
-
-Description: allows the user to unlock his account. Uses get parameters.
-
-Parameters:
-    login: account to be unlocked.
-    token: unlock token.
-
-------------------------------------------------------------------------------------------
-
-PAG_ID::69
-
 Name: appealBan
 
 Description: appeals a ban.
@@ -1141,7 +1129,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::70
+PAG_ID::69
 
 Name: denyAppeal
 

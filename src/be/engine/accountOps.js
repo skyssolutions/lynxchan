@@ -3,7 +3,6 @@
 // operations regarding user accounts
 
 var db = require('../db');
-var unlockTokens = db.unlockTokens();
 var users = db.users();
 var requests = db.recoveryRequests();
 var bcrypt = require('bcrypt');
@@ -19,8 +18,7 @@ var captchaOps;
 var domManipulator;
 var lang;
 
-var maxFailedLogins = 8;
-var validAccountSettings = [ 'alwaysSignRole', 'lockEnabled' ];
+var validAccountSettings = [ 'alwaysSignRole' ];
 
 var newAccountParameters = [ {
   field : 'login',
@@ -199,105 +197,24 @@ exports.registerUser = function(parameters, cb, role, override, captchaId) {
 };
 // } Section 2: Account creation
 
-exports.createSession = function(login, callback, resetFailedAttempts) {
+exports.createSession = function(login, callback) {
 
   var hash = crypto.createHash('sha256').update(
       login + Math.random() + logger.timestamp()).digest('hex');
 
-  var updateBlock = {
+  users.update({
+    login : login
+  }, {
     $set : {
       hash : hash
     }
-  };
-
-  if (resetFailedAttempts) {
-    updateBlock.$unset = {
-      failedLogins : true
-    };
-  }
-
-  users.update({
-    login : login
-  }, updateBlock, function updatedUser(error) {
+  }, function updatedUser(error) {
     callback(error, hash);
   });
 
 };
 
 // Section 3: Login {
-exports.lockAccount = function(domain, user, expiration, callback) {
-
-  var token = crypto.createHash('sha256').update(
-      JSON.stringify(user) + Math.random() + expiration).digest('hex');
-
-  unlockTokens.insertOne({
-    login : user.login,
-    expiration : expiration,
-    unlockToken : token
-  }, function createdToken(error) {
-    if (error || !user.email || !user.email.length) {
-      callback(error);
-    } else {
-
-      var unlockLink = domain + '/unlockAccount.js?token=' + token + '&login=';
-      unlockLink += user.login;
-
-      // style exception, too simple
-      mailer.sendMail({
-        from : sender,
-        to : user.email,
-        subject : lang.subLockedAccount,
-        html : domManipulator.lockEmail(unlockLink)
-      }, function emailSent(error) {
-
-        callback(lang.errLoginFailed);
-      });
-      // style exception, too simple
-
-    }
-
-  });
-
-};
-
-exports.incrementLockCount = function(domain, user, callback) {
-
-  var updateBlock = {
-    $inc : {
-      failedLogins : 1
-    }
-  };
-
-  var locked = false;
-
-  if (user.failedLogins + 1 >= maxFailedLogins) {
-    locked = true;
-    var expiration = new Date();
-    expiration.setDate(expiration.getDate() + 1);
-
-    updateBlock.$set = {
-      lockExpiration : expiration
-    };
-  }
-
-  users.updateOne({
-    login : user.login
-  }, updateBlock, function updatedUser(error) {
-
-    if (error) {
-      callback(lang.errFailedLogin);
-    } else {
-
-      if (locked) {
-        exports.lockAccount(domain, user, expiration, callback);
-      } else {
-        callback(lang.errLoginFailed);
-
-      }
-    }
-  });
-};
-
 exports.login = function(domain, parameters, callback) {
 
   users.findOne({
@@ -307,16 +224,12 @@ exports.login = function(domain, parameters, callback) {
     login : 1,
     email : 1,
     password : 1,
-    settings : 1,
-    lockExpiration : 1,
-    failedLogins : 1
+    settings : 1
   }, function gotUser(error, user) {
     if (error) {
       callback(error);
     } else if (!user) {
       callback(lang.errLoginFailed);
-    } else if (new Date() < user.lockExpiration) {
-      callback(lang.errAccountLocked);
     } else {
 
       // style exception, too simple
@@ -326,14 +239,9 @@ exports.login = function(domain, parameters, callback) {
         if (error) {
           callback(error);
         } else if (!matches) {
-          if (user.settings && user.settings.indexOf('lockEnabled') > -1) {
-            exports.incrementLockCount(domain, user, callback);
-          } else {
-            callback(lang.errLoginFailed);
-          }
-
+          callback(lang.errLoginFailed);
         } else {
-          exports.createSession(parameters.login, callback, true);
+          exports.createSession(parameters.login, callback);
         }
       });
       // style exception, too simple
@@ -485,7 +393,6 @@ exports.emailUserNewPassword = function(email, newPass, callback) {
   });
 
 };
-
 exports.generateNewPassword = function(login, callback) {
 
   var newPass = crypto.createHash('sha256').update(
@@ -621,32 +528,3 @@ exports.changePassword = function(userData, parameters, callback) {
 };
 // } Section 6: Password change
 
-exports.unlockAccount = function(parameters, callback) {
-
-  unlockTokens.findOneAndDelete({
-    login : parameters.login,
-    unlockToken : parameters.token || '',
-    expiration : {
-      $gt : new Date()
-    }
-  }, function gotToken(error, result) {
-
-    if (error) {
-      callback(error);
-    } else if (!result.value) {
-      callback(lang.errInvalidToken);
-    } else {
-
-      users.updateOne({
-        login : parameters.login
-      }, {
-        $unset : {
-          lockExpiration : true,
-          failedLogins : true
-        }
-      }, callback);
-
-    }
-  });
-
-};

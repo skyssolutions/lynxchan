@@ -19,9 +19,8 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 15;
+var maxIndexesSet = 14;
 
-var cachedUnlockTokens;
 var cachedAggregatedLogs;
 var cachedBypasses;
 var cachedFlood;
@@ -498,29 +497,6 @@ function initBypasses(callback) {
     }
   });
 }
-
-function initUnlockTokens(callback) {
-
-  cachedUnlockTokens = cachedDb.collection('unlockTokens');
-
-  cachedUnlockTokens.ensureIndex({
-    expiration : 1
-  }, {
-    expireAfterSeconds : 0
-  }, function setIndex(error, index) {
-    if (error) {
-      if (loading) {
-        loading = false;
-
-        callback(error);
-      }
-    } else {
-      indexSet(callback);
-    }
-  });
-
-}
-
 // end of index initialization
 
 // start of getters
@@ -612,9 +588,6 @@ exports.aggregatedLogs = function() {
   return cachedAggregatedLogs;
 };
 
-exports.unlockTokens = function() {
-  return cachedUnlockTokens;
-};
 // end of getters
 
 function initCollections(db, callback) {
@@ -646,8 +619,6 @@ function initCollections(db, callback) {
   initFlags(callback);
 
   initFlood(callback);
-
-  initUnlockTokens(callback);
 
 }
 

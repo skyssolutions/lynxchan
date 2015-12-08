@@ -472,10 +472,6 @@ checkboxAlwaysSign:
     use: might be turned on.
     description: check-box that indicates the user wishes to always sign posts with his role.
 
-checkboxLock:
-    use: might be turned on.
-    description: check-box that indicates the user wishes to have it's account locked after too many failed login attempts.
-
 boardsDiv:
     use: have children appended to it.
     description: contains the list of boards owned by the user.
@@ -1909,17 +1905,6 @@ Elements:
 dateLink:
     use: have it's href and innerHTML manipulated.
     description: link that leads to the log page.
-
-------------------------------------------------------------------------------------------
-
-TEM_ID::63
-
-unlockEmail:
-
-Elements:
-unlockLink:
-    use: have it's href manipulated.
-    description: link to unlock the account.
 
 ------------------------------------------------------------------------------------------
 

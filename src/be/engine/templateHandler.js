@@ -188,8 +188,7 @@ exports.getPageTests = function() {
       {
         template : 'accountPage',
         fields : [ 'labelLogin', 'boardsDiv', 'emailField',
-            'globalManagementLink', 'boardCreationDiv', 'checkboxAlwaysSign',
-            'checkboxLock' ]
+            'globalManagementLink', 'boardCreationDiv', 'checkboxAlwaysSign' ]
       },
       {
         template : 'banPage',
@@ -344,9 +343,6 @@ exports.getPageTests = function() {
       }, {
         template : 'logIndexPage',
         fields : [ 'divDates' ]
-      }, {
-        template : 'unlockEmail',
-        fields : [ 'unlockLink' ]
       } ];
 
 };

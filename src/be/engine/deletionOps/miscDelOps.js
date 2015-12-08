@@ -158,6 +158,13 @@ exports.deleteBoardContent = function(board, callback, index) {
       frontPage : true
     });
 
+    if (settings.overboard) {
+      process.send({
+        overboard : true,
+        reaggregate : true
+      });
+    }
+
     callback();
   }
 
