@@ -18,6 +18,10 @@ var captchaOps;
 var domManipulator;
 var lang;
 
+var iterations = 4096;
+var keyLength = 256;
+var hashDigest = 'sha512';
+
 var validAccountSettings = [ 'alwaysSignRole' ];
 
 var newAccountParameters = [ {
@@ -219,12 +223,6 @@ exports.login = function(domain, parameters, callback) {
 
   users.findOne({
     login : parameters.login
-  }, {
-    _id : 0,
-    login : 1,
-    email : 1,
-    password : 1,
-    settings : 1
   }, function gotUser(error, user) {
     if (error) {
       callback(error);
@@ -233,7 +231,7 @@ exports.login = function(domain, parameters, callback) {
     } else {
 
       // style exception, too simple
-      bcrypt.compare(parameters.password, user.password, function(error,
+      exports.passwordMatches(user, parameters.password, function(error,
           matches) {
 
         if (error) {
@@ -393,30 +391,29 @@ exports.emailUserNewPassword = function(email, newPass, callback) {
   });
 
 };
+
 exports.generateNewPassword = function(login, callback) {
 
   var newPass = crypto.createHash('sha256').update(
       login + Math.random() + logger.timestamp()).digest('hex').substring(0, 6);
 
-  bcrypt.hash(newPass, 8, function(error, hash) {
+  exports.setUserPassword(login, newPass, function passwordSet(error) {
 
     if (error) {
       callback(error);
     } else {
 
       // style exception, too simple
-      users.findOneAndUpdate({
+      users.findOne({
         login : login
-      }, {
-        $set : {
-          password : hash
-        }
-      }, {}, function updatedUser(error, user) {
+      }, function gotUser(error, user) {
+
         if (error) {
           callback(error);
         } else {
-          exports.emailUserNewPassword(user.value.email, newPass, callback);
+          exports.emailUserNewPassword(user.email, newPass, callback);
         }
+
       });
       // style exception, too simple
 
@@ -466,29 +463,16 @@ exports.changeSettings = function(userData, parameters, callback) {
 // Section 6: Password change {
 exports.updatePassword = function(userData, parameters, callback) {
 
-  bcrypt.hash(parameters.newPassword, 8, function(error, hash) {
-    if (error) {
-      callback(error);
-    } else {
+  exports.setUserPassword(userData.login, parameters.newPassword,
+      function passwordSet(error) {
 
-      // style exception, too simple
-      users.updateOne({
-        login : userData.login
-      }, {
-        $set : {
-          password : hash
-        }
-      }, function updatedPassword(error) {
         if (error) {
           callback(error);
         } else {
           exports.createSession(userData.login, callback);
         }
-      });
-      // style exception, too simple
 
-    }
-  });
+      });
 
 };
 
@@ -508,7 +492,7 @@ exports.changePassword = function(userData, parameters, callback) {
     } else {
 
       // style exception, too simple
-      bcrypt.compare(parameters.password, user.password, function(error,
+      exports.passwordMatches(user, parameters.password, function(error,
           matches) {
 
         if (error) {
@@ -528,3 +512,77 @@ exports.changePassword = function(userData, parameters, callback) {
 };
 // } Section 6: Password change
 
+exports.passwordMatches = function(userData, password, callback) {
+
+  switch (userData.passwordMethod) {
+  case 'pbkdf2':
+    crypto.pbkdf2(password, userData.passwordSalt, iterations, keyLength,
+        hashDigest, function hashed(error, hash) {
+
+          if (error || !hash) {
+            callback(error);
+          } else {
+            callback(null, userData.password === hash.toString('base64'));
+          }
+
+        });
+
+    break;
+
+  default:
+    bcrypt.compare(password, userData.password, function compared(error,
+        matches) {
+
+      if (matches) {
+
+        // style exception, too simple
+        exports.setUserPassword(userData.login, password, function passwordSet(
+            error) {
+          callback(error, true);
+        });
+        // style exception, too simple
+
+      } else {
+        callback(error);
+      }
+
+    });
+  }
+
+};
+
+exports.setUserPassword = function(login, password, callback) {
+
+  crypto.randomBytes(64, function gotSalt(error, buffer) {
+
+    if (error) {
+      callback(error);
+    } else {
+      var salt = buffer.toString('base64');
+
+      // style exception, too simple
+      crypto.pbkdf2(password, salt, iterations, keyLength, hashDigest,
+          function hashed(error, hash) {
+
+            if (error) {
+              callback(error);
+            } else {
+
+              users.updateOne({
+                login : login
+              }, {
+                $set : {
+                  passwordMethod : 'pbkdf2',
+                  passwordSalt : salt,
+                  password : hash.toString('base64')
+                }
+              }, callback);
+            }
+
+          });
+      // style exception, too simple
+
+    }
+  });
+
+};

@@ -117,6 +117,9 @@ posts: stores posts.
 users: stores users.
     login**: login of the user. 16 characters. Only a-Z, _ and 0-9 allowed.
     email: e-mail of the user. 64 characters.
+    passwordSalt: salt used to hash the user's password. 
+    passwordMethod: string indicating which algorithm was used for the password. If not informed, bcrypt is the used algorithm. May contain one of the following values:
+        pbkdf2
     lastSeen(Date): last time this user validated his account on the system.
     password: hashed password of the user.
     ownedBoards(Array): list of the uri's of the boards owned by this user.
