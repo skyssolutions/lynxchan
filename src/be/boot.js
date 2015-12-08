@@ -584,8 +584,10 @@ function checkForDefaultPages() {
       if (debug) {
         throw error;
       }
-    } else {
+    } else if (files.length) {
       iterateDefaultPages(files[0].pages);
+    } else {
+      regenerateAll();
     }
   });
 

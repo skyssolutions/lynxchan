@@ -21,7 +21,7 @@ function getMinDate(informedDate) {
 
   if (informedDate) {
 
-    var matches = informedDate.toString().match(/(\d{2})\/(\d{4})/);
+    var matches = informedDate.match(/(\d{2})\/(\d{4})/);
 
     if (matches) {
 
