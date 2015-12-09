@@ -10,7 +10,7 @@ var logger = require('../logger');
 var crypto = require('crypto');
 var mailer = require('nodemailer').createTransport();
 var settings = require('../settingsHandler').getGeneralSettings();
-var sender = settings.emailSender || 'noreply@mychan.com';
+var sender = settings.emailSender;
 var creationDisabled = settings.disableAccountCreation;
 var logOps;
 var miscOps;
@@ -129,33 +129,34 @@ exports.setGlobalRole = function(operatorData, parameters, callback, override) {
 // Section 2: Account creation {
 exports.createAccount = function(parameters, role, callback) {
 
-  bcrypt.hash(parameters.password, 8, function(error, hash) {
-    if (error) {
+  var newUser = {
+    login : parameters.login
+  };
+
+  if (role !== undefined && role !== null) {
+    newUser.globalRole = +role;
+  }
+
+  if (parameters.email) {
+    newUser.email = parameters.email;
+  }
+
+  users.insertOne(newUser, function createdUser(error) {
+    if (error && error.code !== 11000) {
       callback(error);
+    } else if (error) {
+      callback(lang.errLoginInUse);
     } else {
 
       // style exception, too simple
-      var newUser = {
-        login : parameters.login,
-        password : hash
-      };
-
-      if (role !== undefined && role !== null) {
-        newUser.globalRole = +role;
-      }
-
-      if (parameters.email) {
-        newUser.email = parameters.email;
-      }
-      users.insertOne(newUser, function createdUser(error) {
-        if (error && error.code !== 11000) {
-          callback(error);
-        } else if (error) {
-          callback(lang.errLoginInUse);
-        } else {
-          exports.createSession(parameters.login, callback);
-        }
-      });
+      exports.setUserPassword(parameters.login, parameters.password,
+          function passwordSet(error, hash) {
+            if (error) {
+              callback(error);
+            } else {
+              exports.createSession(parameters.login, callback);
+            }
+          });
       // style exception, too simple
 
     }
@@ -203,17 +204,27 @@ exports.registerUser = function(parameters, cb, role, override, captchaId) {
 
 exports.createSession = function(login, callback) {
 
-  var hash = crypto.createHash('sha256').update(
-      login + Math.random() + logger.timestamp()).digest('hex');
+  crypto.randomBytes(64, function gotHash(error, buffer) {
 
-  users.update({
-    login : login
-  }, {
-    $set : {
-      hash : hash
+    if (error) {
+      callback(error);
+    } else {
+
+      var hash = buffer.toString('base64');
+
+      // style exception, too simple
+      users.update({
+        login : login
+      }, {
+        $set : {
+          hash : hash
+        }
+      }, function updatedUser(error) {
+        callback(error, hash);
+      });
+      // style exception, too simple
+
     }
-  }, function updatedUser(error) {
-    callback(error, hash);
   });
 
 };
