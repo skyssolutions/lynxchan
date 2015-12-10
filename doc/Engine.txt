@@ -26,7 +26,7 @@ CHA_ID::2.4 - captchaOps
 	Captchas rely on cookies on the form api, the purpose of solving a captcha without deleting it is to allow it to be used by non-cookie users. There is a page in the form api called noCookieCaptcha that uses this feature.
 
 CHA_ID::2.5 - deletionOps
-	Handles generation deletion of content, like postings and boards. The most complex operation here is posting, used to delete both threads and replies. First it uses the list of informed content and assembles a list of boards involved in the deletion. Then it iterates through these boards and for each board it looks for the threads to be deleted, then looks for posts to be deleted, including the ones that are going to be deleted because of deleted threads. Then it removes the found threads and posts. After that, it looks for the files of removed postings and delete these too. After that, it updates the thread count of the board, updates the latest posts array of involved threads and iterate the next board. It also handles automatic deletion of exceeding threads in boards. All operations here should delete the files of involved content.
+	Handles deletion of content, like postings and boards. The most complex operation here is posting, used to delete both threads and replies. First it uses the list of informed content and assembles a list of boards involved in the deletion. Then it iterates through these boards and for each board it looks for the threads to be deleted, then looks for posts to be deleted, including the ones that are going to be deleted because of deleted threads. Then it removes the found threads and posts. After that, it looks for the files of removed postings and delete these too. After that, it updates the thread count of the board, updates the latest posts array of involved threads and iterate the next board. It also handles automatic deletion of exceeding threads in boards. All operations here should delete the files of involved content.
 
 CHA_ID::2.6 - domManipulator
 	Handles manipulation of templates to generate html pages. Static pages are saved on gridfs and use a callback that is executed when the operation finishes, dynamic pages are have its content returned to be output by the form api module that required it. The only exception being thread pages, that can also be generated for dynamic use by mod.js on the form api and will use the callback to return the html instead of saving it to mongo. All of its public functions use try-catch to handle errors with missing elements from the templates.
@@ -37,16 +37,15 @@ CHA_ID::2.7 - formOps
 	Like apiOps, it contains a outputResponse function. It takes as parameters a message to be output, the link the users will be redirected from the message, the response object. It also contains two optional parameters. The first being cookies, an array of arrays where the first element of the inner array is the cookie field and the second is the cookie value. These cookies will be applied to the response. The second optional parameter is authBlock. It is to be informed as it is received from accountOps on validate and its used to renew the hash of the user.
 
 CHA_ID::2.8 - generator
-	This module handles the logic of building static files from information. It gathers data from the database and then use the functions from domManipulator and jsonBuider to store this data as either a html or json. It also has a convenience function used to rebuild all pages, all. It takes just the callback and executes it when the operation is finished, informing an error, if any. Currently it does not support the rebuild if preview pages for postings.
+	This module handles the logic of building static files from information. It gathers data from the database and then use the functions from domManipulator, rssBuilder and jsonBuider to store this data on gridFS. It also has a convenience function used to rebuild all pages, all. It takes just the callback and executes it when the operation is finished, informing an error, if any. Currently it does not support the rebuild if preview pages for postings.
 	It also saves default images (banner, thumbnail, spoiler) to gridfs.
 
 CHA_ID::2.9 - gridFsHandler
-	Handles operations using gridfs. Mainly it has writeData that is used to write raw data into the disk. It takes as parameters the data, the filename to be used, the mimetype to be used, an object that will be used as metadata and a callback. If the informed data is a string, it will be converted to an utf-8 buffer. It also has a writeFile function that takes the path to the file instead of the raw data. Both of these will try to delete the original file before saving. This is done because I couldn't find a way to automatically update the last time a file was modified on gridfs by just writing it. So for codes 304 to work, I used this to make the time of the file to be updated.
+	Handles operations using gridfs. Mainly it has writeData that is used to write raw data into the disk. It takes as parameters the data, the filename to be used, the mimetype to be used, an object that will be used as metadata and a callback. If the informed data is a string, it will be converted to an utf-8 buffer. It also has a writeFile function that takes the path to the file instead of the raw data.
 	It also has a function used to stream back files to the user, outputFile. It takes as parameters the filename to be read, the request, the response and the callback. It also has two optional parameters, cookies and retry. Cookies works the same way they work on outputResponse of formOps. Retry is for its own use and should not be informed in any way.
-	It also contains some logic that would be better if it was on uploadHandler. But it is here. Not there.
 
 CHA_ID::2.10 - jsonBuilder
-	For now, it only saves static json to gridfs as a counterpart to domManipulator. But it should also take the role of generating dynamic json files to complete the json api. As it stands, the only way to obtain some information is through dynamic html pages.
+	Counterpart for domManipulator.
 
 CHA_ID::2.11 - langOps
 	This module handles the reading and validation of the used language pack. It loads it synchronously and validate it against the default language pack. The language pack can be obtained from the function languagePack.
@@ -74,7 +73,7 @@ CHA_ID::3 - Generation queue
 	To reduce static files generation overhead, a queue in the master thread is in place to avoid double generation of files. It is reached by using process.send and sending an object with the correct parameters. Instructions of use can be found on the comment block at the beginning of generationQueue at src/be.
 
 CHA_ID::4 - Ip reading
-	Ips are read from the request.connection.remoteAddress. If a request is marked as being from TOR or a proxy, the function ip from logger will return null.
+	Ips are read from the request.connection.remoteAddress and converted to an array of ints. If a request is marked as being from TOR or a proxy, the function ip from logger will return null, unless it is requests to return the proxy address, which is used for proxy bans.
 
 CHA_ID::5 - Schedules
 	The module scheduleHandler is booted in the master thread and runs regular operations from time to time. Unless the application is set to run without starting a daemon.

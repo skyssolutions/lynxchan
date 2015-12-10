@@ -14,7 +14,7 @@ exports.process = function(req, res) {
         var json = url.parse(req.url, true).query.json;
 
         res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-            : 'text/html'));
+            : 'text/html', auth));
 
         if (json) {
           res.end(jsonBuilder.account(userData));

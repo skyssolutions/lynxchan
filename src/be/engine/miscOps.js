@@ -226,9 +226,16 @@ exports.sanitizeStrings = function(object, parameters) {
 
 // It uses the provided contentType and builds a header ready for CORS.
 // Currently it just allows everything.
-exports.corsHeader = function(contentType) {
-  return [ [ 'Content-Type', contentType ],
+exports.corsHeader = function(contentType, auth) {
+
+  var header = [ [ 'Content-Type', contentType ],
       [ 'access-control-allow-origin', '*' ] ];
+
+  if (auth && auth.authStatus === 'expired') {
+    header.push([ 'Set-Cookie', 'hash=' + auth.newHash ]);
+  }
+
+  return header;
 };
 
 exports.getGlobalRoleLabel = function(role) {

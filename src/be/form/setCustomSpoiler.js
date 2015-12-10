@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var boardOps = require('../engine/boardOps').custom;
 var lang = require('../engine/langOps').languagePack();
 
-function setCustomSpoiler(userData, parameters, res) {
+function setCustomSpoiler(userData, parameters, res, auth) {
 
   if (parameters.files.length) {
     boardOps.setCustomSpoiler(userData, parameters.boardUri,
@@ -16,7 +16,8 @@ function setCustomSpoiler(userData, parameters, res) {
             var redirect = '/boardManagement.js?boardUri=';
             redirect += parameters.boardUri;
 
-            formOps.outputResponse(lang.msgSpoilerSet, redirect, res);
+            formOps.outputResponse(lang.msgSpoilerSet, redirect, res, null,
+                auth);
           }
         });
   } else {
@@ -29,7 +30,8 @@ function setCustomSpoiler(userData, parameters, res) {
             var redirect = '/boardManagement.js?boardUri=';
             redirect += parameters.boardUri;
 
-            formOps.outputResponse(lang.msgSpoilerDeleted, redirect, res);
+            formOps.outputResponse(lang.msgSpoilerDeleted, redirect, res, null,
+                auth);
           }
         });
 
@@ -42,7 +44,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    setCustomSpoiler(userData, parameters, res);
+    setCustomSpoiler(userData, parameters, res, auth);
 
   }, false, true);
 

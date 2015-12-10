@@ -7,7 +7,7 @@ var miscOps = require('../engine/miscOps');
 var bOps = require('../engine/bannerOps');
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
-function getBannerData(parameters, userData, res) {
+function getBannerData(auth, parameters, userData, res) {
 
   bOps.getBannerData(userData, parameters.boardUri, function gotBannerData(
       error, banners) {
@@ -17,7 +17,7 @@ function getBannerData(parameters, userData, res) {
       var json = parameters.json;
 
       res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-          : 'text/html'));
+          : 'text/html', auth));
 
       if (json) {
         res.end(jsonBuilder.bannerManagement(parameters.boardUri, banners));
@@ -35,6 +35,6 @@ exports.process = function(req, res) {
       function gotData(auth, userData) {
         var parameters = url.parse(req.url, true).query;
 
-        getBannerData(parameters, userData, res);
+        getBannerData(auth, parameters, userData, res);
       });
 };

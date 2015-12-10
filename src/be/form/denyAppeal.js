@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var modOps = require('../engine/modOps').ipBan.specific;
 
-function denyAppeal(userData, parameters, res) {
+function denyAppeal(userData, parameters, res, auth) {
 
   modOps.denyAppeal(userData, parameters.banId, function appealDenied(error,
       board) {
@@ -17,7 +17,7 @@ function denyAppeal(userData, parameters, res) {
         redirect += '?boardUri=' + board;
       }
 
-      formOps.outputResponse(lang.msgAppealDenied, redirect, res);
+      formOps.outputResponse(lang.msgAppealDenied, redirect, res, null, auth);
     }
   });
 
@@ -28,7 +28,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    denyAppeal(userData, parameters, res);
+    denyAppeal(userData, parameters, res, auth);
 
   });
 

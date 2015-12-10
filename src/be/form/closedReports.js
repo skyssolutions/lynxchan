@@ -7,7 +7,7 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var modOps = require('../engine/modOps').report;
 
-function getClosedReports(userData, parameters, res) {
+function getClosedReports(userData, parameters, res, auth) {
 
   modOps.getClosedReports(userData, parameters, function gotClosedReports(
       error, reports) {
@@ -17,7 +17,7 @@ function getClosedReports(userData, parameters, res) {
       var json = parameters.json;
 
       res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-          : 'text/html'));
+          : 'text/html', auth));
 
       if (json) {
         res.end(jsonBuilder.closedReports(reports));
@@ -37,7 +37,7 @@ exports.process = function(req, res) {
 
         var parameters = url.parse(req.url, true).query;
 
-        getClosedReports(userData, parameters, res);
+        getClosedReports(userData, parameters, res, auth);
 
       });
 

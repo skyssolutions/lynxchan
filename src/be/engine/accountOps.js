@@ -212,12 +212,20 @@ exports.createSession = function(login, callback) {
 
       var hash = buffer.toString('base64');
 
+      var renewAt = new Date();
+      // renewAt.setMinutes(renewAt.getMinutes() + 1); //TODO remove
+
+      var logoutAt = new Date();
+      logoutAt.setHours(logoutAt.getHours() + 1);
+
       // style exception, too simple
       users.update({
         login : login
       }, {
         $set : {
-          hash : hash
+          hash : hash,
+          renewExpiration : renewAt,
+          logoutExpiration : logoutAt
         }
       }, function updatedUser(error) {
         callback(error, hash);
@@ -268,9 +276,14 @@ exports.validate = function(auth, callback) {
     return;
   }
 
+  var now = new Date();
+
   users.findOneAndUpdate({
     login : auth.login,
-    hash : auth.hash.toString()
+    hash : auth.hash.toString(),
+    logoutExpiration : {
+      $gt : now
+    }
   }, {
     $set : {
       lastSeen : new Date()
@@ -280,6 +293,25 @@ exports.validate = function(auth, callback) {
       callback(error);
     } else if (!result.value) {
       callback(lang.errInvalidAccount);
+    } else if (result.value.renewExpiration < now) {
+
+      // style exception, too simple
+      exports.createSession(auth.login, function createdSession(error, hash) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          callback(null, {
+            authStatus : 'expired',
+            newHash : hash
+          }, result.value);
+
+        }
+
+      });
+      // style exception, too simple
+
     } else {
       callback(null, {
         authStatus : 'ok'

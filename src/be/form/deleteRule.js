@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var boardOps = require('../engine/boardOps').rules;
 
-function deleteRule(parameters, userData, res) {
+function deleteRule(parameters, userData, res, auth) {
 
   boardOps.deleteRule(parameters, userData, function deletedRule(error) {
     if (error) {
@@ -12,7 +12,8 @@ function deleteRule(parameters, userData, res) {
     } else {
       var redirectLink = '/rules.js?boardUri=' + parameters.boardUri;
 
-      formOps.outputResponse(lang.msgRuleDeleted, redirectLink, res);
+      formOps
+          .outputResponse(lang.msgRuleDeleted, redirectLink, res, null, auth);
     }
   });
 
@@ -23,7 +24,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    deleteRule(parameters, userData, res);
+    deleteRule(parameters, userData, res, auth);
 
   });
 

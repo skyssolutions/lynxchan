@@ -46,16 +46,19 @@ The following sub-domains are used by the engine:
 * `archive`: used to access the archives.
 
 # Directory structure
-The json api files will be stored on the api directory and accessed by the same sub-domain. `api.domain/function` will use the file `api/function.js`.
-The form api for support of users without js because they are retarded tin foilers are in the form directory and are accessed using `domain/function.js`.
+The json api files will be stored on the `api` directory and accessed by the same sub-domain. `api.domain/function` will use the file `api/function.js`.
+The form api for support of users without js because they are retarded tin foilers are in the `form` directory and are accessed using `domain/function.js`.
 The `engine` directory will hold all scripts that provide functionality but are not to be accessed directly. There are also some few files directly under the `src/be` directory.
+The `addons` directory are used to store the addons that can be loaded. After placing an addon on this directory, it should also be included in the `addons` general setting array.
+And finally, the `settings` directory hold the settings files.
+
 
 The following directories will be expected on the front-end directory:
 * `static`: static files to be accessed by using the static sub-domain.
 * `templates`: will hold the templates, so only the files will have to be specified on the settings.
 
 # Templates
-A file called `templateSettings.json` should be located on the front-end directory pointing the correct templates to be used, located on the templates directory. Inform only the name of the file. Refer to `doc/Templates.txt` for informations on how to structure the templates.
+A file called `templateSettings.json` should be located on the front-end directory pointing the correct templates to be used, located on the templates directory. Inform only the name of the file. Refer to `doc/Templates.txt` for information on how to structure the templates.
 
 # Back-end settings
 Settings files that goes into the settings directory:

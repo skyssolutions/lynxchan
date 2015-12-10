@@ -15,7 +15,7 @@ exports.process = function(req, res) {
         if (!allowedToDelete) {
           formOps.outputError(lang.errDeniedArchiveDeletion, 500, res);
         } else {
-          res.writeHead(200, miscOps.corsHeader('text/html'));
+          res.writeHead(200, miscOps.corsHeader('text/html', auth));
 
           res.end(domManipulator.archiveDeletion());
         }

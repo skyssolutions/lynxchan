@@ -7,7 +7,7 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var modOps = require('../engine/modOps').edit;
 
-function getPostingToEdit(userData, parameters, res) {
+function getPostingToEdit(userData, parameters, res, auth) {
 
   modOps.getPostingToEdit(userData, parameters, function gotPostingToEdit(
       error, message) {
@@ -17,7 +17,7 @@ function getPostingToEdit(userData, parameters, res) {
       var json = parameters.json;
 
       res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-          : 'text/html'));
+          : 'text/html', auth));
 
       if (json) {
         res.end(jsonBuilder.edit(message));
@@ -37,7 +37,7 @@ exports.process = function(req, res) {
 
         var parameters = url.parse(req.url, true).query;
 
-        getPostingToEdit(userData, parameters, res);
+        getPostingToEdit(userData, parameters, res, auth);
 
       });
 

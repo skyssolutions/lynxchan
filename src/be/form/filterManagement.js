@@ -7,7 +7,7 @@ var miscOps = require('../engine/miscOps');
 var boardOps = require('../engine/boardOps').filters;
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
-function getFilterData(parameters, userData, res) {
+function getFilterData(parameters, userData, res, auth) {
 
   boardOps.getFilterData(userData, parameters.boardUri, function gotFilterData(
       error, filters) {
@@ -17,7 +17,7 @@ function getFilterData(parameters, userData, res) {
       var json = parameters.json;
 
       res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-          : 'text/html'));
+          : 'text/html', auth));
 
       if (json) {
         res.end(jsonBuilder.filterManagement(filters));
@@ -37,7 +37,7 @@ exports.process = function(req, res) {
 
         var parameters = url.parse(req.url, true).query;
 
-        getFilterData(parameters, userData, res);
+        getFilterData(parameters, userData, res, auth);
 
       });
 

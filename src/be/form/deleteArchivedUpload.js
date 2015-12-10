@@ -5,7 +5,7 @@ var lang = require('../engine/langOps').languagePack();
 var archive = require('../archive');
 var mandatoryParameters = [ 'boardUri', 'filename' ];
 
-function removeArchivedUpload(userData, parameters, res) {
+function removeArchivedUpload(userData, parameters, res, auth) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -16,8 +16,8 @@ function removeArchivedUpload(userData, parameters, res) {
       formOps.outputError(error, 500, res);
     } else {
 
-      formOps
-          .outputResponse(lang.msgArchiveRemoved, '/archiveDeletion.js', res);
+      formOps.outputResponse(lang.msgArchiveRemoved, '/archiveDeletion.js',
+          res, null, auth);
     }
   });
 
@@ -28,7 +28,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    removeArchivedUpload(userData, parameters, res);
+    removeArchivedUpload(userData, parameters, res, auth);
 
   });
 

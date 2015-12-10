@@ -5,7 +5,7 @@ var lang = require('../engine/langOps').languagePack();
 var accountOps = require('../engine/accountOps');
 var validSettings = accountOps.validAccountSettings();
 
-function changeSettings(userData, parameters, res) {
+function changeSettings(userData, parameters, res, auth) {
 
   var newSettings = [];
 
@@ -27,7 +27,8 @@ function changeSettings(userData, parameters, res) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
-      formOps.outputResponse(lang.msgAccountSettingsSaved, '/account.js', res);
+      formOps.outputResponse(lang.msgAccountSettingsSaved, '/account.js', res,
+          null, auth);
     }
 
   });
@@ -39,7 +40,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    changeSettings(userData, parameters, res);
+    changeSettings(userData, parameters, res, auth);
 
   });
 

@@ -7,7 +7,7 @@ var miscOps = require('../engine/miscOps');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var modOps = require('../engine/modOps').ipBan.general;
 
-function getProxyBans(userData, parameters, res) {
+function getProxyBans(userData, parameters, res, auth) {
 
   modOps.getProxyBans(userData, parameters, function gotProxyBans(error,
       proxyBans) {
@@ -17,7 +17,7 @@ function getProxyBans(userData, parameters, res) {
       var json = parameters.json;
 
       res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-          : 'text/html'));
+          : 'text/html', auth));
 
       if (json) {
         res.end(jsonBuilder.proxyBans(proxyBans));
@@ -37,7 +37,7 @@ exports.process = function(req, res) {
 
         var parameters = url.parse(req.url, true).query;
 
-        getProxyBans(userData, parameters, res);
+        getProxyBans(userData, parameters, res, auth);
 
       });
 

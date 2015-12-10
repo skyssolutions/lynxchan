@@ -5,7 +5,7 @@ var lang = require('../engine/langOps').languagePack();
 var boardOps = require('../engine/boardOps').flags;
 var mandatoryParameters = [ 'flagName' ];
 
-function createFlag(parameters, userData, res) {
+function createFlag(parameters, userData, res, auth) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -18,7 +18,7 @@ function createFlag(parameters, userData, res) {
 
       var url = '/flags.js?boardUri=' + parameters.boardUri;
 
-      formOps.outputResponse(lang.msgFlagCreated, url, res);
+      formOps.outputResponse(lang.msgFlagCreated, url, res, null, auth);
     }
   });
 
@@ -29,7 +29,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    createFlag(parameters, userData, res);
+    createFlag(parameters, userData, res, auth);
 
   });
 

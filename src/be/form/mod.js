@@ -13,10 +13,18 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var modOps = require('../engine/modOps').common;
 var formOps = require('../engine/formOps');
 
-function outputModData(bData, flagData, thread, posts, res, json, userRole) {
+function outputModData(bData, flagData, thread, posts, res, json, userRole,
+    auth) {
+
+  var header = miscOps.corsHeader(json ? 'application/json' : 'text/html');
+
+  if (auth && auth.authStatus === 'expired') {
+    header.push([ 'Set-Cookie', 'hash=' + auth.newHash ]);
+  }
+
+  res.writeHead(200, header);
 
   if (json) {
-    res.writeHead(200, miscOps.corsHeader('application/json'));
 
     res.end(jsonBuilder.thread(bData.boardUri, bData, thread, posts, null,
         true, userRole, flagData));
@@ -28,7 +36,6 @@ function outputModData(bData, flagData, thread, posts, res, json, userRole) {
           if (error) {
             formOps.outputError(error, 500, res);
           } else {
-            res.writeHead(200, miscOps.corsHeader('text/html'));
 
             res.end(content);
           }
@@ -37,7 +44,8 @@ function outputModData(bData, flagData, thread, posts, res, json, userRole) {
 
 }
 
-function getPostingData(boardData, flagData, parameters, res, json, userRole) {
+function getPostingData(boardData, flagData, parameters, res, json, userRole,
+    auth) {
 
   threads.findOne({
     threadId : +parameters.threadId,
@@ -104,7 +112,7 @@ function getPostingData(boardData, flagData, parameters, res, json, userRole) {
               formOps.outputError(error, 500, res);
             } else {
               outputModData(boardData, flagData, thread, posts, res, json,
-                  userRole);
+                  userRole, auth);
             }
 
           });
@@ -116,7 +124,7 @@ function getPostingData(boardData, flagData, parameters, res, json, userRole) {
 
 }
 
-function getFlags(board, parameters, res, json, userRole) {
+function getFlags(board, parameters, res, json, userRole, auth) {
 
   flags.find({
     boardUri : parameters.boardUri
@@ -128,7 +136,7 @@ function getFlags(board, parameters, res, json, userRole) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
-      getPostingData(board, flagData, parameters, res, json, userRole);
+      getPostingData(board, flagData, parameters, res, json, userRole, auth);
     }
   });
 
@@ -171,7 +179,7 @@ exports.process = function(req, res) {
             formOps.outputError(lang.errDeniedManageBoard, 500, res);
           } else {
             getFlags(board, parameters, res, parameters.json,
-                userData.globalRole);
+                userData.globalRole, auth);
           }
         });
         // style exception, too simple

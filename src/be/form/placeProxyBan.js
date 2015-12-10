@@ -5,7 +5,7 @@ var lang = require('../engine/langOps').languagePack();
 var modOps = require('../engine/modOps').ipBan.general;
 var mandatoryParameters = [ 'proxyIp' ];
 
-function placeProxyBan(userData, parameters, captchaId, res) {
+function placeProxyBan(userData, parameters, captchaId, res, auth) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -22,7 +22,8 @@ function placeProxyBan(userData, parameters, captchaId, res) {
             redirectLink += '?boardUri=' + parameters.boardUri;
           }
 
-          formOps.outputResponse(lang.msgProxyBanCreated, redirectLink, res);
+          formOps.outputResponse(lang.msgProxyBanCreated, redirectLink, res,
+              null, auth);
         }
       });
 
@@ -30,12 +31,12 @@ function placeProxyBan(userData, parameters, captchaId, res) {
 
 exports.process = function(req, res) {
 
-  formOps.getAuthenticatedPost(req, res, true,
-      function gotData(auth, userData, parameters) {
+  formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
+      parameters) {
 
-        placeProxyBan(userData, parameters, formOps.getCookies(req).captchaid,
-            res);
+    placeProxyBan(userData, parameters, formOps.getCookies(req).captchaid, res,
+        auth);
 
-      });
+  });
 
 };

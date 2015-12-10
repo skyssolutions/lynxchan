@@ -7,7 +7,7 @@ var miscOps = require('../engine/miscOps');
 var boardOps = require('../engine/boardOps').rules;
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
-function getRulesData(parameters, userData, res) {
+function getRulesData(parameters, userData, res, auth) {
 
   boardOps.boardRules(parameters.boardUri, userData, function gotRules(error,
       rules) {
@@ -17,7 +17,7 @@ function getRulesData(parameters, userData, res) {
       var json = parameters.json;
 
       res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-          : 'text/html'));
+          : 'text/html', auth));
 
       if (json) {
         res.end(jsonBuilder.ruleManagement(rules));
@@ -36,7 +36,7 @@ exports.process = function(req, res) {
 
         var parameters = url.parse(req.url, true).query;
 
-        getRulesData(parameters, userData, res);
+        getRulesData(parameters, userData, res, auth);
 
       });
 

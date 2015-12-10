@@ -101,7 +101,7 @@ function getProcessedObjects(parameters, threads, posts, reportedObjects) {
 
 }
 
-function processParameters(req, userData, parameters, res, captchaId) {
+function processParameters(req, userData, parameters, res, captchaId, auth) {
 
   var reportedObjects = [];
   var threads = {};
@@ -119,30 +119,30 @@ function processParameters(req, userData, parameters, res, captchaId) {
       if (error) {
         formOps.outputError(error, 500, res);
       } else {
-        formOps.outputResponse(lang.msgContentSpoilered, redirectBoard, res);
+        formOps.outputResponse(lang.msgContentSpoilered, redirectBoard, res,
+            null, auth);
       }
     });
 
   } else if (parameters.action.toLowerCase() === 'report') {
 
-    modOps.report
-        .report(req, reportedObjects, parameters, captchaId,
-            function createdReports(error, ban) {
-              if (error) {
-                formOps.outputError(error, 500, res);
-              } else if (ban) {
-                res.writeHead(200, miscOps.corsHeader('text/html'));
+    modOps.report.report(req, reportedObjects, parameters, captchaId,
+        function createdReports(error, ban) {
+          if (error) {
+            formOps.outputError(error, 500, res);
+          } else if (ban) {
+            res.writeHead(200, miscOps.corsHeader('text/html'));
 
-                var board = ban.boardUri ? '/' + ban.boardUri + '/'
-                    : lang.miscAllBoards.toLowerCase();
+            var board = ban.boardUri ? '/' + ban.boardUri + '/'
+                : lang.miscAllBoards.toLowerCase();
 
-                res.end(domManipulator.ban(ban, board));
-              } else {
-                formOps.outputResponse(lang.msgContentReported, redirectBoard,
-                    res);
-              }
+            res.end(domManipulator.ban(ban, board));
+          } else {
+            formOps.outputResponse(lang.msgContentReported, redirectBoard, res,
+                null, auth);
+          }
 
-            });
+        });
   } else if (parameters.action.toLowerCase() === 'ban') {
 
     modOps.ipBan.specific.ban(userData, reportedObjects, parameters, captchaId,
@@ -150,7 +150,8 @@ function processParameters(req, userData, parameters, res, captchaId) {
           if (error) {
             formOps.outputError(error, 500, res);
           } else {
-            formOps.outputResponse(lang.msgUsersBanned, redirectBoard, res);
+            formOps.outputResponse(lang.msgUsersBanned, redirectBoard, res,
+                null, auth);
           }
         });
 
@@ -163,7 +164,8 @@ function processParameters(req, userData, parameters, res, captchaId) {
             formOps.outputError(error, 500, res);
           } else {
 
-            formOps.outputResponse(lang.msgContentDeleted, redirectBoard, res);
+            formOps.outputResponse(lang.msgContentDeleted, redirectBoard, res,
+                null, auth);
           }
 
         });
@@ -200,7 +202,8 @@ exports.process = function(req, res) {
           if (error) {
             formOps.outputError(error, 500, res);
           } else {
-            processParameters(req, userData, parameters, res, auth.captchaid);
+            processParameters(req, userData, parameters, res, auth.captchaid,
+                newAuth);
           }
         });
         // style exception,too simple

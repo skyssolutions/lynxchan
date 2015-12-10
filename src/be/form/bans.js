@@ -7,7 +7,7 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var modOps = require('../engine/modOps').ipBan.versatile;
 
-function getBans(userData, parameters, res) {
+function getBans(userData, parameters, res, auth) {
 
   modOps.getBans(userData, parameters, function gotBans(error, bans) {
     if (error) {
@@ -17,7 +17,7 @@ function getBans(userData, parameters, res) {
       var json = parameters.json;
 
       res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-          : 'text/html'));
+          : 'text/html', auth));
 
       if (json) {
         res.end(jsonBuilder.bans(bans));
@@ -35,6 +35,6 @@ exports.process = function(req, res) {
       function gotData(auth, userData) {
         var parameters = url.parse(req.url, true).query;
 
-        getBans(userData, parameters, res);
+        getBans(userData, parameters, res, auth);
       });
 };

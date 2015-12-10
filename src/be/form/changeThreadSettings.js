@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var modOps = require('../engine/modOps').edit;
 
-function saveThreadSettings(userData, parameters, res) {
+function saveThreadSettings(userData, parameters, res, auth) {
 
   modOps.setThreadSettings(userData, parameters, function setThreadSettings(
       error) {
@@ -13,7 +13,8 @@ function saveThreadSettings(userData, parameters, res) {
     } else {
       var redirectLink = '/mod.js?boardUri=' + parameters.boardUri;
       redirectLink += '&threadId=' + parameters.threadId;
-      formOps.outputResponse(lang.msgThreadSettingsSaved, redirectLink, res);
+      formOps.outputResponse(lang.msgThreadSettingsSaved, redirectLink, res,
+          null, auth);
     }
 
   });
@@ -24,7 +25,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    saveThreadSettings(userData, parameters, res);
+    saveThreadSettings(userData, parameters, res, auth);
 
   });
 

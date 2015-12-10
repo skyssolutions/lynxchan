@@ -7,7 +7,7 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var formOps = require('../engine/formOps');
 
-function getBoardModerationData(parameters, userData, res) {
+function getBoardModerationData(parameters, userData, res, auth) {
 
   boardOps.getBoardModerationData(userData, parameters.boardUri,
       function gotBoardModerationData(error, boardData, ownerData) {
@@ -17,7 +17,7 @@ function getBoardModerationData(parameters, userData, res) {
           var json = parameters.json;
 
           res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-              : 'text/html'));
+              : 'text/html', auth));
 
           if (json) {
             res.end(jsonBuilder.boardModeration(ownerData));
@@ -35,6 +35,6 @@ exports.process = function(req, res) {
       function gotData(auth, userData) {
         var parameters = url.parse(req.url, true).query;
 
-        getBoardModerationData(parameters, userData, res);
+        getBoardModerationData(parameters, userData, res, auth);
       });
 };

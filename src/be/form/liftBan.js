@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var modOps = require('../engine/modOps').ipBan.versatile;
 var lang = require('../engine/langOps').languagePack();
 
-function liftBan(userData, parameters, res) {
+function liftBan(userData, parameters, res, auth) {
 
   modOps.liftBan(userData, parameters, function banLifted(error, rangeBan,
       boardUri) {
@@ -24,7 +24,7 @@ function liftBan(userData, parameters, res) {
         redirect += '?boardUri=' + boardUri;
       }
 
-      formOps.outputResponse(lang.msgBanLifted, redirect, res);
+      formOps.outputResponse(lang.msgBanLifted, redirect, res, null, auth);
     }
   });
 
@@ -35,7 +35,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    liftBan(userData, parameters, res);
+    liftBan(userData, parameters, res, auth);
 
   });
 

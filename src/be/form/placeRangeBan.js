@@ -5,7 +5,7 @@ var modOps = require('../engine/modOps').ipBan.general;
 var lang = require('../engine/langOps').languagePack();
 var mandatoryParameters = [ 'range' ];
 
-function placeRangeBan(userData, parameters, captchaId, res) {
+function placeRangeBan(userData, parameters, captchaId, res, auth) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -22,7 +22,8 @@ function placeRangeBan(userData, parameters, captchaId, res) {
             redirectLink += '?boardUri=' + parameters.boardUri;
           }
 
-          formOps.outputResponse(lang.msgRangeBanCreated, redirectLink, res);
+          formOps.outputResponse(lang.msgRangeBanCreated, redirectLink, res,
+              null, auth);
         }
       });
 
@@ -30,12 +31,12 @@ function placeRangeBan(userData, parameters, captchaId, res) {
 
 exports.process = function(req, res) {
 
-  formOps.getAuthenticatedPost(req, res, true,
-      function gotData(auth, userData, parameters) {
+  formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
+      parameters) {
 
-        placeRangeBan(userData, parameters, formOps.getCookies(req).captchaid,
-            res);
+    placeRangeBan(userData, parameters, formOps.getCookies(req).captchaid, res,
+        auth);
 
-      });
+  });
 
 };

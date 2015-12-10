@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var boardOps = require('../engine/boardOps').meta;
 
-function transferBoard(userData, parameters, res) {
+function transferBoard(userData, parameters, res, auth) {
 
   boardOps.transfer(userData, parameters, function transferedBoard(error) {
     if (error) {
@@ -12,7 +12,8 @@ function transferBoard(userData, parameters, res) {
     } else {
       var redirect = '/' + parameters.boardUri + '/';
 
-      formOps.outputResponse(lang.msgBoardTransferred, redirect, res);
+      formOps.outputResponse(lang.msgBoardTransferred, redirect, res, null,
+          auth);
     }
 
   });
@@ -24,7 +25,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    transferBoard(userData, parameters, res);
+    transferBoard(userData, parameters, res, auth);
 
   });
 

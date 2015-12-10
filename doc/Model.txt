@@ -124,6 +124,8 @@ users: stores users.
     password: hashed password of the user.
     ownedBoards(Array): list of the uri's of the boards owned by this user.
     hash: current hash of the user.
+    renewExpiration(Date): time of when the hash should be silently renewed.
+    logoutExpiration(Date): time of when the user should be logged out. Renewed after a new hash is created.
     globalRole (Number): global role of the user. 
         Anything above 3 means regular user. No powers.
         3 means global janitor. Is able to delete any content and close global reports.

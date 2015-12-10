@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var boardOps = require('../engine/boardOps').meta;
 
-function setVolunteer(userData, parameters, res) {
+function setVolunteer(userData, parameters, res, auth) {
 
   parameters.add = parameters.add === 'true';
 
@@ -15,7 +15,7 @@ function setVolunteer(userData, parameters, res) {
     } else {
       var redirect = '/boardManagement.js?boardUri=' + parameters.boardUri;
       formOps.outputResponse(parameters.add ? lang.msgVolunteerAdded
-          : lang.msgVolunteerRemoved, redirect, res);
+          : lang.msgVolunteerRemoved, redirect, res, null, auth);
     }
 
   });
@@ -27,7 +27,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    setVolunteer(userData, parameters, res);
+    setVolunteer(userData, parameters, res, auth);
 
   });
 
