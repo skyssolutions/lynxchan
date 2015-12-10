@@ -3,7 +3,7 @@
 var apiOps = require('../engine/apiOps');
 var boardOps = require('../engine/boardOps').custom;
 
-function setCustomSpoiler(parameters, userData, res) {
+function setCustomSpoiler(auth, parameters, userData, res) {
 
   if (parameters.files.length) {
     boardOps.setCustomSpoiler(userData, parameters.boardUri,
@@ -12,7 +12,7 @@ function setCustomSpoiler(parameters, userData, res) {
             apiOps.outputError(error, res);
           } else {
 
-            apiOps.outputResponse(null, null, 'ok', res);
+            apiOps.outputResponse(auth, null, 'ok', res);
           }
         });
   } else {
@@ -21,7 +21,7 @@ function setCustomSpoiler(parameters, userData, res) {
           if (error) {
             apiOps.outputError(error, res);
           } else {
-            apiOps.outputResponse(null, null, 'ok', res);
+            apiOps.outputResponse(auth, null, 'ok', res);
           }
         });
   }
@@ -31,6 +31,6 @@ exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-    setCustomSpoiler(parameters, userData, res);
+    setCustomSpoiler(auth, parameters, userData, res);
   }, false, true);
 };

@@ -3,7 +3,7 @@
 var apiOps = require('../engine/apiOps');
 var boardOps = require('../engine/boardOps').custom;
 
-function setCustomJs(parameters, userData, res) {
+function setCustomJs(auth, parameters, userData, res) {
 
   if (parameters.files.length) {
     boardOps.setCustomJs(userData, parameters.boardUri, parameters.files[0],
@@ -12,7 +12,7 @@ function setCustomJs(parameters, userData, res) {
             apiOps.outputError(error, res);
           } else {
 
-            apiOps.outputResponse(null, null, 'ok', res);
+            apiOps.outputResponse(auth, null, 'ok', res);
           }
         });
   } else {
@@ -21,7 +21,7 @@ function setCustomJs(parameters, userData, res) {
       if (error) {
         apiOps.outputError(error, res);
       } else {
-        apiOps.outputResponse(null, null, 'ok', res);
+        apiOps.outputResponse(auth, null, 'ok', res);
       }
     });
   }
@@ -31,6 +31,6 @@ exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-    setCustomJs(parameters, userData, res);
+    setCustomJs(auth, parameters, userData, res);
   }, false, true);
 };

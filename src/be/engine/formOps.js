@@ -412,7 +412,7 @@ exports.checkBlankParameters = function(object, parameters, res) {
 
 };
 
-exports.checkForBan = function(req, boardUri, res, callback) {
+exports.checkForBan = function(req, boardUri, res, callback, auth) {
 
   modOps.ipBan.versatile.checkForBan(req, boardUri, function gotBan(error, ban,
       bypassable) {
@@ -420,6 +420,10 @@ exports.checkForBan = function(req, boardUri, res, callback) {
     if (bypassable && !req.bypassed) {
 
       var header = [ [ 'Location', '/blockBypass.js' ] ];
+
+      if (auth && auth.authStatus === 'expired') {
+        header.push([ 'Set-Cookie', 'hash=' + auth.newHash ]);
+      }
 
       res.writeHead(302, header);
 
@@ -433,7 +437,7 @@ exports.checkForBan = function(req, boardUri, res, callback) {
         return;
       }
 
-      res.writeHead(200, miscOps.corsHeader('text/html'));
+      res.writeHead(200, miscOps.corsHeader('text/html', auth));
 
       var board = ban.boardUri ? '/' + ban.boardUri + '/' : lang.miscAllBoards
           .toLowerCase();

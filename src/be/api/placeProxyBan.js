@@ -4,7 +4,7 @@ var apiOps = require('../engine/apiOps');
 var modOps = require('../engine/modOps').ipBan.general;
 var mandatoryParameters = [ 'proxyIp' ];
 
-function placeProxyBan(userData, parameters, captchaId, res) {
+function placeProxyBan(auth, userData, parameters, captchaId, res) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -16,7 +16,7 @@ function placeProxyBan(userData, parameters, captchaId, res) {
           apiOps.outputError(error, res);
         } else {
 
-          apiOps.outputResponse(null, null, 'ok', res);
+          apiOps.outputResponse(auth, null, 'ok', res);
         }
       });
 
@@ -26,7 +26,7 @@ exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters, captchaId) {
-    placeProxyBan(userData, parameters, captchaId, res);
+    placeProxyBan(auth, userData, parameters, captchaId, res);
   });
 
 };

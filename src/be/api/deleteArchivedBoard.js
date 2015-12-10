@@ -3,7 +3,7 @@
 var apiOps = require('../engine/apiOps');
 var archive = require('../archive');
 
-function removeArchivedBoard(userData, parameters, res) {
+function removeArchivedBoard(auth, userData, parameters, res) {
 
   if (apiOps.checkBlankParameters(parameters, [ 'boardUri' ], res)) {
     return;
@@ -14,7 +14,7 @@ function removeArchivedBoard(userData, parameters, res) {
       apiOps.outputError(error, res);
     } else {
 
-      apiOps.outputResponse(null, null, 'ok', res);
+      apiOps.outputResponse(auth, null, 'ok', res);
     }
   });
 
@@ -25,7 +25,7 @@ exports.process = function(req, res) {
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    removeArchivedBoard(userData, parameters, res);
+    removeArchivedBoard(auth, userData, parameters, res);
 
   });
 

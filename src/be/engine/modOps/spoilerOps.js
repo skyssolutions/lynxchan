@@ -29,7 +29,9 @@ exports.getAdaptedFileArray = function(board, files, filesToDelete) {
 
     var file = files[i];
 
-    if (file.thumb.indexOf('/' + board.boardUri + '/media/') > -1) {
+    var hasThumb = file.thumb !== file.path;
+
+    if (hasThumb && file.thumb.indexOf('/' + board.boardUri + '/media/') > -1) {
       filesToDelete.push(file.thumb);
     }
 

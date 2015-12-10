@@ -4,7 +4,7 @@ var apiOps = require('../engine/apiOps');
 var miscOps = require('../engine/miscOps');
 var toSanitize = [ 'captchaFonts', 'acceptedMimes' ];
 
-function changeGlobalSettings(userData, parameters, res) {
+function changeGlobalSettings(auth, userData, parameters, res) {
 
   for (var i = 0; i < toSanitize.length; i++) {
 
@@ -36,7 +36,7 @@ function changeGlobalSettings(userData, parameters, res) {
         if (error) {
           apiOps.outputError(error, res);
         } else {
-          apiOps.outputResponse(null, null, 'ok', res);
+          apiOps.outputResponse(auth, null, 'ok', res);
         }
       });
 }
@@ -45,6 +45,6 @@ exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-    changeGlobalSettings(userData, parameters, res);
+    changeGlobalSettings(auth, userData, parameters, res);
   });
 };

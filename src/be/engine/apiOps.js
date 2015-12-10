@@ -428,13 +428,13 @@ exports.checkForHashBan = function(parameters, req, res, callback) {
 
 };
 
-exports.checkForBan = function(req, boardUri, res, callback) {
+exports.checkForBan = function(req, boardUri, res, callback, auth) {
 
   modOps.ipBan.versatile.checkForBan(req, boardUri, function gotBan(error, ban,
       bypassable) {
 
     if (bypassable && !req.bypassed) {
-      exports.outputResponse(null, null, 'bypassable', res);
+      exports.outputResponse(auth, null, 'bypassable', res);
     } else if (error) {
       callback(error);
     } else if (ban) {
@@ -448,7 +448,7 @@ exports.checkForBan = function(req, boardUri, res, callback) {
         ban.range = ban.range.join('.');
       }
 
-      exports.outputResponse(null, {
+      exports.outputResponse(auth, {
         reason : ban.reason,
         appealled : ban.appeal ? true : false,
         proxyIp : ban.proxyIp,

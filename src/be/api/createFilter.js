@@ -4,7 +4,7 @@ var apiOps = require('../engine/apiOps');
 var boardOps = require('../engine/boardOps').filters;
 var mandatoryParameters = [ 'boardUri', 'originalTerm', 'replacementTerm' ];
 
-function createFilter(parameters, userData, res) {
+function createFilter(auth, parameters, userData, res) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -14,7 +14,7 @@ function createFilter(parameters, userData, res) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
-      apiOps.outputResponse(null, null, 'ok', res);
+      apiOps.outputResponse(auth, null, 'ok', res);
     }
   });
 }
@@ -24,6 +24,6 @@ exports.process = function(req, res) {
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    createFilter(parameters, userData, res);
+    createFilter(auth, parameters, userData, res);
   });
 };

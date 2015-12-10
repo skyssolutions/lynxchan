@@ -3,13 +3,13 @@
 var apiOps = require('../engine/apiOps');
 var modOps = require('../engine/modOps').report;
 
-function closeReport(userData, parameters, res) {
+function closeReport(auth, userData, parameters, res) {
 
   modOps.closeReport(userData, parameters, function reportClosed(error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
-      apiOps.outputResponse(null, null, 'ok', res);
+      apiOps.outputResponse(auth, null, 'ok', res);
     }
   });
 }
@@ -19,6 +19,6 @@ exports.process = function(req, res) {
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    closeReport(userData, parameters, res);
+    closeReport(auth, userData, parameters, res);
   });
 };

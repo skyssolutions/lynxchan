@@ -213,7 +213,7 @@ exports.createSession = function(login, callback) {
       var hash = buffer.toString('base64');
 
       var renewAt = new Date();
-      // renewAt.setMinutes(renewAt.getMinutes() + 1); //TODO remove
+      renewAt.setMinutes(renewAt.getMinutes() + 1);
 
       var logoutAt = new Date();
       logoutAt.setHours(logoutAt.getHours() + 1);

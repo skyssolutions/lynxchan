@@ -50,7 +50,7 @@ function checkBans(req, res, parameters, userData, captchaId, auth) {
 
         }
 
-      });
+      }, auth);
 
 }
 

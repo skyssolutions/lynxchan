@@ -4,7 +4,7 @@ var apiOps = require('../engine/apiOps');
 var accountOps = require('../engine/accountOps');
 var validSettings = accountOps.validAccountSettings();
 
-function setAccountSettings(userData, parameters, res) {
+function setAccountSettings(userData, parameters, res, auth) {
 
   var desiredSettings = parameters.settings || [];
 
@@ -25,7 +25,7 @@ function setAccountSettings(userData, parameters, res) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
-      apiOps.outputResponse(null, null, 'ok', res);
+      apiOps.outputResponse(auth, null, 'ok', res);
     }
   });
 }
@@ -35,6 +35,6 @@ exports.process = function(req, res) {
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    setAccountSettings(userData, parameters, res);
+    setAccountSettings(userData, parameters, res, auth);
   });
 };
