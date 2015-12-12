@@ -121,6 +121,7 @@ Settings files that goes into the settings directory:
 * `multiboardThreadCount`(Number): amount of threads to be displayed on the multi-board. If none is set, multi-board will not be enabled.
 * `concurrentRebuildMessages`(Number): maximum amount of concurrent rebuild queue messages being processed.
 * `rssDomain`: domain used on links on the RSS feeds. Defaults to ''. 
+* `globalLatestImages`(Number): amount of global latest images to be displayed on the front-page.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

@@ -12,5 +12,6 @@
 "eqnull": true,
 "funcscope": true,
 "node": true,
-"undef": true
+"undef": true,
+"strict": true
 }

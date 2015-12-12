@@ -50,28 +50,32 @@ function main(req, res) {
 
 }
 
-function startListening() {
+function startSSL() {
 
   try {
 
-    if (settingsHandler.getGeneralSettings().ssl) {
+    var options = {
+      key : fs.readFileSync(__dirname + '/server.key'),
+      cert : fs.readFileSync(__dirname + '/server.pem')
+    };
 
-      try {
+    require('https').createServer(options, function(req, res) {
+      main(req, res);
+    }).listen(443, settingsHandler.getGeneralSettings().address);
 
-        var options = {
-          key : fs.readFileSync(__dirname + '/server.key'),
-          cert : fs.readFileSync(__dirname + '/server.pem')
-        };
+  } catch (error) {
+    console.log(error);
+  }
 
-        require('https').createServer(options, function(req, res) {
-          main(req, res);
-        }).listen(443, settingsHandler.getGeneralSettings().address);
+}
 
-      } catch (error) {
-        console.log(error);
-      }
+function startListening() {
 
-    }
+  if (settingsHandler.getGeneralSettings().ssl) {
+    startSSL();
+  }
+
+  try {
 
     require('http').createServer(function(req, res) {
       main(req, res);

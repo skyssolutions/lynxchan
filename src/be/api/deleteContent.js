@@ -29,7 +29,7 @@ function processReceivedPosting(threadsToDelete, postsToDelete, posting,
   }
 }
 
-function processParameters(userData, parameters, res) {
+function processParameters(userData, parameters, res, auth) {
 
   if (apiOps.checkBlankParameters(parameters, [ 'postings' ], res)) {
     return;
@@ -49,7 +49,7 @@ function processParameters(userData, parameters, res) {
         if (error) {
           apiOps.outputError(error, res);
         } else {
-          apiOps.outputResponse(null, null, 'ok', res);
+          apiOps.outputResponse(auth, null, 'ok', res);
         }
       });
 }
@@ -75,7 +75,7 @@ exports.process = function(req, res) {
         if (error) {
           apiOps.outputError(error, res);
         } else {
-          processParameters(userData, parameters, res);
+          processParameters(userData, parameters, res, auth);
         }
       });
       // style exception,too simple

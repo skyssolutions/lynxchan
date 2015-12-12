@@ -158,24 +158,30 @@ exports.setAccountSettingsCheckbox = function(settings, document) {
 
 };
 
+exports.setTitleLoginAndStaff = function(document, userData) {
+
+  document.title = lang.titAccount.replace('{$login}', userData.login);
+
+  var loginLabel = document.getElementById('labelLogin');
+
+  loginLabel.innerHTML = userData.login;
+
+  var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+
+  exports.setBoardCreationForm(userData, document);
+
+  if (!globalStaff) {
+    common.removeElement(document.getElementById('globalManagementLink'));
+  }
+
+};
+
 exports.account = function(userData) {
 
   try {
     var document = jsdom(templateHandler.accountPage);
 
-    document.title = lang.titAccount.replace('{$login}', userData.login);
-
-    var loginLabel = document.getElementById('labelLogin');
-
-    loginLabel.innerHTML = userData.login;
-
-    var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
-
-    exports.setBoardCreationForm(userData, document);
-
-    if (!globalStaff) {
-      common.removeElement(document.getElementById('globalManagementLink'));
-    }
+    exports.setTitleLoginAndStaff(document, userData);
 
     exports.setAccountSettingsCheckbox(userData.settings, document);
 
@@ -205,6 +211,9 @@ exports.account = function(userData) {
 // Section 2: Logs {
 exports.setLogIndexCell = function(dateCell, date) {
 
+  dateCell.setAttribute('class', 'logIndexCell');
+  dateCell.innerHTML = templateHandler.logIndexCell;
+
   var link = dateCell.getElementsByClassName('dateLink')[0];
   link.innerHTML = common.formatDateToDisplay(date, true);
 
@@ -225,8 +234,6 @@ exports.logs = function(dates) {
     for (var i = 0; i < dates.length; i++) {
 
       var dateCell = document.createElement('div');
-      dateCell.setAttribute('class', 'logIndexCell');
-      dateCell.innerHTML = templateHandler.logIndexCell;
 
       exports.setLogIndexCell(dateCell, dates[i]);
 
@@ -249,44 +256,6 @@ exports.logs = function(dates) {
 
 };
 // } Section 2: Logs
-
-exports.message = function(message, link) {
-
-  try {
-
-    var document = jsdom(templateHandler.messagePage);
-
-    document.title = message;
-
-    var messageLabel = document.getElementById('labelMessage');
-
-    messageLabel.innerHTML = message;
-
-    var redirectLink = document.getElementById('linkRedirect');
-
-    redirectLink.href = link;
-
-    var meta = document.createElement('META');
-
-    meta.httpEquiv = 'refresh';
-    meta.content = '3; url=' + link;
-
-    document.getElementsByTagName('head')[0].appendChild(meta);
-
-    return serializer(document);
-  } catch (error) {
-    if (verbose) {
-      console.log('error ' + error);
-    }
-
-    if (debug) {
-      throw error;
-    }
-
-    return error.toString;
-  }
-
-};
 
 // Section 3: Board listing {
 exports.setBoardCell = function(board, boardCell) {
@@ -390,164 +359,6 @@ exports.boards = function(parameters, boards, pageCount) {
 
 };
 // } Section 3: Board listing
-
-exports.edit = function(parameters, message) {
-  try {
-
-    var document = jsdom(templateHandler.editPage);
-
-    document.title = lang.titEdit;
-
-    document.getElementById('fieldMessage').defaultValue = message;
-
-    document.getElementById('boardIdentifier').setAttribute('value',
-        parameters.boardUri);
-
-    if (parameters.threadId) {
-      document.getElementById('threadIdentifier').setAttribute('value',
-          parameters.threadId);
-
-      common.removeElement(document.getElementById('postIdentifier'));
-
-    } else {
-      document.getElementById('postIdentifier').setAttribute('value',
-          parameters.postId);
-      common.removeElement(document.getElementById('threadIdentifier'));
-    }
-
-    return serializer(document);
-
-  } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
-    if (debug) {
-      throw error;
-    }
-
-    return error.toString();
-  }
-};
-
-exports.noCookieCaptcha = function(parameters, captchaId) {
-
-  try {
-
-    var document = jsdom(templateHandler.noCookieCaptchaPage);
-
-    document.title = lang.titNoCookieCaptcha;
-
-    if (!parameters.solvedCaptcha) {
-      common.removeElement(document.getElementById('divSolvedCaptcha'));
-    } else {
-      var labelSolved = document.getElementById('labelCaptchaId');
-      labelSolved.innerHTML = parameters.solvedCaptcha;
-    }
-
-    var captchaPath = '/captcha.js?captchaId=' + captchaId;
-    document.getElementById('imageCaptcha').src = captchaPath;
-
-    document.getElementById('inputCaptchaId').setAttribute('value', captchaId);
-
-    return serializer(document);
-
-  } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
-    if (debug) {
-      throw error;
-    }
-
-    return error.toString();
-  }
-
-};
-
-exports.mainArchive = function(boards) {
-
-  try {
-
-    var document = jsdom(templateHandler.mainArchivePage);
-
-    document.title = lang.titMainArchive;
-
-    var boardsDiv = document.getElementById('boardsDiv');
-
-    for (var i = 0; i < boards.length; i++) {
-
-      var cell = document.createElement('div');
-
-      cell.innerHTML = templateHandler.mainArchiveCell;
-
-      var link = cell.getElementsByClassName('linkBoard')[0];
-
-      var board = boards[i];
-
-      link.href = '/' + board + '/';
-      link.innerHTML = board;
-
-      boardsDiv.appendChild(cell);
-    }
-
-    return serializer(document);
-
-  } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
-    if (debug) {
-      throw error;
-    }
-
-    return error.toString();
-  }
-};
-
-exports.boardArchive = function(boardUri, threads) {
-
-  try {
-
-    var document = jsdom(templateHandler.boardArchivePage);
-
-    document.title = lang.titBoardArchive.replace('{$board}', boardUri);
-
-    var threadsDiv = document.getElementById('threadsDiv');
-
-    for (var i = 0; i < threads.length; i++) {
-
-      var cell = document.createElement('div');
-
-      cell.innerHTML = templateHandler.boardArchiveCell;
-
-      var link = cell.getElementsByClassName('linkThread')[0];
-
-      var thread = threads[i];
-
-      link.href = '/' + boardUri + '/res/' + thread + '.html';
-      link.innerHTML = thread;
-
-      threadsDiv.appendChild(cell);
-    }
-
-    return serializer(document);
-
-  } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
-    if (debug) {
-      throw error;
-    }
-
-    return error.toString();
-  }
-
-};
 
 // This page COULD be static, since it doesn't need any manipulation.
 // However, given how often it will be accessed and how it might require
@@ -692,6 +503,238 @@ exports.hashBan = function(hashBans) {
 
 };
 // } Section 5: Hash ban page
+
+// Section 6: Message page {
+exports.setMessageRedirect = function(document, link) {
+
+  var redirectLink = document.getElementById('linkRedirect');
+
+  redirectLink.href = link;
+
+  var meta = document.createElement('META');
+
+  meta.httpEquiv = 'refresh';
+  meta.content = '3; url=' + link;
+
+  document.getElementsByTagName('head')[0].appendChild(meta);
+
+};
+
+exports.message = function(message, link) {
+
+  try {
+
+    var document = jsdom(templateHandler.messagePage);
+
+    document.title = message;
+
+    var messageLabel = document.getElementById('labelMessage');
+
+    messageLabel.innerHTML = message;
+
+    exports.setMessageRedirect(document, link);
+
+    return serializer(document);
+  } catch (error) {
+    if (verbose) {
+      console.log('error ' + error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString;
+  }
+
+};
+// } Section 6: Message page
+
+// Section 7: Edit page {
+exports.setEditIdentifiers = function(parameters, document) {
+
+  if (parameters.threadId) {
+    document.getElementById('threadIdentifier').setAttribute('value',
+        parameters.threadId);
+
+    common.removeElement(document.getElementById('postIdentifier'));
+
+  } else {
+    document.getElementById('postIdentifier').setAttribute('value',
+        parameters.postId);
+    common.removeElement(document.getElementById('threadIdentifier'));
+  }
+
+};
+
+exports.edit = function(parameters, message) {
+  try {
+
+    var document = jsdom(templateHandler.editPage);
+
+    document.title = lang.titEdit;
+
+    document.getElementById('fieldMessage').defaultValue = message;
+
+    document.getElementById('boardIdentifier').setAttribute('value',
+        parameters.boardUri);
+
+    exports.setEditIdentifiers(parameters, document);
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+};
+// } Section 7: Edit page
+
+// Section 8: No cookie captcha {
+exports.setCaptchaIdAndImage = function(document, captchaId) {
+
+  var captchaPath = '/captcha.js?captchaId=' + captchaId;
+  document.getElementById('imageCaptcha').src = captchaPath;
+
+  document.getElementById('inputCaptchaId').setAttribute('value', captchaId);
+
+};
+
+exports.noCookieCaptcha = function(parameters, captchaId) {
+
+  try {
+
+    var document = jsdom(templateHandler.noCookieCaptchaPage);
+
+    document.title = lang.titNoCookieCaptcha;
+
+    if (!parameters.solvedCaptcha) {
+      common.removeElement(document.getElementById('divSolvedCaptcha'));
+    } else {
+      var labelSolved = document.getElementById('labelCaptchaId');
+      labelSolved.innerHTML = parameters.solvedCaptcha;
+    }
+
+    exports.setCaptchaIdAndImage(document, captchaId);
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+
+};
+// } Section 8: No cookie captcha
+
+// Section 9: Archive index {
+exports.setArchiveIndexCell = function(cell, board) {
+
+  cell.innerHTML = templateHandler.mainArchiveCell;
+
+  var link = cell.getElementsByClassName('linkBoard')[0];
+
+  link.href = '/' + board + '/';
+  link.innerHTML = board;
+
+};
+
+exports.mainArchive = function(boards) {
+
+  try {
+
+    var document = jsdom(templateHandler.mainArchivePage);
+
+    document.title = lang.titMainArchive;
+
+    var boardsDiv = document.getElementById('boardsDiv');
+
+    for (var i = 0; i < boards.length; i++) {
+
+      var cell = document.createElement('div');
+
+      exports.setArchiveIndexCell(cell, boards[i]);
+
+      boardsDiv.appendChild(cell);
+    }
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+};
+// } Section 9: Archive index
+
+// Section 10: Board archive {
+exports.setBoardArchiveCell = function(cell, thread, boardUri) {
+
+  cell.innerHTML = templateHandler.boardArchiveCell;
+
+  var link = cell.getElementsByClassName('linkThread')[0];
+
+  link.href = '/' + boardUri + '/res/' + thread + '.html';
+  link.innerHTML = thread;
+
+};
+
+exports.boardArchive = function(boardUri, threads) {
+
+  try {
+
+    var document = jsdom(templateHandler.boardArchivePage);
+
+    document.title = lang.titBoardArchive.replace('{$board}', boardUri);
+
+    var threadsDiv = document.getElementById('threadsDiv');
+
+    for (var i = 0; i < threads.length; i++) {
+
+      var cell = document.createElement('div');
+
+      exports.setBoardArchiveCell(cell, threads[i], boardUri);
+
+      threadsDiv.appendChild(cell);
+    }
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+
+};
+// } Section 10: Board archive
 
 exports.blockBypass = function(valid) {
 

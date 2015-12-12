@@ -1162,7 +1162,7 @@ filterIdentifier:
     use: have it's value manipulated.
     description: hidden input that identifiers the filter for deletion.
 
-labelCaseIsensitive:
+labelCaseInsensitive:
     use: might be removed.
     description: label that indicates if the filter is case-insensitive. 
 
@@ -1765,6 +1765,10 @@ fieldMultiBoardThreadCount:
 fieldConcurrentRebuildMessages:
     use: have it's value manipulated.
     description: indicates how many maximum concurrent messages should be handled concurrently.
+
+fieldGlobalLatestImages:
+    use: have it's value manipulated.
+    description: field that displays the amount of global latest images to be displayed on the front-page.
 
 ------------------------------------------------------------------------------------------
 

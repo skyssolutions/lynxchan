@@ -295,7 +295,6 @@ Parameters:
     email: new e-mail of the account. 64 characters.
     settings(Array): new settings for the account. May hold the following values:
         alwaysSignRole: indicates the user wishes to always use his role signature on posts.
-        lockEnabled: indicates the user wishes to lock his account on too many failed logins.
 
 ------------------------------------------------------------------------------------------
 
@@ -513,7 +512,6 @@ Parameters:
     tempDir: temporary directory to be used.
     senderEmail: sender e-mail to be used on automated e-mails.
     captchaExpiration(Number): amount of minutes before captchas expire.
-    captchaFonts(Array): array of paths in the system of font files to be used by the captcha.
     siteTitle: title of the site.
     maxRequestSize(Number): maximum size in MB of incoming requests.
     maxFileSize(Number): maximum size in MB of uploaded files.
@@ -551,7 +549,7 @@ Parameters:
     addons(Array): array of addons to be loaded.
     useGlobalBanners(Boolean): makes boards use the global banners.
     allowBoardCustomJs(Boolean): allows for boards to have custom javascript.
-    globalLatestPosts(Number): amount of latest global latest posts that show appear on the front-page.
+    globalLatestPosts(Number): amount of latest global latest posts that appear on the front-page.
     forceCaptcha(Boolean): makes all boards use captcha.
     overboard: uri of the overboard.
     overBoardThreadCount(Number): amount of threads displayed on the overboard.
@@ -561,6 +559,7 @@ Parameters:
     multiboardThreadCount(Number): amount of threads to be displayed on the multi-board.
     concurrentRebuildMessages(Number): amount of concurrent rebuild messages.
     rssDomain: domain used on RSS links.
+    globalLatestImages(Number): amount of latest global images that appear on the front-page.
 
 ------------------------------------------------------------------------------------------
 

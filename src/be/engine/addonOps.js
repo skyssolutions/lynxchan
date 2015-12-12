@@ -30,15 +30,34 @@ exports.testVersion = function(addonName, addonVersion, engineVersion) {
 
 };
 
-exports.startAddons = function() {
+exports.initAddons = function(addons) {
 
-  var engineInfo = JSON.parse(fs.readFileSync(__dirname + '/../package.json'));
+  for (var i = 0; i < addons.length; i++) {
 
-  if (!settings.addons || !settings.addons.length) {
-    return;
+    var addon = addons[i];
+
+    try {
+
+      require('../addons/' + addon).init();
+    } catch (error) {
+
+      console.log('Could not initialize addon ' + addon);
+
+      if (verbose) {
+        console.log(error);
+      }
+
+      if (debug) {
+        throw error;
+      }
+
+    }
+
   }
 
-  var addons = settings.addons;
+};
+
+exports.testAddons = function(addons, engineInfo) {
 
   for (var i = 0; i < addons.length; i++) {
 
@@ -70,27 +89,20 @@ exports.startAddons = function() {
 
   }
 
-  for (i = 0; i < addons.length; i++) {
+};
 
-    addon = addons[i];
+exports.startAddons = function() {
 
-    try {
+  var engineInfo = JSON.parse(fs.readFileSync(__dirname + '/../package.json'));
 
-      require('../addons/' + addon).init();
-    } catch (error) {
-
-      console.log('Could not initialize addon ' + addon);
-
-      if (verbose) {
-        console.log(error);
-      }
-
-      if (debug) {
-        throw error;
-      }
-
-    }
-
+  if (!settings.addons || !settings.addons.length) {
+    return;
   }
+
+  var addons = settings.addons;
+
+  exports.testAddons(addons, engineInfo);
+
+  exports.initAddons(addons);
 
 };

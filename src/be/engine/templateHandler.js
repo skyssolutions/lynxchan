@@ -81,7 +81,7 @@ exports.getCellTests = function() {
       {
         template : 'filterCell',
         fields : [ 'labelOriginal', 'labelReplacement', 'boardIdentifier',
-            'filterIdentifier', 'labelCaseIsensitive' ]
+            'filterIdentifier', 'labelCaseInsensitive' ]
       },
       {
         template : 'boardsCell',
@@ -314,7 +314,7 @@ exports.getPageTests = function() {
             'comboTorAccess', 'checkboxMediaThumb', 'checkboxMaintenance',
             'comboArchive', 'checkboxMultipleReports',
             'checkboxDisableAccountCreation', 'comboBoardCreationRequirement',
-            'checkboxServeArchive', 'fieldMaxTags',
+            'checkboxServeArchive', 'fieldMaxTags', 'fieldGlobalLatestImages',
             'checkboxDisableFloodCheck', 'comboProxyAccess',
             'comboMinClearIpRole', 'fieldThumbExtension',
             'checkboxGlobalBoardModeration', 'checkboxGlobalBanners',

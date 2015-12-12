@@ -6,6 +6,7 @@ var logger = require('../../logger');
 var db = require('../../db');
 var posts = db.posts();
 var threads = db.threads();
+var globalLatestPosts = db.latestPosts();
 var boards = db.boards();
 var files = db.files();
 var settings = require('../../settingsHandler').getGeneralSettings();
@@ -157,6 +158,12 @@ exports.signalAndLoop = function(parentThreads, board, parameters,
         thread : thread
       });
     }
+  }
+
+  if (latestPosts) {
+    process.send({
+      frontPage : true
+    });
   }
 
   if (foundThreads.length || foundPosts.length) {
@@ -371,6 +378,80 @@ exports.logRemoval = function(userData, board, parameters, cb, foundThreads,
   });
 };
 
+exports.removeGlobalLatestPosts = function(userData, board, parameters, cb,
+    foundThreads, foundPosts, parentThreads) {
+
+  var operations = [];
+
+  if (foundThreads.length) {
+
+    operations.push({
+      deleteMany : {
+        filter : {
+          boardUri : board.boardUri,
+          threadId : {
+            $in : foundThreads
+          }
+        }
+      }
+    });
+
+  }
+
+  if (foundPosts.length) {
+
+    operations.push({
+      deleteMany : {
+        filter : {
+          boardUri : board.boardUri,
+          postId : {
+            $in : foundPosts
+          }
+        }
+      }
+
+    });
+
+  }
+
+  if (!operations.length) {
+
+    if (userData) {
+
+      exports.logRemoval(userData, board, parameters, cb, foundThreads,
+          foundPosts, parentThreads);
+
+    } else {
+
+      exports.removeContentFiles(board, parameters, cb, foundThreads,
+          foundPosts, parentThreads);
+    }
+
+    return;
+  }
+
+  globalLatestPosts.bulkWrite(operations, function removedLatestPosts(error) {
+
+    if (error) {
+      cb(error);
+    } else {
+
+      if (userData) {
+
+        exports.logRemoval(userData, board, parameters, cb, foundThreads,
+            foundPosts, parentThreads);
+
+      } else {
+
+        exports.removeContentFiles(board, parameters, cb, foundThreads,
+            foundPosts, parentThreads);
+      }
+    }
+
+  });
+
+};
+
 exports.removeFoundContent = function(userData, board, parameters, cb,
     foundThreads, foundPosts, parentThreads) {
 
@@ -442,16 +523,8 @@ exports.removeFoundContent = function(userData, board, parameters, cb,
           if (error) {
             cb(error);
           } else {
-            if (userData) {
-
-              exports.logRemoval(userData, board, parameters, cb, foundThreads,
-                  foundPosts, parentThreads);
-
-            } else {
-
-              exports.removeContentFiles(board, parameters, cb, foundThreads,
-                  foundPosts, parentThreads);
-            }
+            exports.removeGlobalLatestPosts(userData, board, parameters, cb,
+                foundThreads, foundPosts, parentThreads);
           }
 
         });
@@ -673,7 +746,15 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
       exports.getThreadsToDelete(userData, board, threadsToDelete,
           postsToDelete, parameters, function removedBoardPostings(error) {
             if (error) {
-              callback(error);
+
+              try {
+                callback(error);
+
+              } catch (error) {
+                console.log('iterateBoardsToDelete');
+
+                throw error;
+              }
 
             } else {
               exports.iterateBoardsToDelete(userData, parameters,

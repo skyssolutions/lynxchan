@@ -326,12 +326,18 @@ exports.setGlobalManagementLinks = function(userRole, document) {
   }
 };
 
-exports.processHideableForms = function(document, userRole) {
+exports.processHideableElements = function(document, userRole, staff) {
 
   if (userRole < 2) {
     exports.setNewStaffComboBox(document, userRole);
   } else {
     common.removeElement(document.getElementById('addStaffForm'));
+  }
+
+  if (userRole < 2) {
+    exports.fillStaffDiv(document, exports.getPossibleRoles(userRole), staff);
+  } else {
+    common.removeElement(document.getElementById('divStaff'));
   }
 
 };
@@ -350,6 +356,17 @@ exports.setGlobalManagementList = function(document, reports, appealedBans) {
 
 };
 
+exports.setUserLabel = function(document, userLogin, userRole) {
+
+  var userLabel = document.getElementById('userLabel');
+
+  var userLabelContent = userLogin + ': ';
+  userLabelContent += miscOps.getGlobalRoleLabel(userRole);
+
+  userLabel.innerHTML = userLabelContent;
+
+};
+
 exports.globalManagement = function(userRole, userLogin, staff, reports,
     appealedBans) {
 
@@ -362,20 +379,9 @@ exports.globalManagement = function(userRole, userLogin, staff, reports,
 
     exports.setGlobalManagementLinks(userRole, document);
 
-    exports.processHideableForms(document, userRole);
+    exports.processHideableElements(document, userRole, staff);
 
-    var userLabel = document.getElementById('userLabel');
-
-    var userLabelContent = userLogin + ': ';
-    userLabelContent += miscOps.getGlobalRoleLabel(userRole);
-
-    userLabel.innerHTML = userLabelContent;
-
-    if (userRole < 2) {
-      exports.fillStaffDiv(document, exports.getPossibleRoles(userRole), staff);
-    } else {
-      common.removeElement(document.getElementById('divStaff'));
-    }
+    exports.setUserLabel(document, userLogin, userRole);
 
     return serializer(document);
   } catch (error) {
@@ -395,7 +401,13 @@ exports.globalManagement = function(userRole, userLogin, staff, reports,
 
 // Section 3: Filter management {
 
-exports.setFilterCell = function(cell, boardUri, filter) {
+exports.setFilterCell = function(document, boardUri, filter) {
+
+  var cell = document.createElement('form');
+
+  cell.innerHTML = templateHandler.filterCell;
+
+  common.setFormCellBoilerPlate(cell, '/deleteFilter.js', 'filterCell');
 
   var labelOriginal = cell.getElementsByClassName('labelOriginal')[0];
   labelOriginal.innerHTML = filter.originalTerm;
@@ -410,8 +422,11 @@ exports.setFilterCell = function(cell, boardUri, filter) {
   boardIdentifier.setAttribute('value', boardUri);
 
   if (!filter.caseInsensitive) {
-    common.removeElement(cell.getElementsByClassName('labelCaseIsensitive')[0]);
+    common
+        .removeElement(cell.getElementsByClassName('labelCaseInsensitive')[0]);
   }
+
+  return cell;
 };
 
 exports.filterManagement = function(boardUri, filters) {
@@ -427,18 +442,8 @@ exports.filterManagement = function(boardUri, filters) {
     var filtersDiv = document.getElementById('divFilters');
 
     for (var i = 0; i < filters.length; i++) {
-
-      var filter = filters[i];
-
-      var filterCell = document.createElement('form');
-      filterCell.innerHTML = templateHandler.filterCell;
-
-      common.setFormCellBoilerPlate(filterCell, '/deleteFilter.js',
-          'filterCell');
-
-      exports.setFilterCell(filterCell, boardUri, filter);
-
-      filtersDiv.appendChild(filterCell);
+      filtersDiv.appendChild(exports.setFilterCell(document, boardUri,
+          filters[i]));
     }
 
     return serializer(document);

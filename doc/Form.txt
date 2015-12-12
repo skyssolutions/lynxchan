@@ -451,7 +451,6 @@ Description: changes general account settings.
 Parameters:
     email: new e-mail of the account. 64 characters.
     alwaysSignRole: any value indicates the user wishes to always use his role signature on posts.
-    lockEnabled: any value indicates the user wishes to lock his account on too many failed logins.
 
 ------------------------------------------------------------------------------------------
 
@@ -878,7 +877,6 @@ Json output(Object): object with the current global settings. It contains the fo
     maxFlagSizeKB(Number): maximum size flags can have in kilobytes.
     floodTimerSec(Number): minimum time in seconds users must wait between posts.
     archiveLevel(Number): indicates what should be archived.
-    captchaFonts(Array): array of paths to font files to be used on captcha.
     torAccess(Number): level of access for tor users.
     proxyAccess(Number): level of access for proxy users.
     clearIpMinRole(Number): minimum global role required so an user must be able to see non-hashed ips from users.
@@ -888,7 +886,7 @@ Json output(Object): object with the current global settings. It contains the fo
     addons(Array): array of loaded addons.
     useGlobalBanners(Boolean): indicates that boards are using global banners.
     allowBoardCustomJs(Boolean): indicates that boards are allowed to have custom javascript.
-    globalLatestPosts(Number): amount of latest global latest posts that show appear on the front-page.
+    globalLatestPosts(Number): amount of latest global latest posts that appear on the front-page.
     forceCaptcha(Boolean): indicates if all boards are forced to use captcha.
     tcpPort(Number): port being used for TCP.
     overboard: uri of the overboard.
@@ -899,6 +897,7 @@ Json output(Object): object with the current global settings. It contains the fo
     multiboardThreadCount(Number): amount of threads to be displayed on the multi-board.
     concurrentRebuildMessages(Number): amount of concurrent rebuild messages.
     rssDomain: domain used on RSS links.
+    globalLatestImages(Number): amount of latest global images that appear on the front-page.
 
 ------------------------------------------------------------------------------------------
 
@@ -919,7 +918,6 @@ Parameters:
     tempDir: temporary directory to be used.
     senderEmail: sender e-mail to be used on automated e-mails.
     captchaExpiration(Number): amount of minutes before captchas expire.
-    captchaFonts(Array): array of paths in the system of font files to be used by the captcha.
     siteTitle: title of the site.
     maxRequestSize(Number): maximum size in MB of incoming requests.
     maxFileSize(Number): maximum size in MB of uploaded files.
@@ -957,7 +955,7 @@ Parameters:
     addons(Array): array of addons to be loaded.
     useGlobalBanners(Boolean): makes boards use the global banners.
     allowBoardCustomJs(Boolean): allows for boards to have custom javascript.
-    globalLatestPosts(Number): amount of latest global latest posts that show appear on the front-page.
+    globalLatestPosts(Number): amount of latest global latest posts that appear on the front-page.
     forceCaptcha(Boolean): makes all boards use captcha.
     overboard: uri of the overboard.
     overBoardThreadCount(Number): amount of threads displayed on the overboard.
@@ -965,7 +963,9 @@ Parameters:
     bypassMaxPosts(Number): amount of uses a block bypass lasts.
     bypassMode(Number): mode for block bypass.
     multiboardThreadCount(Number): amount of threads to be displayed on the multi-board.
-    concurrentRebuildMessages(Number: amount of concurrent rebuild messages.
+    concurrentRebuildMessages(Number): amount of concurrent rebuild messages.
+    globalLatestImages(Number): amount of latest global images that appear on the front-page.
+    rssDomain: domain used on RSS links.
 
 ------------------------------------------------------------------------------------------
 

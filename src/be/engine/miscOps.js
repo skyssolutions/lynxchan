@@ -437,6 +437,11 @@ exports.getParametersArray = function() {
     setting : 'port',
     element : 'fieldPort'
   }, {
+    param : 'globalLatestImages',
+    type : 'number',
+    setting : 'globalLatestImages',
+    element : 'fieldGlobalLatestImages'
+  }, {
     param : 'captchaExpiration',
     type : 'number',
     setting : 'captchaExpiration',

@@ -1,5 +1,7 @@
 //Loading add-on, at this point its safe to reference engine components
 
+'use strict';
+
 var templateHandler = require('../engine/templateHandler');
 var lang = require('../engine/langOps').languagePack();
 var domManipulator = require('../engine/domManipulator');
@@ -8,7 +10,7 @@ var settings = require('../settingsHandler').getGeneralSettings();
 var siteTitle = settings.siteTitle || lang.titDefaultChanTitle;
 
 var common = domManipulator.common;
-var static = domManipulator.staticPages;
+var staticPages = domManipulator.staticPages;
 
 // A warning will be displayed on verbose mode and a crash will happen in debug
 // mode if this value doesn't match the current engine version
@@ -17,12 +19,24 @@ exports.engineVersion = '1.4.0';
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
 
+exports.setLatestPosts = function(document, latestPosts) {
+
+  var latestPostsDiv = document.getElementById('divLatestPosts');
+
+  if (!latestPosts) {
+    common.removeElement(latestPostsDiv);
+  } else {
+    staticPages.setLatestPost(latestPosts, latestPostsDiv, document);
+  }
+
+};
+
 exports.init = function() {
 
   // Initializing addon. At this point its safe to reference different addons
 
   // pick an exposed function of the module and replace it
-  static.frontPage = function(boards, latestPosts, callback) {
+  staticPages.frontPage = function(boards, latestPosts, callback) {
 
     try {
 
@@ -42,16 +56,10 @@ exports.init = function() {
       } else {
         // you don't have to overwrite every thing, you can adapt the reference
         // and keep using the module function, un this case, setTopBoards
-        static.setTopBoards(document, boards, boardsDiv);
+        staticPages.setTopBoards(document, boards, boardsDiv);
       }
 
-      var latestPostsDiv = document.getElementById('divLatestPosts');
-
-      if (!latestPosts) {
-        common.removeElement(latestPostsDiv);
-      } else {
-        static.setLatestPost(latestPosts, latestPostsDiv, document);
-      }
+      exports.setLatestPosts(document, latestPosts);
 
       gridFs.writeData(serializer(document), '/', 'text/html', {}, callback);
     } catch (error) {

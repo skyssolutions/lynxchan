@@ -52,6 +52,9 @@ exports.bans = function(bans) {
 // Section 2: Closed reports {
 exports.setClosedReportCell = function(cell, report) {
 
+  cell.innerHTML = templateHandler.closedReportCell;
+  cell.setAttribute('class', 'closedReportCell');
+
   if (report.reason) {
     var reason = cell.getElementsByClassName('reasonLabel')[0];
     reason.innerHTML = report.reason;
@@ -78,13 +81,9 @@ exports.closedReports = function(reports, callback) {
 
     for (var i = 0; i < reports.length; i++) {
 
-      var report = reports[i];
       var cell = document.createElement('div');
 
-      cell.innerHTML = templateHandler.closedReportCell;
-      cell.setAttribute('class', 'closedReportCell');
-
-      exports.setClosedReportCell(cell, report);
+      exports.setClosedReportCell(cell, reports[i]);
 
       reportsDiv.appendChild(cell);
 
