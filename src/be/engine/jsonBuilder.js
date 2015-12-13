@@ -170,7 +170,29 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
   }
 };
 
-exports.frontPage = function(boards, globalLatestPosts, callback) {
+// Section 2: Front-page {
+exports.getLatestPosts = function(globalLatestPosts) {
+
+  var latestPosts = [];
+  if (globalLatestPosts) {
+    for (var i = 0; i < globalLatestPosts.length; i++) {
+      var post = globalLatestPosts[i];
+      latestPosts.push({
+        boardUri : post.boardUri,
+        threadId : post.threadId,
+        postId : post.postId,
+        previewText : post.previewText
+      });
+    }
+
+  }
+
+  return latestPosts;
+
+};
+
+exports.frontPage = function(boards, globalLatestPosts, globalLatestImages,
+    callback) {
 
   var topBoards = [];
 
@@ -186,26 +208,33 @@ exports.frontPage = function(boards, globalLatestPosts, callback) {
     }
   }
 
-  var latestPosts = [];
-  if (globalLatestPosts) {
-    for (i = 0; i < globalLatestPosts.length; i++) {
-      var post = globalLatestPosts[i];
-      latestPosts.push({
-        boardUri : post.boardUri,
-        threadId : post.threadId,
-        postId : post.postId,
-        previewText : post.previewText
+  var latestImages = [];
+
+  if (globalLatestImages) {
+
+    for (i = 0; i < globalLatestImages.length; i++) {
+
+      var image = globalLatestImages[i];
+
+      latestImages.push({
+        boardUri : image.boardUri,
+        threadId : image.threadId,
+        postId : image.postId,
+        thumb : image.thumb
       });
+
     }
 
   }
 
   gridFsHandler.writeData(JSON.stringify({
     topBoards : topBoards,
-    latestPosts : latestPosts
+    latestPosts : exports.getLatestPosts(globalLatestPosts),
+    latestImages : latestImages
   }), '/index.json', 'application/json', {}, callback);
 
 };
+// } Section 2: Front-page
 
 exports.preview = function(postingData, callback) {
 

@@ -579,17 +579,10 @@ exports.cleanGlobalLatestPosts = function(callback) {
       callback();
     } else {
 
-      var processedIds = [];
-
-      var rawIds = results[0].ids;
-      for (var i = 0; i < rawIds.length; i++) {
-        processedIds.push(new ObjectID(rawIds[i]));
-      }
-
       // style exception, too simple
       latestPosts.deleteMany({
         _id : {
-          $in : processedIds
+          $in : results[0].ids
         }
       }, function cleanedLatestPosts(error) {
         if (error) {

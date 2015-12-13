@@ -19,52 +19,22 @@ exports.engineVersion = '1.4.0';
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
 
-exports.setLatestPosts = function(document, latestPosts) {
-
-  var latestPostsDiv = document.getElementById('divLatestPosts');
-
-  if (!latestPosts) {
-    common.removeElement(latestPostsDiv);
-  } else {
-    staticPages.setLatestPost(latestPosts, latestPostsDiv, document);
-  }
-
-};
-
 exports.init = function() {
 
   // Initializing addon. At this point its safe to reference different addons
 
+  var originalLatestPosts = staticPages.setLatestPosts;
+
   // pick an exposed function of the module and replace it
-  staticPages.frontPage = function(boards, latestPosts, callback) {
+  staticPages.setLatestPosts = function(latestPosts, latestPostsDiv, document) {
 
-    try {
+    var footer = document.createElement('footer');
+    footer.innerHTML = 'Example addon is working';
 
-      var document = jsdom(templateHandler.index);
+    document.getElementsByTagName('body')[0].appendChild(footer);
 
-      var footer = document.createElement('footer');
-      footer.innerHTML = 'Example addon is working';
+    originalLatestPosts(latestPosts, latestPostsDiv, document);
 
-      document.getElementsByTagName('body')[0].appendChild(footer);
-
-      document.title = siteTitle;
-
-      var boardsDiv = document.getElementById('divBoards');
-
-      if (!boards) {
-        common.removeElement(boardsDiv);
-      } else {
-        // you don't have to overwrite every thing, you can adapt the reference
-        // and keep using the module function, un this case, setTopBoards
-        staticPages.setTopBoards(document, boards, boardsDiv);
-      }
-
-      exports.setLatestPosts(document, latestPosts);
-
-      gridFs.writeData(serializer(document), '/', 'text/html', {}, callback);
-    } catch (error) {
-      callback(error);
-    }
   };
 
 };

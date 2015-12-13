@@ -677,6 +677,10 @@ exports.sanitizeIp = function(ip) {
 
   var processedIp = [];
 
+  if (!ip) {
+    return processedIp;
+  }
+
   var informedIp = ip.toString().trim().split('.');
 
   for (var i = 0; i < informedIp.length && i < 8; i++) {

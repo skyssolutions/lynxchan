@@ -22,6 +22,10 @@ exports.getCellTests = function() {
 
   return [
       {
+        template : 'latestImageCell',
+        fields : [ 'linkPost' ]
+      },
+      {
         template : 'catalogCell',
         fields : [ 'linkThumb', 'labelReplies', 'labelImages', 'labelPage',
             'labelSubject', 'divMessage', 'lockIndicator', 'pinIndicator',
@@ -160,7 +164,7 @@ exports.getPageTests = function() {
       },
       {
         template : 'index',
-        fields : [ 'divBoards', 'divLatestPosts' ]
+        fields : [ 'divBoards', 'divLatestPosts', 'divLatestImages' ]
       },
       {
         template : 'boardPage',

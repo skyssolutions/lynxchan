@@ -36,14 +36,18 @@ function getRebuildBoards(settings) {
 
 function rebuildFp(settings) {
 
-  var rebuildFP = generalSettings.siteTitle !== settings.siteTitle;
+  var propertiesToCheck = [ 'siteTitle', 'topBoardsCount', 'globalLatestPosts',
+      'globalLatestImages' ];
 
-  var topChanged = generalSettings.topBoardsCount !== settings.topBoardsCount;
+  for (var i = 0; i < propertiesToCheck.length; i++) {
+    var property = propertiesToCheck[i];
 
-  // did the amount of latest posts appearing on the front page changed?
-  var lPC = generalSettings.globalLatestPosts !== settings.globalLatestPosts;
+    if (generalSettings[property] !== settings[property]) {
+      return true;
+    }
+  }
 
-  return rebuildFP || topChanged || lPC;
+  return false;
 
 }
 
@@ -111,10 +115,10 @@ function writeNewSettings(settings, callback) {
       callback(error);
     } else {
 
-      var exceptionalFields = [ 'siteTitle', 'captchaFonts',
-          'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage',
-          'disableTopBoards', 'allowBoardCustomJs', 'topBoardsCount',
-          'globalLatestPosts', 'forceCaptcha', 'overboard', 'pageSize' ];
+      var exceptionalFields = [ 'siteTitle', 'captchaFonts', 'pageSize',
+          'globalLatestImages', 'languagePackPath', 'defaultAnonymousName',
+          'defaultBanMessage', 'disableTopBoards', 'allowBoardCustomJs',
+          'topBoardsCount', 'globalLatestPosts', 'forceCaptcha', 'overboard' ];
 
       for ( var key in generalSettings) {
         if (!settings[key] && exceptionalFields.indexOf(key) === -1) {

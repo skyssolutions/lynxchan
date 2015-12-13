@@ -11,16 +11,18 @@ var boot = require('../boot');
 var genericThumb = boot.genericThumb();
 var genericAudioThumb = boot.genericAudioThumb();
 var spoilerPath = boot.spoilerImage();
+var globalLatestImages = db.latestImages();
 var posts = db.posts();
-var settings = require('../settingsHandler').getGeneralSettings();
 var videoDimensionsCommand = 'ffprobe -v error -show_entries ';
 videoDimensionsCommand += 'stream=width,height ';
 var videoThumbCommand = 'ffmpeg -i {$path} -y -vframes 1 -vf scale=';
 var mp3ThumbCommand = 'ffmpeg -i {$path} -y -an -vcodec copy {$destination}';
 mp3ThumbCommand += ' && mogrify -resize {$dimension} {$destination}';
+var settings = require('../settingsHandler').getGeneralSettings();
 var archive = settings.archiveLevel > 1;
 var supportedMimes = settings.acceptedMimes;
 var thumbSize = settings.thumbSize;
+var latestImages = settings.globalLatestImages;
 var miscOps;
 var lang;
 var gsHandler;
@@ -143,26 +145,133 @@ exports.removeFromDisk = function(path, callback) {
 };
 
 // start of upload saving process
+exports.cleanLatestImages = function(boardData, threadId, postId, file,
+    callback) {
+
+  globalLatestImages.aggregate([ {
+    $sort : {
+      creation : -1
+    }
+  }, {
+    $skip : latestImages
+  }, {
+    $group : {
+      _id : 0,
+      ids : {
+        $push : '$_id'
+      }
+    }
+  } ], function gotLatestPostsToClean(error, results) {
+
+    if (error) {
+      callback(error);
+    } else if (!results.length) {
+
+      exports.updatePostingFiles(boardData, threadId, postId, file, callback,
+          false, true);
+
+    } else {
+
+      // style exception, too simple
+      globalLatestImages.removeMany({
+        _id : {
+          $in : results[0].ids
+        }
+      }, function removedOldImages(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.updatePostingFiles(boardData, threadId, postId, file,
+              callback, false, true);
+        }
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.updateLatestImages = function(boardData, threadId, postId, file,
+    callback) {
+
+  var toInsert = {
+    threadId : threadId,
+    creation : new Date(),
+    boardUri : boardData.boardUri,
+    thumb : file.thumbPath
+  };
+
+  if (postId) {
+    toInsert.postId = postId;
+  }
+
+  globalLatestImages.insertOne(toInsert, function insertedLatestImage(error) {
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      globalLatestImages.count(function counted(error, count) {
+
+        if (error) {
+          callback(error);
+        } else if (count <= latestImages) {
+          exports.updatePostingFiles(boardData, threadId, postId, file,
+              callback, false, true);
+        } else {
+          exports
+              .cleanLatestImages(boardData, threadId, postId, file, callback);
+        }
+
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.updateFileCount = function(threadId, boardData, cb, postId, file) {
+
+  threads.updateOne({
+    threadId : threadId,
+    boardUri : boardData.boardUri
+  }, {
+    $inc : {
+      fileCount : 1
+    }
+  }, function updatedFileCount(error) {
+    if (error) {
+      cb(error);
+    } else {
+      exports.updatePostingFiles(boardData, threadId, postId, file, cb, true,
+          true);
+    }
+  });
+
+};
+
 exports.updatePostingFiles = function(boardData, threadId, postId, file,
-    callback, updatedFileCount) {
+    callback, updatedFileCount, updatedLatestImages) {
+
+  var image = file.mime.indexOf('image/') > -1;
+
+  // add image to latest images before proceeding
+  if (latestImages && !updatedLatestImages && image) {
+
+    exports.updateLatestImages(boardData, threadId, postId, file, callback);
+
+    return;
+  }
 
   // updates thread's file count before proceeding
   if (postId && !updatedFileCount) {
-    threads.updateOne({
-      threadId : threadId,
-      boardUri : boardData.boardUri
-    }, {
-      $inc : {
-        fileCount : 1
-      }
-    }, function updatedFileCount(error) {
-      if (error) {
-        callback(error);
-      } else {
-        exports.updatePostingFiles(boardData, threadId, postId, file, callback,
-            true);
-      }
-    });
+
+    exports.updateFileCount(threadId, boardData, callback, postId, file);
 
     return;
   }

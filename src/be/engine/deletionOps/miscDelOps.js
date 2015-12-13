@@ -8,6 +8,8 @@ var threads = db.threads();
 var files = db.files();
 var flags = db.flags();
 var users = db.users();
+var globalLatestPosts = db.latestPosts();
+var globalLatestImages = db.latestImages();
 var boardStats = db.stats();
 var bans = db.bans();
 var hashBans = db.hashBans();
@@ -22,7 +24,7 @@ var logOps;
 var gridFs;
 
 var collectionsToClean = [ reports, posts, threads, flags, hashBans,
-    boardStats, bans ];
+    boardStats, bans, globalLatestPosts, globalLatestImages ];
 
 exports.loadDependencies = function() {
 

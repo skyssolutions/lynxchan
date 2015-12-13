@@ -21,6 +21,7 @@ var cachedDb;
 
 var maxIndexesSet = 14;
 
+var cachedLatestImages;
 var cachedAggregatedLogs;
 var cachedBypasses;
 var cachedFlood;
@@ -556,6 +557,10 @@ exports.latestPosts = function() {
   return cachedLatestPosts;
 };
 
+exports.latestImages = function() {
+  return cachedLatestImages;
+};
+
 exports.logs = function() {
   return cachedLog;
 };
@@ -656,6 +661,8 @@ exports.init = function(callback) {
     } else {
 
       cachedDb = db;
+
+      cachedLatestImages = db.collection('latestImages');
 
       cachedAggregatedLogs = db.collection('aggregatedLogs');
 

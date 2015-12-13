@@ -7,10 +7,13 @@ var db = require('../../db');
 var posts = db.posts();
 var threads = db.threads();
 var globalLatestPosts = db.latestPosts();
+var globalLatestImages = db.latestImages();
 var boards = db.boards();
 var files = db.files();
 var settings = require('../../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
+var globalLatestPostsCount = settings.globalLatestPosts;
+var globalLatestImagesCount = settings.globalLatestImages;
 var latestPosts = settings.latestPostCount;
 var gridFs;
 var lang;
@@ -160,7 +163,7 @@ exports.signalAndLoop = function(parentThreads, board, parameters,
     }
   }
 
-  if (latestPosts) {
+  if (globalLatestImagesCount || globalLatestPostsCount) {
     process.send({
       frontPage : true
     });
@@ -215,6 +218,33 @@ exports.updateBoardAndThreads = function(board, parameters, cb, foundThreads,
 
 };
 
+exports.removeGlobalLatestImages = function(board, parameters, cb,
+    foundThreads, foundPosts, parentThreads) {
+
+  globalLatestImages.removeMany({
+    boardUri : board.boardUri,
+    $or : [ {
+      threadId : {
+        $in : foundThreads
+      }
+    }, {
+      postId : {
+        $in : foundPosts
+      }
+    } ]
+  }, function removedLatesImages(error) {
+
+    if (error) {
+      cb(error);
+    } else {
+      exports.updateBoardAndThreads(board, parameters, cb, foundThreads,
+          foundPosts, parentThreads);
+    }
+
+  });
+
+};
+
 exports.removeContentFiles = function(board, parameters, cb, foundThreads,
     foundPosts, parentThreads) {
 
@@ -251,25 +281,26 @@ exports.removeContentFiles = function(board, parameters, cb, foundThreads,
   } ], function gotFiles(error, results) {
     if (error) {
       cb(error);
+    } else if (results.length) {
+
+      // style exception, too simple
+      gridFs.removeFiles(results[0].files, function deletedFiles(error) {
+        if (error) {
+          cb(error);
+        } else {
+
+          exports.removeGlobalLatestImages(board, parameters, cb, foundThreads,
+              foundPosts, parentThreads);
+
+        }
+      });
+      // style exception, too simple
+
     } else {
-      if (results.length) {
-
-        // style exception, too simple
-        gridFs.removeFiles(results[0].files, function deletedFiles(error) {
-          if (error) {
-            cb(error);
-          } else {
-            exports.updateBoardAndThreads(board, parameters, cb, foundThreads,
-                foundPosts, parentThreads);
-          }
-        });
-        // style exception, too simple
-
-      } else {
-        exports.updateBoardAndThreads(board, parameters, cb, foundThreads,
-            foundPosts, parentThreads);
-      }
+      exports.updateBoardAndThreads(board, parameters, cb, foundThreads,
+          foundPosts, parentThreads);
     }
+
   });
 
 };

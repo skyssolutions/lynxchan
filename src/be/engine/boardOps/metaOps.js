@@ -47,6 +47,11 @@ var boardParameters = [ {
   length : 256
 } ];
 
+var transferParameters = [ {
+  field : 'login',
+  length : 16
+} ];
+
 exports.loadDependencies = function() {
 
   logOps = require('../logOps');
@@ -354,6 +359,8 @@ exports.transfer = function(userData, parameters, callback) {
     } else if (board.owner === parameters.login) {
       callback();
     } else {
+
+      miscOps.sanitizeStrings(parameters, transferParameters);
 
       // style exception, too simple
       users.findOne({

@@ -15,6 +15,10 @@ divBoards:
     use: have children appended to it or might be removed.
     description: contains the listing of boards.
 
+divLatestImages:
+    use: have children appended to it or might be removed.
+    description: contains the latest images made on the whole site.
+
 divLatestPosts:
     use: have children appended to it or might be removed.
     description: contains the latest posts made on the whole site.
@@ -1909,6 +1913,18 @@ Elements:
 dateLink:
     use: have it's href and innerHTML manipulated.
     description: link that leads to the log page.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::63
+
+latestImageCell*:
+Root element: div
+
+Elements:
+linkPost:
+    use: have it's href and children appended to it.
+    description: link that leads to the post on which the image was posted.
 
 ------------------------------------------------------------------------------------------
 

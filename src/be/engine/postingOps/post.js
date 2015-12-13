@@ -209,7 +209,7 @@ exports.updateBoardForPostCreation = function(parameters, postId, thread,
 exports.addPostToGlobalLatest = function(post, thread, parameters, cleanPosts,
     bump, callback) {
 
-  if (!globalLatestPosts) {
+  if (!globalLatestPosts || !post.message.length) {
     exports.updateBoardForPostCreation(parameters, post.postId, thread,
         cleanPosts, bump, callback);
 
@@ -353,7 +353,7 @@ exports.createPost = function(req, parameters, userData, postId, thread, board,
     } else {
 
       common.recordFlood(req);
-      
+
       // style exception, too simple
       uploadHandler.saveUploads(board, parameters.threadId, postId, parameters,
           function savedFiles(error) {

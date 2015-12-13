@@ -382,7 +382,42 @@ exports.catalog = function(boardUri, threads, callback) {
 // } Section 3: Catalog
 
 // Section 4: Front page {
-exports.setTopBoards = function(document, boards, boardsDiv) {
+exports.setLatestImages = function(latestImages, latestImagesDiv, document) {
+
+  for (var i = 0; i < latestImages.length; i++) {
+
+    var image = latestImages[i];
+
+    var cell = document.createElement('div');
+    cell.innerHTML = templateHandler.latestImageCell;
+    cell.setAttribute('class', 'latestImageCell');
+
+    var link = cell.getElementsByClassName('linkPost')[0];
+
+    var postLink = '/' + image.boardUri + '/res/' + image.threadId + '.html';
+    postLink += '#' + (image.postId || image.threadId);
+
+    link.href = postLink;
+
+    var imgElement = document.createElement('img');
+    imgElement.src = image.thumb;
+
+    link.appendChild(imgElement);
+
+    latestImagesDiv.appendChild(cell);
+
+  }
+
+};
+
+exports.setTopBoards = function(document, boards) {
+
+  var boardsDiv = document.getElementById('divBoards');
+
+  if (!boards) {
+    common.removeElement(boardsDiv);
+    return;
+  }
 
   for (var i = 0; i < boards.length; i++) {
 
@@ -403,13 +438,14 @@ exports.setTopBoards = function(document, boards, boardsDiv) {
 
 };
 
-exports.setLatestPost = function(latestPosts, latestPostsDiv, document) {
+exports.setLatestPosts = function(latestPosts, latestPostsDiv, document) {
 
   for (var i = 0; i < latestPosts.length; i++) {
     var post = latestPosts[i];
 
     var cell = document.createElement('div');
     cell.innerHTML = templateHandler.latestPostCell;
+    cell.setAttribute('class', 'latestPostCell');
 
     var previewLabel = cell.getElementsByClassName('labelPreview')[0];
     previewLabel.innerHTML = post.previewText;
@@ -431,7 +467,7 @@ exports.setLatestPost = function(latestPosts, latestPostsDiv, document) {
 
 };
 
-exports.frontPage = function(boards, latestPosts, callback) {
+exports.frontPage = function(boards, latestPosts, latestImages, callback) {
 
   try {
 
@@ -439,20 +475,22 @@ exports.frontPage = function(boards, latestPosts, callback) {
 
     document.title = siteTitle;
 
-    var boardsDiv = document.getElementById('divBoards');
-
-    if (!boards) {
-      common.removeElement(boardsDiv);
-    } else {
-      exports.setTopBoards(document, boards, boardsDiv);
-    }
+    exports.setTopBoards(document, boards);
 
     var latestPostsDiv = document.getElementById('divLatestPosts');
 
     if (!latestPosts) {
       common.removeElement(latestPostsDiv);
     } else {
-      exports.setLatestPost(latestPosts, latestPostsDiv, document);
+      exports.setLatestPosts(latestPosts, latestPostsDiv, document);
+    }
+
+    var latestImagesDiv = document.getElementById('divLatestImages');
+
+    if (!latestImages) {
+      common.removeElement(latestImagesDiv);
+    } else {
+      exports.setLatestImages(latestImages, latestImagesDiv, document);
     }
 
     gridFs.writeData(serializer(document), '/', 'text/html', {}, callback);
@@ -497,6 +535,7 @@ exports.preview = function(postingData, callback) {
 
     var innerCell = document.createElement('div');
     innerCell.innerHTML = templateHandler.postCell;
+    innerCell.setAttribute('class', 'postCell');
 
     common.setPostInnerElements(document, postingData.boardUri,
         postingData.threadId, postingData, innerCell, true);
@@ -528,6 +567,7 @@ exports.rules = function(boardUri, rules, callback) {
     for (var i = 0; i < rules.length; i++) {
       var cell = document.createElement('div');
       cell.innerHTML = templateHandler.ruleCell;
+      cell.setAttribute('class', 'ruleCell');
 
       cell.getElementsByClassName('textLabel')[0].innerHTML = rules[i];
       cell.getElementsByClassName('indexLabel')[0].innerHTML = i + 1;

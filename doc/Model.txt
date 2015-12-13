@@ -118,7 +118,7 @@ users: stores users.
     login**: login of the user. 16 characters. Only a-Z, _ and 0-9 allowed.
     email: e-mail of the user. 64 characters.
     passwordSalt: salt used to hash the user's password. 
-    passwordMethod: string indicating which algorithm was used for the password. If not informed, bcrypt is the used algorithm. May contain one of the following values:
+    passwordMethod: string indicating which algorithm was used for the password. If not informed, bcrypt is the used algorithm. May hold one of the following values:
         pbkdf2
     lastSeen(Date): last time this user validated his account on the system.
     password: hashed password of the user.
@@ -250,22 +250,22 @@ floodRecord: stores the time when ips will be allowed to post again.
 ----------------------------------------------------------------------------------------
 
 latestPosts: stores metadata from global latest posts.
-    boardUri: uri of the board where the post was made.
-    threadId(Number): id of the thread posted or that contains the post.
-    postId(Number): id of the post.
+    boardUri*: uri of the board where the post was made.
+    threadId(Number)*: id of the thread posted or that contains the post.
+    postId(Number)*: id of the post.
     previewText: text to be displayed on the list of latest posts. 128 characters.
     creation(Date): date when the post was made.
 
 ----------------------------------------------------------------------------------------
 
 overboardThreads: stores aggregated data of threads on the overboard.
-    thread: _id of the document of the thread.
+    thread*: _id of the document of the thread.
 
 ----------------------------------------------------------------------------------------
 
 proxyBans: stores banned proxies.
     proxyIp(Array): ip of the banned proxy.
-    boardUri: uri of the board that banned the proxy. null if global.
+    boardUri(Number)*: uri of the board that banned the proxy. null if global.
 
 ----------------------------------------------------------------------------------------
 
@@ -281,6 +281,14 @@ aggregatedLogs: stores pre-aggregated log data by day.
 
 ----------------------------------------------------------------------------------------
 
+latestImages: stores data from latest images posted on the site.
+    thumb: path to image's thumb.
+    creation(Date): date and time of when this image was uploaded.
+    boardUri*: board which the image belongs to.
+    threadId(Number)*: thread which the image belongs to.
+    postId(Number)*: post which the image belongs to.
+
+----------------------------------------------------------------------------------------
 
 *: duplicated data, foreign key.
 **: unique key

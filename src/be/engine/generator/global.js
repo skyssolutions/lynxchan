@@ -12,6 +12,7 @@ var threads = db.threads();
 var posts = db.posts();
 var boards = db.boards();
 var latestPostsCol = db.latestPosts();
+var latestImagesCol = db.latestImages();
 var boot = require('../../boot');
 var settingsHandler = require('../../settingsHandler');
 var settings = settingsHandler.getGeneralSettings();
@@ -19,6 +20,7 @@ var topBoardsCount = settings.topBoardsCount;
 var templateSettings = settingsHandler.getTemplateSettings();
 var verbose = settings.verbose;
 var globalLatestPosts = settings.globalLatestPosts;
+var globalLatestImages = settings.globalLatestImages;
 var domManipulator;
 var postProjection;
 var threadProjection;
@@ -127,24 +129,57 @@ exports.notFound = function(callback) {
 };
 
 // Section 1: Front-page {
-exports.saveFrontPage = function(foundBoards, globalLatestPosts, callback) {
+exports.saveFrontPage = function(foundBoards, globalLatestPosts,
+    globalLatestImages, callback) {
 
-  domManipulator.frontPage(foundBoards, globalLatestPosts, function savedHtml(
-      error) {
-    if (error) {
-      callback(error);
-    } else {
-      jsonBuilder.frontPage(foundBoards, globalLatestPosts, callback);
-    }
+  domManipulator.frontPage(foundBoards, globalLatestPosts, globalLatestImages,
+      function savedHtml(error) {
+        if (error) {
+          callback(error);
+        } else {
+          jsonBuilder.frontPage(foundBoards, globalLatestPosts,
+              globalLatestImages, callback);
+        }
 
-  });
+      });
+
+};
+
+exports.fetchLatestGlobalImages = function(foundBoards, globalLatestPosts,
+    callback) {
+
+  if (!globalLatestImages) {
+
+    exports.saveFrontPage(foundBoards, globalLatestPosts, null, callback);
+
+    return;
+  }
+
+  latestImagesCol.find({}, {
+    _id : 0,
+    thumb : 1,
+    creation : 1,
+    boardUri : 1,
+    threadId : 1,
+    postId : 1
+  }).toArray(
+      function gotImages(error, images) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.saveFrontPage(foundBoards, globalLatestPosts,
+              images.length ? images : null, callback);
+        }
+
+      });
 
 };
 
 exports.fetchLatestGlobalPosts = function(foundBoards, callback) {
 
   if (!globalLatestPosts) {
-    exports.saveFrontPage(foundBoards, null, callback);
+    exports.fetchLatestGlobalImages(foundBoards, null, callback);
     return;
   }
 
@@ -162,8 +197,8 @@ exports.fetchLatestGlobalPosts = function(foundBoards, callback) {
         if (error) {
           callback(error);
         } else {
-          exports.saveFrontPage(foundBoards, posts.length ? posts : null,
-              callback);
+          exports.fetchLatestGlobalImages(foundBoards, posts.length ? posts
+              : null, callback);
         }
       });
 

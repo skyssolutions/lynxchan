@@ -645,6 +645,7 @@ exports.noCookieCaptcha = function(parameters, captchaId) {
 exports.setArchiveIndexCell = function(cell, board) {
 
   cell.innerHTML = templateHandler.mainArchiveCell;
+  cell.setAttribute('class', 'mainArchiveCell');
 
   var link = cell.getElementsByClassName('linkBoard')[0];
 
@@ -692,6 +693,7 @@ exports.mainArchive = function(boards) {
 exports.setBoardArchiveCell = function(cell, thread, boardUri) {
 
   cell.innerHTML = templateHandler.boardArchiveCell;
+  cell.setAttribute('class', 'boardArchiveCell');
 
   var link = cell.getElementsByClassName('linkThread')[0];
 

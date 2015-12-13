@@ -18,6 +18,11 @@ Root(Object):
         threadId: id of the thread that either contains the post or that was posted.
         postId: id of the post.
         previewText: preview text of the post.
+    latestImages(Array): Array with the global latest images. Each element is an object with the following fields:
+        boardUri: uri of the board where the image is.
+        threadId: id of the thread that contains the image.
+        postId: id of the post that contains the image.
+        thumb: path of the image's thumbnail.
 
 ------------------------------------------------------------------------------------------
 
