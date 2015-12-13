@@ -116,7 +116,7 @@ function addThread(message) {
 }
 // } Section 1: Overboard insertion
 
-function checkForExistance(message, insert) {
+function checkForExistance(message) {
 
   overboardThreads.findOne({
     thread : new ObjectID(message._id)
@@ -125,7 +125,7 @@ function checkForExistance(message, insert) {
       console.log(error);
     } else if (thread) {
       genQueue.queue(message);
-    } else if (insert) {
+    } else if (message.bump) {
       addThread(message);
     }
 
@@ -218,10 +218,12 @@ exports.reaggregate = function(message) {
 
   if (message.reaggregate) {
     fullReaggregate(message);
+  } else if (!message._id) {
+    genQueue.queue(message);
   } else if (!message.post) {
     addThread(message);
   } else {
-    checkForExistance(message, message.bump);
+    checkForExistance(message);
   }
 
 };

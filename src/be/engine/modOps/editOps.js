@@ -8,10 +8,12 @@ var db = require('../../db');
 var boards = db.boards();
 var threads = db.threads();
 var posts = db.posts();
+var settings = require('../../settingsHandler').getGeneralSettings();
 var lang;
 var miscOps;
 var postOps;
 var common;
+var r9k;
 
 var editArguments = [ {
   field : 'message',
@@ -25,6 +27,7 @@ exports.loadDependencies = function() {
   miscOps = require('../miscOps');
   postOps = require('../postingOps').common;
   common = require('.').common;
+  r9k = require('../r9k');
 
 };
 
@@ -181,6 +184,12 @@ exports.queueRebuild = function(page, board, threadId, callback) {
     thread : threadId
   });
 
+  if (settings.overboard) {
+    process.send({
+      overboard : true
+    });
+  }
+
   process.send({
     board : board,
     page : page
@@ -215,6 +224,7 @@ exports.recordEdit = function(parameters, login, callback) {
     $set : {
       lastEditTime : new Date(),
       lastEditLogin : login,
+      hash : parameters.hash,
       markdown : parameters.markdown,
       message : parameters.message
     }
@@ -246,9 +256,25 @@ exports.recordEdit = function(parameters, login, callback) {
   });
 };
 
+exports.getMarkdown = function(parameters, userData, board, callback) {
+
+  postOps.markdownText(parameters.message, parameters.boardUri, board.settings
+      .indexOf('allowCode') > -1, function gotMarkdown(error, markdown) {
+    if (error) {
+      callback(error);
+    } else {
+      parameters.markdown = markdown;
+      exports.recordEdit(parameters, userData.login, callback);
+    }
+  });
+
+};
+
 exports.saveEdit = function(userData, parameters, callback) {
 
   miscOps.sanitizeStrings(parameters, editArguments);
+
+  parameters.hash = r9k.getMessageHash(parameters.message);
 
   var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
@@ -264,16 +290,14 @@ exports.saveEdit = function(userData, parameters, callback) {
     } else {
 
       // style exception, too simple
-      postOps.markdownText(parameters.message, parameters.boardUri,
-          board.settings.indexOf('allowCode') > -1, function gotMarkdown(error,
-              markdown) {
-            if (error) {
-              callback(error);
-            } else {
-              parameters.markdown = markdown;
-              exports.recordEdit(parameters, userData.login, callback);
-            }
-          });
+      r9k.check(parameters, board, function checked(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.getMarkdown(parameters, userData, board, callback);
+        }
+      });
       // style exception, too simple
 
     }

@@ -133,6 +133,8 @@ exports.init = function(callback) {
     if (error) {
       callback(error);
     } else if (!torIp) {
+      console.log('TOR ips will be downloaded, this might take a while');
+
       exports.updateIps(callback);
     } else {
       callback();
