@@ -1,3 +1,5 @@
+//Handles operations pertinent to multi-boards.
+
 'use strict';
 
 var url = require('url');

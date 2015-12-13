@@ -527,3 +527,93 @@ exports.aggregateLogs = function(callback) {
   });
 };
 // } Section 5: Aggregate log information
+
+// Added on 1.4.0
+// Section 6: Create message hash for existing postings {
+exports.getMessageHash = function(message) {
+
+  if (!message || !message.length) {
+    return null;
+  }
+
+  message = message.toLowerCase().replace(/[ \n\t]/g, '');
+
+  return crypto.createHash('md5').update(message).digest('base64');
+
+};
+
+exports.updatePostsR9KHashes = function(callback, postsCursor) {
+
+  postsCursor = postsCursor || cachedPosts.find({}, {
+    message : 1
+  });
+
+  postsCursor.next(function gotPost(error, post) {
+
+    if (error) {
+      callback(error);
+    } else if (post) {
+
+      // style exception, too simple
+      cachedPosts.updateOne({
+        _id : post._id
+      }, {
+        $set : {
+          hash : exports.getMessageHash(post.message)
+        }
+      }, function updatedPost(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.updatePostsR9KHashes(callback, postsCursor);
+        }
+
+      });
+      // style exception, too simple
+
+    } else {
+      callback();
+    }
+
+  });
+};
+
+exports.createR9KHashes = function(callback, threadsCursor) {
+
+  threadsCursor = threadsCursor || cachedThreads.find({}, {
+    message : 1
+  });
+
+  threadsCursor.next(function gotThread(error, thread) {
+
+    if (error) {
+      callback(error);
+    } else if (thread) {
+
+      // style exception, too simple
+      cachedThreads.updateOne({
+        _id : thread._id
+      }, {
+        $set : {
+          hash : exports.getMessageHash(thread.message)
+        }
+      }, function(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.createR9KHashes(callback, threadsCursor);
+        }
+
+      });
+      // style exception, too simple
+
+    } else {
+      exports.updatePostsR9KHashes(callback);
+    }
+
+  });
+
+};
+// } Section 6: Create message hash for existing postings

@@ -20,6 +20,8 @@ boards: stores boards.
         disableCaptcha: disable captchas for posting in the board.
         forceAnonymity: disables the name input.
         unindex: removes board from index.
+        uniqueFiles: board uses R9K to enforce unique files.
+        uniquePosts: board uses R9K to enforce unique posts.
         requireThreadFile: threads can only be created with a file.
         allowCode: allows the usage of [code] on postings.
         archive: archives content if the site owner has enabled archiving.
@@ -43,6 +45,7 @@ boards: stores boards.
 
 threads: stores board's threads.
     name: name of the poster. 32 characters.
+    hash: hash of the message used by R9K.
     signedRole: role of the user that posted the thread.
     password: password used to delete the thread. 8 characters.
     ip(Array): ip of the poster. Null if poster used TOR or a proxy.
@@ -84,6 +87,7 @@ threads: stores board's threads.
 
 posts: stores posts.
     name: name of the poster. 32 characters.
+    hash: hash of the message used by R9K.
     signedRole: role of the user that posted the thread.
     password: password used to delete the post. 8 characters.
     email: email of the poster. 64 characters.

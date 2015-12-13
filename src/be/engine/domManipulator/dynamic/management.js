@@ -26,7 +26,9 @@ exports.boardSettingsRelation = {
   early404 : 'early404Checkbox',
   unindex : 'unindexCheckbox',
   blockDeletion : 'blockDeletionCheckbox',
-  requireThreadFile : 'requireFileCheckbox'
+  requireThreadFile : 'requireFileCheckbox',
+  uniquePosts : 'uniquePostsCheckbox',
+  uniqueFiles : 'uniqueFilesCheckbox'
 };
 
 exports.boardFieldsRelation = {

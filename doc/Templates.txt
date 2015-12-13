@@ -612,6 +612,14 @@ proxyBansLink:
     use: have it's href manipulated.
     description: link to the page used for board proxy bans.
 
+uniqueFilesCheckbox:
+    use: might be turned on.
+    description: checkbox that indicates if this board uses R9K to enforce unique files uploads.
+
+uniquePostsCheckbox:
+    use: might be turned on.
+    description: checkbox that indicates if this board uses R9K to enforce unique posting messages.
+
 blockDeletionCheckbox:
     use: might be turned on.
     description: checkbox that indicates if use deletion of content is blocked.

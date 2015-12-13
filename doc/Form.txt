@@ -207,6 +207,8 @@ Json output(Object): object with data used to manage the board. Contains the fol
         early404: makes threads with less than 5 replies to be deleted after an hour.
         blockDeletion: makes it impossible for users to delete their own posts.
         requireThreadFile: requires at least one file when creating a thread.
+        uniqueFiles: enforces unique file posting.
+        uniquePosts: enforces unique message posting.
     tags(Array): array of tags for the board.
     boardMessage: message displayed on the board header.
     isOwner(Boolean): indicates if the user owns the board.
@@ -539,6 +541,8 @@ Parameters:
     archive: enables archiving of content, if the site allows archiving.
     blockDeletion: disables user deletion of content.
     requireThreadFile: requires at least one file for creating threads.
+    uniqueFiles: enforces unique files on posting.
+    uniquePosts: enforces unique messages on posting.
 
 ------------------------------------------------------------------------------------------
 

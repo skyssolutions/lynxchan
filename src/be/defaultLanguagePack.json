@@ -329,5 +329,8 @@
   "msgAppealDenied": "Appeal denied.",
   "guiTypeAppealDeny": "Appeal deny",
   "errCouldNotMeasureImage": "Could not get image's dimensions.",
-  "errNoFileAndMessage": "Either a message or a file is required."
+  "errNoFileAndMessage": "Either a message or a file is required.",
+  "errMessageAlreadyPosted": "R9K prevented your message from being posted.",
+  "errFileAlreadyPosted": "R9K prevented at least one of your files from being posted.",
+  "errDuplicateFileBeingPosted": "R9K prevented you from posting the same file multiple times at once."
 }

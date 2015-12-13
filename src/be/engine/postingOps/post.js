@@ -15,6 +15,7 @@ var bumpLimit = settings.autoSageLimit;
 var common = require('.').common;
 var gsHandler;
 var generator;
+var r9k;
 var uploadHandler;
 var lang;
 var miscOps;
@@ -29,6 +30,7 @@ exports.loadDependencies = function() {
 
   gsHandler = require('../gridFsHandler');
   generator = require('../generator').board;
+  r9k = require('../r9k');
   uploadHandler = require('../uploadHandler');
   lang = require('../langOps').languagePack();
   miscOps = require('../miscOps');
@@ -322,6 +324,7 @@ exports.createPost = function(req, parameters, userData, postId, thread, board,
   var postToAdd = {
     boardUri : parameters.boardUri,
     postId : postId,
+    hash : parameters.hash,
     markdown : parameters.markdown,
     ip : ip,
     threadId : parameters.threadId,
@@ -482,9 +485,24 @@ exports.getThread = function(req, parameters, userData, board, callback) {
 
 };
 
+exports.checkR9K = function(req, parameters, userData, board, callback) {
+
+  r9k.check(parameters, board, function checked(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.getThread(req, parameters, userData, board, callback);
+    }
+
+  });
+
+};
+
 exports.newPost = function(req, userData, parameters, captchaId, callback) {
 
   parameters.threadId = +parameters.threadId;
+  parameters.hash = r9k.getMessageHash(parameters.message);
 
   if (!parameters.message && !parameters.files.length) {
     callback(lang.errNoFileAndMessage);
@@ -516,7 +534,7 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
             if (error) {
               callback(error);
             } else {
-              exports.getThread(req, parameters, userData, board, callback);
+              exports.checkR9K(req, parameters, userData, board, callback);
             }
 
           });

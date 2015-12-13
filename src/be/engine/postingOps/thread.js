@@ -15,6 +15,7 @@ var delOps;
 var generator;
 var uploadHandler;
 var lang;
+var r9k;
 var miscOps;
 var captchaOps;
 
@@ -30,6 +31,7 @@ exports.loadDependencies = function() {
   lang = require('../langOps').languagePack();
   miscOps = require('../miscOps');
   captchaOps = require('../captchaOps');
+  r9k = require('../r9k');
 
 };
 
@@ -157,6 +159,7 @@ exports.createThread = function(req, userData, parameters, board, threadId,
     boardUri : parameters.boardUri,
     threadId : threadId,
     salt : salt,
+    hash : parameters.hash,
     ip : ip,
     id : id,
     markdown : parameters.markdown,
@@ -424,9 +427,26 @@ exports.checkMarkdownForThread = function(req, userData, parameters, board,
 
 };
 
+exports.checkR9K = function(req, userData, parameters, board, callback) {
+
+  r9k.check(parameters, board, function checked(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports
+          .checkMarkdownForThread(req, userData, parameters, board, callback);
+    }
+
+  });
+
+};
+
 exports.newThread = function(req, userData, parameters, captchaId, cb) {
 
   var noFiles = !parameters.files.length;
+
+  parameters.hash = r9k.getMessageHash(parameters.message);
 
   boards.findOne({
     boardUri : parameters.boardUri
@@ -472,8 +492,7 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
             if (error) {
               cb(error);
             } else {
-              exports.checkMarkdownForThread(req, userData, parameters, board,
-                  cb);
+              exports.checkR9K(req, userData, parameters, board, cb);
             }
           });
       // style exception, too simple
