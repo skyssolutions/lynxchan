@@ -15,9 +15,11 @@
 // catalog(Boolean): indicates to rebuild only the board catalog.
 // rules(Boolean): indicates to rebuild only the board rules page.
 // buildAll(Boolean): indicates to rebuild every page of the board, including
+// preview(Boolean): indicates we are building a preview page.
 // thread pages.
 // page(Number): page to be rebuilt.
 // thread(Number): thread to be rebuilt.
+// post(Number): post to be rebuilt.
 // if only board is informed, its pages and catalog will be rebuilt without
 // rebuilding the threads.
 
@@ -29,16 +31,18 @@ var logDates = [];
 // so we can know more easily what we are going to rebuild,
 // its structure is the following:
 // each key will be a board URI with an object.
-// each object will have the following fields: buildingAll, pages, threads.
+// each object will have the following fields: buildingPages, buildingAll,
+// pages, threads, previews, buildingCatalog, buildingRules.
 // buildingPages indicates we are already rebuilding the board pages.
 // buildingAll may hold a boolean so we know we are already rebuilding the whole
-// board, ignore anything incoming for the board.
+// board, except previews, ignore anything else incoming for the board.
 // buildingCatalog indicates we are already building the catalog without the
 // board pages.
 // buildingRules indicates we are already building the board rules page.
 // pages is an array with the numbers of pages to be rebuilt, indexed from 1.
 // [2,5] means we will rebuild pages 2 and 5
 // threads is an array with the ids of threads to be rebuilt.
+// previews is an array if with the numbers of postings we are going to rebuild.
 var queueTree = {};
 
 // so we can just tell it is rebuilding everything and ignore any incoming
@@ -106,8 +110,21 @@ function checkForGlobalClearing(message) {
 
 function clearBoardTree(message) {
 
-  if (message.buildAll) {
-    delete queueTree[message.board];
+  if (message.preview) {
+    var postingId = message.thread || message.post;
+
+    queueTree[message.board].previews.splice(queueTree[message.board].previews
+        .indexOf(postingId), 1);
+
+  } else if (message.buildAll) {
+
+    queueTree[message.board].buildingAll = false;
+    queueTree[message.board].buildingPages = false;
+    queueTree[message.board].pages = [];
+    queueTree[message.board].threads = [];
+    queueTree[message.board].buildingCatalog = false;
+    queueTree[message.board].buildingRules = false;
+
   } else if (message.catalog) {
     queueTree[message.board].buildingCatalog = false;
   } else if (message.rules) {
@@ -171,7 +188,10 @@ function debugPreGeneration() {
 
 function processMessageForBoards(generationCallback, message) {
 
-  if (message.buildAll) {
+  if (message.preview) {
+    generator.board.preview(message.board, message.thread, message.post,
+        generationCallback);
+  } else if (message.buildAll) {
     generator.board.board(message.board, true, true, generationCallback);
   } else if (message.catalog) {
     generator.board.catalog(message.board, generationCallback);
@@ -319,14 +339,41 @@ function checkBoardSpecialPages(message, boardInformation) {
   checkForPageAndThreadRebuild(message, boardInformation);
 }
 
+function rebuildingPreview(message, boardInformation) {
+
+  var previewsToRebuild = boardInformation.previews;
+
+  var postingId = message.thread || message.post;
+
+  if (!message.preview) {
+    return false;
+  } else if (previewsToRebuild.indexOf(postingId) < 0) {
+
+    previewsToRebuild.push(postingId);
+
+    putInQueue(message, boardInformation);
+
+  }
+
+  return true;
+
+}
+
 function checkForBoardRebuild(message) {
 
   var boardInformation = queueTree[message.board] || {
     buildingAll : false,
     buildingPages : false,
+    catalog : false,
+    rules : false,
     pages : [],
-    threads : []
+    threads : [],
+    previews : []
   };
+
+  if (rebuildingPreview(message, boardInformation)) {
+    return;
+  }
 
   if (boardInformation.buildingAll) {
     return;

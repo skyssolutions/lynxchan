@@ -171,6 +171,13 @@ exports.updateBoardForPostCreation = function(parameters, postId, thread,
     });
   }
 
+  // signal rebuild of preview
+  process.send({
+    board : parameters.boardUri,
+    post : postId,
+    preview : true
+  });
+
   // signal rebuild of thread
   process.send({
     board : parameters.boardUri,
@@ -290,17 +297,8 @@ exports.updateThread = function(parameters, postId, thread, callback, post) {
       callback(error);
     } else {
 
-      // style exception, too simple
-      generator.preview(null, null, null, function generatedPreview(error) {
-        if (error) {
-          console.log(error);
-        }
-
-        exports.addPostToGlobalLatest(post, thread, parameters, cleanPosts,
-            bump, callback);
-
-      }, post);
-      // style exception, too simple
+      exports.addPostToGlobalLatest(post, thread, parameters, cleanPosts, bump,
+          callback);
 
     }
 

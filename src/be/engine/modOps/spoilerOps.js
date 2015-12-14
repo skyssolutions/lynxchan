@@ -117,19 +117,39 @@ exports.getReloadsArray = function(foundThreads, parentThreads, reloadedPages,
 
 };
 
-exports.queueReloads = function(parentThreads, foundThreads, board) {
+exports.queueReloads = function(parents, foundThreads, foundPosts, board) {
 
   var reloadedPages = [];
   var reloadedThreads = [];
 
-  exports.getReloadsArray(foundThreads, parentThreads, reloadedPages,
-      reloadedThreads);
+  exports
+      .getReloadsArray(foundThreads, parents, reloadedPages, reloadedThreads);
 
   for (var i = 0; i < reloadedPages.length; i++) {
 
     process.send({
       board : board.boardUri,
       page : reloadedPages[i]
+    });
+
+  }
+
+  for (i = 0; i < foundThreads.length; i++) {
+
+    process.send({
+      board : board.boardUri,
+      preview : true,
+      thread : foundThreads[i].threadId
+    });
+
+  }
+
+  for (i = 0; i < foundPosts.length; i++) {
+
+    process.send({
+      board : board.boardUri,
+      preview : true,
+      post : foundPosts[i].postId
     });
 
   }
@@ -146,9 +166,9 @@ exports.queueReloads = function(parentThreads, foundThreads, board) {
 };
 
 exports.queueAndClean = function(board, parentThreads, foundThreads,
-    filesToDelete, callback) {
+    foundPosts, filesToDelete, callback) {
 
-  exports.queueReloads(parentThreads, foundThreads, board);
+  exports.queueReloads(parentThreads, foundThreads, foundPosts, board);
 
   if (!filesToDelete.length) {
     callback();
@@ -160,11 +180,11 @@ exports.queueAndClean = function(board, parentThreads, foundThreads,
 };
 
 exports.spoilPosts = function(board, postOps, filesToDelete, foundThreads,
-    parentThreads, callback) {
+    foundPosts, parentThreads, callback) {
 
   if (!postOps.length) {
-    exports.queueAndClean(board, parentThreads, foundThreads, filesToDelete,
-        callback);
+    exports.queueAndClean(board, parentThreads, foundThreads, foundPosts,
+        filesToDelete, callback);
 
     return;
   }
@@ -175,8 +195,8 @@ exports.spoilPosts = function(board, postOps, filesToDelete, foundThreads,
       callback(error);
     } else {
 
-      exports.queueAndClean(board, parentThreads, foundThreads, filesToDelete,
-          callback);
+      exports.queueAndClean(board, parentThreads, foundThreads, foundPosts,
+          filesToDelete, callback);
 
     }
   });
@@ -194,7 +214,7 @@ exports.spoilBoardFiles = function(foundThreads, foundPosts, board,
       foundPosts, board);
 
   if (!threadOps.length) {
-    exports.spoilPosts(board, postOps, filesToDelete, foundThreads,
+    exports.spoilPosts(board, postOps, filesToDelete, foundThreads, foundPosts,
         parentThreads, callback);
     return;
   }
@@ -206,7 +226,7 @@ exports.spoilBoardFiles = function(foundThreads, foundPosts, board,
     } else {
 
       exports.spoilPosts(board, postOps, filesToDelete, foundThreads,
-          parentThreads, callback);
+          foundPosts, parentThreads, callback);
 
     }
 
@@ -276,6 +296,7 @@ exports.getBoardFiles = function(board, element, callback) {
       callback(error);
     } else {
 
+      // style exception, too simple
       posts.find({
         boardUri : board.boardUri,
         postId : {
@@ -286,18 +307,17 @@ exports.getBoardFiles = function(board, element, callback) {
         }
       }, {
         files : 1,
+        postId : 1,
         threadId : 1,
       }).toArray(function gotPosts(error, foundPosts) {
 
-        // style exception, too simple
         if (error) {
           callback(error);
         } else {
           exports.getParentThreads(foundThreads, foundPosts, board, callback);
         }
-        // style exception, too simple
-
       });
+      // style exception, too simple
 
     }
   });

@@ -178,10 +178,29 @@ exports.setThreadSettings = function(userData, parameters, callback) {
 // } Section 1: Thread settings
 
 // Section 2: Save edit {
-exports.queueRebuild = function(page, board, threadId, callback) {
+exports.queueRebuild = function(page, board, posting, callback) {
+
   process.send({
     board : board,
-    thread : threadId
+    thread : posting.threadId
+  });
+
+  var previewMessage = {
+    board : board,
+    preview : true
+  };
+
+  if (posting.postId) {
+    previewMessage.post = posting.postId;
+  } else {
+    previewMessage.thread = posting.threadId;
+  }
+
+  process.send(previewMessage);
+
+  process.send({
+    board : board,
+    thread : posting.threadId
   });
 
   if (settings.overboard) {
@@ -243,15 +262,15 @@ exports.recordEdit = function(parameters, login, callback) {
         if (error) {
           callback(error);
         } else {
-          exports.queueRebuild(thread.page, parameters.boardUri,
-              posting.value.threadId, callback);
+          exports.queueRebuild(thread.page, parameters.boardUri, posting.value,
+              callback);
         }
       });
       // style exception, too simple
 
     } else {
       exports.queueRebuild(posting.value.page, parameters.boardUri,
-          posting.value.threadId, callback);
+          posting.value, callback);
     }
   });
 };

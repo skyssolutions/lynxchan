@@ -68,6 +68,13 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
       board : boardUri
     });
 
+    // signal rebuild of preview
+    process.send({
+      board : boardUri,
+      preview : true,
+      thread : threadId
+    });
+
     // signal rebuild of thread
     process.send({
       board : boardUri,
@@ -86,17 +93,7 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
     if (error) {
       console.log(error.toString());
     }
-
-    // style exception, too simple
-    generator.preview(null, null, null, function generatedPreview(error) {
-      if (error) {
-        console.log(error);
-      }
-
-      exports.addThreadToLatestPosts(thread, threadId, callback);
-    }, thread);
-    // style exception, too simple
-
+    exports.addThreadToLatestPosts(thread, threadId, callback);
   });
 
 };

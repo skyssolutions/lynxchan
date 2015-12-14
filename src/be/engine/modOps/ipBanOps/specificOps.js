@@ -129,6 +129,61 @@ exports.logBans = function(userData, board, informedPosts, informedThreads,
 
 };
 
+exports.reloadPages = function(pages, board, informedThreads, informedPosts,
+    parentThreads) {
+
+  var rebuiltPages = [];
+
+  for (var i = 0; i < pages.length; i++) {
+
+    var page = pages[i];
+
+    if (rebuiltPages.indexOf(page) === -1) {
+      rebuiltPages.push(page);
+      process.send({
+        board : board,
+        page : pages[i]
+      });
+    }
+  }
+
+  for (i = 0; i < informedThreads.length; i++) {
+    process.send({
+      board : board,
+      thread : informedThreads[i]
+    });
+
+    process.send({
+      board : board,
+      thread : informedThreads[i],
+      preview : true
+    });
+  }
+
+  for (i = 0; i < informedPosts.length; i++) {
+
+    process.send({
+      board : board,
+      post : informedPosts[i],
+      preview : true
+    });
+
+  }
+
+  for (i = 0; i < parentThreads.length; i++) {
+
+    var parent = parentThreads[i];
+
+    if (informedThreads.indexOf(parent) === -1) {
+      process.send({
+        board : board,
+        thread : parent
+      });
+    }
+  }
+
+};
+
 exports.updateThreadsBanMessage = function(pages, parentThreads, userData,
     parameters, callback, informedThreads, informedPosts, board) {
 
@@ -162,39 +217,8 @@ exports.updateThreadsBanMessage = function(pages, parentThreads, userData,
           callback(error);
         } else {
 
-          var rebuiltPages = [];
-
-          for (var i = 0; i < pages.length; i++) {
-
-            var page = pages[i];
-
-            if (rebuiltPages.indexOf(page) === -1) {
-              rebuiltPages.push(page);
-              process.send({
-                board : board,
-                page : pages[i]
-              });
-            }
-          }
-
-          for (i = 0; i < informedThreads.length; i++) {
-            process.send({
-              board : board,
-              thread : informedThreads[i]
-            });
-          }
-
-          for (i = 0; i < parentThreads.length; i++) {
-
-            var parent = parentThreads[i];
-
-            if (informedThreads.indexOf(parent) === -1) {
-              process.send({
-                board : board,
-                thread : parent
-              });
-            }
-          }
+          exports.reloadPages(pages, board, informedThreads, informedPosts,
+              parentThreads);
 
           exports.logBans(userData, board, informedPosts, informedThreads,
               parameters, callback);

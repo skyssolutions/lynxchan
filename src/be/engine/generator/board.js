@@ -568,15 +568,17 @@ exports.preview = function(boardUri, threadId, postId, callback, postingData) {
   if (!postingData) {
 
     var queryBlock = {
-      boardUri : boardUri,
-      threadId : threadId
+      boardUri : boardUri
     };
 
-    var collection = threads;
+    var collection;
 
     if (postId) {
       collection = posts;
       queryBlock.postId = postId;
+    } else {
+      collection = threads;
+      queryBlock.threadId = threadId;
     }
 
     collection.findOne(queryBlock, postProjection, function gotPosting(error,

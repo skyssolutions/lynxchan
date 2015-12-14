@@ -158,9 +158,26 @@ exports.signalAndLoop = function(parentThreads, board, parameters,
 
       process.send({
         board : board.boardUri,
+        thread : thread,
+        preview : true
+      });
+
+      process.send({
+        board : board.boardUri,
         thread : thread
       });
     }
+
+    for (i = 0; i < foundPosts.length; i++) {
+
+      process.send({
+        board : board.boardUri,
+        post : foundPosts[i],
+        preview : true
+      });
+
+    }
+
   }
 
   if (globalLatestImagesCount || globalLatestPostsCount) {

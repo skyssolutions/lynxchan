@@ -20,11 +20,18 @@ The dependencies versions are not exactly mandatory and only reflect the version
 # Automatic install (Recommended)
 1. Required: browse to `aux` and run the script `setup.sh` that will prompt for the install of a front-end, default settings and libraries. Browsing to the `aux` directory is required because the scripts use relative paths to this directory.
 2. Optional: run the script `root-setup.sh` that will prompt for the install of a command using a soft-link to `src/be/boot.js`. This script must be run as root. It will also prompt for the install of a init script. The name of both the command and the service will be `lynxchan`.
+3. Optional: if you installed the default front-end, go to it's directory and run the `set-domain.sh` script passing as the first parameter your desired domain.
   
 # Manual install
 1. Create the required settings file in the `src/be/settings` directory. Instructions can be found at `src/be/readme.md`. There is also a directory called settings.example with a set of functional settings.
 2. Browse to `src/be` and run `npm install`.
 3. Clone a front-end to the `src/fe` directory or clone to anywhere and set it's correct location on `src/be/settings/general.json`.
+
+# Important details
+* Set both the `api` and `static` sub-domains pointing to the server. `static` is used to reach static files on the front-end and `api` is used to perform JSON requests to the server.
+* Consult the readme file on the placeholder front-end if you are using it to learn how to set the `settings.js` file, required for it's javascript to run. An example file is also there, which the set-domain script can copy to the right location for you.
+* Pages that are generated, like board and thread pages, won't reflect template changes immediatly. Consult src/be's readme to learn how to manually reload these pages. And even then, keep in mind the server will cache templates when not running on debug mode, so even if you reload the page, a running server might use outdated versions of templates when regenerating pages.
+* There is no default admin account. Consult the src/be readme to see how to use the terminal to create a root account or convert an existing one to root.
 
 # Running
 You can either run the `lynxchan` command or start the `lynxchan` service if you ran the `aux/root-setup.sh` script. You could just run the `src/be/boot.js` file. Run ``` sudo setcap 'cap_net_bind_service=+ep' `which node` ``` to be able to run it on port 80 without root access.
