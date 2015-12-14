@@ -7,7 +7,7 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var formOps = require('../engine/formOps');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 
-function getMinDate(informedDate) {
+function getMinDate(informedYear) {
 
   var date = new Date();
 
@@ -16,17 +16,14 @@ function getMinDate(informedDate) {
   date.setUTCSeconds(0);
   date.setUTCDate(1);
   date.setUTCMilliseconds(0);
+  date.setUTCMonth(0);
 
-  date.setMonth(date.getUTCMonth() - 1);
+  if (informedYear) {
 
-  if (informedDate) {
+    var parsedYear = +informedYear;
 
-    var matches = informedDate.match(/(\d{2})\/(\d{4})/);
-
-    if (matches) {
-
-      date.setUTCFullYear(+matches[2]);
-      date.setUTCMonth(+matches[1] - 1);
+    if (parsedYear) {
+      date.setUTCFullYear(parsedYear);
     }
   }
 
@@ -38,11 +35,11 @@ exports.process = function(req, res) {
 
   var parameters = url.parse(req.url, true).query;
 
-  var date = getMinDate(parameters.date);
+  var date = getMinDate(parameters.year);
 
   var maxDate = new Date(date);
 
-  maxDate.setUTCMonth(maxDate.getUTCMonth() + 1);
+  maxDate.setUTCFullYear(maxDate.getUTCFullYear() + 1);
 
   aggregatedLogs.aggregate([ {
     $match : {

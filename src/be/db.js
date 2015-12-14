@@ -44,6 +44,7 @@ var cachedTorIps;
 var cachedFlags;
 var cachedProxyBans;
 var cachedOverboard;
+var cachedIpAggregation;
 
 var loading;
 
@@ -509,6 +510,10 @@ exports.conn = function() {
   return cachedDb;
 };
 
+exports.uniqueIps = function() {
+  return cachedIpAggregation;
+};
+
 exports.bypasses = function() {
   return cachedBypasses;
 };
@@ -667,19 +672,13 @@ exports.init = function(callback) {
       cachedDb = db;
 
       cachedLatestImages = db.collection('latestImages');
-
+      cachedIpAggregation = db.collection('uniqueIpAggregation');
       cachedAggregatedLogs = db.collection('aggregatedLogs');
-
       cachedProxyBans = db.collection('proxyBans');
-
       cachedOverboard = db.collection('overboardThreads');
-
       cachedLatestPosts = db.collection('latestPosts');
-
       cachedFiles = db.collection('fs.files');
-
       cachedLog = db.collection('staffLogs');
-
       cachedStats = db.collection('boardStats');
 
       initCollections(db, callback);

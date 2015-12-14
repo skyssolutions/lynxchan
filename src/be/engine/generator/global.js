@@ -228,6 +228,7 @@ exports.frontPage = function(callback) {
     _id : 0,
     boardName : 1
   }).sort({
+    uniqueIps : -1,
     postsPerHour : -1,
     lastPostId : -1,
     boardUri : 1

@@ -1232,6 +1232,11 @@ boardsCell*:
 Root element: div
 
 Elements:
+
+labelUniqueIps:
+    use: have it's innerHTML manipulated.
+    description: label that holds how many unique ips posted on the board in the latest 24 hours.
+
 linkBoard:
     use: have it's href manipulated and innerHTML.
     description: link to the board.

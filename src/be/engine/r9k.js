@@ -12,6 +12,7 @@ exports.loadDependencies = function() {
   lang = require('./langOps').languagePack();
 };
 
+// Section 1: Checking for duplicates {
 exports.getQuery = function(boardData, checkMessage, checkFiles, parameters,
     callback) {
 
@@ -112,6 +113,7 @@ exports.check = function(parameters, boardData, callback) {
   });
 
 };
+// } Section 1: Checking for duplicates
 
 exports.getMessageHash = function(message) {
 

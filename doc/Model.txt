@@ -1,5 +1,6 @@
 boards: stores boards.
     owner*: login of the board owner.
+    uniqueIps(Number): unique ips seen on last day.
     boardUri**: url of the board. 32 characters. Only a-Z, _ and 0-9 allowed.
     usesCustomJs(Boolean): pre-aggreated boolean indicating the board has a custom javascript.
     boardName: name of the board. 32 characters.
@@ -291,6 +292,12 @@ latestImages: stores data from latest images posted on the site.
     boardUri*: board which the image belongs to.
     threadId(Number)*: thread which the image belongs to.
     postId(Number)*: post which the image belongs to.
+
+----------------------------------------------------------------------------------------
+
+uniqueIpAggregation: stores daily unique ip's hashes on boards.
+    boardUri*: board which the ips belongs to.
+    ips(Array): hashed ip's seen on this board so far.
 
 ----------------------------------------------------------------------------------------
 

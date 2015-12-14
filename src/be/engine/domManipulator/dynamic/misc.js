@@ -258,6 +258,22 @@ exports.logs = function(dates) {
 // } Section 2: Logs
 
 // Section 3: Board listing {
+exports.setSimpleBoardCellLabels = function(board, boardCell) {
+
+  var labelPPH = boardCell.getElementsByClassName('labelPostsPerHour')[0];
+  labelPPH.innerHTML = board.postsPerHour || 0;
+
+  var labelUniqueIps = boardCell.getElementsByClassName('labelUniqueIps')[0];
+  labelUniqueIps.innerHTML = board.uniqueIps || 0;
+
+  var labelCount = boardCell.getElementsByClassName('labelPostCount')[0];
+  labelCount.innerHTML = board.lastPostId || 0;
+
+  var labelDescription = boardCell.getElementsByClassName('divDescription')[0];
+  labelDescription.innerHTML = board.boardDescription;
+
+};
+
 exports.setBoardCell = function(board, boardCell) {
 
   var linkContent = '/' + board.boardUri + '/ - ' + board.boardName;
@@ -265,14 +281,7 @@ exports.setBoardCell = function(board, boardCell) {
   boardLink.href = '/' + board.boardUri + '/';
   boardLink.innerHTML = linkContent;
 
-  var labelPPH = boardCell.getElementsByClassName('labelPostsPerHour')[0];
-  labelPPH.innerHTML = board.postsPerHour || 0;
-
-  var labelCount = boardCell.getElementsByClassName('labelPostCount')[0];
-  labelCount.innerHTML = board.lastPostId || 0;
-
-  var labelDescription = boardCell.getElementsByClassName('divDescription')[0];
-  labelDescription.innerHTML = board.boardDescription;
+  exports.setSimpleBoardCellLabels(board, boardCell);
 
   var labelTags = boardCell.getElementsByClassName('labelTags')[0];
 

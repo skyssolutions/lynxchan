@@ -8,6 +8,7 @@ var crypto = require('crypto');
 var logger = require('../../logger');
 var db = require('../../db');
 var posts = db.posts();
+var uniqueIps = db.uniqueIps();
 var stats = db.stats();
 var flags = db.flags();
 var latestPosts = db.latestPosts();
@@ -235,13 +236,13 @@ exports.doesUserWishesToSign = function(userData, parameters) {
 
 };
 
-exports.addPostToStats = function(boardUri, callback) {
+exports.addPostToStats = function(ip, boardUri, callback) {
 
   var statHour = new Date();
 
-  statHour.setMilliseconds(0);
-  statHour.setSeconds(0);
-  statHour.setMinutes(0);
+  statHour.setUTCMilliseconds(0);
+  statHour.setUTCSeconds(0);
+  statHour.setUTCMinutes(0);
 
   stats.updateOne({
     boardUri : boardUri,
@@ -257,7 +258,31 @@ exports.addPostToStats = function(boardUri, callback) {
   }, {
     upsert : true
   }, function updatedStats(error) {
-    callback(error);
+
+    if (error) {
+      callback(error);
+    } else if (ip) {
+
+      var hashedIp = crypto.createHash('md5').update(ip.toString()).digest(
+          'base64');
+
+      uniqueIps.update({
+        boardUri : boardUri
+      }, {
+        $set : {
+          boardUri : boardUri
+        },
+        $addToSet : {
+          ips : hashedIp
+        }
+      }, {
+        upsert : true
+      }, callback);
+
+    } else {
+      callback();
+    }
+
   });
 
 };

@@ -89,7 +89,7 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
     });
   }
 
-  common.addPostToStats(boardUri, function updatedStats(error) {
+  common.addPostToStats(thread.ip, boardUri, function updatedStats(error) {
     if (error) {
       console.log(error.toString());
     }

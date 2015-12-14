@@ -11,10 +11,10 @@ var captchaExpiration = settings.captchaExpiration;
 var debug = kernel.debug();
 var gridFsHandler = require('./engine/gridFsHandler');
 var db = require('./db');
-var generator = require('./engine/generator').global;
 var delOps = require('./engine/deletionOps').miscDeletions;
 var boards = db.boards();
 var stats = db.stats();
+var uniqueIps = db.uniqueIps();
 var files = db.files();
 var torHandler = require('./engine/torOps');
 
@@ -30,7 +30,6 @@ exports.reload = function() {
   tempDirectory = settings.tempDirectory;
   captchaExpiration = settings.captchaExpiration;
   gridFsHandler = require('./engine/gridFsHandler');
-  generator = require('./engine/generator').global;
   delOps = require('./engine/deletionOps').miscDeletions;
   torHandler = require('./engine/torOps');
 };
@@ -48,9 +47,11 @@ exports.start = function() {
   torRefresh();
 
   early404(true);
+
+  uniqueIpCount();
 };
 
-// start of early 404 check
+// Section 1: Early 404 check {
 function cleanEarly404() {
 
   delOps.cleanEarly404(function cleanedUp(error) {
@@ -79,9 +80,9 @@ function early404(immediate) {
     }, 1000 * 60 * 30);
   }
 }
-// end of early 404 check
+// } Section 1: Early 404 check
 
-// start of tor refresh
+// Section 2: TOR refresh {
 function refreshTorEntries() {
 
   torHandler.updateIps(function updatedTorIps(error) {
@@ -106,20 +107,19 @@ function torRefresh() {
 
   var nextRefresh = new Date();
 
-  nextRefresh.setSeconds(5);
-  nextRefresh.setMinutes(0);
-  nextRefresh.setHours(0);
-  nextRefresh.setDate(nextRefresh.getDate() + 1);
+  nextRefresh.setUTCSeconds(0);
+  nextRefresh.setUTCMinutes(0);
+  nextRefresh.setUTCHours(0);
+  nextRefresh.setUTCDate(nextRefresh.getUTCDate() + 1);
 
   setTimeout(function() {
     refreshTorEntries();
   }, nextRefresh.getTime() - new Date().getTime());
 
 }
-// end of tor refresh
+// } Section 2: TOR refresh
 
-// start of board stats recording
-
+// Section 3: Board stats recording {
 function applyStats(stats) {
 
   var operations = [];
@@ -170,27 +170,14 @@ function applyStats(stats) {
         throw error;
       }
     } else {
-      if (!settings.disableTopBoards) {
 
-        // style exception, too simple
-        generator.frontPage(function generatedFrontPage(error) {
-          if (error) {
-            if (verbose) {
-              console.log(error.toString());
-            }
-
-            if (debug) {
-              throw error;
-            }
-          } else {
-            boardsStats();
-          }
+      if (settings.topBoardsCount) {
+        require('./generationQueue').queue({
+          frontPage : true
         });
-        // style exception, too simple
-
-      } else {
-        boardsStats();
       }
+
+      boardsStats();
     }
 
   });
@@ -200,10 +187,10 @@ function applyStats(stats) {
 function getStats() {
 
   var timeToApply = new Date();
-  timeToApply.setMilliseconds(0);
-  timeToApply.setSeconds(0);
-  timeToApply.setMinutes(0);
-  timeToApply.setHours(timeToApply.getHours() - 1);
+  timeToApply.setUTCMilliseconds(0);
+  timeToApply.setUTCSeconds(0);
+  timeToApply.setUTCMinutes(0);
+  timeToApply.setUTCHours(timeToApply.getUTCHours() - 1);
 
   if (verbose) {
     console.log('Applying stats for ' + timeToApply);
@@ -249,10 +236,10 @@ function boardsStats() {
 
   var current = tickTime.getTime();
 
-  tickTime.setMilliseconds(0);
-  tickTime.setSeconds(5);
-  tickTime.setMinutes(0);
-  tickTime.setHours(tickTime.getHours() + 1);
+  tickTime.setUTCMilliseconds(0);
+  tickTime.setUTCSeconds(5);
+  tickTime.setUTCMinutes(0);
+  tickTime.setUTCHours(tickTime.getUTCHours() + 1);
 
   setTimeout(function() {
 
@@ -260,9 +247,9 @@ function boardsStats() {
 
   }, tickTime.getTime() - current);
 }
-// end of board stats recording
+// } Section 3: Board stats recording
 
-// start of temp files cleanup
+// Section 4: Temp files cleanup {
 function iterateFiles(files) {
 
   if (files.length) {
@@ -333,9 +320,9 @@ function tempFiles(immediate) {
   }
 
 }
-// end of temp files cleanup
+// } Section 4: Temp files cleanup
 
-// start of captcha cleanup
+// Section 5: Captcha cleanup {
 function expiredCaptcha(immediate) {
   if (immediate) {
     checkExpiredCaptchas();
@@ -408,4 +395,116 @@ function checkExpiredCaptchas() {
   });
 
 }
-// end of captcha cleanup
+// } Section 5: Captcha cleanup
+
+// Section 6: Unique IP counting {
+function setUniqueIpCount(results) {
+
+  var operations = [];
+  var foundBoards = [];
+
+  for (var i = 0; i < results.length; i++) {
+
+    var result = results[i];
+
+    foundBoards.push(result.boardUri);
+
+    operations.push({
+      updateOne : {
+        filter : {
+          boardUri : result.boardUri
+        },
+        update : {
+          $set : {
+            uniqueIps : result.count
+          }
+        }
+      }
+    });
+
+  }
+
+  operations.push({
+    updateMany : {
+      filter : {
+        boardUri : {
+          $nin : foundBoards
+        }
+      },
+      update : {
+        $set : {
+          uniqueIps : 0
+        }
+      }
+    }
+  });
+
+  boards.bulkWrite(operations, function updatedUniqueIps(error) {
+
+    if (error) {
+      if (verbose) {
+        console.log(error.toString());
+      }
+
+      if (debug) {
+        throw error;
+      }
+    }
+
+    if (settings.topBoardsCount) {
+      require('./generationQueue').queue({
+        frontPage : true
+      });
+    }
+
+    uniqueIpCount();
+
+  });
+
+}
+
+function updateUniqueIpCount() {
+
+  uniqueIps.aggregate([ {
+    $project : {
+      boardUri : 1,
+      count : {
+        $size : '$ips'
+      }
+    }
+  } ], function gotCount(error, results) {
+
+    if (error) {
+
+      if (verbose) {
+        console.log(error);
+      }
+
+      if (debug) {
+        throw error;
+      }
+    }
+
+    uniqueIps.deleteMany({});
+
+    setUniqueIpCount(results);
+
+  });
+
+}
+
+function uniqueIpCount() {
+
+  var nextRefresh = new Date();
+
+  nextRefresh.setUTCSeconds(0);
+  nextRefresh.setUTCMinutes(0);
+  nextRefresh.setUTCHours(0);
+  nextRefresh.setUTCDate(nextRefresh.getUTCDate() + 1);
+
+  setTimeout(function() {
+    updateUniqueIpCount();
+  }, nextRefresh.getTime() - new Date().getTime());
+
+}
+// } Section 6: Unique IP counting

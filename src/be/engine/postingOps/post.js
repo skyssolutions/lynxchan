@@ -151,7 +151,7 @@ exports.cleanThreadPosts = function(boardUri, threadId, postId, callback) {
 
 };
 
-exports.updateBoardForPostCreation = function(parameters, postId, thread,
+exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
     cleanPosts, bump, callback) {
 
   if (parameters.email !== 'sage') {
@@ -199,7 +199,7 @@ exports.updateBoardForPostCreation = function(parameters, postId, thread,
     });
   }
 
-  common.addPostToStats(parameters.boardUri, function updatedStats(error) {
+  common.addPostToStats(ip, parameters.boardUri, function updatedStats(error) {
     if (error) {
       console.log(error.toString());
     }
@@ -219,8 +219,8 @@ exports.addPostToGlobalLatest = function(post, thread, parameters, cleanPosts,
     bump, callback) {
 
   if (!globalLatestPosts || !post.message.length) {
-    exports.updateBoardForPostCreation(parameters, post.postId, thread,
-        cleanPosts, bump, callback);
+    exports.updateBoardForPostCreation(post.ip, parameters, post.postId,
+        thread, cleanPosts, bump, callback);
 
   } else {
 
@@ -229,8 +229,8 @@ exports.addPostToGlobalLatest = function(post, thread, parameters, cleanPosts,
         console.log(error);
       }
 
-      exports.updateBoardForPostCreation(parameters, post.postId, thread,
-          cleanPosts, bump, callback);
+      exports.updateBoardForPostCreation(post.ip, parameters, post.postId,
+          thread, cleanPosts, bump, callback);
 
     });
   }

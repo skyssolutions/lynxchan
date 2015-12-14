@@ -79,11 +79,13 @@ exports.process = function(req, res) {
         _id : 0,
         boardName : 1,
         boardUri : 1,
+        uniqueIps : 1,
         tags : 1,
         boardDescription : 1,
         postsPerHour : 1,
         lastPostId : 1
       }).sort({
+        uniqueIps : -1,
         postsPerHour : -1,
         lastPostId : -1,
         boardUri : 1
