@@ -11,7 +11,6 @@ var logger = require('../logger');
 var exec = require('child_process').exec;
 var captchas = require('../db').captchas();
 var crypto = require('crypto');
-var boot = require('../boot');
 var captchaExpiration = settings.captchaExpiration;
 var tempDirectory = settings.tempDirectory;
 var url = require('url');

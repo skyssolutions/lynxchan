@@ -13,7 +13,7 @@ var flags = db.flags();
 var latestPosts = db.latestPosts();
 var tripcodes = db.tripcodes();
 var flood = db.flood();
-var debug = require('../../boot').debug();
+var debug = require('../../kernel').debug();
 var settings = require('../../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var lang;

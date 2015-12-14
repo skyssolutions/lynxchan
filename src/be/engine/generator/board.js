@@ -64,55 +64,6 @@ exports.rules = function(boardUri, callback) {
 
 };
 
-exports.preview = function(boardUri, threadId, postId, callback, postingData) {
-
-  if (!postingData) {
-
-    var queryBlock = {
-      boardUri : boardUri,
-      threadId : threadId
-    };
-
-    var collection = threads;
-
-    if (postId) {
-      collection = posts;
-      queryBlock.postId = postId;
-    }
-
-    collection.findOne(queryBlock, postProjection, function gotPosting(error,
-        posting) {
-      if (error) {
-        callback(error);
-      } else if (!posting) {
-        callback('Posting could not be found');
-      } else {
-        exports.preview(boardUri, threadId, postId, callback, posting);
-      }
-    });
-
-  } else {
-
-    if (verbose) {
-
-      var message = 'Generating preview for ' + postingData.boardUri + '/';
-      message += (postingData.threadId || postingData.postId);
-
-      console.log(message);
-    }
-
-    domManipulator.preview(postingData, function savedHtml(error) {
-      if (error) {
-        callback(error);
-      } else {
-        jsonBuilder.preview(postingData, callback);
-      }
-
-    });
-
-  }
-};
-
 // Section 1: Boards {
 
 // Section 1.1: Board {
@@ -610,3 +561,111 @@ exports.boards = function(callback) {
 
 };
 // } Section 1: Boards
+
+// Section 2: Previews {
+exports.preview = function(boardUri, threadId, postId, callback, postingData) {
+
+  if (!postingData) {
+
+    var queryBlock = {
+      boardUri : boardUri,
+      threadId : threadId
+    };
+
+    var collection = threads;
+
+    if (postId) {
+      collection = posts;
+      queryBlock.postId = postId;
+    }
+
+    collection.findOne(queryBlock, postProjection, function gotPosting(error,
+        posting) {
+      if (error) {
+        callback(error);
+      } else if (!posting) {
+        callback('Posting could not be found');
+      } else {
+        exports.preview(boardUri, threadId, postId, callback, posting);
+      }
+    });
+
+  } else {
+
+    if (verbose) {
+
+      var message = 'Generating preview for ' + postingData.boardUri + '/';
+      message += (postingData.threadId || postingData.postId);
+
+      console.log(message);
+    }
+
+    domManipulator.preview(postingData, function savedHtml(error) {
+      if (error) {
+        callback(error);
+      } else {
+        jsonBuilder.preview(postingData, callback);
+      }
+
+    });
+
+  }
+};
+
+exports.iteratePostsForPreviews = function(callback, postsCursor) {
+
+  postsCursor = postsCursor || posts.find({}, postProjection);
+
+  postsCursor.next(function gotThread(error, post) {
+
+    if (error) {
+      callback(error);
+    } else if (post) {
+
+      exports.preview(null, null, null, function generatedPreview(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.iteratePostsForPreviews(callback, postsCursor);
+        }
+
+      }, post);
+
+    } else {
+      callback();
+    }
+
+  });
+
+};
+
+exports.previews = function(callback, threadsCursor) {
+
+  threadsCursor = threadsCursor || threads.find({}, postProjection);
+
+  threadsCursor.next(function gotThread(error, thread) {
+
+    if (error) {
+      callback(error);
+    } else if (thread) {
+
+      exports.preview(null, null, null, function generatedPreview(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.previews(callback, threadsCursor);
+        }
+
+      }, thread);
+
+    } else {
+      exports.iteratePostsForPreviews(callback);
+    }
+
+  });
+
+};
+// } Section 2: Previews
+

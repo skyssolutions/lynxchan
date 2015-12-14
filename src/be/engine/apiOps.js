@@ -4,7 +4,7 @@
 
 var cluster = require('cluster');
 var settings = require('../settingsHandler').getGeneralSettings();
-var debug = require('../boot').debug();
+var debug = require('../kernel').debug();
 var verbose = settings.verbose;
 var bans = require('../db').bans();
 var fs = require('fs');

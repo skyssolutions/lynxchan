@@ -13,7 +13,7 @@ var posts = db.posts();
 var boards = db.boards();
 var latestPostsCol = db.latestPosts();
 var latestImagesCol = db.latestImages();
-var boot = require('../../boot');
+var kernel = require('../../kernel');
 var settingsHandler = require('../../settingsHandler');
 var settings = settingsHandler.getGeneralSettings();
 var topBoardsCount = settings.topBoardsCount;
@@ -71,8 +71,8 @@ exports.audioThumb = function(callback) {
   var filePath = settingsHandler.getFePath() + '/templates/';
   filePath += templateSettings.audioThumb;
 
-  gfsHandler.writeFile(filePath, boot.genericAudioThumb(), miscOps.getMime(boot
-      .genericAudioThumb()), {}, callback);
+  gfsHandler.writeFile(filePath, kernel.genericAudioThumb(), miscOps
+      .getMime(kernel.genericAudioThumb()), {}, callback);
 
 };
 
@@ -85,7 +85,7 @@ exports.spoiler = function(callback) {
   var filePath = settingsHandler.getFePath() + '/templates/';
   filePath += templateSettings.spoiler;
 
-  gfsHandler.writeFile(filePath, boot.spoilerImage(), miscOps.getMime(boot
+  gfsHandler.writeFile(filePath, kernel.spoilerImage(), miscOps.getMime(kernel
       .spoilerImage()), {}, callback);
 
 };
@@ -99,7 +99,7 @@ exports.defaultBanner = function(callback) {
   var filePath = settingsHandler.getFePath() + '/templates/';
   filePath += templateSettings.defaultBanner;
 
-  gfsHandler.writeFile(filePath, boot.defaultBanner(), miscOps.getMime(boot
+  gfsHandler.writeFile(filePath, kernel.defaultBanner(), miscOps.getMime(kernel
       .defaultBanner()), {
     status : 200
   }, callback);
@@ -114,7 +114,7 @@ exports.thumb = function(callback) {
   var filePath = settingsHandler.getFePath() + '/templates/';
   filePath += templateSettings.thumb;
 
-  gfsHandler.writeFile(filePath, boot.genericThumb(), miscOps.getMime(boot
+  gfsHandler.writeFile(filePath, kernel.genericThumb(), miscOps.getMime(kernel
       .genericThumb()), {}, callback);
 };
 

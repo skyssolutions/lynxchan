@@ -68,7 +68,7 @@ exports.loadDependencies = function() {
 };
 
 var toGenerate;
-var MAX_TO_GENERATE = 11;
+var MAX_TO_GENERATE = 12;
 var reloading;
 
 var fullReloadCallback = function(error, callback) {
@@ -95,14 +95,19 @@ var fullReloadCallback = function(error, callback) {
 
 };
 
-exports.all = function(callback) {
+exports.boardReloads = function(callback) {
 
-  if (reloading) {
-    return;
-  }
+  exports.board.boards(function reloaded(error) {
+    fullReloadCallback(error, callback);
+  });
 
-  reloading = true;
-  toGenerate = MAX_TO_GENERATE;
+  exports.board.previews(function reloaded(error) {
+    fullReloadCallback(error, callback);
+  });
+
+};
+
+exports.globalReloads = function(callback) {
 
   exports.global.frontPage(function reloaded(error) {
     fullReloadCallback(error, callback);
@@ -117,10 +122,6 @@ exports.all = function(callback) {
   });
 
   exports.global.notFound(function reloaded(error) {
-    fullReloadCallback(error, callback);
-  });
-
-  exports.board.boards(function reloaded(error) {
     fullReloadCallback(error, callback);
   });
 
@@ -147,5 +148,20 @@ exports.all = function(callback) {
   exports.global.logs(function reloaded(error) {
     fullReloadCallback(error, callback);
   });
+
+};
+
+exports.all = function(callback) {
+
+  if (reloading) {
+    return;
+  }
+
+  reloading = true;
+  toGenerate = MAX_TO_GENERATE;
+
+  exports.boardReloads(callback);
+
+  exports.globalReloads(callback);
 
 };

@@ -6,7 +6,7 @@ var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
 var logger = require('../../../logger');
 var settings = require('../../../settingsHandler').getGeneralSettings();
-var debug = require('../../../boot').debug();
+var debug = require('../../../kernel').debug();
 var verbose = settings.verbose;
 var templateHandler;
 var lang;

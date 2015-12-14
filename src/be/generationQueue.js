@@ -49,8 +49,8 @@ var rebuildingAllLogs = false;
 var rebuildingOverboard = false;
 // so we can tell its rebuilding the front-page
 var rebuildingFrontPage = false;
-var boot = require('./boot');
-var debug = boot.debug();
+var kernel = require('./kernel');
+var debug = kernel.debug();
 var generator = require('./engine/generator');
 var settings = require('./settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
@@ -155,7 +155,7 @@ function clearTree(error, message) {
 function debugPreGeneration() {
 
   try {
-    boot.reload();
+    kernel.reload();
 
     generator = require('./engine/generator');
   } catch (error) {

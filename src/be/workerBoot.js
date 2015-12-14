@@ -5,7 +5,7 @@
 // Controls connection listeners
 
 var logger = require('./logger');
-var boot = require('./boot');
+var kernel = require('./kernel');
 var settingsHandler = require('./settingsHandler');
 var verbose = settingsHandler.getGeneralSettings().verbose;
 var cluster = require('cluster');
@@ -15,9 +15,9 @@ var requestHandler;
 // paths
 var fePath;
 
-// boot variables
+// kernel variables
 var booted = false;
-var debug = boot.debug();
+var debug = kernel.debug();
 
 exports.reload = function() {
 
@@ -35,7 +35,7 @@ function main(req, res) {
 
   if (debug) {
     try {
-      boot.reload();
+      kernel.reload();
     } catch (error) {
       console.log(error);
       req.connection.destroy();
@@ -111,7 +111,7 @@ exports.boot = function() {
     if (error) {
       console.log(error);
     } else {
-      boot.startEngine();
+      kernel.startEngine();
 
       startListening();
     }

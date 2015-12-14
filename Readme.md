@@ -17,9 +17,9 @@ See other branches named like `1.1.x` for stable versions. They will receive onl
 
 The dependencies versions are not exactly mandatory and only reflect the version that I am sure that will work with the current version of the engine at the moment.
 
-# Automatic install
+# Automatic install (Recommended)
 1. Required: browse to `aux` and run the script `setup.sh` that will prompt for the install of a front-end, default settings and libraries. Browsing to the `aux` directory is required because the scripts use relative paths to this directory.
-2. Optional: run the script `root-setup.sh` that will prompt for the install of a command using a soft-link to `src/be/boot.js`. This script must be run as root. It will also try to install a service if you provide the argument `systemd`, `openrc` or `upstart` and have an user called `node`. The name of both the command and the service will be `lynxchan`.
+2. Optional: run the script `root-setup.sh` that will prompt for the install of a command using a soft-link to `src/be/boot.js`. This script must be run as root. It will also prompt for the install of a init script. The name of both the command and the service will be `lynxchan`.
   
 # Manual install
 1. Create the required settings file in the `src/be/settings` directory. Instructions can be found at `src/be/readme.md`. There is also a directory called settings.example with a set of functional settings.

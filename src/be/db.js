@@ -7,12 +7,12 @@ var dbVersion = 7;
 
 var archive = require('./archive');
 var mongo = require('mongodb');
-var boot = require('./boot');
+var kernel = require('./kernel');
 var migrations;
 var settings = require('./settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
-var noDaemon = boot.noDaemon();
-var debug = boot.debug();
+var noDaemon = kernel.noDaemon();
+var debug = kernel.debug();
 var initArchive = settings.serveArchive || settings.archiveLevel;
 
 var indexesSet;

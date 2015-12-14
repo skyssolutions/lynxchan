@@ -1,8 +1,8 @@
 'use strict';
 
 var url = require('url');
-var boot = require('../boot');
-var defaultBanner = boot.defaultBanner();
+var kernel = require('../kernel');
+var defaultBanner = kernel.defaultBanner();
 var files = require('../db').files();
 var settings = require('../settingsHandler').getGeneralSettings();
 var gridFsHandler = require('../engine/gridFsHandler');

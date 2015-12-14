@@ -12,11 +12,12 @@ Latest version of all them.
 A package.json file is included, so you can install all of them by just running `npm install` on this directory.
 
 # Application usage
-`boot.js` is the main file, run it using Io.js to start the system. Keep in mind that if you ran `aux/setup.sh`, you can just run the `lynxchan` command or start the `lynxchan` service.
+`boot.js` is the main file, run it using Node.js to start the system. Keep in mind that if you ran `aux/setup.sh`, you can just run the `lynxchan` command or start the `lynxchan` service.
 It accepts the following arguments:
 * `--debug`, `-d`: for development. Will not cache static files and will reload any module besides the ones directly under the be directory. It will also cause errors to crash and will clean any file in the temporary directory older than one minute every minute.
 * `--tor-debug`, `-tr`: tor debug. Will cause any request to be marked as a if it were coming from a TOR exit node. 
 * `--reload`, `-r`: will rebuild all pages on boot.
+* `--reload-previews`, `-rp`: will rebuild previews on boot.
 * `--reload-login`, `-rl`: will rebuild login page on boot.
 * `--reload-banner`, `-rb`: will rebuild default banner on boot.
 * `--reload-front`, `-rf`: will rebuild front-page on boot.
@@ -28,7 +29,7 @@ It accepts the following arguments:
 * `--reload-overboard`, `-ro`: reloads the overboard.
 * `--reload-logs`, `-rlog`: reloads logs.
 * `--reload-boards`, `-rboard`: reloads boards.
-* `--no-daemon`, `-nd`: will not start listening. For rebuilding pages while having a server running.
+* `--no-daemon`, `-nd`: will not start listening. For running commands while having a server running.
 * `--create-account`, `-ca`: will create a new account. Require the use of the login, role and password parameters.
 * `--login`, `-l`: informs a login.
 * `--password`, `-p`: informs a password.

@@ -3,7 +3,7 @@
 // handles operations related to the transfer of threads between boards
 
 var mongo = require('mongodb');
-var spoilerPath = require('../../boot').spoilerImage();
+var spoilerPath = require('../../kernel').spoilerImage();
 var ObjectID = mongo.ObjectID;
 var logger = require('../../logger');
 var db = require('../../db');

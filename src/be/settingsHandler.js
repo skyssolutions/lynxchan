@@ -1,7 +1,7 @@
 'use strict';
 
 var fs = require('fs');
-var boot = require('./boot');
+var kernel = require('./kernel');
 var archiveSettings;
 var fePath;
 var dbSettings;
@@ -345,7 +345,7 @@ exports.changeMaintenanceMode = function(newMode) {
     if (error) {
       console.log(error);
     } else {
-      boot.broadCastTopDownReload();
+      kernel.broadCastTopDownReload();
     }
   });
 

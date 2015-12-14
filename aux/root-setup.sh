@@ -3,7 +3,7 @@
 echo "Do you wish to install the command lynxchan for all users using a soft-link? (y,n)"
 read answerCommand
 
-echo "Do you wish to install a init script? Requires install it as a command. (systemd, upstart, openrc, blank for none)"
+echo "Do you wish to install a init script? Requires install as a command and an user called node on the system to run the engine, so it also must have permissions on the engine files. (systemd, upstart, openrc, blank for none)"
 read answerInit
 
 if [ -n "$answerInit" ]; then

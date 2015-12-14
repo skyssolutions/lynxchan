@@ -4,7 +4,7 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
-var spoilerPath = require('../../boot').spoilerImage();
+var spoilerPath = require('../../kernel').spoilerImage();
 var db = require('../../db');
 var boards = db.boards();
 var threads = db.threads();

@@ -1,7 +1,7 @@
 'use strict';
 
 var verbose = require('../settingsHandler').getGeneralSettings().verbose;
-var debug = require('../boot').debug();
+var debug = require('../kernel').debug();
 var miscOps = require('../engine/miscOps');
 var fs = require('fs');
 var captchaOps = require('../engine/captchaOps');

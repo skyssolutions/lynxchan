@@ -4,7 +4,7 @@
 
 var torIps = require('../db').torIps();
 var logger = require('../logger');
-var torDebug = require('../boot').torDebug();
+var torDebug = require('../kernel').torDebug();
 var settings = require('../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var ipSource = settings.torSource;

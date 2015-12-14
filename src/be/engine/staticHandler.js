@@ -2,13 +2,13 @@
 
 // handles request for static files
 
-var boot = require('../boot');
+var kernel = require('../kernel');
 var settingsHandler = require('../settingsHandler');
 var settings = settingsHandler.getGeneralSettings();
 var fePath = settingsHandler.getFePath();
 var verbose = settings.verbose;
 var disable304 = settings.disable304;
-var debug = boot.debug();
+var debug = kernel.debug();
 var fs = require('fs');
 var url = require('url');
 var gridFs;

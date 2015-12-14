@@ -12,7 +12,7 @@ var logOps;
 var miscOps;
 var domManipulator;
 var verbose = require('./settingsHandler').getGeneralSettings().verbose;
-var debug = require('./boot').debug();
+var debug = require('./kernel').debug();
 var loaded = false;
 
 exports.loaded = function() {

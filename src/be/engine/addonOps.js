@@ -5,7 +5,7 @@
 var fs = require('fs');
 var settings = require('../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
-var debug = require('../boot').debug();
+var debug = require('../kernel').debug();
 
 exports.loadDependencies = function() {
 };

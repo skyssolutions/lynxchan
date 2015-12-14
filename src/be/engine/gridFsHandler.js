@@ -10,7 +10,7 @@ var mongo = require('mongodb');
 var settings = require('../settingsHandler').getGeneralSettings();
 var disable304 = settings.disable304;
 var verbose = settings.verbose;
-var noDaemon = require('../boot').noDaemon();
+var noDaemon = require('../kernel').noDaemon();
 var miscOps;
 
 var chunkSize = 1024 * 255;

@@ -2,13 +2,13 @@
 
 var fs = require('fs');
 var logger = require('./logger');
-var boot = require('./boot');
+var kernel = require('./kernel');
 var settingsHandler = require('./settingsHandler');
 var settings = settingsHandler.getGeneralSettings();
 var verbose = settings.verbose;
 var tempDirectory = settings.tempDirectory;
 var captchaExpiration = settings.captchaExpiration;
-var debug = boot.debug();
+var debug = kernel.debug();
 var gridFsHandler = require('./engine/gridFsHandler');
 var db = require('./db');
 var generator = require('./engine/generator').global;

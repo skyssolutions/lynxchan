@@ -2,7 +2,7 @@
 
 // loads, tests and hands html templates
 
-var debug = require('../boot').debug();
+var debug = require('../kernel').debug();
 var settingsHandler = require('../settingsHandler');
 var verbose = settingsHandler.getGeneralSettings().verbose;
 var fs = require('fs');
