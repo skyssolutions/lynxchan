@@ -15,12 +15,14 @@ var lang;
 var gridFs;
 var miscOps;
 var siteTitle;
+var engineInfo;
 
 var availableLogTypes;
 
 exports.loadDependencies = function() {
 
   miscOps = require('../miscOps');
+  engineInfo = require('../addonOps').getEngineInfo();
   common = require('.').common;
   templateHandler = require('../templateHandler');
   lang = require('../langOps').languagePack();
@@ -467,6 +469,15 @@ exports.setLatestPosts = function(latestPosts, latestPostsDiv, document) {
 
 };
 
+exports.setEngineInfo = function(document) {
+
+  var link = document.getElementById('linkEngine');
+
+  link.innerHTML = 'LynxChan ' + engineInfo.version;
+  link.href = 'http://gitlab.com/mrseth/LynxChan';
+
+};
+
 exports.frontPage = function(boards, latestPosts, latestImages, callback) {
 
   try {
@@ -492,6 +503,8 @@ exports.frontPage = function(boards, latestPosts, latestImages, callback) {
     } else {
       exports.setLatestImages(latestImages, latestImagesDiv, document);
     }
+
+    exports.setEngineInfo(document);
 
     gridFs.writeData(serializer(document), '/', 'text/html', {}, callback);
   } catch (error) {

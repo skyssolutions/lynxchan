@@ -6,8 +6,16 @@ var fs = require('fs');
 var settings = require('../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var debug = require('../kernel').debug();
+var engineInfo;
 
 exports.loadDependencies = function() {
+
+  engineInfo = JSON.parse(fs.readFileSync(__dirname + '/../package.json'));
+
+};
+
+exports.getEngineInfo = function() {
+  return engineInfo;
 };
 
 exports.testVersion = function(addonName, addonVersion, engineVersion) {
@@ -92,8 +100,6 @@ exports.testAddons = function(addons, engineInfo) {
 };
 
 exports.startAddons = function() {
-
-  var engineInfo = JSON.parse(fs.readFileSync(__dirname + '/../package.json'));
 
   if (!settings.addons || !settings.addons.length) {
     return;

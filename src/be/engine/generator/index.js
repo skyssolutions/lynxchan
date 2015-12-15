@@ -79,17 +79,19 @@ var fullReloadCallback = function(error, callback) {
 
   if (error) {
     reloading = false;
+    console.log('An error occured during the full reload.');
     callback(error);
+    return;
   }
 
   toGenerate--;
 
+  var left = MAX_TO_GENERATE - toGenerate;
+  var percentage = Math.floor(left * 100 / MAX_TO_GENERATE);
+
+  console.log('Full rebuild progress: ' + percentage + '%');
+
   if (!toGenerate) {
-
-    if (verbose) {
-      console.log('Finished generating all pages');
-    }
-
     callback();
   }
 

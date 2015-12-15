@@ -635,6 +635,7 @@ Json output(Object): object with data regarding the available boards. Contains t
         lastPostId(Number): total amount of posts made on this board so far.
         postsPerHour(Number): how many posts this board received in the last hour.
         tags(Array): array with strings identifying the subjects of the board.
+        uniqueIps(Number): how many unique ips posted on the board in the last 24 hours.
 
 ------------------------------------------------------------------------------------------
 

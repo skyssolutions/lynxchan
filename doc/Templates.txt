@@ -23,6 +23,10 @@ divLatestPosts:
     use: have children appended to it or might be removed.
     description: contains the latest posts made on the whole site.
 
+linkEngine:
+    use: have it's innerHTML and href manipulated.
+    description: contains the engine name and version and links to the repository.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::02
