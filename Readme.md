@@ -12,7 +12,7 @@ See other branches named like `1.1.x` for stable versions. They will receive onl
 * [Node.js](http://nodejs.org) 5.2.0, I suggest installing from source code. DO NOT build the master's HEAD.
 * [MongoDB](https://www.mongodb.org/) 3.2.0
 * [ImageMagick](http://www.imagemagick.org/script/index.php) 6.7.7-10
-* [A front-end](https://gitlab.com/mrseth/LynxChanFront-Placeholder) that must either be placed on the `src/fe` directory or have it's absolute path set on the general.json file. Read the readme.md on src/be for more information about how to configure the path for the front-end.
+* [A front-end](https://gitgud.io/LynxChan/LynxChanFront-Placeholder) that must either be placed on the `src/fe` directory or have it's absolute path set on the general.json file. Read the readme.md on src/be for more information about how to configure the path for the front-end.
 * [ffmpeg](https://www.ffmpeg.org/) (Optional) 2.8.2 if mediaThumb setting is enabled. Requires zlib-devel on centOS to work properly when installed from source.
 
 The dependencies versions are not exactly mandatory and only reflect the version that I am sure that will work with the current version of the engine at the moment.
@@ -47,7 +47,7 @@ You can find all the information you need at the documents in `doc`.
 The front end are static files and templates. They are handled as a separate project and you can use them on any location in the system. But the path to its files will default to `src/fe`.
 Note that the front-end directory is in the ignore. I am designing this project to have a modular front-end, so theres no point in having a default front-end in the repository. 
 * [Definitive front-end](https://github.com/lleaff/LynxChanFront) is the definitive version developed by lleaff. It is prettier and has more features. Requires gulp to be built. Discontinued, left at 0.4.2 version of the engine.
-* [Placeholder front-end](https://gitlab.com/mrseth/LynxChanFront-Placeholder) is usually more up to date, but has less features and is kind of rough.
+* [Placeholder front-end](https://gitgud.io/LynxChan/LynxChanFront-Placeholder) is usually more up to date, but has less features and is kind of rough.
 
 # Back-end
 The back-end project is a [Nodeclipse](http://www.nodeclipse.org/) project with lint and formatting defined. IMO eclipse is a shit, but it makes it very practical to automatically format and clean everything.

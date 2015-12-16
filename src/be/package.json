@@ -4,7 +4,7 @@
   "readme": "Refer to Readme.md and src/be/Readme.md",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/mrseth/LynxChan.git"
+    "url": "https://gitgud.io/LynxChan/LynxChan.git"
   },
   "version": "1.4.0",
   "dependencies": {

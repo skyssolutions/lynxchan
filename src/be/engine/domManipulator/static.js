@@ -474,7 +474,7 @@ exports.setEngineInfo = function(document) {
   var link = document.getElementById('linkEngine');
 
   link.innerHTML = 'LynxChan ' + engineInfo.version;
-  link.href = 'http://gitlab.com/mrseth/LynxChan';
+  link.href = 'http://gitgud.io/LynxChan/LynxChan';
 
 };
 

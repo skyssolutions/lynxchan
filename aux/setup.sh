@@ -22,7 +22,7 @@ fi
 
 if [ "$answerFrontEnd" == "y" ]; then
   
-  git clone https://gitlab.com/mrseth/LynxChanFront-Placeholder.git ../src/fe
+  git clone https://gitgud.io/LynxChan/LynxChanFront-Placeholder.git ../src/fe
   cd ../src/fe
   git checkout master
   cd ../../aux
