@@ -16,7 +16,7 @@ var miscOps;
 var chunkSize = 1024 * 255;
 var streamableMimes = [ 'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg',
     'audio/ogg', 'audio/webm' ];
-var permanentTypes = [ 'media', 'preview' ];
+var permanentTypes = [ 'media' ];
 
 exports.loadDependencies = function() {
 

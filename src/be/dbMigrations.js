@@ -513,6 +513,8 @@ exports.aggregateLogs = function(callback) {
 
     if (error) {
       callback(error);
+    } else if (!results.length) {
+      callback();
     } else {
       var earliest = results[0].time;
 

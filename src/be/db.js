@@ -120,6 +120,8 @@ function upgrade(version, callback) {
 
 function iterateUpgrades(currentVersion, callback) {
 
+  migrations = migrations || require('./dbMigrations');
+
   if (verbose) {
     console.log('Iterating db version ' + currentVersion);
   }
@@ -169,7 +171,7 @@ exports.checkVersion = function(callback) {
     },
     upgraded : false
   }).sort({
-    version : -1
+    version : 1
   }).limit(1).toArray(function gotLatestVersion(error, versions) {
 
     if (error) {
@@ -177,9 +179,45 @@ exports.checkVersion = function(callback) {
     } else if (!versions.length) {
       registerLatestVersion(callback);
     } else {
-      migrations = require('./dbMigrations');
 
-      iterateUpgrades(versions[0].version, callback);
+      var version = versions[0];
+
+      if (dbVersion - version.version > 1) {
+
+        var toInsert = [];
+
+        for (var i = version.version + 1; i < dbVersion; i++) {
+          toInsert.push({
+            updateOne : {
+              filter : {
+                version : i
+              },
+              update : {
+                $set : {
+                  version : i,
+                  upgraded : false,
+                  active : false
+                }
+              },
+              upsert : true
+            }
+          });
+        }
+
+        // style exception, too simple
+        cachedVersions.bulkWrite(toInsert, function insertedVersions(error) {
+
+          if (error) {
+            callback(error);
+          } else {
+            iterateUpgrades(version.version, callback);
+          }
+        });
+        // style exception, too simple
+
+      } else {
+        iterateUpgrades(version.version, callback);
+      }
     }
 
   });
