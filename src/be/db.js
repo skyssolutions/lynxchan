@@ -163,24 +163,23 @@ exports.checkVersion = function(callback) {
 
   cachedVersions = cachedDb.collection('witnessedReleases');
 
-  cachedVersions.findOne({
+  cachedVersions.find({
     version : {
       $lt : dbVersion
     },
     upgraded : false
-  }, {
-    sort : {
-      version : -1
-    }
-  }, function gotLatestVersion(error, version) {
+  }).sort({
+    version : -1
+  }).limit(1).toArray(function gotLatestVersion(error, versions) {
+
     if (error) {
       callback(error);
-    } else if (!version) {
+    } else if (!versions.length) {
       registerLatestVersion(callback);
     } else {
       migrations = require('./dbMigrations');
 
-      iterateUpgrades(version.version, callback);
+      iterateUpgrades(versions[0].version, callback);
     }
 
   });

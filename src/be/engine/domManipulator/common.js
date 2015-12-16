@@ -371,6 +371,15 @@ exports.setOmittedInformation = function(thread, threadCell, posts, innerPage) {
 
   var omissionLabel = threadCell.getElementsByClassName('labelOmission')[0];
 
+  var notEnougPosts = !thread.postCount;
+  notEnougPosts = notEnougPosts || thread.postCount <= settings.latestPostCount;
+
+  if (innerPage || notEnougPosts) {
+    exports.removeElement(omissionLabel);
+
+    return;
+  }
+
   var displayedPosts = posts.length;
   var displayedImages = 0;
 
@@ -406,16 +415,9 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
   var boardUri = thread.boardUri;
 
   var threadCell = exports.getThreadCellBase(document, thread);
+  threadCell.setAttribute('data-boarduri', boardUri);
 
-  var notEnougPosts = !thread.postCount;
-  notEnougPosts = notEnougPosts || thread.postCount <= settings.latestPostCount;
-
-  if (innerPage || notEnougPosts) {
-    exports
-        .removeElement(threadCell.getElementsByClassName('labelOmission')[0]);
-  } else {
-    exports.setOmittedInformation(thread, threadCell, posts, innerPage);
-  }
+  exports.setOmittedInformation(thread, threadCell, posts, innerPage, settings);
 
   exports.setSharedHideableElements(thread, threadCell);
 
@@ -564,6 +566,7 @@ exports.addPosts = function(document, posts, boardUri, threadId, modding,
     var postCell = document.createElement('div');
     postCell.innerHTML = templateHandler.postCell;
     postCell.setAttribute('class', 'postCell');
+    postCell.setAttribute('data-boarduri', boardUri);
 
     var post = posts[i];
     if (post.files && post.files.length > 1) {
