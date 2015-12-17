@@ -55,8 +55,9 @@ function startSSL() {
   try {
 
     var options = {
-      key : fs.readFileSync(__dirname + '/server.key'),
-      cert : fs.readFileSync(__dirname + '/server.pem')
+      key : fs.readFileSync(__dirname + '/ssl.key'),
+      cert : fs.readFileSync(__dirname + '/ssl.cert'),
+      passphrase : settingsHandler.getGeneralSettings().sslPass
     };
 
     require('https').createServer(options, function(req, res) {
@@ -64,7 +65,28 @@ function startSSL() {
     }).listen(443, settingsHandler.getGeneralSettings().address);
 
   } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+  }
+
+}
+
+function handleHttpError(error) {
+
+  console.log('Failed to listen to HTTP.');
+  console.log('Enable verbose or debug mode to print the error.');
+
+  if (verbose) {
     console.log(error);
+  }
+
+  if (debug) {
+    throw error;
   }
 
 }
@@ -94,13 +116,7 @@ function startListening() {
 
     console.log(message);
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
-    if (debug) {
-      throw error;
-    }
+    handleHttpError(error);
   }
 
 }

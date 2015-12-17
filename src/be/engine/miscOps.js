@@ -391,6 +391,11 @@ exports.getParametersArray = function() {
     setting : 'rssDomain',
     element : 'fieldRssDomain'
   }, {
+    param : 'sslPass',
+    type : 'string',
+    setting : 'sslPass',
+    element : 'fieldSslPass'
+  }, {
     param : 'senderEmail',
     type : 'string',
     setting : 'emailSender',

@@ -504,6 +504,7 @@ Name: saveGlobalSettings
 Description: saves global settings. Requires authentication. Restricted to root users. Blank parameters will revert to the default.
 
 Parameters:
+    sslPass: optional passphrase for the ssl key.
     address: address to bind the server to.
     port(Number): port to be used by the server.
     fePath: path to the front-end directory to be used.

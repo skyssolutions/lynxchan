@@ -9,7 +9,8 @@ audioThumb: used as generic thumb for audio files.
 
 TEM_ID::01
 
-index:
+index: site's front-page.
+
 Elements:
 divBoards:
     use: have children appended to it or might be removed.
@@ -31,7 +32,7 @@ linkEngine:
 
 TEM_ID::02
 
-boardPage:
+boardPage: board pages, listing threads.
 
 Elements:
 panelMessage:
@@ -106,7 +107,7 @@ linkNext:
 
 TEM_ID::03
 
-threadPage:
+threadPage: thread page, with all replies.
 
 Elements:
 ipDeletionForm:
@@ -225,7 +226,7 @@ transferThreadIdentifier:
 
 TEM_ID::04
 
-messagePage:
+messagePage: generic message page used by the form api.
 
 Elements:
 labelMessage:
@@ -243,7 +244,8 @@ head
 
 TEM_ID::05
 
-opCell*:
+opCell*: cell used for the thread's OP.
+
 Root element: form
 Observation: will have the class "multipleUploads" added to it if contains more than one upload.
 
@@ -368,7 +370,8 @@ divBanMessage:
 
 TEM_ID::06
 
-postCell*:
+postCell*: cell used for thread replies.
+
 Root element: form
 Observation: will have the class "multipleUploads" added to it if contains more than one upload.
 
@@ -469,7 +472,7 @@ labelId:
 
 TEM_ID::07
 
-accountPage:
+accountPage: page used for user's accounts.
 
 Elements:
 labelLogin:
@@ -500,7 +503,7 @@ boardCreationDiv:
 
 TEM_ID::08
 
-recoveryEmail:
+recoveryEmail: template used for recovery request e-mails.
 
 Elements:
 linkRecovery:
@@ -511,7 +514,7 @@ linkRecovery:
 
 TEM_ID::09
 
-resetEmail:
+resetEmail: template used for password reset e-mails.
 
 Elements:
 labelNewPass:
@@ -522,7 +525,7 @@ labelNewPass:
 
 TEM_ID::10
 
-gManagement:
+gManagement: global management page.
 
 Elements:
 appealedBansPanel:
@@ -581,7 +584,8 @@ hashBansLink:
 
 TEM_ID::11
 
-staffCell*:
+staffCell*: cell used to list global staff members.
+
 Root element: form
 
 Elements:
@@ -601,7 +605,7 @@ roleCombo:
 
 TEM_ID::12
 
-bManagement:
+bManagement: board management page.
 
 Elements:
 linkSelf:
@@ -772,7 +776,8 @@ boardMessageField:
 
 TEM_ID::13
 
-volunteerCell*:
+volunteerCell*: cell used to list board volunteer's.
+
 Root element: form
 
 Elements:
@@ -792,7 +797,8 @@ userLabel:
 
 TEM_ID::14
 
-reportCell*:
+reportCell*: cell used to list open reports.
+
 Root element: form
 
 Elements:
@@ -812,7 +818,7 @@ idIdentifier:
 
 TEM_ID::15
 
-closedReportsPage:
+closedReportsPage: page listing closed reports.
 
 Elements:
 reportDiv:
@@ -823,7 +829,8 @@ reportDiv:
 
 TEM_ID::16
 
-closedReportCell*:
+closedReportCell*: cell used to list closed reports.
+
 Root element: div
 
 Elements:
@@ -847,7 +854,7 @@ closedDateLabel:
 
 TEM_ID::17
 
-bansPage:
+bansPage: page listing bans.
 
 Elements:
 bansDiv:
@@ -858,7 +865,8 @@ bansDiv:
 
 TEM_ID::18
 
-banCell*:
+banCell*: cell used to list bans.
+
 Root element: div
 
 Elements:
@@ -902,7 +910,8 @@ liftIdentifier:
 
 TEM_ID::19
 
-uploadCell*:
+uploadCell*: element that contains a post's files.
+
 Root element: figure
 
 Elements:
@@ -938,7 +947,7 @@ labelHash:
 
 TEM_ID::20
 
-errorPage:
+errorPage: generic error page used by the form api.
 
 Elements:
 codeLabel:
@@ -953,7 +962,7 @@ errorLabel:
 
 TEM_ID::21
 
-banPage:
+banPage: page describing an user's ban, used by the form api.
 
 Elements:
 boardLabel:
@@ -984,7 +993,7 @@ idIdentifier:
 
 TEM_ID::22
 
-bannerManagementPage:
+bannerManagementPage: page used to manage banners.
 
 Elements:
 bannersDiv:
@@ -1003,7 +1012,8 @@ boardIdentifier:
 
 TEM_ID::23
 
-bannerCell*:
+bannerCell*: cell used to list banners.
+
 Root element: form
 
 Elements:
@@ -1019,7 +1029,7 @@ bannerIdentifier:
 
 TEM_ID::24
 
-catalogPage:
+catalogPage: template for board's catalogs.
 
 Elements:
 divThreads:
@@ -1034,7 +1044,8 @@ labelBoard:
 
 TEM_ID::25
 
-catalogCell*:
+catalogCell*: cell used to list threads on the catalog.
+
 Root element: div
 
 Elements:
@@ -1078,7 +1089,7 @@ pinIndicator:
 
 TEM_ID::26
 
-loginPage:
+loginPage: login page.
 
 Elements:
 divCreation:
@@ -1089,7 +1100,7 @@ divCreation:
 
 TEM_ID::27
 
-logsPage:
+logsPage: page that lists the log entries for a single day.
 
 Elements:
 divLogs:
@@ -1100,7 +1111,8 @@ divLogs:
 
 TEM_ID::28
 
-logCell*:
+logCell*: cell used to list log entries.
+
 Root element: div
 
 Elements:
@@ -1132,7 +1144,7 @@ labelType:
 
 TEM_ID::29
 
-previewPage:
+previewPage: page used to create a post's preview.
 
 Elements:
 panelContent:
@@ -1143,7 +1155,7 @@ panelContent:
 
 TEM_ID::30
 
-filterManagement:
+filterManagement: page used to manage a board's word filters.
 
 Elements:
 divFilters:
@@ -1158,7 +1170,8 @@ boardIdentifier:
 
 TEM_ID::31
 
-filterCell*:
+filterCell*: cell used to list existing word filters.
+
 Root element: form
 
 Elements:
@@ -1186,7 +1199,7 @@ labelCaseInsensitive:
 
 TEM_ID::32
 
-boardModerationPage:
+boardModerationPage: page used by global staff to moderate boards.
 
 Elements:
 boardTransferIdentifier:
@@ -1213,7 +1226,7 @@ labelLastSeen:
 
 TEM_ID::33
 
-boardsPage:
+boardsPage: page used to list existing boards.
 
 Elements:
 divBoards:
@@ -1232,7 +1245,8 @@ linkOverboard:
 
 TEM_ID::34
 
-boardsCell*:
+boardsCell*: cell used to list existing boards.
+
 Root element: div
 
 Elements:
@@ -1265,7 +1279,7 @@ divDescription:
 
 TEM_ID::35
 
-noCookieCaptchaPage:
+noCookieCaptchaPage: page used to provide a dynamic page that allows the user to solve captchas without cookies.
 
 Elements:
 divSolvedCaptcha:
@@ -1288,7 +1302,7 @@ imageCaptcha:
 
 TEM_ID::36
 
-rangeBansPage:
+rangeBansPage: page used to list range bans.
 
 Elements:
 rangeBansDiv:
@@ -1303,7 +1317,8 @@ boardIdentifier:
 
 TEM_ID::37
 
-rangeBanCell*:
+rangeBanCell*: cell used to list range bans.
+
 Root element: form
 
 Elements:
@@ -1319,7 +1334,7 @@ idIdentifier:
 
 TEM_ID::38
 
-rangeBanPage:
+rangeBanPage: page used by the form api to inform the user about the range ban that blocked him.
 
 Elements:
 boardLabel:
@@ -1334,7 +1349,7 @@ rangeLabel:
 
 TEM_ID::37
 
-hashBansPage:
+hashBansPage: page used to list hash bans.
 
 Elements:
 hashBansDiv:
@@ -1349,7 +1364,8 @@ boardIdentifier:
 
 TEM_ID::38
 
-hashBanCell*:
+hashBanCell*: cell used to list hash bans.
+
 Root element: form
 
 Elements:
@@ -1365,7 +1381,7 @@ idIdentifier:
 
 TEM_ID::38
 
-ruleManagementPage:
+ruleManagementPage: page used to manage a board's rules.
 
 Elements:
 
@@ -1381,7 +1397,8 @@ boardIdentifier:
 
 TEM_ID::39
 
-ruleManagementCell*:
+ruleManagementCell*: cell used to list existing rules.
+
 Root element: form
 
 Elements:
@@ -1401,7 +1418,7 @@ boardIdentifier:
 
 TEM_ID::40
 
-rulesPage:
+rulesPage: page used to build the one that will list the board rules for users.
 
 Elements:
 boardLabel:
@@ -1416,7 +1433,8 @@ divRules:
 
 TEM_ID::41
 
-ruleCell*:
+ruleCell*: cell used to list rules for users.
+
 Root element: div
 
 Elements:
@@ -1432,19 +1450,19 @@ textLabel:
 
 TEM_ID::42
 
-notFoundPage:
+notFoundPage: 404 page.
 
 ------------------------------------------------------------------------------------------
 
 TEM_ID::43
 
-maintenancePage:
+maintenancePage: page used by the form api to indicate the site is under maintenance.
 
 ------------------------------------------------------------------------------------------
 
 TEM_ID::44
 
-editPage:
+editPage: page used to edit posts.
 
 Elements:
 fieldMessage:
@@ -1467,7 +1485,7 @@ postIdentifier:
 
 TEM_ID::45
 
-flagsPage:
+flagsPage: page used to manage flags.
 
 Elements:
 flagsDiv:
@@ -1486,7 +1504,8 @@ maxSizeLabel:
 
 TEM_ID::46
 
-flagCell*:
+flagCell*: cell used to list flags.
+
 Root element: form
 
 Elements:
@@ -1506,7 +1525,7 @@ idIdentifier:
 
 TEM_ID::47
 
-mainArchivePage:
+mainArchivePage: page used to list archived boards.
 
 Elements:
 boardsDiv:
@@ -1517,7 +1536,8 @@ boardsDiv:
 
 TEM_ID::48
 
-mainArchiveCell*:
+mainArchiveCell*: cell used to list archived boards.
+
 rootElement: div
 
 Elements:
@@ -1529,7 +1549,7 @@ linkBoard:
 
 TEM_ID::49
 
-boardArchivePage:
+boardArchivePage: page used to list archived threads.
 
 Elements:
 threadsDiv:
@@ -1540,7 +1560,8 @@ threadsDiv:
 
 TEM_ID::50
 
-boardArchiveCell*:
+boardArchiveCell*: cell used to list archived threads.
+
 rootElement: div
 
 Elements:
@@ -1552,12 +1573,16 @@ linkThread:
 
 TEM_ID::51
 
-globalSettingsPage:
+globalSettingsPage: page used to change global settings.
 
 Elements:
 fieldAddress:
     use: have it's value manipulated.
     description: field that displays the address being used.
+
+fieldSslPass:
+    use: have it's value manipulated.
+    description: field that displays the ssl key passphrase.
 
 fieldRssDomain:
     use: have it's value manipulated.
@@ -1795,13 +1820,13 @@ fieldGlobalLatestImages:
 
 TEM_ID::52
 
-archiveDeletionPage:
+archiveDeletionPage: page used to delete archived content.
 
 ------------------------------------------------------------------------------------------
 
 TEM_ID::53
 
-hashBanPage:
+hashBanPage: page used to inform an user which files he tried to post were banned.
 
 Elements:
 hashBansPanel:
@@ -1812,7 +1837,8 @@ hashBansPanel:
 
 TEM_ID::54
 
-hashBanCellDisplay*:
+hashBanCellDisplay*: cell used to list banned files an user tried to post.
+
 Root element: div
 
 Elements:
@@ -1828,7 +1854,8 @@ labelBoard:
 
 TEM_ID::55
 
-latestPostCell*:
+latestPostCell*: cell used to list the latest posts on the whole site on the front-page.
+
 Root element: div
 
 Elements:
@@ -1844,7 +1871,7 @@ linkPost:
 
 TEM_ID::56
 
-overboard:
+overboard: page used to create the overboard and multi-board.
 
 Elements:
 bannerImage:
@@ -1859,7 +1886,7 @@ divThreads:
 
 TEM_ID::57
 
-proxyBansPage:
+proxyBansPage: page used to manage proxy bans.
 
 Elements:
 proxyBansDiv:
@@ -1874,7 +1901,8 @@ boardIdentifier:
 
 TEM_ID::58
 
-proxyBanCell*:
+proxyBanCell*: cell used to list banned proxies.
+
 Root element: form
 
 Elements:
@@ -1890,7 +1918,7 @@ idIdentifier:
 
 TEM_ID::59
 
-proxyBanPage:
+proxyBanPage: page used to inform to the user that his proxy has been banned.
 
 Elements:
 boardLabel:
@@ -1901,7 +1929,7 @@ boardLabel:
 
 TEM_ID::60
 
-bypassPage:
+bypassPage: page used to renew the user's bypass token.
 
 Elements:
 indicatorValidBypass:
@@ -1912,7 +1940,7 @@ indicatorValidBypass:
 
 TEM_ID::61
 
-logIndexPage:
+logIndexPage: page that lists the available dates to read logs from.
 
 Elements:
 divDates:
@@ -1923,7 +1951,8 @@ divDates:
 
 TEM_ID::62
 
-logIndexCell*:
+logIndexCell*: cell used to list dates that contains logs.
+
 Root element: div
 
 Elements:
@@ -1935,7 +1964,8 @@ dateLink:
 
 TEM_ID::63
 
-latestImageCell*:
+latestImageCell*: cell used to list global latest images on the front-page.
+
 Root element: div
 
 Elements:

@@ -321,7 +321,7 @@ exports.getPageTests = function() {
             'checkboxDisableAccountCreation', 'comboBoardCreationRequirement',
             'checkboxServeArchive', 'fieldMaxTags', 'fieldGlobalLatestImages',
             'checkboxDisableFloodCheck', 'comboProxyAccess',
-            'comboMinClearIpRole', 'fieldThumbExtension',
+            'comboMinClearIpRole', 'fieldThumbExtension', 'fieldSslPass',
             'checkboxGlobalBoardModeration', 'checkboxGlobalBanners',
             'checkboxAllowCustomJs', 'fieldGlobalLatestPosts',
             'checkboxGlobalCaptcha', 'fieldRssDomain', 'fieldOverboard',

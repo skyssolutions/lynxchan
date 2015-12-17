@@ -61,6 +61,9 @@ The following directories will be expected on the front-end directory:
 # Templates
 A file called `templateSettings.json` should be located on the front-end directory pointing the correct templates to be used, located on the templates directory. Inform only the name of the file. Refer to `doc/Templates.txt` for information on how to structure the templates.
 
+# SSL
+To use SSL, enable the setting `ssl` and place the key file named `ssl.key` and the certificate named `ssl.cert` on the src/be directories. After that, restart the engine. Remember to also inform the key passphrase if it requires one.
+
 # Back-end settings
 Settings files that goes into the settings directory:
 `general.json`: contains general settings for the application. Holds the following settings:
@@ -69,6 +72,7 @@ Settings files that goes into the settings directory:
 * `address`: ip to bind the server on. Defaults to `0.0.0.0`.
 * `port`(Number): port to listen for http. Defaults to 80.
 * `ssl`(Boolean): if true, will listen to https on port 443.
+* `sslPass`: optional passphrase for the ssl key.
 * `fePath`: absolute path to the directory containing the fe files. Defaults to the relative path to the src/fe directory. The directory indicated must have the `templateSettings.json` file. If you are using the front-end at the default path, the template settings must be sitting directly inside the `src/fe` directory.
 * `pageSize`(Number): amount of threads on each board page. Defaults to 10.
 * `latestPostCount`(Number): number of latest posts to be displayed on each thread in board pages. Defaults to 5.

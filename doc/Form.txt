@@ -852,6 +852,7 @@ Description: displays the page that allows for the user to change global setting
 
 Json output(Object): object with the current global settings. It contains the following fields:
     address: address to connect to.
+    sslPass: optional passphrase for the ssl key.
     port(Number): port to listen to.
     autoSageLimit(Number): how many posts a thread must received before it stops being bumped.
     tempDirectory: temporary directory to be used.
@@ -913,6 +914,7 @@ Name: saveGlobalSettings
 Description: saves global settings. Requires authentication. Restricted to root users. Blank parameters will revert to the default.
 
 Parameters:
+    sslPass: optional passphrase for the ssl key.
     address: address to bind the server to.
     port(Number): port to be used by the server.
     fePath: path to the front-end directory to be used.

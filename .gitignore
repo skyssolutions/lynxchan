@@ -1,7 +1,7 @@
 /src/be/node_modules
 /src/be/settings
-/src/be/server.key
-/src/be/server.pem
+/src/be/ssl.key
+/src/be/ssl.cert
 /src/fe
 /src/be/addons
 !/src/be/addons/example.js
