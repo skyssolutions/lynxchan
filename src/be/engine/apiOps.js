@@ -366,6 +366,9 @@ exports.getAnonJsonData = function(req, res, callback, exceptionalMimes) {
   req.on('end', function dataEnded() {
 
     if (!ended) {
+
+      ended = true;
+
       stream.end(function closedStream() {
         exports.handleWrittenData(res, path, exceptionalMimes, callback);
       });

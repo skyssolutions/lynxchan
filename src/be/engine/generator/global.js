@@ -68,7 +68,7 @@ exports.audioThumb = function(callback) {
     console.log('Saving audio thumb image');
   }
 
-  var filePath = settingsHandler.getFePath() + '/templates/';
+  var filePath = settings.fePath + '/templates/';
   filePath += templateSettings.audioThumb;
 
   gfsHandler.writeFile(filePath, kernel.genericAudioThumb(), miscOps
@@ -82,7 +82,7 @@ exports.spoiler = function(callback) {
     console.log('Saving spoiler image');
   }
 
-  var filePath = settingsHandler.getFePath() + '/templates/';
+  var filePath = settings.fePath + '/templates/';
   filePath += templateSettings.spoiler;
 
   gfsHandler.writeFile(filePath, kernel.spoilerImage(), miscOps.getMime(kernel
@@ -96,7 +96,7 @@ exports.defaultBanner = function(callback) {
     console.log('Saving default banner');
   }
 
-  var filePath = settingsHandler.getFePath() + '/templates/';
+  var filePath = settings.fePath + '/templates/';
   filePath += templateSettings.defaultBanner;
 
   gfsHandler.writeFile(filePath, kernel.defaultBanner(), miscOps.getMime(kernel
@@ -111,7 +111,7 @@ exports.thumb = function(callback) {
     console.log('Saving generic thumbnail');
   }
 
-  var filePath = settingsHandler.getFePath() + '/templates/';
+  var filePath = settings.fePath + '/templates/';
   filePath += templateSettings.thumb;
 
   gfsHandler.writeFile(filePath, kernel.genericThumb(), miscOps.getMime(kernel

@@ -12,9 +12,6 @@ var cluster = require('cluster');
 var fs = require('fs');
 var requestHandler;
 
-// paths
-var fePath;
-
 // kernel variables
 var booted = false;
 var debug = kernel.debug();

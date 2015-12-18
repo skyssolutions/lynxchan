@@ -3,10 +3,8 @@
 var fs = require('fs');
 var kernel = require('./kernel');
 var archiveSettings;
-var fePath;
 var dbSettings;
 var generalSettings;
-var tempDirectory;
 var templateSettings;
 
 // Section 1: New settings {
@@ -253,13 +251,9 @@ exports.loadSettings = function() {
 
   loadGeneralSettings();
 
-  fePath = generalSettings.fePath;
-
-  tempDirectory = generalSettings.tempDirectory || '/tmp';
-
   setMaxSizes();
 
-  var templateSettingsPath = fePath + '/templateSettings.json';
+  var templateSettingsPath = generalSettings.fePath + '/templateSettings.json';
 
   templateSettings = JSON.parse(fs.readFileSync(templateSettingsPath));
 
@@ -315,10 +309,6 @@ exports.getDefaultSettings = function() {
 exports.getDbSettings = function() {
 
   return dbSettings;
-};
-
-exports.getFePath = function() {
-  return fePath;
 };
 
 exports.getArchiveSettings = function() {

@@ -4,7 +4,8 @@
 
 var debug = require('../kernel').debug();
 var settingsHandler = require('../settingsHandler');
-var verbose = settingsHandler.getGeneralSettings().verbose;
+var settings = settingsHandler.getGeneralSettings();
+var verbose = settings.verbose;
 var fs = require('fs');
 var jsdom = require('jsdom').jsdom;
 
@@ -369,13 +370,18 @@ exports.testPageFields = function(document, page, errors) {
   return error;
 };
 
-exports.loadPages = function(errors, templatesPath, templateSettings, pages) {
+exports.loadPages = function(errors) {
+
+  var pages = exports.getPageTests();
+
+  var templateSettings = settingsHandler.getTemplateSettings();
 
   for (var i = 0; i < pages.length; i++) {
 
     var page = pages[i];
 
-    var fullPath = templatesPath + templateSettings[page.template];
+    var fullPath = settings.fePath + '/templates/';
+    fullPath += templateSettings[page.template];
 
     try {
       var template = fs.readFileSync(fullPath);
@@ -397,11 +403,13 @@ exports.loadPages = function(errors, templatesPath, templateSettings, pages) {
   }
 };
 
-exports.getTestCell = function(document, name, fePath, templateSettings) {
+exports.getTestCell = function(document, name) {
 
   var toReturn = document.createElement('div');
 
-  var fullPath = fePath + templateSettings[name];
+  var templateSettings = settingsHandler.getTemplateSettings();
+
+  var fullPath = settings.fePath + '/templates/' + templateSettings[name];
 
   try {
     var template = fs.readFileSync(fullPath);
@@ -417,11 +425,10 @@ exports.getTestCell = function(document, name, fePath, templateSettings) {
   return toReturn;
 };
 
-exports.testCell = function(document, templatesPath, templateSettings, cell) {
+exports.testCell = function(document, cell) {
   var error = '';
 
-  var cellElement = exports.getTestCell(document, cell.template, templatesPath,
-      templateSettings);
+  var cellElement = exports.getTestCell(document, cell.template);
 
   for (var j = 0; j < cell.fields.length; j++) {
 
@@ -438,9 +445,11 @@ exports.testCell = function(document, templatesPath, templateSettings, cell) {
   return error;
 };
 
-exports.loadCells = function(errors, templatesPath, templateSettings, cells) {
+exports.loadCells = function(errors) {
 
   var document = jsdom('<html></html>');
+
+  var cells = exports.getCellTests();
 
   for (var i = 0; i < cells.length; i++) {
 
@@ -448,8 +457,7 @@ exports.loadCells = function(errors, templatesPath, templateSettings, cells) {
 
     var errorFound = false;
 
-    var error = exports.testCell(document, templatesPath, templateSettings,
-        cell);
+    var error = exports.testCell(document, cell);
 
     if (error.length) {
       errors.push('\nCell ' + cell.template + error);
@@ -457,17 +465,13 @@ exports.loadCells = function(errors, templatesPath, templateSettings, cells) {
   }
 };
 
-exports.loadAndTestTemplates = function(path, templateSettings) {
-
-  var cellTests = exports.getCellTests();
-
-  var pageTests = exports.getPageTests();
+exports.loadTemplates = function() {
 
   var errors = [];
 
-  exports.loadCells(errors, path, templateSettings, cellTests);
+  exports.loadCells(errors);
 
-  exports.loadPages(errors, path, templateSettings, pageTests);
+  exports.loadPages(errors);
 
   if (errors.length) {
 
@@ -491,12 +495,4 @@ exports.loadAndTestTemplates = function(path, templateSettings) {
     }
 
   }
-};
-
-exports.loadTemplates = function() {
-
-  var fePath = settingsHandler.getFePath() + '/templates/';
-  var templateSettings = settingsHandler.getTemplateSettings();
-
-  exports.loadAndTestTemplates(fePath, templateSettings);
 };
