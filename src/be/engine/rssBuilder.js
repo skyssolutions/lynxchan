@@ -11,6 +11,12 @@ exports.loadDependencies = function() {
 
 };
 
+exports.getSanitizedMessage = function(message) {
+
+  return '<![CDATA[ ' + message.substring(0, 256) + ' ]]>';
+
+};
+
 exports.getThreads = function(threads) {
 
   var rssContent = '';
@@ -21,12 +27,13 @@ exports.getThreads = function(threads) {
 
     rssContent += '<item><title>';
 
-    rssContent += thread.subject || thread.message.substring(0, 256);
+    rssContent += thread.subject || exports.getSanitizedMessage(thread.message);
 
-    rssContent += '</title><link>' + settings.rssDomain + '/' + thread.boardUri;
-    rssContent += '/res/' + thread.threadId + '.html</link>';
+    rssContent += '</title><link>' + settings.rssDomain + '/';
+    rssContent += thread.boardUri + '/res/' + thread.threadId + '.html</link>';
 
-    rssContent += '<description>' + thread.message + '</description>';
+    rssContent += '<description><![CDATA[ ' + thread.markdown;
+    rssContent += ' ]]></description>';
 
     rssContent += '<pubDate>' + thread.creation.toUTCString().substring(0, 25);
     rssContent += '</pubDate>';
