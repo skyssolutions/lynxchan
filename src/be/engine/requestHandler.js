@@ -155,7 +155,7 @@ exports.getPathNameForGfs = function(req) {
 
 exports.testForMultiBoard = function(pathName, boardsToReturn) {
 
-  if (!multiBoardAllowed) {
+  if (!multiBoardAllowed || maintenance) {
     return;
   }
 

@@ -67,7 +67,7 @@ exports.ip = function(req, proxyIp) {
   } else if (req.cachedIp) {
     return req.cachedIp;
   } else {
-    req.cachedIp = exports.convertIpToArray(req.connection.remoteAddress);
+    req.cachedIp = exports.convertIpToArray(exports.getRawIp(req));
 
     return req.cachedIp;
   }
@@ -78,4 +78,19 @@ exports.ip = function(req, proxyIp) {
 // underscore in between
 exports.timestamp = function(time) {
   return exports.formatedDate(time) + '_' + exports.formatedTime(time);
+};
+
+exports.getRawIp = function(req) {
+
+  var remote = req.connection.remoteAddress;
+
+  if (req.headers && req.headers['x-forwarded-for'] && remote === '127.0.0.1') {
+
+    req.localProxy = true;
+    return req.headers['x-forwarded-for'];
+
+  }
+
+  return remote;
+
 };

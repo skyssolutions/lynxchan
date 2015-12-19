@@ -92,7 +92,7 @@ exports.updateIps = function(callback) {
 // end of update
 exports.markAsProxy = function(req) {
 
-  if (req.headers && req.headers['x-forwarded-for']) {
+  if (!req.localProxy && req.headers && req.headers['x-forwarded-for']) {
     var proxy = req.headers['x-forwarded-for'];
 
     if (proxy !== req.connection.remoteAddress) {
@@ -104,7 +104,7 @@ exports.markAsProxy = function(req) {
 
 exports.markAsTor = function(req, callback) {
 
-  var ip = logger.convertIpToArray(req.connection.remoteAddress);
+  var ip = logger.convertIpToArray(logger.getRawIp(req));
 
   torIps.findOne({
     ip : ip
