@@ -13,7 +13,7 @@ var fs = require('fs');
 var requestHandler;
 
 // kernel variables
-var booted = false;
+var serverBooted = false;
 var debug = kernel.debug();
 
 exports.reload = function() {
@@ -25,7 +25,7 @@ exports.reload = function() {
 // functions
 function main(req, res) {
 
-  if (!booted) {
+  if (!serverBooted) {
     req.connection.destroy();
     return;
   }
@@ -57,11 +57,22 @@ function startSSL() {
       passphrase : settingsHandler.getGeneralSettings().sslPass
     };
 
-    require('https').createServer(options, function(req, res) {
+    var server = require('https').createServer(options, function(req, res) {
       main(req, res);
     }).listen(443, settingsHandler.getGeneralSettings().address);
 
+    server.on('error', function handle(error) {
+
+      if (verbose) {
+        console.log(error);
+      }
+
+      if (debug) {
+        throw error;
+      }
+    });
   } catch (error) {
+
     if (verbose) {
       console.log(error);
     }
@@ -69,21 +80,7 @@ function startSSL() {
     if (debug) {
       throw error;
     }
-  }
 
-}
-
-function handleHttpError(error) {
-
-  console.log('Failed to listen to HTTP.');
-  console.log('Enable verbose or debug mode to print the error.');
-
-  if (verbose) {
-    console.log(error);
-  }
-
-  if (debug) {
-    throw error;
   }
 
 }
@@ -94,16 +91,15 @@ function startListening() {
     startSSL();
   }
 
-  try {
+  var server = require('http').createServer(function(req, res) {
+    main(req, res);
 
-    require('http').createServer(function(req, res) {
-      main(req, res);
+  }).listen(settingsHandler.getGeneralSettings().port,
+      settingsHandler.getGeneralSettings().address);
 
-    }).listen(settingsHandler.getGeneralSettings().port,
-        settingsHandler.getGeneralSettings().address);
+  server.on('listening', function booted() {
 
-    booted = true;
-
+    serverBooted = true;
     var message = 'Server worker ' + cluster.worker.id;
     message += ' booted at ' + logger.timestamp();
 
@@ -112,9 +108,22 @@ function startListening() {
     }
 
     console.log(message);
-  } catch (error) {
-    handleHttpError(error);
-  }
+  });
+
+  server.on('error', function handleError(error) {
+
+    console.log('Failed to listen to HTTP.');
+    console.log('Enable verbose or debug mode to print the error.');
+
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+  });
 
 }
 

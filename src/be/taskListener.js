@@ -6,8 +6,11 @@
 var fs = require('fs');
 var net = require('net');
 var settingsHandler = require('./settingsHandler');
-var socketLocation = settingsHandler.getGeneralSettings().tempDirectory;
+var settings = settingsHandler.getGeneralSettings();
+var socketLocation = settings.tempDirectory;
 socketLocation += '/unix.socket';
+var verbose = 1;// settings.verbose;
+var debug = require('./kernel').debug();
 
 function processTask(task) {
 
@@ -42,12 +45,27 @@ exports.start = function() {
 
   fs.unlink(socketLocation, function removedFile(error) {
 
+    if (error && verbose) {
+      console.log(error);
+    }
+
     // style exception, too simple
     var server = net.createServer(function(socket) {
 
       exports.handleSocket(socket);
 
     }).listen(socketLocation);
+
+    server.on('error', function handleError(error) {
+      if (verbose) {
+        console.log(error);
+      }
+
+      if (debug) {
+        throw error;
+      }
+
+    });
     // style exception, too simple
 
   });
