@@ -6,7 +6,6 @@ var db = require('../db');
 var users = db.users();
 var requests = db.recoveryRequests();
 var bcrypt = require('bcrypt');
-var logger = require('../logger');
 var crypto = require('crypto');
 var mailer = require('nodemailer').createTransport();
 var settings = require('../settingsHandler').getGeneralSettings();
@@ -341,13 +340,16 @@ exports.emailUserOfRequest = function(domain, login, email, hash, callback) {
 
 exports.generateRequest = function(domain, login, email, callback) {
 
-  var requestHash = crypto.createHash('sha256').update(
-      login + Math.random() + logger.timestamp()).digest('hex');
+  var requestHash = crypto.createHash('sha256').update(login + Math.random())
+      .digest('hex');
+
+  var expiration = new Date();
+  expiration.setDate(expiration.getDate() + 1);
 
   requests.insertOne({
     login : login,
     recoveryToken : requestHash,
-    expiration : logger.addMinutes(new Date(), 24 * 60)
+    expiration : expiration
   }, function requestCreated(error) {
     if (error) {
       callback(error);
@@ -437,8 +439,8 @@ exports.emailUserNewPassword = function(email, newPass, callback) {
 
 exports.generateNewPassword = function(login, callback) {
 
-  var newPass = crypto.createHash('sha256').update(
-      login + Math.random() + logger.timestamp()).digest('hex').substring(0, 6);
+  var newPass = crypto.createHash('sha256').update(login + Math.random())
+      .digest('hex').substring(0, 6);
 
   exports.setUserPassword(login, newPass, function passwordSet(error) {
 

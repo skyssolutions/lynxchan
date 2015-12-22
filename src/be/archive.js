@@ -4,7 +4,6 @@ var conn;
 var files;
 
 var mongo = require('mongodb');
-var logger = require('./logger');
 var gridFsHandler;
 var formOps;
 var lang;

@@ -7,7 +7,6 @@ var cluster = require('cluster');
 var db;
 var overboard;
 var fs = require('fs');
-var logger = require('./logger');
 var settingsHandler = require('./settingsHandler');
 var verbose;
 var generator;

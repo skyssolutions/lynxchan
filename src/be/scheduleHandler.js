@@ -1,7 +1,6 @@
 'use strict';
 
 var fs = require('fs');
-var logger = require('./logger');
 var kernel = require('./kernel');
 var settingsHandler = require('./settingsHandler');
 var settings = settingsHandler.getGeneralSettings();
@@ -250,6 +249,14 @@ function boardsStats() {
 // } Section 3: Board stats recording
 
 // Section 4: Temp files cleanup {
+function oldEnoughToDelete(date) {
+
+  date.setMinutes(date.getMinutes() + 1);
+
+  return new Date() > date;
+
+}
+
 function iterateFiles(files) {
 
   if (files.length) {
@@ -258,21 +265,12 @@ function iterateFiles(files) {
     fs.stat(file, function gotStats(error, stats) {
 
       if (error) {
-        if (verbose) {
-          console.log(error);
-        }
-
-        if (debug) {
-          throw error;
-        } else {
-          iterateFiles(files);
-        }
-
+        throw error;
       } else {
 
         var deleteFile = stats.isFile() && !stats.size;
 
-        if (deleteFile && new Date() > logger.addMinutes(stats.ctime, 1)) {
+        if (deleteFile && oldEnoughToDelete(stats.ctime)) {
 
           if (verbose) {
             console.log('Removing expired tmp file ' + file);
@@ -295,13 +293,7 @@ function iterateFiles(files) {
 function removeExpiredTempFiles() {
   fs.readdir(tempDirectory, function gotFiles(error, files) {
     if (error) {
-      if (verbose) {
-        console.log(error);
-      }
-
-      if (debug) {
-        throw error;
-      }
+      throw error;
     } else {
       iterateFiles(files);
     }

@@ -7,7 +7,6 @@ var ObjectID = mongo.ObjectID;
 var settings = require('../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var forceCaptcha = settings.forceCaptcha;
-var logger = require('../logger');
 var exec = require('child_process').exec;
 var captchas = require('../db').captchas();
 var crypto = require('crypto');
@@ -162,9 +161,12 @@ exports.distortImage = function() {
 
 exports.transferToGfs = function(path, id, callback) {
 
+  var expiration = new Date();
+  expiration.setUTCMinutes(expiration.getUTCMinutes() + captchaExpiration);
+
   gridFsHandler.writeFile(path, id + '.jpg', 'image/jpeg', {
     type : 'captcha',
-    expiration : logger.addMinutes(new Date(), captchaExpiration)
+    expiration : expiration
   }, function saved(error) {
 
     uploadHandler.removeFromDisk(path);
@@ -244,9 +246,12 @@ exports.generateCaptcha = function(callback) {
   var text = crypto.createHash('sha256').update(Math.random() + new Date())
       .digest('hex').substring(0, 6);
 
+  var expiration = new Date();
+  expiration.setUTCMinutes(expiration.getUTCMinutes() + captchaExpiration);
+
   var toInsert = {
     answer : text,
-    expiration : logger.addMinutes(new Date(), captchaExpiration)
+    expiration : expiration
   };
 
   captchas.insertOne(toInsert, function(error) {

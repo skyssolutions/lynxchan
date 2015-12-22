@@ -4,7 +4,6 @@
 // Initializes the systems
 // Controls connection listeners
 
-var logger = require('./logger');
 var kernel = require('./kernel');
 var settingsHandler = require('./settingsHandler');
 var verbose = settingsHandler.getGeneralSettings().verbose;
@@ -101,7 +100,7 @@ function startListening() {
 
     serverBooted = true;
     var message = 'Server worker ' + cluster.worker.id;
-    message += ' booted at ' + logger.timestamp();
+    message += ' booted at ' + new Date().toUTCString();
 
     if (!debug) {
       requestHandler = require('./engine/requestHandler');

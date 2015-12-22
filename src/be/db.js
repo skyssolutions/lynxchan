@@ -19,7 +19,7 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 14;
+var maxIndexesSet = 15;
 
 var cachedLatestImages;
 var cachedAggregatedLogs;
@@ -351,8 +351,8 @@ function initHashBans(callback) {
   cachedHashBans = cachedDb.collection('hashBans');
 
   cachedHashBans.ensureIndex({
-    boardUri : 1,
-    md5 : 1
+    md5 : 1,
+    boardUri : 1
   }, {
     unique : 1
   }, function setIndex(error, index) {
@@ -416,10 +416,25 @@ function initPosts(callback) {
   cachedPosts = cachedDb.collection('posts');
 
   cachedPosts.ensureIndex({
-    postId : 1,
-    boardUri : 1
+    boardUri : 1,
+    postId : 1
   }, {
     unique : true
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+
+  cachedPosts.ensureIndex({
+    boardUri : 1,
+    threadId : 1
   }, function setIndex(error, index) {
     if (error) {
       if (loading) {
@@ -481,8 +496,8 @@ function initThreads(callback) {
   cachedThreads = cachedDb.collection('threads');
 
   cachedThreads.ensureIndex({
-    threadId : 1,
-    boardUri : 1
+    boardUri : 1,
+    threadId : 1
   }, {
     unique : true
   }, function setIndex(error, index) {

@@ -4,7 +4,6 @@
 
 var crypto = require('crypto');
 var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
-var logger = require('../../logger');
 var settings = require('../../settingsHandler').getGeneralSettings();
 var forcedCaptcha = settings.forceCaptcha;
 var db = require('../../db');
