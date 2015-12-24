@@ -144,11 +144,7 @@ function clearBoardTree(message) {
 
 }
 
-function clearTree(error, message) {
-
-  if (!checkForGlobalClearing(message)) {
-    clearBoardTree(message);
-  }
+function processRebuildResult(error, message) {
 
   concurrentMessages--;
 
@@ -173,16 +169,12 @@ function debugPreGeneration() {
 
   try {
     kernel.reload();
-
-    generator = require('./engine/generator');
   } catch (error) {
     if (verbose) {
       console.log(error);
     }
 
-    if (debug) {
-      throw error;
-    }
+    throw error;
   }
 }
 
@@ -210,7 +202,7 @@ function processMessageForBoards(generationCallback, message) {
 function processMessage(message) {
 
   var generationCallback = function(error) {
-    clearTree(error, message);
+    processRebuildResult(error, message);
   };
 
   if (debug) {
@@ -251,6 +243,10 @@ function processQueue() {
 
   if (verbose) {
     console.log('Processing ' + JSON.stringify(message, null, 2));
+  }
+
+  if (!checkForGlobalClearing(message)) {
+    clearBoardTree(message);
   }
 
   processMessage(message);
@@ -364,7 +360,7 @@ function checkForBoardRebuild(message) {
   var boardInformation = queueTree[message.board] || {
     buildingAll : false,
     buildingPages : false,
-    catalog : false,
+    buildingCatalog : false,
     rules : false,
     pages : [],
     threads : [],

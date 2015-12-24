@@ -98,9 +98,7 @@ exports.getFileData = function(file, fields, mime, callback) {
 
     var measureFunction;
 
-    if (toPush.mime === 'image/gif') {
-      measureFunction = uploadHandler.getGifBounds;
-    } else if (toPush.mime.indexOf('image/') > -1) {
+    if (toPush.mime.indexOf('image/') > -1) {
       measureFunction = uploadHandler.getImageBounds;
     } else if (video && settings.mediaThumb) {
       measureFunction = uploadHandler.getVideoBounds;

@@ -56,29 +56,6 @@ exports.getImageBounds = function(file, callback) {
 
   var path = file.pathInDisk;
 
-  exec('identify ' + path, function(error, stats) {
-
-    if (!error) {
-      var matches = stats.match(/\s(\d+)x(\d+)\s/);
-
-      if (!matches) {
-        callback(lang.errCouldNotMeasureImage);
-      } else {
-        callback(null, matches[1], matches[2]);
-      }
-
-    } else {
-      callback(error);
-    }
-
-  });
-
-};
-
-exports.getGifBounds = function(file, callback) {
-
-  var path = file.pathInDisk;
-
   exec('identify ' + path, function(error, results) {
     if (error) {
       callback(error);
