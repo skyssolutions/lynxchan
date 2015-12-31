@@ -154,6 +154,25 @@ exports.cleanThreadPosts = function(boardUri, threadId, postId, callback) {
 exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
     cleanPosts, bump, callback) {
 
+  // signal rebuild of thread
+  process.send({
+    board : parameters.boardUri,
+    thread : parameters.threadId
+  });
+
+  // signal rebuild of preview
+  process.send({
+    board : parameters.boardUri,
+    post : postId,
+    preview : true
+  });
+
+  // signal rebuild of board catalog
+  process.send({
+    board : parameters.boardUri,
+    catalog : true
+  });
+
   if (parameters.email !== 'sage') {
 
     for (var i = 0; i < (thread.page || 1); i++) {
@@ -170,25 +189,6 @@ exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
       page : thread.page
     });
   }
-
-  // signal rebuild of preview
-  process.send({
-    board : parameters.boardUri,
-    post : postId,
-    preview : true
-  });
-
-  // signal rebuild of thread
-  process.send({
-    board : parameters.boardUri,
-    thread : parameters.threadId
-  });
-
-  // signal rebuild of board
-  process.send({
-    board : parameters.boardUri,
-    catalog : true
-  });
 
   if (settings.overboard) {
     process.send({

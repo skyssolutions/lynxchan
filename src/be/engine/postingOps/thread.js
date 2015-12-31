@@ -63,9 +63,10 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
     });
   } else {
 
-    // signal rebuild of board pages
+    // signal rebuild of thread
     process.send({
-      board : boardUri
+      board : boardUri,
+      thread : threadId
     });
 
     // signal rebuild of preview
@@ -75,10 +76,9 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
       thread : threadId
     });
 
-    // signal rebuild of thread
+    // signal rebuild of board pages
     process.send({
-      board : boardUri,
-      thread : threadId
+      board : boardUri
     });
   }
 
