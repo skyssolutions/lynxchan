@@ -472,6 +472,9 @@ exports.insertBoard = function(parameters, userData, callback) {
     boardDescription : parameters.boardDescription,
     owner : userData.login,
     settings : defaultSettings,
+    uniqueIps : 0,
+    lastPostId : 0,
+    postsPerHour : 0
   }, function insertedBoard(error) {
     if (error && error.code !== 11000) {
       callback(error);

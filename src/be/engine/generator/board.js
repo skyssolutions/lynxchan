@@ -412,7 +412,18 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
 };
 // } Section 1.1.2: Board page
 
-exports.catalog = function(boardUri, callback) {
+exports.catalog = function(boardUri, callback, boardData) {
+
+  if (!boardData) {
+
+    boards.findOne({
+      boardUri : boardUri
+    }, boardProjection, function gotBoardData(error, boardData) {
+      exports.catalog(boardUri, callback, boardData);
+    });
+
+    return;
+  }
 
   if (verbose) {
     console.log('Building catalog of ' + boardUri);
@@ -429,7 +440,7 @@ exports.catalog = function(boardUri, callback) {
     } else {
 
       // style exception, too simple
-      domManipulator.catalog(boardUri, threads, function savedHTML(error) {
+      domManipulator.catalog(boardData, threads, function savedHTML(error) {
         jsonBuilder.catalog(boardUri, threads, callback);
       });
 

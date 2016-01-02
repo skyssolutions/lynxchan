@@ -305,7 +305,6 @@ exports.page = function(board, page, threads, pageCount, boardData, flagData,
 // } Section 2: Board
 
 // Section 3: Catalog {
-
 exports.setCellThumb = function(thumbLink, boardUri, document, thread) {
   thumbLink.href = '/' + boardUri + '/res/' + thread.threadId + '.html';
 
@@ -319,7 +318,24 @@ exports.setCellThumb = function(thumbLink, boardUri, document, thread) {
   }
 };
 
-exports.setCell = function(boardUri, document, cell, thread) {
+exports.setCatalogCellIndicators = function(thread, cell) {
+
+  for ( var key in common.indicatorsRelation) {
+    if (!thread[key]) {
+
+      common.removeElement(cell
+          .getElementsByClassName(common.indicatorsRelation[key])[0]);
+    }
+  }
+
+};
+
+exports.setCell = function(boardUri, document, thread) {
+
+  var cell = document.createElement('div');
+
+  cell.innerHTML = templateHandler.catalogCell;
+  cell.setAttribute('class', 'catalogCell');
 
   exports.setCellThumb(cell.getElementsByClassName('linkThumb')[0], boardUri,
       document, thread);
@@ -330,26 +346,30 @@ exports.setCell = function(boardUri, document, cell, thread) {
   var labelImages = cell.getElementsByClassName('labelImages')[0];
   labelImages.innerHTML = thread.fileCount || 0;
   cell.getElementsByClassName('labelPage')[0].innerHTML = thread.page;
+
   if (thread.subject) {
     cell.getElementsByClassName('labelSubject')[0].innerHTML = thread.subject;
   }
 
-  for ( var key in common.indicatorsRelation) {
-    if (!thread[key]) {
-      common.removeElement(cell
-          .getElementsByClassName(common.indicatorsRelation[key])[0]);
-    }
-  }
+  exports.setCatalogCellIndicators(thread, cell);
 
   cell.getElementsByClassName('divMessage')[0].innerHTML = thread.markdown;
 
+  return cell;
+
 };
 
-exports.catalog = function(boardUri, threads, callback) {
+exports.catalog = function(boardData, threads, callback) {
 
   try {
 
     var document = jsdom(templateHandler.catalogPage);
+
+    var boardUri = boardData.boardUri;
+
+    if (boardData.usesCustomCss) {
+      common.setCustomCss(boardUri, document);
+    }
 
     document.title = lang.titCatalog.replace('{$board}', boardUri);
 
@@ -358,15 +378,7 @@ exports.catalog = function(boardUri, threads, callback) {
     var threadsDiv = document.getElementById('divThreads');
 
     for (var i = 0; i < threads.length; i++) {
-      var thread = threads[i];
-
-      var cell = document.createElement('div');
-      cell.innerHTML = templateHandler.catalogCell;
-      cell.setAttribute('class', 'catalogCell');
-
-      exports.setCell(boardUri, document, cell, thread);
-
-      threadsDiv.appendChild(cell);
+      threadsDiv.appendChild(exports.setCell(boardUri, document, threads[i]));
     }
 
     gridFs.writeData(serializer(document), '/' + boardUri + '/catalog.html',
@@ -380,7 +392,6 @@ exports.catalog = function(boardUri, threads, callback) {
   }
 
 };
-
 // } Section 3: Catalog
 
 // Section 4: Front page {
