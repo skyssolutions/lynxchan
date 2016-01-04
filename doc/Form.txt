@@ -342,7 +342,6 @@ Json output(Object): object with the data of the thread.
     lastEditLogin: Login of the last user to edit the thread message.
     message: text of the post.
     name: name of the poster.
-    proxyIp: ip of the proxy used by the poster.
     ip: hashed and salted ip of the poster.
     range: range of the poster.
     creation(Date): time when the post was created.
@@ -365,7 +364,6 @@ Json output(Object): object with the data of the thread.
         email: email of the poster.
         flag: url of the used flag.
         flagName: name of the used flag.
-        proxyIp: ip of the proxy used by the poster.
         lastEditTime(Date): date of the last time the message of the thread message was edited.
         lastEditLogin: Login of the last user to edit the thread message.
         postId(Number): unique id of the post inside the board.
@@ -884,7 +882,6 @@ Json output(Object): object with the current global settings. It contains the fo
     floodTimerSec(Number): minimum time in seconds users must wait between posts.
     archiveLevel(Number): indicates what should be archived.
     torAccess(Number): level of access for tor users.
-    proxyAccess(Number): level of access for proxy users.
     clearIpMinRole(Number): minimum global role required so an user must be able to see non-hashed ips from users.
     thumbExtension: extension to be used on thumbnails.
     allowGlobalBoardModeration(Boolean): indicates the global staff are allowed to moderate boards.
@@ -955,7 +952,6 @@ Parameters:
     maxTags(Number): maximum amount of tags per board.
     disableFloodCheck(Boolean): disables flood checks.
     torAccess(Number): access for tor users.
-    proxyAccess(Number): access for proxy users.
     clearIpMinRole(Number): minimum global role required so an user must be able to see non-hashed ips from users.
     thumbExtension: extension to be used on thumbnails.
     allowGlobalBoardModeration(Boolean): allows global staff to moderate boards.
@@ -1068,52 +1064,13 @@ Parameters:
 
 PAG_ID::63
 
-Name: proxyBans
-
-Description: page that displays the proxy ban management.
-
-Parameters:
-    boardUri: uri of the board to be managed. If not informed, global proxy bans will be managed.
-    
-Json output(Array): array with the proxy bans. Each object contains the following fields:
-    _id: id of the ban.
-    ip: banned proxy ip.
-
-------------------------------------------------------------------------------------------
-
-PAG_ID::64
-
-Name: placeProxyBan
-
-Description: creates a new proxy ban.
-
-Parameters:
-    boardUri: uri of the board where the proxy will be banned from. If not informed, will place a global proxy ban.
-    proxyIp: ip of the proxy to be banned.
-    captcha: captcha input.
-
-------------------------------------------------------------------------------------------
-
-PAG_ID::65
-
-Name: liftProxyBan
-
-Description: deletes a proxy ban.
-
-Parameters:
-    proxyBanId: id of the proxy ban to be removed
-
-------------------------------------------------------------------------------------------
-
-PAG_ID::66
-
 Name: blockBypass
 
 Description: displays the page that allows the user to renew a block bypass and indicates if he has a valid block bypass token.
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::67
+PAG_ID::64
 
 Name: renewBypass
 
@@ -1124,7 +1081,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::68
+PAG_ID::65
 
 Name: appealBan
 
@@ -1136,7 +1093,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::69
+PAG_ID::66
 
 Name: denyAppeal
 

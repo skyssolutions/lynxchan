@@ -1,6 +1,6 @@
 'use strict';
 
-// Handles anything related to TOR and some transparent proxy operations
+// Handles anything related to TOR
 
 var torIps = require('../db').torIps();
 var logger = require('../logger');
@@ -90,18 +90,6 @@ exports.updateIps = function(callback) {
 };
 
 // end of update
-exports.markAsProxy = function(req) {
-
-  if (!req.localProxy && req.headers && req.headers['x-forwarded-for']) {
-    var proxy = req.headers['x-forwarded-for'];
-
-    if (proxy !== req.connection.remoteAddress) {
-      req.isProxy = true;
-    }
-  }
-
-};
-
 exports.markAsTor = function(req, callback) {
 
   var ip = logger.convertIpToArray(logger.getRawIp(req));
@@ -118,9 +106,8 @@ exports.markAsTor = function(req, callback) {
         if (verbose) {
           console.log('Marked ip ' + ip + ' as TOR.');
         }
-      } else {
-        exports.markAsProxy(req);
       }
+
       callback(null, req);
     }
   });

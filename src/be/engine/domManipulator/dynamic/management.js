@@ -68,9 +68,6 @@ exports.boardManagementLinks = [ {
 }, {
   page : 'flags',
   element : 'flagManagementLink'
-}, {
-  page : 'proxyBans',
-  element : 'proxyBansLink'
 } ];
 
 exports.loadDependencies = function() {
@@ -313,7 +310,6 @@ exports.setGlobalManagementLinks = function(userRole, document) {
     common.removeElement(document.getElementById('hashBansLink'));
     common.removeElement(document.getElementById('rangeBansLink'));
     common.removeElement(document.getElementById('bansLink'));
-    common.removeElement(document.getElementById('proxyBansLink'));
   }
 
   if (userRole !== 0) {

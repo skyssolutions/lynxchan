@@ -43,8 +43,6 @@ exports.loadDependencies = function() {
     hashBan : lang.guiTypeHashBan,
     hashBanLift : lang.guiTypeHashBanLift,
     threadTransfer : lang.guiTypeThreadTransfer,
-    proxyBan : lang.guiTypeProxyBan,
-    proxyBanLift : lang.guiTypeProxyBanLift,
     appealDeny : lang.guiTypeAppealDeny
   };
 

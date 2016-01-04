@@ -49,8 +49,7 @@ threads: stores board's threads.
     hash: hash of the message used by R9K.
     signedRole: role of the user that posted the thread.
     password: password used to delete the thread. 8 characters.
-    ip(Array): ip of the poster. Null if poster used TOR or a proxy.
-    proxyIp(Array): ip of the transparent proxy used by the poster.
+    ip(Array): ip of the poster. Null if poster used TOR.
     flag: url of this thread's flag.
     banMessage: message to be displayed indicating this message was a cause to a ban. 128 characters.
     salt: thread's salt used for id generation.
@@ -96,8 +95,7 @@ posts: stores posts.
     flag: url of this post's flag.
     flagName: name of the flag used.
     subject: subject of the thread. 128 characters.
-    ip(Array): ip of the poster. Null if poster used TOR or a proxy.
-    proxyIp(Array): ip of the transparent proxy used by the poster.
+    ip(Array): ip of the poster. Null if poster used TOR.
     message: text of the post. 2048 characters.
     markdown: text of the post after markdown.
     banMessage: message to be displayed indicating this message was a cause to a ban. 128 characters.
@@ -213,8 +211,6 @@ staffLogs: stores log activity from staff.
         archiveDeletion
         fileDeletion
         threadTransfer
-        proxyBan
-        proxyBanLift
         appealDeny
     time(Date): date and time of when the event occurred.
     boardUri*: board related to the event.
@@ -265,12 +261,6 @@ latestPosts: stores metadata from global latest posts.
 
 overboardThreads: stores aggregated data of threads on the overboard.
     thread*: _id of the document of the thread.
-
-----------------------------------------------------------------------------------------
-
-proxyBans: stores banned proxies.
-    proxyIp(Array): ip of the banned proxy.
-    boardUri(Number)*: uri of the board that banned the proxy. null if global.
 
 ----------------------------------------------------------------------------------------
 

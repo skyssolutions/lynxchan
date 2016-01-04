@@ -335,10 +335,6 @@ exports.createPost = function(req, parameters, userData, postId, thread, board,
     email : parameters.email
   };
 
-  if (req.isProxy) {
-    postToAdd.proxyIp = logger.ip(req, true);
-  }
-
   if (parameters.flag) {
     postToAdd.flagName = parameters.flagName;
     postToAdd.flag = parameters.flag;

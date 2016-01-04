@@ -256,7 +256,6 @@
   "errDeniedSpoilerManagement": "You are not allowed to manage the custom spoiler of this board.",
   "msgSpoilerSet": "Custom spoiler saved.",
   "msgSpoilerDeleted": "Custom spoiler deleted.",
-  "errBlockedProxy": "Proxy users are blocked.",
   "titArchiveDeletion": "Archive deletion",
   "errDeniedArchiveDeletion": "You are not allowed to delete archived content.",
   "msgArchiveRemoved": "Content removed from archive.",
@@ -267,11 +266,6 @@
     "threadPiece": "thread {$thread} from board /{$board}/.",
     "filesPiece": "files {$files} from board /{$board}/."
   },
-  "guiProxyLevels": [
-    "No posting",
-    "Post without files",
-    "Post with files"
-  ],
   "guiTorLevels": [
     "No posting",
     "Post without files",
@@ -290,7 +284,6 @@
   "errNoCustomJs": "Custom javascript is not enabled.",
   "errDeniedJsManagement": "You are not allowed to manage the custom js of this board.",
   "errOnlyJsAllowed": "Only javascript files are allowed.",
-  "errProxyFilesBlocked": "Proxy users are not allowed to post files.",
   "errTorFilesBlocked": "TOR users are not allowed to post files.",
   "msgThreadTransferred": "Thread transferred.",
   "errDeniedThreadTransfer": "You are not allowed to transfer a thread between boards.",
@@ -300,16 +293,7 @@
   "errDeniedSpoilered": "You are not allowed to spoil existing files.",
   "msgErrThreadFileRequired": "This board requires at least one file when creating threads.",
   "errBoardDelConfirmation": "You must confirm that you wish to delete this board.",
-  "errDeniedGlobalProxyBansManagement": "You are not allowed to manage globlal proxy bans.",
-  "errDeniedBoardProxyBanManagement": "You are not allowed to manage this board's proxy bans.",
-  "titProxyBans": "Proxy bans",
-  "msgProxyBanCreated": "Proxy ban created.",
   "errInvalidIp": "Invalid ip.",
-  "logProxyBan": "User {$login} banned proxy {$ip} from {$board}.",
-  "guiTypeProxyBan": "Proxy ban",
-  "guiTypeProxyBanLift": "Proxy ban lift",
-  "msgProxyBanLifted": "Proxy ban lifted.",
-  "logProxyBanLift": "User {$login} lifted a ban for proxy {$ip} from {$board}.",
   "guiBypassModes": [
     "Disabled",
     "Enabled",

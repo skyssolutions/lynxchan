@@ -68,10 +68,6 @@ exports.getPostObject = function(post, preview, boardData, modding, userRole) {
     files : exports.getFilesArray(post.files, modding)
   };
 
-  if (modding && post.proxyIp) {
-    toReturn.proxyIp = post.proxyIp;
-  }
-
   if (modding && post.ip) {
     toReturn.ip = miscOps.hashIpForDisplay(post.ip, boardData.ipSalt, userRole);
     toReturn.range = miscOps.getRange(post.ip).join('.');
@@ -129,10 +125,6 @@ exports.getThreadObject = function(thread, posts, board, modding, userRole) {
     files : exports.getFilesArray(thread.files, modding),
     posts : exports.buildThreadPosts(posts, board, modding, userRole)
   };
-
-  if (modding && thread.proxyIp) {
-    threadObject.proxyIp = thread.proxyIp;
-  }
 
   if (modding && thread.ip) {
     threadObject.ip = miscOps.hashIpForDisplay(thread.ip, board.ipSalt,
@@ -528,23 +520,6 @@ exports.overboard = function(foundThreads, previewRelation, callback,
       threads : threadsToAdd
     }), url, 'application/json', {}, callback);
   }
-
-};
-
-exports.proxyBans = function(proxyBans) {
-
-  var toReturn = [];
-
-  for (var i = 0; i < proxyBans.length; i++) {
-    var ban = proxyBans[i];
-
-    toReturn.push({
-      proxyIp : ban.proxyIp.join('.'),
-      _id : ban._id
-    });
-  }
-
-  return JSON.stringify(toReturn);
 
 };
 

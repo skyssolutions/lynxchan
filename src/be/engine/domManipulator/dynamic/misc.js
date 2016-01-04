@@ -401,7 +401,7 @@ exports.setBanPage = function(document, ban, board) {
 
   if (ban.range) {
     document.getElementById('rangeLabel').innerHTML = ban.range.join('.');
-  } else if (!ban.proxyIp) {
+  } else {
 
     document.getElementById('reasonLabel').innerHTML = ban.reason;
 
@@ -431,10 +431,8 @@ exports.ban = function(ban, board) {
 
     if (ban.range) {
       templateToUse = templateHandler.rangeBanPage;
-    } else if (!ban.proxyIp) {
-      templateToUse = templateHandler.banPage;
     } else {
-      templateToUse = templateHandler.proxyBanPage;
+      templateToUse = templateHandler.banPage;
     }
 
     var document = jsdom(templateToUse);

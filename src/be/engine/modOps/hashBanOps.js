@@ -7,7 +7,6 @@ var ObjectID = mongo.ObjectID;
 var logger = require('../../logger');
 var settings = require('../../settingsHandler').getGeneralSettings();
 var torBlocked = settings.torAccess < 2;
-var proxyBlocked = settings.proxyAccess < 2;
 var db = require('../../db');
 var boards = db.boards();
 var hashBans = db.hashBans();
@@ -293,10 +292,6 @@ exports.checkForHashBans = function(parameters, req, callback) {
   } else if (torBlocked && req.isTor) {
 
     callback(lang.errTorFilesBlocked);
-    return;
-  } else if (proxyBlocked && req.isProxy) {
-
-    callback(lang.errProxyFilesBlocked);
     return;
   }
 

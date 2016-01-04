@@ -10,8 +10,14 @@ function createBanner(parameters, userData, res, auth) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
-      formOps.outputResponse(lang.msgBannerCreated,
-          '/bannerManagement.js?boardUri=' + parameters.boardUri, res, null,
+
+      var redirectLink = '/bannerManagement.js';
+
+      if (parameters.boardUri) {
+        redirectLink += '?boardUri=' + parameters.boardUri;
+      }
+
+      formOps.outputResponse(lang.msgBannerCreated, redirectLink, res, null,
           auth);
     }
   });

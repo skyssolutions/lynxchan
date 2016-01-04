@@ -44,8 +44,7 @@ exports.getCellTests = function() {
             'divBanMessage', 'spanId', 'panelIp', 'labelRange',
             'cyclicIndicator', 'linkQuote', 'divPosts', 'labelOmission',
             'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag', 'labelIp',
-            'labelProxyIp', 'panelProxyIp', 'contentOmissionIndicator',
-            'linkFullText' ]
+            'contentOmissionIndicator', 'linkFullText' ]
       },
       {
         template : 'postCell',
@@ -53,8 +52,7 @@ exports.getCellTests = function() {
             'divMessage', 'linkSelf', 'deletionCheckBox', 'labelId',
             'labelRole', 'divBanMessage', 'spanId', 'panelIp', 'labelRange',
             'linkQuote', 'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag',
-            'labelIp', 'labelProxyIp', 'panelProxyIp',
-            'contentOmissionIndicator', 'linkFullText' ]
+            'labelIp', 'contentOmissionIndicator', 'linkFullText' ]
       },
       {
         template : 'staffCell',
@@ -126,9 +124,6 @@ exports.getCellTests = function() {
       }, {
         template : 'latestPostCell',
         fields : [ 'labelPreview', 'linkPost' ]
-      }, {
-        template : 'proxyBanCell',
-        fields : [ 'ipLabel', 'idIdentifier' ]
       }, {
         template : 'logIndexCell',
         fields : [ 'dateLink' ]
@@ -206,7 +201,7 @@ exports.getPageTests = function() {
         fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
             'reportDiv', 'bansLink', 'rangeBansLink', 'hashBansLink',
             'globalSettingsLink', 'archiveDeletionLink', 'globalBannersLink',
-            'proxyBansLink', 'appealedBansPanel' ]
+            'appealedBansPanel' ]
       },
       {
         template : 'bManagement',
@@ -223,8 +218,8 @@ exports.getPageTests = function() {
             'hourlyThreadLimitField', 'autoCaptchaThresholdField',
             'hashBansLink', 'customSpoilerIndicator', 'tagsField',
             'customJsForm', 'customJsIdentifier', 'blockDeletionCheckbox',
-            'requireFileCheckbox', 'proxyBansLink', 'appealedBansPanel',
-            'linkSelf', 'uniqueFilesCheckbox', 'uniquePostsCheckbox' ]
+            'requireFileCheckbox', 'appealedBansPanel', 'linkSelf',
+            'uniqueFilesCheckbox', 'uniquePostsCheckbox' ]
       },
       {
         template : 'closedReportsPage',
@@ -321,8 +316,8 @@ exports.getPageTests = function() {
             'comboArchive', 'checkboxMultipleReports',
             'checkboxDisableAccountCreation', 'comboBoardCreationRequirement',
             'checkboxServeArchive', 'fieldMaxTags', 'fieldGlobalLatestImages',
-            'checkboxDisableFloodCheck', 'comboProxyAccess',
-            'comboMinClearIpRole', 'fieldThumbExtension', 'fieldSslPass',
+            'checkboxDisableFloodCheck', 'comboMinClearIpRole',
+            'fieldThumbExtension', 'fieldSslPass',
             'checkboxGlobalBoardModeration', 'checkboxGlobalBanners',
             'checkboxAllowCustomJs', 'fieldGlobalLatestPosts',
             'checkboxGlobalCaptcha', 'fieldRssDomain', 'fieldOverboard',
@@ -337,12 +332,6 @@ exports.getPageTests = function() {
       }, {
         template : 'overboard',
         fields : [ 'bannerImage', 'divThreads' ]
-      }, {
-        template : 'proxyBansPage',
-        fields : [ 'proxyBansDiv', 'boardIdentifier' ]
-      }, {
-        template : 'proxyBanPage',
-        fields : [ 'boardLabel' ]
       }, {
         template : 'bypassPage',
         fields : [ 'indicatorValidBypass' ]

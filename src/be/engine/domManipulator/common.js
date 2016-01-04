@@ -314,13 +314,6 @@ exports.setThreadModdingElements = function(modding, boardUri, thread, cell,
     exports.removeElement(cell.getElementsByClassName('panelIp')[0]);
   }
 
-  if (modding && thread.proxyIp) {
-    cell.getElementsByClassName('labelProxyIp')[0].innerHTML = thread.proxyIp
-        .join('.');
-  } else {
-    exports.removeElement(cell.getElementsByClassName('panelProxyIp')[0]);
-  }
-
 };
 
 exports.setThreadHiddeableElements = function(thread, cell, modding, boardUri,
@@ -513,13 +506,6 @@ exports.setPostModElements = function(post, modding, postCell, boardUri,
     exports.setPostingIp(postCell, post, boardData, userRole);
   } else {
     exports.removeElement(postCell.getElementsByClassName('panelIp')[0]);
-  }
-
-  if (modding && post.proxyIp) {
-    postCell.getElementsByClassName('labelProxyIp')[0].innerHTML = post.proxyIp
-        .join('.');
-  } else {
-    exports.removeElement(postCell.getElementsByClassName('panelProxyIp')[0]);
   }
 
   if (modding) {

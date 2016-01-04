@@ -34,9 +34,9 @@ exports.convertIpToArray = function convertIpToArray(ip) {
   }
 };
 
-exports.ip = function(req, proxyIp) {
+exports.ip = function(req) {
 
-  if (req.isTor || (req.isProxy && !proxyIp)) {
+  if (req.isTor) {
     return null;
   } else if (req.cachedIp) {
     return req.cachedIp;
@@ -53,10 +53,7 @@ exports.getRawIp = function(req) {
   var remote = req.connection.remoteAddress;
 
   if (req.headers && req.headers['x-forwarded-for'] && remote === '127.0.0.1') {
-
-    req.localProxy = true;
     return req.headers['x-forwarded-for'];
-
   }
 
   return remote;

@@ -879,11 +879,7 @@ exports.deleteFromIp = function(parameters, userData, callback) {
   var processedIp = miscOps.sanitizeIp(parameters.ip);
 
   var queryBlock = {
-    $or : [ {
-      ip : processedIp
-    }, {
-      proxyIp : processedIp
-    } ]
+    ip : processedIp
   };
 
   if (parameters.boards) {

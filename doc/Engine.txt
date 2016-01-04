@@ -73,7 +73,7 @@ CHA_ID::3 - Generation queue
 	To reduce static files generation overhead, a queue in the master thread is in place to avoid double generation of files. It is reached by using process.send and sending an object with the correct parameters. Instructions of use can be found on the comment block at the beginning of generationQueue at src/be.
 
 CHA_ID::4 - Ip reading
-	Ips are read from the request.connection.remoteAddress and converted to an array of ints. If a request is marked as being from TOR or a proxy, the function ip from logger will return null, unless it is requests to return the proxy address, which is used for proxy bans.
+	Ips are read from the request.connection.remoteAddress and converted to an array of ints. If a request is marked as being from TOR, the function ip from logger will return null.
 
 CHA_ID::5 - Schedules
 	The module scheduleHandler is booted in the master thread and runs regular operations from time to time. Unless the application is set to run without starting a daemon.

@@ -258,14 +258,6 @@ linkFullText:
     use: have it's href manipulated.
     description: link to the post if the message is too long and had its original text trimmed.
 
-panelProxyIp:
-    use: might be removed.
-    description: panel containing the label of the proxy ip.
-
-labelProxyIp:
-    use: have it's innerHTML manipulated.
-    description: label with the proxy ip.
-
 labelIp:
     use: have it's innerHTML manipulated or might be removed.
     description: label used to display the hashed ip of the poster to the staff.
@@ -387,14 +379,6 @@ linkFullText:
 labelIp:
     use: have it's innerHTML manipulated or might be removed.
     description: label used to display the hashed ip of the poster to the staff.
-
-panelProxyIp:
-    use: might be removed.
-    description: panel containing the label of the proxy ip.
-
-labelProxyIp:
-    use: have it's innerHTML manipulated.
-    description: label with the proxy ip.
 
 divBanMessage:
     use: have it's innerHTML manipulated or might be removed. 
@@ -532,10 +516,6 @@ appealedBansPanel:
     use: have children appended to it or might be removed.
     panel containing the appealed bans that weren't denied.
 
-proxyBansLink:
-    use: might be removed.
-    description: link to the page used for global proxy bans.
-
 archiveDeletionLink:
     use: might be removed.
     description: link to the page that contains the archive deletion tools.
@@ -615,10 +595,6 @@ linkSelf:
 appealedBansPanel:
     use: have children appended to it.
     panel containing the appealed bans that weren't denied.
-
-proxyBansLink:
-    use: have it's href manipulated.
-    description: link to the page used for board proxy bans.
 
 uniqueFilesCheckbox:
     use: might be turned on.
@@ -1744,10 +1720,6 @@ comboArchive:
     use: have children appended to it.
     description: indicates the level of archiving enabled.
 
-comboProxyAccess:
-    use: have children appended to it.
-    description: indicates the level of access users have.
-
 comboTorAccess:
     use: have children appended to it.
     description: indicates the level of access TOR users have.
@@ -1886,49 +1858,6 @@ divThreads:
 
 TEM_ID::57
 
-proxyBansPage: page used to manage proxy bans.
-
-Elements:
-proxyBansDiv:
-    use: have children appended to it.
-    description: panel where the banned uploaded files will be displayed.
-
-boardIdentifier:
-    use: might be removed or have it's value manipulated.
-    description: hidden identifier used to create new proxy bans on boards.
-
-------------------------------------------------------------------------------------------
-
-TEM_ID::58
-
-proxyBanCell*: cell used to list banned proxies.
-
-Root element: form
-
-Elements:
-ipLabel:
-    use: have it's innerHTML manipulated.
-    description: label that holds banned proxy.
-
-idIdentifier:
-    use: have it's value manipulated.
-    description: hidden input that identifies the ban.
-
-------------------------------------------------------------------------------------------
-
-TEM_ID::59
-
-proxyBanPage: page used to inform to the user that his proxy has been banned.
-
-Elements:
-boardLabel:
-    use: have it's innerHTML manipulated.
-    description: label that holds the board where the proxy has been banned from.
-
-------------------------------------------------------------------------------------------
-
-TEM_ID::60
-
 bypassPage: page used to renew the user's bypass token.
 
 Elements:
@@ -1938,7 +1867,7 @@ indicatorValidBypass:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::61
+TEM_ID::58
 
 logIndexPage: page that lists the available dates to read logs from.
 
@@ -1949,7 +1878,7 @@ divDates:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::62
+TEM_ID::59
 
 logIndexCell*: cell used to list dates that contains logs.
 
@@ -1962,7 +1891,7 @@ dateLink:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::63
+TEM_ID::60
 
 latestImageCell*: cell used to list global latest images on the front-page.
 

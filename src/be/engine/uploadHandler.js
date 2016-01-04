@@ -519,8 +519,8 @@ exports.generateImageThumb = function(boardData, threadId, postId, file,
   file.thumbOnDisk = thumbDestination;
   file.thumbMime = file.mime;
 
-  var command = 'convert ' + file.pathInDisk + ' -resize ' + thumbSize + 'x';
-  command += thumbSize + ' ' + thumbDestination;
+  var command = 'convert ' + file.pathInDisk + ' -coalesce -resize ';
+  command += thumbSize + 'x' + thumbSize + ' ' + thumbDestination;
 
   exec(command, function(error) {
     if (error) {

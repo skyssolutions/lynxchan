@@ -84,7 +84,6 @@ errArchiveNotLoaded: error thrown when the the user tries to access the archives
 errBoardLocked: error thrown when the board is locked for thread creation.
 errDeniedSpoilerManagement: error thrown when the user is not allowed to manage the custom spoiler of a board.
 errDeniedArchiveDeletion: error thrown when the user is not allowed to delete content from the archive.
-errBlockedProxy: error throw when proxy users are blocked.
 errDeniedIpDeletion: error thrown when the user is not allowed to delete posts from a single ip.
 errInvalidRange: error thrown when an invalid range is informed.
 errDeniedFlagManagement: error thrown when the user is not allowed to manage a board's flags.
@@ -94,14 +93,11 @@ errDeniedGlobalBannerManagement: error thrown when the user is not allowed to ma
 errNoCustomJs: error throw when custom javascript is not allowed on boards.
 errDeniedJsManagement: error thrown when the user is not allowed to manage the custom css of a board.
 errOnlyJsAllowed: error thrown when an operation requires a javascript file.
-errProxyFilesBlocked: error thrown when proxy users are not allowed to post files.
 errTorFilesBlocked: error thrown when TOR users are not allowed to post files.
 errNoFileAndMessage: error thrown when an operation requires either a message or files uploaded. Used when replying a thread.
 errDeniedThreadTransfer: error thrown when the user is not allowed to move a thread between boards.
 errDeniedSpoilered: error thrown when the user is not allowed to spoil existing files.
 errBoardDelConfirmation: error thrown when the user fails to send the confirmation to delete a board.
-errDeniedGlobalProxyBansManagement: error thrown when the user is denied management of the global proxy bans.
-errDeniedBoardProxyBanManagement: error thrown when the user is denied management of a board's proxy bans.
 errInvalidIp: error thrown when an invalid ip is informed.
 errDisabledBypass: error thrown when block bypass is not enabled.
 errInvalidToken: error thrown when the specified unlock token is not valid.
@@ -137,11 +133,8 @@ guiUnlimited: label used when a file size limit for an operation is limitless.
 guiNoFlag: label used for the first option on a flag combobox.
 guiArchiveLevels: array with the labels to be shown to archive options in this order: no archive, only pages, pages and images.
 guiTypeArchiveDeletion: label used for logs of archive deletion.
-guiProxyLevels: array containing the posting levels for proxy users. First element indicates no posting, second posting without files, third posting with files.
-guiTorLevels: array containing the posting levels for proxy users. First element indicates no posting, second posting without files, third posting with files.
+guiTorLevels: array containing the posting levels for TOR users. First element indicates no posting, second posting without files, third posting with files.
 guiTypeThreadTransfer: label used for logs of thread transfers.
-guiTypeProxyBan: label used for logs of proxy bans.
-guiTypeProxyBanLift: label used for logs of proxy ban lifts.
 guiBypassModes: array with the bypass mode options. The first element is the one for bypass disabled. The second is for bypass enabled. The third is for mandatory use of block bypass.
 logGlobalRoleChange: object containing pieces used to compose the message added to the log on a global role change. Contains the following fields:
     userPiece: piece used for the start of the message indicating which user changed the global role of the subject. Replaces: {$login}.
@@ -200,8 +193,6 @@ logArchiveDeletion: object containing the pieces used for the log message when d
     threadPiece: piece used when a thread is being deleted from the archives. Replaces: {$board}, {$thread}
     filesPiece: piece used when files are being deleted from the archives. Replaces: {$board}, {$files}
 logThreadTransfer: log message for thread movings. Replaces: {$login}, {$board}, {$thread}, {$boardDestination}
-logProxyBan: log entry for proxy ban creation. Replaces: {$login}, {$board}, {$ip}
-logProxyBanLift: log entry for proxy ban lift. Replaces: {$login}, {$board}, {$ip}
 logAppealDenied: log entry for appeal deny. Replaces: {$login}, {$id}
 miscAllBoards: string meaning "all boards" to be used when something refers to all boards.
 miscReasonNotPresent: reason for blank parameter error when it is not informed.
@@ -260,8 +251,6 @@ msgCssSet: message used when a custom javascript is uploaded for a board.
 msgThreadTransferred: message used after moving a thread between boards.
 msgContentSpoilered: message displayed after making files spoilered.
 msgErrThreadFileRequired: error thrown when a board requires a file to create a thread.
-msgProxyBanCreated: message displayed when a proxy ban is placed.
-msgProxyBanLifted: message displayed after lifting a proxy ban.
 msgBypassRenewed: message displayed after renewing block bypass.
 msgAccountUnlocked: message displayed when the user's account is unlocked.
 msgBanAppealed: message displayed after appealing a ban.
@@ -298,7 +287,6 @@ titGlobalSettings: title of the global settings page.
 titArchiveDeletion: title of the archive deletion page.
 titGlobalBanners: title of the global banners management page.
 titHashBan: title of the page that displays a hash ban when the user tries to upload a banned file.
-titProxyBans: title of the proxy ban management page.
 titBlockbypass: title of the page used to renew the block bypass.
 titLogPage: title for log pages. Replaces: {$date}
 titMultiboard: title of the multi-board.

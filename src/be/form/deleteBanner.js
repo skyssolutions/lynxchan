@@ -11,8 +11,14 @@ function deleteBanner(parameters, userData, res, auth) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
-      formOps.outputResponse(lang.msgBannerDeleted,
-          '/bannerManagement.js?boardUri=' + board, res, null, auth);
+      var redirectLink = '/bannerManagement.js';
+
+      if (board) {
+        redirectLink += '?boardUri=' + board;
+      }
+
+      formOps.outputResponse(lang.msgBannerDeleted, redirectLink, res, null,
+          auth);
     }
   });
 

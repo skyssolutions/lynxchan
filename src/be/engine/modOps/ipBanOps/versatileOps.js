@@ -6,12 +6,10 @@ var db = require('../../../db');
 var bans = db.bans();
 var flood = db.flood();
 var boards = db.boards();
-var proxyBans = db.proxyBans();
 var settings = require('../../../settingsHandler').getGeneralSettings();
 var blockTor = settings.torAccess < 1;
 var bypassAllowed = settings.bypassMode > 0;
 var bypassMandatory = settings.bypassMode > 1;
-var blockProxy = settings.proxyAccess < 1;
 var disableFloodCheck = settings.disableFloodCheck;
 var logOps;
 var lang;
@@ -145,10 +143,8 @@ exports.checkForFlood = function(req, boardUri, callback) {
       callback(error);
     } else if (flood && !disableFloodCheck) {
       callback(lang.errFlood);
-    } else if (!req.isProxy) {
-      exports.getActiveBan(ip, boardUri, callback);
     } else {
-      callback();
+      exports.getActiveBan(ip, boardUri, callback);
     }
   });
 
@@ -172,28 +168,6 @@ exports.checkForBan = function(req, boardUri, callback) {
         var errorToReturn = blockTor ? lang.errBlockedTor : null;
 
         callback(errorToReturn, null, bypassAllowed && blockTor);
-      }
-
-    } else if (req.isProxy) {
-      if (blockProxy) {
-        callback(lang.errBlockedProxy);
-      } else {
-
-        // style exception, too simple
-        proxyBans.findOne({
-          proxyIp : logger.ip(req, true),
-          boardUri : {
-            $in : [ boardUri, null ]
-          }
-        }, function gotProxyBan(error, ban) {
-          if (error || ban) {
-            callback(error, ban);
-          } else {
-            exports.checkForFlood(req, boardUri, callback);
-
-          }
-        });
-        // style exception, too simple
       }
 
     } else {

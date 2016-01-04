@@ -109,7 +109,6 @@ Settings files that goes into the settings directory:
 * `maxBoardTags`(Number): maximum amount of tags each board can have. Defaults to 5.
 * `disableFloodCheck`(Boolean): indicates if the flood checks should be disabled. This shouldn't affect performance at all, since it's meant to be used for benchmarking purposes.
 * `torAccess`(Number): access allowed for TOR users. 0 will block them completely, 1 will allow them to post without uploads, 2 will allow for them to post normally. Defaults to 0.
-* `proxyAccess`(Number): access allowed for proxy users. See torAccess. Defaults to 0.
 * `clearIpMinRole`(Number): minimum global role required for users to see non-hashed ips from posts and perform global deletions from ip.
 * `thumbExtension`: forces all thumbs to use this extension. Keeps gifs from being animated as a side-effect, even if `gif` is used.
 * `allowGlobalBoardModeration`(Boolean): if true, global staff will be allowed to act as board moderators too.
@@ -122,7 +121,7 @@ Settings files that goes into the settings directory:
 * `overBoardThreadCount`(Number): amount of threads that should be shown at the overboard. Defaults to 50.
 * `bypassMaxPosts`(Number): how many uses a block bypass will have before expires. Defaults to 30.
 * `bypassDurationHours`(Number): how many hours a block bypass will last. Defaults to 24
-* `bypassMode`(Number): mode used for bypass. 0 means that it won`t be enabled. 1 means that users caught in range bans, TOR users (if TOR is blocked) and users caught in proxy bans will be able to post if they get a bypass token. 2 means that anyone will only be able to post if they get a bypass token. Defaults to 0.
+* `bypassMode`(Number): mode used for bypass. 0 means that it won`t be enabled. 1 means that users caught in range bans and TOR users (if TOR is blocked) will be able to post if they get a bypass token. 2 means that anyone will only be able to post if they get a bypass token. Defaults to 0.
 * `multiboardThreadCount`(Number): amount of threads to be displayed on the multi-board. If none is set, multi-board will not be enabled.
 * `concurrentRebuildMessages`(Number): maximum amount of concurrent rebuild queue messages being processed.
 * `rssDomain`: domain used on links on the RSS feeds. Defaults to ''. 

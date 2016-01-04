@@ -634,13 +634,6 @@ exports.getParametersArray = function() {
     element : 'checkboxSsl'
   }, {
     // range
-    param : 'proxyAccess',
-    type : 'range',
-    limit : 2,
-    setting : 'proxyAccess',
-    element : 'comboProxyAccess',
-    options : lang.guiProxyLevels
-  }, {
     param : 'bypassMode',
     type : 'range',
     limit : 2,
