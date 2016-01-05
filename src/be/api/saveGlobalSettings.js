@@ -2,7 +2,7 @@
 
 var apiOps = require('../engine/apiOps');
 var miscOps = require('../engine/miscOps');
-var toSanitize = [ 'captchaFonts', 'acceptedMimes' ];
+var toSanitize = [ 'acceptedMimes', 'addons' ];
 
 function changeGlobalSettings(auth, userData, parameters, res) {
 

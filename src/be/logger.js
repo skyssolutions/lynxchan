@@ -2,10 +2,6 @@
 
 var ipv6 = require('ip-address');
 
-exports.addMinutes = function(date, amount) {
-  return new Date(date.getTime() + amount * 60000);
-};
-
 // Creates an UCT formated date in 'yyyy-MM-dd' format
 exports.formatedDate = function(time) {
   time = time || new Date();
@@ -25,7 +21,11 @@ exports.formatedDate = function(time) {
   return time.getUTCFullYear() + '-' + monthString + '-' + dayString;
 };
 
-exports.convertIpToArray = function convertIpToArray(ip) {
+exports.convertIpToArray = function(ip) {
+
+  if (!ip) {
+    return null;
+  }
 
   if (ip.match(/\d+.\d+.\d+.\d+/)) {
     return ipv6.Address6.fromAddress4(ip).toUnsignedByteArray().slice(-4);

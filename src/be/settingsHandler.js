@@ -113,10 +113,10 @@ function writeNewSettings(settings, callback) {
       callback(error);
     } else {
 
-      var exceptionalFields = [ 'siteTitle', 'captchaFonts', 'pageSize',
-          'globalLatestImages', 'languagePackPath', 'defaultAnonymousName',
-          'defaultBanMessage', 'disableTopBoards', 'allowBoardCustomJs',
-          'topBoardsCount', 'globalLatestPosts', 'forceCaptcha', 'overboard' ];
+      var exceptionalFields = [ 'siteTitle', 'pageSize', 'globalLatestImages',
+          'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage',
+          'disableTopBoards', 'allowBoardCustomJs', 'topBoardsCount',
+          'globalLatestPosts', 'forceCaptcha', 'overboard' ];
 
       for ( var key in generalSettings) {
         if (!settings[key] && exceptionalFields.indexOf(key) === -1) {
