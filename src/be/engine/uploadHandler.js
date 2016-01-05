@@ -376,7 +376,7 @@ exports.transferThumbToGfs = function(boardData, threadId, postId, fileId,
 
   if (parts.length > 1) {
 
-    var ext = parts[parts.length - 1].toLowerCase();
+    var ext = parts[parts.length - 1].toLowerCase().replace(/\W/g, '');
 
     if (file.thumbOnDisk) {
 

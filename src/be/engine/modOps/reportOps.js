@@ -41,12 +41,18 @@ exports.loadDependencies = function() {
 // Section 1: Closed reports {
 exports.readClosedReports = function(parameters, callback) {
 
-  reports.find({
+  var queryBlock = {
     closedBy : {
       $exists : true
     },
     global : parameters.boardUri ? false : true
-  }, {
+  };
+
+  if (parameters.boardUri) {
+    queryBlock.boardUri = parameters.boardUri;
+  }
+
+  reports.find(queryBlock, {
     boardUri : 1,
     threadId : 1,
     closedBy : 1,
