@@ -187,7 +187,7 @@ exports.process = function(req, res) {
         }
       }
 
-      var action = parameters.action.toLowerCase();
+      var action = (parameters.action || '').toLowerCase();
 
       var deleting = action === 'delete';
       var banning = action === 'ban';

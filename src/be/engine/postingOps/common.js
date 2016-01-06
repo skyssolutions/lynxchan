@@ -321,12 +321,12 @@ exports.applyFilters = function(filters, message) {
 exports.processLine = function(split, replaceCode) {
 
   split = split.replace(/^>[^\&].*/g, greenTextFunction);
-  split = split.replace(/\=\=.+\=\=/g, redTextFunction);
-  split = split.replace(/\'\'\'.+\'\'\'/g, boldFunction);
-  split = split.replace(/\'\'.+\'\'/g, italicFunction);
-  split = split.replace(/\_\_.+\_\_/g, underlineFunction);
-  split = split.replace(/\~\~.+\~\~/g, strikeFunction);
-  split = split.replace(/\[spoiler\].+\[\/spoiler\]/g, spoilerFunction);
+  split = split.replace(/\=\=.+?\=\=/g, redTextFunction);
+  split = split.replace(/\'\'\'.+?\'\'\'/g, boldFunction);
+  split = split.replace(/\'\'.+?\'\'/g, italicFunction);
+  split = split.replace(/\_\_.+?\_\_/g, underlineFunction);
+  split = split.replace(/\~\~.+?\~\~/g, strikeFunction);
+  split = split.replace(/\[spoiler\].+?\[\/spoiler\]/g, spoilerFunction);
   split = split.replace(/\[aa\]/g, '<span class="aa">');
   split = split.replace(/\[\/aa\]/g, '</span>');
 
