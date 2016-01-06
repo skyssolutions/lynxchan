@@ -370,6 +370,11 @@ exports.getParametersArray = function() {
     setting : 'acceptedMimes',
     element : 'fieldAcceptedMimes'
   }, {
+    param : 'slaves',
+    type : 'array',
+    setting : 'slaves',
+    element : 'fieldSlaves'
+  }, {
     // string
     param : 'address',
     type : 'string',
@@ -380,6 +385,11 @@ exports.getParametersArray = function() {
     type : 'string',
     setting : 'fePath',
     element : 'fieldFePath'
+  }, {
+    param : 'master',
+    type : 'string',
+    setting : 'master',
+    element : 'fieldMaster'
   }, {
     param : 'tempDir',
     type : 'string',

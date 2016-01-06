@@ -1788,6 +1788,14 @@ fieldGlobalLatestImages:
     use: have it's value manipulated.
     description: field that displays the amount of global latest images to be displayed on the front-page.
 
+fieldMaster:
+    use: have it's value manipulated.
+    description: field that displays the ip of the master instance of a cluster.
+
+fieldSlaves:
+    use: have it's value manipulated.
+    description: field that displays the ips of the slaves instances of a cluster.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::52

@@ -300,7 +300,8 @@ exports.getDefaultSettings = function() {
     bypassMaxPosts : 30,
     bypassDurationHours : 24,
     bypassMode : 0,
-    rssDomain : ''
+    rssDomain : '',
+    slaves : []
   };
 
 };

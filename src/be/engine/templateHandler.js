@@ -317,9 +317,9 @@ exports.getPageTests = function() {
             'checkboxDisableAccountCreation', 'comboBoardCreationRequirement',
             'checkboxServeArchive', 'fieldMaxTags', 'fieldGlobalLatestImages',
             'checkboxDisableFloodCheck', 'comboMinClearIpRole',
-            'fieldThumbExtension', 'fieldSslPass',
+            'fieldThumbExtension', 'fieldSslPass', 'fieldMaster',
             'checkboxGlobalBoardModeration', 'checkboxGlobalBanners',
-            'checkboxAllowCustomJs', 'fieldGlobalLatestPosts',
+            'checkboxAllowCustomJs', 'fieldGlobalLatestPosts', 'fieldSlaves',
             'checkboxGlobalCaptcha', 'fieldRssDomain', 'fieldOverboard',
             'comboBypassMode', 'fieldBypassHours', 'fieldBypassPosts',
             'fieldMultiBoardThreadCount', 'fieldConcurrentRebuildMessages' ]

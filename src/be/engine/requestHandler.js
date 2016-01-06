@@ -308,6 +308,8 @@ exports.handle = function(req, res) {
     return;
   }
 
+  // TODO redirect if is a master and got slaves
+
   var subdomain = exports.getSubdomain(req);
 
   if (subdomain === 'api') {

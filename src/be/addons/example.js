@@ -14,7 +14,7 @@ var staticPages = domManipulator.staticPages;
 
 // A warning will be displayed on verbose mode and a crash will happen in debug
 // mode if this value doesn't match the current engine version
-exports.engineVersion = '1.4.0';
+exports.engineVersion = '1.5.0';
 
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;

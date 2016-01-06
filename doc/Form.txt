@@ -901,6 +901,8 @@ Json output(Object): object with the current global settings. It contains the fo
     concurrentRebuildMessages(Number): amount of concurrent rebuild messages.
     rssDomain: domain used on RSS links.
     globalLatestImages(Number): amount of latest global images that appear on the front-page.
+    master: ip of the master instance of the cluster.
+    slaves(Array): ips of the slaves of the cluster.
 
 ------------------------------------------------------------------------------------------
 
@@ -969,6 +971,8 @@ Parameters:
     concurrentRebuildMessages(Number): amount of concurrent rebuild messages.
     globalLatestImages(Number): amount of latest global images that appear on the front-page.
     rssDomain: domain used on RSS links.
+    master: ip of the master instance of the cluster.
+    slaves(Array): ips of the slaves of the cluster.
 
 ------------------------------------------------------------------------------------------
 

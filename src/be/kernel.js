@@ -427,6 +427,7 @@ function bootWorkers() {
         message.upStream = false;
 
         if (message.reload) {
+          // TODO propagate new settings to the whole cluster
           processBulkRebuild(message, genQueue);
         }
 

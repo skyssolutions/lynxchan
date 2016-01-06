@@ -2,7 +2,7 @@
 
 var apiOps = require('../engine/apiOps');
 var miscOps = require('../engine/miscOps');
-var toSanitize = [ 'acceptedMimes', 'addons' ];
+var toSanitize = [ 'acceptedMimes', 'addons', 'slaves' ];
 
 function changeGlobalSettings(auth, userData, parameters, res) {
 

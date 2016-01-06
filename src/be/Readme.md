@@ -126,6 +126,8 @@ Settings files that goes into the settings directory:
 * `concurrentRebuildMessages`(Number): maximum amount of concurrent rebuild queue messages being processed.
 * `rssDomain`: domain used on links on the RSS feeds. Defaults to ''. 
 * `globalLatestImages`(Number): amount of global latest images to be displayed on the front-page.
+* `master`: ip of the master.
+* `slaves`(Array): ips of the slaves.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.
