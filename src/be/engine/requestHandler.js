@@ -3,14 +3,22 @@
 // Decides what to do with an incoming request and will output errors if they
 // are not handled
 
+var logger = require('../logger');
 var indexString = 'index.html';
 var url = require('url');
+var proxy = require('http-proxy').createProxyServer({});
+
+proxy.on('proxyReq', function(proxyReq, req, res, options) {
+  proxyReq.setHeader('x-forwarded-for', logger.getRawIp(req));
+});
+
 var settings = require('../settingsHandler').getGeneralSettings();
 var multiBoardAllowed = settings.multiboardThreadCount;
 var multiBoard = require('./multiBoardHandler');
 var verbose = settings.verbose;
 var maintenance = settings.maintenance;
 var archive = require('../archive');
+var debug = require('../kernel').debug();
 var serveArchive = settings.serveArchive;
 var formOps;
 var apiOps;
@@ -18,6 +26,7 @@ var miscOps;
 var gridFs;
 var lang;
 var staticHandler;
+var lastSlaveIndex = 0;
 
 exports.loadDependencies = function() {
 
@@ -300,6 +309,72 @@ exports.getSubdomain = function(req) {
 
 };
 
+exports.redirect = function(req, res) {
+
+  // TODO try and fix requests to ssl servers
+  // until then, always request using plain HTTP to slaves
+  var fixed = false;
+  var proxyUrl = req.connection.encrypted && fixed ? 'https' : 'http';
+
+  proxyUrl += '://';
+
+  proxyUrl += settings.slaves[lastSlaveIndex++];
+
+  if (lastSlaveIndex >= settings.slaves.length) {
+    lastSlaveIndex = 0;
+  }
+
+  if (!req.connection.encrypted || !fixed) {
+    proxyUrl += ':' + settings.port;
+  }
+
+  if (verbose) {
+    console.log('Proxying to ' + proxyUrl);
+  }
+
+  proxy.web(req, res, {
+    target : proxyUrl,
+    secure : true
+  }, function proxyed(error) {
+
+    try {
+      exports.outputError(error, res);
+    } catch (error) {
+      console.log(error);
+    }
+
+  });
+
+};
+
+exports.checkForRedirection = function(req, res) {
+
+  var remote = req.connection.remoteAddress;
+
+  var isSlave = settings.slaves.indexOf(remote) > -1;
+  var isLocal = !debug && remote === '127.0.0.1';
+
+  if (settings.master) {
+
+    if (remote !== settings.master && !isLocal) {
+      req.connection.destroy();
+      return false;
+    } else {
+
+      return true;
+    }
+
+  } else if (!settings.slaves.length || isLocal || isSlave) {
+
+    return false;
+  }
+
+  exports.redirect(req, res);
+
+  return true;
+
+};
+
 exports.handle = function(req, res) {
 
   if (!req.headers || !req.headers.host) {
@@ -308,7 +383,9 @@ exports.handle = function(req, res) {
     return;
   }
 
-  // TODO redirect if is a master and got slaves
+  if (exports.checkForRedirection(req, res)) {
+    return;
+  }
 
   var subdomain = exports.getSubdomain(req);
 

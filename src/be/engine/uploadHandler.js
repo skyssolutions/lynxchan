@@ -70,8 +70,11 @@ exports.getImageBounds = function(file, callback) {
 
         if (dimensions) {
 
-          maxWidth = dimensions[1] > maxWidth ? dimensions[1] : maxWidth;
-          maxHeight = dimensions[2] > maxHeight ? dimensions[2] : maxHeight;
+          var currentWidth = +dimensions[1];
+          var currentHeight = +dimensions[2];
+
+          maxWidth = currentWidth > maxWidth ? currentWidth : maxWidth;
+          maxHeight = currentHeight > maxHeight ? currentHeight : maxHeight;
 
         }
       }
