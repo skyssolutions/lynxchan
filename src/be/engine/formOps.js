@@ -204,54 +204,57 @@ exports.processParsedRequest = function(res, fields, files, callback,
 
 exports.getPostData = function(req, res, callback, exceptionalMimes) {
 
-  try {
-    var parser = new multiParty.Form({
-      uploadDir : uploadDir,
-      autoFiles : true
-    });
+  var parser = new multiParty.Form({
+    uploadDir : uploadDir,
+    autoFiles : true
+  });
 
-    var filesToDelete = [];
+  var filesToDelete = [];
 
-    var endingCb = function() {
+  var endingCb = function() {
 
-      for (var j = 0; j < filesToDelete.length; j++) {
+    for (var j = 0; j < filesToDelete.length; j++) {
 
-        uploadHandler.removeFromDisk(filesToDelete[j]);
-      }
+      uploadHandler.removeFromDisk(filesToDelete[j]);
+    }
 
-    };
+  };
 
-    res.on('close', endingCb);
+  res.on('close', endingCb);
 
-    res.on('finish', endingCb);
+  res.on('finish', endingCb);
 
-    parser.on('file', function(name, file) {
+  parser.on('error', function(error) {
+    if (verbose) {
+      console.log(error);
+    }
 
-      filesToDelete.push(file.path);
+    req.connection.destroy();
+  });
 
-    });
+  parser.on('file', function(name, file) {
 
-    parser.on('progress', function(bytesReceived) {
-      if (bytesReceived > maxRequestSize) {
-        req.connection.destroy();
-      }
-    });
+    filesToDelete.push(file.path);
 
-    parser.parse(req, function parsed(error, fields, files) {
+  });
 
-      if (error) {
-        exports.outputError(error, 500, res);
-      } else {
-        exports.processParsedRequest(res, fields, files, callback, exports
-            .getCookies(req), exceptionalMimes);
+  parser.on('progress', function(bytesReceived) {
+    if (bytesReceived > maxRequestSize) {
+      req.connection.destroy();
+    }
+  });
 
-      }
+  parser.parse(req, function parsed(error, fields, files) {
 
-    });
+    if (error) {
+      exports.outputError(error, 500, res);
+    } else {
+      exports.processParsedRequest(res, fields, files, callback, exports
+          .getCookies(req), exceptionalMimes);
 
-  } catch (error) {
-    exports.outputError(error, 500, res);
-  }
+    }
+
+  });
 
 };
 

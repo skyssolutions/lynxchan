@@ -352,26 +352,35 @@ exports.checkForRedirection = function(req, res) {
   var remote = req.connection.remoteAddress;
 
   var isSlave = settings.slaves.indexOf(remote) > -1;
-  var isLocal = !debug && remote === '127.0.0.1';
+  var isLocal = remote === '127.0.0.1';
+  var isMaster = settings.master === remote;
 
   if (settings.master) {
 
-    if (remote !== settings.master && !isLocal) {
+    if (!isMaster && !isLocal) {
       req.connection.destroy();
-      return false;
-    } else {
-
       return true;
+    } else {
+      req.trustedProxy = true;
+      return false;
     }
 
-  } else if (!settings.slaves.length || isLocal || isSlave) {
+  } else if (!settings.slaves.length || isSlave) {
+
+    req.trustedProxy = isLocal;
+    req.fromSlave = isSlave;
 
     return false;
+
+  } else {
+
+    // TODO serve pages used to read and update settings
+
+    exports.redirect(req, res);
+
+    return true;
+
   }
-
-  exports.redirect(req, res);
-
-  return true;
 
 };
 

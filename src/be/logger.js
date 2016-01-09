@@ -50,13 +50,10 @@ exports.ip = function(req) {
 
 exports.getRawIp = function(req) {
 
-  var remote = req.connection.remoteAddress;
-
-  // TODO check if remote is the master
-  if (req.headers && req.headers['x-forwarded-for'] && remote === '127.0.0.1') {
+  if (req.headers['x-forwarded-for'] && req.trustedProxy) {
     return req.headers['x-forwarded-for'];
+  } else {
+    return req.connection.remoteAddress;
   }
-
-  return remote;
 
 };
