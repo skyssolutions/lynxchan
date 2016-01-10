@@ -1101,10 +1101,21 @@ PAG_ID::66
 
 Name: denyAppeal
 
-Description: denied the appeal of a ban. Requires authentication
+Description: denies the appeal of a ban. Requires authentication.
 
 Parameters:
     banId: id of the ban being having it's appeal denied.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::67
+
+Name: takeMessage
+
+Description: internal use only, it receives a page generation message. It is actually parsed as if it were part of the json api, it will be moved to that once sub-domains are removed.
+
+Parameters:
+    varies according to the message. The parameters field of the incoming json should be the message itself.
 
 ------------------------------------------------------------------------------------------
 

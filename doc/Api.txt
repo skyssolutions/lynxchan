@@ -706,7 +706,7 @@ PAG_ID::45
 
 Name: denyAppeal
 
-Description: denied the appeal of a ban.
+Description: denies the appeal of a ban. Requires authentication.
 
 Parameters:
     banId: id of the ban being having it's appeal denied.

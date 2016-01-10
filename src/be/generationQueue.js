@@ -56,9 +56,12 @@ var rebuildingFrontPage = false;
 var kernel = require('./kernel');
 var debug = kernel.debug();
 var generator = require('./engine/generator');
+var http = require('http');
 var settings = require('./settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
+var currentSlave = 0;
 var concurrentMessages = 0;
+var MAX_TRIES = 4;
 var maxConcurrentMessages = settings.concurrentRebuildMessages;
 
 exports.reload = function() {
@@ -144,11 +147,86 @@ function clearBoardTree(message) {
 
 }
 
-function processRebuildResult(error, message) {
+function debugPreGeneration() {
 
-  concurrentMessages--;
+  try {
+    kernel.reload();
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
 
-  processQueue();
+    throw error;
+  }
+}
+
+function processMessageForBoards(message, callback) {
+
+  if (message.preview) {
+    generator.board.preview(message.board, message.thread, message.post,
+        callback);
+  } else if (message.buildAll) {
+    generator.board.board(message.board, true, true, callback);
+  } else if (message.catalog) {
+    generator.board.catalog(message.board, callback);
+  } else if (message.rules) {
+    generator.board.rules(message.board, callback);
+  } else if (!message.page && !message.thread) {
+    generator.board.board(message.board, false, false, callback);
+  } else if (message.page) {
+    generator.board.page(message.board, message.page, callback);
+  } else {
+    generator.board.thread(message.board, message.thread, callback);
+  }
+
+}
+
+exports.processMessage = function(message, callback) {
+
+  if (debug) {
+    debugPreGeneration();
+  }
+
+  if (message.globalRebuild) {
+    generator.all(callback);
+  } else if (message.log) {
+
+    if (message.date) {
+      generator.global.log(new Date(message.date), callback);
+    } else {
+      generator.global.logs(callback);
+    }
+
+  } else if (message.overboard) {
+    generator.global.overboard(callback);
+  } else if (message.allBoards) {
+    generator.board.boards(callback);
+  } else if (message.frontPage) {
+    generator.global.frontPage(callback);
+  } else {
+    processMessageForBoards(message, callback);
+  }
+
+};
+
+function getAddressToRebuild() {
+
+  if (settings.master) {
+    return settings.master;
+  } else {
+
+    var slaveToUse = settings.slaves[currentSlave++];
+
+    if (currentSlave >= settings.slaves.length) {
+      currentSlave = 0;
+    }
+
+    return slaveToUse;
+  }
+
+}
+
+function handleRequestResult(error) {
 
   if (error) {
 
@@ -163,75 +241,87 @@ function processRebuildResult(error, message) {
 
   }
 
+  concurrentMessages--;
+
+  processQueue();
+
 }
 
-function debugPreGeneration() {
+function sendMessageByHttp(message, callback, error, retries) {
 
-  try {
-    kernel.reload();
-  } catch (error) {
-    if (verbose) {
-      console.log(error);
+  retries = retries || 0;
+
+  if (retries >= MAX_TRIES) {
+    callback(error);
+    return;
+  }
+
+  if (verbose) {
+    console.log('Try ' + retries);
+  }
+
+  retries++;
+
+  var address = getAddressToRebuild();
+
+  if (verbose) {
+    console.log('Sending rebuild message to ' + address);
+  }
+
+  var req = http.request({
+    hostname : address,
+    port : settings.port,
+    path : '/takeMessage.js',
+    method : 'POST'
+  }, function gotResponse(res) {
+
+    if (res.statusCode !== 200) {
+
+      sendMessageByHttp(message, callback, 'Request status ' + res.statusCode,
+          retries);
+      return;
     }
 
-    throw error;
-  }
-}
+    var response = '';
 
-function processMessageForBoards(generationCallback, message) {
+    res.on('data', function(data) {
 
-  if (message.preview) {
-    generator.board.preview(message.board, message.thread, message.post,
-        generationCallback);
-  } else if (message.buildAll) {
-    generator.board.board(message.board, true, true, generationCallback);
-  } else if (message.catalog) {
-    generator.board.catalog(message.board, generationCallback);
-  } else if (message.rules) {
-    generator.board.rules(message.board, generationCallback);
-  } else if (!message.page && !message.thread) {
-    generator.board.board(message.board, false, false, generationCallback);
-  } else if (message.page) {
-    generator.board.page(message.board, message.page, generationCallback);
-  } else {
-    generator.board.thread(message.board, message.thread, generationCallback);
-  }
+      response += data;
+    });
 
-}
+    res.on('end', function() {
 
-function processMessage(message) {
+      try {
 
-  var generationCallback = function(error) {
-    processRebuildResult(error, message);
-  };
+        var parsedResponse = JSON.parse(response);
 
-  if (debug) {
-    debugPreGeneration();
-  }
+        if (parsedResponse.status === 'ok') {
+          callback();
+        } else {
+          sendMessageByHttp(message, callback, parsedResponse.data, retries);
+        }
 
-  if (message.globalRebuild) {
-    generator.all(generationCallback);
-  } else if (message.log) {
+      } catch (error) {
+        sendMessageByHttp(message, callback, error, retries);
+      }
 
-    if (message.date) {
-      generator.global.log(new Date(message.date), generationCallback);
-    } else {
-      generator.global.logs(generationCallback);
-    }
+    });
 
-  } else if (message.overboard) {
-    generator.global.overboard(generationCallback);
-  } else if (message.allBoards) {
-    generator.board.boards(generationCallback);
-  } else if (message.frontPage) {
-    generator.global.frontPage(generationCallback);
-  } else {
-    processMessageForBoards(generationCallback, message);
-  }
+  });
+
+  req.on('error', function(error) {
+    sendMessageByHttp(message, callback, error, retries);
+  });
+
+  req.write(JSON.stringify({
+    parameters : message
+  }));
+  req.end();
 
 }
 
 function processQueue() {
+
   if (!queueArray.length) {
 
     return;
@@ -249,7 +339,15 @@ function processQueue() {
     clearBoardTree(message);
   }
 
-  processMessage(message);
+  var generationCallBack = function(error) {
+    handleRequestResult(error);
+  };
+
+  if (settings.slaves.length) {
+    sendMessageByHttp(message, generationCallBack);
+  } else {
+    exports.processMessage(message, generationCallBack);
+  }
 
 }
 
@@ -268,6 +366,7 @@ function putInQueue(message, boardInformation) {
   }
 
   if (concurrentMessages < maxConcurrentMessages) {
+
     if (verbose) {
       console.log('Idle, running processQueue');
     }
@@ -458,6 +557,28 @@ exports.queue = function(message) {
 
   if (verbose) {
     console.log('Queuing ' + JSON.stringify(message, null, 2));
+  }
+
+  if (settings.master) {
+
+    if (verbose) {
+      console.log('Sending message to master node');
+    }
+
+    sendMessageByHttp(message, function sentMessage(error) {
+      if (error) {
+
+        if (verbose) {
+          console.log(error);
+        }
+
+        if (debug) {
+          throw error;
+        }
+      }
+    });
+
+    return;
   }
 
   if (rebuildingAll) {

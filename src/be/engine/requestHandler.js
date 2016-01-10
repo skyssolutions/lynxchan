@@ -352,6 +352,8 @@ exports.checkForRedirection = function(req, res) {
   var remote = req.connection.remoteAddress;
 
   var isSlave = settings.slaves.indexOf(remote) > -1;
+  
+  // Is up to the webserver to drop unwanted connections.
   var isLocal = remote === '127.0.0.1';
   var isMaster = settings.master === remote;
 
