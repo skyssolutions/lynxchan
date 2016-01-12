@@ -1,0 +1,26 @@
+Important notice: if you are deploying LynxChan under a webserver, you must setup your webserver to refuse unknown connections requests to /takeMessage.js on all servers, allowing only your nodes to request this page. If your webserver allows any source to request this page, your server could be overloaded by simply requesting the generation of unnecessary pages. On stand alone mode this page is not available at all.
+
+Also, is up to the webserver to refuse any connection not coming from the master on slaves.
+
+Sharding is the capability of the engine to run as a distributed system, with a single master and several slaves.
+
+The master has two roles:
+
+1: to act as a load balancer, passing requests to the slaves.
+2: to distribute the centralized queue for generating pages.
+
+The first item is fairly simple, the master just acts as a reverse-proxy. Currently, it is unable to pass requests using https to slaves, that should be eventually fixed. However, it is able to pass incoming https requests using plain http to slaves. So you can either trust no one will sniff your traffic between slaves and the master or deploy webservers to take in http and pass using https to slaves.
+
+The requests will be passed using the port the master is listening to. So if your master listens on port 8080, it will try to pass the request to slaves on port 8080.
+
+
+The second item works as follows:
+Worker process on a slave triggers a page regeneration and send it to master process.
+Master process sends regeneration message to master node using http.
+Master node receives the message on a worker process using the page /takeMessage.js and sends it to master process.
+Master process on master node queues the message or discards it.
+Master process sends the regeneration message to a slave node.
+Slave node receives the message on a worker process and generates the page.
+
+This way, the I/O is kept as efficient as possible, because there will be still a single queue, instead of each server having its own queue an possibily building the same pages at the same time.
+

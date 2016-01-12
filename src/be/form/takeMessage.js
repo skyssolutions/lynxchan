@@ -6,7 +6,7 @@ var genQueue = require('../generationQueue');
 
 function processMessage(req, res, message) {
 
-  if (settings.master || !settings.slaves.length) {
+  if (settings.master) {
 
     genQueue.processMessage(message, function generated(error) {
 
@@ -27,8 +27,11 @@ function processMessage(req, res, message) {
 
 exports.process = function(req, res) {
 
-  // Is up to the reverse proxy to refuse external connections to this page.
-  if (!req.fromSlave && !req.trustedProxy) {
+  var standAlone = !settings.master && !settings.slaves.length;
+
+  // Is up to the reverse proxy to refuse external connections to this page on a
+  // cluster.
+  if (standAlone || (!req.fromSlave && !req.trustedProxy)) {
 
     req.connection.destroy();
     return;

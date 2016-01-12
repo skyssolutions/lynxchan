@@ -35,19 +35,18 @@ exports.reload = function() {
 
 exports.start = function() {
 
-  expiredCaptcha(true);
-
   if (debug) {
     tempFiles(true);
   }
 
-  boardsStats();
+  if (!settings.master) {
+    expiredCaptcha(true);
+    boardsStats();
+    torRefresh();
+    early404(true);
+    uniqueIpCount();
+  }
 
-  torRefresh();
-
-  early404(true);
-
-  uniqueIpCount();
 };
 
 // Section 1: Early 404 check {
