@@ -385,11 +385,7 @@ exports.checkForRedirection = function(req, pathName, res) {
     return false;
 
   } else {
-
-    // TODO serve pages used to read and update settings
-
     return exports.redirect(req, res);
-
   }
 
 };

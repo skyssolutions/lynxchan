@@ -1,13 +1,93 @@
 'use strict';
 
 var fs = require('fs');
+var http = require('http');
 var kernel = require('./kernel');
 var archiveSettings;
 var dbSettings;
 var generalSettings;
 var templateSettings;
 
+var MAX_ATTEMPTS = 4;
+
 // Section 1: New settings {
+function broadCastToSlaves(newSettings, callback, index, attempts) {
+
+  index = index || 0;
+
+  // no more slaves
+  if (index >= newSettings.slaves.length) {
+
+    callback();
+    return;
+  }
+
+  attempts = attempts || 0;
+
+  // failed to broadcast to slave, try next one
+  if (attempts >= MAX_ATTEMPTS) {
+    console.log('Failed to contact ' + newSettings.slaves[index]);
+
+    broadCastToSlaves(newSettings, callback, ++index);
+
+    return;
+  }
+
+  if (generalSettings.verbose) {
+    console.log('Attempt ' + attempts + ' to ' + newSettings.slaves[index]);
+  }
+
+  var req = http.request({
+    hostname : newSettings.slaves[index],
+    port : generalSettings.port,
+    path : '/takeSettings.js',
+    method : 'POST'
+  }, function gotResponse(res) {
+
+    if (res.statusCode !== 200) {
+
+      broadCastToSlaves(newSettings, callback, index, ++attempts);
+      return;
+    }
+
+    var response = '';
+
+    res.on('data', function(data) {
+
+      response += data;
+    });
+
+    res.on('end', function() {
+
+      try {
+
+        var parsedResponse = JSON.parse(response);
+
+        if (parsedResponse.status === 'ok') {
+          broadCastToSlaves(newSettings, callback, ++index);
+        } else {
+          broadCastToSlaves(newSettings, callback, index, ++attempts);
+        }
+
+      } catch (error) {
+        broadCastToSlaves(newSettings, callback, index, ++attempts);
+      }
+
+    });
+
+  });
+
+  req.on('error', function(error) {
+    broadCastToSlaves(newSettings, callback, index, ++attempts);
+  });
+
+  req.write(JSON.stringify({
+    parameters : newSettings
+  }));
+  req.end();
+
+}
+
 function broadCastReload(reloadsToMake, callback) {
 
   process.send({
@@ -105,42 +185,56 @@ function checkSettingsChanges(settings, callback) {
 
 }
 
+function prepareSettingsForChangeCheck(settings, callback) {
+
+  // these fields won`t be set with the current values if none is provided
+  // because we want them to be null when comparing
+  var defaultToNull = [ 'siteTitle', 'pageSize', 'globalLatestImages',
+      'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage',
+      'disableTopBoards', 'allowBoardCustomJs', 'topBoardsCount',
+      'globalLatestPosts', 'forceCaptcha', 'overboard' ];
+
+  // these ones default to the default values if they are on the previous
+  // list
+  var defaultToDefault = [ 'pageSize' ];
+
+  var defaults = exports.getDefaultSettings();
+
+  for ( var key in generalSettings) {
+
+    if (settings[key]) {
+      continue;
+    }
+
+    if (defaultToNull.indexOf(key) === -1) {
+
+      settings[key] = generalSettings[key];
+    } else if (defaultToDefault.indexOf(key) > -1) {
+      settings[key] = defaults[key];
+    }
+  }
+
+  checkSettingsChanges(settings, callback);
+
+}
+
 function writeNewSettings(settings, callback) {
 
   fs.writeFile(__dirname + '/settings/general.json', new Buffer(JSON.stringify(
       settings, null, 2), 'utf-8'), function wroteFile(error) {
     if (error) {
       callback(error);
+    } else if (settings.master) {
+
+      broadCastReload([], callback);
+
+    } else if (settings.slaves && settings.slaves.length) {
+      broadCastToSlaves(settings, function broadCastToSlaves() {
+        prepareSettingsForChangeCheck(settings, callback);
+      });
+
     } else {
-
-      // these fields won`t be set with the current values if none is provided
-      // because we want them to be null when comparing
-      var defaultToNull = [ 'siteTitle', 'pageSize', 'globalLatestImages',
-          'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage',
-          'disableTopBoards', 'allowBoardCustomJs', 'topBoardsCount',
-          'globalLatestPosts', 'forceCaptcha', 'overboard' ];
-
-      // these ones default to the default values if they are on the previous
-      // list
-      var defaultToDefault = [ 'pageSize' ];
-
-      var defaults = exports.getDefaultSettings();
-
-      for ( var key in generalSettings) {
-
-        if (settings[key]) {
-          continue;
-        }
-
-        if (defaultToNull.indexOf(key) === -1) {
-
-          settings[key] = generalSettings[key];
-        } else if (defaultToDefault.indexOf(key) > -1) {
-          settings[key] = defaults[key];
-        }
-      }
-
-      checkSettingsChanges(settings, callback);
+      prepareSettingsForChangeCheck(settings, callback);
     }
   });
 

@@ -172,6 +172,14 @@ exports.getFileData = function(matches, res, stats, file, location, content,
 exports.processFile = function(file, res, finalArray, toRemove,
     exceptionalMimes, callback) {
 
+  if (!file.name || !file.content) {
+    exports.outputResponse(null, null, 'fileParseError', res);
+    return;
+  }
+
+  file.content = file.content.toString();
+  file.name = file.name.toString();
+
   var matches = file.content.match(/^data:([0-9A-Za-z-+\/]+);base64,(.+)$/);
 
   if (!matches) {

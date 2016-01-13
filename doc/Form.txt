@@ -1119,4 +1119,15 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::68
+
+Name: takeSettings
+
+Description: internal use only, it receives settings from a master node. It will be moved to the json api once sub-domains are removed.
+
+Parameters:
+    same ones than the global settings.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
