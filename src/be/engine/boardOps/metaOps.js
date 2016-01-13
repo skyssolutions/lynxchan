@@ -135,7 +135,7 @@ exports.getMessageMarkdown = function(message) {
     return miscOps.htmlReplaceTable[match];
   });
 
-  ret = ret.replace(/\[.+\]\(.+\)/g, function prettyLinks(match) {
+  ret = ret.replace(/\[.+?\]\(.+?\)/g, function prettyLinks(match) {
     var matchesArray = match.match(/\[(.+)\]\((.+)\)/);
 
     return '<a href=\"' + matchesArray[2] + '\">' + matchesArray[1] + '</a>';

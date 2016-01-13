@@ -71,9 +71,7 @@ exports.outputError = function(error, res) {
 
 };
 
-exports.processApiRequest = function(req, res) {
-
-  var pathName = url.parse(req.url).pathname;
+exports.processApiRequest = function(req, pathName, res) {
 
   if (verbose) {
     console.log('Processing api request: ' + pathName);
@@ -102,9 +100,7 @@ exports.processApiRequest = function(req, res) {
 
 };
 
-exports.processFormRequest = function(req, res) {
-
-  var pathName = url.parse(req.url).pathname;
+exports.processFormRequest = function(req, pathName, res) {
 
   if (verbose) {
     console.log('Processing form request: ' + pathName);
@@ -136,8 +132,7 @@ exports.processFormRequest = function(req, res) {
 
 };
 
-exports.getPathNameForGfs = function(req) {
-  var pathName = url.parse(req.url).pathname;
+exports.getPathNameForGfs = function(pathName) {
 
   // look at the alias starting from the second character so a board named
   // /alias/ won't return a false negative
@@ -195,9 +190,9 @@ exports.testForMultiBoard = function(pathName, boardsToReturn) {
 
 };
 
-exports.outputGfsFile = function(req, res) {
+exports.outputGfsFile = function(req, pathName, res) {
 
-  var pathName = exports.getPathNameForGfs(req);
+  pathName = exports.getPathNameForGfs(pathName);
 
   var splitArray = pathName.split('/');
 
@@ -209,7 +204,7 @@ exports.outputGfsFile = function(req, res) {
 
   if (firstPart.indexOf('.js', firstPart.length - 3) !== -1) {
 
-    exports.processFormRequest(req, res);
+    exports.processFormRequest(req, pathName, res);
 
   } else if (gotSecondString && !/\W/.test(splitArray[1])) {
 
@@ -345,14 +340,29 @@ exports.redirect = function(req, res) {
 
   });
 
+  return true;
+
 };
 
-exports.checkForRedirection = function(req, res) {
+exports.checkForService = function(req, pathName, isSlave) {
+
+  var shouldServe = !settings.slaves.length || isSlave;
+
+  var toGlobalSettings = pathName.indexOf('/globalSettings') === 0;
+  var setGlobalSettings = pathName.indexOf('/saveGlobalSettings') === 0;
+
+  shouldServe = shouldServe || toGlobalSettings || setGlobalSettings;
+
+  return shouldServe;
+
+};
+
+exports.checkForRedirection = function(req, pathName, res) {
 
   var remote = req.connection.remoteAddress;
 
   var isSlave = settings.slaves.indexOf(remote) > -1;
-  
+
   // Is up to the webserver to drop unwanted connections.
   var isLocal = remote === '127.0.0.1';
   var isMaster = settings.master === remote;
@@ -367,7 +377,7 @@ exports.checkForRedirection = function(req, res) {
       return false;
     }
 
-  } else if (!settings.slaves.length || isSlave) {
+  } else if (exports.checkForService(req, pathName, isSlave)) {
 
     req.trustedProxy = isLocal;
     req.fromSlave = isSlave;
@@ -378,30 +388,18 @@ exports.checkForRedirection = function(req, res) {
 
     // TODO serve pages used to read and update settings
 
-    exports.redirect(req, res);
-
-    return true;
+    return exports.redirect(req, res);
 
   }
 
 };
 
-exports.handle = function(req, res) {
-
-  if (!req.headers || !req.headers.host) {
-    res.writeHead(200, miscOps.corsHeader('text/plain'));
-    res.end('get fucked, m8 :^)');
-    return;
-  }
-
-  if (exports.checkForRedirection(req, res)) {
-    return;
-  }
+exports.serve = function(req, pathName, res) {
 
   var subdomain = exports.getSubdomain(req);
 
   if (subdomain === 'api') {
-    exports.processApiRequest(req, res);
+    exports.processApiRequest(req, pathName, res);
   } else if (subdomain === 'static') {
     exports.outputStaticFile(req, res);
   } else if (subdomain === 'archive') {
@@ -414,7 +412,25 @@ exports.handle = function(req, res) {
     }
 
   } else {
-    exports.outputGfsFile(req, res);
+    exports.outputGfsFile(req, pathName, res);
+  }
+
+};
+
+exports.handle = function(req, res) {
+
+  if (!req.headers || !req.headers.host) {
+    res.writeHead(200, miscOps.corsHeader('text/plain'));
+    res.end('get fucked, m8 :^)');
+    return;
+  }
+
+  var pathName = url.parse(req.url).pathname;
+
+  if (exports.checkForRedirection(req, pathName, res)) {
+    return;
+  } else {
+    exports.serve(req, pathName, res);
   }
 
 };

@@ -113,14 +113,30 @@ function writeNewSettings(settings, callback) {
       callback(error);
     } else {
 
-      var exceptionalFields = [ 'siteTitle', 'pageSize', 'globalLatestImages',
+      // these fields won`t be set with the current values if none is provided
+      // because we want them to be null when comparing
+      var defaultToNull = [ 'siteTitle', 'pageSize', 'globalLatestImages',
           'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage',
           'disableTopBoards', 'allowBoardCustomJs', 'topBoardsCount',
           'globalLatestPosts', 'forceCaptcha', 'overboard' ];
 
+      // these ones default to the default values if they are on the previous
+      // list
+      var defaultToDefault = [ 'pageSize' ];
+
+      var defaults = exports.getDefaultSettings();
+
       for ( var key in generalSettings) {
-        if (!settings[key] && exceptionalFields.indexOf(key) === -1) {
+
+        if (settings[key]) {
+          continue;
+        }
+
+        if (defaultToNull.indexOf(key) === -1) {
+
           settings[key] = generalSettings[key];
+        } else if (defaultToDefault.indexOf(key) > -1) {
+          settings[key] = defaults[key];
         }
       }
 
