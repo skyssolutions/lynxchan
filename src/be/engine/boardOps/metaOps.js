@@ -268,7 +268,7 @@ exports.setSettings = function(userData, parameters, callback) {
 // Section 2: Transfer {
 exports.updateUsersOwnedBoards = function(oldOwner, parameters, callback) {
 
-  users.update({
+  users.updateOne({
     login : oldOwner
   }, {
     $pull : {
@@ -281,7 +281,7 @@ exports.updateUsersOwnedBoards = function(oldOwner, parameters, callback) {
     } else {
 
       // style exception, too simple
-      users.update({
+      users.updateOne({
         login : parameters.login
       }, {
         $addToSet : {
@@ -318,7 +318,7 @@ exports.logTransfer = function(userData, parameters, oldOwner, callback) {
 
 exports.performTransfer = function(oldOwner, userData, parameters, callback) {
 
-  boards.update({
+  boards.updateOne({
     boardUri : parameters.boardUri
   }, {
     $set : {
@@ -395,6 +395,7 @@ exports.manageVolunteer = function(currentVolunteers, parameters, callback) {
   } else {
 
     var operation;
+    var userOperation;
 
     if (isAVolunteer) {
       operation = {
@@ -402,25 +403,39 @@ exports.manageVolunteer = function(currentVolunteers, parameters, callback) {
           volunteers : parameters.login
         }
       };
+
+      userOperation = {
+        $pull : {
+          volunteeredBoards : parameters.boardUri
+        }
+      };
+
     } else {
       operation = {
         $addToSet : {
           volunteers : parameters.login
         }
       };
+
+      userOperation = {
+        $addToSet : {
+          volunteeredBoards : parameters.boardUri
+        }
+      };
+
     }
 
-    users.findOne({
+    users.findOneAndUpdate({
       login : parameters.login
-    }, function gotUser(error, user) {
+    }, userOperation, function gotUser(error, result) {
       if (error) {
         callback(error);
-      } else if (!user && !isAVolunteer) {
+      } else if (!result.value && !isAVolunteer) {
         callback(lang.errUserNotFound);
       } else {
 
         // style exception, too simple
-        boards.update({
+        boards.updateOne({
           boardUri : parameters.boardUri
         }, operation, function updatedVolunteers(error) {
           callback(error);
@@ -437,6 +452,8 @@ exports.manageVolunteer = function(currentVolunteers, parameters, callback) {
 exports.setVolunteer = function(userData, parameters, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+
+  parameters.add = parameters.add ? true : false;
 
   boards.findOne({
     boardUri : parameters.boardUri
@@ -483,7 +500,7 @@ exports.insertBoard = function(parameters, userData, callback) {
     } else {
 
       // style exception, too simple
-      users.update({
+      users.updateOne({
         login : userData.login
       }, {
         $addToSet : {

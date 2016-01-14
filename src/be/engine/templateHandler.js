@@ -188,7 +188,7 @@ exports.getPageTests = function() {
       },
       {
         template : 'accountPage',
-        fields : [ 'labelLogin', 'boardsDiv', 'emailField',
+        fields : [ 'labelLogin', 'ownedDiv', 'emailField', 'volunteeredDiv',
             'globalManagementLink', 'boardCreationDiv', 'checkboxAlwaysSign' ]
       },
       {

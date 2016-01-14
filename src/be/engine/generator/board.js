@@ -313,7 +313,7 @@ exports.updateThreadsPage = function(boardUri, page, threadsArray, pageCount,
     ids.push(threadsArray[i].threadId);
   }
 
-  threads.update({
+  threads.updateMany({
     boardUri : boardUri,
     threadId : {
       $in : ids
@@ -322,8 +322,6 @@ exports.updateThreadsPage = function(boardUri, page, threadsArray, pageCount,
     $set : {
       page : page
     }
-  }, {
-    multi : true
   }, function(error, result) {
     if (error) {
       callback(error);

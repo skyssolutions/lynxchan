@@ -17,7 +17,7 @@ var r9k;
 
 var editArguments = [ {
   field : 'message',
-  length : 2048,
+  length : 4096,
   removeHTML : false
 } ];
 

@@ -12,6 +12,7 @@ var cachedThreads = db.threads();
 var cachedBoards = db.boards();
 var cachedTorIps = db.torIps();
 var cachedBans = db.bans();
+var cachedUsers = db.users();
 
 // Added on 0.4.3
 // Section 1: Mime pre-aggregation on upload data on postings {
@@ -619,3 +620,52 @@ exports.createR9KHashes = function(callback, threadsCursor) {
 
 };
 // } Section 6: Create message hash for existing postings
+
+// Added on 1.5.0
+exports.aggregateVolunteeredBoards = function(callback) {
+
+  cachedBoards.find({
+    'volunteers.0' : {
+      $exists : true
+    }
+  }, {
+    _id : 0,
+    volunteers : 1,
+    boardUri : 1
+  }).toArray(function gotBoards(error, boards) {
+
+    if (error) {
+      callback(error);
+    } else if (!boards.length) {
+      callback();
+    } else {
+
+      var operations = [];
+
+      for (var i = 0; i < boards.length; i++) {
+        operations.push({
+
+          updateMany : {
+            filter : {
+              login : {
+                $in : boards[i].volunteers
+              }
+            },
+            update : {
+              $addToSet : {
+                volunteeredBoards : boards[i].boardUri
+              }
+            }
+          }
+
+        });
+
+      }
+
+      cachedUsers.bulkWrite(operations, callback);
+
+    }
+
+  });
+
+};

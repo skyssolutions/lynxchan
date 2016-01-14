@@ -49,7 +49,7 @@ exports.removeThreads = function(boardUri, threadsToDelete, callback) {
     } else {
 
       // style exception, too simple
-      boards.update({
+      boards.updateOne({
         boardUri : boardUri
       }, {
         $inc : {
@@ -226,6 +226,34 @@ exports.logBoardDeletion = function(board, user, callback) {
   });
 };
 
+exports.updateVolunteeredList = function(board, user, callback) {
+
+  if (!board.volunteers || !board.volunteers.length) {
+    exports.logBoardDeletion(board, user, callback);
+    return;
+  }
+
+  users.updateMany({
+    login : {
+      $in : board.volunteers
+    }
+  }, {
+    $pull : {
+      volunteeredBoards : board.boardUri
+    }
+  }, function updatedVolunteers(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.logBoardDeletion(board, user, callback);
+
+    }
+
+  });
+
+};
+
 exports.deleteBoard = function(board, user, callback) {
 
   boards.deleteOne({
@@ -236,7 +264,7 @@ exports.deleteBoard = function(board, user, callback) {
     } else {
 
       // style exception, too simple
-      users.update({
+      users.updateOne({
         login : board.owner
       }, {
         $pull : {
@@ -246,7 +274,7 @@ exports.deleteBoard = function(board, user, callback) {
         if (error) {
           callback(error);
         } else {
-          exports.logBoardDeletion(board, user, callback);
+          exports.updateVolunteeredList(board, user, callback);
         }
       });
       // style exception, too simple
@@ -271,7 +299,8 @@ exports.board = function(userData, parameters, callback) {
   }, {
     _id : 0,
     boardUri : 1,
-    owner : 1
+    owner : 1,
+    volunteers : 1
   }, function gotBoard(error, board) {
     if (error) {
       callback(error);

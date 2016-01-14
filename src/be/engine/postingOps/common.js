@@ -37,7 +37,7 @@ exports.postingParameters = [ {
   removeHTML : true
 }, {
   field : 'message',
-  length : 2048
+  length : 4096
 }, {
   field : 'password',
   length : 8
@@ -266,7 +266,7 @@ exports.addPostToStats = function(ip, boardUri, callback) {
       var hashedIp = crypto.createHash('md5').update(ip.toString()).digest(
           'base64');
 
-      uniqueIps.update({
+      uniqueIps.updateOne({
         boardUri : boardUri
       }, {
         $set : {

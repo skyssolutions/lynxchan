@@ -64,7 +64,7 @@ exports.reaggregateLatestPosts = function(countData, board, parentThreads,
       var foundPosts = results.length ? results[0].ids : [];
 
       // style exception, too simple
-      threads.update({
+      threads.updateOne({
         boardUri : board.boardUri,
         threadId : parentThreads[index]
       }, {
@@ -201,7 +201,7 @@ exports.updateBoardAndThreads = function(board, parameters, cb, foundThreads,
 
   if (!parameters.deleteUploads) {
 
-    boards.update({
+    boards.updateOne({
       boardUri : board.boardUri
     }, {
       $inc : {

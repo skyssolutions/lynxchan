@@ -289,7 +289,7 @@ exports.updateThread = function(parameters, postId, thread, callback, post) {
     updateBlock.$set.lastBump = new Date();
   }
 
-  threads.update({
+  threads.updateOne({
     boardUri : parameters.boardUri,
     threadId : parameters.threadId
   }, updateBlock, function updatedThread(error, result) {

@@ -57,7 +57,7 @@ threads: stores board's threads.
     flagName: name of the flag used.
     email: email of the poster. 64 characters.
     subject: subject of the thread. 128 characters.
-    message: text of the post. 2048 characters.
+    message: text of the post. 4096 characters.
     markdown: text of the post after markdown.
     creation(Date): time when the post was created.
     boardUri*/***: url of the board the thread belongs to.
@@ -96,7 +96,7 @@ posts: stores posts.
     flagName: name of the flag used.
     subject: subject of the thread. 128 characters.
     ip(Array): ip of the poster. Null if poster used TOR.
-    message: text of the post. 2048 characters.
+    message: text of the post. 4096 characters.
     markdown: text of the post after markdown.
     banMessage: message to be displayed indicating this message was a cause to a ban. 128 characters.
     creation(Date): time when the post was created.
@@ -127,6 +127,7 @@ users: stores users.
     password: hashed password of the user.
     ownedBoards(Array): list of the uri's of the boards owned by this user.
     hash: current hash of the user.
+    volunteeredBoards(Array): list of the uri's of the boards where this user is a volunteer at.
     renewExpiration(Date): time of when the hash should be silently renewed.
     logoutExpiration(Date): time of when the user should be logged out. Renewed after a new hash is created.
     globalRole (Number): global role of the user. 

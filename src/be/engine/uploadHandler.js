@@ -268,7 +268,7 @@ exports.updatePostingFiles = function(boardData, threadId, postId, file,
     collectionToQuery = posts;
   }
 
-  collectionToQuery.update(queryBlock, {
+  collectionToQuery.updateOne(queryBlock, {
     $push : {
       files : {
         originalName : file.title.replace(/[<>]/g, function replace(match) {

@@ -129,7 +129,7 @@ exports.createRangeBan = function(userData, parameters, callback) {
       }
 
       // style exception,too simple
-      bans.insert(rangeBan, function insertedBan(error) {
+      bans.insertOne(rangeBan, function insertedBan(error) {
         if (error) {
           callback(error);
         } else {

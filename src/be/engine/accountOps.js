@@ -103,7 +103,7 @@ exports.setGlobalRole = function(operatorData, parameters, callback, override) {
     } else {
 
       // style exception, too simple
-      users.update({
+      users.updateOne({
         login : parameters.login
       }, {
         $set : {
@@ -218,7 +218,7 @@ exports.createSession = function(login, callback) {
       logoutAt.setHours(logoutAt.getHours() + 1);
 
       // style exception, too simple
-      users.update({
+      users.updateOne({
         login : login
       }, {
         $set : {

@@ -101,7 +101,7 @@ function checkAmount(message) {
 
 function addThread(message) {
 
-  overboardThreads.insert({
+  overboardThreads.insertOne({
     thread : new ObjectID(message._id)
   }, function(error) {
 

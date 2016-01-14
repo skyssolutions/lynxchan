@@ -109,12 +109,11 @@ exports.recoveryEmail = function(recoveryLink) {
 };
 
 // Section 1: Account {
-exports.fillOwnedBoardsDiv = function(document, boardList) {
+exports.fillBoardsDiv = function(document, boardDiv, boardList) {
+
   if (!boardList || !boardList.length) {
     return;
   }
-
-  var boardDiv = document.getElementById('boardsDiv');
 
   for (var i = 0; i < boardList.length; i++) {
     var link = document.createElement('a');
@@ -190,7 +189,11 @@ exports.account = function(userData) {
           userData.email);
     }
 
-    exports.fillOwnedBoardsDiv(document, userData.ownedBoards);
+    exports.fillBoardsDiv(document, document.getElementById('ownedDiv'),
+        userData.ownedBoards);
+
+    exports.fillBoardsDiv(document, document.getElementById('volunteeredDiv'),
+        userData.volunteeredBoards);
 
     return serializer(document);
   } catch (error) {

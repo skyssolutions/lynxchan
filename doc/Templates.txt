@@ -467,7 +467,11 @@ checkboxAlwaysSign:
     use: might be turned on.
     description: check-box that indicates the user wishes to always sign posts with his role.
 
-boardsDiv:
+ownedDiv:
+    use: have children appended to it.
+    description: contains the list of boards owned by the user.
+
+volunteeredDiv:
     use: have children appended to it.
     description: contains the list of boards owned by the user.
 

@@ -1,6 +1,6 @@
 'use strict';
 
-var dbVersion = 7;
+var dbVersion = 8;
 
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
@@ -109,6 +109,10 @@ function upgrade(version, callback) {
 
   case 6:
     migrations.createR9KHashes(callback);
+    break;
+
+  case 7:
+    migrations.aggregateVolunteeredBoards(callback);
     break;
 
   default:
