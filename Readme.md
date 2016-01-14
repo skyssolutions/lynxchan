@@ -20,7 +20,7 @@ The dependencies versions are not exactly mandatory and only reflect the version
 # Automatic install (Recommended)
 1. Required: browse to `aux` and run the script `setup.sh` that will prompt for the install of a front-end, default settings and libraries. Browsing to the `aux` directory is required because the scripts use relative paths to this directory. Make sure you used `git clone` to obtain the engine.
 2. Optional: run the script `root-setup.sh` that will prompt for the install of a command using a soft-link to `src/be/boot.js`. This script must be run as root. It will also prompt for the install of a init script. The name of both the command and the service will be `lynxchan`.
-3. Optional: if you installed the default front-end, go to it's directory and run the `set-domain.sh` script passing as the first parameter your desired domain. It has localhost:8080 as the default, this will change the domain used to look for the static files on the templates.
+3. Optional: if you installed the default front-end, go to it's directory and run the `set-domain.sh` script passing as the first parameter your desired domain. It has localhost:8080 as the default, this will change the domain used to reference the domain on front-end files. Currently there is only one reference, that is to the archives.
   
 # Manual install
 1. Create the required settings file in the `src/be/settings` directory. Instructions can be found at `src/be/readme.md`. There is also a directory called settings.example with a set of functional settings.
@@ -31,7 +31,6 @@ The dependencies versions are not exactly mandatory and only reflect the version
 * Do not use root on any process of the engine install, except when running root-setup.sh.
 * If you didn't use git clone to get this repository, the setup script won't be able to change to the latest stable version, since it requires moving to a different branch.
 * Set both the `api` and `static` sub-domains pointing to the server. `static` is used to reach static files on the front-end and `api` is used to perform JSON requests to the server.
-* Consult the readme file on the placeholder front-end if you are using it to learn how to set the `settings.js` file, required for it's javascript to run. An example file is also there, which the set-domain script can copy to the right location for you.
 * Pages that are generated, like board and thread pages, won't reflect template changes immediatly. Consult src/be's readme to learn how to manually reload these pages. And even then, keep in mind the server will cache templates when not running on debug mode, so even if you reload the page, a running server might use outdated versions of templates when regenerating pages.
 * There is no default admin account. Consult the src/be readme to see how to use the terminal to create a root account or convert an existing one to root.
 * If you start the engine on the master branch and then checkout a stable version that is too old, the database might not work or even get corrupted. So if you started it on the master branch and you wish to use a stable version, drop the database if anything weird happens.

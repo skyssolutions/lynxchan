@@ -82,11 +82,9 @@ exports.readFileStats = function(pathName, lastSeen, header, req, res, cb) {
 
 };
 
-exports.outputFile = function(req, res, callback) {
+exports.outputFile = function(req, pathName, res, callback) {
 
   var lastSeen = req.headers ? req.headers['if-modified-since'] : null;
-
-  var pathName = url.parse(req.url).pathname;
 
   if (verbose) {
     console.log('Outputting static file \'' + pathName + '\'');

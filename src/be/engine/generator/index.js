@@ -9,7 +9,6 @@ var settings = settingsHandler.getGeneralSettings();
 var verbose = settings.verbose;
 
 exports.postProjection = {
-  _id : 0,
   subject : 1,
   creation : 1,
   threadId : 1,

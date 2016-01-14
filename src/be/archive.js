@@ -382,7 +382,6 @@ function logArchiveDeletion(userData, parameters, callback) {
 exports.deleteBoard = function(userData, parameters, callback) {
 
   if (checkForDeletionError(userData, callback)) {
-    console.log('del error');
     return;
   }
 

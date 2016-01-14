@@ -46,13 +46,10 @@ Examples:
 `lynxchan -rf -rb -nd` = reload the saved front-page and the default banner and do not start a server.
 
 # Sub-domains
-The following sub-domains are used by the engine:
-* `static`: used to retrieve static files from the front-end.
-* `api`: used to access the json api.
-* `archive`: used to access the archives.
+The only sub-domain used is `archive` to serve archives. There used to be other two but they are gone. RIP in peace.
 
 # Directory structure
-The json api files will be stored on the `api` directory and accessed by the same sub-domain. `api.domain/function` will use the file `api/function.js`.
+The json api files will be stored on the `api` directory and accessed by the `/.api/` path. `/.api/function` will use the file `api/function.js`.
 The form api for support of users without js because they are retarded tin foilers are in the `form` directory and are accessed using `domain/function.js`.
 The `engine` directory will hold all scripts that provide functionality but are not to be accessed directly. There are also some few files directly under the `src/be` directory.
 The `addons` directory are used to store the addons that can be loaded. After placing an addon on this directory, it should also be included in the `addons` general setting array.
@@ -60,7 +57,7 @@ And finally, the `settings` directory hold the settings files.
 
 
 The following directories will be expected on the front-end directory:
-* `static`: static files to be accessed by using the static sub-domain.
+* `static`: static files to be accessed by using the `/.static/` path.
 * `templates`: will hold the templates, so only the files will have to be specified on the settings.
 
 # Templates

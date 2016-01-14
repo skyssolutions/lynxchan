@@ -799,8 +799,6 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
                 callback(error);
 
               } catch (error) {
-                console.log('iterateBoardsToDelete');
-
                 throw error;
               }
 

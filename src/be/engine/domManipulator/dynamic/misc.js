@@ -544,7 +544,7 @@ exports.message = function(message, link) {
     return serializer(document);
   } catch (error) {
     if (verbose) {
-      console.log('error ' + error);
+      console.log(error);
     }
 
     if (debug) {

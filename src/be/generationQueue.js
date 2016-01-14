@@ -353,7 +353,7 @@ function processQueue() {
   var message = getNextQueueItem();
 
   if (verbose) {
-    console.log('Processing ' + JSON.stringify(message, null, 2));
+    console.log('\nProcessing ' + JSON.stringify(message, null, 2));
   }
 
   if (message.clearBeforeRebuild) {

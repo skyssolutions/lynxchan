@@ -20,7 +20,6 @@ var rssBuilder;
 var jsonBuilder;
 
 var boardProjection = {
-  _id : 0,
   boardUri : 1,
   threadCount : 1,
   boardName : 1,
@@ -518,7 +517,7 @@ exports.board = function(boardUri, reloadThreads, reloadRules, cb, boardData) {
   }
 
   if (verbose) {
-    console.log('Generating board ' + boardUri);
+    console.log('\nGenerating board ' + boardUri);
   }
 
   var pageCount = Math.floor(boardData.threadCount / pageSize);
@@ -531,16 +530,27 @@ exports.board = function(boardUri, reloadThreads, reloadRules, cb, boardData) {
 };
 // } Section 1.1: Board
 
-exports.iterateBoards = function(cursor, callback) {
+exports.boards = function(callback, lastId) {
 
-  cursor.next(function gotResults(error, board) {
+  var query = {};
+
+  if (lastId) {
+    query._id = {
+      $lt : lastId
+    };
+  }
+
+  boards.find(query, boardProjection).sort({
+    _id : -1
+  }).limit(1).toArray(function gotResults(error, results) {
+
     if (error) {
-
       callback(error);
-    } else if (!board) {
-
+    } else if (!results || !results.length) {
       callback();
     } else {
+
+      var board = results[0];
 
       // style exception parent callback is too simple
       exports.board(board.boardUri, true, true, function generatedBoard(error) {
@@ -548,7 +558,7 @@ exports.iterateBoards = function(cursor, callback) {
         if (error) {
           callback(error);
         } else {
-          exports.iterateBoards(cursor, callback);
+          exports.boards(callback, board._id);
         }
 
       }, board);
@@ -557,18 +567,6 @@ exports.iterateBoards = function(cursor, callback) {
     }
 
   });
-
-};
-
-exports.boards = function(callback) {
-
-  if (verbose) {
-    console.log('Generating all boards.');
-  }
-
-  var cursor = boards.find({}, boardProjection);
-
-  exports.iterateBoards(cursor, callback);
 
 };
 // } Section 1: Boards
@@ -608,7 +606,7 @@ exports.preview = function(boardUri, threadId, postId, callback, postingData) {
     if (verbose) {
 
       var message = 'Generating preview for ' + postingData.boardUri + '/';
-      message += (postingData.threadId || postingData.postId);
+      message += (postingData.postId || postingData.threadId);
 
       console.log(message);
     }
@@ -625,22 +623,32 @@ exports.preview = function(boardUri, threadId, postId, callback, postingData) {
   }
 };
 
-exports.iteratePostsForPreviews = function(callback, postsCursor) {
+exports.iteratePostsForPreviews = function(callback, lastId) {
 
-  postsCursor = postsCursor || posts.find({}, postProjection);
+  var query = {};
 
-  postsCursor.next(function gotThread(error, post) {
+  if (lastId) {
+    query._id = {
+      $lt : lastId
+    };
+  }
+
+  posts.find(query, postProjection).sort({
+    _id : -1
+  }).limit(1).toArray(function gotThread(error, results) {
 
     if (error) {
       callback(error);
-    } else if (post) {
+    } else if (results && results.length) {
+
+      var post = results[0];
 
       exports.preview(null, null, null, function generatedPreview(error) {
 
         if (error) {
           callback(error);
         } else {
-          exports.iteratePostsForPreviews(callback, postsCursor);
+          exports.iteratePostsForPreviews(callback, post._id);
         }
 
       }, post);
@@ -653,22 +661,32 @@ exports.iteratePostsForPreviews = function(callback, postsCursor) {
 
 };
 
-exports.previews = function(callback, threadsCursor) {
+exports.previews = function(callback, lastId) {
 
-  threadsCursor = threadsCursor || threads.find({}, postProjection);
+  var query = {};
 
-  threadsCursor.next(function gotThread(error, thread) {
+  if (lastId) {
+    query._id = {
+      $lt : lastId
+    };
+  }
+
+  threads.find(query, postProjection).sort({
+    _id : -1
+  }).limit(1).toArray(function gotThread(error, results) {
 
     if (error) {
       callback(error);
-    } else if (thread) {
+    } else if (results && results.length) {
+
+      var thread = results[0];
 
       exports.preview(null, null, null, function generatedPreview(error) {
 
         if (error) {
           callback(error);
         } else {
-          exports.previews(callback, threadsCursor);
+          exports.previews(callback, thread._id);
         }
 
       }, thread);

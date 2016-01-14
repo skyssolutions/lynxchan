@@ -281,16 +281,6 @@ exports.outputArchiveFile = function(req, res) {
   }
 };
 
-exports.outputStaticFile = function(req, res) {
-
-  staticHandler.outputFile(req, res, function fileOutput(error) {
-    if (error) {
-      exports.outputError(error, res);
-    }
-
-  });
-};
-
 exports.getSubdomain = function(req) {
   var subdomain = req.headers.host.split('.');
 
@@ -394,11 +384,7 @@ exports.serve = function(req, pathName, res) {
 
   var subdomain = exports.getSubdomain(req);
 
-  if (subdomain === 'api') {
-    exports.processApiRequest(req, pathName, res);
-  } else if (subdomain === 'static') {
-    exports.outputStaticFile(req, res);
-  } else if (subdomain === 'archive') {
+  if (subdomain === 'archive') {
     if (serveArchive && archive.loaded()) {
       exports.outputArchiveFile(req, res);
     } else if (!serveArchive) {
@@ -408,7 +394,23 @@ exports.serve = function(req, pathName, res) {
     }
 
   } else {
-    exports.outputGfsFile(req, pathName, res);
+
+    if (pathName.indexOf('/.api/') === 0) {
+      exports.processApiRequest(req, pathName.substring(5), res);
+    } else if (pathName.indexOf('/.static/') === 0) {
+
+      staticHandler.outputFile(req, pathName.substring(8), res,
+          function fileOutput(error) {
+            if (error) {
+              exports.outputError(error, res);
+            }
+
+          });
+
+    } else {
+      exports.outputGfsFile(req, pathName, res);
+    }
+
   }
 
 };
