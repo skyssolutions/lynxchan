@@ -189,6 +189,7 @@ Root(Array): array of objects representing threads. Each element contains the fo
     pinned: indicates if the thread is pinned.
     cyclic(Boolean): indicates if the thread is cyclic.
     thumb: path to the thumbnail of the first image posted in this thread, if any.
+    lastBump(Date): last time this thread was bumped.
 
 ------------------------------------------------------------------------------------------
 

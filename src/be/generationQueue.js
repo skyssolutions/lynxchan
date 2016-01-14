@@ -71,46 +71,6 @@ exports.reload = function() {
   maxConcurrentMessages = settings.concurrentRebuildMessages;
 };
 
-function clearGlobalRebuilding() {
-
-  rebuildingAllLogs = false;
-  rebuildingAll = false;
-  rebuildingOverboard = false;
-  rebuildingAllBoards = false;
-  rebuildingFrontPage = false;
-  return true;
-
-}
-
-function checkForGlobalClearing(message) {
-
-  if (message.globalRebuild) {
-    return clearGlobalRebuilding();
-  } else if (message.log) {
-
-    if (message.date) {
-      logDates.splice(logDates.indexOf(message.date), 1);
-    } else {
-      logDates = [];
-      rebuildingAllLogs = false;
-    }
-
-    return true;
-
-  } else if (message.overboard) {
-    rebuildingOverboard = false;
-    return true;
-  } else if (message.allBoards) {
-    rebuildingAllBoards = false;
-    return true;
-  } else if (message.frontPage) {
-    rebuildingFrontPage = false;
-    return true;
-  }
-
-  return false;
-}
-
 function clearBoardTree(message) {
 
   if (message.preview) {
@@ -145,6 +105,46 @@ function clearBoardTree(message) {
 
   }
 
+}
+
+function clearGlobalRebuilding() {
+
+  rebuildingAllLogs = false;
+  rebuildingAll = false;
+  rebuildingOverboard = false;
+  rebuildingAllBoards = false;
+  rebuildingFrontPage = false;
+
+}
+
+function clearTree(message) {
+
+  if (message.globalRebuild) {
+    clearGlobalRebuilding();
+    return;
+  } else if (message.log) {
+
+    if (message.date) {
+      logDates.splice(logDates.indexOf(message.date), 1);
+    } else {
+      logDates = [];
+      rebuildingAllLogs = false;
+    }
+
+    return;
+
+  } else if (message.overboard) {
+    rebuildingOverboard = false;
+    return;
+  } else if (message.allBoards) {
+    rebuildingAllBoards = false;
+    return;
+  } else if (message.frontPage) {
+    rebuildingFrontPage = false;
+    return;
+  }
+
+  clearBoardTree(message);
 }
 
 function debugPreGeneration() {
@@ -226,7 +226,11 @@ function getAddressToRebuild() {
 
 }
 
-function handleRequestResult(error) {
+function handleRequestResult(error, message) {
+
+  if (!message.clearBeforeRebuild) {
+    clearTree(message);
+  }
 
   if (error) {
 
@@ -352,12 +356,12 @@ function processQueue() {
     console.log('Processing ' + JSON.stringify(message, null, 2));
   }
 
-  if (!checkForGlobalClearing(message)) {
-    clearBoardTree(message);
+  if (message.clearBeforeRebuild) {
+    clearTree(message);
   }
 
   var generationCallBack = function(error) {
-    handleRequestResult(error);
+    handleRequestResult(error, message);
   };
 
   if (settings.slaves.length) {
@@ -368,7 +372,7 @@ function processQueue() {
 
 }
 
-function putInQueue(message, boardInformation, priority) {
+function putInQueue(message, boardInformation, priority, clearBeforeRebuild) {
 
   if (boardInformation) {
     queueTree[message.board] = boardInformation;
@@ -380,6 +384,7 @@ function putInQueue(message, boardInformation, priority) {
     expiration.setSeconds(expiration.getSeconds() + priority);
   }
 
+  message.clearBeforeRebuild = clearBeforeRebuild;
   message.expiration = expiration;
 
   queueArray.push(message);
@@ -429,7 +434,8 @@ function checkForPageAndThreadRebuild(message, boardInformation) {
     boardInformation.pages.push(message.page);
   }
 
-  putInQueue(message, boardInformation, message.thread ? 0 : 30);
+  putInQueue(message, boardInformation, message.thread ? 0 : 30,
+      message.thread ? true : false);
 
 }
 
@@ -441,7 +447,7 @@ function checkBoardSpecialPages(message, boardInformation) {
 
   if (message.rules) {
     boardInformation.buildingRules = true;
-    putInQueue(message, boardInformation, 30);
+    putInQueue(message, boardInformation, 30, true);
     return;
   }
 
@@ -470,7 +476,7 @@ function rebuildingPreview(message, boardInformation) {
 
     previewsToRebuild.push(postingId);
 
-    putInQueue(message, boardInformation);
+    putInQueue(message, boardInformation, 0, true);
 
   }
 
@@ -501,7 +507,7 @@ function checkForBoardRebuild(message) {
   if (message.buildAll) {
     boardInformation.buildingAll = true;
 
-    putInQueue(message, boardInformation, 60);
+    putInQueue(message, boardInformation, 60, true);
     return;
   }
 
@@ -569,7 +575,7 @@ exports.checkForLog = function(message) {
       rebuildingAllLogs = true;
     }
 
-    putInQueue(message, null, 60);
+    putInQueue(message, null, 60, true);
 
     return;
   }

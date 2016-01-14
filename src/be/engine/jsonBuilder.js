@@ -315,7 +315,8 @@ exports.catalog = function(boardUri, threads, callback) {
       subject : thread.subject,
       locked : thread.locked ? true : false,
       pinned : thread.pinned ? true : false,
-      cyclic : thread.cyclic ? true : false
+      cyclic : thread.cyclic ? true : false,
+      lastBump : thread.lastBump,
     };
 
     if (thread.files && thread.files.length) {

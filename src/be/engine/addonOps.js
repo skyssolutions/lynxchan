@@ -18,9 +18,23 @@ exports.getEngineInfo = function() {
   return engineInfo;
 };
 
+exports.versionsMatch = function(addonVersion, engineVersion) {
+
+  addonVersion = addonVersion.split('.');
+  engineVersion = engineVersion.split('.');
+
+  for (var i = 0; i < addonVersion.length; i++) {
+    if (addonVersion[i] !== engineVersion[i]) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 exports.testVersion = function(addonName, addonVersion, engineVersion) {
 
-  if (addonVersion !== engineVersion) {
+  if (!exports.versionsMatch(addonVersion, engineVersion)) {
 
     var msg = 'Engine version mismatch for addon ' + addonName;
     msg += '\nAddon engine version: ' + addonVersion + '\nEngine version: ';
