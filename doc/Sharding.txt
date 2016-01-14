@@ -1,9 +1,15 @@
-Important notice: if you are deploying LynxChan under a webserver, you must setup your webserver to refuse unknown connections requests to /takeMessage.js on all servers, allowing only your nodes to request this page. If your webserver allows any source to request this page, your server could be overloaded by simply requesting the generation of unnecessary pages. On stand alone mode this page is not available at all.
-
-Also, is up to the webserver to refuse any connection not coming from the master on slaves.
-
 Sharding is the capability of the engine to run as a distributed system, with a single master and several slaves.
 
+PRECAUTIONS
+If you are deploying LynxChan under a webserver, you must setup your webserver to refuse unknown connections requests to /takeMessage.js on all servers, allowing only your nodes to request this page. If your webserver allows any source to request this page, your server could be overloaded by simply requesting the generation of unnecessary pages to the master node. 
+
+On stand alone mode this page is not available at all, so this is only a concern on sharded settings.
+
+Also, is up to the webserver to refuse any connection not coming from the master on slaves, if you use one.
+
+All of this is handled by the engine if you are not using reverse-proxies, since in this case it can decide based on the IP of the request.
+
+WORKFLOW
 The master has two roles:
 
 1: to act as a load balancer, passing requests to the slaves.
@@ -11,8 +17,8 @@ The master has two roles:
 
 The first item is fairly simple, the master just acts as a reverse-proxy. Currently, it is unable to pass requests using https to slaves, that should be eventually fixed. However, it is able to pass incoming https requests using plain http to slaves. So you can either trust no one will sniff your traffic between slaves and the master or deploy webservers to take in http and pass using https to slaves.
 
-The requests will be passed using the port the master is listening to. So if your master listens on port 8080, it will try to pass the request to slaves on port 8080.
-
+The requests will be passed using the port the master is listening to when using http and 443 when using https (when its fixed, of course). 
+So if your master listens on port 8080, it will try to pass the request to slaves on port 8080.
 
 The second item works as follows:
 Worker process on a slave triggers a page regeneration and send it to master process.
@@ -24,3 +30,20 @@ Slave node receives the message on a worker process and generates the page.
 
 This way, the I/O is kept as efficient as possible, because there will be still a single queue, instead of each server having its own queue an possibily building the same pages at the same time.
 
+SETTING UP
+To put your servers into sharding mode you must do the following things:
+
+1: On the global settings of the slaves input the ip of the master node to be used to 
+A) determine if the incoming request is from it and should be served or dropped.
+B) to send rebuild messages that were triggered so the master node can put it on the queue or drop.
+After this, your slave node will refuse any request coming from any ip that is not the master node.
+
+2: On the global settings of the master node, insert the ips of the slaves separated by commas as any other list. The engine handles a couple of details here:
+A) it will automatically change the settings for the slaves to the ones the master is using as soon as you add them to the list of slaves.
+B) you can change the list of slaves as you wish on any moment or even remove them all. No restart required.
+
+And of course, point them all to the same database.
+
+Keep in mind that the engine won't synchronize the front-end files, is up to you to make sure they are all the same across servers. 
+The slaves are the ones responsible for generating pages but the master also serves the page used to display global settings, so it must have the correct domains on at least this page.
+Just make sure they are all the same across all servers.

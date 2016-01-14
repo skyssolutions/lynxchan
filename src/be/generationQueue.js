@@ -320,16 +320,33 @@ function sendMessageByHttp(message, callback, error, retries) {
 
 }
 
+function getNextQueueItem() {
+
+  var lowestExpiration = Infinity;
+  var lowestIndex;
+
+  for (var i = 0; i < queueArray.length; i++) {
+    var currentExpiration = queueArray[i].expiration;
+
+    if (currentExpiration < lowestExpiration) {
+      lowestIndex = i;
+      lowestExpiration = currentExpiration;
+    }
+
+  }
+
+  return queueArray.splice(lowestIndex, 1)[0];
+}
+
 function processQueue() {
 
   if (!queueArray.length) {
-
     return;
   }
 
   concurrentMessages++;
 
-  var message = queueArray.shift();
+  var message = getNextQueueItem();
 
   if (verbose) {
     console.log('Processing ' + JSON.stringify(message, null, 2));
@@ -351,11 +368,19 @@ function processQueue() {
 
 }
 
-function putInQueue(message, boardInformation) {
+function putInQueue(message, boardInformation, priority) {
 
   if (boardInformation) {
     queueTree[message.board] = boardInformation;
   }
+
+  var expiration = new Date();
+
+  if (priority) {
+    expiration.setSeconds(expiration.getSeconds() + priority);
+  }
+
+  message.expiration = expiration;
 
   queueArray.push(message);
 
@@ -385,7 +410,7 @@ function checkForPageAndThreadRebuild(message, boardInformation) {
   if (!message.thread && !message.page) {
     boardInformation.buildingPages = true;
 
-    putInQueue(message, boardInformation);
+    putInQueue(message, boardInformation, 30);
 
     return;
   }
@@ -399,13 +424,12 @@ function checkForPageAndThreadRebuild(message, boardInformation) {
   }
 
   if (message.thread) {
-
     boardThreads.push(message.thread);
   } else {
     boardInformation.pages.push(message.page);
   }
 
-  putInQueue(message, boardInformation);
+  putInQueue(message, boardInformation, message.thread ? 0 : 30);
 
 }
 
@@ -417,7 +441,7 @@ function checkBoardSpecialPages(message, boardInformation) {
 
   if (message.rules) {
     boardInformation.buildingRules = true;
-    putInQueue(message, boardInformation);
+    putInQueue(message, boardInformation, 30);
     return;
   }
 
@@ -427,7 +451,7 @@ function checkBoardSpecialPages(message, boardInformation) {
 
   if (message.catalog) {
     boardInformation.buildingCatalog = true;
-    putInQueue(message, boardInformation);
+    putInQueue(message, boardInformation, 15);
     return;
   }
 
@@ -477,7 +501,7 @@ function checkForBoardRebuild(message) {
   if (message.buildAll) {
     boardInformation.buildingAll = true;
 
-    putInQueue(message, boardInformation);
+    putInQueue(message, boardInformation, 60);
     return;
   }
 
@@ -492,7 +516,7 @@ function checkForFullBoardRebuild(message) {
 
   if (message.allBoards) {
     rebuildingAllBoards = true;
-    putInQueue(message);
+    putInQueue(message, null, 60);
     return;
   }
 
@@ -503,7 +527,7 @@ function checkForFullBoardRebuild(message) {
   if (message.frontPage) {
     rebuildingFrontPage = true;
 
-    putInQueue(message);
+    putInQueue(message, null, 60);
     return;
   }
 
@@ -520,7 +544,7 @@ exports.checkForOverBoard = function(message) {
   if (message.overboard) {
     rebuildingOverboard = true;
 
-    putInQueue(message);
+    putInQueue(message, null, 30);
 
     return;
   }
@@ -545,7 +569,7 @@ exports.checkForLog = function(message) {
       rebuildingAllLogs = true;
     }
 
-    putInQueue(message);
+    putInQueue(message, null, 60);
 
     return;
   }

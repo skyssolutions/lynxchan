@@ -40,6 +40,11 @@ It accepts the following arguments:
 Arguments that are meant to inform values should be used in the following manner:
 `argument value`
 
+Examples:
+`lynxchan -r -nd` = rebuild all pages and do not start a server.
+`lynxchan -ca -l login -p pass -gr 0` = create an account with login login, password pass with root global role and then start the server.
+`lynxchan -rf -rb -nd` = reload the saved front-page and the default banner and do not start a server.
+
 # Sub-domains
 The following sub-domains are used by the engine:
 * `static`: used to retrieve static files from the front-end.
