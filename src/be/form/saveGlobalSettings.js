@@ -18,7 +18,7 @@ function changeGlobalSettings(userData, parameters, res, auth) {
       continue;
     }
 
-    var parts = rawParam.toString().trim().split(',');
+    var parts = rawParam.trim().split(',');
 
     var newArray = [];
 

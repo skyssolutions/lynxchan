@@ -59,7 +59,7 @@ exports.process = function(req, res) {
   apiOps.getAnonJsonData(req, res, function gotData(auth, parameters) {
 
     if (parameters.password) {
-      parameters.password = parameters.password.trim();
+      parameters.password = parameters.password.toString().trim();
 
       if (!parameters.password.length) {
         delete parameters.password;

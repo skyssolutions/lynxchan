@@ -194,20 +194,9 @@ exports.createThread = function(req, userData, parameters, board, threadId,
 
       // style exception, too simple
       uploadHandler.saveUploads(board, threadId, null, parameters,
-          function savedUploads(error) {
-            if (error) {
-              if (verbose) {
-                console.log(error);
-              }
-
-              if (debug) {
-                throw error;
-              }
-            }
-
+          function savedUploads() {
             exports.updateBoardForThreadCreation(parameters.boardUri, threadId,
                 enabledCaptcha, callback, threadToAdd);
-
           });
       // style exception, too simple
 

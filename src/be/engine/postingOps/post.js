@@ -355,18 +355,8 @@ exports.createPost = function(req, parameters, userData, postId, thread, board,
 
       // style exception, too simple
       uploadHandler.saveUploads(board, parameters.threadId, postId, parameters,
-          function savedFiles(error) {
-            if (error) {
-              if (verbose) {
-                console.log(error);
-              }
-
-              if (debug) {
-                throw error;
-              }
-            }
+          function savedFiles() {
             exports.updateThread(parameters, postId, thread, cb, postToAdd);
-
           });
       // style exception, too simple
 

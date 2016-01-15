@@ -11,6 +11,7 @@ var kernel = require('../kernel');
 var genericThumb = kernel.genericThumb();
 var genericAudioThumb = kernel.genericAudioThumb();
 var spoilerPath = kernel.spoilerImage();
+var debug = kernel.debug();
 var globalLatestImages = db.latestImages();
 var posts = db.posts();
 var videoDimensionsCommand = 'ffprobe -v error -show_entries ';
@@ -19,6 +20,7 @@ var videoThumbCommand = 'ffmpeg -i {$path} -y -vframes 1 -vf scale=';
 var mp3ThumbCommand = 'ffmpeg -i {$path} -y -an -vcodec copy {$destination}';
 mp3ThumbCommand += ' && mogrify -resize {$dimension} {$destination}';
 var settings = require('../settingsHandler').getGeneralSettings();
+var verbose = settings.verbose;
 var archive = settings.archiveLevel > 1;
 var supportedMimes = settings.acceptedMimes;
 var thumbSize = settings.thumbSize;
@@ -600,12 +602,20 @@ exports.saveUploads = function(boardData, threadId, postId, parameters,
 
     exports.processFile(boardData, threadId, postId, file, parameters,
         function processedFile(error) {
+
           if (error) {
-            callback(error);
-          } else {
-            exports.saveUploads(boardData, threadId, postId, parameters,
-                callback, index + 1);
+            if (verbose) {
+              console.log(error);
+            }
+
+            if (debug) {
+              throw error;
+            }
           }
+
+          exports.saveUploads(boardData, threadId, postId, parameters,
+              callback, index + 1);
+
         });
 
   } else {

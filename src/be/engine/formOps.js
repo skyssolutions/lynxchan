@@ -45,7 +45,7 @@ exports.getDomain = function(req) {
 exports.getCookies = function(req) {
   var parsedCookies = {};
 
-  if (req.headers && req.headers.cookie) {
+  if (req.headers.cookie) {
 
     var cookies = req.headers.cookie.split(';');
 
@@ -404,7 +404,7 @@ exports.checkBlankParameters = function(object, parameters, res) {
       return failCheck(parameter, lang.miscReasonUndefined);
     }
 
-    if (!object[parameter].toString().trim().length) {
+    if (!object[parameter].trim().length) {
       return failCheck(parameter, lang.miscReasonNoLength);
     }
   }

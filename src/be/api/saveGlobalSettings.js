@@ -21,7 +21,7 @@ function changeGlobalSettings(auth, userData, parameters, res) {
 
     for (var j = 0; j < receivedArray.length; j++) {
 
-      var processedPart = receivedArray[j].trim();
+      var processedPart = receivedArray[j].toString().trim();
 
       if (processedPart.length) {
         newArray.push(processedPart);
