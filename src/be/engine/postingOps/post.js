@@ -14,6 +14,7 @@ var verbose = settings.verbose;
 var bumpLimit = settings.autoSageLimit;
 var common = require('.').common;
 var gsHandler;
+var overboardOps;
 var generator;
 var r9k;
 var uploadHandler;
@@ -28,6 +29,7 @@ var autoLockLimit = bumpLimit * 2;
 
 exports.loadDependencies = function() {
 
+  overboardOps = require('../overboardOps');
   gsHandler = require('../gridFsHandler');
   generator = require('../generator').board;
   r9k = require('../r9k');
@@ -191,7 +193,7 @@ exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
   }
 
   if (settings.overboard) {
-    process.send({
+    overboardOps.reaggregate({
       overboard : true,
       _id : thread._id,
       post : true,

@@ -5,7 +5,6 @@
 
 var cluster = require('cluster');
 var db;
-var overboard;
 var fs = require('fs');
 var settingsHandler = require('./settingsHandler');
 var verbose;
@@ -72,7 +71,6 @@ exports.reload = function() {
   require('./archive').reload();
 
   if (cluster.isMaster) {
-    overboard.reload();
     require('./scheduleHandler').reload();
     require('./generationQueue').reload();
   } else {
@@ -380,16 +378,7 @@ function processBulkRebuild(message, genQueue) {
   exports.reload();
 
   for (var i = 0; i < message.rebuilds.length; i++) {
-
-    var rebuild = message.rebuilds[i];
-
-    if (rebuild.overboard) {
-      overboard.reaggregate(rebuild);
-    } else {
-      genQueue.queue(rebuild);
-
-    }
-
+    genQueue.queue(message.rebuilds[i]);
   }
 }
 
@@ -434,8 +423,6 @@ function bootWorkers() {
           cluster.workers[id].send(message);
         }
 
-      } else if (message.overboard) {
-        overboard.reaggregate(message);
       } else {
         genQueue.queue(message);
       }
@@ -769,8 +756,6 @@ if (cluster.isMaster) {
       throw error;
     } else {
       exports.startEngine();
-
-      overboard = require('./overboardOps');
 
       checkDbVersions();
     }

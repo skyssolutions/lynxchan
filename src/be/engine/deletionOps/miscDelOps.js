@@ -21,6 +21,7 @@ var verbose = settings.verbose;
 var threadLimit = settings.maxThreadCount;
 var lang;
 var logOps;
+var overboardOps;
 var gridFs;
 
 var collectionsToClean = [ reports, posts, threads, flags, hashBans,
@@ -29,6 +30,7 @@ var collectionsToClean = [ reports, posts, threads, flags, hashBans,
 exports.loadDependencies = function() {
 
   logOps = require('../logOps');
+  overboardOps = require('../overboardOps');
   lang = require('../langOps').languagePack();
   gridFs = require('../gridFsHandler');
 
@@ -161,7 +163,7 @@ exports.deleteBoardContent = function(board, callback, index) {
     });
 
     if (settings.overboard) {
-      process.send({
+      overboardOps.reaggregate({
         overboard : true,
         reaggregate : true
       });

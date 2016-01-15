@@ -13,6 +13,7 @@ var logger = require('../../logger');
 var common;
 var delOps;
 var generator;
+var overboardOps;
 var uploadHandler;
 var lang;
 var r9k;
@@ -29,6 +30,7 @@ exports.loadDependencies = function() {
   generator = require('../generator').board;
   uploadHandler = require('../uploadHandler');
   lang = require('../langOps').languagePack();
+  overboardOps = require('../overboardOps');
   miscOps = require('../miscOps');
   captchaOps = require('../captchaOps');
   r9k = require('../r9k');
@@ -83,7 +85,7 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
   }
 
   if (settings.overboard) {
-    process.send({
+    overboardOps.reaggregate({
       overboard : true,
       _id : thread._id
     });

@@ -2,17 +2,15 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
-var genQueue = require('./generationQueue');
-var settings = require('./settingsHandler').getGeneralSettings();
+var settings = require('../settingsHandler').getGeneralSettings();
 var overboardSize = settings.overBoardThreadCount;
-var db = require('./db');
+var db = require('../db');
 var overboardThreads = db.overboardThreads();
 var threads = db.threads();
 var reaggregating;
 
-exports.reload = function() {
-  settings = require('./settingsHandler').getGeneralSettings();
-  overboardSize = settings.overBoardThreadCount;
+exports.loadDependencies = function() {
+
 };
 
 // Section 1: Overboard insertion {
@@ -49,7 +47,7 @@ function getThreadsToRemove(toRemove, ids, message) {
         if (error) {
           console.log(error);
         } else {
-          genQueue.queue(message);
+          process.send(message);
         }
       });
       // style exception, too simple
@@ -80,7 +78,7 @@ function checkAmount(message) {
           console.log(error);
         } else if (!foundThreads.length) {
           // will probably never fall into this condition
-          genQueue.queue(message);
+          process.send(message);
 
         } else {
           getThreadsToRemove(count - overboardSize, foundThreads[0].ids,
@@ -91,7 +89,7 @@ function checkAmount(message) {
       // style exception, too simple
 
     } else {
-      genQueue.queue(message);
+      process.send(message);
     }
 
   });
@@ -124,7 +122,7 @@ function checkForExistance(message) {
     if (error) {
       console.log(error);
     } else if (thread) {
-      genQueue.queue(message);
+      process.send(message);
     } else if (message.bump) {
       addThread(message);
     }
@@ -202,7 +200,7 @@ function fullReaggregate(message) {
         if (error) {
           console.log(error);
         } else {
-          genQueue.queue(message);
+          process.send(message);
         }
 
       });
@@ -219,7 +217,7 @@ exports.reaggregate = function(message) {
   if (message.reaggregate) {
     fullReaggregate(message);
   } else if (!message._id) {
-    genQueue.queue(message);
+    process.send(message);
   } else if (!message.post) {
     addThread(message);
   } else {

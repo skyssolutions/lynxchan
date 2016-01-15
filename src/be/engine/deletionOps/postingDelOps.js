@@ -17,12 +17,14 @@ var globalLatestImagesCount = settings.globalLatestImages;
 var latestPosts = settings.latestPostCount;
 var gridFs;
 var lang;
+var overboardOps;
 var miscOps;
 var logOps;
 
 exports.loadDependencies = function() {
 
   logOps = require('../logOps');
+  overboardOps = require('../overboardOps');
   gridFs = require('../gridFsHandler');
   lang = require('../langOps').languagePack();
   miscOps = require('../miscOps');
@@ -757,7 +759,7 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
   if (!foundBoards.length) {
 
     if (settings.overboard) {
-      process.send({
+      overboardOps.reaggregate({
         overboard : true,
         reaggregate : true
       });

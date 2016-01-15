@@ -12,6 +12,7 @@ var settings = require('../../settingsHandler').getGeneralSettings();
 var lang;
 var miscOps;
 var postOps;
+var overboardOps;
 var common;
 var r9k;
 
@@ -25,6 +26,7 @@ exports.loadDependencies = function() {
 
   lang = require('../langOps').languagePack();
   miscOps = require('../miscOps');
+  overboardOps = require('../overboardOps');
   postOps = require('../postingOps').common;
   common = require('.').common;
   r9k = require('../r9k');
@@ -204,7 +206,7 @@ exports.queueRebuild = function(page, board, posting, callback) {
   });
 
   if (settings.overboard) {
-    process.send({
+    overboardOps.reaggregate({
       overboard : true
     });
   }

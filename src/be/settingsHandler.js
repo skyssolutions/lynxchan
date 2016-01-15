@@ -143,7 +143,8 @@ function checkOverboardChanged(settings) {
 function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
 
   if (checkOverboardChanged(settings)) {
-    reloadsToMake.push({
+
+    require('./engine/overboardOps').reaggregate({
       overboard : true,
       reaggregate : settings.overboard && !generalSettings.overboard
     });
