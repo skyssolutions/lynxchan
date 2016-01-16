@@ -7,7 +7,6 @@ var cluster = require('cluster');
 var db;
 var fs = require('fs');
 var settingsHandler = require('./settingsHandler');
-var verbose;
 var generator;
 
 var reloadDirectories = [ 'engine', 'form', 'api', 'addons' ];
@@ -63,8 +62,6 @@ exports.reload = function() {
   checkImagesSet();
 
   setDefaultImages();
-
-  verbose = settingsHandler.getGeneralSettings().verbose;
 
   exports.startEngine();
 
@@ -448,17 +445,15 @@ function regenerateAll() {
   generator.all(function regeneratedAll(error) {
     if (error) {
 
-      if (verbose) {
-        console.log(error);
-      }
+      console.log(error);
 
       if (debug) {
         throw error;
       }
 
-    } else {
-      bootWorkers();
     }
+
+    bootWorkers();
   });
 
 }
@@ -484,9 +479,7 @@ function iterateOptionalReloads(index) {
 
           if (error) {
 
-            if (verbose) {
-              console.log(error);
-            }
+            console.log(error);
 
             if (debug) {
               throw error;
@@ -520,16 +513,16 @@ function iterateDefaultPages(foundFiles, index) {
     generator[fileData.generatorModule][fileData.generatorFunction]
         (function generated(error) {
           if (error) {
-            if (verbose) {
-              console.log(error);
-            }
+
+            console.log(error);
 
             if (debug) {
               throw error;
             }
-          } else {
-            iterateDefaultPages(foundFiles, index + 1);
           }
+
+          iterateDefaultPages(foundFiles, index + 1);
+
         });
   } else {
     iterateDefaultPages(foundFiles, index + 1);
@@ -568,14 +561,9 @@ function checkForDefaultPages() {
       }
     }
   }, function gotFiles(error, files) {
-    if (error) {
-      if (verbose) {
-        console.log(error);
-      }
 
-      if (debug) {
-        throw error;
-      }
+    if (error) {
+      throw error;
     } else if (files.length) {
       iterateDefaultPages(files[0].pages);
     } else {
@@ -592,8 +580,6 @@ checkImagesSet();
 setDefaultImages();
 
 composeDefaultFiles();
-
-verbose = settingsHandler.getGeneralSettings().verbose;
 
 db = require('./db');
 

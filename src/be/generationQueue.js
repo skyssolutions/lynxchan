@@ -234,10 +234,7 @@ function handleRequestResult(error, message) {
 
   if (error) {
 
-    if (verbose) {
-      console.log(error);
-
-    }
+    console.log(error);
 
     if (debug) {
       throw error;

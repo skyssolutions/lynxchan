@@ -204,7 +204,8 @@ exports.getLiftedBanLogMessage = function(ban, userData) {
       logMessage += pieces.boardRangeBanPiece.replace('{$board}', ban.boardUri);
     }
 
-    logMessage += pieces.finalRangeBanPIece.replace('{$range}', ban.range);
+    logMessage += pieces.finalRangeBanPIece.replace('{$range}', ban.range
+        .join('.'));
 
   } else {
     logMessage += pieces.unknownPiece.replace('{$ban}', ban._id);

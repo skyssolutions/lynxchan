@@ -83,7 +83,8 @@ exports.logRangeBanCreation = function(userData, parameters, callback) {
     logMessage += pieces.globalPiece;
   }
 
-  logMessage += pieces.finalPiece.replace('{$range}', parameters.range);
+  logMessage += pieces.finalPiece.replace('{$range}', parameters.range
+      .join('.'));
 
   logOps.insertLog({
     user : userData.login,
@@ -98,16 +99,16 @@ exports.logRangeBanCreation = function(userData, parameters, callback) {
 
 exports.createRangeBan = function(userData, parameters, callback) {
 
-  var processedRange = miscOps.sanitizeIp(parameters.range);
+  parameters.range = miscOps.sanitizeIp(parameters.range);
 
-  if (!processedRange.length) {
+  if (!parameters.range.length) {
     callback(lang.errInvalidRange);
 
     return;
   }
 
   bans.findOne({
-    range : processedRange,
+    range : parameters.range,
     boardUri : parameters.boardUri ? parameters.boardUri : {
       $exists : false
     }
@@ -120,7 +121,7 @@ exports.createRangeBan = function(userData, parameters, callback) {
     } else {
 
       var rangeBan = {
-        range : processedRange,
+        range : parameters.range,
         appliedBy : userData.login,
       };
 

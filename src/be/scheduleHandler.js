@@ -54,9 +54,8 @@ function cleanEarly404() {
 
   delOps.cleanEarly404(function cleanedUp(error) {
     if (error) {
-      if (verbose) {
-        console.log(error);
-      }
+
+      console.log(error);
 
       if (debug) {
         throw error;
@@ -86,9 +85,7 @@ function refreshTorEntries() {
   torHandler.updateIps(function updatedTorIps(error) {
     if (error) {
 
-      if (verbose) {
-        console.log(error);
-      }
+      console.log(error);
 
       if (debug) {
         throw error;
@@ -160,9 +157,8 @@ function applyStats(stats) {
 
   boards.bulkWrite(operations, function updatedStats(error) {
     if (error) {
-      if (verbose) {
-        console.log(error.toString());
-      }
+
+      console.log(error);
 
       if (debug) {
         throw error;
@@ -175,9 +171,9 @@ function applyStats(stats) {
         });
       }
 
-      boardsStats();
     }
 
+    boardsStats();
   });
 
 }
@@ -211,11 +207,13 @@ function getStats() {
   } ], function gotStats(error, result) {
 
     if (error) {
-      if (verbose) {
-        console.log(error.toString());
-      }
+
+      console.log(error);
+
       if (debug) {
         throw error;
+      } else {
+        boardsStats();
       }
 
     } else if (!result.length) {
@@ -345,12 +343,12 @@ function checkExpiredCaptchas() {
   } ], function gotExpiredFiles(error, results) {
     if (error) {
 
-      if (verbose) {
-        console.log(error);
-      }
+      console.log(error);
 
       if (debug) {
         throw error;
+      } else {
+        expiredCaptcha();
       }
 
     } else if (results.length) {
@@ -366,16 +364,16 @@ function checkExpiredCaptchas() {
       // style exception, too simple
       gridFsHandler.removeFiles(expiredFiles, function deletedFiles(error) {
         if (error) {
-          if (verbose) {
-            console.log(error);
-          }
+
+          console.log(error);
 
           if (debug) {
             throw error;
           }
-        } else {
-          expiredCaptcha();
         }
+
+        expiredCaptcha();
+
       });
 
       // style exception, too simple
@@ -433,9 +431,8 @@ function setUniqueIpCount(results) {
   boards.bulkWrite(operations, function updatedUniqueIps(error) {
 
     if (error) {
-      if (verbose) {
-        console.log(error.toString());
-      }
+
+      console.log(error);
 
       if (debug) {
         throw error;
@@ -456,6 +453,10 @@ function setUniqueIpCount(results) {
 
 function updateUniqueIpCount() {
 
+  if (verbose) {
+    console.log('Setting unique ips for boards');
+  }
+
   uniqueIps.aggregate([ {
     $project : {
       boardUri : 1,
@@ -465,20 +466,27 @@ function updateUniqueIpCount() {
     }
   } ], function gotCount(error, results) {
 
+    uniqueIps.deleteMany({}, function clearedUniqueIps(deletionError) {
+
+      if (deletionError) {
+        console.log(deletionError);
+      }
+
+    });
+
     if (error) {
 
-      if (verbose) {
-        console.log(error);
-      }
+      console.log(error);
 
       if (debug) {
         throw error;
+      } else {
+        uniqueIpCount();
       }
+
+    } else {
+      setUniqueIpCount(results);
     }
-
-    uniqueIps.deleteMany({});
-
-    setUniqueIpCount(results);
 
   });
 

@@ -221,7 +221,7 @@ exports.updateReport = function(report, userData, callback) {
 
       logMessage += pieces.finalPiece.replace('{$thread}', report.threadId)
           .replace('{$board}', report.boardUri).replace('{$reason}',
-              report.reason);
+              report.reason || '');
 
       logOps.insertLog({
         user : userData.login,

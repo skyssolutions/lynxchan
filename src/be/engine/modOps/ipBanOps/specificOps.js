@@ -116,7 +116,7 @@ exports.logBans = function(userData, board, informedPosts, informedThreads,
 
   logMessage += pieces.endPiece.replace('{$board}', board).replace(
       '{$expiration}', parameters.expiration).replace('{$reason}',
-      parameters.reason);
+      parameters.reason || '');
 
   logOps.insertLog({
     user : userData.login,
