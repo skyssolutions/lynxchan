@@ -42,8 +42,8 @@ exports.boardFieldsRelation = {
 };
 
 exports.boardControlIdentifiers = [ 'addVolunteerBoardIdentifier',
-    'deletionIdentifier', 'transferBoardIdentifier', 'boardSettingsIdentifier',
-    'customCssIdentifier', 'customSpoilerIdentifier' ];
+    'deletionIdentifier', 'transferBoardIdentifier', 'customCssIdentifier',
+    'customSpoilerIdentifier' ];
 
 exports.boardManagementLinks = [ {
   page : 'closedReports',
@@ -151,8 +151,6 @@ exports.setBoardOwnerControls = function(document, boardData) {
     common.removeElement(document.getElementById('customSpoilerIndicator'));
   }
 
-  exports.setBoardControlCheckBoxes(document, boardData);
-
   exports.setVolunteersDiv(document, boardData);
 
 };
@@ -171,7 +169,12 @@ exports.setBoardManagementLinks = function(document, boardData) {
 
 exports.setContent = function(document, boardData, userData, bans, reports) {
 
+  document.getElementById('boardSettingsIdentifier').setAttribute('value',
+      boardData.boardUri);
+
   exports.setBoardManagementLinks(document, boardData);
+
+  exports.setBoardControlCheckBoxes(document, boardData);
 
   exports.setBoardFields(document, boardData);
 

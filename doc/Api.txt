@@ -337,7 +337,7 @@ PAG_ID::21
 
 Name: setBoardSettings
 
-Description: changes board settings. Requires authentication. Restricted to the board owner.
+Description: changes board settings. Requires authentication.
 
 Parameters:
     boardUri*: board uri.

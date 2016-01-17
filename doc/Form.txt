@@ -184,7 +184,7 @@ PAG_ID::12
 
 Name: boardManagement
 
-Description: displays page for board management. Requires validation. Allowed only for the board owner and volunteers. This board uses get parameters for ease of use.
+Description: displays page for board management. Requires validation. Allowed only for the board owner and volunteers. This board uses get parameters.
 
 Parameters:
     boardUri: uri of the board the user wishes to manage.
@@ -520,7 +520,7 @@ PAG_ID::30
 
 Name: setBoardSettings
 
-Description: changes board settings. Requires authentication. Restricted to the board owner.
+Description: changes board settings. Requires authentication.
 
 Parameters:
     boardUri*: board URI.

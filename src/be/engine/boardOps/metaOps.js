@@ -241,8 +241,6 @@ exports.saveNewSettings = function(board, parameters, callback) {
 
 exports.setSettings = function(userData, parameters, callback) {
 
-  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
-
   boards.findOne({
     boardUri : parameters.boardUri
   }, function(error, board) {
@@ -251,7 +249,7 @@ exports.setSettings = function(userData, parameters, callback) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
-    } else if (board.owner !== userData.login && !globallyAllowed) {
+    } else if (!modCommonOps.isInBoardStaff(userData, board, 2)) {
       callback(lang.errDeniedChangeBoardSettings);
     } else {
       miscOps.sanitizeStrings(parameters, boardParameters);

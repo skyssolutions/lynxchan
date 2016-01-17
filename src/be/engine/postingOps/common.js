@@ -424,6 +424,8 @@ exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
 
   message = message.replace(/(http|https)\:\/\/\S+/g, function links(match) {
 
+    match = match.replace(/>/g, '&gt');
+
     return '<a target="blank" href="' + match + '">' + match + '</a>';
 
   });
