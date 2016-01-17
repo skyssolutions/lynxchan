@@ -2,6 +2,7 @@
 /src/be/settings
 /src/be/ssl.key
 /src/be/ssl.cert
+/src/be/locationData
 /src/fe
 /src/be/addons
 !/src/be/addons/example.js

@@ -219,7 +219,7 @@ exports.getPageTests = function() {
             'hashBansLink', 'customSpoilerIndicator', 'tagsField',
             'customJsForm', 'customJsIdentifier', 'blockDeletionCheckbox',
             'requireFileCheckbox', 'appealedBansPanel', 'linkSelf',
-            'uniqueFilesCheckbox', 'uniquePostsCheckbox' ]
+            'uniqueFilesCheckbox', 'uniquePostsCheckbox', 'locationCheckBox' ]
       },
       {
         template : 'closedReportsPage',

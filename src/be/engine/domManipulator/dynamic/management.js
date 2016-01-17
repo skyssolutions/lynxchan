@@ -28,7 +28,8 @@ exports.boardSettingsRelation = {
   blockDeletion : 'blockDeletionCheckbox',
   requireThreadFile : 'requireFileCheckbox',
   uniquePosts : 'uniquePostsCheckbox',
-  uniqueFiles : 'uniqueFilesCheckbox'
+  uniqueFiles : 'uniqueFilesCheckbox',
+  locationFlags : 'locationCheckBox'
 };
 
 exports.boardFieldsRelation = {

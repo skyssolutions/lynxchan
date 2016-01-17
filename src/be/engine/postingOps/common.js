@@ -2,6 +2,7 @@
 
 // handles operations common to user posting
 
+var fs = require('fs');
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var crypto = require('crypto');
@@ -18,8 +19,12 @@ var debug = require('../../kernel').debug();
 var settings = require('../../settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var lang;
+var locationOps;
 var miscOps;
 
+var dataPath = __dirname + '/../../locationData/data.json';
+
+var fieldList = [ 'country', 'region', 'city' ];
 var maxGlobalLatestPosts = settings.globalLatestPosts;
 var floodTimer = settings.floodTimerSec * 1000;
 
@@ -49,6 +54,7 @@ exports.loadDependencies = function() {
 
   lang = require('../langOps').languagePack();
   miscOps = require('../miscOps');
+  locationOps = require('../locationOps');
 
   if (!exports.defaultAnonymousName) {
     exports.defaultAnonymousName = lang.miscDefaultAnonymous;
@@ -553,30 +559,6 @@ exports.createId = function(salt, boardUri, ip) {
   }
 };
 
-exports.getFlagUrl = function(flagId, boardUri, callback) {
-
-  if (!flagId || !flagId.length) {
-    callback();
-    return;
-  }
-
-  try {
-    flags.findOne({
-      boardUri : boardUri,
-      _id : new ObjectID(flagId)
-    }, function gotFlagData(error, flag) {
-      if (!flag) {
-        callback();
-      } else {
-        callback('/' + boardUri + '/flags/' + flagId, flag.name);
-      }
-    });
-  } catch (error) {
-    callback();
-  }
-
-};
-
 // Section 3: Global latest posts {
 exports.cleanGlobalLatestPosts = function(callback) {
 
@@ -666,3 +648,143 @@ exports.addPostToLatestPosts = function(posting, callback) {
 
 };
 // } Section 3: Global latest posts
+
+// Section 4: Flag selection {
+exports.getCurrentObject = function(ipData, field, currentObject, flags) {
+
+  var location = ipData[field];
+
+  if (location) {
+    currentObject = currentObject ? currentObject[location] : flags[location];
+  } else {
+    currentObject = null;
+  }
+
+  return currentObject;
+
+};
+
+exports.searchLocation = function(data, ipData) {
+
+  var index = 0;
+  var selectedObject;
+  var currentObject;
+  var parentObject;
+
+  while (!selectedObject && index < fieldList.length) {
+
+    var field = fieldList[index];
+
+    currentObject = exports.getCurrentObject(ipData, field, currentObject,
+        data.relation);
+
+    if (!currentObject) {
+      selectedObject = parentObject;
+      break;
+    } else if (currentObject.relation) {
+
+      parentObject = currentObject;
+      currentObject = currentObject.relation;
+      index++;
+
+    } else {
+      selectedObject = currentObject;
+    }
+
+  }
+
+  return selectedObject || {
+    flag : data.unknownFlag,
+    name : 'Unknown'
+  };
+
+};
+
+exports.readFlagData = function(locationData, callback) {
+
+  fs.readFile(dataPath, function readBoards(error, content) {
+
+    if (error) {
+      if (verbose) {
+        console.log(error);
+      }
+
+      callback();
+    } else {
+
+      var data;
+
+      try {
+        data = JSON.parse(content);
+      } catch (error) {
+
+        if (verbose) {
+          console.log(error);
+        }
+
+        callback();
+        return;
+      }
+
+      var flagData = exports.searchLocation(data, locationData);
+
+      callback(data.flagsUrl + flagData.flag, flagData.name);
+
+    }
+  });
+
+};
+
+exports.getLocationFlagUrl = function(ip, callback) {
+
+  locationOps.getLocationInfo(ip, function gotData(error, locationData) {
+
+    if (!locationData) {
+
+      if (error && verbose) {
+        console.log(error);
+      }
+
+      callback();
+
+    } else {
+
+      exports.readFlagData(locationData, callback);
+    }
+
+  });
+
+};
+
+exports.getFlagUrl = function(flagId, ip, boardData, callback) {
+
+  if (!flagId || !flagId.length) {
+
+    if (ip && boardData.settings.indexOf('locationFlags') > -1) {
+
+      exports.getLocationFlagUrl(ip, callback);
+    } else {
+      callback();
+
+    }
+
+    return;
+  }
+
+  try {
+    flags.findOne({
+      boardUri : boardData.boardUri,
+      _id : new ObjectID(flagId)
+    }, function gotFlagData(error, flag) {
+      if (!flag) {
+        callback();
+      } else {
+        callback('/' + boardData.boardUri + '/flags/' + flagId, flag.name);
+      }
+    });
+  } catch (error) {
+    callback();
+  }
+
+};
+// } Section 4: Flag selection

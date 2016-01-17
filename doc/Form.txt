@@ -209,6 +209,7 @@ Json output(Object): object with data used to manage the board. Contains the fol
         requireThreadFile: requires at least one file when creating a thread.
         uniqueFiles: enforces unique file posting.
         uniquePosts: enforces unique message posting.
+        locationFlags: users got location flags on their posts.
     tags(Array): array of tags for the board.
     boardMessage: message displayed on the board header.
     isOwner(Boolean): indicates if the user owns the board.
@@ -541,6 +542,7 @@ Parameters:
     requireThreadFile: requires at least one file for creating threads.
     uniqueFiles: enforces unique files on posting.
     uniquePosts: enforces unique messages on posting.
+    locationFlags: users will have location flags on their posts.
 
 ------------------------------------------------------------------------------------------
 

@@ -592,6 +592,10 @@ TEM_ID::12
 bManagement: board management page.
 
 Elements:
+locationCheckBox:
+    use: might be turned on.
+    description: checkbox that indicates if this board uses location flags.
+
 linkSelf:
     use: have it's href manipulated.
     description: link that leads to the board front-page.

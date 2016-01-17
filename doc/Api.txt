@@ -360,6 +360,7 @@ Parameters:
         requireThreadFile: requires at least one file when creating a thread.
         uniqueFiles: enforces unique files on posting.
         uniquePosts: enforces unique messages on posting.
+        locationFlags: users will have location flags on their posts.
 
 ------------------------------------------------------------------------------------------
 

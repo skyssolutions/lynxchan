@@ -26,6 +26,7 @@ The dependencies versions are not exactly mandatory and only reflect the version
 1. Create the required settings file in the `src/be/settings` directory. Instructions can be found at `src/be/readme.md`. There is also a directory called settings.example with a set of functional settings.
 2. Browse to `src/be` and run `npm install`.
 3. Clone a front-end to the `src/fe` directory or clone to anywhere and set it's correct location on `src/be/settings/general.json`.
+4. (Optional) clone https://gitgud.io/LynxChan/LynxChan-LocationData to src/be/locationData so location flags can work.
 
 # Important details
 * Do not use root on any process of the engine install, except when running root-setup.sh.

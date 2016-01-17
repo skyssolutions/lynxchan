@@ -7,6 +7,7 @@ var dbVersion = 8;
 
 var archive = require('./archive');
 var mongo = require('mongodb');
+var cluster = require('cluster');
 var kernel = require('./kernel');
 var migrations;
 var settings = require('./settingsHandler').getGeneralSettings();
@@ -246,8 +247,6 @@ function indexSet(callback) {
 // start of index initialization
 function initCaptchas(callback) {
 
-  cachedCaptchas = cachedDb.collection('captchas');
-
   cachedCaptchas.ensureIndex({
     expiration : 1
   }, {
@@ -267,8 +266,6 @@ function initCaptchas(callback) {
 
 function initFlood(callback) {
 
-  cachedFlood = cachedDb.collection('floodRecord');
-
   cachedFlood.ensureIndex({
     expiration : 1
   }, {
@@ -287,8 +284,6 @@ function initFlood(callback) {
 }
 
 function initFlags(callback) {
-
-  cachedFlags = cachedDb.collection('flags');
 
   cachedFlags.ensureIndex({
     boardUri : 1,
@@ -311,8 +306,6 @@ function initFlags(callback) {
 
 function initTorIps(callback) {
 
-  cachedTorIps = cachedDb.collection('torIps');
-
   cachedTorIps.ensureIndex({
     ip : 1
   }, function setIndex(error, index) {
@@ -329,8 +322,6 @@ function initTorIps(callback) {
 }
 
 function initTripcodes(callback) {
-
-  cachedTripcodes = cachedDb.collection('secureTripcodes');
 
   cachedTripcodes.ensureIndex({
     tripcode : 1
@@ -350,8 +341,6 @@ function initTripcodes(callback) {
 }
 
 function initHashBans(callback) {
-
-  cachedHashBans = cachedDb.collection('hashBans');
 
   cachedHashBans.ensureIndex({
     md5 : 1,
@@ -373,8 +362,6 @@ function initHashBans(callback) {
 
 function initBans(callback) {
 
-  cachedBans = cachedDb.collection('bans');
-
   cachedBans.ensureIndex({
     expiration : 1
   }, {
@@ -393,7 +380,6 @@ function initBans(callback) {
 }
 
 function initReports(callback) {
-  cachedReports = cachedDb.collection('reports');
 
   cachedReports.ensureIndex({
     boardUri : 1,
@@ -416,7 +402,6 @@ function initReports(callback) {
 }
 
 function initPosts(callback) {
-  cachedPosts = cachedDb.collection('posts');
 
   cachedPosts.ensureIndex({
     boardUri : 1,
@@ -453,8 +438,6 @@ function initPosts(callback) {
 
 function initRecoveryRequests(callback) {
 
-  cachedRecoveryRequests = cachedDb.collection('recoveryRequests');
-
   cachedRecoveryRequests.ensureIndex({
     expiration : 1
   }, {
@@ -475,8 +458,6 @@ function initRecoveryRequests(callback) {
 
 function initUsers(callback) {
 
-  cachedUsers = cachedDb.collection('users');
-
   cachedUsers.ensureIndex({
     login : 1
   }, {
@@ -496,7 +477,6 @@ function initUsers(callback) {
 }
 
 function initThreads(callback) {
-  cachedThreads = cachedDb.collection('threads');
 
   cachedThreads.ensureIndex({
     boardUri : 1,
@@ -518,8 +498,6 @@ function initThreads(callback) {
 
 function initBoards(callback) {
 
-  cachedBoards = cachedDb.collection('boards');
-
   cachedBoards.ensureIndex({
     boardUri : 1
   }, {
@@ -539,8 +517,6 @@ function initBoards(callback) {
 }
 
 function initBypasses(callback) {
-
-  cachedBypasses = cachedDb.collection('blockBypasses');
 
   cachedBypasses.ensureIndex({
     expiration : 1
@@ -655,7 +631,7 @@ exports.aggregatedLogs = function() {
 
 // end of getters
 
-function initCollections(db, callback) {
+function initIndexes(callback) {
 
   initBypasses(callback);
 
@@ -684,6 +660,52 @@ function initCollections(db, callback) {
   initFlags(callback);
 
   initFlood(callback);
+
+}
+
+function preIndexSet(callback) {
+
+  if (cluster.isMaster && !settings.master) {
+    initIndexes(callback);
+  } else {
+    callback();
+  }
+
+}
+
+function initIndexedCollections(callback) {
+
+  cachedBypasses = cachedDb.collection('blockBypasses');
+  cachedPosts = cachedDb.collection('posts');
+  cachedBoards = cachedDb.collection('boards');
+  cachedTripcodes = cachedDb.collection('secureTripcodes');
+  cachedFlood = cachedDb.collection('floodRecord');
+  cachedHashBans = cachedDb.collection('hashBans');
+  cachedReports = cachedDb.collection('reports');
+  cachedFlags = cachedDb.collection('flags');
+  cachedCaptchas = cachedDb.collection('captchas');
+  cachedTorIps = cachedDb.collection('torIps');
+  cachedBans = cachedDb.collection('bans');
+  cachedThreads = cachedDb.collection('threads');
+  cachedRecoveryRequests = cachedDb.collection('recoveryRequests');
+  cachedUsers = cachedDb.collection('users');
+
+  preIndexSet(callback);
+
+}
+
+function initCollections(callback) {
+
+  cachedLatestImages = cachedDb.collection('latestImages');
+  cachedIpAggregation = cachedDb.collection('uniqueIpAggregation');
+  cachedAggregatedLogs = cachedDb.collection('aggregatedLogs');
+  cachedOverboard = cachedDb.collection('overboardThreads');
+  cachedLatestPosts = cachedDb.collection('latestPosts');
+  cachedFiles = cachedDb.collection('fs.files');
+  cachedLog = cachedDb.collection('staffLogs');
+  cachedStats = cachedDb.collection('boardStats');
+
+  initIndexedCollections(callback);
 
 }
 
@@ -722,16 +744,7 @@ exports.init = function(callback) {
 
       cachedDb = db;
 
-      cachedLatestImages = db.collection('latestImages');
-      cachedIpAggregation = db.collection('uniqueIpAggregation');
-      cachedAggregatedLogs = db.collection('aggregatedLogs');
-      cachedOverboard = db.collection('overboardThreads');
-      cachedLatestPosts = db.collection('latestPosts');
-      cachedFiles = db.collection('fs.files');
-      cachedLog = db.collection('staffLogs');
-      cachedStats = db.collection('boardStats');
-
-      initCollections(db, callback);
+      initCollections(callback);
     }
 
   });

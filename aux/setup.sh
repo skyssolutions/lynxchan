@@ -9,6 +9,9 @@ read answerLibs
 echo "Do you wish to install the default settings from the example? (0.0.0.0:8080 to listen to requests, expects a database at localhost:27017) (y,n)"
 read answerSettings
 
+echo "Do you wish to install the necessary data to use location flags? (y,n)"
+read answerLocation
+
 stable="n"
 
 if [ "$stable" == "n" ]; then
@@ -68,3 +71,10 @@ if [ "$answerLibs" == "y" ]; then
   echo "Libraries installed."
 
 fi
+
+if [ "$answerLocation" == "y" ]; then
+
+  git clone https://gitgud.io/LynxChan/LynxChan-LocationData.git ../src/be/locationData
+  
+fi
+

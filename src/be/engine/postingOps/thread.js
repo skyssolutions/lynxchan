@@ -367,7 +367,7 @@ exports.getNewThreadId = function(req, userData, parameters, board,
     } else {
 
       // style exception, too simple
-      common.getFlagUrl(parameters.flag, parameters.boardUri,
+      common.getFlagUrl(parameters.flag, logger.ip(req), board,
           function gotFlagUrl(flagUrl, flagName) {
 
             parameters.flagName = flagName;

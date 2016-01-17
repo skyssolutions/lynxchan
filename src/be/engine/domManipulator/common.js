@@ -185,6 +185,7 @@ exports.setFlags = function(document, board, flagData) {
 
   var option = document.createElement('option');
   option.innerHTML = lang.guiNoFlag;
+  option.value = '';
   combobox.appendChild(option);
 
   for (var i = 0; i < flagData.length; i++) {

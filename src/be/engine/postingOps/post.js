@@ -368,15 +368,15 @@ exports.createPost = function(req, parameters, userData, postId, thread, board,
 exports.getPostFlag = function(req, parameters, userData, postId, thread,
     board, wishesToSign, cb) {
 
-  common.getFlagUrl(parameters.flag, parameters.boardUri, function gotFlagUrl(
-      flagUrl, flagName) {
+  common.getFlagUrl(parameters.flag, logger.ip(req), board,
+      function gotFlagUrl(flagUrl, flagName) {
 
-    parameters.flagName = flagName;
-    parameters.flag = flagUrl;
+        parameters.flagName = flagName;
+        parameters.flag = flagUrl;
 
-    exports.createPost(req, parameters, userData, postId, thread, board,
-        wishesToSign, cb);
-  });
+        exports.createPost(req, parameters, userData, postId, thread, board,
+            wishesToSign, cb);
+      });
 
 };
 

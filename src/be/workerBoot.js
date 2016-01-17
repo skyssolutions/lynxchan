@@ -99,7 +99,7 @@ function startListening() {
   server.on('listening', function booted() {
 
     serverBooted = true;
-    var message = 'Server worker ' + cluster.worker.id;
+    var message = 'Worker ' + cluster.worker.id;
     message += ' booted at ' + new Date().toUTCString();
 
     if (!debug) {
@@ -112,14 +112,11 @@ function startListening() {
   server.on('error', function handleError(error) {
 
     console.log('Failed to listen to HTTP.');
-    console.log('Enable verbose or debug mode to print the error.');
-
-    if (verbose) {
-      console.log(error);
-    }
 
     if (debug) {
       throw error;
+    } else {
+      console.log(error);
     }
 
   });
