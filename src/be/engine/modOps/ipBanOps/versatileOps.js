@@ -6,17 +6,26 @@ var db = require('../../../db');
 var bans = db.bans();
 var flood = db.flood();
 var boards = db.boards();
-var settings = require('../../../settingsHandler').getGeneralSettings();
-var blockTor = settings.torAccess < 1;
-var bypassAllowed = settings.bypassMode > 0;
-var bypassMandatory = settings.bypassMode > 1;
-var disableFloodCheck = settings.disableFloodCheck;
+var blockTor;
+var bypassAllowed;
+var bypassMandatory;
+var disableFloodCheck;
 var logOps;
 var lang;
 var logger;
 var miscOps;
 var torOps;
 var common;
+
+exports.loadSettings = function() {
+  var settings = require('../../../settingsHandler').getGeneralSettings();
+
+  blockTor = settings.torAccess < 1;
+  bypassAllowed = settings.bypassMode > 0;
+  bypassMandatory = settings.bypassMode > 1;
+  disableFloodCheck = settings.disableFloodCheck;
+
+};
 
 exports.loadDependencies = function() {
 

@@ -1,10 +1,10 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var settings = require('../settingsHandler').getGeneralSettings();
+var settingsHandler = require('../settingsHandler');
 var genQueue = require('../generationQueue');
 
-function processMessage(req, res, message) {
+function processMessage(req, res, message, settings) {
 
   if (settings.master) {
 
@@ -27,6 +27,8 @@ function processMessage(req, res, message) {
 
 exports.process = function(req, res) {
 
+  var settings = settingsHandler().getGeneralSettings();
+
   var standAlone = !settings.master && !settings.slaves.length;
 
   // Is up to the reverse proxy to refuse external connections to this page on a
@@ -39,7 +41,7 @@ exports.process = function(req, res) {
 
   apiOps.getAnonJsonData(req, res, function gotData(auth, parameters) {
 
-    processMessage(req, res, parameters);
+    processMessage(req, res, parameters, settings);
 
   });
 

@@ -4,16 +4,25 @@
 
 var kernel = require('../kernel');
 var settingsHandler = require('../settingsHandler');
-var settings = settingsHandler.getGeneralSettings();
-var verbose = settings.verbose;
-var disable304 = settings.disable304;
+var verbose;
+var disable304;
 var debug = kernel.debug();
 var fs = require('fs');
 var url = require('url');
 var gridFs;
 var miscOps;
+var fePath;
 
 var filesCache = {};
+
+exports.loadSettings = function() {
+
+  var settings = settingsHandler.getGeneralSettings();
+
+  fePath = settings.fePath;
+  verbose = settings.verbose;
+  disable304 = settings.disable304;
+};
 
 exports.loadDependencies = function() {
 
@@ -35,7 +44,7 @@ exports.readAndRespond = function(pathName, modifiedTime, header, res, cb) {
   header.push([ 'last-modified', modifiedTime.toString() ]);
   header.push([ 'expires', new Date().toString() ]);
 
-  fs.readFile(settings.fePath + '/static' + pathName, function(error, data) {
+  fs.readFile(fePath + '/static' + pathName, function(error, data) {
 
     if (error) {
       cb(error);
@@ -59,8 +68,7 @@ exports.readAndRespond = function(pathName, modifiedTime, header, res, cb) {
 // reads file stats to find out if theres a new version
 exports.readFileStats = function(pathName, lastSeen, header, req, res, cb) {
 
-  fs.stat(settings.fePath + '/static' + pathName, function gotStats(error,
-      stats) {
+  fs.stat(fePath + '/static' + pathName, function gotStats(error, stats) {
     if (error) {
       if (debug) {
         console.log(error);

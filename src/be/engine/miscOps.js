@@ -3,8 +3,7 @@
 // miscellaneous operations
 
 var settingsHandler = require('../settingsHandler');
-var settings = settingsHandler.getGeneralSettings();
-var verbose = settings.verbose;
+var verbose;
 var db = require('../db');
 var bans = db.bans();
 var crypto = require('crypto');
@@ -12,8 +11,18 @@ var users = db.users();
 var reports = db.reports();
 var formOps;
 var lang;
+var clearIpMinRole;
 
 var MAX_STAFF_ROLE = 3;
+
+exports.loadSettings = function() {
+
+  var settings = settingsHandler.getGeneralSettings();
+
+  clearIpMinRole = settings.clearIpMinRole;
+  verbose = settings.verbose;
+
+};
 
 exports.MIMETYPES = {
   a : 'application/octet-stream',
@@ -174,11 +183,12 @@ exports.getMime = function(pathName) {
 
 exports.hashIpForDisplay = function(ip, salt, userRole) {
 
-  if (userRole <= settings.clearIpMinRole) {
+  if (userRole <= clearIpMinRole) {
     return ip.join('.');
   }
 
-  return crypto.createHash('sha256').update(salt + ip).digest('hex');
+  return crypto.createHash('sha256').update(salt + ip).digest('hex').substring(
+      0, 48);
 
 };
 

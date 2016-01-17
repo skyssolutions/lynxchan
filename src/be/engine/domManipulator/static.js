@@ -6,18 +6,30 @@
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
 var logger = require('../../logger');
-var settings = require('../../settingsHandler').getGeneralSettings();
-var archive = settings.archiveLevel > 0 && require('../../archive').loaded();
-var accountCreationDisabled = settings.disableAccountCreation;
+var archive;
+var accountCreationDisabled;
 var common;
 var templateHandler;
 var lang;
 var gridFs;
 var miscOps;
+var clearIpMinRole;
+var overboard;
 var siteTitle;
 var engineInfo;
 
 var availableLogTypes;
+
+exports.loadSettings = function() {
+  var settings = require('../../settingsHandler').getGeneralSettings();
+
+  overboard = settings.overboard;
+  archive = settings.archiveLevel > 0 && require('../../archive').loaded();
+  accountCreationDisabled = settings.disableAccountCreation;
+  siteTitle = settings.siteTitle || lang.titDefaultChanTitle;
+  clearIpMinRole = settings.clearIpMinRole;
+
+};
 
 exports.loadDependencies = function() {
 
@@ -27,7 +39,6 @@ exports.loadDependencies = function() {
   templateHandler = require('../templateHandler');
   lang = require('../langOps').languagePack();
   gridFs = require('../gridFsHandler');
-  siteTitle = settings.siteTitle || lang.titDefaultChanTitle;
   availableLogTypes = {
     '' : lang.guiAllTypes,
     archiveDeletion : lang.guiTypeArchiveDeletion,
@@ -153,7 +164,7 @@ exports.setModElements = function(modding, document, boardUri, boardData,
     common.removeElement(document.getElementById('formTransfer'));
   }
 
-  var allowedToDeleteFromIp = userRole <= settings.clearIpMinRole;
+  var allowedToDeleteFromIp = userRole <= clearIpMinRole;
 
   if (!modding || !allowedToDeleteFromIp) {
     common.removeElement(document.getElementById('ipDeletionForm'));
@@ -649,15 +660,12 @@ exports.overboard = function(foundThreads, previewRelation, callback,
 
     var document = jsdom(templateHandler.overboard);
 
-    var tit = multiBoard ? lang.titMultiboard : '/' + settings.overboard + '/';
+    var tit = multiBoard ? lang.titMultiboard : '/' + overboard + '/';
     document.title = tit;
 
     var img = document.getElementById('bannerImage');
 
-    var bannerSrc = '/randomBanner.js?boardUri=';
-    bannerSrc += multiBoard ? '.multiBoard' : settings.overboard;
-
-    img.src = bannerSrc;
+    img.src = '/randomBanner.js';
 
     exports.addOverBoardThreads(foundThreads, previewRelation, document);
 

@@ -4,14 +4,13 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
-var settings = require('../settingsHandler').getGeneralSettings();
-var verbose = settings.verbose;
-var forceCaptcha = settings.forceCaptcha;
 var exec = require('child_process').exec;
 var captchas = require('../db').captchas();
 var crypto = require('crypto');
-var captchaExpiration = settings.captchaExpiration;
-var tempDirectory = settings.tempDirectory;
+var verbose;
+var forceCaptcha;
+var captchaExpiration;
+var tempDirectory;
 var url = require('url');
 var miscOps;
 var lang;
@@ -38,6 +37,17 @@ var maxCircles = 10;
 // used to control how large the circles can be
 var minCircleSize = 15;
 var maxCircleSize = 30;
+
+exports.loadSettings = function() {
+
+  var settings = require('../settingsHandler').getGeneralSettings();
+
+  verbose = settings.verbose;
+  forceCaptcha = settings.forceCaptcha;
+  captchaExpiration = settings.captchaExpiration;
+  tempDirectory = settings.tempDirectory;
+
+};
 
 exports.loadDependencies = function() {
 

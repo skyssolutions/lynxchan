@@ -2,15 +2,16 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
-var settings = require('../settingsHandler').getGeneralSettings();
-var overboardSize = settings.overBoardThreadCount;
+var overboardSize;
 var db = require('../db');
 var overboardThreads = db.overboardThreads();
 var threads = db.threads();
 var reaggregating;
 
-exports.loadDependencies = function() {
+exports.loadSettings = function() {
+  var settings = require('../settingsHandler').getGeneralSettings();
 
+  overboardSize = settings.overBoardThreadCount;
 };
 
 // Section 1: Overboard insertion {

@@ -12,14 +12,13 @@ proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.setHeader('x-forwarded-for', logger.getRawIp(req));
 });
 
-var settings = require('../settingsHandler').getGeneralSettings();
-var multiBoardAllowed = settings.multiboardThreadCount;
 var multiBoard = require('./multiBoardHandler');
-var verbose = settings.verbose;
-var maintenance = settings.maintenance;
-var archive = require('../archive');
+var multiBoardAllowed;
+var verbose;
+var maintenance;
+var serveArchive;
 var debug = require('../kernel').debug();
-var serveArchive = settings.serveArchive;
+var archive = require('../archive');
 var formOps;
 var apiOps;
 var miscOps;
@@ -27,6 +26,22 @@ var gridFs;
 var lang;
 var staticHandler;
 var lastSlaveIndex = 0;
+var slaves;
+var master;
+var port;
+
+exports.loadSettings = function() {
+
+  var settings = require('../settingsHandler').getGeneralSettings();
+
+  multiBoardAllowed = settings.multiboardThreadCount;
+  verbose = settings.verbose;
+  maintenance = settings.maintenance;
+  slaves = settings.slaves;
+  master = settings.master;
+  port = settings.port;
+  serveArchive = settings.serveArchive;
+};
 
 exports.loadDependencies = function() {
 
@@ -303,14 +318,14 @@ exports.redirect = function(req, res) {
 
   proxyUrl += '://';
 
-  proxyUrl += settings.slaves[lastSlaveIndex++];
+  proxyUrl += slaves[lastSlaveIndex++];
 
-  if (lastSlaveIndex >= settings.slaves.length) {
+  if (lastSlaveIndex >= slaves.length) {
     lastSlaveIndex = 0;
   }
 
   if (!req.connection.encrypted || !fixed) {
-    proxyUrl += ':' + settings.port;
+    proxyUrl += ':' + port;
   }
 
   if (verbose) {
@@ -336,7 +351,7 @@ exports.redirect = function(req, res) {
 
 exports.checkForService = function(req, pathName, isSlave) {
 
-  var shouldServe = !settings.slaves.length || isSlave;
+  var shouldServe = !slaves.length || isSlave;
 
   var toGlobalSettings = pathName.indexOf('/globalSettings') === 0;
   var setGlobalSettings = pathName.indexOf('/saveGlobalSettings') === 0;
@@ -351,13 +366,13 @@ exports.checkForRedirection = function(req, pathName, res) {
 
   var remote = req.connection.remoteAddress;
 
-  var isSlave = settings.slaves.indexOf(remote) > -1;
+  var isSlave = slaves.indexOf(remote) > -1;
 
   // Is up to the webserver to drop unwanted connections.
   var isLocal = remote === '127.0.0.1';
-  var isMaster = settings.master === remote;
+  var isMaster = master === remote;
 
-  if (settings.master) {
+  if (master) {
 
     if (!isMaster && !isLocal) {
       req.connection.destroy();

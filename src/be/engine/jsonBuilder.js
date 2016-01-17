@@ -3,11 +3,19 @@
 // builds JSON versions of pages
 
 var logger = require('../logger');
-var settings = require('../settingsHandler').getGeneralSettings();
+var settings;
 var gridFsHandler;
 var miscOps;
+var overboard;
+var boardCreationRequirement;
 
-var boardCreationRequirement = settings.boardCreationRequirement;
+exports.loadSettings = function() {
+
+  settings = require('../settingsHandler').getGeneralSettings();
+
+  overboard = settings.overboard;
+  boardCreationRequirement = settings.boardCreationRequirement;
+};
 
 exports.loadDependencies = function() {
 
@@ -515,7 +523,7 @@ exports.overboard = function(foundThreads, previewRelation, callback,
       threads : threadsToAdd
     }));
   } else {
-    var url = '/' + settings.overboard + '/1.json';
+    var url = '/' + overboard + '/1.json';
 
     gridFsHandler.writeData(JSON.stringify({
       threads : threadsToAdd

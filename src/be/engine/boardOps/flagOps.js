@@ -4,8 +4,7 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
-var settings = require('../../settingsHandler').getGeneralSettings();
-var maxFlagSize = settings.maxFlagSizeB;
+var maxFlagSize;
 var gridFsHandler;
 var miscOps;
 var db;
@@ -15,13 +14,21 @@ var posts;
 var flags;
 var lang;
 
-var globalBoardModeration = settings.allowGlobalBoardModeration;
+var globalBoardModeration;
 
 var newFlagParameters = [ {
   field : 'flagName',
   length : 16,
   removeHTML : true
 } ];
+
+exports.loadSettings = function() {
+
+  var settings = require('../../settingsHandler').getGeneralSettings();
+  maxFlagSize = settings.maxFlagSizeB;
+  globalBoardModeration = settings.allowGlobalBoardModeration;
+
+};
 
 exports.loadDependencies = function() {
 

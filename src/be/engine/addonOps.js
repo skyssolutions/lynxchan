@@ -3,19 +3,51 @@
 // operations regarding addons
 
 var fs = require('fs');
-var settings = require('../settingsHandler').getGeneralSettings();
-var verbose = settings.verbose;
 var debug = require('../kernel').debug();
-var engineInfo;
-
-exports.loadDependencies = function() {
-
-  engineInfo = JSON.parse(fs.readFileSync(__dirname + '/../package.json'));
-
-};
+var engineInfo = JSON.parse(fs.readFileSync(__dirname + '/../package.json'));
+var addons;
+var verbose;
 
 exports.getEngineInfo = function() {
   return engineInfo;
+};
+
+exports.loadSettings = function() {
+
+  var settings = require('../settingsHandler').getGeneralSettings();
+  verbose = settings.verbose;
+  addons = settings.addons;
+
+  if (!addons) {
+    return;
+  }
+
+  for (var i = 0; i < addons.length; i++) {
+
+    try {
+
+      var addon = require('../addons/' + addons[i]);
+
+      if (addon.hasOwnProperty('loadSettings')) {
+        addon.loadSettings();
+      }
+
+    } catch (error) {
+
+      console.log('Could not load settings for addon ' + addons[i]);
+
+      if (verbose) {
+        console.log(error);
+      }
+
+      if (debug) {
+        throw error;
+      }
+
+    }
+
+  }
+
 };
 
 exports.versionsMatch = function(addonVersion, engineVersion) {
@@ -115,11 +147,9 @@ exports.testAddons = function(addons, engineInfo) {
 
 exports.startAddons = function() {
 
-  if (!settings.addons || !settings.addons.length) {
+  if (!addons || !addons.length) {
     return;
   }
-
-  var addons = settings.addons;
 
   exports.testAddons(addons, engineInfo);
 

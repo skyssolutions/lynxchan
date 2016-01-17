@@ -9,9 +9,8 @@ var boards = db.boards();
 var threads = db.threads();
 var posts = db.posts();
 var reports = db.reports();
-var settings = require('../../settingsHandler').getGeneralSettings();
 var logger = require('../../logger');
-var multipleReports = settings.multipleReports;
+var multipleReports;
 var logOps;
 var miscOps;
 var moduleRoot;
@@ -25,6 +24,13 @@ var reportArguments = [ {
   length : 256,
   removeHTML : true
 } ];
+
+exports.loadSettings = function() {
+
+  var settings = require('../../settingsHandler').getGeneralSettings();
+  multipleReports = settings.multipleReports;
+
+};
 
 exports.loadDependencies = function() {
 

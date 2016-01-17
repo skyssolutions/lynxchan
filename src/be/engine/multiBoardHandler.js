@@ -6,10 +6,9 @@ var url = require('url');
 var db = require('../db');
 var jsonBuilder = require('./jsonBuilder');
 var gfsHandler = require('./gridFsHandler');
-var settings = require('../settingsHandler').getGeneralSettings();
-var threadCount = settings.multiboardThreadCount;
 var debug = require('../kernel').debug();
-var verbose = settings.verbose;
+var threadCount;
+var verbose;
 var threads = db.threads();
 var posts = db.posts();
 var boards = db.boards();
@@ -17,6 +16,16 @@ var files = db.files();
 var domManipulator;
 var miscOps;
 var generator;
+var multiboardThreadCount;
+
+exports.loadSettings = function() {
+
+  var settings = require('../settingsHandler').getGeneralSettings();
+
+  threadCount = settings.multiboardThreadCount;
+  verbose = settings.verbose;
+  multiboardThreadCount = settings.multiboardThreadCount;
+};
 
 exports.loadDependencies = function() {
 
@@ -218,7 +227,7 @@ exports.outputBoards = function(boardList, req, res, callback) {
 
 exports.clearCache = function(board) {
 
-  if (!settings.multiboardThreadCount) {
+  if (!multiboardThreadCount) {
     return;
   }
 

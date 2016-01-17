@@ -16,17 +16,16 @@ var latestPosts = db.latestPosts();
 var tripcodes = db.tripcodes();
 var flood = db.flood();
 var debug = require('../../kernel').debug();
-var settings = require('../../settingsHandler').getGeneralSettings();
-var verbose = settings.verbose;
 var lang;
 var locationOps;
 var miscOps;
+var verbose;
+var maxGlobalLatestPosts;
+var floodTimer;
 
 var dataPath = __dirname + '/../../locationData/data.json';
 
 var fieldList = [ 'country', 'region', 'city' ];
-var maxGlobalLatestPosts = settings.globalLatestPosts;
-var floodTimer = settings.floodTimerSec * 1000;
 
 exports.postingParameters = [ {
   field : 'subject',
@@ -48,17 +47,27 @@ exports.postingParameters = [ {
   length : 8
 } ];
 
-exports.defaultAnonymousName = settings.defaultAnonymousName;
+exports.loadSettings = function() {
+
+  var settings = require('../../settingsHandler').getGeneralSettings();
+
+  exports.defaultAnonymousName = settings.defaultAnonymousName;
+
+  if (!exports.defaultAnonymousName) {
+    exports.defaultAnonymousName = lang.miscDefaultAnonymous;
+  }
+
+  verbose = settings.verbose;
+  maxGlobalLatestPosts = settings.globalLatestPosts;
+  floodTimer = settings.floodTimerSec * 1000;
+
+};
 
 exports.loadDependencies = function() {
 
   lang = require('../langOps').languagePack();
   miscOps = require('../miscOps');
   locationOps = require('../locationOps');
-
-  if (!exports.defaultAnonymousName) {
-    exports.defaultAnonymousName = lang.miscDefaultAnonymous;
-  }
 
 };
 

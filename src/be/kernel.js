@@ -49,12 +49,22 @@ function reloadDirectory(directory) {
 
 }
 
+function reloadCore() {
+
+  require('./archive').reload();
+
+  if (cluster.isMaster) {
+    require('./scheduleHandler').reload();
+    require('./generationQueue').reload();
+  } else {
+    require('./workerBoot').reload();
+  }
+}
+
 exports.reload = function() {
 
   for (var i = 0; i < reloadDirectories.length; i++) {
-
     reloadDirectory(__dirname + '/' + reloadDirectories[i]);
-
   }
 
   settingsHandler.loadSettings();
@@ -65,16 +75,32 @@ exports.reload = function() {
 
   exports.startEngine();
 
-  require('./archive').reload();
-
-  if (cluster.isMaster) {
-    require('./scheduleHandler').reload();
-    require('./generationQueue').reload();
-  } else {
-    require('./workerBoot').reload();
-  }
+  reloadCore();
 
 };
+
+function reloadSettings() {
+
+  settingsHandler.loadSettings();
+
+  checkImagesSet();
+
+  setDefaultImages();
+
+  var dirListing = fs.readdirSync(__dirname + '/engine');
+
+  for (var i = 0; i < dirListing.length; i++) {
+    var module = require('./engine/' + dirListing[i]);
+
+    if (module.hasOwnProperty('loadSettings')) {
+      module.loadSettings();
+    }
+
+  }
+
+  reloadCore();
+
+}
 
 var informedArguments = {
   debug : {
@@ -372,7 +398,7 @@ exports.noDaemon = function() {
 };
 
 function processBulkRebuild(message, genQueue) {
-  exports.reload();
+  reloadSettings();
 
   for (var i = 0; i < message.rebuilds.length; i++) {
     genQueue.queue(message.rebuilds[i]);
@@ -642,7 +668,15 @@ exports.startEngine = function() {
   }
 
   for (i = 0; i < dirListing.length; i++) {
-    require('./engine/' + dirListing[i]).loadDependencies();
+    var module = require('./engine/' + dirListing[i]);
+
+    if (module.hasOwnProperty('loadDependencies')) {
+      module.loadDependencies();
+    }
+
+    if (module.hasOwnProperty('loadSettings')) {
+      module.loadSettings();
+    }
   }
 
   require('./engine/addonOps').startAddons();
@@ -752,7 +786,7 @@ if (cluster.isMaster) {
 
   process.on('message', function messageReceived(msg) {
     if (msg.reload) {
-      exports.reload();
+      reloadSettings();
     }
   });
 
@@ -760,7 +794,7 @@ if (cluster.isMaster) {
 }
 
 exports.broadCastTopDownReload = function() {
-  exports.reload();
+  reloadSettings();
 
   for ( var id in cluster.workers) {
     cluster.workers[id].send({

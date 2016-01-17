@@ -4,8 +4,8 @@
 
 var debug = require('../kernel').debug();
 var settingsHandler = require('../settingsHandler');
-var settings = settingsHandler.getGeneralSettings();
-var verbose = settings.verbose;
+var verbose;
+var fePath;
 var fs = require('fs');
 var jsdom = require('jsdom').jsdom;
 
@@ -16,7 +16,12 @@ require('jsdom').defaultDocumentFeatures = {
   MutationEvents : false
 };
 
-exports.loadDependencies = function() {
+exports.loadSettings = function() {
+
+  var settings = settingsHandler.getGeneralSettings();
+  verbose = settings.verbose;
+  fePath = settings.fePath;
+
 };
 
 exports.getCellTests = function() {
@@ -369,7 +374,7 @@ exports.loadPages = function(errors) {
 
     var page = pages[i];
 
-    var fullPath = settings.fePath + '/templates/';
+    var fullPath = fePath + '/templates/';
     fullPath += templateSettings[page.template];
 
     try {
@@ -398,7 +403,7 @@ exports.getTestCell = function(document, name) {
 
   var templateSettings = settingsHandler.getTemplateSettings();
 
-  var fullPath = settings.fePath + '/templates/' + templateSettings[name];
+  var fullPath = fePath + '/templates/' + templateSettings[name];
 
   try {
     var template = fs.readFileSync(fullPath);

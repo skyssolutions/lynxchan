@@ -10,16 +10,29 @@ var globalLatestPosts = db.latestPosts();
 var globalLatestImages = db.latestImages();
 var boards = db.boards();
 var files = db.files();
-var settings = require('../../settingsHandler').getGeneralSettings();
-var verbose = settings.verbose;
-var globalLatestPostsCount = settings.globalLatestPosts;
-var globalLatestImagesCount = settings.globalLatestImages;
-var latestPosts = settings.latestPostCount;
+var verbose;
+var globalLatestPostsCount;
+var globalLatestImagesCount;
+var latestPosts;
 var gridFs;
 var lang;
+var overboard;
 var overboardOps;
 var miscOps;
+var clearIpMinRole;
 var logOps;
+
+exports.loadSettings = function() {
+  var settings = require('../../settingsHandler').getGeneralSettings();
+
+  verbose = settings.verbose;
+  globalLatestPostsCount = settings.globalLatestPosts;
+  globalLatestImagesCount = settings.globalLatestImages;
+  latestPosts = settings.latestPostCount;
+  overboard = settings.overboard;
+  clearIpMinRole = settings.clearIpMinRole;
+
+};
 
 exports.loadDependencies = function() {
 
@@ -758,7 +771,7 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
 
   if (!foundBoards.length) {
 
-    if (settings.overboard) {
+    if (overboard) {
       overboardOps.reaggregate({
         overboard : true,
         reaggregate : true
@@ -867,7 +880,7 @@ exports.posting = function(userData, parameters, threadsToDelete,
 
 exports.deleteFromIp = function(parameters, userData, callback) {
 
-  var allowed = userData.globalRole <= settings.clearIpMinRole;
+  var allowed = userData.globalRole <= clearIpMinRole;
 
   if (!allowed) {
 

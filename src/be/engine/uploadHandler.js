@@ -19,15 +19,16 @@ videoDimensionsCommand += 'stream=width,height ';
 var videoThumbCommand = 'ffmpeg -i {$path} -y -vframes 1 -vf scale=';
 var mp3ThumbCommand = 'ffmpeg -i {$path} -y -an -vcodec copy {$destination}';
 mp3ThumbCommand += ' && mogrify -resize {$dimension} {$destination}';
-var settings = require('../settingsHandler').getGeneralSettings();
-var verbose = settings.verbose;
-var archive = settings.archiveLevel > 1;
-var supportedMimes = settings.acceptedMimes;
-var thumbSize = settings.thumbSize;
-var latestImages = settings.globalLatestImages;
+var verbose;
+var archive;
+var supportedMimes;
+var thumbSize;
+var latestImages;
 var miscOps;
 var lang;
 var gsHandler;
+var thumbExtension;
+var mediaThumb;
 
 var correctedMimesRelation = {
   'video/webm' : 'audio/webm',
@@ -37,6 +38,19 @@ var correctedMimesRelation = {
 var thumbAudioMimes = [ 'audio/mpeg', 'audio/ogg' ];
 
 var videoMimes = [ 'video/webm', 'video/mp4', 'video/ogg' ];
+
+exports.loadSettings = function() {
+
+  var settings = require('../settingsHandler').getGeneralSettings();
+
+  verbose = settings.verbose;
+  archive = settings.archiveLevel > 1;
+  supportedMimes = settings.acceptedMimes;
+  thumbSize = settings.thumbSize;
+  latestImages = settings.globalLatestImages;
+  mediaThumb = settings.mediaThumb;
+  thumbExtension = settings.thumbExtension;
+};
 
 exports.loadDependencies = function() {
 
@@ -342,7 +356,7 @@ exports.transferMediaToGfs = function(boardData, threadId, postId, fileId,
 exports.processThumb = function(boardData, threadId, postId, fileId, ext, file,
     meta, callback) {
   var thumbName = '/' + boardData.boardUri + '/media/' + 't_' + fileId;
-  thumbName += '.' + (settings.thumbExtension || ext);
+  thumbName += '.' + (thumbExtension || ext);
 
   file.thumbPath = thumbName;
 
@@ -436,7 +450,7 @@ exports.generateVideoThumb = function(boardData, threadId, postId, file,
 
   var command = videoThumbCommand.replace('{$path}', file.pathInDisk);
 
-  var extensionToUse = settings.thumbExtension || 'png';
+  var extensionToUse = thumbExtension || 'png';
 
   var thumbDestination = file.pathInDisk + '_.' + extensionToUse;
 
@@ -466,7 +480,7 @@ exports.generateVideoThumb = function(boardData, threadId, postId, file,
 exports.generateAudioThumb = function(boardData, threadId, postId, file,
     callback) {
 
-  var extensionToUse = settings.thumbExtension || 'png';
+  var extensionToUse = thumbExtension || 'png';
 
   var thumbDestination = file.pathInDisk + '_.' + extensionToUse;
 
@@ -492,8 +506,8 @@ exports.generateGifThumb = function(boardData, threadId, postId, file, cb) {
 
   var thumbDestination = file.pathInDisk + '_t';
 
-  if (settings.thumbExtension) {
-    thumbDestination += '.' + settings.thumbExtension;
+  if (thumbExtension) {
+    thumbDestination += '.' + thumbExtension;
   }
 
   file.thumbOnDisk = thumbDestination;
@@ -517,8 +531,8 @@ exports.generateImageThumb = function(boardData, threadId, postId, file,
 
   var thumbDestination = file.pathInDisk + '_t';
 
-  if (settings.thumbExtension) {
-    thumbDestination += '.' + settings.thumbExtension;
+  if (thumbExtension) {
+    thumbDestination += '.' + thumbExtension;
   }
 
   file.thumbOnDisk = thumbDestination;
@@ -558,7 +572,7 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
 
   var tooSmall = file.height <= thumbSize && file.width <= thumbSize;
 
-  var gifCondition = settings.thumbExtension || tooSmall;
+  var gifCondition = thumbExtension || tooSmall;
 
   if (parameters.spoiler || file.spoiler) {
 
@@ -571,12 +585,12 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
 
     exports.generateImageThumb(boardData, threadId, postId, file, callback);
 
-  } else if (videoMimes.indexOf(file.mime) > -1 && settings.mediaThumb) {
+  } else if (videoMimes.indexOf(file.mime) > -1 && mediaThumb) {
 
     exports.generateVideoThumb(boardData, threadId, postId, file, tooSmall,
         callback);
 
-  } else if (thumbAudioMimes.indexOf(file.mime) > -1 && settings.mediaThumb) {
+  } else if (thumbAudioMimes.indexOf(file.mime) > -1 && mediaThumb) {
 
     exports.generateAudioThumb(boardData, threadId, postId, file, callback);
   } else {

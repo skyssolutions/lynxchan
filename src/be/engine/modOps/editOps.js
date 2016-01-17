@@ -8,19 +8,25 @@ var db = require('../../db');
 var boards = db.boards();
 var threads = db.threads();
 var posts = db.posts();
-var settings = require('../../settingsHandler').getGeneralSettings();
 var lang;
 var miscOps;
 var postOps;
 var overboardOps;
 var common;
 var r9k;
+var overboard;
 
 var editArguments = [ {
   field : 'message',
   length : 4096,
   removeHTML : false
 } ];
+
+exports.loadSettings = function() {
+  var settings = require('../../settingsHandler').getGeneralSettings();
+
+  overboard = settings.overboard;
+};
 
 exports.loadDependencies = function() {
 
@@ -205,7 +211,7 @@ exports.queueRebuild = function(page, board, posting, callback) {
     thread : posting.threadId
   });
 
-  if (settings.overboard) {
+  if (overboard) {
     overboardOps.reaggregate({
       overboard : true
     });

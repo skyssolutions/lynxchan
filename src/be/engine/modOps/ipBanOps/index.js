@@ -4,6 +4,13 @@ exports.specific = require('./specificOps');
 exports.general = require('./generalOps');
 exports.versatile = require('./versatileOps');
 
+exports.loadSettings = function() {
+
+  exports.specific.loadSettings();
+  exports.versatile.loadSettings();
+
+};
+
 exports.loadDependencies = function() {
 
   exports.specific.loadDependencies();

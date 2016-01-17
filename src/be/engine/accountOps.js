@@ -8,9 +8,8 @@ var requests = db.recoveryRequests();
 var bcrypt = require('bcrypt');
 var crypto = require('crypto');
 var mailer = require('nodemailer').createTransport();
-var settings = require('../settingsHandler').getGeneralSettings();
-var sender = settings.emailSender;
-var creationDisabled = settings.disableAccountCreation;
+var sender;
+var creationDisabled;
 var logOps;
 var miscOps;
 var captchaOps;
@@ -35,6 +34,15 @@ var changeSettingsParameters = [ {
   field : 'email',
   length : 64
 } ];
+
+exports.loadSettings = function() {
+
+  var settings = require('../settingsHandler').getGeneralSettings();
+
+  sender = settings.emailSender;
+  creationDisabled = settings.disableAccountCreation;
+
+};
 
 exports.loadDependencies = function() {
 

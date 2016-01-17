@@ -9,9 +9,6 @@ var posts = db.posts();
 var threads = db.threads();
 var logger = require('../../logger');
 var debug = require('../../kernel').debug();
-var settings = require('../../settingsHandler').getGeneralSettings();
-var verbose = settings.verbose;
-var bumpLimit = settings.autoSageLimit;
 var common = require('.').common;
 var gsHandler;
 var overboardOps;
@@ -21,11 +18,25 @@ var uploadHandler;
 var lang;
 var miscOps;
 var captchaOps;
+var overboard;
 
-var latestPostsCount = settings.latestPostCount;
-var globalLatestPosts = settings.globalLatestPosts;
-var bumpLimit = settings.autoSageLimit;
-var autoLockLimit = bumpLimit * 2;
+var autoLockLimit;
+var bumpLimit;
+var verbose;
+var latestPostsCount;
+var globalLatestPosts;
+
+exports.loadSettings = function() {
+
+  var settings = require('../../settingsHandler').getGeneralSettings();
+
+  overboard = settings.overboard;
+  verbose = settings.verbose;
+  bumpLimit = settings.autoSageLimit;
+  latestPostsCount = settings.latestPostCount;
+  globalLatestPosts = settings.globalLatestPosts;
+  autoLockLimit = bumpLimit * 2;
+};
 
 exports.loadDependencies = function() {
 
@@ -192,7 +203,7 @@ exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
     });
   }
 
-  if (settings.overboard) {
+  if (overboard) {
     overboardOps.reaggregate({
       overboard : true,
       _id : thread._id,

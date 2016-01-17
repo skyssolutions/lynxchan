@@ -5,20 +5,29 @@
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
 var logger = require('../../../logger');
-var settings = require('../../../settingsHandler').getGeneralSettings();
 var debug = require('../../../kernel').debug();
-var verbose = settings.verbose;
+var verbose;
+var overboard;
 var templateHandler;
 var lang;
 var common;
 var miscOps;
-
-var boardCreationRequirement = settings.boardCreationRequirement;
+var boardCreationRequirement;
 
 exports.optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
 
 exports.accountSettingsRelation = {
   alwaysSignRole : 'checkboxAlwaysSign'
+};
+
+exports.loadSettings = function() {
+
+  var settings = require('../../../settingsHandler').getGeneralSettings();
+
+  verbose = settings.verbose;
+  overboard = settings.overboard;
+  boardCreationRequirement = settings.boardCreationRequirement;
+
 };
 
 exports.loadDependencies = function() {
@@ -345,8 +354,8 @@ exports.boards = function(parameters, boards, pageCount) {
 
     var linkOverboard = document.getElementById('linkOverboard');
 
-    if (settings.overboard) {
-      linkOverboard.href = '/' + settings.overboard + '/';
+    if (overboard) {
+      linkOverboard.href = '/' + overboard + '/';
     } else {
       common.removeElement(linkOverboard);
     }

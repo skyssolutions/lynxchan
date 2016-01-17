@@ -8,6 +8,16 @@ exports.report = require('./reportOps');
 exports.transfer = require('./transferOps');
 exports.spoiler = require('./spoilerOps');
 
+exports.loadSettings = function() {
+
+  exports.common.loadSettings();
+  exports.edit.loadSettings();
+  exports.hashBan.loadSettings();
+  exports.report.loadSettings();
+  exports.ipBan.loadSettings();
+
+};
+
 exports.loadDependencies = function() {
 
   exports.common.loadDependencies();

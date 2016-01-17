@@ -5,12 +5,18 @@
 
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
-var settings = require('../../../settingsHandler').getGeneralSettings();
 var debug = require('../../../kernel').debug();
-var verbose = settings.verbose;
+var verbose;
 var templateHandler;
 var lang;
 var common;
+
+exports.loadSettings = function() {
+
+  var settings = require('../../../settingsHandler').getGeneralSettings();
+  verbose = settings.verbose;
+
+};
 
 exports.loadDependencies = function() {
 

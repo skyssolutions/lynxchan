@@ -3,23 +3,23 @@
 // general operations for the json api
 
 var cluster = require('cluster');
-var settings = require('../settingsHandler').getGeneralSettings();
 var debug = require('../kernel').debug();
-var verbose = settings.verbose;
 var bans = require('../db').bans();
 var fs = require('fs');
 var crypto = require('crypto');
 var path = require('path');
-var tempDir = settings.tempDirectory;
-var maxRequestSize = settings.maxRequestSizeB;
-var maxFileSize = settings.maxFileSizeB;
-var maxFiles = settings.maxFiles;
+var verbose;
+var tempDir;
+var maxRequestSize;
+var maxFileSize;
+var maxFiles;
 var accountOps;
 var miscOps;
 var modOps;
 var uploadHandler;
 var allowedMimes;
 var videoMimes;
+var mediaThumb;
 var lang;
 var workerId = cluster.isMaster ? null : cluster.worker.id;
 var reqCount = 0;
@@ -29,6 +29,19 @@ var FILE_EXT_RE = /(\.[_\-a-zA-Z0-9]{0,16}).*/;
 var b64Safe = {
   '/' : '_',
   '+' : '-'
+};
+
+exports.loadSettings = function() {
+
+  var settings = require('../settingsHandler').getGeneralSettings();
+
+  verbose = settings.verbose;
+  tempDir = settings.tempDirectory;
+  maxRequestSize = settings.maxRequestSizeB;
+  maxFileSize = settings.maxFileSizeB;
+  maxFiles = settings.maxFiles;
+  mediaThumb = settings.mediaThumb;
+
 };
 
 exports.loadDependencies = function() {
@@ -142,7 +155,7 @@ exports.getFileData = function(matches, res, stats, file, location, content,
 
     if (toPush.mime.indexOf('image/') > -1) {
       measureFunction = uploadHandler.getImageBounds;
-    } else if (video && settings.mediaThumb) {
+    } else if (video && mediaThumb) {
       measureFunction = uploadHandler.getVideoBounds;
     }
 

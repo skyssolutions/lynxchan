@@ -2,9 +2,9 @@
 
 var apiOps = require('../engine/apiOps');
 var settingsHandler = require('../settingsHandler');
-var settings = require('../settingsHandler').getGeneralSettings();
+var settingsHandler = require('../settingsHandler');
 
-function saveSettings(parameters, res) {
+function saveSettings(settings, parameters, res) {
 
   parameters.master = settings.master;
   parameters.slaves = [];
@@ -24,6 +24,8 @@ function saveSettings(parameters, res) {
 
 exports.process = function(req, res) {
 
+  var settings = settingsHandler.getGeneralSettings();
+
   // Is up to the reverse proxy to refuse external connections to this page on a
   // cluster.
   if (!settings.master || !req.trustedProxy) {
@@ -34,7 +36,7 @@ exports.process = function(req, res) {
 
   apiOps.getAnonJsonData(req, res, function gotData(auth, parameters) {
 
-    saveSettings(parameters, res);
+    saveSettings(settings, parameters, res);
 
   });
 

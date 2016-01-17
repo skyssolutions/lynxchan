@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var miscOps = require('../engine/miscOps');
 var bypassOps = require('../engine/bypassOps');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
-var enabled = require('../settingsHandler').getGeneralSettings().bypassMode;
+var settingsHandler = require('../settingsHandler');
 var lang = require('../engine/langOps').languagePack();
 
 function renewBypass(auth, parameters, res) {
@@ -29,7 +29,7 @@ function renewBypass(auth, parameters, res) {
 
 exports.process = function(req, res) {
 
-  if (!enabled) {
+  if (!settingsHandler.getGeneralSettings().bypassMode) {
     formOps.outputError(lang.errDisabledBypass, 500, res);
 
     return;

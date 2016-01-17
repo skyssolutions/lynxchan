@@ -2,8 +2,16 @@
 
 // builds RSS versions of pages
 
-var settings = require('../settingsHandler').getGeneralSettings();
+var rssDomain;
 var gridFsHandler;
+
+exports.loadSettings = function() {
+
+  var settings = require('../settingsHandler').getGeneralSettings();
+
+  rssDomain = settings.rssDomain;
+
+};
 
 exports.loadDependencies = function() {
 
@@ -29,7 +37,7 @@ exports.getThreads = function(threads) {
 
     rssContent += thread.subject || exports.getSanitizedMessage(thread.message);
 
-    rssContent += '</title><link>' + settings.rssDomain + '/';
+    rssContent += '</title><link>' + rssDomain + '/';
     rssContent += thread.boardUri + '/res/' + thread.threadId + '.html</link>';
 
     rssContent += '<description><![CDATA[ ' + thread.markdown;

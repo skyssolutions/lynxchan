@@ -4,11 +4,11 @@
 
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
-var settings = require('../../../settingsHandler').getGeneralSettings();
 var debug = require('../../../kernel').debug();
-var verbose = settings.verbose;
-var globalBoardModeration = settings.allowGlobalBoardModeration;
-var customJs = settings.allowBoardCustomJs;
+var settings;
+var verbose;
+var globalBoardModeration;
+var customJs;
 var common;
 var templateHandler;
 var lang;
@@ -71,11 +71,20 @@ exports.boardManagementLinks = [ {
   element : 'flagManagementLink'
 } ];
 
+exports.loadSettings = function() {
+
+  settings = require('../../../settingsHandler').getGeneralSettings();
+  verbose = settings.verbose;
+  globalBoardModeration = settings.allowGlobalBoardModeration;
+  customJs = settings.allowBoardCustomJs;
+  displayMaxBannerSize = common.formatFileSize(settings.maxBannerSizeB);
+  displayMaxFlagSize = common.formatFileSize(settings.maxFlagSizeB);
+
+};
+
 exports.loadDependencies = function() {
 
   common = require('..').common;
-  displayMaxBannerSize = common.formatFileSize(settings.maxBannerSizeB);
-  displayMaxFlagSize = common.formatFileSize(settings.maxFlagSizeB);
   templateHandler = require('../../templateHandler');
   lang = require('../../langOps').languagePack();
   miscOps = require('../../miscOps');

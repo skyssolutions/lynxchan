@@ -8,9 +8,8 @@ var flags = db.flags();
 var threads = db.threads();
 var posts = db.posts();
 var settingsHandler = require('../../settingsHandler');
-var settings = settingsHandler.getGeneralSettings();
-var pageSize = settings.pageSize;
-var verbose = settings.verbose;
+var pageSize;
+var verbose;
 var domManipulator;
 var postProjection;
 var threadProjection;
@@ -28,6 +27,14 @@ var boardProjection = {
   usesCustomCss : 1,
   settings : 1,
   boardDescription : 1
+};
+
+exports.loadSettings = function() {
+
+  var settings = settingsHandler.getGeneralSettings();
+  pageSize = settings.pageSize;
+  verbose = settings.verbose;
+
 };
 
 exports.loadDependencies = function() {

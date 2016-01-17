@@ -88,6 +88,7 @@ CHA_ID::8 - Addons
 	Addons should be written as regular modules and be placed on the /src/be/addons directory. They can be either a single file or a directory. They should have 4 things on their exports:
 	engineVersion: string indicating the engine version the addon is designed for.
 	init: function that is run by the engine after the engine and all addons are loaded.
+  loadSettings: function that is run every time the settings are changed.
 	apiRequest: function that is called when a request to the api is done to this addon. Takes two parameters:
 		req: request provided by the io.js api.
 		res: response provided by the io.js. Reference for these two: https://iojs.org/api/http.html

@@ -7,9 +7,6 @@ var compiledIps = __dirname + '/../locationData/compiledIps';
 var locationLineSize = 60;
 var ipLineSize = 10;
 
-exports.loadDependencies = function() {
-};
-
 exports.ipToInt = function(ip) {
 
   var toReturn = ip[0] << 24 >>> 0;

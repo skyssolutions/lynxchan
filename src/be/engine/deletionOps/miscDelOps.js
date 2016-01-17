@@ -16,9 +16,9 @@ var hashBans = db.hashBans();
 var reports = db.reports();
 var posts = db.posts();
 var boards = db.boards();
-var settings = require('../../settingsHandler').getGeneralSettings();
-var verbose = settings.verbose;
-var threadLimit = settings.maxThreadCount;
+var verbose;
+var threadLimit;
+var overboard;
 var lang;
 var logOps;
 var overboardOps;
@@ -26,6 +26,14 @@ var gridFs;
 
 var collectionsToClean = [ reports, posts, threads, flags, hashBans,
     boardStats, bans, globalLatestPosts, globalLatestImages ];
+
+exports.loadSettings = function() {
+  var settings = require('../../settingsHandler').getGeneralSettings();
+
+  verbose = settings.verbose;
+  threadLimit = settings.maxThreadCount;
+  overboard = settings.overboard;
+};
 
 exports.loadDependencies = function() {
 
@@ -162,7 +170,7 @@ exports.deleteBoardContent = function(board, callback, index) {
       frontPage : true
     });
 
-    if (settings.overboard) {
+    if (overboard) {
       overboardOps.reaggregate({
         overboard : true,
         reaggregate : true

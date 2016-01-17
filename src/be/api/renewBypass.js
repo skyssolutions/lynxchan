@@ -2,7 +2,7 @@
 
 var apiOps = require('../engine/apiOps');
 var bypassOps = require('../engine/bypassOps');
-var enabled = require('../settingsHandler').getGeneralSettings().bypassMode;
+var settingsHandler = require('../settingsHandler');
 var lang = require('../engine/langOps').languagePack();
 
 function renewBypass(parameters, captchaId, res) {
@@ -22,7 +22,7 @@ function renewBypass(parameters, captchaId, res) {
 
 exports.process = function(req, res) {
 
-  if (!enabled) {
+  if (!settingsHandler.getGeneralSettings().bypassMode) {
     apiOps.outputError(lang.errDisabledBypass, res);
 
     return;

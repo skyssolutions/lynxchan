@@ -4,10 +4,6 @@
 // personally I don't like putting actual logic on index.js files, but this is
 // just wrapping actual implementations
 
-var settingsHandler = require('../../settingsHandler');
-var settings = settingsHandler.getGeneralSettings();
-var verbose = settings.verbose;
-
 exports.postProjection = {
   subject : 1,
   creation : 1,
@@ -58,6 +54,13 @@ exports.threadProjection = {
 
 exports.board = require('./board');
 exports.global = require('./global');
+
+exports.loadSettings = function() {
+
+  exports.board.loadSettings();
+  exports.global.loadSettings();
+
+};
 
 exports.loadDependencies = function() {
 

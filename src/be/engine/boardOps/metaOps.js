@@ -4,8 +4,7 @@
 
 var crypto = require('crypto');
 var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
-var settings = require('../../settingsHandler').getGeneralSettings();
-var forcedCaptcha = settings.forceCaptcha;
+var forcedCaptcha;
 var db = require('../../db');
 var reports = db.reports();
 var bans = db.bans();
@@ -17,12 +16,11 @@ var postingOps;
 var miscOps;
 var modCommonOps;
 var lang;
-
-var globalBoardModeration = settings.allowGlobalBoardModeration;
-
-var boardCreationRequirement = settings.boardCreationRequirement;
-
-var maxVolunteers = settings.maxBoardVolunteers;
+var maxBoardTags;
+var overboard;
+var globalBoardModeration;
+var boardCreationRequirement;
+var maxVolunteers;
 
 var defaultSettings = [ 'disableIds', 'disableCaptcha' ];
 
@@ -50,6 +48,18 @@ var transferParameters = [ {
   field : 'login',
   length : 16
 } ];
+
+exports.loadSettings = function() {
+
+  var settings = require('../../settingsHandler').getGeneralSettings();
+  forcedCaptcha = settings.forceCaptcha;
+  globalBoardModeration = settings.allowGlobalBoardModeration;
+  boardCreationRequirement = settings.boardCreationRequirement;
+  maxVolunteers = settings.maxBoardVolunteers;
+  maxBoardTags = settings.maxBoardTags;
+  overboard = settings.overboard;
+
+};
 
 exports.loadDependencies = function() {
 
@@ -182,7 +192,7 @@ exports.sanitizeBoardTags = function(tags) {
 
   var i;
 
-  for (i = 0; i < tags.length && toRet.length < settings.maxBoardTags; i++) {
+  for (i = 0; i < tags.length && toRet.length < maxBoardTags; i++) {
     var tagToAdd = tags[i].toString().trim().replace(/[<>]/g, replaceFunction)
         .toLowerCase().substring(0, 32);
 
@@ -534,7 +544,7 @@ exports.createBoard = function(captchaId, parameters, userData, callback) {
   if (/\W/.test(parameters.boardUri)) {
     callback(lang.errInvalidUri);
     return;
-  } else if (settings.overboard === parameters.boardUri) {
+  } else if (overboard === parameters.boardUri) {
     callback(lang.errUriInUse);
     return;
   }

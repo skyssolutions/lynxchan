@@ -2,14 +2,21 @@
 
 // handles board customization operations
 
-var settings = require('../../settingsHandler').getGeneralSettings();
 var db = require('../../db');
 var boards = db.boards();
 var lang;
 var gridFsHandler;
 
-var globalBoardModeration = settings.allowGlobalBoardModeration;
-var customJs = settings.allowBoardCustomJs;
+var globalBoardModeration;
+var customJs;
+
+exports.loadSettings = function() {
+
+  var settings = require('../../settingsHandler').getGeneralSettings();
+  globalBoardModeration = settings.allowGlobalBoardModeration;
+  customJs = settings.allowBoardCustomJs;
+
+};
 
 exports.loadDependencies = function() {
 

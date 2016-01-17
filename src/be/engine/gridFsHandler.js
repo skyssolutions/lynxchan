@@ -7,9 +7,8 @@ var archiveHandler = require('../archive');
 var files = db.files();
 var conn = db.conn();
 var mongo = require('mongodb');
-var settings = require('../settingsHandler').getGeneralSettings();
-var disable304 = settings.disable304;
-var verbose = settings.verbose;
+var disable304;
+var verbose;
 var noDaemon = require('../kernel').noDaemon();
 var miscOps;
 
@@ -17,6 +16,14 @@ var chunkSize = 1024 * 255;
 var streamableMimes = [ 'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg',
     'audio/ogg', 'audio/webm' ];
 var permanentTypes = [ 'media' ];
+
+exports.loadSettings = function() {
+
+  var settings = require('../settingsHandler').getGeneralSettings();
+
+  disable304 = settings.disable304;
+  verbose = settings.verbose;
+};
 
 exports.loadDependencies = function() {
 

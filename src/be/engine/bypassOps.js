@@ -4,9 +4,18 @@ var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var db = require('../db');
 var bypasses = db.bypasses();
-var settings = require('../settingsHandler').getGeneralSettings();
-var expirationToAdd = 1000 * 60 * 60 * settings.bypassDurationHours;
+var expirationToAdd;
 var captchaOps;
+var bypassMaxPosts;
+var bypassMode;
+
+exports.loadSettings = function() {
+  var settings = require('../settingsHandler').getGeneralSettings();
+
+  bypassMaxPosts = settings.bypassMaxPosts;
+  bypassMode = settings.bypassMode;
+  expirationToAdd = 1000 * 60 * 60 * settings.bypassDurationHours;
+};
 
 exports.loadDependencies = function() {
 
@@ -24,7 +33,7 @@ exports.renewBypass = function(captchaId, captchaInput, callback) {
     } else {
 
       var newBypass = {
-        usesLeft : settings.bypassMaxPosts,
+        usesLeft : bypassMaxPosts,
         expiration : new Date(new Date().getTime() + expirationToAdd)
       };
 
@@ -70,7 +79,7 @@ exports.checkBypass = function(bypassId, callback) {
 
 exports.useBypass = function(bypassId, req, callback) {
 
-  if (!settings.bypassMode) {
+  if (!bypassMode) {
     callback();
     return;
   }

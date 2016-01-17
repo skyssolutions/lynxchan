@@ -5,8 +5,7 @@ var miscOps = require('../engine/miscOps');
 var formOps = require('../engine/formOps');
 var jsonBuilder = require('../engine/jsonBuilder');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
-var settings = require('../settingsHandler').getGeneralSettings();
-var pageSize = settings.boardsPerPage || 50;
+var settingsHandler = require('../settingsHandler');
 var url = require('url');
 
 function getQueryBlock(parameters) {
@@ -54,6 +53,8 @@ exports.process = function(req, res) {
   var page = parameters.page || 1;
 
   var queryBlock = getQueryBlock(parameters);
+
+  var pageSize = settingsHandler.getGeneralSettings().boardsPerPage;
 
   boards.count(queryBlock, function(error, count) {
     if (error) {

@@ -4,15 +4,21 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
-var settings = require('../settingsHandler').getGeneralSettings();
-var maxBannerSize = settings.maxBannerSizeB;
 var db = require('../db');
 var boards = db.boards();
 var files = db.files();
 var gridFsHandler;
 var lang;
+var maxBannerSize;
+var globalBoardModeration;
 
-var globalBoardModeration = settings.allowGlobalBoardModeration;
+exports.loadSettings = function() {
+  var settings = require('../settingsHandler').getGeneralSettings();
+
+  maxBannerSize = settings.maxBannerSizeB;
+  globalBoardModeration = settings.allowGlobalBoardModeration;
+
+};
 
 exports.loadDependencies = function() {
 

@@ -2,9 +2,9 @@
 
 // contains common operations to the multiple parts of the domManipulator module
 
-var settings = require('../../settingsHandler').getGeneralSettings();
-var allowedJs = settings.allowBoardCustomJs;
-var forceCaptcha = settings.forceCaptcha;
+var allowedJs;
+var forceCaptcha;
+var latestPostCount;
 var lang;
 var templateHandler;
 var miscOps;
@@ -19,10 +19,20 @@ var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 var displayMaxSize;
 var maxPreviewBreaks = 16;
 
+exports.loadSettings = function() {
+
+  var settings = require('../../settingsHandler').getGeneralSettings();
+
+  allowedJs = settings.allowBoardCustomJs;
+  forceCaptcha = settings.forceCaptcha;
+  latestPostCount = settings.latestPostCount;
+  displayMaxSize = exports.formatFileSize(settings.maxFileSizeB);
+
+};
+
 exports.loadDependencies = function() {
 
   lang = require('../langOps').languagePack();
-  displayMaxSize = exports.formatFileSize(settings.maxFileSizeB);
   templateHandler = require('../templateHandler');
   miscOps = require('../miscOps');
 
@@ -366,7 +376,7 @@ exports.setOmittedInformation = function(thread, threadCell, posts, innerPage) {
   var omissionLabel = threadCell.getElementsByClassName('labelOmission')[0];
 
   var notEnougPosts = !thread.postCount;
-  notEnougPosts = notEnougPosts || thread.postCount <= settings.latestPostCount;
+  notEnougPosts = notEnougPosts || thread.postCount <= latestPostCount;
 
   if (innerPage || notEnougPosts) {
     exports.removeElement(omissionLabel);
@@ -411,7 +421,7 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
   var threadCell = exports.getThreadCellBase(document, thread);
   threadCell.setAttribute('data-boarduri', boardUri);
 
-  exports.setOmittedInformation(thread, threadCell, posts, innerPage, settings);
+  exports.setOmittedInformation(thread, threadCell, posts, innerPage);
 
   exports.setSharedHideableElements(thread, threadCell);
 

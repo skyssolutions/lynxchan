@@ -7,8 +7,7 @@ var db = require('../../db');
 var threads = db.threads();
 var boards = db.boards();
 var debug = require('../../kernel').debug();
-var settings = require('../../settingsHandler').getGeneralSettings();
-var verbose = settings.verbose;
+var verbose;
 var logger = require('../../logger');
 var common;
 var delOps;
@@ -19,9 +18,20 @@ var lang;
 var r9k;
 var miscOps;
 var captchaOps;
+var overboard;
+var threadLimit;
+var globalLatestPosts;
 
-var threadLimit = settings.maxThreadCount;
-var globalLatestPosts = settings.globalLatestPosts;
+exports.loadSettings = function() {
+
+  var settings = require('../../settingsHandler').getGeneralSettings();
+
+  overboard = settings.overboard;
+  verbose = settings.verbose;
+  threadLimit = settings.maxThreadCount;
+  globalLatestPosts = settings.globalLatestPosts;
+
+};
 
 exports.loadDependencies = function() {
 
@@ -84,7 +94,7 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
     });
   }
 
-  if (settings.overboard) {
+  if (overboard) {
     overboardOps.reaggregate({
       overboard : true,
       _id : thread._id

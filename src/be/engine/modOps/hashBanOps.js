@@ -5,8 +5,7 @@
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var logger = require('../../logger');
-var settings = require('../../settingsHandler').getGeneralSettings();
-var torBlocked = settings.torAccess < 2;
+var torBlocked;
 var db = require('../../db');
 var boards = db.boards();
 var hashBans = db.hashBans();
@@ -21,6 +20,12 @@ var hashBanArguments = [ {
   length : 32,
   removeHTML : true
 } ];
+
+exports.loadSettings = function() {
+  var settings = require('../../settingsHandler').getGeneralSettings();
+
+  torBlocked = settings.torAccess < 2;
+};
 
 exports.loadDependencies = function() {
 

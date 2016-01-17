@@ -2,13 +2,19 @@
 
 // handle board filter operations
 
-var settings = require('../../settingsHandler').getGeneralSettings();
+var maxFiltersCount;
 var db = require('../../db');
 var boards = db.boards();
 var miscOps;
 var lang;
 
-var globalBoardModeration = settings.allowGlobalBoardModeration;
+var globalBoardModeration;
+
+exports.loadSettings = function() {
+  var settings = require('../../settingsHandler').getGeneralSettings();
+  maxFiltersCount = settings.maxFilters;
+  globalBoardModeration = settings.allowGlobalBoardModeration;
+};
 
 exports.loadDependencies = function() {
 
@@ -16,8 +22,6 @@ exports.loadDependencies = function() {
   lang = require('../langOps').languagePack();
 
 };
-
-var maxFiltersCount = settings.maxFilters;
 
 var filterParameters = [ {
   field : 'originalTerm',

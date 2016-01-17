@@ -4,12 +4,19 @@
 
 var db = require('../../db');
 var boards = db.boards();
-var settings = require('../../settingsHandler').getGeneralSettings();
-var maxRulesCount = settings.maxBoardRules;
 var lang;
 var miscOps;
+var maxRulesCount;
+var globalBoardModeration;
 
-var globalBoardModeration = settings.allowGlobalBoardModeration;
+exports.loadSettings = function() {
+
+  var settings = require('../../settingsHandler').getGeneralSettings();
+
+  maxRulesCount = settings.maxBoardRules;
+  globalBoardModeration = settings.allowGlobalBoardModeration;
+
+};
 
 exports.loadDependencies = function() {
 

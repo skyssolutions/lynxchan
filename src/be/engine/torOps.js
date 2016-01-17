@@ -5,13 +5,18 @@
 var torIps = require('../db').torIps();
 var logger = require('../logger');
 var torDebug = require('../kernel').torDebug();
-var settings = require('../settingsHandler').getGeneralSettings();
-var verbose = settings.verbose;
-var ipSource = settings.torSource;
+var verbose;
+var ipSource;
 var https = require('https');
 var http = require('http');
 
-exports.loadDependencies = function() {
+exports.loadSettings = function() {
+
+  var settings = require('../settingsHandler').getGeneralSettings();
+
+  verbose = settings.verbose;
+  ipSource = settings.torSource;
+
 };
 
 // start of update

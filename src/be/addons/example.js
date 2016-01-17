@@ -3,11 +3,11 @@
 'use strict';
 
 var templateHandler = require('../engine/templateHandler');
+var settingsHandler = require('../settingsHandler');
 var lang = require('../engine/langOps').languagePack();
 var domManipulator = require('../engine/domManipulator');
 var gridFs = require('../engine/gridFsHandler');
-var settings = require('../settingsHandler').getGeneralSettings();
-var siteTitle = settings.siteTitle || lang.titDefaultChanTitle;
+var verbose;
 
 var common = domManipulator.common;
 var staticPages = domManipulator.staticPages;
@@ -31,6 +31,10 @@ exports.init = function() {
   // pick an exposed function of the module and replace it
   staticPages.setLatestPosts = function(latestPosts, latestPostsDiv, document) {
 
+    if (verbose) {
+      console.log('Example addon is running');
+    }
+
     var footer = document.createElement('footer');
     footer.innerHTML = 'Example addon is working';
 
@@ -39,6 +43,14 @@ exports.init = function() {
     originalLatestPosts(latestPosts, latestPostsDiv, document);
 
   };
+
+};
+
+// If this function is declared, the engine will execute it every time settings
+// change
+exports.loadSettings = function() {
+
+  verbose = settingsHandler.getGeneralSettings().verbose;
 
 };
 

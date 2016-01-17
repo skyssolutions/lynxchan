@@ -7,14 +7,12 @@ var boards = db.boards();
 var bans = db.bans();
 var posts = db.posts();
 var threads = db.threads();
-var settings = require('../../../settingsHandler').getGeneralSettings();
-var defaultBanMessage = settings.defaultBanMessage;
+var defaultBanMessage;
 var logger;
 var logOps;
 var miscOps;
 var captchaOps;
 var common;
-
 var lang;
 
 var appealArguments = [ {
@@ -33,6 +31,17 @@ var banArguments = [ {
   removeHTML : true
 } ];
 
+exports.loadSettings = function() {
+
+  var settings = require('../../../settingsHandler').getGeneralSettings();
+  defaultBanMessage = settings.defaultBanMessage;
+
+  if (!defaultBanMessage) {
+    defaultBanMessage = lang.miscDefaultBanMessage;
+  }
+
+};
+
 exports.loadDependencies = function() {
 
   captchaOps = require('../../captchaOps');
@@ -41,10 +50,6 @@ exports.loadDependencies = function() {
   logger = require('../../../logger');
   miscOps = require('../../miscOps');
   lang = require('../../langOps').languagePack();
-
-  if (!defaultBanMessage) {
-    defaultBanMessage = lang.miscDefaultBanMessage;
-  }
 
 };
 

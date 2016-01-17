@@ -2,9 +2,15 @@
 
 // contains operations common to multiple parts of modOps
 
-var settings = require('../../settingsHandler').getGeneralSettings();
-var globalBoardModeration = settings.allowGlobalBoardModeration;
+var globalBoardModeration;
 var maxRoleStaff;
+
+exports.loadSettings = function() {
+  var settings = require('../../settingsHandler').getGeneralSettings();
+
+  globalBoardModeration = settings.allowGlobalBoardModeration;
+
+};
 
 exports.loadDependencies = function() {
   maxRoleStaff = require('../miscOps').getMaxStaffRole();

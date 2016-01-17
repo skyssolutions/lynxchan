@@ -4,7 +4,7 @@ var url = require('url');
 var kernel = require('../kernel');
 var defaultBanner = kernel.defaultBanner();
 var files = require('../db').files();
-var settings = require('../settingsHandler').getGeneralSettings();
+var settingsHandler = require('../settingsHandler');
 var gridFsHandler = require('../engine/gridFsHandler');
 var miscOps = require('../engine/miscOps');
 var formOps = require('../engine/formOps');
@@ -23,10 +23,9 @@ exports.process = function(req, res) {
 
   var parameters = url.parse(req.url, true).query;
 
-  var overboard = parameters.boardUri === settings.overboard;
-  var multiBoard = parameters.boardUri === '.multiBoard';
-  var global = overboard || multiBoard || settings.useGlobalBanners;
-  
+  var useGlobal = settingsHandler.getGeneralSettings().useGlobalBanners;
+
+  var global = !parameters.boardUri || useGlobal;
 
   files.find({
     'metadata.boardUri' : global ? {

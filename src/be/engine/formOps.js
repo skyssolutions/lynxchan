@@ -2,18 +2,17 @@
 
 // general operations for the form api
 
-var settings = require('../settingsHandler').getGeneralSettings();
 var bans = require('../db').bans();
 var fs = require('fs');
 var crypto = require('crypto');
 var debug = require('../kernel').debug();
-var verbose = settings.verbose;
 var multiParty = require('multiparty');
 var jsdom = require('jsdom').jsdom;
-var uploadDir = settings.tempDirectory;
-var maxRequestSize = settings.maxRequestSizeB;
-var maxFileSize = settings.maxFileSizeB;
-var maxFiles = settings.maxFiles;
+var verbose;
+var uploadDir;
+var maxRequestSize;
+var maxFileSize;
+var maxFiles;
 var accountOps;
 var uploadHandler;
 var modOps;
@@ -23,6 +22,19 @@ var lang;
 var uploadHandler;
 var validMimes;
 var videoMimes;
+var mediaThumb;
+
+exports.loadSettings = function() {
+
+  var settings = require('../settingsHandler').getGeneralSettings();
+
+  verbose = settings.verbose;
+  uploadDir = settings.tempDirectory;
+  maxRequestSize = settings.maxRequestSizeB;
+  maxFileSize = settings.maxFileSizeB;
+  maxFiles = settings.maxFiles;
+  mediaThumb = settings.mediaThumb;
+};
 
 exports.loadDependencies = function() {
 
@@ -94,13 +106,13 @@ exports.getFileData = function(file, fields, mime, callback) {
     };
 
     var video = videoMimes.indexOf(toPush.mime) > -1;
-    video = video && settings.mediaThumb;
+    video = video && mediaThumb;
 
     var measureFunction;
 
     if (toPush.mime.indexOf('image/') > -1) {
       measureFunction = uploadHandler.getImageBounds;
-    } else if (video && settings.mediaThumb) {
+    } else if (video) {
       measureFunction = uploadHandler.getVideoBounds;
     }
 

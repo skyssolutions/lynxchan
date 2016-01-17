@@ -3,13 +3,18 @@
 // Handles the language package
 
 var fs = require('fs');
-var settings = require('../settingsHandler').getGeneralSettings();
-var verbose = settings.verbose;
 var debug = require('../kernel').debug();
+var verbose;
+var languagePackPath;
 
 var languagePack = {};
 
-exports.loadDependencies = function() {
+exports.loadSettings = function() {
+
+  var settings = require('../settingsHandler').getGeneralSettings();
+
+  verbose = settings.verbose;
+  languagePackPath = settings.languagePackPath;
 };
 
 exports.languagePack = function() {
@@ -78,7 +83,7 @@ exports.processObject = function(defaultObject, chosenObject, missingKeys,
 
 exports.loadLanguagePack = function(defaultPack) {
 
-  var chosenPack = JSON.parse(fs.readFileSync(settings.languagePackPath));
+  var chosenPack = JSON.parse(fs.readFileSync(languagePackPath));
 
   var missingKeys = [];
 
@@ -108,7 +113,7 @@ exports.init = function() {
 
   var defaultPack = JSON.parse(fs.readFileSync(defaultLanguagePath));
 
-  if (settings.languagePackPath) {
+  if (languagePackPath) {
     exports.loadLanguagePack(defaultPack);
   } else {
     languagePack = defaultPack;

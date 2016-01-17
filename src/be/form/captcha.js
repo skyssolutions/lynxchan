@@ -1,6 +1,6 @@
 'use strict';
 
-var verbose = require('../settingsHandler').getGeneralSettings().verbose;
+var settingsHandler = require('../settingsHandler');
 var debug = require('../kernel').debug();
 var miscOps = require('../engine/miscOps');
 var fs = require('fs');
@@ -12,7 +12,7 @@ function showCaptcha(req, id, res, cookies) {
   gridFsHandler.outputFile(id + '.jpg', req, res, function streamedFile(error) {
     if (error) {
 
-      if (verbose) {
+      if (settingsHandler.getGeneralSettings().verbose) {
         console.log(error);
       }
 
@@ -27,6 +27,8 @@ function showCaptcha(req, id, res, cookies) {
 }
 
 exports.process = function(req, res) {
+
+  var verbose = settingsHandler.getGeneralSettings().verbose;
 
   captchaOps.checkForCaptcha(req, function checked(error, id) {
 

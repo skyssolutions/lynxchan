@@ -7,7 +7,7 @@ var ObjectID = mongo.ObjectID;
 var db = require('../../db');
 var logs = db.logs();
 var aggregatedLogs = db.aggregatedLogs();
-var overboard = db.overboardThreads();
+var overboardThreads = db.overboardThreads();
 var threads = db.threads();
 var posts = db.posts();
 var boards = db.boards();
@@ -15,12 +15,11 @@ var latestPostsCol = db.latestPosts();
 var latestImagesCol = db.latestImages();
 var kernel = require('../../kernel');
 var settingsHandler = require('../../settingsHandler');
-var settings = settingsHandler.getGeneralSettings();
-var topBoardsCount = settings.topBoardsCount;
 var templateSettings = settingsHandler.getTemplateSettings();
-var verbose = settings.verbose;
-var globalLatestPosts = settings.globalLatestPosts;
-var globalLatestImages = settings.globalLatestImages;
+var topBoardsCount;
+var verbose;
+var globalLatestPosts;
+var globalLatestImages;
 var domManipulator;
 var postProjection;
 var threadProjection;
@@ -29,6 +28,21 @@ var gfsHandler;
 var jsonBuilder;
 var miscOps;
 var rssBuilder;
+var overboard;
+var fePath;
+var overBoardThreadCount;
+
+exports.loadSettings = function() {
+  var settings = settingsHandler.getGeneralSettings();
+
+  verbose = settings.verbose;
+  topBoardsCount = settings.topBoardsCount;
+  globalLatestPosts = settings.globalLatestPosts;
+  globalLatestImages = settings.globalLatestImages;
+  overboard = settings.overboard;
+  fePath = settings.fePath;
+  overBoardThreadCount = settings.overBoardThreadCount;
+};
 
 exports.loadDependencies = function() {
 
@@ -68,7 +82,7 @@ exports.audioThumb = function(callback) {
     console.log('Saving audio thumb image');
   }
 
-  var filePath = settings.fePath + '/templates/';
+  var filePath = fePath + '/templates/';
   filePath += templateSettings.audioThumb;
 
   gfsHandler.writeFile(filePath, kernel.genericAudioThumb(), miscOps
@@ -82,7 +96,7 @@ exports.spoiler = function(callback) {
     console.log('Saving spoiler image');
   }
 
-  var filePath = settings.fePath + '/templates/';
+  var filePath = fePath + '/templates/';
   filePath += templateSettings.spoiler;
 
   gfsHandler.writeFile(filePath, kernel.spoilerImage(), miscOps.getMime(kernel
@@ -96,7 +110,7 @@ exports.defaultBanner = function(callback) {
     console.log('Saving default banner');
   }
 
-  var filePath = settings.fePath + '/templates/';
+  var filePath = fePath + '/templates/';
   filePath += templateSettings.defaultBanner;
 
   gfsHandler.writeFile(filePath, kernel.defaultBanner(), miscOps.getMime(kernel
@@ -111,7 +125,7 @@ exports.thumb = function(callback) {
     console.log('Saving generic thumbnail');
   }
 
-  var filePath = settings.fePath + '/templates/';
+  var filePath = fePath + '/templates/';
   filePath += templateSettings.thumb;
 
   gfsHandler.writeFile(filePath, kernel.genericThumb(), miscOps.getMime(kernel
@@ -254,7 +268,7 @@ exports.buildJsonAndRssOverboard = function(foundThreads, previewRelation,
           callback(error);
         } else {
           rssBuilder.board({
-            boardUri : settings.overboard
+            boardUri : overboard
           }, foundThreads, callback);
         }
 
@@ -346,7 +360,7 @@ exports.getOverboardThreads = function(ids, callback) {
     }
   }, threadProjection).sort({
     lastBump : -1
-  }).limit(settings.overBoardThreadCount).toArray(
+  }).limit(overBoardThreadCount).toArray(
       function gotThreads(error, foundThreads) {
         if (error) {
           callback(error);
@@ -361,7 +375,7 @@ exports.getOverboardThreads = function(ids, callback) {
 
 exports.overboard = function(callback) {
 
-  if (!settings.overboard) {
+  if (!overboard) {
     callback();
     return;
   }
@@ -370,7 +384,7 @@ exports.overboard = function(callback) {
     console.log('Building overboard');
   }
 
-  overboard.find({}, {
+  overboardThreads.find({}, {
     _id : 0,
     thread : 1
   }).toArray(function gotOverBoardThreads(error, foundOverboardThreads) {
@@ -412,7 +426,7 @@ exports.log = function(date, callback, logData) {
   if (!logData) {
 
     if (!date) {
-      if (settings.verbose) {
+      if (verbose) {
 
         console.log('Could not build log page, no data.');
       }
