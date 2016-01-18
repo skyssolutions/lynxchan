@@ -22,6 +22,8 @@ var miscOps;
 var verbose;
 var maxGlobalLatestPosts;
 var floodTimer;
+var globalMaxSizeMB;
+var globalMaxFiles;
 
 var dataPath = __dirname + '/../../locationData/data.json';
 
@@ -60,6 +62,8 @@ exports.loadSettings = function() {
   verbose = settings.verbose;
   maxGlobalLatestPosts = settings.globalLatestPosts;
   floodTimer = settings.floodTimerSec * 1000;
+  globalMaxSizeMB = settings.maxFileSizeMB;
+  globalMaxFiles = settings.maxFiles;
 
 };
 
@@ -336,6 +340,39 @@ exports.applyFilters = function(filters, message) {
   }
 
   return message;
+
+};
+
+exports.checkBoardFileLimits = function(files, boardData) {
+
+  if (!boardData) {
+    return null;
+  }
+
+  var allowedMimes = boardData.acceptedMimes;
+
+  var checkSize = boardData.maxFileSizeMB < globalMaxSizeMB;
+
+  var maxSize = checkSize ? boardData.maxFileSizeMB * 1024 * 1024 : null;
+
+  var checkMimes = allowedMimes && allowedMimes.length;
+
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i];
+
+    if (checkMimes && allowedMimes.indexOf(file.mime) < 0) {
+      return lang.errInvalidMimeForBoard;
+    }
+
+    if (maxSize && maxSize < file.size) {
+      return lang.errFileTooLargeForBoard;
+    }
+
+  }
+
+  if (boardData.maxFiles && boardData.maxFiles < globalMaxFiles) {
+    files.splice(boardData.maxFiles, globalMaxFiles - boardData.maxFiles);
+  }
 
 };
 

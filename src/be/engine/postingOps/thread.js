@@ -110,8 +110,16 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
 
 };
 
-exports.updateBoardForThreadCreation = function(boardUri, threadId,
+exports.updateBoardForThreadCreation = function(boardData, threadId,
     enabledCaptcha, callback, thread) {
+
+  var boardUri = boardData.boardUri;
+  var boardThreadLimit = boardData.maxThreadCount;
+
+  var gotBoardThreadLimit = boardThreadLimit && boardThreadLimit < threadLimit;
+  gotBoardThreadLimit = gotBoardThreadLimit && boardThreadLimit > 0;
+
+  var limitToUse = gotBoardThreadLimit ? boardThreadLimit : threadLimit;
 
   boards.findOneAndUpdate({
     boardUri : boardUri
@@ -126,17 +134,20 @@ exports.updateBoardForThreadCreation = function(boardUri, threadId,
       callback(error);
     } else {
 
-      if (board.value.threadCount > threadLimit) {
+      var threadCount = board.value.threadCount;
+
+      if (threadCount > limitToUse) {
 
         // style exception, too simple
-        delOps.cleanThreads(boardUri, function cleanedThreads(error) {
-          if (error) {
-            callback(error);
-          } else {
-            exports.finishThreadCreation(boardUri, threadId, enabledCaptcha,
-                callback, thread);
-          }
-        });
+        delOps.cleanThreads(boardUri, limitToUse,
+            function cleanedThreads(error) {
+              if (error) {
+                callback(error);
+              } else {
+                exports.finishThreadCreation(boardUri, threadId,
+                    enabledCaptcha, callback, thread);
+              }
+            });
         // style exception, too simple
 
       } else {
@@ -205,7 +216,7 @@ exports.createThread = function(req, userData, parameters, board, threadId,
       // style exception, too simple
       uploadHandler.saveUploads(board, threadId, null, parameters,
           function savedUploads() {
-            exports.updateBoardForThreadCreation(parameters.boardUri, threadId,
+            exports.updateBoardForThreadCreation(board, threadId,
                 enabledCaptcha, callback, threadToAdd);
           });
       // style exception, too simple
@@ -453,14 +464,21 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
     autoCaptchaCount : 1,
     autoCaptchaStartTime : 1,
     hourlyThreadLimit : 1,
+    maxFiles : 1,
+    maxFileSizeMB : 1,
     usesCustomSpoiler : 1,
+    maxThreadCount : 1,
     lockedUntil : 1,
+    acceptedMimes : 1,
     lockCountStart : 1,
     filters : 1,
     threadLockCount : 1,
     anonymousName : 1,
     settings : 1
   }, function gotBoard(error, board) {
+
+    var boardLimitError = common.checkBoardFileLimits(parameters.files, board);
+
     if (error) {
       cb(error);
     } else if (!board) {
@@ -469,6 +487,8 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
       cb(lang.errBoardLocked);
     } else if (board.settings.indexOf('requireThreadFile') > -1 && noFiles) {
       cb(lang.msgErrThreadFileRequired);
+    } else if (boardLimitError) {
+      cb(boardLimitError);
     } else {
 
       if (board.settings.indexOf('forceAnonymity') > -1) {

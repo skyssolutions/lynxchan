@@ -17,7 +17,6 @@ var reports = db.reports();
 var posts = db.posts();
 var boards = db.boards();
 var verbose;
-var threadLimit;
 var overboard;
 var lang;
 var logOps;
@@ -31,7 +30,6 @@ exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
   verbose = settings.verbose;
-  threadLimit = settings.maxThreadCount;
   overboard = settings.overboard;
 };
 
@@ -114,7 +112,7 @@ exports.getThreadFilesToRemove = function(boardUri, threadsToRemove, callback) {
 
 };
 
-exports.cleanThreads = function(boardUri, callback) {
+exports.cleanThreads = function(boardUri, limit, callback) {
 
   if (verbose) {
     console.log('Cleaning threads of ' + boardUri);
@@ -130,7 +128,7 @@ exports.cleanThreads = function(boardUri, callback) {
       lastBump : -1
     }
   }, {
-    $skip : threadLimit
+    $skip : limit
   }, {
     $group : {
       _id : 0,

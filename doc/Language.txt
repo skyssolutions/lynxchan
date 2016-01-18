@@ -108,6 +108,8 @@ errFlood: error thrown when flood is detected.
 errMessageAlreadyPosted: error thrown when R9K blocks a message.
 errFileAlreadyPosted: error thrown when R9K blocks a file.
 errDuplicateFileBeingPosted: error thrown when R9K is enforcing file uniqueness and the user tries to post the same file twice.
+errFileTooLargeForBoard: error thrown when a file being uploaded is too large for that board in specific.
+errInvalidMimeForBoard: error thrown when a file being uploaded isn't allowed by the board in specific.
 guiAllTypes: option to select all types of logs.
 guiTypeBan: label used for logs of bans.
 guiTypeRange: label used for logs of range bans.

@@ -266,7 +266,19 @@ exports.getLatestPosts = function(thread, postId) {
 
 };
 
-exports.updateThread = function(parameters, postId, thread, callback, post) {
+exports.getBumpLimit = function(boardData) {
+
+  // No need to check if the number here is greater than 0, since it will be
+  // used just to check a condition
+  var hasBoardLimit = boardData.autoSageLimit;
+  hasBoardLimit = hasBoardLimit && boardData.autoSageLimit < bumpLimit;
+
+  return hasBoardLimit ? boardData.autoSageLimit : bumpLimit;
+
+};
+
+exports.updateThread = function(boardData, parameters, postId, thread,
+    callback, post) {
 
   var updateBlock = {
     $set : {
@@ -281,9 +293,11 @@ exports.updateThread = function(parameters, postId, thread, callback, post) {
   var saged = parameters.email === 'sage';
   var bump = false;
 
+  var limitToUse = exports.getBumpLimit(boardData);
+
   if (!thread.autoSage) {
 
-    if (thread.postCount >= bumpLimit) {
+    if (thread.postCount >= limitToUse) {
 
       if (thread.cyclic) {
         cleanPosts = true;
@@ -367,7 +381,8 @@ exports.createPost = function(req, parameters, userData, postId, thread, board,
       // style exception, too simple
       uploadHandler.saveUploads(board, parameters.threadId, postId, parameters,
           function savedFiles() {
-            exports.updateThread(parameters, postId, thread, cb, postToAdd);
+            exports.updateThread(board, parameters, postId, thread, cb,
+                postToAdd);
           });
       // style exception, too simple
 
@@ -515,13 +530,22 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
     boardUri : 1,
     usesCustomSpoiler : 1,
     anonymousName : 1,
+    acceptedMimes : 1,
+    maxFiles : 1,
+    autoSageLimit : 1,
+    maxFileSizeMB : 1,
     settings : 1,
     volunteers : 1
   }, function gotBoard(error, board) {
+
+    var boardLimitError = common.checkBoardFileLimits(parameters.files, board);
+
     if (error) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
+    } else if (boardLimitError) {
+      callback(boardLimitError);
     } else {
 
       // style exception, too simple

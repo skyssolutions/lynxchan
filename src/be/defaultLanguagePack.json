@@ -316,5 +316,7 @@
   "errNoFileAndMessage": "Either a message or a file is required.",
   "errMessageAlreadyPosted": "R9K prevented your message from being posted.",
   "errFileAlreadyPosted": "R9K prevented at least one of your files from being posted.",
-  "errDuplicateFileBeingPosted": "R9K prevented you from posting the same file multiple times at once."
+  "errDuplicateFileBeingPosted": "R9K prevented you from posting the same file multiple times at once.",
+  "errFileTooLargeForBoard": "You tried to upload a file that is larger than the allowed size for this board.",
+  "errInvalidMimeForBoard": "You tried to upload a file with an invalid format for this board."
 }
