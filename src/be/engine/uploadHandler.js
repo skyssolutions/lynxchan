@@ -21,7 +21,6 @@ var mp3ThumbCommand = 'ffmpeg -i {$path} -y -an -vcodec copy {$destination}';
 mp3ThumbCommand += ' && mogrify -resize {$dimension} {$destination}';
 var verbose;
 var archive;
-var supportedMimes;
 var thumbSize;
 var latestImages;
 var miscOps;
@@ -45,7 +44,6 @@ exports.loadSettings = function() {
 
   verbose = settings.verbose;
   archive = settings.archiveLevel > 1;
-  supportedMimes = settings.acceptedMimes;
   thumbSize = settings.thumbSize;
   latestImages = settings.globalLatestImages;
   mediaThumb = settings.mediaThumb;
@@ -62,10 +60,6 @@ exports.loadDependencies = function() {
 
 exports.videoMimes = function() {
   return videoMimes;
-};
-
-exports.supportedMimes = function() {
-  return supportedMimes;
 };
 
 exports.getImageBounds = function(file, callback) {

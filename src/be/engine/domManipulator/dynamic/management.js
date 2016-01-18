@@ -34,11 +34,14 @@ exports.boardSettingsRelation = {
 
 exports.boardFieldsRelation = {
   boardNameField : 'boardName',
-  tagsField : 'tags',
   boardDescriptionField : 'boardDescription',
   autoCaptchaThresholdField : 'autoCaptchaThreshold',
   hourlyThreadLimitField : 'hourlyThreadLimit',
-  anonymousNameField : 'anonymousName'
+  anonymousNameField : 'anonymousName',
+  maxFilesField : 'maxFiles',
+  maxFileSizeField : 'maxFileSizeMB',
+  maxThreadFields : 'maxThreadCount',
+  autoSageLimitField : 'autoSageLimit'
 };
 
 exports.boardControlIdentifiers = [ 'addVolunteerBoardIdentifier',
@@ -111,6 +114,12 @@ exports.setBoardFields = function(document, boardData) {
     document.getElementById(key).setAttribute('value',
         boardData[exports.boardFieldsRelation[key]] || '');
   }
+
+  document.getElementById('validMimesField').setAttribute('value',
+      (boardData.acceptedMimes || []).join(', '));
+
+  document.getElementById('tagsField').setAttribute('value',
+      (boardData.tags || []).join(', '));
 
   var messageContent = boardData.boardMessage || '';
 

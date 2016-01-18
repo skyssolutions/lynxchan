@@ -34,6 +34,8 @@ exports.loadSettings = function() {
   maxFileSize = settings.maxFileSizeB;
   maxFiles = settings.maxFiles;
   mediaThumb = settings.mediaThumb;
+  validMimes = settings.acceptedMimes;
+
 };
 
 exports.loadDependencies = function() {
@@ -45,7 +47,6 @@ exports.loadDependencies = function() {
   domManipulator = require('./domManipulator').dynamicPages.miscPages;
   lang = require('./langOps').languagePack();
   uploadHandler = require('./uploadHandler');
-  validMimes = uploadHandler.supportedMimes();
   videoMimes = uploadHandler.videoMimes();
 
 };

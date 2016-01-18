@@ -341,6 +341,11 @@ Description: changes board settings. Requires authentication.
 
 Parameters:
     boardUri*: board uri.
+    autoSageLimit(Number): how many times a thread can be replied before it stops being bumped.***
+    maxThreadCount(Number): how many threads the board can have.***
+    maxFileSizeMB(Number): how large files uploaded to the board can be.***
+    acceptedMimes(Array): accepted mimes for uploaded files.***
+    maxFiles(Number): maximum allowed files to be uploaded on posts.***
     boardMessage: new message of the board. 256 characters.
     boardName*: new name of the board. 32 characters.
     autoCaptchaLimit(Number): a limit that automatically enables captcha if these many threads are created within an hour.
@@ -716,3 +721,4 @@ Parameters:
 
 *: mandatory parameters
 **: exclusive funcionality to the json api.
+***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

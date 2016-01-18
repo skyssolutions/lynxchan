@@ -30,6 +30,10 @@ function setBoardSettings(userData, parameters, res, auth) {
     parameters.tags = parameters.tags.split(',');
   }
 
+  if (parameters.acceptedMimes) {
+    parameters.acceptedMimes = parameters.acceptedMimes.split(',');
+  }
+
   boardOps.setSettings(userData, parameters, function settingsSaved(error) {
     if (error) {
       formOps.outputError(error, 500, res);

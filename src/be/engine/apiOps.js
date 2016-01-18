@@ -41,6 +41,7 @@ exports.loadSettings = function() {
   maxFileSize = settings.maxFileSizeB;
   maxFiles = settings.maxFiles;
   mediaThumb = settings.mediaThumb;
+  allowedMimes = settings.acceptedMimes;
 
 };
 
@@ -50,7 +51,6 @@ exports.loadDependencies = function() {
   miscOps = require('./miscOps');
   modOps = require('./modOps');
   uploadHandler = require('./uploadHandler');
-  allowedMimes = uploadHandler.supportedMimes();
   videoMimes = uploadHandler.videoMimes();
   lang = require('./langOps').languagePack();
 

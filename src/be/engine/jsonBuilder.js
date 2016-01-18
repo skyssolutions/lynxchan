@@ -398,7 +398,12 @@ exports.boardManagement = function(userData, boardData, reports, bans) {
     boardMessage : boardData.boardMessage,
     isOwner : userData.login === boardData.owner,
     openReports : reports || [],
-    appealedBans : bans || []
+    appealedBans : bans || [],
+    autoSageLimit : boardData.autoSageLimit || settings.autoSageLimit,
+    maxThreadCount : boardData.maxThreadCount || settings.maxThreadCount,
+    maxFileSizeMB : boardData.maxFileSizeMB || settings.maxFileSizeMB,
+    acceptedMimes : boardData.acceptedMimes || settings.acceptedMimes,
+    maxFiles : boardData.maxFiles || settings.maxFiles
   });
 
 };

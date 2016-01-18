@@ -193,6 +193,11 @@ Json output(Object): object with data used to manage the board. Contains the fol
     usesCustomSpoiler(Boolean): indicates if the board has a custom spoiler image.
     volunteers(Array): array with the logins of the board volunteers.
     boardName: name of the board.
+    autoSageLimit(Number): how many times a thread can be replied before it stops being bumped.
+    maxThreadCount(Number): how many threads the board can have.
+    maxFileSizeMB(Number): how large files uploaded to the board can be.
+    acceptedMimes(Array): accepted mimes for uploaded files.
+    maxFiles(Number): maximum allowed files to be uploaded on posts.
     boardDescription: description of the board.
     anonName: name used for anonymous users.
     hourlyThreadLimit(Number): how many threads can be created on the board within an hour before it locks thread creation.
@@ -524,6 +529,11 @@ Name: setBoardSettings
 Description: changes board settings. Requires authentication.
 
 Parameters:
+    autoSageLimit(Number): how many times a thread can be replied before it stops being bumped.***
+    maxThreadCount(Number): how many threads the board can have.***
+    maxFileSizeMB(Number): how large files uploaded to the board can be.***
+    acceptedMimes(Array): accepted mimes for uploaded files.***
+    maxFiles(Number): maximum allowed files to be uploaded on posts.***
     boardUri*: board URI.
     boardName*: new name of the board. 32 characters.
     boardDescription*: new description of the board. 128 characters.
@@ -1134,3 +1144,4 @@ Parameters:
 ------------------------------------------------------------------------------------------
 
 *: mandatory parameters.
+***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

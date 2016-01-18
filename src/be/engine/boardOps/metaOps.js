@@ -21,6 +21,7 @@ var overboard;
 var globalBoardModeration;
 var boardCreationRequirement;
 var maxVolunteers;
+var allowedMimes;
 
 var defaultSettings = [ 'disableIds', 'disableCaptcha' ];
 
@@ -58,6 +59,7 @@ exports.loadSettings = function() {
   maxVolunteers = settings.maxBoardVolunteers;
   maxBoardTags = settings.maxBoardTags;
   overboard = settings.overboard;
+  allowedMimes = settings.acceptedMimes;
 
 };
 
@@ -190,9 +192,7 @@ exports.sanitizeBoardTags = function(tags) {
     return miscOps.replaceTable[match];
   };
 
-  var i;
-
-  for (i = 0; i < tags.length && toRet.length < maxBoardTags; i++) {
+  for (var i = 0; i < tags.length && toRet.length < maxBoardTags; i++) {
     var tagToAdd = tags[i].toString().trim().replace(/[<>]/g, replaceFunction)
         .toLowerCase().substring(0, 32);
 
@@ -204,6 +204,30 @@ exports.sanitizeBoardTags = function(tags) {
   return toRet;
 };
 
+exports.sanitizeBoardMimes = function(mimes) {
+
+  if (!mimes || !mimes.length) {
+    return null;
+  }
+
+  var toRet = [];
+
+  for (var i = 0; i < mimes.length; i++) {
+    var tagToAdd = mimes[i].toString().trim().toLowerCase();
+
+    if (toRet.indexOf(tagToAdd) === -1 && allowedMimes.indexOf(tagToAdd) >= 0) {
+      toRet.push(tagToAdd);
+    }
+  }
+
+  if (toRet.length && miscOps.arraysDiff(allowedMimes, toRet)) {
+    return toRet;
+  } else {
+    return null;
+  }
+
+};
+
 exports.saveNewSettings = function(board, parameters, callback) {
 
   var newSettings = {
@@ -213,7 +237,12 @@ exports.saveNewSettings = function(board, parameters, callback) {
     boardMessage : parameters.boardMessage,
     boardMarkdown : exports.getMessageMarkdown(parameters.boardMessage),
     anonymousName : parameters.anonymousName || '',
-    tags : exports.sanitizeBoardTags(parameters.tags)
+    tags : exports.sanitizeBoardTags(parameters.tags),
+    acceptedMimes : exports.sanitizeBoardMimes(parameters.acceptedMimes),
+    autoSageLimit : +parameters.autoSageLimit,
+    maxThreadCount : +parameters.maxThreadCount,
+    maxFileSizeMB : +parameters.maxFileSizeMB,
+    maxFiles : +parameters.maxFiles
   };
 
   var updateBlock = {
@@ -623,15 +652,21 @@ exports.getBoardManagementData = function(userData, board, callback) {
     tags : 1,
     owner : 1,
     settings : 1,
+    maxFiles : 1,
     boardUri : 1,
     boardName : 1,
     volunteers : 1,
     boardMessage : 1,
+    autoSageLimit : 1,
     anonymousName : 1,
+    acceptedMimes : 1,
+    maxFileSizeMB : 1,
+    maxThreadCount : 1,
     boardDescription : 1,
     usesCustomSpoiler : 1,
     hourlyThreadLimit : 1,
     autoCaptchaThreshold : 1
+
   }, function(error, boardData) {
     if (error) {
       callback(error);

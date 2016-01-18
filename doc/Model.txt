@@ -39,6 +39,11 @@ boards: stores boards.
     rules(Array): array with board rules. Each rule is limited to 512 characters.
     boardMessage: message of the board. 256 characters.
     boardMarkdown: markdown of the message.
+    autoSageLimit(Number): how many times a thread can be replied before it stops being bumped.
+    maxThreadCount(Number): how many threads the board can have.
+    maxFileSizeMB(Number): how large files uploaded to the board can be.
+    acceptedMimes(Array): accepted mimes for uploaded files.
+    maxFiles(Number): maximum allowed files to be uploaded on posts.
     ipSalt: salt used to display hashed ips to staff.
     usesCustomSpoiler(Boolean): pre-aggregated boolean indicating the board has a custom spoiler.
     tags(Array): array of strings used as tags to identify the board subjects. Each tag can be up to 32 characters. Any upper-case character will be converted to lower-case.
