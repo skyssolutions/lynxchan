@@ -32,6 +32,7 @@ exports.threadProjection = {
   banMessage : 1,
   flagName : 1,
   cyclic : 1,
+  autoSage : 1,
   lastEditTime : 1,
   boardUri : 1,
   lastEditLogin : 1,

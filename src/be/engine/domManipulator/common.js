@@ -12,7 +12,8 @@ var miscOps;
 exports.indicatorsRelation = {
   pinned : 'pinIndicator',
   locked : 'lockIndicator',
-  cyclic : 'cyclicIndicator'
+  cyclic : 'cyclicIndicator',
+  autoSage : 'bumpLockIndicator'
 };
 
 var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];

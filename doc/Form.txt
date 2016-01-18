@@ -348,6 +348,7 @@ Json output(Object): object with the data of the thread.
     creation(Date): time when the post was created.
     locked(Boolean: indicates if the thread is locked and cannot be replied to.
     cyclic(Boolean): indicates if the thread is cyclic.
+    autoSage(Boolean): indicates if the thread is bumplocked.
     pinned(Boolean): indicates if the thread is pinned and will be listed on top of unpinned threads.
     files(Array): files uploaded with the thread. Each object contains the following fields:
         originalName: original name of the upload.

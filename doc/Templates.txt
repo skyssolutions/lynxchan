@@ -334,6 +334,10 @@ lockIndicator:
     use: might be removed.
     description: element that indicates the thread is locked.
 
+bumpLockIndicator:
+    use: might be removed.
+    description: element that indicates the thread is bumplocked.
+
 cyclicIndicator:
     use: might be removed.
     description: element that indicates the thread is cyclic.
@@ -1048,6 +1052,10 @@ labelImages:
 labelPage:
     use: have it's innerHTML manipulated.
     description: holds the page where the thread currently is.
+
+bumpLockIndicator:
+    use: might be removed.
+    description: element that indicates the thread is bumplocked.
 
 cyclicIndicator:
     use: might be removed.

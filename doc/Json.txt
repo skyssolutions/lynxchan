@@ -49,6 +49,7 @@ Root(Object):
     message: text of the post.
     name: name of the poster.
     creation(Date): time when the post was created.
+    autoSage(Boolean): indicates if the thread is bumplocked.
     locked(Boolean: indicates if the thread is locked and cannot be replied to.
     cyclic(Boolean): indicates if the thread is cyclic.
     pinned(Boolean): indicates if the thread is pinned and will be listed on top of unpinned threads.
@@ -134,6 +135,7 @@ Root(Object):
         lastEditTime(Date): date of the last time the message of the thread message was edited.
         lastEditLogin: Login of the last user to edit the thread message.
         name: name of the poster.
+        autoSage(Boolean): indicates if the thread is bumplocked.
         cyclic(Boolean): indicates if the thread is cyclic.
         creation(Date): time when the post was created.
         locked(Boolean: indicates if the thread is locked and cannot be replied to.
@@ -190,6 +192,7 @@ Root(Array): array of objects representing threads. Each element contains the fo
     cyclic(Boolean): indicates if the thread is cyclic.
     thumb: path to the thumbnail of the first image posted in this thread, if any.
     lastBump(Date): last time this thread was bumped.
+    autoSage(Boolean): indicates if the thread is bumplocked.
 
 ------------------------------------------------------------------------------------------
 

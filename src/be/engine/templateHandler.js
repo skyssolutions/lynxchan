@@ -35,7 +35,7 @@ exports.getCellTests = function() {
         template : 'catalogCell',
         fields : [ 'linkThumb', 'labelReplies', 'labelImages', 'labelPage',
             'labelSubject', 'divMessage', 'lockIndicator', 'pinIndicator',
-            'cyclicIndicator' ]
+            'cyclicIndicator', 'bumpLockIndicator' ]
       },
       {
         template : 'bannerCell',
@@ -49,7 +49,7 @@ exports.getCellTests = function() {
             'divBanMessage', 'spanId', 'panelIp', 'labelRange',
             'cyclicIndicator', 'linkQuote', 'divPosts', 'labelOmission',
             'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag', 'labelIp',
-            'contentOmissionIndicator', 'linkFullText' ]
+            'contentOmissionIndicator', 'linkFullText', 'bumpLockIndicator' ]
       },
       {
         template : 'postCell',

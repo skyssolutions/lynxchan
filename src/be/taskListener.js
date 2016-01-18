@@ -45,7 +45,7 @@ exports.start = function() {
 
   fs.unlink(socketLocation, function removedFile(error) {
 
-    if (error && verbose) {
+    if (error && error.code !== 'ENOENT' && verbose) {
       console.log(error);
     }
 

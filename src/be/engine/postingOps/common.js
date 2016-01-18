@@ -105,6 +105,13 @@ var spoilerFunction = function(match) {
   return '<span class="spoiler">' + content + '</span>';
 };
 
+var altSpoilerFunction = function(match) {
+
+  var content = match.substring(2, match.length - 2);
+
+  return '<span class="spoiler">' + content + '</span>';
+};
+
 exports.getSignedRole = function(userData, wishesToSign, board) {
 
   board.volunteers = board.volunteers || [];
@@ -342,6 +349,7 @@ exports.processLine = function(split, replaceCode) {
   split = split.replace(/\_\_.+?\_\_/g, underlineFunction);
   split = split.replace(/\~\~.+?\~\~/g, strikeFunction);
   split = split.replace(/\[spoiler\].+?\[\/spoiler\]/g, spoilerFunction);
+  split = split.replace(/\*\*.+?\*\*/g, altSpoilerFunction);
   split = split.replace(/\[aa\]/g, '<span class="aa">');
   split = split.replace(/\[\/aa\]/g, '</span>');
 

@@ -130,6 +130,7 @@ exports.getThreadObject = function(thread, posts, board, modding, userRole) {
     locked : thread.locked ? true : false,
     pinned : thread.pinned ? true : false,
     cyclic : thread.cyclic ? true : false,
+    autoSage : thread.autoSage ? true : false,
     files : exports.getFilesArray(thread.files, modding),
     posts : exports.buildThreadPosts(posts, board, modding, userRole)
   };
@@ -324,6 +325,7 @@ exports.catalog = function(boardUri, threads, callback) {
       locked : thread.locked ? true : false,
       pinned : thread.pinned ? true : false,
       cyclic : thread.cyclic ? true : false,
+      autoSage : thread.autoSage ? true : false,
       lastBump : thread.lastBump,
     };
 
