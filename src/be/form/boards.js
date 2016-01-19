@@ -27,7 +27,7 @@ function getQueryBlock(parameters) {
     var rawTags = parameters.tags.split(',');
 
     for (var i = 0; i < rawTags.length; i++) {
-      var tag = rawTags[i].trim();
+      var tag = rawTags[i].trim().toLowerCase();
 
       if (tag.length) {
         tags.push(tag);
@@ -44,6 +44,28 @@ function getQueryBlock(parameters) {
 
   return queryBlock;
 
+}
+
+function getSortBlock(parameters) {
+
+  switch (parameters.sorting) {
+
+  case '1':
+    return {
+      uniqueIps : 1,
+      postsPerHour : 1,
+      lastPostId : 1,
+      boardUri : -1
+    };
+
+  default:
+    return {
+      uniqueIps : -1,
+      postsPerHour : -1,
+      lastPostId : -1,
+      boardUri : 1
+    };
+  }
 }
 
 exports.process = function(req, res) {
@@ -85,12 +107,7 @@ exports.process = function(req, res) {
         boardDescription : 1,
         postsPerHour : 1,
         lastPostId : 1
-      }).sort({
-        uniqueIps : -1,
-        postsPerHour : -1,
-        lastPostId : -1,
-        boardUri : 1
-      }).skip(toSkip).limit(pageSize).toArray(
+      }).sort(getSortBlock(parameters)).skip(toSkip).limit(pageSize).toArray(
           function(error, foundBoards) {
             if (error) {
               formOps.outputError(error, 500, res);

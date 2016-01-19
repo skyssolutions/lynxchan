@@ -636,6 +636,7 @@ Parameters:
     page: page to be viewed.
     boardUri: uri to be searched partially.
     tags(Array): tags to be searched. Only boards with all tags will be returned.
+    sorting: sorting to be used. 1 sorts boards from least popular to most popular. Anything else sort them from most popular to least popular.
 
 Json output(Object): object with data regarding the available boards. Contains the following fields:
     pageCount: total amount of available pages.

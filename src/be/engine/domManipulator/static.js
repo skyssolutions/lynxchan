@@ -663,10 +663,6 @@ exports.overboard = function(foundThreads, previewRelation, callback,
     var tit = multiBoard ? lang.titMultiboard : '/' + overboard + '/';
     document.title = tit;
 
-    var img = document.getElementById('bannerImage');
-
-    img.src = '/randomBanner.js';
-
     exports.addOverBoardThreads(foundThreads, previewRelation, document);
 
     if (multiBoard) {

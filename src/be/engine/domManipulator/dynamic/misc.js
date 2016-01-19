@@ -322,6 +322,10 @@ exports.setPages = function(parameters, document, pageCount) {
       href += '&tags=' + parameters.tags;
     }
 
+    if (parameters.sorting) {
+      href += '&sorting=' + parameters.sorting;
+    }
+
     link.href = href;
 
     pagesDiv.appendChild(link);

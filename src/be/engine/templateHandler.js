@@ -338,7 +338,7 @@ exports.getPageTests = function() {
         fields : [ 'hashBansPanel' ]
       }, {
         template : 'overboard',
-        fields : [ 'bannerImage', 'divThreads' ]
+        fields : [ 'divThreads' ]
       }, {
         template : 'bypassPage',
         fields : [ 'indicatorValidBypass' ]

@@ -1870,10 +1870,6 @@ TEM_ID::56
 overboard: page used to create the overboard and multi-board.
 
 Elements:
-bannerImage:
-    use: have it's src manipulated.
-    description: banner of the overboard.
-
 divThreads:
     use: have children appended to it.
     description: div containing the threads.
