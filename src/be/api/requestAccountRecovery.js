@@ -1,6 +1,7 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
+var formOps = require('../engine/formOps');
 var accountOps = require('../engine/accountOps');
 
 function recoverAccount(domain, parameters, res, captchaId) {
@@ -23,6 +24,6 @@ exports.process = function(req, res) {
 
   apiOps.getAnonJsonData(req, res,
       function gotData(auth, parameters, captchaId) {
-        recoverAccount(apiOps.getDomain(req), parameters, res, captchaId);
+        recoverAccount(formOps.getDomain(req), parameters, res, captchaId);
       });
 };

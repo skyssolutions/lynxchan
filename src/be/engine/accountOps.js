@@ -245,7 +245,7 @@ exports.createSession = function(login, callback) {
 };
 
 // Section 3: Login {
-exports.login = function(domain, parameters, callback) {
+exports.login = function(parameters, callback) {
 
   users.findOne({
     login : parameters.login

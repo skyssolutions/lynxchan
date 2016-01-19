@@ -4,13 +4,13 @@ var apiOps = require('../engine/apiOps');
 var accountOps = require('../engine/accountOps');
 var mandatoryParameters = [ 'login' ];
 
-function login(domain, parameters, res) {
+function login(parameters, res) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
   }
 
-  accountOps.login(domain, parameters, function loggedIn(error, hash) {
+  accountOps.login(parameters, function loggedIn(error, hash) {
 
     if (error) {
       apiOps.outputError(error, res);
@@ -23,6 +23,6 @@ function login(domain, parameters, res) {
 exports.process = function(req, res) {
 
   apiOps.getAnonJsonData(req, res, function gotData(auth, parameters) {
-    login(apiOps.getDomain(req), parameters, res);
+    login(parameters, res);
   });
 };

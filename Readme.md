@@ -13,7 +13,7 @@ See other branches named like `1.1.x` for stable versions. They will receive onl
 * [MongoDB](https://www.mongodb.org/) 3.2.1
 * [ImageMagick](http://www.imagemagick.org/script/index.php) 6.7.7-10
 * [A front-end](https://gitgud.io/LynxChan/LynxChanFront-Placeholder) that must either be placed on the `src/fe` directory or have it's absolute path set on the general.json file. Read the readme.md on src/be for more information about how to configure the path for the front-end.
-* [ffmpeg](https://www.ffmpeg.org/) (Optional) 2.8.4 if mediaThumb setting is enabled. Requires zlib-devel on centOS to work properly when installed from source.
+* [ffmpeg](https://www.ffmpeg.org/) (Optional) 2.8.5 if mediaThumb setting is enabled. Requires zlib-devel on centOS to work properly when installed from source.
 
 The dependencies versions are not exactly mandatory and only reflect the version that I am sure that will work with the current version of the engine at the moment.
 

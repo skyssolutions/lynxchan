@@ -56,10 +56,6 @@ exports.loadDependencies = function() {
 
 };
 
-exports.getDomain = function(req) {
-  return 'http://' + req.headers.host.substring(4);
-};
-
 exports.uploadPath = function(baseDir, filename) {
   var ext = path.extname(filename).replace(FILE_EXT_RE, '$1');
   var name = exports.randoString(18) + ext;

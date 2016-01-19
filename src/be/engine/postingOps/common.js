@@ -751,7 +751,7 @@ exports.searchLocation = function(data, ipData) {
 
   return selectedObject || {
     flag : data.unknownFlag,
-    name : 'Unknown'
+    name : data.unknownFlagName
   };
 
 };
