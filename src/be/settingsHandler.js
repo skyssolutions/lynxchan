@@ -230,7 +230,7 @@ function writeNewSettings(settings, callback) {
       broadCastReload([], callback);
 
     } else if (settings.slaves && settings.slaves.length) {
-      broadCastToSlaves(settings, function broadCastToSlaves() {
+      broadCastToSlaves(settings, function broadCastedToSlaves() {
         prepareSettingsForChangeCheck(settings, callback);
       });
 

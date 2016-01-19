@@ -440,7 +440,7 @@ exports.handle = function(req, res) {
 
   var pathName = url.parse(req.url).pathname;
 
-  if (exports.checkForRedirection(req, pathName, res)) {
+  if (!maintenance && exports.checkForRedirection(req, pathName, res)) {
     return;
   } else {
     exports.serve(req, pathName, res);

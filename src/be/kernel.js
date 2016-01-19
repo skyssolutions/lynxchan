@@ -316,28 +316,21 @@ function setDefaultImages() {
   var templateSettings = settingsHandler.getTemplateSettings();
 
   var thumbExt = templateSettings.thumb.split('.');
-
   thumbExt = thumbExt[thumbExt.length - 1].toLowerCase();
-
-  genericThumb = '/genericThumb' + '.' + thumbExt;
+  genericThumb = '/genericThumb.' + thumbExt;
 
   var audioThumbExt = templateSettings.audioThumb.split('.');
-
   audioThumbExt = audioThumbExt[audioThumbExt.length - 1].toLowerCase();
-
-  genericAudioThumb = '/audioGenericThumb' + '.' + audioThumbExt;
+  genericAudioThumb = '/audioGenericThumb.' + audioThumbExt;
 
   var bannerExt = templateSettings.defaultBanner.split('.');
-
   bannerExt = bannerExt[bannerExt.length - 1].toLowerCase();
-
-  defaultBanner = '/defaultBanner' + '.' + bannerExt;
+  defaultBanner = '/defaultBanner.' + bannerExt;
 
   var spoilerExt = templateSettings.spoiler.split('.');
-
   spoilerExt = spoilerExt[spoilerExt.length - 1].toLowerCase();
+  spoilerImage = '/spoiler.' + spoilerExt;
 
-  spoilerImage = '/spoiler' + '.' + spoilerExt;
 }
 
 function composeDefaultFiles() {
