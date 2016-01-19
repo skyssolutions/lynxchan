@@ -31,6 +31,10 @@ exports.loadDependencies = function() {
 
 };
 
+exports.dropCache = function() {
+  filesCache = {};
+};
+
 exports.respond = function(fileContent, header, res) {
 
   res.writeHead(200, header);

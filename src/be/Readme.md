@@ -29,13 +29,14 @@ It accepts the following arguments:
 * `--reload-overboard`, `-ro`: reloads the overboard.
 * `--reload-logs`, `-rlog`: reloads logs.
 * `--reload-boards`, `-rboard`: reloads boards.
+* `--reload-front-end`, `-rfe`: reloads the front-end files, including cached static files. Will be ignored if maintenance mode is being changed on the same command or if no daemon was not informed.
 * `--no-daemon`, `-nd`: will not start listening. For running commands while having a server running.
 * `--create-account`, `-ca`: will create a new account. Require the use of the login, role and password parameters.
 * `--login`, `-l`: informs a login.
 * `--password`, `-p`: informs a password.
 * `--global-role`, `-gr`: informs a role.
 * `--set-role`, `-sr`: set a new role for an existing account. Will not be used if `-ca` is used.
-* `--maintenace`, `-m`: indicates a new value for maintenance mode. The value will be parsed as JSON, so informing `true` or `false` will work, so as informing numbers that evaluate to false or true. 
+* `--maintenace`, `-m`: indicates a new value for maintenance mode. The value will be parsed as JSON, so informing `true` or `false` will work, so as informing numbers that evaluate to false or true. Will be ignored if no daemon was not informed.
 
 Arguments that are meant to inform values should be used in the following manner:
 `argument value`

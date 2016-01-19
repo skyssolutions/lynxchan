@@ -102,10 +102,22 @@ function reloadSettings() {
 
 }
 
+function reloadFe() {
+
+  require('./engine/templateHandler').loadTemplates();
+  require('./engine/staticHandler').dropCache();
+
+}
+
 var informedArguments = {
   debug : {
     short : '-d',
     long : '--debug',
+    type : 'boolean'
+  },
+  reloadFrontEnd : {
+    short : '-rfe',
+    long : '--reload-front-end',
     type : 'boolean'
   },
   torDebug : {
@@ -712,8 +724,27 @@ function initTorControl() {
       if (!noDaemon) {
         require('./taskListener').start();
         require('./scheduleHandler').start();
-      } else if (informedArguments.maintenance.value) {
-        checkMaintenanceMode();
+      } else {
+
+        if (informedArguments.maintenance.value) {
+          checkMaintenanceMode();
+        } else if (informedArguments.reloadFrontEnd.informed) {
+
+          var client = new require('net').Socket();
+
+          // style exception, too simple
+          client.connect(socketLocation, function() {
+            client.write(JSON.stringify({
+              type : 'reloadFE'
+            }));
+
+            client.destroy();
+
+          });
+          // style exception, too simple
+
+        }
+
       }
 
       if (createAccount) {
@@ -778,20 +809,30 @@ if (cluster.isMaster) {
 } else {
 
   process.on('message', function messageReceived(msg) {
-    if (msg.reload) {
-      reloadSettings();
-    }
+    exports.processTopDownMessage(msg);
   });
 
   require('./workerBoot').boot();
 }
 
-exports.broadCastTopDownReload = function() {
-  reloadSettings();
+exports.processTopDownMessage = function(message) {
+
+  if (message.reloadSettings) {
+    reloadSettings();
+  } else if (message.reloadFE) {
+    reloadFe();
+  }
+
+};
+
+// Top-down messages are generated from the master process and then sent to
+// workers instead of being generated from worker processes and then processed
+// at the master process
+exports.broadCastTopDownMessage = function(message) {
+
+  exports.processTopDownMessage(message);
 
   for ( var id in cluster.workers) {
-    cluster.workers[id].send({
-      reload : true
-    });
+    cluster.workers[id].send(message);
   }
 };

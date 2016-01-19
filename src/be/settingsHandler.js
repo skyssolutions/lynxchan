@@ -446,7 +446,9 @@ exports.changeMaintenanceMode = function(newMode) {
     if (error) {
       console.log(error);
     } else {
-      kernel.broadCastTopDownReload();
+      kernel.broadCastTopDownMessage({
+        reloadSettings : true
+      });
     }
   });
 

@@ -9,14 +9,21 @@ var settingsHandler = require('./settingsHandler');
 var settings = settingsHandler.getGeneralSettings();
 var socketLocation = settings.tempDirectory;
 socketLocation += '/unix.socket';
-var verbose = 1;// settings.verbose;
-var debug = require('./kernel').debug();
+var verbose = settings.verbose;
+var kernel = require('./kernel');
+var debug = kernel.debug();
 
 function processTask(task) {
 
   switch (task.type) {
   case 'maintenance':
     settingsHandler.changeMaintenanceMode(task.value);
+    break;
+
+  case 'reloadFE':
+    kernel.broadCastTopDownMessage({
+      reloadFE : true
+    });
     break;
   }
 
