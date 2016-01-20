@@ -40,7 +40,7 @@ function broadCastToSlaves(newSettings, callback, index, attempts) {
   var req = http.request({
     hostname : newSettings.slaves[index],
     port : generalSettings.port,
-    path : '/takeSettings.js',
+    path : '/.api/takeSettings.js',
     method : 'POST'
   }, function gotResponse(res) {
 
@@ -92,7 +92,7 @@ function broadCastReload(reloadsToMake, callback) {
 
   process.send({
     upStream : true,
-    reload : true,
+    reloadSettings : true,
     rebuilds : reloadsToMake
   });
 

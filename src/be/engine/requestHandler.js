@@ -36,9 +36,9 @@ exports.loadSettings = function() {
 
   multiBoardAllowed = settings.multiboardThreadCount;
   verbose = settings.verbose;
-  maintenance = settings.maintenance;
   slaves = settings.slaves;
   master = settings.master;
+  maintenance = settings.maintenance && !master;
   port = settings.port;
   serveArchive = settings.serveArchive;
 };
@@ -93,7 +93,7 @@ exports.processApiRequest = function(req, pathName, res) {
   }
 
   try {
-    if (maintenance) {
+    if (maintenance && !req.fromSlave) {
       apiOps.outputResponse(null, null, 'maintenance', res);
     } else {
 
@@ -122,7 +122,7 @@ exports.processFormRequest = function(req, pathName, res) {
   }
 
   try {
-    if (maintenance) {
+    if (maintenance && !req.fromSlave) {
       gridFs.outputFile('/maintenance.html', req, res, function streamedFile(
           error) {
         if (error) {
@@ -351,14 +351,17 @@ exports.redirect = function(req, res) {
 
 exports.checkForService = function(req, pathName, isSlave) {
 
-  var shouldServe = !slaves.length || isSlave;
+  if (!slaves.length || isSlave) {
+    return true;
+  }
 
   var toGlobalSettings = pathName.indexOf('/globalSettings') === 0;
-  var setGlobalSettings = pathName.indexOf('/saveGlobalSettings') === 0;
+  var setGlobalSettingsApi = pathName.indexOf('/.api/saveGlobalSettings') === 0;
+  var setGlobalSettingsForm = pathName.indexOf('/saveGlobalSettings') === 0;
 
-  shouldServe = shouldServe || toGlobalSettings || setGlobalSettings;
+  var toRet = setGlobalSettingsForm || maintenance || toGlobalSettings;
 
-  return shouldServe;
+  return toRet || setGlobalSettingsApi;
 
 };
 
@@ -440,7 +443,7 @@ exports.handle = function(req, res) {
 
   var pathName = url.parse(req.url).pathname;
 
-  if (!maintenance && exports.checkForRedirection(req, pathName, res)) {
+  if (exports.checkForRedirection(req, pathName, res)) {
     return;
   } else {
     exports.serve(req, pathName, res);

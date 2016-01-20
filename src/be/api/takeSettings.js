@@ -2,7 +2,6 @@
 
 var apiOps = require('../engine/apiOps');
 var settingsHandler = require('../settingsHandler');
-var settingsHandler = require('../settingsHandler');
 
 function saveSettings(settings, parameters, res) {
 

@@ -27,7 +27,7 @@ function processMessage(req, res, message, settings) {
 
 exports.process = function(req, res) {
 
-  var settings = settingsHandler().getGeneralSettings();
+  var settings = settingsHandler.getGeneralSettings();
 
   var standAlone = !settings.master && !settings.slaves.length;
 

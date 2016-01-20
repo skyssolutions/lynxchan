@@ -1122,27 +1122,5 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::67
-
-Name: takeMessage
-
-Description: internal use only, it receives a page generation message. It is actually parsed as if it were part of the json api, it will be moved to that once sub-domains are removed.
-
-Parameters:
-    varies according to the message. The parameters field of the incoming json should be the message itself.
-
-------------------------------------------------------------------------------------------
-
-PAG_ID::68
-
-Name: takeSettings
-
-Description: internal use only, it receives settings from a master node. It will be moved to the json api once sub-domains are removed.
-
-Parameters:
-    same ones than the global settings.
-
-------------------------------------------------------------------------------------------
-
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

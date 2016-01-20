@@ -443,7 +443,7 @@ function bootWorkers() {
       if (message.upStream) {
         message.upStream = false;
 
-        if (message.reload) {
+        if (message.reloadSettings) {
           processBulkRebuild(message, genQueue);
         }
 

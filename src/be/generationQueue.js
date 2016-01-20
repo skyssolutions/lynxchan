@@ -272,7 +272,7 @@ function sendMessageByHttp(message, callback, error, retries) {
   var req = http.request({
     hostname : address,
     port : settings.port,
-    path : '/takeMessage.js',
+    path : '/.api/takeMessage.js',
     method : 'POST'
   }, function gotResponse(res) {
 
