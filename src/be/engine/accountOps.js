@@ -286,14 +286,14 @@ exports.validate = function(auth, callback) {
   var now = new Date();
 
   users.findOneAndUpdate({
-    login : auth.login,
+    login : auth.login.toString(),
     hash : auth.hash.toString(),
     logoutExpiration : {
       $gt : now
     }
   }, {
     $set : {
-      lastSeen : new Date()
+      lastSeen : now
     }
   }, function foundUser(error, result) {
     if (error) {

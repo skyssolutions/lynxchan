@@ -131,6 +131,7 @@ Settings files that goes into the settings directory:
 * `globalLatestImages`(Number): amount of global latest images to be displayed on the front-page.
 * `master`: ip of the master.
 * `slaves`(Array): ips of the slaves.
+* `frontPageStats`(Boolean): indicates if total posts made on existing boards and total unique ips on the last 24 hours should be displayed on the front-page.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

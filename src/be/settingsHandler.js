@@ -88,12 +88,13 @@ function broadCastToSlaves(newSettings, callback, index, attempts) {
 
 }
 
-function broadCastReload(reloadsToMake, callback) {
+function broadCastReload(reloadsToMake, callback, feChanged) {
 
   process.send({
     upStream : true,
     reloadSettings : true,
-    rebuilds : reloadsToMake
+    rebuilds : reloadsToMake,
+    reloadFE : feChanged
   });
 
   callback();
@@ -104,15 +105,17 @@ function getRebuildBoards(settings) {
 
   var rebuildBoards = generalSettings.pageSize !== settings.pageSize;
   var fileSizeDelta = generalSettings.maxFileSizeMB !== settings.maxFileSizeMB;
-  var globalCTurnedOn = !generalSettings.forceCaptcha && settings.forceCaptcha;
-  var globalCTurnedOff = generalSettings.forceCaptcha && !settings.forceCaptcha;
-  var globalCChanged = globalCTurnedOn || globalCTurnedOff;
+  var globalCChanged = generalSettings.forceCaptcha ^ settings.forceCaptcha;
 
   return rebuildBoards || fileSizeDelta || globalCChanged;
 
 }
 
 function rebuildFp(settings) {
+
+  if (generalSettings.frontPageStats ^ settings.frontPageStats) {
+    return true;
+  }
 
   var propertiesToCheck = [ 'siteTitle', 'topBoardsCount', 'globalLatestPosts',
       'globalLatestImages' ];
@@ -178,7 +181,7 @@ function checkSettingsChanges(settings, callback) {
       globalRebuild : true
     });
 
-    broadCastReload(reloadsToMake, callback);
+    broadCastReload(reloadsToMake, callback, true);
     return;
   }
 
@@ -193,7 +196,7 @@ function prepareSettingsForChangeCheck(settings, callback) {
   var defaultToNull = [ 'siteTitle', 'pageSize', 'globalLatestImages',
       'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage',
       'disableTopBoards', 'allowBoardCustomJs', 'topBoardsCount',
-      'globalLatestPosts', 'forceCaptcha', 'overboard' ];
+      'globalLatestPosts', 'forceCaptcha', 'overboard', 'frontPageStats' ];
 
   // these ones default to the default values if they are on the previous
   // list

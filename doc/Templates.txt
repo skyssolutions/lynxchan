@@ -28,6 +28,18 @@ linkEngine:
     use: have it's innerHTML and href manipulated.
     description: contains the engine name and version and links to the repository.
 
+divStats:
+    use: might be removed.
+    description: panel that contains the global stats.
+
+labelTotalPosts:
+    use: have it's innerHTML manipulated.
+    description: label with the total amount of posts in the whole site.
+
+labelTotalIps:
+    use: have it's innerHTML manipualted.
+    description: label with the total amount of unique ips in the past 24 hours.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::02
@@ -522,7 +534,7 @@ gManagement: global management page.
 Elements:
 appealedBansPanel:
     use: have children appended to it or might be removed.
-    panel containing the appealed bans that weren't denied.
+    description: panel containing the appealed bans that weren't denied.
 
 archiveDeletionLink:
     use: might be removed.
@@ -1699,6 +1711,10 @@ checkboxVerbose:
 checkboxDisable304:
     use: might be turned on.
     description: indicates the server has http response 304 disabled.
+
+checkboxFrontPageStats:
+    use: might be turned on.
+    description: indicates if total posts on existing boards and total unique ip count should be displayed on the front-page.
 
 checkboxSsl:
     use: might be turned on.

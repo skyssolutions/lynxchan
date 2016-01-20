@@ -166,7 +166,7 @@ exports.getPageTests = function() {
       {
         template : 'index',
         fields : [ 'divBoards', 'divLatestPosts', 'divLatestImages',
-            'linkEngine' ]
+            'linkEngine', 'divStats', 'labelTotalPosts', 'labelTotalIps' ]
       },
       {
         template : 'boardPage',
@@ -320,11 +320,11 @@ exports.getPageTests = function() {
             'fieldMaxBannerSize', 'fieldMaxFlagSize', 'fieldFloodInterval',
             'checkboxVerbose', 'checkboxDisable304', 'checkboxSsl',
             'comboTorAccess', 'checkboxMediaThumb', 'checkboxMaintenance',
-            'comboArchive', 'checkboxMultipleReports',
+            'comboArchive', 'checkboxMultipleReports', 'fieldMaster',
             'checkboxDisableAccountCreation', 'comboBoardCreationRequirement',
             'checkboxServeArchive', 'fieldMaxTags', 'fieldGlobalLatestImages',
             'checkboxDisableFloodCheck', 'comboMinClearIpRole',
-            'fieldThumbExtension', 'fieldSslPass', 'fieldMaster',
+            'fieldThumbExtension', 'fieldSslPass', 'checkboxFrontPageStats',
             'checkboxGlobalBoardModeration', 'checkboxGlobalBanners',
             'checkboxAllowCustomJs', 'fieldGlobalLatestPosts', 'fieldSlaves',
             'checkboxGlobalCaptcha', 'fieldRssDomain', 'fieldOverboard',

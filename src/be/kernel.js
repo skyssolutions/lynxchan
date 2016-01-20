@@ -24,6 +24,7 @@ var genericThumb;
 var defaultBanner;
 var genericAudioThumb;
 var spoilerImage;
+var genQueue;
 
 function reloadDirectory(directory) {
 
@@ -402,23 +403,63 @@ exports.noDaemon = function() {
   return noDaemon;
 };
 
-function processBulkRebuild(message, genQueue) {
-  reloadSettings();
+// Processes messages generated from master, even on the master process.
+exports.processTopDownMessage = function(message) {
 
-  for (var i = 0; i < message.rebuilds.length; i++) {
-    genQueue.queue(message.rebuilds[i]);
+  if (message.reloadSettings) {
+    reloadSettings();
   }
+
+  if (message.reloadFE) {
+    reloadFe();
+  }
+
+};
+
+// Processes and broadcasts messages coming from master to workers.
+// Top-down messages are generated from the master process and then sent to
+// workers instead of being generated from worker processes and then processed
+// at the master process
+exports.broadCastTopDownMessage = function(message) {
+
+  exports.processTopDownMessage(message);
+
+  for ( var id in cluster.workers) {
+    cluster.workers[id].send(message);
+  }
+};
+
+// Processes messages coming from workers to master.
+// The message can be either broadcast back to workers
+// or just added to the rebuild queue.
+function processBottomTopMessage(message) {
+
+  if (message.upStream) {
+    message.upStream = false;
+
+    exports.broadCastTopDownMessage(message);
+
+    if (message.rebuilds) {
+      for (var i = 0; i < message.rebuilds.length; i++) {
+        genQueue.queue(message.rebuilds[i]);
+      }
+    }
+
+  } else {
+    genQueue.queue(message);
+  }
+
 }
 
 // after everything is all right, call this function to start the workers
 function bootWorkers() {
 
-  var genQueue = require('./generationQueue');
-
   if (noDaemon) {
     db.conn().close();
     return;
   }
+
+  genQueue = require('./generationQueue');
 
   var workerLimit;
 
@@ -439,23 +480,9 @@ function bootWorkers() {
     forkTime[worker.id] = new Date().getTime();
 
     worker.on('message', function receivedMessage(message) {
-
-      if (message.upStream) {
-        message.upStream = false;
-
-        if (message.reloadSettings) {
-          processBulkRebuild(message, genQueue);
-        }
-
-        for ( var id in cluster.workers) {
-          cluster.workers[id].send(message);
-        }
-
-      } else {
-        genQueue.queue(message);
-      }
-
+      processBottomTopMessage(message);
     });
+
   });
 
   cluster.on('exit', function(worker, code, signal) {
@@ -814,25 +841,3 @@ if (cluster.isMaster) {
 
   require('./workerBoot').boot();
 }
-
-exports.processTopDownMessage = function(message) {
-
-  if (message.reloadSettings) {
-    reloadSettings();
-  } else if (message.reloadFE) {
-    reloadFe();
-  }
-
-};
-
-// Top-down messages are generated from the master process and then sent to
-// workers instead of being generated from worker processes and then processed
-// at the master process
-exports.broadCastTopDownMessage = function(message) {
-
-  exports.processTopDownMessage(message);
-
-  for ( var id in cluster.workers) {
-    cluster.workers[id].send(message);
-  }
-};

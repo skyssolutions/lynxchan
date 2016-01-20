@@ -653,6 +653,11 @@ exports.getParametersArray = function() {
     setting : 'ssl',
     element : 'checkboxSsl'
   }, {
+    param : 'frontPageStats',
+    type : 'boolean',
+    setting : 'frontPageStats',
+    element : 'checkboxFrontPageStats'
+  }, {
     // range
     param : 'bypassMode',
     type : 'range',
