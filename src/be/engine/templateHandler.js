@@ -132,6 +132,9 @@ exports.getCellTests = function() {
       }, {
         template : 'logIndexCell',
         fields : [ 'dateLink' ]
+      }, {
+        template : 'graphIndexCell',
+        fields : [ 'dateLink' ]
       } ];
 
 };
@@ -344,6 +347,9 @@ exports.getPageTests = function() {
         fields : [ 'indicatorValidBypass' ]
       }, {
         template : 'logIndexPage',
+        fields : [ 'divDates' ]
+      }, {
+        template : 'graphsIndexPage',
         fields : [ 'divDates' ]
       } ];
 

@@ -787,3 +787,52 @@ exports.blockBypass = function(valid) {
     return error.toString();
   }
 };
+
+// Section 11: Graphs {
+exports.setGraphIndexCell = function(dateCell, date) {
+
+  dateCell.setAttribute('class', 'graphIndexCell');
+  dateCell.innerHTML = templateHandler.graphIndexCell;
+
+  var link = dateCell.getElementsByClassName('dateLink')[0];
+  link.innerHTML = common.formatDateToDisplay(date, true);
+
+  link.href = '/.global/graphs/' + logger.formatedDate(date) + '.png';
+
+};
+
+exports.graphs = function(dates) {
+
+  try {
+
+    var document = jsdom(templateHandler.graphsIndexPage);
+
+    document.title = lang.titGraphs;
+
+    var divDates = document.getElementById('divDates');
+
+    for (var i = 0; i < dates.length; i++) {
+
+      var dateCell = document.createElement('div');
+
+      exports.setGraphIndexCell(dateCell, dates[i]);
+
+      divDates.appendChild(dateCell);
+    }
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+
+};
+// } Section 11: graphs

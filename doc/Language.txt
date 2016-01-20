@@ -292,3 +292,4 @@ titHashBan: title of the page that displays a hash ban when the user tries to up
 titBlockbypass: title of the page used to renew the block bypass.
 titLogPage: title for log pages. Replaces: {$date}
 titMultiboard: title of the multi-board.
+titGraphs: title for the graphs page.

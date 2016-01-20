@@ -498,7 +498,38 @@ exports.setEngineInfo = function(document) {
 
 };
 
-exports.frontPage = function(boards, latestPosts, latestImages, callback) {
+exports.checkForLatestContent = function(document, latestImages, latestPosts) {
+
+  var latestPostsDiv = document.getElementById('divLatestPosts');
+
+  if (!latestPosts) {
+    common.removeElement(latestPostsDiv);
+  } else {
+    exports.setLatestPosts(latestPosts, latestPostsDiv, document);
+  }
+
+  var latestImagesDiv = document.getElementById('divLatestImages');
+
+  if (!latestImages) {
+    common.removeElement(latestImagesDiv);
+  } else {
+    exports.setLatestImages(latestImages, latestImagesDiv, document);
+  }
+
+};
+
+exports.setGlobalStats = function(document, globalStats) {
+
+  var postsLabel = document.getElementById('labelTotalPosts');
+  postsLabel.innerHTML = globalStats.totalPosts || 0;
+
+  var ipsLabel = document.getElementById('labelTotalIps');
+  ipsLabel.innerHTML = globalStats.totalIps || 0;
+
+};
+
+exports.frontPage = function(boards, latestPosts, latestImages, globalStats,
+    callback) {
 
   try {
 
@@ -508,21 +539,13 @@ exports.frontPage = function(boards, latestPosts, latestImages, callback) {
 
     exports.setTopBoards(document, boards);
 
-    var latestPostsDiv = document.getElementById('divLatestPosts');
-
-    if (!latestPosts) {
-      common.removeElement(latestPostsDiv);
+    if (globalStats) {
+      exports.setGlobalStats(document, globalStats);
     } else {
-      exports.setLatestPosts(latestPosts, latestPostsDiv, document);
+      common.removeElement(document.getElementById('divStats'));
     }
 
-    var latestImagesDiv = document.getElementById('divLatestImages');
-
-    if (!latestImages) {
-      common.removeElement(latestImagesDiv);
-    } else {
-      exports.setLatestImages(latestImages, latestImagesDiv, document);
-    }
+    exports.checkForLatestContent(document, latestImages, latestPosts);
 
     exports.setEngineInfo(document);
 

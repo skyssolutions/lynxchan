@@ -10,6 +10,7 @@ Anything else is used to access files saved on mongo.
 The engine stores global files on the following paths:
 /.global/logs/ stores staff logs pages.
 /.global/banners/ stores global banners.
+/.global/graphs/ stores daily graphs.
 /maintenance.html stores the maintenace page.
 /404.html stores the 404 page.
 /login.html stores the login page.

@@ -193,7 +193,7 @@ exports.getLatestPosts = function(globalLatestPosts) {
 };
 
 exports.frontPage = function(boards, globalLatestPosts, globalLatestImages,
-    callback) {
+    globalStats, callback) {
 
   var topBoards = [];
 
@@ -228,11 +228,19 @@ exports.frontPage = function(boards, globalLatestPosts, globalLatestImages,
 
   }
 
-  gridFsHandler.writeData(JSON.stringify({
+  var object = {
     topBoards : topBoards,
     latestPosts : exports.getLatestPosts(globalLatestPosts),
     latestImages : latestImages
-  }), '/index.json', 'application/json', {}, callback);
+  };
+
+  if (globalStats) {
+    object.totalPosts = globalStats.totalPosts;
+    object.totalIps = globalStats.totalIps;
+  }
+
+  gridFsHandler.writeData(JSON.stringify(object), '/index.json',
+      'application/json', {}, callback);
 
 };
 // } Section 2: Front-page
@@ -409,27 +417,19 @@ exports.boardManagement = function(userData, boardData, reports, bans) {
 };
 
 exports.closedReports = function(closedReports) {
-
   return JSON.stringify(closedReports);
-
 };
 
 exports.bans = function(bans) {
-
   return JSON.stringify(bans);
-
 };
 
 exports.bannerManagement = function(boardUri, banners) {
-
   return JSON.stringify(banners);
-
 };
 
 exports.logs = function(dates) {
-
   return JSON.stringify(dates);
-
 };
 
 exports.filterManagement = function(filters) {
@@ -466,15 +466,11 @@ exports.rangeBans = function(rangeBans) {
 };
 
 exports.hashBans = function(hashBans) {
-
   return JSON.stringify(hashBans);
-
 };
 
 exports.ruleManagement = function(rules) {
-
   return JSON.stringify(rules);
-
 };
 
 exports.edit = function(message) {
@@ -486,9 +482,7 @@ exports.edit = function(message) {
 };
 
 exports.flagManagement = function(flags) {
-
   return JSON.stringify(flags);
-
 };
 
 exports.globalSettings = function() {
@@ -548,4 +542,8 @@ exports.log = function(date, logs, callback) {
     type : 'log'
   }, callback);
 
+};
+
+exports.graphs = function(dates) {
+  return JSON.stringify(dates);
 };

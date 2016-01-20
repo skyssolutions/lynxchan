@@ -29,6 +29,7 @@ var jsonBuilder;
 var miscOps;
 var rssBuilder;
 var overboard;
+var globalStats;
 var fePath;
 var overBoardThreadCount;
 
@@ -41,6 +42,7 @@ exports.loadSettings = function() {
   globalLatestImages = settings.globalLatestImages;
   overboard = settings.overboard;
   fePath = settings.fePath;
+  globalStats = settings.frontPageStats;
   overBoardThreadCount = settings.overBoardThreadCount;
 };
 
@@ -144,18 +146,56 @@ exports.notFound = function(callback) {
 
 // Section 1: Front-page {
 exports.saveFrontPage = function(foundBoards, globalLatestPosts,
-    globalLatestImages, callback) {
+    globalLatestImages, globalStats, callback) {
 
   domManipulator.frontPage(foundBoards, globalLatestPosts, globalLatestImages,
-      function savedHtml(error) {
+      globalStats, function savedHtml(error) {
         if (error) {
           callback(error);
         } else {
           jsonBuilder.frontPage(foundBoards, globalLatestPosts,
-              globalLatestImages, callback);
+              globalLatestImages, globalStats, callback);
         }
 
       });
+
+};
+
+exports.fetchGlobalStats = function(foundBoards, globalLatestPosts,
+    globalLatestImages, callback) {
+
+  if (!globalStats) {
+    exports.saveFrontPage(foundBoards, globalLatestPosts, globalLatestImages,
+        null, callback);
+
+    return;
+  }
+
+  boards.aggregate([ {
+    $project : {
+      lastPostId : 1,
+      uniqueIps : 1
+    }
+  }, {
+    $group : {
+      _id : 0,
+      totalIps : {
+        $sum : '$uniqueIps'
+      },
+      totalPosts : {
+        $sum : '$lastPostId'
+      }
+    }
+  } ], function gotGlobalStats(error, results) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.saveFrontPage(foundBoards, globalLatestPosts, globalLatestImages,
+          results.length ? results[0] : null, callback);
+    }
+
+  });
 
 };
 
@@ -164,7 +204,7 @@ exports.fetchLatestGlobalImages = function(foundBoards, globalLatestPosts,
 
   if (!globalLatestImages) {
 
-    exports.saveFrontPage(foundBoards, globalLatestPosts, null, callback);
+    exports.fetchGlobalStats(foundBoards, globalLatestPosts, null, callback);
 
     return;
   }
@@ -182,7 +222,7 @@ exports.fetchLatestGlobalImages = function(foundBoards, globalLatestPosts,
         if (error) {
           callback(error);
         } else {
-          exports.saveFrontPage(foundBoards, globalLatestPosts,
+          exports.fetchGlobalStats(foundBoards, globalLatestPosts,
               images.length ? images : null, callback);
         }
 

@@ -155,6 +155,7 @@ Meta-data of files on gridfs will have the following values:
 * `threadId`(Number): id of the thread the file belongs to.
 * `postId`(Number): id of the post the file belongs to.
 * `status`(Number): http status to be used when outputting this page. Defaults to 200 when outputting.
+* `date`(Number): date to which the file refers to.
 * `type`: type of file. May hold one of the following values: 
   * `board`
   * `thread` 
@@ -167,3 +168,4 @@ Meta-data of files on gridfs will have the following values:
   * `flag`
   * `log`
   * `multiboard`
+  * `graph`

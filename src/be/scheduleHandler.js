@@ -439,7 +439,7 @@ function setUniqueIpCount(results) {
       }
     }
 
-    if (settings.topBoardsCount) {
+    if (settings.topBoardsCount || settings.frontPageStats) {
       require('./generationQueue').queue({
         frontPage : true
       });

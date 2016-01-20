@@ -23,6 +23,8 @@ Root(Object):
         threadId: id of the thread that contains the image.
         postId: id of the post that contains the image.
         thumb: path of the image's thumbnail.
+    totalPosts(Number): total amount of posts made on existing boards.
+    totalIps(Number): total amount of unique ips on existing boards in the past 24 hours.
 
 ------------------------------------------------------------------------------------------
 
