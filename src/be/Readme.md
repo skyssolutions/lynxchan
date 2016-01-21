@@ -30,6 +30,7 @@ It accepts the following arguments:
 * `--reload-logs`, `-rlog`: reloads logs.
 * `--reload-boards`, `-rboard`: reloads boards.
 * `--reload-front-end`, `-rfe`: reloads the front-end files on a running instance, including cached static files. Will be ignored if maintenance mode is being changed on the same command or if no daemon was not informed.
+* `--reload-graphs`, `-rg`: redraws daily graphs.
 * `--no-daemon`, `-nd`: will not start listening. For running commands while having a server running.
 * `--create-account`, `-ca`: will create a new account. Require the use of the login, role and password parameters.
 * `--login`, `-l`: informs a login.

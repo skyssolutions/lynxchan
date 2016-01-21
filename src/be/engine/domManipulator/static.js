@@ -526,6 +526,9 @@ exports.setGlobalStats = function(document, globalStats) {
   var ipsLabel = document.getElementById('labelTotalIps');
   ipsLabel.innerHTML = globalStats.totalIps || 0;
 
+  var filesLabel = document.getElementById('labelTotalFiles');
+  filesLabel.innerHTML = globalStats.totalFiles || 0;
+
 };
 
 exports.frontPage = function(boards, latestPosts, latestImages, globalStats,

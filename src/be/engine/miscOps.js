@@ -242,7 +242,7 @@ exports.corsHeader = function(contentType, auth) {
       [ 'access-control-allow-origin', '*' ] ];
 
   if (auth && auth.authStatus === 'expired') {
-    header.push([ 'Set-Cookie', 'hash=' + auth.newHash ]);
+    header.push([ 'Set-Cookie', 'hash=' + auth.newHash + ';path=/' ]);
   }
 
   return header;

@@ -174,7 +174,8 @@ exports.fetchGlobalStats = function(foundBoards, globalLatestPosts,
   boards.aggregate([ {
     $project : {
       lastPostId : 1,
-      uniqueIps : 1
+      uniqueIps : 1,
+      lastFileId : 1
     }
   }, {
     $group : {
@@ -184,6 +185,9 @@ exports.fetchGlobalStats = function(foundBoards, globalLatestPosts,
       },
       totalPosts : {
         $sum : '$lastPostId'
+      },
+      totalFiles : {
+        $sum : '$lastFileId'
       }
     }
   } ], function gotGlobalStats(error, results) {
@@ -570,3 +574,8 @@ exports.logs = function(callback) {
 
 };
 // } Section 3: Logs
+
+// Just a wraper so we can generate graphs on the terminal
+exports.graphs = function(callback) {
+  require('../../dbMigrations').generateGraphs(callback);
+};

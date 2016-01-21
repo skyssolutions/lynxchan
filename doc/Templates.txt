@@ -40,6 +40,10 @@ labelTotalIps:
     use: have it's innerHTML manipualted.
     description: label with the total amount of unique ips in the past 24 hours.
 
+labelTotalFiles:
+    use: have it's innerHTML manipulated.
+    description: label with the total amount of uploaded files in the whole site.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::02

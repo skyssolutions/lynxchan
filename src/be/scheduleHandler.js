@@ -16,6 +16,7 @@ var stats = db.stats();
 var uniqueIps = db.uniqueIps();
 var files = db.files();
 var torHandler = require('./engine/torOps');
+var graphOps = require('./graphsOps');
 
 // handles schedules in general.
 // currently it handles the removal of expired captcha's images, applies board
@@ -431,9 +432,7 @@ function setUniqueIpCount(results) {
   boards.bulkWrite(operations, function updatedUniqueIps(error) {
 
     if (error) {
-
       console.log(error);
-
       if (debug) {
         throw error;
       }
@@ -445,7 +444,28 @@ function setUniqueIpCount(results) {
       });
     }
 
-    uniqueIpCount();
+    var graphDate = new Date();
+
+    graphDate.setUTCSeconds(0);
+    graphDate.setUTCMinutes(0);
+    graphDate.setUTCHours(0);
+    graphDate.setUTCDate(graphDate.getUTCDate() - 1);
+
+    // style exception, too simple
+    graphOps.generate(graphDate, function generated(error) {
+
+      if (error) {
+        console.log(error);
+        if (debug) {
+          throw error;
+        }
+
+      }
+
+      uniqueIpCount();
+
+    });
+    // style exception, too simple
 
   });
 

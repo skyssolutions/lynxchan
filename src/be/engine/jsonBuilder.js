@@ -192,6 +192,16 @@ exports.getLatestPosts = function(globalLatestPosts) {
 
 };
 
+exports.setGlobalStats = function(globalStats, object) {
+
+  if (globalStats) {
+    object.totalPosts = globalStats.totalPosts;
+    object.totalIps = globalStats.totalIps;
+    object.totalFiles = globalStats.totalFiles;
+  }
+
+};
+
 exports.frontPage = function(boards, globalLatestPosts, globalLatestImages,
     globalStats, callback) {
 
@@ -234,10 +244,7 @@ exports.frontPage = function(boards, globalLatestPosts, globalLatestImages,
     latestImages : latestImages
   };
 
-  if (globalStats) {
-    object.totalPosts = globalStats.totalPosts;
-    object.totalIps = globalStats.totalIps;
-  }
+  exports.setGlobalStats(globalStats, object);
 
   gridFsHandler.writeData(JSON.stringify(object), '/index.json',
       'application/json', {}, callback);

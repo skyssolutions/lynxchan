@@ -43,17 +43,44 @@ exports.process = function(req, res) {
 
   var json = parameters.json;
 
-  var dates = [];
+  files.aggregate([ {
+    $match : {
+      'metadata.date' : {
+        $gte : date,
+        $lt : maxDate
+      },
+      'metadata.type' : 'graph'
+    }
+  }, {
+    $sort : {
+      'metadata.date' : -1
+    }
+  }, {
+    $group : {
+      _id : 0,
+      dates : {
+        $push : '$metadata.date'
+      }
+    }
+  } ], function gotDates(error, results) {
 
-  // TODO get files
+    if (error) {
+      formOps.outputError(error, 500, res);
+    } else {
 
-  res.writeHead(200, miscOps
-      .corsHeader(json ? 'application/json' : 'text/html'));
+      var dates = results.length ? results[0].dates : [];
 
-  if (json) {
-    res.end(jsonBuilder.graphs(dates));
-  } else {
-    res.end(domManipulator.graphs(dates));
-  }
+      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+          : 'text/html'));
+
+      if (json) {
+        res.end(jsonBuilder.graphs(dates));
+      } else {
+        res.end(domManipulator.graphs(dates));
+      }
+
+    }
+
+  });
 
 };

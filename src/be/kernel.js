@@ -131,6 +131,11 @@ var informedArguments = {
     long : '--maintenance',
     type : 'value'
   },
+  reloadGraphs : {
+    short : '-rg',
+    long : '--reload-graphs',
+    type : 'boolean'
+  },
   noDaemon : {
     short : '-nd',
     long : '--no-daemon',
@@ -273,6 +278,10 @@ var optionalReloads = [ {
   generatorFunction : 'boards',
   generatorModule : 'board',
   command : informedArguments.reloadBoards.informed
+}, {
+  generatorFunction : 'graphs',
+  generatorModule : 'global',
+  command : informedArguments.reloadGraphs.informed
 } ];
 
 var debug = informedArguments.debug.informed;

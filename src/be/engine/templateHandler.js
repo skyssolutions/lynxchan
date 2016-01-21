@@ -169,7 +169,8 @@ exports.getPageTests = function() {
       {
         template : 'index',
         fields : [ 'divBoards', 'divLatestPosts', 'divLatestImages',
-            'linkEngine', 'divStats', 'labelTotalPosts', 'labelTotalIps' ]
+            'linkEngine', 'divStats', 'labelTotalPosts', 'labelTotalIps',
+            'labelTotalFiles' ]
       },
       {
         template : 'boardPage',

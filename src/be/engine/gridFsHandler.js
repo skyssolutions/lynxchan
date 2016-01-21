@@ -26,9 +26,7 @@ exports.loadSettings = function() {
 };
 
 exports.loadDependencies = function() {
-
   miscOps = require('./miscOps');
-
 };
 
 // start of writing data

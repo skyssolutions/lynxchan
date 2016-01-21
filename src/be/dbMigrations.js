@@ -1,11 +1,13 @@
 'use strict';
 
 var crypto = require('crypto');
+var mongo = require('mongodb');
+var graphOps = require('./graphsOps');
 var db = require('./db');
 var aggregatedLogs = db.aggregatedLogs();
 var logs = db.logs();
+var stats = db.stats();
 var cachedFiles = db.files();
-var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var cachedPosts = db.posts();
 var cachedThreads = db.threads();
@@ -663,6 +665,62 @@ exports.aggregateVolunteeredBoards = function(callback) {
       }
 
       cachedUsers.bulkWrite(operations, callback);
+
+    }
+
+  });
+
+};
+
+exports.generateGraphs = function(callback, date, limit) {
+
+  if (!date) {
+    stats.find().sort({
+      startingTime : 1
+    }).limit(1).toArray(function gotFirstDate(error, results) {
+
+      if (error) {
+        callback(error);
+      } else if (results.length) {
+        var dateToStart = results[0].startingTime;
+
+        dateToStart.setUTCMilliseconds(0);
+        dateToStart.setUTCSeconds(0);
+        dateToStart.setUTCMinutes(0);
+        dateToStart.setUTCHours(0);
+
+        var newLimit = new Date();
+
+        newLimit.setUTCMilliseconds(0);
+        newLimit.setUTCSeconds(0);
+        newLimit.setUTCMinutes(0);
+        newLimit.setUTCHours(0);
+        newLimit.setUTCDate(newLimit.getUTCDate() - 1);
+
+        exports.generateGraphs(callback, dateToStart, newLimit);
+      } else {
+        callback();
+      }
+
+    });
+
+    return;
+  }
+
+  if (date > limit) {
+    callback();
+    return;
+  }
+
+  graphOps.generate(date, function generated(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      date.setUTCDate(date.getUTCDate() + 1);
+
+      exports.generateGraphs(callback, date, limit);
 
     }
 

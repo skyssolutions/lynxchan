@@ -341,7 +341,7 @@ exports.outputResponse = function(message, redirect, res, cookies, authBlock) {
   var header = miscOps.corsHeader('text/html');
 
   if (authBlock && authBlock.authStatus === 'expired') {
-    header.push([ 'Set-Cookie', 'hash=' + authBlock.newHash ]);
+    header.push([ 'Set-Cookie', 'hash=' + authBlock.newHash + ';path=/' ]);
   }
 
   if (cookies) {
