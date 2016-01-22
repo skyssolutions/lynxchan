@@ -2,7 +2,7 @@
 
 var apiOps = require('../engine/apiOps');
 var modOps = require('../engine/modOps').edit;
-var mandatoryParameters = [ 'message' ];
+var mandatoryParameters = [ 'message', 'boardUri' ];
 
 function saveEdit(auth, parameters, userData, res) {
 

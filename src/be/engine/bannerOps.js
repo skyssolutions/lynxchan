@@ -133,6 +133,8 @@ exports.addBanner = function(userData, parameters, callback) {
     exports.writeNewBanner(parameters, callback);
   } else {
 
+    parameters.boardUri = parameters.boardUri.toString();
+
     boards.findOne({
       boardUri : parameters.boardUri
     }, function gotBoard(error, board) {

@@ -6,8 +6,13 @@ var miscOps = require('../engine/miscOps');
 var jsonBuilder = require('../engine/jsonBuilder');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var modOps = require('../engine/modOps').edit;
+var mandatoryParameters = [ 'boardUri' ];
 
 function getPostingToEdit(userData, parameters, res, auth) {
+
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+    return;
+  }
 
   modOps.getPostingToEdit(userData, parameters, function gotPostingToEdit(
       error, message) {

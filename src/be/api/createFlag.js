@@ -2,7 +2,7 @@
 
 var apiOps = require('../engine/apiOps');
 var boardOps = require('../engine/boardOps').flags;
-var mandatoryParameters = [ 'flagName' ];
+var mandatoryParameters = [ 'flagName', 'boardUri' ];
 
 function createFlag(auth, parameters, userData, res) {
 

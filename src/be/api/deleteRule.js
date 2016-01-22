@@ -2,8 +2,13 @@
 
 var apiOps = require('../engine/apiOps');
 var boardOps = require('../engine/boardOps').rules;
+var mandatoryParameters = [ 'boardUri', 'ruleIndex' ];
 
 function deleteRule(auth, parameters, userData, res) {
+
+  if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+    return;
+  }
 
   boardOps.deleteRule(parameters, userData, function ruleDeleted(error) {
     if (error) {

@@ -153,6 +153,8 @@ exports.process = function(req, res) {
           return;
         }
 
+        parameters.boardUri = parameters.boardUri.toString();
+
         var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
         // style exception, too simple

@@ -3,8 +3,13 @@
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var boardOps = require('../engine/boardOps').rules;
+var mandatoryParameters = [ 'boardUri', 'ruleIndex' ];
 
 function deleteRule(parameters, userData, res, auth) {
+
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+    return;
+  }
 
   boardOps.deleteRule(parameters, userData, function deletedRule(error) {
     if (error) {

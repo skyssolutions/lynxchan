@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var url = require('url');
 var modOps = require('../engine/modOps').edit;
-var mandatoryParameters = [ 'message' ];
+var mandatoryParameters = [ 'message', 'boardUri' ];
 
 function saveEdit(parameters, userData, res, auth) {
 

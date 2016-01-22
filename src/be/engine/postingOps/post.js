@@ -521,6 +521,8 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
     return;
   }
 
+  parameters.boardUri = parameters.boardUri.toString();
+
   boards.findOne({
     boardUri : parameters.boardUri
   }, {

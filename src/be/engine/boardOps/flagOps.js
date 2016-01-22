@@ -90,6 +90,8 @@ exports.createFlag = function(userData, parameters, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
+  parameters.boardUri = parameters.boardUri.toString();
+
   boards.findOne({
     boardUri : parameters.boardUri
   }, function gotBoard(error, board) {

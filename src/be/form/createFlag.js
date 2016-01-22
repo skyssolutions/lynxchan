@@ -3,7 +3,7 @@
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var boardOps = require('../engine/boardOps').flags;
-var mandatoryParameters = [ 'flagName' ];
+var mandatoryParameters = [ 'flagName', 'boardUri' ];
 
 function createFlag(parameters, userData, res, auth) {
 

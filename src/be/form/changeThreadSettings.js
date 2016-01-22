@@ -3,8 +3,13 @@
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var modOps = require('../engine/modOps').edit;
+var mandatoryParameters = [ 'boardUri', 'threadId' ];
 
 function saveThreadSettings(userData, parameters, res, auth) {
+
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+    return;
+  }
 
   modOps.setThreadSettings(userData, parameters, function setThreadSettings(
       error) {

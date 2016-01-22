@@ -77,6 +77,8 @@ exports.createFilter = function(userData, parameters, callback) {
 
   miscOps.sanitizeStrings(parameters, filterParameters);
 
+  parameters.boardUri = parameters.boardUri.toString();
+
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
   boards.findOne({
@@ -101,6 +103,8 @@ exports.createFilter = function(userData, parameters, callback) {
 exports.deleteFilter = function(userData, parameters, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+
+  parameters.boardUri = parameters.boardUri.toString();
 
   boards.findOne({
     boardUri : parameters.boardUri

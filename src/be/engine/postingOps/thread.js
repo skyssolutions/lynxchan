@@ -452,6 +452,7 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
   var noFiles = !parameters.files.length;
 
   parameters.hash = r9k.getMessageHash(parameters.message);
+  parameters.boardUri = parameters.boardUri.toString();
 
   boards.findOne({
     boardUri : parameters.boardUri

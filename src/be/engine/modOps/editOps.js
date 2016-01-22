@@ -43,6 +43,8 @@ exports.getPostingToEdit = function(userData, parameters, callback) {
 
   var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
+  parameters.boardUri = parameters.boardUri.toString();
+
   boards.findOne({
     boardUri : parameters.boardUri
   }, function gotBoard(error, board) {
@@ -167,6 +169,8 @@ exports.getThreadToChangeSettings = function(parameters, callback) {
 exports.setThreadSettings = function(userData, parameters, callback) {
 
   var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+
+  parameters.boardUri = parameters.boardUri.toString();
 
   boards.findOne({
     boardUri : parameters.boardUri
@@ -304,6 +308,8 @@ exports.saveEdit = function(userData, parameters, callback) {
   parameters.hash = r9k.getMessageHash(parameters.message);
 
   var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+
+  parameters.boardUri = parameters.boardUri.toString();
 
   boards.findOne({
     boardUri : parameters.boardUri

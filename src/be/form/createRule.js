@@ -3,7 +3,7 @@
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var boardOps = require('../engine/boardOps').rules;
-var mandatoryParameters = [ 'rule' ];
+var mandatoryParameters = [ 'rule', 'boardUri' ];
 
 function addRule(parameters, userData, res, auth) {
 

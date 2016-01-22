@@ -48,6 +48,9 @@ exports.getRangeBans = function(userData, parameters, callback) {
   var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 
   if (parameters.boardUri) {
+
+    parameters.boardUri = parameters.boardUri.toString();
+
     boards.findOne({
       boardUri : parameters.boardUri
     }, function gotBoard(error, board) {
@@ -107,6 +110,9 @@ exports.createRangeBan = function(userData, parameters, callback) {
     return;
   }
 
+  parameters.boardUri = parameters.boardUri ? parameters.boardUri.toString()
+      : null;
+
   bans.findOne({
     range : parameters.range,
     boardUri : parameters.boardUri ? parameters.boardUri : {
@@ -150,6 +156,9 @@ exports.checkRangeBanPermission = function(userData, parameters, callback) {
   var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 
   if (parameters.boardUri) {
+
+    parameters.boardUri = parameters.boardUri.toString();
+
     boards.findOne({
       boardUri : parameters.boardUri
     }, function gotBoard(error, board) {

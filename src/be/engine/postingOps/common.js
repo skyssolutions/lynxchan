@@ -791,7 +791,12 @@ exports.readFlagData = function(locationData, callback) {
 
 };
 
-exports.getLocationFlagUrl = function(ip, callback) {
+exports.getLocationFlagUrl = function(ip, boardData, callback) {
+
+  if (!ip || boardData.settings.indexOf('locationFlags') < 0) {
+    callback();
+    return;
+  }
 
   locationOps.getLocationInfo(ip, function gotData(error, locationData) {
 
@@ -815,15 +820,7 @@ exports.getLocationFlagUrl = function(ip, callback) {
 exports.getFlagUrl = function(flagId, ip, boardData, callback) {
 
   if (!flagId || !flagId.length) {
-
-    if (ip && boardData.settings.indexOf('locationFlags') > -1) {
-
-      exports.getLocationFlagUrl(ip, callback);
-    } else {
-      callback();
-
-    }
-
+    exports.getLocationFlagUrl(ip, boardData, callback);
     return;
   }
 
@@ -833,13 +830,13 @@ exports.getFlagUrl = function(flagId, ip, boardData, callback) {
       _id : new ObjectID(flagId)
     }, function gotFlagData(error, flag) {
       if (!flag) {
-        callback();
+        exports.getLocationFlagUrl(ip, boardData, callback);
       } else {
         callback('/' + boardData.boardUri + '/flags/' + flagId, flag.name);
       }
     });
   } catch (error) {
-    callback();
+    exports.getLocationFlagUrl(ip, boardData, callback);
   }
 
 };

@@ -591,6 +591,8 @@ exports.transfer = function(userData, parameters, callback) {
   }
 
   parameters.threadId = +parameters.threadId;
+  parameters.boardUri = parameters.boardUri.toString();
+  parameters.boardUriDestination = parameters.boardUriDestination.toString();
 
   threads.findOne({
     threadId : parameters.threadId,

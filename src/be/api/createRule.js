@@ -2,7 +2,7 @@
 
 var apiOps = require('../engine/apiOps');
 var boardOps = require('../engine/boardOps').rules;
-var mandatoryParameters = [ 'rule' ];
+var mandatoryParameters = [ 'rule', 'boardUri' ];
 
 function addRule(auth, parameters, userData, res) {
 

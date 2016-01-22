@@ -280,6 +280,8 @@ exports.saveNewSettings = function(board, parameters, callback) {
 
 exports.setSettings = function(userData, parameters, callback) {
 
+  parameters.boardUri = parameters.boardUri.toString();
+
   boards.findOne({
     boardUri : parameters.boardUri
   }, function(error, board) {
@@ -380,6 +382,8 @@ exports.performTransfer = function(oldOwner, userData, parameters, callback) {
 exports.transfer = function(userData, parameters, callback) {
 
   var admin = userData.globalRole < 2;
+
+  parameters.boardUri = parameters.boardUri.toString();
 
   boards.findOne({
     boardUri : parameters.boardUri
@@ -491,6 +495,8 @@ exports.setVolunteer = function(userData, parameters, callback) {
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
   parameters.add = parameters.add ? true : false;
+
+  parameters.boardUri = parameters.boardUri.toString();
 
   boards.findOne({
     boardUri : parameters.boardUri

@@ -76,6 +76,8 @@ exports.getClosedReports = function(userData, parameters, callback) {
   var isOnGlobalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
   if (parameters.boardUri) {
+    parameters.boardUri = parameters.boardUri.toString();
+
     boards.findOne({
       boardUri : parameters.boardUri
     }, function gotBoard(error, board) {

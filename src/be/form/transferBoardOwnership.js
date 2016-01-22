@@ -3,8 +3,13 @@
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var boardOps = require('../engine/boardOps').meta;
+var mandatoryParameters = [ 'boardUri', 'login' ];
 
 function transferBoard(userData, parameters, res, auth) {
+
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+    return;
+  }
 
   boardOps.transfer(userData, parameters, function transferedBoard(error) {
     if (error) {

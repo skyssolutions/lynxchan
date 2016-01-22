@@ -29,6 +29,8 @@ exports.addBoardRule = function(parameters, userData, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
+  parameters.boardUri = parameters.boardUri.toString();
+
   boards.findOne({
     boardUri : parameters.boardUri
   }, function gotBoard(error, board) {
@@ -77,6 +79,8 @@ exports.addBoardRule = function(parameters, userData, callback) {
 exports.deleteRule = function(parameters, userData, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+
+  parameters.boardUri = parameters.boardUri.toString();
 
   boards.findOne({
     boardUri : parameters.boardUri
