@@ -117,6 +117,8 @@ function upgrade(version, callback) {
     break;
 
   case 8:
+    console.log('Generating posting graphs for the first time.');
+    console.log('This might take a while.');
     migrations.generateGraphs(callback);
     break;
 

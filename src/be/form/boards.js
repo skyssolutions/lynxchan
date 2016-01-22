@@ -54,7 +54,36 @@ function getSortBlock(parameters) {
     return {
       uniqueIps : 1,
       postsPerHour : 1,
-      lastPostId : 1,
+      lastPostId : 1
+    };
+
+  case '2':
+    return {
+      lastPostId : -1
+    };
+
+  case '3':
+    return {
+      lastPostId : 1
+    };
+
+  case '4':
+    return {
+      postsPerHour : -1
+    };
+
+  case '5':
+    return {
+      postsPerHour : 1
+    };
+
+  case '6':
+    return {
+      boardUri : 1
+    };
+
+  case '7':
+    return {
       boardUri : -1
     };
 
@@ -62,8 +91,7 @@ function getSortBlock(parameters) {
     return {
       uniqueIps : -1,
       postsPerHour : -1,
-      lastPostId : -1,
-      boardUri : 1
+      lastPostId : -1
     };
   }
 }

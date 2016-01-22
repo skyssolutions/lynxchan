@@ -231,21 +231,6 @@ exports.allThreads = function(boardUri, callback, boardData) {
 // } Section 1.1.1: Thread
 
 // Section 1.1.2: Board page {
-exports.buildRssAndJsonPages = function(boardUri, page, threadsArray,
-    pageCount, boardData, flagData, latestPosts, callback) {
-
-  jsonBuilder.page(boardUri, page, threadsArray, pageCount, boardData,
-      flagData, latestPosts, function builtJson(error) {
-
-        if (error || page > 1) {
-          callback(error);
-        } else {
-          rssBuilder.board(boardData, threadsArray, callback);
-        }
-      });
-
-};
-
 exports.getLatestPosts = function(boardUri, page, threadsArray, pageCount,
     boardData, flagData, callback) {
 
@@ -299,8 +284,8 @@ exports.getLatestPosts = function(boardUri, page, threadsArray, pageCount,
             if (error) {
               callback(error);
             } else {
-              exports.buildRssAndJsonPages(boardUri, page, threadsArray,
-                  pageCount, boardData, flagData, latestPosts, callback);
+              jsonBuilder.page(boardUri, page, threadsArray, pageCount,
+                  boardData, flagData, latestPosts, callback);
             }
           });
       // style exception, too simple
@@ -416,6 +401,22 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
 };
 // } Section 1.1.2: Board page
 
+// Section 1.1..3: Catalog {
+exports.buildCatalogJsonAndRss = function(boardData, threads, callback) {
+
+  jsonBuilder.catalog(boardData.boardUri, threads,
+      function generatedJson(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          rssBuilder.board(boardData, threads, callback);
+        }
+
+      });
+
+};
+
 exports.catalog = function(boardUri, callback, boardData) {
 
   if (!boardData) {
@@ -445,14 +446,15 @@ exports.catalog = function(boardUri, callback, boardData) {
 
       // style exception, too simple
       domManipulator.catalog(boardData, threads, function savedHTML(error) {
-        jsonBuilder.catalog(boardUri, threads, callback);
+        exports.buildCatalogJsonAndRss(boardData, threads, callback);
       });
-
       // style exception, too simple
+
     }
   });
 
 };
+// } Section 1.1.3: Catalog
 
 exports.pageIteration = function(boardUri, currentPage, boardData, callback,
     rebuildThreadPages) {
