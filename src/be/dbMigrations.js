@@ -672,40 +672,8 @@ exports.aggregateVolunteeredBoards = function(callback) {
 
 };
 
-exports.generateGraphs = function(callback, date, limit) {
-
-  if (!date) {
-    stats.find().sort({
-      startingTime : 1
-    }).limit(1).toArray(function gotFirstDate(error, results) {
-
-      if (error) {
-        callback(error);
-      } else if (results.length) {
-        var dateToStart = results[0].startingTime;
-
-        dateToStart.setUTCMilliseconds(0);
-        dateToStart.setUTCSeconds(0);
-        dateToStart.setUTCMinutes(0);
-        dateToStart.setUTCHours(0);
-
-        var newLimit = new Date();
-
-        newLimit.setUTCMilliseconds(0);
-        newLimit.setUTCSeconds(0);
-        newLimit.setUTCMinutes(0);
-        newLimit.setUTCHours(0);
-        newLimit.setUTCDate(newLimit.getUTCDate() - 1);
-
-        exports.generateGraphs(callback, dateToStart, newLimit);
-      } else {
-        callback();
-      }
-
-    });
-
-    return;
-  }
+// Section 7: Graph generation {
+exports.iterateDates = function(date, step, limit, callback) {
 
   if (date > limit) {
     callback();
@@ -718,12 +686,96 @@ exports.generateGraphs = function(callback, date, limit) {
       callback(error);
     } else {
 
-      date.setUTCDate(date.getUTCDate() + 1);
+      date.setUTCDate(date.getUTCDate() + step);
 
-      exports.generateGraphs(callback, date, limit);
+      exports.iterateDates(date, step, limit, callback);
 
     }
 
   });
 
 };
+
+exports.getGraphStartDate = function(date) {
+
+  var startDate = new Date(date);
+
+  startDate.setUTCMilliseconds(0);
+  startDate.setUTCSeconds(0);
+  startDate.setUTCMinutes(0);
+  startDate.setUTCHours(0);
+
+  return startDate;
+
+};
+
+exports.getGraphLimitDate = function() {
+
+  var newLimit = new Date();
+
+  newLimit.setUTCMilliseconds(0);
+  newLimit.setUTCSeconds(0);
+  newLimit.setUTCMinutes(0);
+  newLimit.setUTCHours(0);
+  newLimit.setUTCDate(newLimit.getUTCDate() - 1);
+
+  return newLimit;
+
+};
+
+exports.generateGraphs = function(callback) {
+
+  stats.find().sort({
+    startingTime : 1
+  }).limit(1).toArray(function gotFirstDate(error, results) {
+
+    if (error) {
+      callback(error);
+    } else if (results.length) {
+      var dateToStart = exports.getGraphStartDate(results[0].startingTime);
+
+      var newLimit = exports.getGraphLimitDate();
+
+      var coreCount = require('os').cpus().length;
+
+      var stopped = false;
+      var remaining = coreCount;
+
+      var loopCallBack = function(error) {
+
+        if (stopped) {
+          return;
+        }
+
+        if (error) {
+          stopped = true;
+          callback(error);
+        } else {
+
+          remaining--;
+
+          if (!remaining) {
+            callback();
+          }
+
+        }
+
+      };
+
+      for (var i = 0; i < coreCount; i++) {
+
+        var specificDate = new Date(dateToStart);
+        specificDate.setUTCDate(specificDate.getUTCDate() + i);
+
+        exports.iterateDates(specificDate, coreCount, newLimit, loopCallBack);
+
+      }
+
+    } else {
+      callback();
+    }
+
+  });
+
+};
+// } Section 7: Graph generation

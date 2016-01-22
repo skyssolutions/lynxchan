@@ -446,6 +446,7 @@ function setUniqueIpCount(results) {
 
     var graphDate = new Date();
 
+    graphDate.setUTCMilliseconds(0);
     graphDate.setUTCSeconds(0);
     graphDate.setUTCMinutes(0);
     graphDate.setUTCHours(0);
@@ -516,6 +517,7 @@ function uniqueIpCount() {
 
   var nextRefresh = new Date();
 
+  nextRefresh.setUTCMilliseconds(0);
   nextRefresh.setUTCSeconds(0);
   nextRefresh.setUTCMinutes(0);
   nextRefresh.setUTCHours(0);

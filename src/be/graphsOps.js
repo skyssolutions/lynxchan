@@ -7,6 +7,7 @@ var db = require('./db');
 var logger = require('./logger');
 var conn = db.conn();
 var stats = db.stats();
+var verbose = require('./settingsHandler').getGeneralSettings().verbose;
 
 // Duplicated code, since we can't make a core module depend on an engine module
 function writeData(data, dest, mime, meta, callback) {
@@ -250,6 +251,11 @@ exports.generate = function(date, callback) {
     } else if (!results.length) {
       callback();
     } else {
+
+      if (verbose) {
+        console.log('Generating graph for ' + date.toUTCString());
+      }
+
       plot(date, results, callback);
     }
 
