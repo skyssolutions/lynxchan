@@ -837,7 +837,12 @@ if (cluster.isMaster) {
     } else {
       exports.startEngine();
 
-      checkDbVersions();
+      if (!settingsHandler.getGeneralSettings().master) {
+        checkDbVersions();
+      } else {
+        initTorControl();
+      }
+
     }
 
   });

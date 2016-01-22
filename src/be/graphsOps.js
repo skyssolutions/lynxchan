@@ -47,12 +47,12 @@ function getPPHScaleMarker(startY, startX, maxPPH, endX, stepSize, i) {
 
 }
 
-function getNextIterator(i, minGap, stepSize, maxPPH) {
+function getNextIterator(i, ratio, maxPPH) {
 
-  if (i + (2 * (minGap / stepSize)) > maxPPH) {
+  if (i + (2 * ratio) > maxPPH && i < maxPPH) {
     return maxPPH;
   } else {
-    return i + (minGap / stepSize);
+    return i + ratio;
   }
 
 }
@@ -68,18 +68,18 @@ function getPPHScale(startY, endY, startX, endX, maxPPH) {
   var nextIterator = 0;
   var minGap = 20;
 
-  for (var i = 0; i <= maxPPH; i++) {
+  var i = 0;
 
-    if (nextIterator <= i) {
+  var ratio = stepSize < minGap ? Math.round(minGap / stepSize) : null;
 
-      toRet += getPPHScaleMarker(startY, startX, maxPPH, endX, stepSize, i);
+  while (i <= maxPPH) {
 
-      if (stepSize < minGap) {
-        nextIterator = getNextIterator(i, minGap, stepSize, maxPPH);
-      } else {
-        nextIterator = i + 1;
-      }
+    toRet += getPPHScaleMarker(startY, startX, maxPPH, endX, stepSize, i);
 
+    if (ratio) {
+      i = getNextIterator(i, ratio, maxPPH);
+    } else {
+      i++;
     }
 
   }
@@ -92,20 +92,16 @@ function getPPHScale(startY, endY, startX, endX, maxPPH) {
 // Section 2: Bars {
 function getValue(results, i, date) {
 
+  if (!results.length) {
+    return;
+  }
+
   var currentDate = new Date(date);
   currentDate.setUTCHours(currentDate.getUTCHours() + i);
 
-  for (var j = 0; j < results.length; j++) {
-
-    var result = results[j];
-
-    var dateToCheck = new Date(result._id);
-
-    if (dateToCheck.getTime() === currentDate.getTime()) {
-      return result.posts;
-    } else if (result._id > currentDate) {
-      return;
-    }
+  if (results[0]._id.getTime() === currentDate.getTime()) {
+    var toRet = results.shift();
+    return toRet.posts;
   }
 
 }
@@ -165,15 +161,7 @@ function getCommandStart(date, startX, startY, endX, endY) {
 
 }
 
-function getCommand(date, results) {
-
-  var startX = 52;
-  var endX = 970;
-
-  var startY = 100;
-  var endY = 730;
-
-  var barWidth = (endX - startX) / 24;
+function getMaxPPH(results) {
 
   var maxPPH = 0;
 
@@ -184,7 +172,25 @@ function getCommand(date, results) {
       maxPPH = currentResult.posts;
     }
 
+    currentResult._id = new Date(currentResult._id);
+
   }
+
+  return maxPPH;
+
+}
+
+function getCommand(date, results) {
+
+  var startX = 52;
+  var endX = 970;
+
+  var startY = 100;
+  var endY = 730;
+
+  var barWidth = (endX - startX) / 24;
+
+  var maxPPH = getMaxPPH(results);
 
   var toRet = getCommandStart(date, startX, startY, endX, endY);
 
