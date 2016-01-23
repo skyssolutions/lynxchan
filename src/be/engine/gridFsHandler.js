@@ -315,18 +315,37 @@ exports.streamFile = function(stats, req, callback, cookies, res, optCon) {
     if (!error) {
       if (!range) {
 
-        header.push([ 'Content-Length', stats.length ]);
-        res.writeHead(stats.metadata.status || 200, header);
-
         var stream = gs.stream();
 
+        var wrote = false;
+
         stream.on('data', function(chunk) {
+
+          if (!wrote) {
+            wrote = true;
+            header.push([ 'Content-Length', stats.length ]);
+            res.writeHead(stats.metadata.status || 200, header);
+          }
+
           res.write(chunk);
+
         });
 
         stream.on('error', function(error) {
-          callback(error);
+
           gs.close();
+
+          if (wrote) {
+            callback(error);
+          } else {
+
+            // We failed before writing anything, wait 100ms and try again
+            setTimeout(function() {
+              exports.streamFile(stats, req, callback, cookies, res, optCon);
+            }, 100);
+
+          }
+
         });
 
         stream.on('end', function() {

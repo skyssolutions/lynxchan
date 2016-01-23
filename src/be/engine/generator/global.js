@@ -175,7 +175,8 @@ exports.fetchGlobalStats = function(foundBoards, globalLatestPosts,
     $project : {
       lastPostId : 1,
       uniqueIps : 1,
-      lastFileId : 1
+      lastFileId : 1,
+      postsPerHour : 1
     }
   }, {
     $group : {
@@ -188,6 +189,12 @@ exports.fetchGlobalStats = function(foundBoards, globalLatestPosts,
       },
       totalFiles : {
         $sum : '$lastFileId'
+      },
+      totalBoards : {
+        $sum : 1
+      },
+      totalPPH : {
+        $sum : '$postsPerHour'
       }
     }
   } ], function gotGlobalStats(error, results) {

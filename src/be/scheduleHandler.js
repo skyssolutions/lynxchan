@@ -157,21 +157,17 @@ function applyStats(stats) {
   });
 
   boards.bulkWrite(operations, function updatedStats(error) {
-    if (error) {
 
+    if (error) {
       console.log(error);
 
       if (debug) {
         throw error;
       }
-    } else {
-
-      if (settings.topBoardsCount) {
-        require('./generationQueue').queue({
-          frontPage : true
-        });
-      }
-
+    } else if (settings.topBoardsCount || settings.frontPageStats) {
+      require('./generationQueue').queue({
+        frontPage : true
+      });
     }
 
     boardsStats();

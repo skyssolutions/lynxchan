@@ -198,6 +198,8 @@ exports.setGlobalStats = function(globalStats, object) {
     object.totalPosts = globalStats.totalPosts;
     object.totalIps = globalStats.totalIps;
     object.totalFiles = globalStats.totalFiles;
+    object.totalPPH = globalStats.totalPPH;
+    object.totalBoards = globalStats.totalBoards;
   }
 
 };

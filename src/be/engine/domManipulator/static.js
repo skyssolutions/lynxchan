@@ -529,6 +529,12 @@ exports.setGlobalStats = function(document, globalStats) {
   var filesLabel = document.getElementById('labelTotalFiles');
   filesLabel.innerHTML = globalStats.totalFiles || 0;
 
+  var pphLabel = document.getElementById('labelTotalPPH');
+  pphLabel.innerHTML = globalStats.totalPPH || 0;
+
+  var totalBoardsLabel = document.getElementById('labelTotalBoards');
+  totalBoardsLabel.innerHTML = globalStats.totalBoards || 0;
+
 };
 
 exports.frontPage = function(boards, latestPosts, latestImages, globalStats,

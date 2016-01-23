@@ -44,6 +44,14 @@ labelTotalFiles:
     use: have it's innerHTML manipulated.
     description: label with the total amount of uploaded files in the whole site.
 
+labelTotalBoards:
+    use: have it's innerHTML manipulated.
+    description: label with the total amount boards on the site.
+
+labelTotalPPH:
+    use: have it's innerHTML manipulated.
+    description: label with the total PPH of the site for the past hour.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::02

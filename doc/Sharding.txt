@@ -1,14 +1,5 @@
 Sharding is the capability of the engine to run as a distributed system, with a single master and several slaves.
 
-PRECAUTIONS
-If you are deploying LynxChan under a webserver, you must setup your webserver to refuse unknown connections requests to /takeMessage.js on all servers, allowing only your nodes to request this page. If your webserver allows any source to request this page, your server could be overloaded by simply requesting the generation of unnecessary pages to the master node. 
-
-On stand alone mode this page is not available at all, so this is only a concern on sharded settings.
-
-Also, is up to the webserver to refuse any connection not coming from the master on slaves, if you use one.
-
-All of this is handled by the engine if you are not using reverse-proxies, since in this case it can decide based on the IP of the request.
-
 WORKFLOW
 The master has two roles:
 
@@ -31,19 +22,9 @@ Slave node receives the message on a worker process and generates the page.
 This way, the I/O is kept as efficient as possible, because there will be still a single queue, instead of each server having its own queue an possibily building the same pages at the same time.
 
 SETTING UP
-To put your servers into sharding mode you must do the following things:
 
-1: On the global settings of the slaves input the ip of the master node to be used to 
-A) determine if the incoming request is from it and should be served or dropped.
-B) to send rebuild messages that were triggered so the master node can put it on the queue or drop.
-After this, your slave node will refuse any request coming from any ip that is not the master node.
+First, deploy all the servers you want to have running. Slaves will rebuild pages, so having them with a good CPU is desirable.
 
-2: On the global settings of the master node, insert the ips of the slaves separated by commas as any other list. The engine handles a couple of details here:
-A) it will automatically change the settings for the slaves to the ones the master is using as soon as you add them to the list of slaves.
-B) you can change the list of slaves as you wish on any moment or even remove them all. No restart required.
+Then on the slaves, log as a root user and on the global settings, input the ip of the master server on the correct field. If the slave is not running under a webserver, your next request won't be served, because slaves only serve requests to localhost and their master. So if you are running a slave under a webserver, you should restrict requests from any server but the master on it.
 
-And of course, point them all to the same database.
-
-Keep in mind that the engine won't synchronize the front-end files, is up to you to make sure they are all the same across servers. 
-The slaves are the ones responsible for generating pages but the master also serves the page used to display global settings, so it must have the correct domains on at least this page.
-Just make sure they are all the same across all servers.
+Now on the master, input the ips of the slaves on the correct field using the screen for global settings. The master will update the settings of any slave that you set. If your master is running under a webserver, you should configure the webserver to block any requests to '/.api/takeMessage' on the master from any ip but the slaves.
