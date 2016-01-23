@@ -380,6 +380,7 @@ exports.account = function(userData) {
     email : userData.email || '',
     ownedBoards : userData.ownedBoards || [],
     settings : userData.settings || [],
+    volunteeredBoards : userData.volunteeredBoards || [],
     boardCreationAllowed : allowed
   });
 

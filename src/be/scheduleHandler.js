@@ -438,11 +438,9 @@ function setUniqueIpCount(results) {
       }
     }
 
-    if (settings.topBoardsCount || settings.frontPageStats) {
-      require('./generationQueue').queue({
-        frontPage : true
-      });
-    }
+    require('./generationQueue').queue({
+      frontPage : true
+    });
 
     var graphDate = new Date();
 

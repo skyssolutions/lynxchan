@@ -59,6 +59,7 @@ Description: display the account page for the user. Requires validation.
 Json output(Object): object with the account data. Contains the following fields:
     login: login of the user.
     email: e-mail of the user.
+    volunteeredBoards(Array): array with the boards where this user is a volunteer.
     boardCreationAllowed(boolean): indicates if the user is allowed to create boards.
     ownedBoards(Array): array with the list of uri of boards owned by the user.
     settings(Array): array of account settings. May contain the following values:
