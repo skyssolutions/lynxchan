@@ -1,0 +1,273 @@
+1.5.0:
+
+**Api.txt**
+
+newThread:
+
+message max length is now 4096.
+
+---------------------------------------
+
+replyThread:
+message max length is now 4096.
+
+---------------------------------------
+
+setBoardSettings:
+
+New parameters:
+autoSageLimit
+maxThreadCount
+maxFileSizeMB
+acceptedMimes
+maxFiles
+locationFlags
+
+---------------------------------------
+
+saveEdit:
+
+message max length is now 4096.
+
+---------------------------------------
+
+saveGlobalSettings:
+
+Removed parameters:
+proxyAccess
+
+New parameters:
+master
+slaves
+frontPageStats
+
+---------------------------------------
+
+Removed pages:
+liftProxyBan
+
+New pages:
+takeMessage
+takeSettings
+
+---------------------------------------
+
+**Form.txt**
+
+newThread:
+
+message max length is now 4096.
+
+---------------------------------------
+
+replyThread:
+message max length is now 4096.
+
+---------------------------------------
+
+setBoardSettings:
+
+New parameters:
+autoSageLimit
+maxThreadCount
+maxFileSizeMB
+acceptedMimes
+maxFiles
+locationFlags
+
+---------------------------------------
+
+saveEdit:
+
+message max length is now 4096.
+
+---------------------------------------
+
+account:
+
+New json values:
+volunteeredBoards
+
+---------------------------------------
+
+boardManagement:
+
+New json values:
+autoSageLimit
+maxThreadCount
+maxFileSizeMB
+acceptedMimes
+maxFiles
+settings.locationFlags
+
+---------------------------------------
+
+mod:
+
+New json values:
+autoSage
+
+Removed json values:
+proxyIp
+posts.proxyIp
+
+---------------------------------------
+
+boards:
+
+New parameters:
+sorting
+
+---------------------------------------
+
+globalSettings:
+
+New json values:
+master
+slaves
+frontPageStats
+
+Removed json values:
+proxyAccess
+
+---------------------------------------
+
+saveGlobalSettings:
+
+Removed parameters:
+proxyAccess
+
+New parameters:
+master
+slaves
+frontPageStats
+
+---------------------------------------
+
+Removed pages:
+proxyBans
+placeProxyBan
+liftProxyBan
+
+New pages:
+graphs
+
+---------------------------------------
+
+**Language.txt**
+
+Removed entries:
+errBlockedProxy
+errProxyFilesBlocked
+errDeniedGlobalProxyBansManagement
+errDeniedBoardProxyBanManagement
+guiProxyLevels
+guiTypeProxyBan
+guiTypeProxyBanLift
+logProxyBan
+logProxyBanLift
+msgProxyBanCreated
+msgProxyBanLifted
+titProxyBans
+
+New entries:
+errFileTooLargeForBoard
+errInvalidMimeForBoard
+titGraphs
+
+---------------------------------------
+
+**Templates.txt**
+
+index:
+
+Added:
+divStats
+labelTotalPosts
+labelTotalIps
+labelTotalFiles
+labelTotalBoards
+labelTotalPPH
+
+---------------------------------------
+
+opCell:
+
+Removed:
+panelProxyIp
+labelProxyIp
+
+Added:
+bumpLockIndicator
+
+---------------------------------------
+
+postCell:
+
+Removed:
+panelProxyIp
+labelProxyIp
+
+---------------------------------------
+
+accountPage:
+
+Renamed:
+boardsDiv -> ownedDiv
+
+Added:
+volunteeredDiv
+
+---------------------------------------
+
+gManagement:
+
+Removed:
+proxyBansLink
+
+---------------------------------------
+
+bManagement:
+
+Removed:
+proxyBansLink
+
+Added:
+locationCheckBox
+
+---------------------------------------
+
+catalogCell:
+
+Added:
+bumpLockIndicator
+
+---------------------------------------
+
+globalSettingsPage:
+
+Removed:
+comboProxyAccess
+
+Added:
+checkboxFrontPageStats
+fieldMaster
+fieldSlaves
+
+---------------------------------------
+
+overboard:
+
+Removed:
+bannerImage
+
+---------------------------------------
+
+Removed templates:
+proxyBansPage
+proxyBanCell
+proxyBanPage
+
+Added templates:
+graphsIndexPage
+graphIndexCell
