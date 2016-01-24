@@ -519,7 +519,7 @@ function checkForFullBoardRebuild(message) {
 
   if (message.allBoards) {
     rebuildingAllBoards = true;
-    putInQueue(message, null, 60);
+    putInQueue(message, null, 60, true);
     return;
   }
 
@@ -614,7 +614,7 @@ exports.queue = function(message) {
 
   if (message.globalRebuild) {
     rebuildingAll = true;
-    putInQueue(message);
+    putInQueue(message, null, 60, true);
     return;
   }
 

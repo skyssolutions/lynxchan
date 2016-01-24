@@ -6,7 +6,9 @@
 var logger = require('../logger');
 var indexString = 'index.html';
 var url = require('url');
-var proxy = require('http-proxy').createProxyServer({});
+var proxy = require('http-proxy').createProxyServer({
+  secure : false
+});
 
 proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.setHeader('x-forwarded-for', logger.getRawIp(req));
@@ -311,10 +313,7 @@ exports.getSubdomain = function(req) {
 
 exports.redirect = function(req, res) {
 
-  // TODO try and fix requests to ssl servers
-  // until then, always request using plain HTTP to slaves
-  var fixed = false;
-  var proxyUrl = req.connection.encrypted && fixed ? 'https' : 'http';
+  var proxyUrl = req.connection.encrypted ? 'https' : 'http';
 
   proxyUrl += '://';
 
@@ -324,7 +323,7 @@ exports.redirect = function(req, res) {
     lastSlaveIndex = 0;
   }
 
-  if (!req.connection.encrypted || !fixed) {
+  if (!req.connection.encrypted) {
     proxyUrl += ':' + port;
   }
 
@@ -333,8 +332,7 @@ exports.redirect = function(req, res) {
   }
 
   proxy.web(req, res, {
-    target : proxyUrl,
-    secure : true
+    target : proxyUrl
   }, function proxyed(error) {
 
     try {
