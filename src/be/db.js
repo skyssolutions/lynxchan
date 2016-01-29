@@ -20,7 +20,7 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 15;
+var maxIndexesSet = 16;
 
 var cachedLatestImages;
 var cachedAggregatedLogs;
@@ -540,6 +540,23 @@ function initBypasses(callback) {
     }
   });
 }
+
+function initStats(callback) {
+
+  cachedStats.ensureIndex({
+    startingTime : 1
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+}
 // end of index initialization
 
 // start of getters
@@ -667,6 +684,7 @@ function initIndexes(callback) {
 
   initFlood(callback);
 
+  initStats(callback);
 }
 
 function preIndexSet(callback) {
@@ -679,24 +697,32 @@ function preIndexSet(callback) {
 
 }
 
-function initIndexedCollections(callback) {
+function initBoardIndexedCollections(callback) {
 
-  cachedBypasses = cachedDb.collection('blockBypasses');
   cachedPosts = cachedDb.collection('posts');
   cachedBoards = cachedDb.collection('boards');
-  cachedTripcodes = cachedDb.collection('secureTripcodes');
-  cachedFlood = cachedDb.collection('floodRecord');
   cachedHashBans = cachedDb.collection('hashBans');
   cachedReports = cachedDb.collection('reports');
   cachedFlags = cachedDb.collection('flags');
-  cachedCaptchas = cachedDb.collection('captchas');
-  cachedTorIps = cachedDb.collection('torIps');
   cachedBans = cachedDb.collection('bans');
   cachedThreads = cachedDb.collection('threads');
+  cachedStats = cachedDb.collection('boardStats');
+
+  preIndexSet(callback);
+
+}
+
+function initGlobalIndexedCollections(callback) {
+
+  cachedBypasses = cachedDb.collection('blockBypasses');
+  cachedTripcodes = cachedDb.collection('secureTripcodes');
+  cachedFlood = cachedDb.collection('floodRecord');
+  cachedCaptchas = cachedDb.collection('captchas');
+  cachedTorIps = cachedDb.collection('torIps');
   cachedRecoveryRequests = cachedDb.collection('recoveryRequests');
   cachedUsers = cachedDb.collection('users');
 
-  preIndexSet(callback);
+  initBoardIndexedCollections(callback);
 
 }
 
@@ -709,9 +735,8 @@ function initCollections(callback) {
   cachedLatestPosts = cachedDb.collection('latestPosts');
   cachedFiles = cachedDb.collection('fs.files');
   cachedLog = cachedDb.collection('staffLogs');
-  cachedStats = cachedDb.collection('boardStats');
 
-  initIndexedCollections(callback);
+  initGlobalIndexedCollections(callback);
 
 }
 
