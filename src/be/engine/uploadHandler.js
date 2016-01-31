@@ -612,9 +612,7 @@ exports.saveUploads = function(boardData, threadId, postId, parameters,
         function processedFile(error) {
 
           if (error) {
-            if (verbose) {
-              console.log(error);
-            }
+            console.log(error);
 
             if (debug) {
               throw error;

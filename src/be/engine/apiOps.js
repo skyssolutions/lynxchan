@@ -128,7 +128,7 @@ exports.checkBlankParameters = function(object, parameters, res) {
 exports.getFileData = function(matches, res, stats, file, location, content,
     exceptionalMimes, finalArray, callback) {
 
-  var mime = matches[1];
+  var mime = matches[1].toLowerCase().trim();
 
   if (stats.size > maxFileSize) {
     exports.outputResponse(null, null, 'fileTooLarge', res);

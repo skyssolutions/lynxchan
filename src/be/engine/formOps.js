@@ -147,7 +147,7 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
 
     var file = files.files.shift();
 
-    var mime = file.headers['content-type'];
+    var mime = file.headers['content-type'].toLowerCase().trim();
 
     var acceptableSize = file.size && file.size < maxFileSize;
 
