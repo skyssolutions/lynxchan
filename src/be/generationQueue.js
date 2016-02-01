@@ -473,7 +473,7 @@ function rebuildingPreview(message, boardInformation) {
 
     previewsToRebuild.push(postingId);
 
-    putInQueue(message, boardInformation, 0, true);
+    putInQueue(message, boardInformation, 5, true);
 
   }
 

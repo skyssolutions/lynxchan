@@ -149,19 +149,23 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
         if (error) {
           callback(error);
         } else {
+
           // style exception, too simple
-          domManipulator.thread(boardUri, boardData, flagData, threadData,
-              posts, function savedHtml(error) {
+          jsonBuilder.thread(boardUri, boardData, threadData, posts,
+              function savedJson(error) {
+
                 if (error) {
                   callback(error);
                 } else {
                   mbHandler.clearCache(boardUri);
 
-                  jsonBuilder.thread(boardUri, boardData, threadData, posts,
-                      callback, null, null, flagData);
+                  domManipulator.thread(boardUri, boardData, flagData,
+                      threadData, posts, callback);
                 }
-              });
+
+              }, null, null, flagData);
           // style exception, too simple
+
         }
       });
 
