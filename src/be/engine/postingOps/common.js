@@ -29,6 +29,14 @@ var dataPath = __dirname + '/../../locationData/data.json';
 
 var fieldList = [ 'country', 'region', 'city' ];
 
+exports.linkSanitizationRelation = {
+  '_' : '&#95;',
+  '=' : '&#61;',
+  '\'' : '&#8216;',
+  '~' : '&#126;',
+  '*' : '&#42;'
+};
+
 exports.postingParameters = [ {
   field : 'subject',
   length : 128,
@@ -480,7 +488,12 @@ exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
 
     match = match.replace(/>/g, '&gt');
 
-    return '<a target="blank" href="' + match + '">' + match + '</a>';
+    var htmlContent = match.replace(/[_='~*]/g, function sanitization(
+        innerMatch) {
+      return exports.linkSanitizationRelation[innerMatch];
+    });
+
+    return '<a target="blank" href="' + match + '">' + htmlContent + '</a>';
 
   });
 

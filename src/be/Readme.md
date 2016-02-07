@@ -6,8 +6,9 @@ Required modules:
 * bcrypt: used for encrypting passwords.
 * nodemailer: used to send e-mails for people resetting account passwords.
 * ip-address: used to handle ips.
+* http-proxy: used on sharding so the master server can act as a reverse-proxy and pass the request to slaves.
 
-Latest version of all them.
+The version of each one is specified on the package.json file.
 
 A package.json file is included, so you can install all of them by just running `npm install` on this directory.
 
@@ -35,8 +36,8 @@ It accepts the following arguments:
 * `--create-account`, `-ca`: will create a new account. Require the use of the login, role and password parameters.
 * `--login`, `-l`: informs a login.
 * `--password`, `-p`: informs a password.
-* `--global-role`, `-gr`: informs a role.
-* `--set-role`, `-sr`: set a new role for an existing account. Will not be used if `-ca` is used.
+* `--global-role`, `-gr`: informs a role from 0 to 4, 0 meaning root user, 1 admin, 2 global volunteer, 3 global janitor and 4 regular user.
+* `--set-role`, `-sr`: set a new role for an existing account. Will not be used if `-ca` is used. Takes a login and global role.
 * `--maintenance`, `-m`: indicates a new value for maintenance mode on a running instance. The value will be parsed as JSON, so informing `true` or `false` will work, so as informing numbers that evaluate to false or true. Will be ignored if no daemon was not informed.
 
 Arguments that are meant to inform values should be used in the following manner:
