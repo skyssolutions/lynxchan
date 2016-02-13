@@ -385,31 +385,6 @@ exports.boards = function(parameters, boards, pageCount) {
 };
 // } Section 3: Board listing
 
-// This page COULD be static, since it doesn't need any manipulation.
-// However, given how often it will be accessed and how it might require
-// manipulation in the future, I will leave it as a dynamic page.
-exports.archiveDeletion = function() {
-  try {
-    var document = jsdom(templateHandler.archiveDeletionPage);
-
-    document.title = lang.titArchiveDeletion;
-
-    return serializer(document);
-
-  } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
-    if (debug) {
-      throw error;
-    }
-
-    return error.toString();
-  }
-
-};
-
 // Section 4: Ban {
 exports.setBanPage = function(document, ban, board) {
 
@@ -664,103 +639,6 @@ exports.noCookieCaptcha = function(parameters, captchaId) {
 };
 // } Section 8: No cookie captcha
 
-// Section 9: Archive index {
-exports.setArchiveIndexCell = function(cell, board) {
-
-  cell.innerHTML = templateHandler.mainArchiveCell;
-  cell.setAttribute('class', 'mainArchiveCell');
-
-  var link = cell.getElementsByClassName('linkBoard')[0];
-
-  link.href = '/' + board + '/';
-  link.innerHTML = board;
-
-};
-
-exports.mainArchive = function(boards) {
-
-  try {
-
-    var document = jsdom(templateHandler.mainArchivePage);
-
-    document.title = lang.titMainArchive;
-
-    var boardsDiv = document.getElementById('boardsDiv');
-
-    for (var i = 0; i < boards.length; i++) {
-
-      var cell = document.createElement('div');
-
-      exports.setArchiveIndexCell(cell, boards[i]);
-
-      boardsDiv.appendChild(cell);
-    }
-
-    return serializer(document);
-
-  } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
-    if (debug) {
-      throw error;
-    }
-
-    return error.toString();
-  }
-};
-// } Section 9: Archive index
-
-// Section 10: Board archive {
-exports.setBoardArchiveCell = function(cell, thread, boardUri) {
-
-  cell.innerHTML = templateHandler.boardArchiveCell;
-  cell.setAttribute('class', 'boardArchiveCell');
-
-  var link = cell.getElementsByClassName('linkThread')[0];
-
-  link.href = '/' + boardUri + '/res/' + thread + '.html';
-  link.innerHTML = thread;
-
-};
-
-exports.boardArchive = function(boardUri, threads) {
-
-  try {
-
-    var document = jsdom(templateHandler.boardArchivePage);
-
-    document.title = lang.titBoardArchive.replace('{$board}', boardUri);
-
-    var threadsDiv = document.getElementById('threadsDiv');
-
-    for (var i = 0; i < threads.length; i++) {
-
-      var cell = document.createElement('div');
-
-      exports.setBoardArchiveCell(cell, threads[i], boardUri);
-
-      threadsDiv.appendChild(cell);
-    }
-
-    return serializer(document);
-
-  } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
-    if (debug) {
-      throw error;
-    }
-
-    return error.toString();
-  }
-
-};
-// } Section 10: Board archive
-
 exports.blockBypass = function(valid) {
 
   try {
@@ -788,7 +666,7 @@ exports.blockBypass = function(valid) {
   }
 };
 
-// Section 11: Graphs {
+// Section 9: Graphs {
 exports.setGraphIndexCell = function(dateCell, date) {
 
   dateCell.setAttribute('class', 'graphIndexCell');
@@ -835,4 +713,4 @@ exports.graphs = function(dates) {
   }
 
 };
-// } Section 11: graphs
+// } Section 9: graphs

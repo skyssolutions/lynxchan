@@ -77,13 +77,10 @@ errPostingNotFound: error thrown when the specified posting can not be found.
 errBannerTooLarge: error thrown when a banner is too large to be used.
 errRepeatedFlag: error thrown when there is already a flag with the specified name in the board.
 errFlagNotFound: error thrown when the specified flag for an operation can't be found.
-errNotServingArchives: error thrown when the instance is not set to serve archives.
 errFormatNotAllowed: error thrown when an uploaded file uses a format disallowed by the server.
 errDeniedGlobalSettings: error thrown when the user is not allowed to edit global settings.
-errArchiveNotLoaded: error thrown when the the user tries to access the archives, they were enabled but the server haven't been restarted yet.
 errBoardLocked: error thrown when the board is locked for thread creation.
 errDeniedSpoilerManagement: error thrown when the user is not allowed to manage the custom spoiler of a board.
-errDeniedArchiveDeletion: error thrown when the user is not allowed to delete content from the archive.
 errDeniedIpDeletion: error thrown when the user is not allowed to delete posts from a single ip.
 errInvalidRange: error thrown when an invalid range is informed.
 errDeniedFlagManagement: error thrown when the user is not allowed to manage a board's flags.
@@ -110,7 +107,6 @@ errFileAlreadyPosted: error thrown when R9K blocks a file.
 errDuplicateFileBeingPosted: error thrown when R9K is enforcing file uniqueness and the user tries to post the same file twice.
 errFileTooLargeForBoard: error thrown when a file being uploaded is too large for that board in specific.
 errInvalidMimeForBoard: error thrown when a file being uploaded isn't allowed by the board in specific.
-guiAllTypes: option to select all types of logs.
 guiTypeBan: label used for logs of bans.
 guiTypeRange: label used for logs of range bans.
 guiTypeBanLift: label used for logs of ban lifts.
@@ -133,8 +129,6 @@ guiTypeAppealDeny: label used for logs of denied appeals.
 guiOpen: string used on the catalog on the link to open the thread when it doesn't have a file.
 guiUnlimited: label used when a file size limit for an operation is limitless.
 guiNoFlag: label used for the first option on a flag combobox.
-guiArchiveLevels: array with the labels to be shown to archive options in this order: no archive, only pages, pages and images.
-guiTypeArchiveDeletion: label used for logs of archive deletion.
 guiTorLevels: array containing the posting levels for TOR users. First element indicates no posting, second posting without files, third posting with files.
 guiTypeThreadTransfer: label used for logs of thread transfers.
 guiBypassModes: array with the bypass mode options. The first element is the one for bypass disabled. The second is for bypass enabled. The third is for mandatory use of block bypass.
@@ -189,11 +183,6 @@ logLiftHashBan: object containing the pieces used for logs of hash ban lifts. Co
     globalPiece: piece used to indicate it is a global hash ban.
     boardPiece: piece used to indicate the board of the hash ban. Replaces: {$board}.
     finalPiece: final piece. Replaces: {$hash}.
-logArchiveDeletion: object containing the pieces used for the log message when deleting something from the archives. Contains the following fields:
-    startPiece: piece used at the start of the message. Replaces: {$login}
-    boardPiece: piece used when a board is being deleted whole from the archives. Replaces: {$board}
-    threadPiece: piece used when a thread is being deleted from the archives. Replaces: {$board}, {$thread}
-    filesPiece: piece used when files are being deleted from the archives. Replaces: {$board}, {$files}
 logThreadTransfer: log message for thread movings. Replaces: {$login}, {$board}, {$thread}, {$boardDestination}
 logAppealDenied: log entry for appeal deny. Replaces: {$login}, {$id}
 miscAllBoards: string meaning "all boards" to be used when something refers to all boards.
@@ -246,7 +235,6 @@ msgFlagDeleted: message used after deleting a flag.
 msgSavedGlobalSettings: message used after saving global settings.
 msgSpoilerSet: message displayed after setting a custom spoiler on a board.
 msgSpoilerDeleted: message displayed after deleting a custom spoiler on a board.
-msgArchiveRemoved: message displayed after removing content from the archives.
 msgDeletedFromIp: message displayed after deleting postings from an ip.
 msgJsDeleted: message used when the custom javascript of a board is deleted.
 msgCssSet: message used when a custom javascript is uploaded for a board.
@@ -283,10 +271,7 @@ titRules: title of the rules page of a board. Replaces: {$board}.
 titMaintenance: title of the maintenance page.
 titEdit: title of the edit page.
 titFlagManagement: title of the flag management page.
-titMainArchive: title of the main archive page.
-titBoardArchive: title of the board archive page. Replaces: {$board}.
 titGlobalSettings: title of the global settings page.
-titArchiveDeletion: title of the archive deletion page.
 titGlobalBanners: title of the global banners management page.
 titHashBan: title of the page that displays a hash ban when the user tries to upload a banned file.
 titBlockbypass: title of the page used to renew the block bypass.

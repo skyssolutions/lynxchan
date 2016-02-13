@@ -48,9 +48,6 @@ Examples:
 `lynxchan -ca -l login -p pass -gr 0` = create an account with login login, password pass with root global role and then start the server.
 `lynxchan -rf -rb -nd` = reload the saved front-page and the default banner and do not start a server.
 
-# Sub-domains
-The only sub-domain used is `archive` to serve archives. There used to be other two but they are gone. RIP in peace.
-
 # Directory structure
 The json api files will be stored on the `api` directory and accessed by the `/.api/` path. `/.api/function` will use the file `api/function.js`.
 The form api for support of users without js because they are retarded tin foilers are in the `form` directory and are accessed using `domain/function.js`.
@@ -109,8 +106,6 @@ Settings files that goes into the settings directory:
 * `maxBannerSizeKB`(Number): maximum size in kilobytes for board banners. Defaults to 200KB.
 * `maxFlagSizeKB`(Number): maximum size in kilobytes for board flags. Defaults to 32KB.
 * `floodTimerSec`(Number): time in seconds required between postings from the same ip. Not applicable to TOR users. Defaults to 10.
-* `archiveLevel`(Number): archive setting. 0 will not archive anything, 1 will archive only html pages of threads, 2 will archive uploads and thumbnails too. Defaults to 0.
-* `serveArchive`(Boolean): indicates that the application will serve the archive on sub-domain `archive`.
 * `maxBoardTags`(Number): maximum amount of tags each board can have. Defaults to 5.
 * `disableFloodCheck`(Boolean): indicates if the flood checks should be disabled. This shouldn't affect performance at all, since it's meant to be used for benchmarking purposes.
 * `torAccess`(Number): access allowed for TOR users. 0 will block them completely, 1 will allow them to post without uploads, 2 will allow for them to post normally. Defaults to 0.
@@ -143,8 +138,6 @@ Settings files that goes into the settings directory:
 * `password`: password to use on the database.
 * `ssl`(Boolean): will connect to the database using SSL.
 `user` is optional and `password` will only be used if login is informed.
-
-`archive.json`: archive database information. Same fields as `db.json`.
 
 Settings files must contain a json object where each key defined here will have its corresponding value.
 

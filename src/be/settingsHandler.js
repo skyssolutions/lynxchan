@@ -3,7 +3,6 @@
 var fs = require('fs');
 var http = require('http');
 var kernel = require('./kernel');
-var archiveSettings;
 var dbSettings;
 var generalSettings;
 var templateSettings;
@@ -296,17 +295,6 @@ function loadDatabasesSettings() {
     }
   }
 
-  try {
-    var archivePath = __dirname + '/settings/archive.json';
-
-    archiveSettings = JSON.parse(fs.readFileSync(archivePath));
-  } catch (error) {
-
-    if (error.code !== 'ENOENT') {
-      throw error;
-    }
-
-  }
 }
 
 function loadGeneralSettings() {
@@ -406,7 +394,6 @@ exports.getDefaultSettings = function() {
     maxBannerSizeKB : 200,
     maxFlagSizeKB : 32,
     floodTimerSec : 10,
-    archiveLevel : 0,
     torAccess : 0,
     clearIpMinRole : 0,
     boardCreationRequirement : 4,
@@ -423,10 +410,6 @@ exports.getDefaultSettings = function() {
 exports.getDbSettings = function() {
 
   return dbSettings;
-};
-
-exports.getArchiveSettings = function() {
-  return archiveSettings;
 };
 
 exports.getGeneralSettings = function() {

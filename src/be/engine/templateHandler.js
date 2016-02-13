@@ -118,12 +118,6 @@ exports.getCellTests = function() {
         template : 'flagCell',
         fields : [ 'flagImg', 'nameLabel', 'idIdentifier' ]
       }, {
-        template : 'mainArchiveCell',
-        fields : [ 'linkBoard' ]
-      }, {
-        template : 'boardArchiveCell',
-        fields : [ 'linkThread' ]
-      }, {
         template : 'hashBanCellDisplay',
         fields : [ 'labelFile', 'labelBoard' ]
       }, {
@@ -209,8 +203,7 @@ exports.getPageTests = function() {
         template : 'gManagement',
         fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
             'reportDiv', 'bansLink', 'rangeBansLink', 'hashBansLink',
-            'globalSettingsLink', 'archiveDeletionLink', 'globalBannersLink',
-            'appealedBansPanel' ]
+            'globalSettingsLink', 'globalBannersLink', 'appealedBansPanel' ]
       },
       {
         template : 'bManagement',
@@ -223,10 +216,10 @@ exports.getPageTests = function() {
             'disableIdsCheckbox', 'rangeBansLink', 'disableCaptchaCheckbox',
             'filterManagementLink', 'anonymousNameField', 'boardLabel',
             'customCssIdentifier', 'ruleManagementLink', 'allowCodeCheckbox',
-            'flagManagementLink', 'enableArchiveCheckbox', 'early404Checkbox',
-            'hourlyThreadLimitField', 'autoCaptchaThresholdField',
-            'hashBansLink', 'customSpoilerIndicator', 'tagsField',
-            'customJsForm', 'customJsIdentifier', 'blockDeletionCheckbox',
+            'flagManagementLink', 'early404Checkbox', 'hourlyThreadLimitField',
+            'autoCaptchaThresholdField', 'hashBansLink',
+            'customSpoilerIndicator', 'tagsField', 'customJsForm',
+            'customJsIdentifier', 'blockDeletionCheckbox',
             'requireFileCheckbox', 'appealedBansPanel', 'linkSelf',
             'uniqueFilesCheckbox', 'uniquePostsCheckbox', 'locationCheckBox',
             'maxFilesField', 'maxFileSizeField', 'maxThreadFields',
@@ -303,14 +296,7 @@ exports.getPageTests = function() {
         template : 'flagsPage',
         fields : [ 'flagsDiv', 'boardIdentifier', 'maxSizeLabel' ]
       },
-      {
-        template : 'mainArchivePage',
-        fields : [ 'boardsDiv' ]
-      },
-      {
-        template : 'boardArchivePage',
-        fields : [ 'threadsDiv' ]
-      },
+
       {
         template : 'globalSettingsPage',
         fields : [ 'fieldAddress', 'fieldPort', 'fieldFePath', 'fieldPageSize',
@@ -324,9 +310,9 @@ exports.getPageTests = function() {
             'fieldMaxBannerSize', 'fieldMaxFlagSize', 'fieldFloodInterval',
             'checkboxVerbose', 'checkboxDisable304', 'checkboxSsl',
             'comboTorAccess', 'checkboxMediaThumb', 'checkboxMaintenance',
-            'comboArchive', 'checkboxMultipleReports', 'fieldMaster',
+            'checkboxMultipleReports', 'fieldMaster',
             'checkboxDisableAccountCreation', 'comboBoardCreationRequirement',
-            'checkboxServeArchive', 'fieldMaxTags', 'fieldGlobalLatestImages',
+            'fieldMaxTags', 'fieldGlobalLatestImages',
             'checkboxDisableFloodCheck', 'comboMinClearIpRole',
             'fieldThumbExtension', 'fieldSslPass', 'checkboxFrontPageStats',
             'checkboxGlobalBoardModeration', 'checkboxGlobalBanners',
@@ -334,9 +320,6 @@ exports.getPageTests = function() {
             'checkboxGlobalCaptcha', 'fieldRssDomain', 'fieldOverboard',
             'comboBypassMode', 'fieldBypassHours', 'fieldBypassPosts',
             'fieldMultiBoardThreadCount', 'fieldConcurrentRebuildMessages' ]
-      }, {
-        template : 'archiveDeletionPage',
-        fields : []
       }, {
         template : 'hashBanPage',
         fields : [ 'hashBansPanel' ]

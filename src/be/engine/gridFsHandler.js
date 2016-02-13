@@ -3,7 +3,6 @@
 // handles every gridfs operation.
 
 var db = require('../db');
-var archiveHandler = require('../archive');
 var files = db.files();
 var conn = db.conn();
 var mongo = require('mongodb');
@@ -30,7 +29,7 @@ exports.loadDependencies = function() {
 };
 
 // start of writing data
-exports.writeDataOnOpenFile = function(gs, data, callback, archive, meta, mime,
+exports.writeDataOnOpenFile = function(gs, data, callback, meta, mime,
     destination) {
 
   if (typeof (data) === 'string') {
@@ -38,18 +37,12 @@ exports.writeDataOnOpenFile = function(gs, data, callback, archive, meta, mime,
   }
 
   gs.write(data, true, function wroteData(error) {
-
-    if (error || !archive || noDaemon) {
-      callback(error);
-    } else {
-      archiveHandler.archiveData(data, destination, mime, meta, callback);
-    }
-
+    callback(error);
   });
 
 };
 
-exports.writeData = function(data, dest, mime, meta, callback, archive) {
+exports.writeData = function(data, dest, mime, meta, callback) {
 
   meta.lastModified = new Date();
 
@@ -67,8 +60,7 @@ exports.writeData = function(data, dest, mime, meta, callback, archive) {
     if (error) {
       callback(error);
     } else {
-      exports
-          .writeDataOnOpenFile(gs, data, callback, archive, meta, mime, dest);
+      exports.writeDataOnOpenFile(gs, data, callback, meta, mime, dest);
     }
   });
 
@@ -76,25 +68,20 @@ exports.writeData = function(data, dest, mime, meta, callback, archive) {
 // end of writing data
 
 // start of transferring file to gridfs
-exports.writeFileOnOpenFile = function(gs, path, callback, archive,
-    destination, meta, mime) {
+exports.writeFileOnOpenFile = function(gs, path, callback, destination, meta,
+    mime) {
   gs.writeFile(path, function wroteFile(error) {
 
     // style exception, too simple
     gs.close(function closed(closeError, result) {
-      if (!archive || error || noDaemon) {
-        callback(error || closeError);
-      } else {
-        archiveHandler.writeFile(path, destination, mime, meta, callback);
-      }
-
+      callback(error || closeError);
     });
     // style exception, too simple
 
   });
 };
 
-exports.writeFile = function(path, dest, mime, meta, callback, archive) {
+exports.writeFile = function(path, dest, mime, meta, callback) {
 
   meta.lastModified = new Date();
 
@@ -114,8 +101,7 @@ exports.writeFile = function(path, dest, mime, meta, callback, archive) {
     if (error) {
       callback(error);
     } else {
-      exports
-          .writeFileOnOpenFile(gs, path, callback, archive, dest, meta, mime);
+      exports.writeFileOnOpenFile(gs, path, callback, dest, meta, mime);
     }
   });
 

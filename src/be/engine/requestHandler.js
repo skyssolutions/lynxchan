@@ -18,9 +18,7 @@ var multiBoard = require('./multiBoardHandler');
 var multiBoardAllowed;
 var verbose;
 var maintenance;
-var serveArchive;
 var debug = require('../kernel').debug();
-var archive = require('../archive');
 var formOps;
 var apiOps;
 var miscOps;
@@ -42,7 +40,6 @@ exports.loadSettings = function() {
   master = settings.master;
   maintenance = settings.maintenance && !master;
   port = settings.port;
-  serveArchive = settings.serveArchive;
 };
 
 exports.loadDependencies = function() {
@@ -254,63 +251,6 @@ exports.outputGfsFile = function(req, pathName, res) {
 
 };
 
-exports.outputArchiveFile = function(req, res) {
-
-  var pathName = exports.getPathNameForGfs(req);
-
-  var splitArray = pathName.split('/');
-
-  var gotSecondString = splitArray.length === 2 && splitArray[1].length;
-
-  // redirects after cutting the index.html
-  if (gotSecondString && !/\W/.test(splitArray[1])) {
-
-    res.writeHead(302, {
-      'Location' : '/' + splitArray[1] + '/'
-
-    });
-    res.end();
-    return;
-  }
-
-  if (pathName === '/') {
-    try {
-
-      archive.mainArquive(req, res);
-
-    } catch (error) {
-      formOps.outputError(error, 500, res);
-    }
-  } else if (splitArray.length === 3 && !splitArray[2].length) {
-    try {
-
-      archive.boardArquive(splitArray[1], req, res);
-
-    } catch (error) {
-      formOps.outputError(error, 500, res);
-    }
-  } else {
-    archive.outputFile(pathName, req, res, function streamedFile(error) {
-      if (error) {
-        exports.outputError(error, res);
-      }
-    });
-  }
-};
-
-exports.getSubdomain = function(req) {
-  var subdomain = req.headers.host.split('.');
-
-  if (subdomain.length > 1) {
-    subdomain = subdomain[0];
-  } else {
-    subdomain = null;
-  }
-
-  return subdomain;
-
-};
-
 exports.redirect = function(req, res) {
 
   var proxyUrl = req.connection.encrypted ? 'https' : 'http';
@@ -398,35 +338,20 @@ exports.checkForRedirection = function(req, pathName, res) {
 
 exports.serve = function(req, pathName, res) {
 
-  var subdomain = exports.getSubdomain(req);
+  if (pathName.indexOf('/.api/') === 0) {
+    exports.processApiRequest(req, pathName.substring(5), res);
+  } else if (pathName.indexOf('/.static/') === 0) {
 
-  if (subdomain === 'archive') {
-    if (serveArchive && archive.loaded()) {
-      exports.outputArchiveFile(req, res);
-    } else if (!serveArchive) {
-      formOps.outputError(lang.errNotServingArchives, 500, res);
-    } else {
-      formOps.outputError(lang.errArchiveNotLoaded, 500, res);
-    }
+    staticHandler.outputFile(req, pathName.substring(8), res,
+        function fileOutput(error) {
+          if (error) {
+            exports.outputError(error, res);
+          }
+
+        });
 
   } else {
-
-    if (pathName.indexOf('/.api/') === 0) {
-      exports.processApiRequest(req, pathName.substring(5), res);
-    } else if (pathName.indexOf('/.static/') === 0) {
-
-      staticHandler.outputFile(req, pathName.substring(8), res,
-          function fileOutput(error) {
-            if (error) {
-              exports.outputError(error, res);
-            }
-
-          });
-
-    } else {
-      exports.outputGfsFile(req, pathName, res);
-    }
-
+    exports.outputGfsFile(req, pathName, res);
   }
 
 };

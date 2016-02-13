@@ -22,7 +22,6 @@ exports.boardSettingsRelation = {
   disableCaptcha : 'disableCaptchaCheckbox',
   forceAnonymity : 'forceAnonymityCheckbox',
   allowCode : 'allowCodeCheckbox',
-  archive : 'enableArchiveCheckbox',
   early404 : 'early404Checkbox',
   unindex : 'unindexCheckbox',
   blockDeletion : 'blockDeletionCheckbox',
@@ -341,7 +340,6 @@ exports.setGlobalManagementLinks = function(userRole, document) {
   var admin = userRole < 2;
 
   if (!admin) {
-    common.removeElement(document.getElementById('archiveDeletionLink'));
     common.removeElement(document.getElementById('globalBannersLink'));
   }
 };

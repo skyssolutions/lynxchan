@@ -6,7 +6,6 @@
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
 var logger = require('../../logger');
-var archive;
 var accountCreationDisabled;
 var common;
 var templateHandler;
@@ -24,7 +23,6 @@ exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
   overboard = settings.overboard;
-  archive = settings.archiveLevel > 0 && require('../../archive').loaded();
   accountCreationDisabled = settings.disableAccountCreation;
   siteTitle = settings.siteTitle || lang.titDefaultChanTitle;
   clearIpMinRole = settings.clearIpMinRole;
@@ -40,8 +38,6 @@ exports.loadDependencies = function() {
   lang = require('../langOps').languagePack();
   gridFs = require('../gridFsHandler');
   availableLogTypes = {
-    '' : lang.guiAllTypes,
-    archiveDeletion : lang.guiTypeArchiveDeletion,
     ban : lang.guiTypeBan,
     rangeBan : lang.guiTypeRange,
     banLift : lang.guiTypeBanLift,
@@ -184,7 +180,7 @@ exports.setModElements = function(modding, document, boardUri, boardData,
           boardUri : boardUri,
           type : 'thread',
           threadId : threadData.threadId
-        }, callback, archive && boardData.settings.indexOf('archive') > -1);
+        }, callback);
   }
 };
 

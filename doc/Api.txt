@@ -360,7 +360,6 @@ Parameters:
         allowCode: the use of [code] is allowed.
         early404: will delete threads after one hour if they do not receive at least 5 replies.
         unindex: the board will not be displayed on the top boards or the boards list.
-        archive: enables archiving of content, if the site allows archiving.
         blockDeletion: disables user deletion of content.
         requireThreadFile: requires at least one file when creating a thread.
         uniqueFiles: enforces unique files on posting.
@@ -546,8 +545,6 @@ Parameters:
     disableAccountCreation(Boolean): disables account creation.
     boardCreationRequirement(Number): defines the minimum global role required for users to create boards.
     multipleReports(Boolean): enables users to report multiple posts at once.
-    serveArchive(Boolean): sets the server to serve archived files.
-    archiveLevel(Number): level of archiving. 0 = no archives. 1 = only pages. 2 = pages and files.
     maxTags(Number): maximum amount of tags per board.
     disableFloodCheck(Boolean): disables flood checks.
     torAccess(Number): access level for TOR users.
@@ -587,41 +584,6 @@ Parameters:
 
 PAG_ID::35
 
-Name: deleteArchivedBoard
-
-Description: deletes all files and threads from an archived board. Reserved for root and admins. Requires authentication.
-
-Parameters:
-    boardUri: uri of the board to be removed from files.
-
-------------------------------------------------------------------------------------------
-
-PAG_ID::36
-
-Name: deleteArchivedThread
-
-Description: deletes a thread from the archives. Reserved for root and admins. Requires authentication.
-
-Parameters:
-    boardUri: uri of the board containing the thread.
-    threadId: id of the thread to be removed.
-
-------------------------------------------------------------------------------------------
-
-PAG_ID::37
-
-Name: deleteArchivedUpload
-
-Description: deletes an upload from the archives. Reserved for root and admins. Requires authentication.
-
-Parameters:
-    boardUri: uri of the board containing the thread.
-    filename: names of the files to be removed separated by commas.
-
-------------------------------------------------------------------------------------------
-
-PAG_ID::38
-
 Name: deleteFromIp
 
 Description: deletes posts and threads from an ip from multiple boards. Requires authentication. Reserved for users with an role equal or lower than the global setting clearIpMinRole.
@@ -632,7 +594,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::39
+PAG_ID::36
 
 Name: setCustomJs
 
@@ -643,7 +605,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::40
+PAG_ID::37
 
 Name: transferThread
 
@@ -658,7 +620,7 @@ Output: new id of the thread.
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::41
+PAG_ID::38
 
 Name: spoilFiles
 
@@ -672,7 +634,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::42
+PAG_ID::39
 
 Name: solveCaptcha
 
@@ -684,7 +646,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::43
+PAG_ID::40
 
 Name: renewBypass
 
@@ -697,7 +659,7 @@ Output: id of the new block bypass.
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::44
+PAG_ID::41
 
 Name: appealBan
 
@@ -709,7 +671,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::45
+PAG_ID::42
 
 Name: denyAppeal
 
@@ -720,7 +682,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::46
+PAG_ID::43
 
 Name: takeMessage
 
@@ -731,7 +693,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::47
+PAG_ID::44
 
 Name: takeSettings
 

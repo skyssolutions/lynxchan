@@ -25,7 +25,6 @@ boards: stores boards.
         uniquePosts: board uses R9K to enforce unique posts.
         requireThreadFile: threads can only be created with a file.
         allowCode: allows the usage of [code] on postings.
-        archive: archives content if the site owner has enabled archiving.
         early404: makes threads with less than 5 replies to be deleted after an hour.
         blockDeletion: makes it impossible for users to delete their own posts.
         locationFlags: board uses location flags for users.
@@ -215,7 +214,6 @@ staffLogs: stores log activity from staff.
         rangeBan
         hashBan
         hashBanLift
-        archiveDeletion
         fileDeletion
         threadTransfer
         appealDeny

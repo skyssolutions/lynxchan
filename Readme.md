@@ -9,18 +9,17 @@
 See other branches named like `1.1.x` for stable versions. They will receive only critical bug fixes and as long as they live, they will be maintained. Remember to use a compatible version of your front-end with these stable versions. Newer versions might not have required elements on the templates for these versions.
 
 # Required software
-* [Node.js](http://nodejs.org) 5.4.1, I suggest installing from source code. DO NOT build the master's HEAD.
+* [Node.js](http://nodejs.org) 5.6.0, I suggest installing from source code. DO NOT build the master's HEAD.
 * [MongoDB](https://www.mongodb.org/) 3.2.1
 * [ImageMagick](http://www.imagemagick.org/script/index.php) 6.7.7-10
 * [A front-end](https://gitgud.io/LynxChan/LynxChanFront-Placeholder) that must either be placed on the `src/fe` directory or have it's absolute path set on the general.json file. Read the readme.md on src/be for more information about how to configure the path for the front-end.
-* [ffmpeg](https://www.ffmpeg.org/) (Optional) 2.8.5 if mediaThumb setting is enabled. Requires zlib-devel on centOS to work properly when installed from source.
+* [ffmpeg](https://www.ffmpeg.org/) (Optional) 2.8.6 if mediaThumb setting is enabled. Requires zlib-devel on centOS to work properly when installed from source.
 
 The dependencies versions are not exactly mandatory and only reflect the version that I am sure that will work with the current version of the engine at the moment.
 
 # Automatic install (Recommended)
 1. Required: browse to `aux` and run the script `setup.sh` that will prompt for the install of a front-end, default settings and libraries. Browsing to the `aux` directory is required because the scripts use relative paths to this directory. Make sure you used `git clone` to obtain the engine.
 2. Optional: run the script `root-setup.sh` that will prompt for the install of a command using a soft-link to `src/be/boot.js`. This script must be run as root. It will also prompt for the install of a init script. The name of both the command and the service will be `lynxchan`.
-3. Optional: if you installed the default front-end, go to it's directory and run the `set-domain.sh` script passing as the first parameter your desired domain. It has localhost:8080 as the default, this will change the domain used to reference the domain on front-end files. Currently there is only one reference, that is to the archives.
   
 # Manual install
 1. Create the required settings file in the `src/be/settings` directory. Instructions can be found at `src/be/readme.md`. There is also a directory called settings.example with a set of functional settings.

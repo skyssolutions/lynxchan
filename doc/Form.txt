@@ -209,7 +209,6 @@ Json output(Object): object with data used to manage the board. Contains the fol
         forceAnonymity: disables the name input.
         unindex: removes board from index.
         allowCode: allows the usage of [code] on postings.
-        archive: archives content if the site owner has enabled archiving.
         early404: makes threads with less than 5 replies to be deleted after an hour.
         blockDeletion: makes it impossible for users to delete their own posts.
         requireThreadFile: requires at least one file when creating a thread.
@@ -549,7 +548,6 @@ Parameters:
     early404: will delete threads after one hour if they do not receive at least 5 replies.
     tags(Array): array of tags to be used on this board.
     unindex: if any value is passed, the board will not be displayed on the top boards or the boards list.
-    archive: enables archiving of content, if the site allows archiving.
     blockDeletion: disables user deletion of content.
     requireThreadFile: requires at least one file for creating threads.
     uniqueFiles: enforces unique files on posting.
@@ -884,7 +882,6 @@ Json output(Object): object with the current global settings. It contains the fo
     verbose(Boolean): indicates if the server must use verbose mode.
     disableFloodCheck(Boolean): indicates if the server must not block posts on flood.
     mediaThumb(Boolean): indicates if the server will generate thumbnails for media files.
-    serveArchive(Boolean): indicates if the server will serve archives.
     fePath: path to the front-end to be used.
     pageSize(Number): how many threads should be displayed by page.
     latestPostCount(Number): how many posts must be displayed per thread on board pages.
@@ -903,7 +900,6 @@ Json output(Object): object with the current global settings. It contains the fo
     maxBannerSizeKB(Number): maximum size banners can have in kilobytes.
     maxFlagSizeKB(Number): maximum size flags can have in kilobytes.
     floodTimerSec(Number): minimum time in seconds users must wait between posts.
-    archiveLevel(Number): indicates what should be archived.
     torAccess(Number): level of access for tor users.
     clearIpMinRole(Number): minimum global role required so an user must be able to see non-hashed ips from users.
     thumbExtension: extension to be used on thumbnails.
@@ -973,8 +969,6 @@ Parameters:
     disableAccountCreation(Boolean): disables account creation.
     boardCreationRequirement(Number): defines the minimum global role required for users to create boards.
     multipleReports(Boolean): enables users to report multiple posts at once.
-    serveArchive(Boolean): sets the server to serve archived files.
-    archiveLevel(Number): level of archiving. 0 = no archives. 1 = only pages. 2 = pages and files.
     maxTags(Number): maximum amount of tags per board.
     disableFloodCheck(Boolean): disables flood checks.
     torAccess(Number): access for tor users.
@@ -1014,49 +1008,6 @@ Parameters:
 
 PAG_ID::56
 
-Name: archiveDeletion
-
-Description: displays the page used to delete content from archive. Reserved for root and admins. Requires authentication.
-
-------------------------------------------------------------------------------------------
-
-PAG_ID::57
-
-Name: deleteArchivedBoard
-
-Description: deletes all files and threads from an archived board. Reserved for root and admins. Requires authentication.
-
-Parameters:
-    boardUri: uri of the board to be removed from files.
-
-------------------------------------------------------------------------------------------
-
-PAG_ID::58
-
-Name: deleteArchivedThread
-
-Description: deletes a thread from the archives. Reserved for root and admins. Requires authentication.
-
-Parameters:
-    boardUri: uri of the board containing the thread.
-    threadId: id of the thread to be removed.
-
-------------------------------------------------------------------------------------------
-
-PAG_ID::59
-
-Name: deleteArchivedUpload
-
-Description: deletes an upload from the archives. Reserved for root and admins. Requires authentication.
-
-Parameters:
-    boardUri: uri of the board containing the thread.
-    filename(Array): names of the files to be removed.
-
-------------------------------------------------------------------------------------------
-
-PAG_ID::60
-
 Name: deleteFromIp
 
 Description: deletes posts and threads from an ip from multiple boards. Requires authentication. Reserved for users with an role equal or lower than the global setting clearIpMinRole.
@@ -1067,7 +1018,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::61
+PAG_ID::57
 
 Name: setCustomJs
 
@@ -1078,7 +1029,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::62
+PAG_ID::58
 
 Name: transferThread
 
@@ -1091,7 +1042,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::63
+PAG_ID::59
 
 Name: blockBypass
 
@@ -1099,7 +1050,7 @@ Description: displays the page that allows the user to renew a block bypass and 
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::64
+PAG_ID::60
 
 Name: renewBypass
 
@@ -1110,7 +1061,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::65
+PAG_ID::61
 
 Name: appealBan
 
@@ -1122,7 +1073,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::66
+PAG_ID::62
 
 Name: denyAppeal
 
@@ -1133,7 +1084,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::67
+PAG_ID::63
 
 Name: graphs
 

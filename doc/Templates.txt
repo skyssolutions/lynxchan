@@ -548,10 +548,6 @@ appealedBansPanel:
     use: have children appended to it or might be removed.
     description: panel containing the appealed bans that weren't denied.
 
-archiveDeletionLink:
-    use: might be removed.
-    description: link to the page that contains the archive deletion tools.
-
 globalBannersLink:
     use: might be removed.
     description: link to the page used to manage global bans.
@@ -754,11 +750,7 @@ disableCaptchaCheckbox:
 
 unindexCheckbox:
     use: might be turned on.
-    description: check-box that indicates if the board is not indexed. 
-
-enableArchiveCheckbox:
-    use: might be turned on.
-    description: checkbox that indicates if the board is archiving content. Will not work if the site owner don't enable archiving.
+    description: check-box that indicates if the board is not indexed.
 
 forceAnonymityCheckbox:
     use: might be turned on.
@@ -1539,54 +1531,6 @@ idIdentifier:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::47
-
-mainArchivePage: page used to list archived boards.
-
-Elements:
-boardsDiv:
-    use: have children appended to it.
-    description: div that displays the available boards in the archive.
-
-------------------------------------------------------------------------------------------
-
-TEM_ID::48
-
-mainArchiveCell*: cell used to list archived boards.
-
-rootElement: div
-
-Elements:
-linkBoard:
-    use: have it's href and innerHTML manipulated.
-    description: link to the archived board.
-
-------------------------------------------------------------------------------------------
-
-TEM_ID::49
-
-boardArchivePage: page used to list archived threads.
-
-Elements:
-threadsDiv:
-    use: have children appended to it.
-    description: div that displays the available threads in the board archive.
-
-------------------------------------------------------------------------------------------
-
-TEM_ID::50
-
-boardArchiveCell*: cell used to list archived threads.
-
-rootElement: div
-
-Elements:
-linkThread:
-    use: have it's href and innerHTML manipulated.
-    description: link to the archived thread.
-
-------------------------------------------------------------------------------------------
-
 TEM_ID::51
 
 globalSettingsPage: page used to change global settings.
@@ -1744,10 +1688,6 @@ checkboxMultipleReports:
     use: might be turned on.
     description: indicates the server allows for the report of multiple items at once.
 
-checkboxServeArchive:
-    use: might be turned on.
-    description: indicates the server is serving archives.
-
 checkboxDisableAccountCreation:
     use: might be turned on.
     description: indicates that account creation is disabled.
@@ -1759,10 +1699,6 @@ checkboxDisableFloodCheck:
 comboBoardCreationRequirement:
     use: have children appended to it.
     description: indicates the minimum global role required for people to create boards.
-
-comboArchive:
-    use: have children appended to it.
-    description: indicates the level of archiving enabled.
 
 comboTorAccess:
     use: have children appended to it.
@@ -1839,12 +1775,6 @@ fieldMaster:
 fieldSlaves:
     use: have it's value manipulated.
     description: field that displays the ips of the slaves instances of a cluster.
-
-------------------------------------------------------------------------------------------
-
-TEM_ID::52
-
-archiveDeletionPage: page used to delete archived content.
 
 ------------------------------------------------------------------------------------------
 

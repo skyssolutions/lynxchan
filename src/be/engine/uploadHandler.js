@@ -20,7 +20,6 @@ var videoThumbCommand = 'ffmpeg -i {$path} -y -vframes 1 -vf scale=';
 var mp3ThumbCommand = 'ffmpeg -i {$path} -y -an -vcodec copy {$destination}';
 mp3ThumbCommand += ' && mogrify -resize {$dimension} {$destination}';
 var verbose;
-var archive;
 var thumbSize;
 var latestImages;
 var miscOps;
@@ -43,7 +42,6 @@ exports.loadSettings = function() {
   var settings = require('../settingsHandler').getGeneralSettings();
 
   verbose = settings.verbose;
-  archive = settings.archiveLevel > 1;
   thumbSize = settings.thumbSize;
   latestImages = settings.globalLatestImages;
   mediaThumb = settings.mediaThumb;
@@ -334,16 +332,7 @@ exports.transferMediaToGfs = function(boardData, threadId, postId, fileId,
   file.path = fileName;
   file.gfsName = fileId + '.' + extension;
 
-  var allowsArchive;
-
-  if (boardData.settings) {
-    allowsArchive = boardData.settings.indexOf('archive') > -1;
-  }
-
-  var archiveMedia = allowsArchive && archive;
-
-  gsHandler.writeFile(file.pathInDisk, fileName, file.mime, meta, cb,
-      archiveMedia);
+  gsHandler.writeFile(file.pathInDisk, fileName, file.mime, meta, cb);
 
 };
 
@@ -354,12 +343,6 @@ exports.processThumb = function(boardData, threadId, postId, fileId, ext, file,
 
   file.thumbPath = thumbName;
 
-  var allowsArchive;
-
-  if (boardData.settings) {
-    allowsArchive = boardData.settings.indexOf('archive') > -1;
-  }
-
   gsHandler.writeFile(file.thumbOnDisk, thumbName, file.thumbMime, meta,
       function wroteTbToGfs(error) {
         if (error) {
@@ -369,7 +352,7 @@ exports.processThumb = function(boardData, threadId, postId, fileId, ext, file,
               ext, meta, callback);
         }
 
-      }, archive && allowsArchive);
+      });
 };
 
 exports.transferThumbToGfs = function(boardData, threadId, postId, fileId,

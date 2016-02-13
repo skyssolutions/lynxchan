@@ -643,11 +643,6 @@ exports.getParametersArray = function() {
     setting : 'multipleReports',
     element : 'checkboxMultipleReports'
   }, {
-    param : 'serveArchive',
-    type : 'boolean',
-    setting : 'serveArchive',
-    element : 'checkboxServeArchive'
-  }, {
     param : 'ssl',
     type : 'boolean',
     setting : 'ssl',
@@ -672,13 +667,6 @@ exports.getParametersArray = function() {
     setting : 'torAccess',
     element : 'comboTorAccess',
     options : lang.guiTorLevels
-  }, {
-    param : 'archiveLevel',
-    type : 'range',
-    setting : 'archiveLevel',
-    limit : 2,
-    element : 'comboArchive',
-    options : lang.guiArchiveLevels
   }, {
     param : 'clearIpMinRole',
     type : 'range',

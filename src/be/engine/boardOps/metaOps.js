@@ -76,7 +76,7 @@ exports.loadDependencies = function() {
 
 exports.getValidSettings = function() {
   return [ 'disableIds', 'disableCaptcha', 'forceAnonymity', 'allowCode',
-      'archive', 'early404', 'unindex', 'blockDeletion', 'requireThreadFile',
+      'early404', 'unindex', 'blockDeletion', 'requireThreadFile',
       'uniqueFiles', 'uniquePosts', 'locationFlags' ];
 };
 

@@ -5,7 +5,6 @@ var dbVersion = 9;
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
 
-var archive = require('./archive');
 var mongo = require('mongodb');
 var cluster = require('cluster');
 var kernel = require('./kernel');
@@ -14,7 +13,6 @@ var settings = require('./settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var noDaemon = kernel.noDaemon();
 var debug = kernel.debug();
-var initArchive = settings.serveArchive || settings.archiveLevel;
 
 var indexesSet;
 
@@ -241,13 +239,9 @@ function indexSet(callback) {
 
   if (indexesSet === maxIndexesSet) {
     loading = false;
-
-    if (initArchive && !noDaemon) {
-      archive.init(callback);
-    } else {
-      callback();
-    }
+    callback();
   }
+
 }
 
 // start of index initialization

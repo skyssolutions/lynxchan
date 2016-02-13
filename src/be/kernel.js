@@ -52,8 +52,6 @@ function reloadDirectory(directory) {
 
 function reloadCore() {
 
-  require('./archive').reload();
-
   if (cluster.isMaster) {
     require('./scheduleHandler').reload();
     require('./generationQueue').reload();
