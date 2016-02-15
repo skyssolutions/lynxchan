@@ -48,7 +48,7 @@ exports.processData = function(data, callback) {
           ip : ip
         },
         update : {
-          $set : {
+          $setOnInsert : {
             ip : ip
           }
         },

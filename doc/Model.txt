@@ -298,7 +298,10 @@ uniqueIpAggregation: stores daily unique ip's hashes on boards.
 
 uploadReferences: stores reference count to uploaded files.
     references(Number): amount of references to this file.    
-    identifier: combination of hash plus mime used to identify the file. Example: 'hash-mime'
+    identifier: combination of hash plus mime used to identify the file. Example: 'hash-mime'. The slash will be removed from the mime part.
+    width(Number): pre-aggregated width of the file, if any.
+    height(Number): pre-aggregated height of the file, if any.
+    size(Number): pre-aggregated size in bytes of the file.
 
 ----------------------------------------------------------------------------------------
 

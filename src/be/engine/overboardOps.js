@@ -175,7 +175,7 @@ function fullReaggregate(message) {
               thread : ids[i]
             },
             update : {
-              $set : {
+              $setOnInsert : {
                 thread : ids[i]
               }
             },

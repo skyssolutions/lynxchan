@@ -28,7 +28,7 @@ exports.aggregateLog = function(entry, callback) {
     $push : {
       logs : entry._id
     },
-    $set : {
+    $setOnInsert : {
       date : entryTime
     }
   }, {

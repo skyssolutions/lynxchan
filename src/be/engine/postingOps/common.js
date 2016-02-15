@@ -282,7 +282,7 @@ exports.addPostToStats = function(ip, boardUri, callback) {
     boardUri : boardUri,
     startingTime : statHour
   }, {
-    $set : {
+    $setOnInsert : {
       boardUri : boardUri,
       startingTime : statHour
     },
@@ -303,7 +303,7 @@ exports.addPostToStats = function(ip, boardUri, callback) {
       uniqueIps.updateOne({
         boardUri : boardUri
       }, {
-        $set : {
+        $setOnInsert : {
           boardUri : boardUri
         },
         $addToSet : {

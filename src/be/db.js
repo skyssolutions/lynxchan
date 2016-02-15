@@ -155,9 +155,11 @@ function iterateUpgrades(currentVersion, callback) {
         version : currentVersion
       }, {
         $set : {
-          version : currentVersion,
           active : false,
           upgraded : true
+        },
+        $setOnInsert : {
+          version : currentVersion
         }
       }, {
         upsert : true
@@ -207,8 +209,10 @@ exports.checkVersion = function(callback) {
                 version : i
               },
               update : {
+                $setOnInsert : {
+                  version : i
+                },
                 $set : {
-                  version : i,
                   upgraded : false,
                   active : false
                 }
