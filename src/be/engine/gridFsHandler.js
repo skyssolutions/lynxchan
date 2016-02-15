@@ -283,7 +283,7 @@ exports.getHeader = function(stats, req, cookies) {
   return header;
 };
 
-exports.streamFile = function(stats, req, callback, cookies, res, optCon) {
+exports.streamFile = function(stats, req, callback, cookies, res) {
 
   var header = exports.getHeader(stats, req, cookies);
 
@@ -294,7 +294,7 @@ exports.streamFile = function(stats, req, callback, cookies, res, optCon) {
     header.push([ 'Accept-Ranges', 'bytes' ]);
   }
 
-  var gs = mongo.GridStore(optCon || conn, stats.filename, 'r');
+  var gs = mongo.GridStore(conn, stats.filename, 'r');
 
   gs.open(function openedGs(error, gs) {
 
@@ -327,7 +327,7 @@ exports.streamFile = function(stats, req, callback, cookies, res, optCon) {
 
             // We failed before writing anything, wait 100ms and try again
             setTimeout(function() {
-              exports.streamFile(stats, req, callback, cookies, res, optCon);
+              exports.streamFile(stats, req, callback, cookies, res);
             }, 100);
 
           }

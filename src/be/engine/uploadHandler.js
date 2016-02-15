@@ -3,6 +3,7 @@
 // handles any action regarding user uploads on posting
 
 var fs = require('fs');
+var migrations = require('../dbMigrations');
 var db = require('../db');
 var threads = db.threads();
 var boards = db.boards();
@@ -441,7 +442,7 @@ exports.generateVideoThumb = function(boardData, threadId, postId, file,
 
   command += ' ' + thumbDestination;
 
-  file.thumbMime = miscOps.getMime(thumbDestination);
+  file.thumbMime = migrations.getMime(thumbDestination);
   file.thumbOnDisk = thumbDestination;
 
   exec(command, function createdThumb(error) {
@@ -471,7 +472,7 @@ exports.generateAudioThumb = function(boardData, threadId, postId, file,
       file.thumbPath = genericAudioThumb;
     } else {
       file.thumbOnDisk = thumbDestination;
-      file.thumbMime = miscOps.getMime(thumbDestination);
+      file.thumbMime = migrations.getMime(thumbDestination);
     }
 
     exports.transferFilesToGS(boardData, threadId, postId, file, callback);

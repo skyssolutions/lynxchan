@@ -4,6 +4,7 @@
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
+var migrations = require('../../dbMigrations');
 var db = require('../../db');
 var logs = db.logs();
 var aggregatedLogs = db.aggregatedLogs();
@@ -87,7 +88,7 @@ exports.audioThumb = function(callback) {
   var filePath = fePath + '/templates/';
   filePath += templateSettings.audioThumb;
 
-  gfsHandler.writeFile(filePath, kernel.genericAudioThumb(), miscOps
+  gfsHandler.writeFile(filePath, kernel.genericAudioThumb(), migrations
       .getMime(kernel.genericAudioThumb()), {}, callback);
 
 };
@@ -101,8 +102,8 @@ exports.spoiler = function(callback) {
   var filePath = fePath + '/templates/';
   filePath += templateSettings.spoiler;
 
-  gfsHandler.writeFile(filePath, kernel.spoilerImage(), miscOps.getMime(kernel
-      .spoilerImage()), {}, callback);
+  gfsHandler.writeFile(filePath, kernel.spoilerImage(), migrations
+      .getMime(kernel.spoilerImage()), {}, callback);
 
 };
 
@@ -115,8 +116,8 @@ exports.defaultBanner = function(callback) {
   var filePath = fePath + '/templates/';
   filePath += templateSettings.defaultBanner;
 
-  gfsHandler.writeFile(filePath, kernel.defaultBanner(), miscOps.getMime(kernel
-      .defaultBanner()), {
+  gfsHandler.writeFile(filePath, kernel.defaultBanner(), migrations
+      .getMime(kernel.defaultBanner()), {
     status : 200
   }, callback);
 };
@@ -130,8 +131,8 @@ exports.thumb = function(callback) {
   var filePath = fePath + '/templates/';
   filePath += templateSettings.thumb;
 
-  gfsHandler.writeFile(filePath, kernel.genericThumb(), miscOps.getMime(kernel
-      .genericThumb()), {}, callback);
+  gfsHandler.writeFile(filePath, kernel.genericThumb(), migrations
+      .getMime(kernel.genericThumb()), {}, callback);
 };
 
 exports.notFound = function(callback) {

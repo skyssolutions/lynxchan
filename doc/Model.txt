@@ -296,6 +296,12 @@ uniqueIpAggregation: stores daily unique ip's hashes on boards.
 
 ----------------------------------------------------------------------------------------
 
+uploadReferences: stores reference count to uploaded files.
+    references(Number): amount of references to this file.    
+    identifier: combination of hash plus mime used to identify the file. Example: 'hash-mime'
+
+----------------------------------------------------------------------------------------
+
 *: duplicated data, foreign key.
 **: unique key
 ***:part of a unique key combination.

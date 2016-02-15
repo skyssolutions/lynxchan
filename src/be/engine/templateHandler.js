@@ -296,7 +296,6 @@ exports.getPageTests = function() {
         template : 'flagsPage',
         fields : [ 'flagsDiv', 'boardIdentifier', 'maxSizeLabel' ]
       },
-
       {
         template : 'globalSettingsPage',
         fields : [ 'fieldAddress', 'fieldPort', 'fieldFePath', 'fieldPageSize',

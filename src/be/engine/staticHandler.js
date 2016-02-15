@@ -3,6 +3,7 @@
 // handles request for static files
 
 var kernel = require('../kernel');
+var migrations = require('../dbMigrations');
 var settingsHandler = require('../settingsHandler');
 var verbose;
 var disable304;
@@ -102,7 +103,7 @@ exports.outputFile = function(req, pathName, res, callback) {
     console.log('Outputting static file \'' + pathName + '\'');
   }
 
-  var header = miscOps.corsHeader(miscOps.getMime(pathName));
+  var header = miscOps.corsHeader(migrations.getMime(pathName));
 
   var file;
 

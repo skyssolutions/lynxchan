@@ -18,8 +18,9 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 16;
+var maxIndexesSet = 18;
 
+var cachedUploadReferences;
 var cachedLatestImages;
 var cachedAggregatedLogs;
 var cachedBypasses;
@@ -118,6 +119,11 @@ function upgrade(version, callback) {
     console.log('Generating posting graphs for the first time.');
     console.log('This might take a while.');
     migrations.generateGraphs(callback);
+    break;
+
+  case 9:
+    console.log('Deduplicating files, this might take a while.');
+    migrations.deduplicateFiles(callback);
     break;
 
   default:
@@ -245,6 +251,38 @@ function indexSet(callback) {
 }
 
 // start of index initialization
+function initUploadReferences(callback) {
+
+  cachedUploadReferences.ensureIndex({
+    references : 1
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+
+  cachedUploadReferences.ensureIndex({
+    identifier : 1
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+
+}
+
 function initCaptchas(callback) {
 
   cachedCaptchas.ensureIndex({
@@ -646,17 +684,15 @@ exports.aggregatedLogs = function() {
   return cachedAggregatedLogs;
 };
 
+exports.uploadReferences = function() {
+  return cachedUploadReferences;
+};
+
 // end of getters
 
-function initIndexes(callback) {
+function initGlobalIndexes(callback) {
 
   initBypasses(callback);
-
-  initBoards(callback);
-
-  initThreads(callback);
-
-  initPosts(callback);
 
   initUsers(callback);
 
@@ -674,17 +710,31 @@ function initIndexes(callback) {
 
   initTorIps(callback);
 
-  initFlags(callback);
-
   initFlood(callback);
 
+  initUploadReferences(callback);
+
+}
+
+function initBoardIndexes(callback) {
+
+  initBoards(callback);
+
+  initThreads(callback);
+
+  initPosts(callback);
+
+  initFlags(callback);
+
   initStats(callback);
+
+  initGlobalIndexes(callback);
 }
 
 function preIndexSet(callback) {
 
   if (cluster.isMaster && !settings.master) {
-    initIndexes(callback);
+    initBoardIndexes(callback);
   } else {
     callback();
   }
@@ -715,6 +765,7 @@ function initGlobalIndexedCollections(callback) {
   cachedTorIps = cachedDb.collection('torIps');
   cachedRecoveryRequests = cachedDb.collection('recoveryRequests');
   cachedUsers = cachedDb.collection('users');
+  cachedUploadReferences = cachedDb.collection('uploadReferences');
 
   initBoardIndexedCollections(callback);
 
