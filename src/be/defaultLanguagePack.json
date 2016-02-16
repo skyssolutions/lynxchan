@@ -95,7 +95,6 @@
   "miscReasonNnull": "null",
   "miscReasonUndefined": "undefined",
   "miscReasonNoLength": "empty",
-  "errUnknownExtension": "Unknown extension.",
   "miscRoles": [
     "Root",
     "Admin",

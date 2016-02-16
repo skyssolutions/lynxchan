@@ -1,6 +1,6 @@
 'use strict';
 
-var dbVersion = 9;
+var dbVersion = 10;
 
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool

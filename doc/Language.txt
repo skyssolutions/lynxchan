@@ -100,7 +100,6 @@ errDisabledBypass: error thrown when block bypass is not enabled.
 errInvalidToken: error thrown when the specified unlock token is not valid.
 errBanNotFound: error thrown when the specified ban can't be found.
 errCouldNotMeasureImage: error thrown when the engine can't measure an image's dimensions.
-errUnknownExtension: error thrown when the extension of the file being saved to mongo cannot be understood.
 errFlood: error thrown when flood is detected.
 errMessageAlreadyPosted: error thrown when R9K blocks a message.
 errFileAlreadyPosted: error thrown when R9K blocks a file.
