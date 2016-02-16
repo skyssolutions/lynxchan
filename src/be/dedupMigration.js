@@ -31,6 +31,7 @@ function updatePostingDedupedFile(file, identifier, postingData, cb) {
   var boardMediaPath = '/' + postingData.boardUri + '/media/';
   var boardThumb = file.thumb.indexOf(boardMediaPath) === 0;
 
+  delete file.name;
   file.path = '/.media/' + identifier;
 
   if (!hasThumb) {

@@ -38,7 +38,6 @@ exports.getFilesArray = function(fileArray, modding) {
         path : file.path,
         thumb : file.thumb,
         mime : file.mime,
-        name : file.name,
         size : file.size,
         width : file.width,
         height : file.height

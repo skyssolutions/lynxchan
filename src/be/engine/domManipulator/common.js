@@ -672,7 +672,6 @@ exports.setUploadLinks = function(document, cell, file) {
 
   var nameLink = cell.getElementsByClassName('nameLink')[0];
   nameLink.href = file.path;
-  nameLink.innerHTML = file.name;
 
   var originalLink = cell.getElementsByClassName('originalNameLink')[0];
   originalLink.innerHTML = file.originalName;

@@ -936,7 +936,7 @@ imgLink:
     description: holds the thumbnail of the image and links to the file. Will have the attribute "data-filemime" with the file mime. If the file has dimensions, will have the attributes "data-filewidth" and "data-fileheight" with the dimensions of the file.
 
 nameLink:
-    use: have it's href and it's innerHTML manipulated.
+    use: have it's href manipulated.
     description: alternative link to the image using the name of the file instead of a thumbnail.
 
 divHash:

@@ -61,7 +61,6 @@ Root(Object):
         path: path for the file.
         thumb: path for the file's thumbnail.
         size(Number) size in bytes of the file.
-        name: name of the file.
         mime: mime of the file.
         width(Number): width of the file, if image.
         height(Number): size of the file, if image.
@@ -85,10 +84,9 @@ Root(Object):
             path: path for the file.
             thumb: path for the file's thumbnail.
             size(Number) size in bytes of the file.
-            width(Number): width of the file, if image.
+            width(Number): width of the file, if any.
             mime: mime of the file.
-            height(Number): size of the file, if image. 
-            name: name of the file.
+            height(Number): size of the file, if any.
 
 ------------------------------------------------------------------------------------------
 
@@ -108,7 +106,15 @@ Root(Object):
     name: name of the poster.
     message: text of the post.
     creation(Date): time when the post was created.
-    
+    files(Array): pre-aggregated array of files uploaded with the post. Each object contains the following fields:
+        originalName: original name of the upload.
+        path: path for the file.
+        thumb: path for the file's thumbnail.
+        size(Number) size in bytes of the file.
+        width(Number): width of the file, if any.
+        mime: mime of the file.
+        height(Number): size of the file, if any.
+
 ------------------------------------------------------------------------------------------
 
 JSO_ID::04
@@ -148,7 +154,6 @@ Root(Object):
             path: path for the file.
             mime: mime of the file.
             thumb: path for the file's thumbnail.
-            name: name of the file.
             size(Number) size in bytes of the file.
             width(Number): width of the file, if image.
             height(Number): size of the file, if image.
@@ -172,11 +177,10 @@ Root(Object):
                 path: path for the file.
                 thumb: path for the file's thumbnail.
                 mime: mime of the file.
-                name: name of the file.
                 size(Number) size in bytes of the file.
                 width(Number): width of the file, if image.
                 height(Number): size of the file, if image. 
-    
+
 ------------------------------------------------------------------------------------------
 
 JSO_ID::05

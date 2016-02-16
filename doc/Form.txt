@@ -361,7 +361,6 @@ Json output(Object): object with the data of the thread.
         md5: md5 hash of the file.
         thumb: path for the file's thumbnail.
         size(Number) size in bytes of the file.
-        name: name of the file.
         mime: mime of the file.
         width(Number): width of the file, if image.
         height(Number): size of the file, if image.
@@ -388,8 +387,7 @@ Json output(Object): object with the data of the thread.
             size(Number) size in bytes of the file.
             width(Number): width of the file, if image.
             mime: mime of the file.
-            height(Number): size of the file, if image. 
-            name: name of the file.
+            height(Number): size of the file, if image.
 
 ------------------------------------------------------------------------------------------
 
