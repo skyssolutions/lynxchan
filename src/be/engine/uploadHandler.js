@@ -59,6 +59,7 @@ exports.loadDependencies = function() {
 
 };
 
+// Section 1: Utility functions {
 exports.videoMimes = function() {
   return videoMimes;
 };
@@ -134,8 +135,9 @@ exports.removeFromDisk = function(path, callback) {
     }
   });
 };
+// } Section 1: Utility functions
 
-// start of upload saving process
+// Section 2: Upload handling {
 exports.cleanLatestImages = function(boardData, threadId, postId, file,
     callback) {
 
@@ -299,6 +301,7 @@ exports.updatePostingFiles = function(boardData, threadId, postId, file,
 
 };
 
+// Section 2.1: New file {
 exports.transferThumbToGfs = function(identifier, file, callback) {
 
   var meta = {
@@ -481,6 +484,37 @@ exports.generateThumb = function(identifier, file, callback) {
 
 };
 
+exports.updatePostingWithNewUpload = function(parameters, identifier,
+    boardData, threadId, postId, file, callback) {
+
+  if (parameters.spoiler || file.spoiler) {
+
+    var spoilerToUse;
+
+    if (boardData.usesCustomSpoiler) {
+      spoilerToUse = '/' + boardData.boardUri + '/custom.spoiler';
+    } else {
+      spoilerToUse = spoilerPath;
+    }
+
+    file.thumbPath = spoilerToUse;
+
+  }
+
+  exports.updatePostingFiles(boardData, threadId, postId, file,
+      function updatedPosting(error) {
+
+        if (error) {
+          exports.undoReference(error, identifier, callback);
+        } else {
+          callback();
+        }
+
+      });
+
+};
+// } Section 2.1: New file
+
 exports.checkForThumb = function(identifier, boardData, threadId, postId, file,
     parameters, callback) {
 
@@ -540,36 +574,6 @@ exports.undoReference = function(error, identifier, callback) {
   }, function undone(undoingError) {
     callback(undoingError || error);
   });
-
-};
-
-exports.updatePostingWithNewUpload = function(parameters, identifier,
-    boardData, threadId, postId, file, callback) {
-
-  if (parameters.spoiler || file.spoiler) {
-
-    var spoilerToUse;
-
-    if (boardData.usesCustomSpoiler) {
-      spoilerToUse = '/' + boardData.boardUri + '/custom.spoiler';
-    } else {
-      spoilerToUse = spoilerPath;
-    }
-
-    file.thumbPath = spoilerToUse;
-
-  }
-
-  exports.updatePostingFiles(boardData, threadId, postId, file,
-      function updatedPosting(error) {
-
-        if (error) {
-          exports.undoReference(error, identifier, callback);
-        } else {
-          callback();
-        }
-
-      });
 
 };
 
@@ -663,4 +667,4 @@ exports.saveUploads = function(boardData, threadId, postId, parameters,
     callback();
   }
 };
-// end of upload saving process
+// } Section 2: Upload handling

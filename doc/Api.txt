@@ -45,6 +45,9 @@ spoiler(Boolean): indicates that the individual file should be spoiled without m
 name: original name of the file.
 content: content of the file using base64 encoding. Example of content:
 data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAECAIAAAAiZtkUAAAAA3NCSVQICAjb4U/gAAAAGXRFWHRTb2Z0d2FyZQBnbm9tZS1zY3JlZW5zaG907wO/PgAAABVJREFUCJlj/P//PwMqYGLAAMQJAQDengMFOtjosAAAAABJRU5ErkJggg==
+Alternatively, if you inform these two fields instead of content, you can only reference an existing file instead of uploading it. You can check if a file already exists using the checkFileIdentifier entry point on the form api.
+md5: md5 of the file.
+mime: mime of the file.
 
 ------------------------------------------------------------------------------------------
 

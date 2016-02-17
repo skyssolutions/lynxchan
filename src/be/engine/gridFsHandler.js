@@ -283,7 +283,7 @@ exports.getHeader = function(stats, req, cookies) {
   return header;
 };
 
-exports.streamFile = function(stats, req, callback, cookies, res) {
+exports.streamFile = function(stats, req, callback, cookies, res, retries) {
 
   var header = exports.getHeader(stats, req, cookies);
 
@@ -320,15 +320,18 @@ exports.streamFile = function(stats, req, callback, cookies, res) {
         stream.on('error', function(error) {
 
           gs.close();
+          retries = retries || 0;
 
-          if (wrote) {
+          if (wrote || retries >= 9) {
             callback(error);
           } else {
 
             // We failed before writing anything, wait 100ms and try again
-            setTimeout(function() {
-              exports.streamFile(stats, req, callback, cookies, res);
-            }, 100);
+            setTimeout(
+                function() {
+                  exports.streamFile(stats, req, callback, cookies, res,
+                      ++retries);
+                }, 10);
 
           }
 

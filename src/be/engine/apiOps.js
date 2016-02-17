@@ -4,7 +4,9 @@
 
 var cluster = require('cluster');
 var debug = require('../kernel').debug();
-var bans = require('../db').bans();
+var db = require('../db');
+var bans = db.bans();
+var references = db.uploadReferences();
 var fs = require('fs');
 var crypto = require('crypto');
 var path = require('path');
@@ -178,11 +180,53 @@ exports.getFileData = function(matches, res, stats, file, location, content,
 
 };
 
+exports.handleReferencedFile = function(finalArray, file, res, callback) {
+
+  file.md5 = file.md5.toString();
+  file.mime = file.mime.toString();
+  file.name = file.name.toString();
+
+  if (allowedMimes.indexOf(file.mime) === -1) {
+    exports.outputResponse(null, null, 'formatNotAllowed', res);
+
+  } else {
+
+    references.findOne({
+      identifier : file.md5 + '-' + file.mime.replace('/', '')
+    }, function gotReferencedFile(error, reference) {
+
+      if (reference) {
+
+        finalArray.push({
+          title : file.name,
+          md5 : file.md5,
+          mime : file.mime,
+          spoiler : file.spoiler,
+          width : reference.width,
+          height : reference.height,
+          size : reference.size
+
+        });
+
+      }
+
+      callback();
+
+    });
+  }
+
+};
+
 exports.processFile = function(file, res, finalArray, toRemove,
     exceptionalMimes, callback) {
 
-  if (!file.name || !file.content) {
+  if (!file.name || (!file.content && (!file.md5 || !file.mime))) {
     exports.outputResponse(null, null, 'fileParseError', res);
+    return;
+  } else if (!file.content) {
+
+    exports.handleReferencedFile(finalArray, file, res, callback);
+
     return;
   }
 

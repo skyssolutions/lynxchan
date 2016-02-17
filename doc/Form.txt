@@ -272,7 +272,7 @@ Parameters:
     banMessage: message to be displayed in the banned content.
     action: action to be performed. 'ban', 'spoil', 'delete' and 'report' may be used, case insensitive.
     global: if any value is passed, indicates the reports are global.
-    expiration: date able to be converted to a new Date of when the bans should expire.    
+    expiration: date able to be converted to a new Date of when the bans should expire.
     captcha: captcha input. Used for banning and reporting.
     deleteUploads: if informed, only the uploads and not the posts and threads will be deleted.
 
@@ -806,7 +806,7 @@ Parameters:
 
 Json output(Object): object with the data pertinent to the post being edited. Contains the following fields:
     message: original message of the posting.
-    
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::49
@@ -820,7 +820,7 @@ Parameters:
     message*: new message of the posting. 4096 characters.
     threadId: id of the thread to be edited.
     postId: id of the post to be edited.
-    
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::50
@@ -1092,7 +1092,20 @@ Parameters:
     year: year in format YYYY to specify a year to fetch available dates. Defaults to current year.
 
 Json output(Array): array with the available dates.
-    
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::64
+
+Name: checkFileIdentifier
+
+Description: checks if a file already exists on the server. Uses get parameters. Outputs only json.
+
+Parameters:
+    identifier: identifier for the file. It is composed of the file md5 plus a '-' character plus the mime of the file with any '/' removed, all lowercases. Example: 07646fffbf7147f8d77916c453b98853-imagejpeg
+
+Json output(Boolean): if the file exists, returns a true.
+
 ------------------------------------------------------------------------------------------
 
 *: mandatory parameters.
