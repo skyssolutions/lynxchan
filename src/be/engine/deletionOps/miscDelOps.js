@@ -20,6 +20,7 @@ var verbose;
 var overboard;
 var lang;
 var logOps;
+var referenceHandler;
 var overboardOps;
 var gridFs;
 
@@ -37,6 +38,7 @@ exports.loadDependencies = function() {
 
   logOps = require('../logOps');
   overboardOps = require('../overboardOps');
+  referenceHandler = require('../referenceHandler');
   lang = require('../langOps').languagePack();
   gridFs = require('../gridFsHandler');
 
@@ -74,6 +76,26 @@ exports.removeThreads = function(boardUri, threadsToDelete, callback) {
 
 };
 
+exports.removePostsFromPrunedThreads = function(boardUri, threadsToDelete,
+    callback) {
+
+  posts.deleteMany({
+    boardUri : boardUri,
+    threadId : {
+      $in : threadsToDelete
+    }
+  }, function deletedPosts(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.removeThreads(boardUri, threadsToDelete, callback);
+    }
+
+  });
+
+};
+
 exports.getThreadFilesToRemove = function(boardUri, threadsToRemove, callback) {
 
   files.aggregate([ {
@@ -102,7 +124,8 @@ exports.getThreadFilesToRemove = function(boardUri, threadsToRemove, callback) {
         if (error) {
           callback(error);
         } else {
-          exports.removeThreads(boardUri, threadsToRemove, callback);
+          exports.removePostsFromPrunedThreads(boardUri, threadsToRemove,
+              callback);
         }
       });
       // style exception, too simple
@@ -142,8 +165,23 @@ exports.cleanThreads = function(boardUri, limit, callback) {
     } else if (!threadsToRemove.length) {
       callback();
     } else {
-      exports.getThreadFilesToRemove(boardUri, threadsToRemove[0].threads,
-          callback);
+
+      var prunedThreads = threadsToRemove[0].threads;
+
+      // style exception, too simple
+      referenceHandler
+          .clearPostingReferences(boardUri, prunedThreads, null, false,
+              function removedReferences(error) {
+
+                if (error) {
+                  callback(error);
+                } else {
+                  exports.getThreadFilesToRemove(boardUri, prunedThreads,
+                      callback);
+                }
+              });
+      // style exception, too simple
+
     }
   });
 
@@ -317,7 +355,20 @@ exports.board = function(userData, parameters, callback) {
     } else if (board.owner !== userData.login && !admin) {
       callback(lang.errDeniedBoardDeletion);
     } else {
-      exports.deleteBoard(board, userData.login, callback);
+
+      // style exception, too simple
+      referenceHandler.clearBoardReferences(board.boardUri,
+          function clearedReferences(error) {
+            if (error) {
+              callback(error);
+            } else {
+              exports.deleteBoard(board, userData.login, callback);
+
+            }
+
+          });
+      // style exception, too simple
+
     }
   });
 

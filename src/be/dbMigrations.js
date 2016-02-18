@@ -782,7 +782,71 @@ exports.generateGraphs = function(callback) {
 
 // Added on 1.6.0
 // Section 8: File deduplication {
+exports.iterateBoardsForOrphanedPosts = function(boards, callback) {
+
+  if (!boards.length) {
+    callback();
+    return;
+  }
+
+  var board = boards.pop();
+
+  cachedPosts.removeMany({
+    boardUri : board._id,
+    threadId : {
+      $nin : board.threads
+    }
+  }, function removedOrphanedPosts(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.iterateBoardsForOrphanedPosts(boards, callback);
+    }
+
+  });
+
+};
+
+exports.removeOrphanedPosts = function(callback) {
+
+  // Edge case: boards that have orphaned posts and don't have any threads won't
+  // clean up their orphaned posts.
+  cachedThreads.aggregate([ {
+    $project : {
+      threadId : 1,
+      boardUri : 1,
+      _id : 0
+    }
+  }, {
+    $group : {
+      _id : '$boardUri',
+      threads : {
+        $push : '$threadId'
+      }
+    }
+  } ], function gotThreads(error, results) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.iterateBoardsForOrphanedPosts(results, callback);
+    }
+
+  });
+
+};
+
 exports.deduplicateFiles = function(callback) {
-  require('./dedupMigration').deduplicateFiles(callback);
+  require('./dedupMigration').deduplicateFiles(
+      function deduplicatedFiles(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.removeOrphanedPosts(callback);
+        }
+
+      });
 };
 // } Section 8: File deduplication

@@ -93,9 +93,9 @@ exports.updateReferencesCount = function(postReferences, threadReferences,
 };
 
 exports.getThreadReferences = function(postReferences, boardUri,
-    threadsToClear, callback) {
+    threadsToClear, callback, boardDeletion) {
 
-  if (!threadsToClear || !threadsToClear.length) {
+  if ((!threadsToClear || !threadsToClear.length) && !boardDeletion) {
     exports.updateReferencesCount(postReferences, [], callback);
 
     return;
@@ -108,9 +108,11 @@ exports.getThreadReferences = function(postReferences, boardUri,
     }
   };
 
-  query.threadId = {
-    $in : threadsToClear
-  };
+  if (threadsToClear && threadsToClear.length) {
+    query.threadId = {
+      $in : threadsToClear
+    };
+  }
 
   threads.aggregate(exports.getAggregationQuery(query),
       function countedReferences(error, results) {
@@ -171,5 +173,24 @@ exports.clearPostingReferences = function(boardUri, threadsToClear,
         }
 
       });
+
+};
+
+exports.clearBoardReferences = function(boardUri, callback) {
+
+  posts.aggregate(exports.getAggregationQuery({
+    boardUri : boardUri,
+    'files.0' : {
+      $exists : 1
+    }
+  }), function gotPostsReferences(error, results) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.getThreadReferences(results, boardUri, null, callback, true);
+    }
+
+  });
 
 };
