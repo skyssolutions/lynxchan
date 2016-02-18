@@ -24,26 +24,6 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Posting files update {
-exports.adjustFileThumbPath = function(cp, newBoard, originalThread, file) {
-
-  var spoilered = cp.thumb.indexOf('spoiler.') > -1;
-  var customSpolier = cp.thumb.indexOf('.spoiler') > -1;
-
-  spoilered = spoilered || customSpolier;
-
-  if (cp.thumb === '/' + originalThread.boardUri + '/media/t_' + file.name) {
-    // we got an actual thumbnail?
-    cp.thumb = '/' + newBoard.boardUri + '/media/t_' + cp.name;
-  } else if (spoilered && newBoard.usesCustomSpoiler) {
-    // we got a spoilered file AND the new board uses custom spoiler?
-    cp.thumb = '/' + newBoard.boardUri + '/custom.spoiler';
-  } else if (customSpolier) {
-    // it uses a custom spoiler but the new board doesn`t have one?
-    cp.thumb = spoilerPath;
-  }
-
-};
-
 exports.getAdjustedFiles = function(newBoard, originalThread, files) {
 
   if (!files || !files.length) {
@@ -58,14 +38,18 @@ exports.getAdjustedFiles = function(newBoard, originalThread, files) {
 
     var cp = JSON.parse(JSON.stringify(file));
 
-    if (cp.name.indexOf('-') === -1) {
-      // only rename the file if its the first time it is being transferred
-      cp.name = originalThread.boardUri + '-' + cp.name;
+    var spoilered = cp.thumb.indexOf('spoiler.') > -1;
+    var customSpolier = cp.thumb.indexOf('.spoiler') > -1;
+
+    spoilered = spoilered || customSpolier;
+
+    if (spoilered && newBoard.usesCustomSpoiler) {
+      // we got a spoilered file AND the new board uses custom spoiler?
+      cp.thumb = '/' + newBoard.boardUri + '/custom.spoiler';
+    } else if (customSpolier) {
+      // it uses a custom spoiler but the new board doesn`t have one?
+      cp.thumb = spoilerPath;
     }
-
-    cp.path = '/' + newBoard.boardUri + '/media/' + cp.name;
-
-    exports.adjustFileThumbPath(cp, newBoard, originalThread, file);
 
     newFiles.push(cp);
 
@@ -161,20 +145,6 @@ exports.getNewMeta = function(file, newThreadId, newBoard, newPostId) {
 };
 
 // Section 3.1: New path generation {
-exports.getMediaNewPath = function(newBoard, name, originalThread) {
-
-  if (name.indexOf('-') === -1) {
-    if (name.indexOf('t_') > -1) {
-      name = 't_' + originalThread.boardUri + '-' + name.substring(2);
-    } else {
-      name = originalThread.boardUri + '-' + name;
-    }
-  }
-
-  return '/' + newBoard.boardUri + '/media/' + name;
-
-};
-
 exports.getPreviewNewPath = function(newBoard, newPostingId, name) {
 
   var newPath = '/' + newBoard.boardUri + '/preview/' + newPostingId + '.';
@@ -205,8 +175,6 @@ exports.getNewPath = function(newBoard, name, thread, newThreadId, newPostId,
     file) {
 
   switch (file.metadata.type) {
-  case 'media':
-    return exports.getMediaNewPath(newBoard, name, thread);
 
   case 'thread':
     return exports.getThreadNewPath(newBoard, newThreadId, name);

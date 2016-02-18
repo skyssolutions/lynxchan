@@ -6,7 +6,6 @@ boards: stores boards.
     boardName: name of the board. 32 characters.
     boardDescription: description of the board. 128 characters.
     lastPostId: id of last post in this board.
-    lastFileId: id of last file posted in this board.
     autoCaptchaThreshold(Number): hourly threshold that enables captcha if exceeded.
     autoCaptchaCount(Number): counting towards automatic captcha activation.
     autoCaptchaStartTime(Date): time of when the counting towards automatic captchaActivation started.

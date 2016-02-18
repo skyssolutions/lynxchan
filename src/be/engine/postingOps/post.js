@@ -13,6 +13,7 @@ var common = require('.').common;
 var gsHandler;
 var overboardOps;
 var generator;
+var referenceHandler;
 var r9k;
 var uploadHandler;
 var lang;
@@ -41,6 +42,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   overboardOps = require('../overboardOps');
+  referenceHandler = require('../referenceHandler');
   gsHandler = require('../gridFsHandler');
   generator = require('../generator').board;
   r9k = require('../r9k');
@@ -108,6 +110,25 @@ exports.updateThreadAfterCleanUp = function(boardUri, threadId, removedPosts,
 
 };
 
+exports.removeCleanedPosts = function(postsToDelete, boardUri, threadId,
+    postId, removedFileCount, callback) {
+
+  posts.deleteMany({
+    boardUri : boardUri,
+    postId : {
+      $in : postsToDelete
+    }
+  }, function postsRemoved(error) {
+    if (error) {
+      callback(error);
+    } else {
+      exports.updateThreadAfterCleanUp(boardUri, threadId, postsToDelete,
+          postId, removedFileCount, callback);
+    }
+  });
+
+};
+
 exports.cleanThreadPosts = function(boardUri, threadId, postId, callback) {
 
   posts.aggregate([ {
@@ -141,23 +162,24 @@ exports.cleanThreadPosts = function(boardUri, threadId, postId, callback) {
     } else if (!results.length) {
       callback(null, postId);
     } else {
+
       var postsToDelete = results[0].posts;
+      var removedFileCount = results[0].removedFileCount;
 
       // style exception, too simple
-      posts.deleteMany({
-        boardUri : boardUri,
-        postId : {
-          $in : postsToDelete
-        }
-      }, function postsRemoved(error) {
-        if (error) {
-          callback(error);
-        } else {
-          exports.updateThreadAfterCleanUp(boardUri, threadId, postsToDelete,
-              postId, results[0].removedFileCount, callback);
-        }
-      });
+      referenceHandler.clearPostingReferences(boardUri, null, postsToDelete,
+          false, function removedReferences(error) {
+
+            if (error) {
+              callback(error);
+            } else {
+              exports.removeCleanedPosts(postsToDelete, boardUri, threadId,
+                  postId, removedFileCount, callback);
+            }
+
+          });
       // style exception, too simple
+
     }
 
   });

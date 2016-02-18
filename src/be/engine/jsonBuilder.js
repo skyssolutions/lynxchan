@@ -196,7 +196,6 @@ exports.setGlobalStats = function(globalStats, object) {
   if (globalStats) {
     object.totalPosts = globalStats.totalPosts;
     object.totalIps = globalStats.totalIps;
-    object.totalFiles = globalStats.totalFiles;
     object.totalPPH = globalStats.totalPPH;
     object.totalBoards = globalStats.totalBoards;
   }

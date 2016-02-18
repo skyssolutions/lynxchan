@@ -25,7 +25,6 @@ Root(Object):
         thumb: path of the image's thumbnail.
     totalPosts(Number): total amount of posts made on existing boards.
     totalIps(Number): total amount of unique ips on existing boards in the past 24 hours.
-    totalFiles(Number): total amount of files uploaded on existing boards.
 
 ------------------------------------------------------------------------------------------
 
