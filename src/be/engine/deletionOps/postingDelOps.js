@@ -17,6 +17,7 @@ var latestPosts;
 var gridFs;
 var lang;
 var overboard;
+var referenceHandler;
 var overboardOps;
 var miscOps;
 var clearIpMinRole;
@@ -37,6 +38,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   logOps = require('../logOps');
+  referenceHandler = require('../referenceHandler');
   overboardOps = require('../overboardOps');
   gridFs = require('../gridFsHandler');
   lang = require('../langOps').languagePack();
@@ -280,6 +282,14 @@ exports.removeGlobalLatestImages = function(board, parameters, cb,
 exports.removeContentFiles = function(board, parameters, cb, foundThreads,
     foundPosts, parentThreads) {
 
+  if (parameters.deleteUploads) {
+
+    exports.removeGlobalLatestImages(board, parameters, cb, foundThreads,
+        foundPosts, parentThreads);
+
+    return;
+  }
+
   var matchBlock = {
     'metadata.boardUri' : board.boardUri,
     $or : [ {
@@ -292,14 +302,6 @@ exports.removeContentFiles = function(board, parameters, cb, foundThreads,
       }
     } ]
   };
-
-  if (parameters.deleteUploads) {
-    matchBlock['metadata.type'] = 'media';
-
-    matchBlock.$or[0]['metadata.postId'] = {
-      $exists : false
-    };
-  }
 
   files.aggregate([ {
     $match : matchBlock
@@ -719,8 +721,20 @@ exports.getPostsToDelete = function(userData, board, postsToDelete, parameters,
       var parentThreads = results.length ? exports.sanitizeParentThreads(
           foundThreads, results[0].parentThreads) : [];
 
-      exports.removeFoundContent(userData, board, parameters, cb, foundThreads,
-          foundPosts, parentThreads);
+      // style exception, too simple
+      referenceHandler.clearPostingReferences(board.boardUri, foundThreads,
+          foundPosts, parameters.deleteUploads, function clearedReferences(
+              error) {
+
+            if (error) {
+              cb(error);
+            } else {
+              exports.removeFoundContent(userData, board, parameters, cb,
+                  foundThreads, foundPosts, parentThreads);
+            }
+
+          });
+      // style exception, too simple
 
     }
   });
