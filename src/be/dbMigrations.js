@@ -837,16 +837,120 @@ exports.removeOrphanedPosts = function(callback) {
 
 };
 
-exports.deduplicateFiles = function(callback) {
-  require('./dedupMigration').deduplicateFiles(
-      function deduplicatedFiles(error) {
+exports.fillInMd5 = function(files, posting) {
+
+  for (var i = 0; i < files.length; i++) {
+
+    var file = files[i];
+
+    for (var j = 0; j < posting.files.length; j++) {
+
+      if (posting.files[j].path === file.filename) {
+
+        posting.files[j].md5 = file.md5;
+      }
+
+    }
+
+  }
+
+};
+
+exports.addMissingMd5 = function(callback, foundPostings, collectionToUse) {
+
+  collectionToUse = collectionToUse || cachedThreads;
+
+  if (!foundPostings) {
+    collectionToUse.find({
+      'files.0' : {
+        $exists : true
+      },
+      'files.md5' : {
+        $exists : false
+      }
+    }, {
+      files : 1
+    }).toArray(function gotThreads(error, foundPostings) {
+
+      if (error) {
+        callback(error);
+      } else {
+        exports.addMissingMd5(callback, foundPostings, collectionToUse);
+      }
+
+    });
+
+    return;
+  }
+
+  if (!foundPostings.length) {
+    if (collectionToUse === cachedPosts) {
+      require('./dedupMigration').deduplicateFiles(callback);
+    } else {
+      exports.addMissingMd5(callback, null, cachedPosts);
+    }
+
+    return;
+  }
+
+  var posting = foundPostings.pop();
+
+  var filesToFind = [];
+
+  for (var i = 0; i < posting.files.length; i++) {
+    filesToFind.push(posting.files[i].path);
+  }
+
+  cachedFiles.find({
+    filename : {
+      $in : filesToFind
+    }
+  }, {
+    md5 : 1,
+    filename : 1,
+    _id : 0
+  }).toArray(function gotFiles(error, files) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      exports.fillInMd5(files, posting);
+
+      // style exception, too simple
+      collectionToUse.updateOne({
+        _id : posting._id
+      }, {
+        $set : {
+          files : posting.files
+        }
+      }, function updatedPosting(error) {
 
         if (error) {
           callback(error);
         } else {
-          exports.removeOrphanedPosts(callback);
+          exports.addMissingMd5(callback, foundPostings, collectionToUse);
         }
 
       });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.deduplicateFiles = function(callback) {
+
+  exports.removeOrphanedPosts(function removedOrphanedPosts(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.addMissingMd5(callback);
+    }
+
+  });
 };
 // } Section 8: File deduplication
