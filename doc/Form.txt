@@ -921,6 +921,7 @@ Json output(Object): object with the current global settings. It contains the fo
     master: ip of the master instance of the cluster.
     slaves(Array): ips of the slaves of the cluster.
     frontPageStats(Boolean): indicates if total posts made on existing boards and total unique ips should be displayed on the front-page.
+    autoPruneFiles(Boolean): makes the engine run a weekly schedule to prune files that are no longer in use.
 
 ------------------------------------------------------------------------------------------
 
@@ -990,6 +991,7 @@ Parameters:
     master: ip of the master instance of the cluster.
     slaves(Array): ips of the slaves of the cluster.
     frontPageStats(Boolean): indicates if total posts made on existing boards and total unique ips should be displayed on the front-page.
+    autoPruneFiles(Boolean): makes the engine run a weekly schedule to prune files that are no longer in use.
 
 ------------------------------------------------------------------------------------------
 

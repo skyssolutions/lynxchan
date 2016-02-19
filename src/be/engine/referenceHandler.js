@@ -3,8 +3,15 @@
 var db = require('../db');
 var threads = db.threads();
 var posts = db.posts();
+var files = db.files();
 var references = db.uploadReferences();
+var gridFsHandler;
 
+exports.loadDependencies = function() {
+  gridFsHandler = require('./gridFsHandler');
+};
+
+// Section 1: Reference decrease {
 exports.getAggregationQuery = function(matchQuery) {
 
   return [ {
@@ -194,3 +201,95 @@ exports.clearBoardReferences = function(boardUri, callback) {
   });
 
 };
+// } Section 1: Reference decrease
+
+// Section 2: File pruning {
+exports.deleteFiles = function(files, callback) {
+
+  gridFsHandler.removeFiles(files, function deletedFiles(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      references.removeMany({
+        references : {
+          $lt : 1
+        }
+      }, callback);
+    }
+  });
+
+};
+
+exports.prune = function(callback) {
+
+  references.aggregate([ {
+    $match : {
+      references : {
+        $lt : 1
+      }
+    }
+  }, {
+    $project : {
+      identifier : 1,
+      _id : 0
+    }
+  }, {
+    $group : {
+      _id : 0,
+      identifiers : {
+        $push : '$identifier'
+      }
+    }
+  } ], function gotIdentifiers(error, results) {
+
+    if (error) {
+      callback(error);
+    } else if (!results.length) {
+      callback();
+    } else {
+
+      // style exception, too simple
+      files.aggregate([ {
+        $match : {
+          'metadata.identifier' : {
+            $in : results[0].identifiers
+          }
+        }
+      }, {
+        $project : {
+          filename : 1,
+          _id : 0
+        }
+      }, {
+        $group : {
+          _id : 0,
+          files : {
+            $push : '$filename'
+          }
+        }
+      } ], function gotNames(error, results) {
+
+        if (error) {
+          callback(error);
+        } else if (!results.length) {
+
+          references.removeMany({
+            references : {
+              $lt : 1
+            }
+          }, callback);
+
+        } else {
+          exports.deleteFiles(results[0].files, callback);
+        }
+
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+// } Section 2: File pruning

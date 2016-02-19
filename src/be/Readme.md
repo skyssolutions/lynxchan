@@ -31,6 +31,7 @@ It accepts the following arguments:
 * `--reload-logs`, `-rlog`: reloads logs.
 * `--reload-boards`, `-rboard`: reloads boards.
 * `--reload-front-end`, `-rfe`: reloads the front-end files on a running instance, including cached static files. Will be ignored if maintenance mode is being changed on the same command or if no daemon was not informed.
+* `--prune-files`, `-pf`: prunes files that no longer contains references to them. Its advisable to turn on maintenance mode before using this command to avoid race conditions.
 * `--reload-graphs`, `-rg`: redraws daily graphs.
 * `--no-daemon`, `-nd`: will not start listening. For running commands while having a server running.
 * `--create-account`, `-ca`: will create a new account. Require the use of the login, role and password parameters.
@@ -129,6 +130,7 @@ Settings files that goes into the settings directory:
 * `master`: ip of the master.
 * `slaves`(Array): ips of the slaves.
 * `frontPageStats`(Boolean): indicates if total posts made on existing boards and total unique ips on the last 24 hours should be displayed on the front-page.
+* `autoPruneFiles`(Boolean): the engine will run a weekly task that will make it enter maintenance mode, prune files that are no longer in use and then come out of maintenance mode.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.
@@ -151,6 +153,7 @@ Meta-data of files on gridfs will have the following values:
 * `postId`(Number): id of the post the file belongs to.
 * `status`(Number): http status to be used when outputting this page. Defaults to 200 when outputting.
 * `date`(Number): date to which the file refers to.
+* `identifier`: identifier for media files.
 * `type`: type of file. May hold one of the following values: 
   * `board`
   * `thread` 
@@ -164,4 +167,3 @@ Meta-data of files on gridfs will have the following values:
   * `log`
   * `multiboard`
   * `graph`
-  * `identifier`

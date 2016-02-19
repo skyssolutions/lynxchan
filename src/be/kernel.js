@@ -114,6 +114,11 @@ var informedArguments = {
     long : '--debug',
     type : 'boolean'
   },
+  pruneFiles : {
+    short : '-pf',
+    long : '--prune-files',
+    type : 'boolean'
+  },
   reloadFrontEnd : {
     short : '-rfe',
     long : '--reload-front-end',
@@ -792,6 +797,27 @@ function initTorControl() {
   });
 }
 
+function checkFilePruning() {
+
+  if (informedArguments.pruneFiles.informed) {
+
+    require('./engine/referenceHandler').prune(function pruned(error) {
+
+      if (error) {
+
+        console.log(error);
+      }
+
+      initTorControl();
+
+    });
+
+  } else {
+    initTorControl();
+  }
+
+}
+
 function checkDbVersions() {
 
   db.checkVersion(function checkedVersion(error) {
@@ -815,12 +841,12 @@ function checkDbVersions() {
 
             throw toThrow;
           } else {
-            initTorControl();
+            checkFilePruning();
           }
         });
 
       } else {
-        initTorControl();
+        checkFilePruning();
       }
     }
   });

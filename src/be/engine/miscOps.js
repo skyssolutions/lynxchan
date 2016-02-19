@@ -461,10 +461,15 @@ exports.getParametersArray = function() {
     setting : 'verbose',
     element : 'checkboxVerbose'
   }, {
-    param : 'forceCaptcha',
+    param : 'verbose',
     type : 'boolean',
-    setting : 'forceCaptcha',
-    element : 'checkboxGlobalCaptcha'
+    setting : 'verbose',
+    element : 'checkboxVerbose'
+  }, {
+    param : 'autoPruneFiles',
+    type : 'boolean',
+    setting : 'autoPruneFiles',
+    element : 'checkboxAutoPruneFiles'
   }, {
     param : 'useGlobalBanners',
     type : 'boolean',

@@ -309,7 +309,7 @@ exports.getPageTests = function() {
             'fieldMaxBannerSize', 'fieldMaxFlagSize', 'fieldFloodInterval',
             'checkboxVerbose', 'checkboxDisable304', 'checkboxSsl',
             'comboTorAccess', 'checkboxMediaThumb', 'checkboxMaintenance',
-            'checkboxMultipleReports', 'fieldMaster',
+            'checkboxMultipleReports', 'fieldMaster', 'checkboxAutoPruneFiles',
             'checkboxDisableAccountCreation', 'comboBoardCreationRequirement',
             'fieldMaxTags', 'fieldGlobalLatestImages',
             'checkboxDisableFloodCheck', 'comboMinClearIpRole',

@@ -17,6 +17,7 @@ var uniqueIps = db.uniqueIps();
 var files = db.files();
 var torHandler = require('./engine/torOps');
 var graphOps = require('./graphsOps');
+var referenceHandler = require('./engine/referenceHandler');
 
 // handles schedules in general.
 // currently it handles the removal of expired captcha's images, applies board
@@ -46,6 +47,11 @@ exports.start = function() {
     torRefresh();
     early404(true);
     uniqueIpCount();
+
+    if (settings.autoPruneFiles) {
+      autoFilePruning();
+    }
+
   }
 
 };
@@ -523,3 +529,62 @@ function uniqueIpCount() {
 
 }
 // } Section 6: Unique IP counting
+
+// Section 7: Automatic file pruning {
+function commitPruning(takeOffMaintenance) {
+
+  referenceHandler.prune(function prunedFiles(error) {
+
+    if (error) {
+      console.log(error);
+    }
+
+    if (takeOffMaintenance) {
+      settingsHandler.changeMaintenanceMode(false);
+    }
+
+    autoFilePruning();
+
+  });
+
+}
+
+function startPruning() {
+
+  if (!settings.maintenance) {
+
+    settingsHandler.changeMaintenanceMode(true);
+
+    var commitAt = new Date();
+    commitAt.setUTCMilliseconds(0);
+    commitAt.setUTCSeconds(0);
+    commitAt.setUTCMinutes(commitAt.getUTCMinutes() + 1);
+
+    setTimeout(function() {
+      commitPruning(true);
+    }, commitAt.getTime() - new Date().getTime());
+
+  } else {
+    commitPruning(false);
+  }
+
+}
+
+function autoFilePruning() {
+
+  var nextPrune = new Date();
+
+  nextPrune.setUTCMilliseconds(0);
+  nextPrune.setUTCSeconds(0);
+  nextPrune.setUTCMinutes(0);
+  nextPrune.setUTCHours(0);
+  nextPrune.setUTCDate(nextPrune.getUTCDate() + 7 - nextPrune.getUTCDay());
+
+  setTimeout(function() {
+
+    startPruning();
+
+  }, nextPrune.getTime() - new Date().getTime());
+
+}
+// } Section 7: Automatic file pruning
