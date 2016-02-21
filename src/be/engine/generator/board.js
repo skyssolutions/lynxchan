@@ -3,6 +3,7 @@
 // handles generation control of pages specific to a board
 
 var exec = require('child_process').exec;
+var ObjectID = require('mongodb').ObjectID;
 var kernel = require('../../kernel');
 var db = require('../../db');
 var boards = db.boards();
@@ -607,6 +608,12 @@ exports.startBoardRebuildProcesses = function(callback, initialBoards) {
       return;
     }
 
+    var trimmed = stdout.trim();
+
+    if (trimmed.length) {
+      console.log(trimmed);
+    }
+
     if (error) {
       running = false;
       callback(stderr);
@@ -721,7 +728,8 @@ exports.preview = function(boardUri, threadId, postId, callback, postingData) {
   }
 };
 
-exports.iteratePostsForPreviews = function(callback, lastId) {
+exports.iteratePostsForPreviews = function(callback, lastId, toSkip,
+    startedSkipping) {
 
   var query = {};
 
@@ -731,9 +739,15 @@ exports.iteratePostsForPreviews = function(callback, lastId) {
     };
   }
 
-  posts.find(query, postProjection).sort({
+  var cursor = posts.find(query, postProjection).sort({
     _id : -1
-  }).limit(1).toArray(function gotThread(error, results) {
+  });
+
+  if (toSkip && startedSkipping) {
+    cursor.skip(toSkip);
+  }
+
+  cursor.limit(1).toArray(function gotThread(error, results) {
 
     if (error) {
       callback(error);
@@ -741,15 +755,17 @@ exports.iteratePostsForPreviews = function(callback, lastId) {
 
       var post = results[0];
 
+      // style exception, too simple
       exports.preview(null, null, null, function generatedPreview(error) {
 
         if (error) {
           callback(error);
         } else {
-          exports.iteratePostsForPreviews(callback, post._id);
+          exports.iteratePostsForPreviews(callback, post._id, toSkip, true);
         }
 
       }, post);
+      // style exception, too simple
 
     } else {
       callback();
@@ -759,7 +775,8 @@ exports.iteratePostsForPreviews = function(callback, lastId) {
 
 };
 
-exports.previews = function(callback, lastId) {
+exports.iterateThreadsForPreviews = function(callback, lastId, lastPostId,
+    toSkip, startedSkipping) {
 
   var query = {};
 
@@ -769,9 +786,17 @@ exports.previews = function(callback, lastId) {
     };
   }
 
-  threads.find(query, postProjection).sort({
+  var cursor = threads.find(query, postProjection).sort({
     _id : -1
-  }).limit(1).toArray(function gotThread(error, results) {
+  });
+
+  if (toSkip && startedSkipping) {
+    cursor.skip(toSkip);
+  }
+
+  cursor.limit(1);
+
+  cursor.toArray(function gotThread(error, results) {
 
     if (error) {
       callback(error);
@@ -779,21 +804,136 @@ exports.previews = function(callback, lastId) {
 
       var thread = results[0];
 
+      // style exception, too simple
       exports.preview(null, null, null, function generatedPreview(error) {
 
         if (error) {
           callback(error);
         } else {
-          exports.previews(callback, thread._id);
+          exports.iterateThreadsForPreviews(callback, thread._id, lastPostId,
+              toSkip, true);
         }
 
       }, thread);
+      // style exception, too simple
 
     } else {
-      exports.iteratePostsForPreviews(callback);
+      exports.iteratePostsForPreviews(callback, lastPostId, toSkip);
     }
 
   });
+
+};
+
+exports.startPreviewRebuildProcesses = function(startThreads, startPosts,
+    callback) {
+
+  var count = startThreads.length < startPosts.length ? startThreads.length
+      : startPosts.length;
+
+  var bootPath = __dirname + '/../../boot.js -nd -rp -nf';
+
+  if (count > 1) {
+    bootPath += ' -i ' + (count - 1);
+  }
+
+  var running = true;
+
+  var execCallback = function(error, stdout, stderr) {
+
+    if (!running) {
+      return;
+    }
+
+    var trimmed = stdout.trim();
+
+    if (trimmed.length) {
+      console.log(trimmed);
+    }
+
+    if (error) {
+      running = false;
+      callback(stderr);
+
+    } else {
+
+      count--;
+
+      if (!count) {
+        running = false;
+        callback();
+      }
+
+    }
+
+  };
+
+  for (var i = 0; i < count; i++) {
+
+    var pathToUse = bootPath;
+
+    if (i) {
+      if (i < startThreads.length) {
+        pathToUse += ' -t ' + (startThreads[i - 1])._id;
+      }
+
+      if (i < startPosts.length) {
+        pathToUse += ' -po ' + (startPosts[i - 1])._id;
+      }
+
+    }
+
+    exec(pathToUse, execCallback);
+
+  }
+
+};
+
+exports.previews = function(callback, lastId) {
+
+  var informedArguments = kernel.informedArguments();
+
+  if (informedArguments.noFork.informed) {
+
+    exports.iterateThreadsForPreviews(callback, new ObjectID(
+        informedArguments.thread.value), new ObjectID(
+        informedArguments.post.value), +informedArguments.interval.value);
+
+    return;
+  }
+
+  threads.find({}, {
+    threadId : 1
+  }).sort({
+    _id : -1
+  }).limit(require('os').cpus().length).toArray(
+      function gotInitialThreads(error, initialThreads) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          // style exception, too simple
+          posts.find({}, {
+            postId : 1
+          }).sort({
+            _id : -1
+          }).limit(require('os').cpus().length).toArray(
+              function gotInitialPosts(error, initialPosts) {
+
+                if (error) {
+                  callback(error);
+                } else {
+                  exports.startPreviewRebuildProcesses(initialThreads,
+                      initialPosts, callback);
+                }
+
+              });
+          // style exception, too simple
+
+        }
+
+      });
 
 };
 // } Section 2: Previews

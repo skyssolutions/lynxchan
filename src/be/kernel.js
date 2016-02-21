@@ -244,6 +244,16 @@ var informedArguments = {
     long : '--board',
     type : 'value'
   },
+  thread : {
+    short : '-t',
+    long : '--thread',
+    type : 'value'
+  },
+  post : {
+    short : '-po',
+    long : '--post',
+    type : 'value'
+  },
   interval : {
     short : '-i',
     long : '--interval',
