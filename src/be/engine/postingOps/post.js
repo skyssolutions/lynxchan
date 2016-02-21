@@ -556,6 +556,7 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
     anonymousName : 1,
     acceptedMimes : 1,
     maxFiles : 1,
+    captchaMode : 1,
     autoSageLimit : 1,
     maxFileSizeMB : 1,
     settings : 1,
@@ -582,7 +583,7 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
               exports.checkR9K(req, parameters, userData, board, callback);
             }
 
-          });
+          }, true);
       // style exception, too simple
 
     }

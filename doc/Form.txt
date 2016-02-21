@@ -198,6 +198,7 @@ Json output(Object): object with data used to manage the board. Contains the fol
     maxThreadCount(Number): how many threads the board can have.
     maxFileSizeMB(Number): how large files uploaded to the board can be.
     acceptedMimes(Array): accepted mimes for uploaded files.
+    captchaMode(Number): indicates the captcha mode for the board. 0 means no captcha, 1 means only for new threads and 2 means for all posts on the board.
     maxFiles(Number): maximum allowed files to be uploaded on posts.
     boardDescription: description of the board.
     anonName: name used for anonymous users.
@@ -205,7 +206,6 @@ Json output(Object): object with data used to manage the board. Contains the fol
     autoCaptchaThreshold(Number): how many threads can be created on the board within an hour before captcha is turned on automatically.
     settings(Array): array of settings being used in the board. May contain the following values:
         disableIds: disables recording of thread-wise ids.
-        disableCaptcha: disable captchas for posting in the board.
         forceAnonymity: disables the name input.
         unindex: removes board from index.
         allowCode: allows the usage of [code] on postings.
@@ -539,7 +539,6 @@ Parameters:
     disableIds: if any value is passed, ids on threads and posts will be disabled.
     hourlyThreadLimit: limit of new threads allowed per hour. If exceeded, the board will lock for thread creation temporarily.
     anonymousName: name to be used when the user is anonymous. 32 character.
-    disableCaptcha: if any value is passed, captchas will be disabled.
     forceAnonymity: if any value is passed, the name input is disabled on posting.
     allowCode: if any value is passed, use of code tag will be allowed on markdown.
     boardMessage: new message of the board. 256 characters.
@@ -551,6 +550,7 @@ Parameters:
     uniqueFiles: enforces unique files on posting.
     uniquePosts: enforces unique messages on posting.
     locationFlags: users will have location flags on their posts.
+    captchaMode(Number): indicates the captcha mode for the board. 0 means no captcha, 1 means only for new threads and 2 means for all posts on the board.
 
 ------------------------------------------------------------------------------------------
 

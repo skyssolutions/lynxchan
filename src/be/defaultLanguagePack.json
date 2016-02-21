@@ -298,5 +298,10 @@
   "errDuplicateFileBeingPosted": "R9K prevented you from posting the same file multiple times at once.",
   "errFileTooLargeForBoard": "You tried to upload a file that is larger than the allowed size for this board.",
   "errInvalidMimeForBoard": "You tried to upload a file with an invalid format for this board.",
-  "titGraphs": "Available daily graphs"
+  "titGraphs": "Available daily graphs",
+  "guiCaptchaModes": [
+    "No captcha",
+    "Only for threads",
+    "For all posts"
+  ]
 }

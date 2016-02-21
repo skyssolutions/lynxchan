@@ -316,13 +316,26 @@ exports.isCaptchaSolved = function(captcha, input) {
 
 };
 
-exports.attemptCaptcha = function(id, input, board, callback) {
+exports.dispensesCaptcha = function(board, thread) {
 
-  if (board && board.settings.indexOf('disableCaptcha') > -1 && !forceCaptcha) {
+  if (!board || forceCaptcha) {
+    return;
+  }
+
+  if (board.captchaMode < 1 || (board.captchaMode < 2 && thread)) {
+
     if (verbose) {
       console.log('Captcha disabled');
     }
 
+    return true;
+  }
+
+};
+
+exports.attemptCaptcha = function(id, input, board, callback, thread) {
+
+  if (exports.dispensesCaptcha(board, thread)) {
     callback();
     return;
   }

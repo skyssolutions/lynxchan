@@ -19,7 +19,6 @@ var displayMaxFlagSize;
 
 exports.boardSettingsRelation = {
   disableIds : 'disableIdsCheckbox',
-  disableCaptcha : 'disableCaptchaCheckbox',
   forceAnonymity : 'forceAnonymityCheckbox',
   allowCode : 'allowCodeCheckbox',
   early404 : 'early404Checkbox',
@@ -91,6 +90,13 @@ exports.loadDependencies = function() {
   lang = require('../../langOps').languagePack();
   miscOps = require('../../miscOps');
 
+  exports.boardRangeSettingsRelation = [ {
+    limit : 2,
+    element : 'captchaModeComboBox',
+    setting : 'captchaMode',
+    labels : lang.guiCaptchaModes
+  } ];
+
 };
 
 // Section 1: Board control {
@@ -100,8 +106,42 @@ exports.setBoardControlCheckBoxes = function(document, boardData) {
 
   for (var i = 0; i < settings.length; i++) {
     var setting = settings[i];
-    document.getElementById(exports.boardSettingsRelation[setting])
-        .setAttribute('checked', true);
+
+    var checkBox = document
+        .getElementById(exports.boardSettingsRelation[setting]);
+
+    if (checkBox) {
+      checkBox.setAttribute('checked', true);
+    }
+
+  }
+
+};
+
+exports.setBoardComboBoxes = function(document, boardData) {
+
+  for (var i = 0; i < exports.boardRangeSettingsRelation.length; i++) {
+
+    var setting = exports.boardRangeSettingsRelation[i];
+
+    var element = document.getElementById(setting.element);
+
+    var labels = setting.labels;
+
+    for (var j = 0; j <= setting.limit; j++) {
+
+      var option = document.createElement('option');
+      option.innerHTML = labels[j];
+      option.setAttribute('value', j);
+
+      if (j === boardData[setting.setting]) {
+        option.setAttribute('selected', true);
+      }
+
+      element.appendChild(option);
+
+    }
+
   }
 
 };
@@ -192,6 +232,8 @@ exports.setContent = function(document, boardData, userData, bans, reports) {
   exports.setBoardManagementLinks(document, boardData);
 
   exports.setBoardControlCheckBoxes(document, boardData);
+
+  exports.setBoardComboBoxes(document, boardData);
 
   exports.setBoardFields(document, boardData);
 

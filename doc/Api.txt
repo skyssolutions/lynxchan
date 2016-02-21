@@ -355,10 +355,10 @@ Parameters:
     boardDescription*: new description of the board. 128 characters.
     tags(Array): array of tags to be used on this board.
     anonymousName: name to be used when the user is anonymous. 32 character.
+    captchaMode(Number): indicates the captcha mode for the board. 0 means no captcha, 1 means only for new threads and 2 means for all posts on the board.
     hourlyThreadLimit(Number): limit of new threads allowed per hour. If exceeded, the board will lock for thread creation temporarily.
     settings(Array): new settings of the board. May contain the following values:
         disableIds: ids on threads and posts will be disabled.
-        disableCaptcha: captchas will be disabled.
         forceAnonymity: the name input is disabled on posting.
         allowCode: the use of [code] is allowed.
         early404: will delete threads after one hour if they do not receive at least 5 replies.

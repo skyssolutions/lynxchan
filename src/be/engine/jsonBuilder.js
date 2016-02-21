@@ -419,7 +419,8 @@ exports.boardManagement = function(userData, boardData, reports, bans) {
     maxThreadCount : boardData.maxThreadCount || settings.maxThreadCount,
     maxFileSizeMB : boardData.maxFileSizeMB || settings.maxFileSizeMB,
     acceptedMimes : boardData.acceptedMimes || settings.acceptedMimes,
-    maxFiles : boardData.maxFiles || settings.maxFiles
+    maxFiles : boardData.maxFiles || settings.maxFiles,
+    captchaMode : boardData.captchaMode || 0
   });
 
 };

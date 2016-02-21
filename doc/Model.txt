@@ -17,7 +17,6 @@ boards: stores boards.
     volunteers(Array): array of logins of the users that are volunteers in the board.
     settings(Array): list of settings of the board. May contain the following strings:
         disableIds: disables recording of thread-wise ids.
-        disableCaptcha: disable captchas for posting in the board.
         forceAnonymity: disables the name input.
         unindex: removes board from index.
         uniqueFiles: board uses R9K to enforce unique files.
@@ -45,6 +44,7 @@ boards: stores boards.
     ipSalt: salt used to display hashed ips to staff.
     usesCustomSpoiler(Boolean): pre-aggregated boolean indicating the board has a custom spoiler.
     tags(Array): array of strings used as tags to identify the board subjects. Each tag can be up to 32 characters. Any upper-case character will be converted to lower-case.
+    captchaMode(Number): indicates the captcha mode for the board. 0 means no captcha, 1 means only for new threads and 2 means for all posts on the board.
 
 ----------------------------------------------------------------------------------------
 

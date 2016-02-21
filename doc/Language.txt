@@ -130,6 +130,7 @@ guiUnlimited: label used when a file size limit for an operation is limitless.
 guiNoFlag: label used for the first option on a flag combobox.
 guiTorLevels: array containing the posting levels for TOR users. First element indicates no posting, second posting without files, third posting with files.
 guiTypeThreadTransfer: label used for logs of thread transfers.
+guiCaptchaModes: array with the captcha modes for boards. The first element is used for no captcha, the second for captcha only for new threads and the third one for all posts.
 guiBypassModes: array with the bypass mode options. The first element is the one for bypass disabled. The second is for bypass enabled. The third is for mandatory use of block bypass.
 logGlobalRoleChange: object containing pieces used to compose the message added to the log on a global role change. Contains the following fields:
     userPiece: piece used for the start of the message indicating which user changed the global role of the subject. Replaces: {$login}.

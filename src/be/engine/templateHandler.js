@@ -213,7 +213,7 @@ exports.getPageTests = function() {
             'deletionIdentifier', 'reportDiv', 'closedReportsLink',
             'bannerManagementLink', 'boardNameField', 'boardDescriptionField',
             'boardMessageField', 'boardSettingsIdentifier', 'unindexCheckbox',
-            'disableIdsCheckbox', 'rangeBansLink', 'disableCaptchaCheckbox',
+            'disableIdsCheckbox', 'rangeBansLink', 'captchaModeComboBox',
             'filterManagementLink', 'anonymousNameField', 'boardLabel',
             'customCssIdentifier', 'ruleManagementLink', 'allowCodeCheckbox',
             'flagManagementLink', 'early404Checkbox', 'hourlyThreadLimitField',

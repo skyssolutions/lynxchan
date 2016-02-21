@@ -201,7 +201,7 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
     var linkManagement = document.getElementById('linkManagement');
     linkManagement.href = '/boardManagement.js?boardUri=' + boardData.boardUri;
 
-    common.setHeader(document, boardUri, boardData, flagData);
+    common.setHeader(document, boardUri, boardData, flagData, true);
 
     exports.setThreadHiddenIdentifiers(document, boardUri, threadData);
 

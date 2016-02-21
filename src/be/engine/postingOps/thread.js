@@ -305,10 +305,6 @@ exports.setStartTime = function(usedSet, board, setBlock, updateBlock) {
 
 exports.setCaptchaEnabling = function(updateBlock) {
 
-  updateBlock.$pullAll = {
-    settings : [ 'disableCaptcha' ]
-  };
-
   var unsetBlock = updateBlock.$unset || {};
 
   unsetBlock.autoCaptchaCount = 1;
@@ -321,14 +317,18 @@ exports.setCaptchaEnabling = function(updateBlock) {
   if (updateBlock.$set) {
     delete updateBlock.$set.autoCaptchaStartTime;
     delete updateBlock.$set.autoCaptchaCount;
+  } else {
+    updateBlock.$set = {};
   }
+
+  updateBlock.$set.captchaMode = 1;
 
   return true;
 };
 
 exports.setUpdateForAutoCaptcha = function(updateBlock, board) {
 
-  if (board.settings.indexOf('disableCaptcha') === -1) {
+  if (board.captchaMode > 0) {
     return false;
   }
 
@@ -469,6 +469,7 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
     maxFileSizeMB : 1,
     usesCustomSpoiler : 1,
     maxThreadCount : 1,
+    captchaMode : 1,
     lockedUntil : 1,
     acceptedMimes : 1,
     lockCountStart : 1,

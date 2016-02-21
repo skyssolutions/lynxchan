@@ -22,8 +22,9 @@ var globalBoardModeration;
 var boardCreationRequirement;
 var maxVolunteers;
 var allowedMimes;
+var rangeSettings;
 
-var defaultSettings = [ 'disableIds', 'disableCaptcha' ];
+var defaultSettings = [ 'disableIds' ];
 
 var boardParameters = [ {
   field : 'boardUri',
@@ -72,12 +73,14 @@ exports.loadDependencies = function() {
   modCommonOps = require('../modOps').common;
   lang = require('../langOps').languagePack();
 
+  var dynamicPages = require('../domManipulator').dynamicPages;
+  rangeSettings = dynamicPages.managementPages.boardRangeSettingsRelation;
 };
 
 exports.getValidSettings = function() {
-  return [ 'disableIds', 'disableCaptcha', 'forceAnonymity', 'allowCode',
-      'early404', 'unindex', 'blockDeletion', 'requireThreadFile',
-      'uniqueFiles', 'uniquePosts', 'locationFlags' ];
+  return [ 'disableIds', 'forceAnonymity', 'allowCode', 'early404', 'unindex',
+      'blockDeletion', 'requireThreadFile', 'uniqueFiles', 'uniquePosts',
+      'locationFlags' ];
 };
 
 // Section 1: New settings {
@@ -86,17 +89,14 @@ exports.captchaOrAnonimityChanged = function(board, params) {
   var oldSettings = board.settings;
   var newSettings = params.settings;
 
-  var hadCaptcha = oldSettings.indexOf('disableCaptcha') === -1;
-  var hasCaptcha = newSettings.indexOf('disableCaptcha') === -1;
-
-  var captchaChanged = hadCaptcha !== hasCaptcha && !forcedCaptcha;
+  var captchaChanged = board.captchaMode !== +params.captchaMode;
 
   var hadAnon = oldSettings.indexOf('forceAnonymity') === -1;
   var hasAnon = newSettings.indexOf('forceAnonymity') === -1;
 
   var anonChanged = hadAnon !== hasAnon;
 
-  return anonChanged || captchaChanged;
+  return anonChanged || (captchaChanged && !forcedCaptcha);
 
 };
 
@@ -242,7 +242,8 @@ exports.saveNewSettings = function(board, parameters, callback) {
     autoSageLimit : +parameters.autoSageLimit,
     maxThreadCount : +parameters.maxThreadCount,
     maxFileSizeMB : +parameters.maxFileSizeMB,
-    maxFiles : +parameters.maxFiles
+    maxFiles : +parameters.maxFiles,
+    captchaMode : +parameters.captchaMode
   };
 
   var updateBlock = {
@@ -662,6 +663,7 @@ exports.getBoardManagementData = function(userData, board, callback) {
     boardUri : 1,
     boardName : 1,
     volunteers : 1,
+    captchaMode : 1,
     boardMessage : 1,
     autoSageLimit : 1,
     anonymousName : 1,

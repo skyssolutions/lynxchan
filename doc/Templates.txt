@@ -740,9 +740,9 @@ early404Checkbox:
     use: might be turned on.
     description: checkbox that indicates if the option to use early 404 on threads is on.
 
-disableCaptchaCheckbox:
-    use: might be turned on.
-    description: check-box that indicates if the option to disable captchas is turned on. 
+captchaModeComboBox:
+    use: have children appended to it.
+    description: combobox indicating the captcha mode for the board. 
 
 unindexCheckbox:
     use: might be turned on.

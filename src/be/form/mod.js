@@ -167,6 +167,7 @@ exports.process = function(req, res) {
           ipSalt : 1,
           boardName : 1,
           settings : 1,
+          captchaMode : 1,
           boardMarkdown : 1,
           usesCustomCss : 1,
           boardDescription : 1,

@@ -211,10 +211,12 @@ exports.setFlags = function(document, board, flagData) {
 
 };
 
-exports.setBoardToggleableElements = function(boardData, document) {
+exports.setBoardToggleableElements = function(boardData, document, thread) {
   var settings = boardData.settings;
 
-  if (settings.indexOf('disableCaptcha') > -1 && !forceCaptcha) {
+  var captchaMode = boardData.captchaMode;
+
+  if ((captchaMode < 1 || (captchaMode < 2 && thread)) && !forceCaptcha) {
     exports.removeElement(document.getElementById('captchaDiv'));
   }
 
@@ -229,7 +231,7 @@ exports.setBoardToggleableElements = function(boardData, document) {
   }
 };
 
-exports.setHeader = function(document, board, boardData, flagData) {
+exports.setHeader = function(document, board, boardData, flagData, thread) {
 
   var titleHeader = document.getElementById('labelName');
   titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
@@ -240,7 +242,7 @@ exports.setHeader = function(document, board, boardData, flagData) {
   var linkBanner = '/randomBanner.js?boardUri=' + board;
   document.getElementById('bannerImage').src = linkBanner;
 
-  exports.setBoardToggleableElements(boardData, document);
+  exports.setBoardToggleableElements(boardData, document, thread);
 
   if (boardData.usesCustomCss) {
     exports.setCustomCss(board, document);
