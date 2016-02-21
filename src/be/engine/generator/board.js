@@ -2,6 +2,8 @@
 
 // handles generation control of pages specific to a board
 
+var exec = require('child_process').exec;
+var kernel = require('../../kernel');
 var db = require('../../db');
 var boards = db.boards();
 var flags = db.flags();
@@ -541,19 +543,25 @@ exports.board = function(boardUri, reloadThreads, reloadRules, cb, boardData) {
 };
 // } Section 1.1: Board
 
-exports.boards = function(callback, lastId) {
+exports.iterateBoards = function(callback, lastUri, toSkip, startedSkipping) {
 
   var query = {};
 
-  if (lastId) {
-    query._id = {
-      $lt : lastId
+  if (lastUri) {
+    query.boardUri = {
+      $lt : lastUri
     };
   }
 
-  boards.find(query, boardProjection).sort({
-    _id : -1
-  }).limit(1).toArray(function gotResults(error, results) {
+  var cursor = boards.find(query, boardProjection).sort({
+    boardUri : -1
+  });
+
+  if (toSkip && startedSkipping) {
+    cursor.skip(toSkip);
+  }
+
+  cursor.limit(1).toArray(function gotResults(error, results) {
 
     if (error) {
       callback(error);
@@ -569,7 +577,7 @@ exports.boards = function(callback, lastId) {
         if (error) {
           callback(error);
         } else {
-          exports.boards(callback, board._id);
+          exports.iterateBoards(callback, board.boardUri, toSkip, true);
         }
 
       }, board);
@@ -578,6 +586,85 @@ exports.boards = function(callback, lastId) {
     }
 
   });
+
+};
+
+exports.startBoardRebuildProcesses = function(callback, initialBoards) {
+
+  var remaining = initialBoards.length;
+
+  var bootPath = __dirname + '/../../boot.js -nd -rboard -nf';
+
+  if (remaining > 1) {
+    bootPath += ' -i ' + (remaining - 1);
+  }
+
+  var running = true;
+
+  var execCallback = function(error, stdout, stderr) {
+
+    if (!running) {
+      return;
+    }
+
+    if (error) {
+      running = false;
+      callback(stderr);
+
+    } else {
+
+      remaining--;
+
+      if (!remaining) {
+        running = false;
+        callback();
+      }
+
+    }
+
+  };
+
+  for (var i = 0; i < remaining; i++) {
+
+    var pathToUse = bootPath;
+
+    if (i) {
+      pathToUse += ' -b ' + (initialBoards[i - 1]).boardUri;
+    }
+
+    exec(pathToUse, execCallback);
+
+  }
+
+};
+
+exports.boards = function(callback) {
+
+  var informedArguments = kernel.informedArguments();
+
+  if (informedArguments.noFork.informed) {
+
+    exports.iterateBoards(callback, informedArguments.board.value,
+        +informedArguments.interval.value);
+
+    return;
+  }
+
+  boards.find({}, {
+    boardUri : 1,
+    _id : 0
+  }).sort({
+    boardUri : -1
+  }).limit(require('os').cpus().length).toArray(
+      function gotInitialBoards(error, initialBoards) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.startBoardRebuildProcesses(callback, initialBoards);
+        }
+
+      });
 
 };
 // } Section 1: Boards

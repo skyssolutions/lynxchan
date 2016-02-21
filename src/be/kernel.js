@@ -204,6 +204,11 @@ var informedArguments = {
     long : '--reload-audio',
     type : 'boolean'
   },
+  noFork : {
+    short : '-nf',
+    long : '--no-fork',
+    type : 'boolean'
+  },
   reloadThumb : {
     short : '-rt',
     long : '--reload-thumb',
@@ -233,7 +238,21 @@ var informedArguments = {
     short : '-gr',
     long : '--global-role',
     type : 'value'
+  },
+  board : {
+    short : '-b',
+    long : '--board',
+    type : 'value'
+  },
+  interval : {
+    short : '-i',
+    long : '--interval',
+    type : 'value'
   }
+};
+
+exports.informedArguments = function() {
+  return informedArguments;
 };
 
 var args = process.argv;
@@ -549,10 +568,25 @@ function iterateOptionalReloads(index) {
 
           if (error) {
 
-            console.log(error);
+            if (informedArguments.noFork.informed) {
 
-            if (debug) {
-              throw error;
+              console.error(error);
+
+              // style exception, too simple
+              db.conn().close(function closed() {
+                process.exit(1);
+              });
+              // style exception, too simple
+
+              return;
+
+            } else {
+
+              console.log(error);
+
+              if (debug) {
+                throw error;
+              }
             }
 
           }
