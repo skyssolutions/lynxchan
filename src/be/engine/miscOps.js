@@ -330,6 +330,11 @@ exports.getParametersArray = function() {
     setting : 'globalLatestImages',
     element : 'fieldGlobalLatestImages'
   }, {
+    param : 'torPort',
+    type : 'number',
+    setting : 'torPort',
+    element : 'fieldTorPort'
+  }, {
     param : 'captchaExpiration',
     type : 'number',
     setting : 'captchaExpiration',

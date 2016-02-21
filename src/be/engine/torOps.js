@@ -97,6 +97,10 @@ exports.updateIps = function(callback) {
 // end of update
 exports.markAsTor = function(req, callback) {
 
+  if (req.isTor) {
+    callback(null, req);
+  }
+
   var ip = logger.convertIpToArray(logger.getRawIp(req));
 
   torIps.findOne({

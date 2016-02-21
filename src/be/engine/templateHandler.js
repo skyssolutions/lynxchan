@@ -311,7 +311,7 @@ exports.getPageTests = function() {
             'comboTorAccess', 'checkboxMediaThumb', 'checkboxMaintenance',
             'checkboxMultipleReports', 'fieldMaster', 'checkboxAutoPruneFiles',
             'checkboxDisableAccountCreation', 'comboBoardCreationRequirement',
-            'fieldMaxTags', 'fieldGlobalLatestImages',
+            'fieldMaxTags', 'fieldGlobalLatestImages', 'fieldTorPort',
             'checkboxDisableFloodCheck', 'comboMinClearIpRole',
             'fieldThumbExtension', 'fieldSslPass', 'checkboxFrontPageStats',
             'checkboxGlobalBoardModeration', 'checkboxGlobalBanners',

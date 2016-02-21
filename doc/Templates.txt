@@ -1772,6 +1772,10 @@ fieldSlaves:
     use: have it's value manipulated.
     description: field that displays the ips of the slaves instances of a cluster.
 
+fieldTorPort:
+    use: have it's value manipulated.
+    description: field that displays the port that will mark any incoming request through it as TOR.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::53

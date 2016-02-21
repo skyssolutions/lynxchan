@@ -6,7 +6,8 @@
 
 var kernel = require('./kernel');
 var settingsHandler = require('./settingsHandler');
-var verbose = settingsHandler.getGeneralSettings().verbose;
+var settings = settingsHandler.getGeneralSettings();
+var verbose = settings.verbose;
 var cluster = require('cluster');
 var fs = require('fs');
 var requestHandler;
@@ -17,7 +18,8 @@ var debug = kernel.debug();
 
 exports.reload = function() {
 
-  verbose = settingsHandler.getGeneralSettings().verbose;
+  settings = settingsHandler.getGeneralSettings();
+  verbose = settings.verbose;
   requestHandler = require('./engine/requestHandler');
 };
 
@@ -53,12 +55,12 @@ function startSSL() {
     var options = {
       key : fs.readFileSync(__dirname + '/ssl.key'),
       cert : fs.readFileSync(__dirname + '/ssl.cert'),
-      passphrase : settingsHandler.getGeneralSettings().sslPass
+      passphrase : settings.sslPass
     };
 
     var server = require('https').createServer(options, function(req, res) {
       main(req, res);
-    }).listen(443, settingsHandler.getGeneralSettings().address);
+    }).listen(443, settings.address);
 
     server.on('error', function handle(error) {
 
@@ -84,17 +86,41 @@ function startSSL() {
 
 }
 
+function startTorPort() {
+
+  var server = require('http').createServer(function(req, res) {
+    req.isTor = true;
+
+    main(req, res);
+
+  }).listen(settings.torPort, settings.address);
+
+  server.on('error', function handleError(error) {
+
+    if (debug) {
+      throw error;
+    } else if (verbose) {
+      console.log(error);
+    }
+
+  });
+
+}
+
 function startListening() {
 
-  if (settingsHandler.getGeneralSettings().ssl) {
+  if (settings.ssl) {
     startSSL();
+  }
+
+  if (settings.torPort) {
+    startTorPort();
   }
 
   var server = require('http').createServer(function(req, res) {
     main(req, res);
 
-  }).listen(settingsHandler.getGeneralSettings().port,
-      settingsHandler.getGeneralSettings().address);
+  }).listen(settings.port, settings.address);
 
   server.on('listening', function booted() {
 
