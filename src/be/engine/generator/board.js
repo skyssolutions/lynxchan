@@ -599,6 +599,10 @@ exports.startBoardRebuildProcesses = function(callback, initialBoards) {
 
   if (remaining > 1) {
     bootPath += ' -i ' + (remaining - 1);
+  } else if (!remaining) {
+    callback();
+
+    return;
   }
 
   var running = true;
@@ -826,16 +830,40 @@ exports.iterateThreadsForPreviews = function(callback, lastId, lastPostId,
 
 };
 
+exports.getFinalCommand = function(bootPath, startThreads, startPosts, i) {
+
+  var pathToUse = bootPath;
+
+  if (i) {
+    if (i < startThreads.length) {
+      pathToUse += ' -t ' + (startThreads[i - 1])._id;
+    }
+
+    if (i < startPosts.length) {
+      pathToUse += ' -po ' + (startPosts[i - 1])._id;
+    }
+
+  }
+
+  return pathToUse;
+
+};
+
 exports.startPreviewRebuildProcesses = function(startThreads, startPosts,
     callback) {
 
-  var count = startThreads.length < startPosts.length ? startThreads.length
+  var count = startThreads.length > startPosts.length ? startThreads.length
       : startPosts.length;
 
   var bootPath = __dirname + '/../../boot.js -nd -rp -nf';
 
   if (count > 1) {
     bootPath += ' -i ' + (count - 1);
+  } else if (!count) {
+
+    callback();
+
+    return;
   }
 
   var running = true;
@@ -871,20 +899,8 @@ exports.startPreviewRebuildProcesses = function(startThreads, startPosts,
 
   for (var i = 0; i < count; i++) {
 
-    var pathToUse = bootPath;
-
-    if (i) {
-      if (i < startThreads.length) {
-        pathToUse += ' -t ' + (startThreads[i - 1])._id;
-      }
-
-      if (i < startPosts.length) {
-        pathToUse += ' -po ' + (startPosts[i - 1])._id;
-      }
-
-    }
-
-    exec(pathToUse, execCallback);
+    exec(exports.getFinalCommand(bootPath, startThreads, startPosts, i),
+        execCallback);
 
   }
 

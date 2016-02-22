@@ -1214,6 +1214,10 @@ boardDeletionIdentifier:
     use: have it's value manipulated.
     description: hidden input that identifies the board for the deletion operation.
 
+specialSettingsIdentifier:
+    use: have it's value manipulated.
+    description: hidden input that identifies the board for the special settings set operation.
+
 labelTitle:
     use: have it's innerHTML manipulated.
     description: header that displays basic board information.
@@ -1225,6 +1229,10 @@ labelOwner:
 labelLastSeen:
     use: have it's innerHTML manipulated.
     description: displays the last time the owner of the board was seen.
+
+checkboxSfw:
+    use: might be turned on.
+    description: checkbox that indicates if the board is SFW.
 
 ------------------------------------------------------------------------------------------
 

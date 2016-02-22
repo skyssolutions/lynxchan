@@ -447,10 +447,12 @@ exports.filterManagement = function(filters) {
 
 };
 
-exports.boardModeration = function(ownerData) {
+exports.boardModeration = function(boardData, ownerData) {
 
   return JSON.stringify({
-    owner : ownerData.login
+    owner : ownerData.login,
+    specialSettings : boardData.specialSettings || [],
+    lastSeen: ownerData.lastSeen 
   });
 
 };

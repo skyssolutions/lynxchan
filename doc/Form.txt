@@ -620,6 +620,9 @@ Parameters:
 
 Json output(Object): object with the moderation data of the board. Contains the following fields:
     owner: login of the board owner.
+    lastSeen(Date): date of when the board owner was last seen.
+    specialSettings(Array): array with the board's special settings. May hold the following values:
+        sfw: indicates the board is sfw.
 
 ------------------------------------------------------------------------------------------
 
@@ -1109,6 +1112,18 @@ Parameters:
     identifier: identifier for the file. It is composed of the file md5 plus a '-' character plus the mime of the file with any '/' removed, all lowercases. Example: 07646fffbf7147f8d77916c453b98853-imagejpeg
 
 Json output(Boolean): if the file exists, returns a true.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::65
+
+Name: setSpecialBoardSettings
+
+Description: sets the special settings for the board. Requires authentication, allowed only for users with global role lesser than 2.
+
+Parameters:
+    boardUri*: board to have its special settings changed.
+    sfw: if informed, will add it to the special settings of the board, indicating it is sfw.
 
 ------------------------------------------------------------------------------------------
 

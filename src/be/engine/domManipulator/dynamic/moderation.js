@@ -11,6 +11,13 @@ var templateHandler;
 var lang;
 var common;
 
+var boardModerationIdentifiers = [ 'boardTransferIdentifier',
+    'boardDeletionIdentifier', 'specialSettingsIdentifier' ];
+
+var specialSettingsRelation = {
+  sfw : 'checkboxSfw'
+};
+
 exports.loadSettings = function() {
 
   var settings = require('../../../settingsHandler').getGeneralSettings();
@@ -110,44 +117,6 @@ exports.closedReports = function(reports, callback) {
   }
 };
 // } Section 2: Closed reports
-
-exports.boardModeration = function(boardData, ownerData) {
-
-  try {
-
-    var document = jsdom(templateHandler.boardModerationPage);
-
-    document.title = lang.titBoardModeration.replace('{$board}',
-        boardData.boardUri);
-
-    document.getElementById('boardTransferIdentifier').setAttribute('value',
-        boardData.boardUri);
-
-    document.getElementById('boardDeletionIdentifier').setAttribute('value',
-        boardData.boardUri);
-
-    document.getElementById('labelOwner').innerHTML = ownerData.login;
-
-    document.getElementById('labelLastSeen').innerHTML = ownerData.lastSeen;
-
-    var title = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
-    document.getElementById('labelTitle').innerHTML = title;
-
-    return serializer(document);
-
-  } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
-    if (debug) {
-      throw error;
-    }
-
-    return error.toString();
-  }
-
-};
 
 // Section 3: Range bans {
 exports.setRangeBanCells = function(document, rangeBans) {
@@ -262,3 +231,62 @@ exports.hashBans = function(hashBans, boardUri) {
 };
 
 // } Section 4: Hash bans
+
+// Section 5: Board moderation {
+exports.setSpecialCheckboxesAndIdentifiers = function(document, boardData) {
+
+  var specialSettings = boardData.specialSettings || [];
+
+  for ( var key in specialSettingsRelation) {
+
+    if (!specialSettingsRelation.hasOwnProperty(key)) {
+      continue;
+    }
+
+    if (specialSettings.indexOf(key) > -1) {
+      document.getElementById(specialSettingsRelation[key]).setAttribute(
+          'checked', true);
+    }
+  }
+
+  for (var i = 0; i < boardModerationIdentifiers.length; i++) {
+    document.getElementById(boardModerationIdentifiers[i]).setAttribute(
+        'value', boardData.boardUri);
+  }
+
+};
+
+exports.boardModeration = function(boardData, ownerData) {
+
+  try {
+
+    var document = jsdom(templateHandler.boardModerationPage);
+
+    document.title = lang.titBoardModeration.replace('{$board}',
+        boardData.boardUri);
+
+    exports.setSpecialCheckboxesAndIdentifiers(document, boardData);
+
+    document.getElementById('labelOwner').innerHTML = ownerData.login;
+
+    document.getElementById('labelLastSeen').innerHTML = ownerData.lastSeen;
+
+    var title = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
+    document.getElementById('labelTitle').innerHTML = title;
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+  }
+
+};
+// } Section 5: Board moderation

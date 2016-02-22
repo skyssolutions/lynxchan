@@ -45,6 +45,8 @@ boards: stores boards.
     usesCustomSpoiler(Boolean): pre-aggregated boolean indicating the board has a custom spoiler.
     tags(Array): array of strings used as tags to identify the board subjects. Each tag can be up to 32 characters. Any upper-case character will be converted to lower-case.
     captchaMode(Number): indicates the captcha mode for the board. 0 means no captcha, 1 means only for new threads and 2 means for all posts on the board.
+    specialSettings(Array): array of settings that only the global staff are allowed to change. May hold the following values:
+        sfw: indicates the board is sfw.
 
 ----------------------------------------------------------------------------------------
 

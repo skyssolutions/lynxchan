@@ -214,7 +214,7 @@ exports.setFlags = function(document, board, flagData) {
 exports.setBoardToggleableElements = function(boardData, document, thread) {
   var settings = boardData.settings;
 
-  var captchaMode = boardData.captchaMode;
+  var captchaMode = boardData.captchaMode || 0;
 
   if ((captchaMode < 1 || (captchaMode < 2 && thread)) && !forceCaptcha) {
     exports.removeElement(document.getElementById('captchaDiv'));

@@ -303,5 +303,6 @@
     "No captcha",
     "Only for threads",
     "For all posts"
-  ]
+  ],
+  "msgBoardSpecialSettingsSaved": "Board special settings saved."
 }

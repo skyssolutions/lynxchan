@@ -15,13 +15,16 @@ function setSettings(auth, userData, parameters, res) {
 
   var desiredSettings = [];
 
-  for (var i = 0; i < 0; i++) {
-    var setting = possibleSettings[i];
+  for (var i = 0; i < parameters.settings.length; i++) {
 
-    if (parameters.settings.indexOf(setting) > -1) {
+    var setting = parameters.settings[i];
+
+    if (possibleSettings.indexOf(setting) > -1) {
       desiredSettings.push(setting);
     }
   }
+
+  parameters.settings = desiredSettings;
 
   boardOps.setSettings(userData, parameters, function savedSettings(error) {
 

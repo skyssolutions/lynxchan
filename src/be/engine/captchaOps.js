@@ -322,7 +322,9 @@ exports.dispensesCaptcha = function(board, thread) {
     return;
   }
 
-  if (board.captchaMode < 1 || (board.captchaMode < 2 && thread)) {
+  var captchaMode = board.captchaMode || 0;
+
+  if (captchaMode < 1 || (captchaMode < 2 && thread)) {
 
     if (verbose) {
       console.log('Captcha disabled');

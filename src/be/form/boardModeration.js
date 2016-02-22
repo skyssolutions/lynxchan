@@ -20,7 +20,7 @@ function getBoardModerationData(parameters, userData, res, auth) {
               : 'text/html', auth));
 
           if (json) {
-            res.end(jsonBuilder.boardModeration(ownerData));
+            res.end(jsonBuilder.boardModeration(boardData, ownerData));
           } else {
             res.end(dom.boardModeration(boardData, ownerData));
           }

@@ -709,6 +709,19 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::45
+
+Name: setSpecialBoardSettings
+
+Description: sets the special settings for the board. Requires authentication, allowed only for users with global role lesser than 2.
+
+Parameters:
+    boardUri: board to have its special settings changed.
+    specialSettings(Array): array with the desired special settings. May hold the following values:
+        sfw
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters
 **: exclusive funcionality to the json api.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

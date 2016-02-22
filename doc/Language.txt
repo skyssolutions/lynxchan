@@ -245,6 +245,7 @@ msgBypassRenewed: message displayed after renewing block bypass.
 msgAccountUnlocked: message displayed when the user's account is unlocked.
 msgBanAppealed: message displayed after appealing a ban.
 msgAppealDenied: message displayed after denying an appeal.
+msgBoardSpecialSettingsSaved: message displayed after setting the special settings for a board.
 subPasswordReset: subject of the e-mail informing the new password of the user's account.
 subPasswordRequest: subject of the e-mail of a password reset request.
 subLockedAccount: subject of the e-mail used when the user got his account locked.

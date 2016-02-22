@@ -83,6 +83,10 @@ exports.getValidSettings = function() {
       'locationFlags' ];
 };
 
+exports.getValidSpecialSettings = function() {
+  return [ 'sfw' ];
+};
+
 // Section 1: New settings {
 exports.captchaOrAnonimityChanged = function(board, params) {
 
@@ -535,6 +539,7 @@ exports.insertBoard = function(parameters, userData, callback) {
     settings : defaultSettings,
     uniqueIps : 0,
     lastPostId : 0,
+    captchaMode : 0,
     postsPerHour : 0
   }, function insertedBoard(error) {
     if (error && error.code !== 11000) {
@@ -717,4 +722,33 @@ exports.getBoardModerationData = function(userData, boardUri, callback) {
       // style exception, too simple
     }
   });
+};
+
+exports.setSpecialSettings = function(userData, parameters, callback) {
+
+  var admin = userData.globalRole < 2;
+
+  if (!admin) {
+    callback(lang.errDeniedBoardMod);
+    return;
+  }
+
+  boards.findOneAndUpdate({
+    boardUri : parameters.boardUri
+  }, {
+    $set : {
+      specialSettings : parameters.specialSettings
+    }
+  }, function gotBoard(error, result) {
+
+    if (error) {
+      callback(error);
+    } else if (!result.value) {
+      callback(lang.errBoardNotFound);
+    } else {
+      callback();
+    }
+
+  });
+
 };

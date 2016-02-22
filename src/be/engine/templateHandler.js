@@ -248,7 +248,8 @@ exports.getPageTests = function() {
       {
         template : 'boardModerationPage',
         fields : [ 'boardTransferIdentifier', 'boardDeletionIdentifier',
-            'labelTitle', 'labelOwner', 'labelLastSeen' ]
+            'labelTitle', 'labelOwner', 'labelLastSeen', 'checkboxSfw',
+            'specialSettingsIdentifier' ]
       },
       {
         template : 'boardsPage',
