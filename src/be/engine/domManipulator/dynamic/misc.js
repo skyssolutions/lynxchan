@@ -297,6 +297,12 @@ exports.setBoardCell = function(board, boardCell) {
 
   var labelTags = boardCell.getElementsByClassName('labelTags')[0];
 
+  var specialSettings = board.specialSettings || [];
+
+  if (specialSettings.indexOf('sfw') < 0) {
+    common.removeElement(boardCell.getElementsByClassName('indicatorSfw')[0]);
+  }
+
   if (board.tags) {
     labelTags.innerHTML = board.tags.join(', ');
   } else {
@@ -316,6 +322,10 @@ exports.setPages = function(parameters, document, pageCount) {
 
     if (parameters.boardUri) {
       href += '&boardUri=' + parameters.boardUri;
+    }
+
+    if (parameters.sfw) {
+      href += '&sfw=1';
     }
 
     if (parameters.tags) {

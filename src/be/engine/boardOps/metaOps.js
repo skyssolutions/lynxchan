@@ -18,6 +18,7 @@ var modCommonOps;
 var lang;
 var maxBoardTags;
 var overboard;
+var sfwOverboard;
 var globalBoardModeration;
 var boardCreationRequirement;
 var maxVolunteers;
@@ -60,6 +61,7 @@ exports.loadSettings = function() {
   maxVolunteers = settings.maxBoardVolunteers;
   maxBoardTags = settings.maxBoardTags;
   overboard = settings.overboard;
+  sfwOverboard = settings.sfwOverboard;
   allowedMimes = settings.acceptedMimes;
 
 };
@@ -582,10 +584,12 @@ exports.createBoard = function(captchaId, parameters, userData, callback) {
 
   miscOps.sanitizeStrings(parameters, boardParameters);
 
+  var reservedUris = [ overboard, sfwOverboard ];
+
   if (/\W/.test(parameters.boardUri)) {
     callback(lang.errInvalidUri);
     return;
-  } else if (overboard === parameters.boardUri) {
+  } else if (reservedUris.indexOf(parameters.boardUri) > -1) {
     callback(lang.errUriInUse);
     return;
   }

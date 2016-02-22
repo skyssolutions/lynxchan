@@ -94,7 +94,7 @@ exports.getCellTests = function() {
       {
         template : 'boardsCell',
         fields : [ 'linkBoard', 'labelPostsPerHour', 'labelPostCount',
-            'divDescription', 'labelTags', 'labelUniqueIps' ]
+            'divDescription', 'labelTags', 'labelUniqueIps', 'indicatorSfw' ]
       },
       {
         template : 'rangeBanCell',
@@ -308,12 +308,12 @@ exports.getPageTests = function() {
             'fieldTorSource', 'fieldLanguagePack', 'fieldMaxRules',
             'fieldThumbSize', 'fieldMaxFilters', 'fieldMaxVolunteers',
             'fieldMaxBannerSize', 'fieldMaxFlagSize', 'fieldFloodInterval',
-            'checkboxVerbose', 'checkboxDisable304', 'checkboxSsl',
+            'checkboxVerbose', 'checkboxDisable304', 'comboMinClearIpRole',
             'comboTorAccess', 'checkboxMediaThumb', 'checkboxMaintenance',
             'checkboxMultipleReports', 'fieldMaster', 'checkboxAutoPruneFiles',
             'checkboxDisableAccountCreation', 'comboBoardCreationRequirement',
             'fieldMaxTags', 'fieldGlobalLatestImages', 'fieldTorPort',
-            'checkboxDisableFloodCheck', 'comboMinClearIpRole',
+            'checkboxDisableFloodCheck', 'checkboxSsl', 'fieldSfwOverboard',
             'fieldThumbExtension', 'fieldSslPass', 'checkboxFrontPageStats',
             'checkboxGlobalBoardModeration', 'checkboxGlobalBanners',
             'checkboxAllowCustomJs', 'fieldGlobalLatestPosts', 'fieldSlaves',

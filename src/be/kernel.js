@@ -691,17 +691,30 @@ function checkDbVersions() {
     } else {
 
       var overboard = settingsHandler.getGeneralSettings().overboard;
+      var sfwOverboard = settingsHandler.getGeneralSettings().sfwOverboard;
 
-      if (overboard) {
+      if (overboard || sfwOverboard) {
+
+        var uris = [];
+
+        if (overboard) {
+          uris.push(overboard);
+        }
+
+        if (sfwOverboard) {
+          uris.push(sfwOverboard);
+        }
 
         db.boards().findOne({
-          boardUri : overboard
+          boardUri : {
+            $in : uris
+          }
         }, function(error, board) {
           if (error) {
             throw error;
           } else if (board) {
-            var toThrow = 'You will have to change your overboard uri';
-            toThrow += ', there is already a board with this uri';
+            var toThrow = 'You will have to change your overboard or SFW ';
+            toThrow += 'overboard uri, there is already a board with this uri';
 
             throw toThrow;
           } else {

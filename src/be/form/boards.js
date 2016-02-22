@@ -8,6 +8,24 @@ var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var settingsHandler = require('../settingsHandler');
 var url = require('url');
 
+function getTags(parameters) {
+
+  var tags = [];
+
+  var rawTags = parameters.tags.split(',');
+
+  for (var i = 0; i < rawTags.length; i++) {
+    var tag = rawTags[i].trim().toLowerCase();
+
+    if (tag.length) {
+      tags.push(tag);
+    }
+  }
+
+  return tags;
+
+}
+
 function getQueryBlock(parameters) {
 
   var queryBlock = {};
@@ -20,22 +38,14 @@ function getQueryBlock(parameters) {
     delete parameters.boardUri;
   }
 
+  if (parameters.sfw) {
+    queryBlock.specialSettings = 'sfw';
+  }
+
   if (parameters.tags && parameters.tags.length) {
 
-    var tags = [];
-
-    var rawTags = parameters.tags.split(',');
-
-    for (var i = 0; i < rawTags.length; i++) {
-      var tag = rawTags[i].trim().toLowerCase();
-
-      if (tag.length) {
-        tags.push(tag);
-      }
-    }
-
     queryBlock.tags = {
-      $all : tags
+      $all : getTags(parameters)
     };
 
   } else {
@@ -130,6 +140,7 @@ exports.process = function(req, res) {
         _id : 0,
         boardName : 1,
         boardUri : 1,
+        specialSettings : 1,
         uniqueIps : 1,
         tags : 1,
         boardDescription : 1,

@@ -1263,6 +1263,10 @@ Root element: div
 
 Elements:
 
+indicatorSfw:
+    use: might be removed.
+    description: element that is displayed only for SFW boards.
+
 labelUniqueIps:
     use: have it's innerHTML manipulated.
     description: label that holds how many unique ips posted on the board in the latest 24 hours.
@@ -1555,6 +1559,10 @@ fieldRssDomain:
 fieldPort:
     use: have it's value manipulated.
     description: field that displays the port being used.
+
+fieldSfwOverboard:
+    use: have it's value manipulated.
+    description: field that displays sfw overboard uri.
 
 fieldFePath:
     use: have it's value manipulated.

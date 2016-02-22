@@ -633,6 +633,7 @@ Name: boards
 Description: displays all existing boards. Uses get parameters.
 
 Parameters:
+    sfw: displays only sfw boards if anything is informed.
     page: page to be viewed.
     boardUri: uri to be searched partially.
     tags(Array): tags to be searched. Only boards with all tags will be returned.
@@ -926,6 +927,7 @@ Json output(Object): object with the current global settings. It contains the fo
     frontPageStats(Boolean): indicates if total posts made on existing boards and total unique ips should be displayed on the front-page.
     autoPruneFiles(Boolean): makes the engine run a weekly schedule to prune files that are no longer in use.
     torPort(Number): port to be used that will mark any request using it as TOR.
+    sfwOverboard: uri for the sfw overboard.
 
 ------------------------------------------------------------------------------------------
 
@@ -997,6 +999,7 @@ Parameters:
     frontPageStats(Boolean): indicates if total posts made on existing boards and total unique ips should be displayed on the front-page.
     autoPruneFiles(Boolean): makes the engine run a weekly schedule to prune files that are no longer in use.
     torPort(Number): port to be used that will mark any request using it as TOR.
+    sfwOverboard: uri for the sfw overboard.
 
 ------------------------------------------------------------------------------------------
 

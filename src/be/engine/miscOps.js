@@ -314,6 +314,11 @@ exports.getParametersArray = function() {
     setting : 'overboard',
     element : 'fieldOverboard'
   }, {
+    param : 'sfwOverboard',
+    type : 'string',
+    setting : 'sfwOverboard',
+    element : 'fieldSfwOverboard'
+  }, {
     param : 'thumbExtension',
     type : 'string',
     setting : 'thumbExtension',

@@ -245,17 +245,38 @@ function writeNewSettings(settings, callback) {
 
 exports.setNewSettings = function(settings, callback) {
 
-  if (settings.overboard) {
+  if (settings.overboard || settings.sfwOverboard) {
 
     var lang = require('./engine/langOps').languagePack();
 
-    if (/\W/.test(settings.overboard)) {
-      callback(lang.errInvalidUri);
-      return;
+    var boardsToTest = [];
+
+    if (settings.overboard) {
+
+      if (/\W/.test(settings.overboard)) {
+        callback(lang.errInvalidUri);
+        return;
+      }
+
+      boardsToTest.push(settings.overboard);
+
+    }
+
+    if (settings.sfwOverboard) {
+
+      if (/\W/.test(settings.sfwOverboard)) {
+        callback(lang.errInvalidUri);
+        return;
+      }
+
+      boardsToTest.push(settings.sfwOverboard);
+
     }
 
     require('./db').boards().findOne({
-      boardUri : settings.overboard
+      boardUri : {
+        $in : boardsToTest
+      }
     }, function gotBoard(error, board) {
       if (error) {
         callback(error);
