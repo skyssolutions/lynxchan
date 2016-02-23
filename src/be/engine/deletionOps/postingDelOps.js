@@ -17,6 +17,7 @@ var latestPosts;
 var gridFs;
 var lang;
 var overboard;
+var sfwOverboard;
 var referenceHandler;
 var overboardOps;
 var miscOps;
@@ -26,6 +27,7 @@ var logOps;
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  sfwOverboard = settings.sfwOverboard;
   verbose = settings.verbose;
   globalLatestPostsCount = settings.globalLatestPosts;
   globalLatestImagesCount = settings.globalLatestImages;
@@ -785,7 +787,7 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
 
   if (!foundBoards.length) {
 
-    if (overboard) {
+    if (overboard || sfwOverboard) {
       overboardOps.reaggregate({
         overboard : true,
         reaggregate : true

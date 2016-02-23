@@ -15,7 +15,7 @@ function setBoardSpecialSettings(auth, userData, parameters, res) {
 
   var desiredSettings = [];
 
-  for (var i = 0; i < parameters.specialSettings.length; i++) {
+  for (var i = 0; i < possibleSettings.length; i++) {
 
     var setting = parameters.specialSettings[i];
 

@@ -3,6 +3,8 @@
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var overboardSize;
+var sfwOverboard;
+var overboard;
 var db = require('../db');
 var overboardThreads = db.overboardThreads();
 var threads = db.threads();
@@ -11,6 +13,8 @@ var reaggregating;
 exports.loadSettings = function() {
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  overboard = settings.overboard;
+  sfwOverboard = settings.sfwOverboard;
   overboardSize = settings.overBoardThreadCount;
 };
 
@@ -19,30 +23,41 @@ exports.loadSettings = function() {
 // Section 1.1: Overboard pruning {
 function getThreadsToRemove(toRemove, ids, message) {
 
-  threads.find({
-    _id : {
-      $in : ids
+  threads.aggregate([ {
+    $match : {
+      _id : {
+        $in : ids
+      }
     }
   }, {
-    threadId : 1
-  }).sort({
-    lastBump : 1
-  }).limit(toRemove).toArray(function(error, foundThreads) {
+    $project : {
+      lastBump : 1
+    }
+  }, {
+    $sort : {
+      lastBump : 1
+    }
+  }, {
+    $limit : toRemove
+  }, {
+    $group : {
+      _id : 0,
+      ids : {
+        $push : '$_id'
+      }
+    }
+  } ], function(error, results) {
 
     if (error) {
       console.log(error);
+    } else if (!results.length) {
+      process.send(message);
     } else {
-
-      var idsToRemove = [];
-
-      for (var i = 0; i < foundThreads.length; i++) {
-        idsToRemove.push(new ObjectID(foundThreads[i]._id));
-      }
 
       // style exception, too simple
       overboardThreads.deleteMany({
         thread : {
-          $in : idsToRemove
+          $in : results[0].ids
         }
       }, function removed(error) {
         if (error) {
@@ -59,7 +74,13 @@ function getThreadsToRemove(toRemove, ids, message) {
 
 function checkAmount(message) {
 
-  overboardThreads.count({}, function gotCount(error, count) {
+  var queryBlock = {
+    sfw : message.sfw ? true : {
+      $ne : true
+    }
+  };
+
+  overboardThreads.count(queryBlock, function gotCount(error, count) {
 
     if (error) {
       console.log(error);
@@ -67,6 +88,8 @@ function checkAmount(message) {
 
       // style exception, too simple
       overboardThreads.aggregate([ {
+        $match : queryBlock
+      }, {
         $group : {
           _id : 0,
           ids : {
@@ -101,7 +124,8 @@ function checkAmount(message) {
 function addThread(message) {
 
   overboardThreads.insertOne({
-    thread : new ObjectID(message._id)
+    thread : new ObjectID(message._id),
+    sfw : message.sfw
   }, function(error) {
 
     if (error) {
@@ -132,15 +156,68 @@ function checkForExistance(message) {
 
 }
 
-function fullReaggregate(message) {
+function finishFullAggregation(message, ids) {
 
-  if (reaggregating) {
+  if (!ids.length) {
+    reaggregating = false;
+
     return;
   }
 
-  reaggregating = true;
+  var operations = [];
+
+  for (var i = 0; i < ids.length; i++) {
+
+    operations.push({
+      updateOne : {
+        filter : {
+          thread : ids[i]
+        },
+        update : {
+          $setOnInsert : {
+            thread : ids[i]
+          }
+        },
+        upsert : true
+      }
+    });
+
+  }
+
+  operations.push({
+    deleteMany : {
+      filter : {
+        thread : {
+          $nin : ids
+        }
+      }
+    }
+  });
+
+  overboardThreads.bulkWrite(operations, function reaggregated(error) {
+    reaggregating = false;
+    if (error) {
+      console.log(error);
+    } else {
+      process.send(message);
+    }
+
+  });
+
+}
+
+function reaggregateSfw(message, nsfwIds) {
+
+  if (!sfwOverboard) {
+    finishFullAggregation(message, nsfwIds);
+    return;
+  }
 
   threads.aggregate([ {
+    $match : {
+      sfw : true
+    }
+  }, {
     $project : {
       lastBump : 1
     }
@@ -163,50 +240,60 @@ function fullReaggregate(message) {
       reaggregating = false;
       console.log(error);
     } else if (results.length) {
-      var ids = results[0].ids;
+      finishFullAggregation(message, nsfwIds.concat(results[0].ids));
+    } else {
+      finishFullAggregation(message, nsfwIds);
+    }
 
-      var operations = [];
+  });
 
-      for (var i = 0; i < ids.length; i++) {
+}
 
-        operations.push({
-          updateOne : {
-            filter : {
-              thread : ids[i]
-            },
-            update : {
-              $setOnInsert : {
-                thread : ids[i]
-              }
-            },
-            upsert : true
-          }
-        });
+function fullReaggregate(message) {
 
+  if (reaggregating) {
+    return;
+  }
+
+  reaggregating = true;
+
+  if (!overboard) {
+    reaggregateSfw(message, []);
+    return;
+  }
+
+  threads.aggregate([ {
+    $match : {
+      sfw : {
+        $ne : true
       }
+    }
+  }, {
+    $project : {
+      lastBump : 1
+    }
+  }, {
+    $sort : {
+      lastBump : -1
+    }
+  }, {
+    $limit : overboardSize
+  }, {
+    $group : {
+      _id : 0,
+      ids : {
+        $push : '$_id'
+      }
+    }
+  } ], function gotThreads(error, results) {
 
-      operations.push({
-        deleteMany : {
-          filter : {
-            thread : {
-              $nin : ids
-            }
-          }
-        }
-      });
-
-      // style exception, too simple
-      overboardThreads.bulkWrite(operations, function reaggregated(error) {
-        reaggregating = false;
-        if (error) {
-          console.log(error);
-        } else {
-          process.send(message);
-        }
-
-      });
-      // style exception, too simple
-
+    if (error) {
+      reaggregating = false;
+      console.log(error);
+    } else if (results.length) {
+      reaggregateSfw(message, results[0].ids);
+    } else {
+      reaggregateSfw(message, []);
     }
 
   });

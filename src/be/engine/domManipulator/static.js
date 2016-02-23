@@ -14,6 +14,7 @@ var gridFs;
 var miscOps;
 var clearIpMinRole;
 var overboard;
+var sfwOverboard;
 var siteTitle;
 var engineInfo;
 
@@ -22,6 +23,7 @@ var availableLogTypes;
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
   accountCreationDisabled = settings.disableAccountCreation;
   siteTitle = settings.siteTitle || lang.titDefaultChanTitle;
@@ -679,20 +681,19 @@ exports.addOverBoardThreads = function(foundThreads, previewRelation, doc) {
 };
 
 exports.overboard = function(foundThreads, previewRelation, callback,
-    multiBoard) {
+    multiBoard, sfw) {
 
   try {
 
     var document = jsdom(templateHandler.overboard);
 
-    var tit = multiBoard ? lang.titMultiboard : '/' + overboard + '/';
-    document.title = tit;
-
     exports.addOverBoardThreads(foundThreads, previewRelation, document);
 
     if (multiBoard) {
+      document.title = lang.titMultiboard;
       callback(null, serializer(document));
     } else {
+      document.title = '/' + (sfw ? sfwOverboard : overboard) + '/';
       gridFs.writeData(serializer(document), document.title, 'text/html', {},
           callback);
     }

@@ -8,6 +8,7 @@ var logger = require('../../../logger');
 var debug = require('../../../kernel').debug();
 var verbose;
 var overboard;
+var sfwOverboard;
 var templateHandler;
 var lang;
 var common;
@@ -26,6 +27,7 @@ exports.loadSettings = function() {
 
   verbose = settings.verbose;
   overboard = settings.overboard;
+  sfwOverboard = settings.sfwOverboard;
   boardCreationRequirement = settings.boardCreationRequirement;
 
 };
@@ -360,19 +362,33 @@ exports.setBoards = function(boards, document) {
 
 };
 
+exports.setOverboardLinks = function(document) {
+
+  var linkOverboard = document.getElementById('linkOverboard');
+
+  if (overboard) {
+    linkOverboard.href = '/' + overboard + '/';
+  } else {
+    common.removeElement(linkOverboard);
+  }
+
+  var linkSfwOverboard = document.getElementById('linkSfwOver');
+
+  if (sfwOverboard) {
+    linkSfwOverboard.href = '/' + sfwOverboard + '/';
+  } else {
+    common.removeElement(linkSfwOverboard);
+  }
+
+};
+
 exports.boards = function(parameters, boards, pageCount) {
   try {
     var document = jsdom(templateHandler.boardsPage);
 
     document.title = lang.titBoards;
 
-    var linkOverboard = document.getElementById('linkOverboard');
-
-    if (overboard) {
-      linkOverboard.href = '/' + overboard + '/';
-    } else {
-      common.removeElement(linkOverboard);
-    }
+    exports.setOverboardLinks(document);
 
     exports.setBoards(boards, document);
 

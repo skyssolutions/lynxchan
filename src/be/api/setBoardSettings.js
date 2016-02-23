@@ -15,7 +15,7 @@ function setSettings(auth, userData, parameters, res) {
 
   var desiredSettings = [];
 
-  for (var i = 0; i < parameters.settings.length; i++) {
+  for (var i = 0; i < possibleSettings.length; i++) {
 
     var setting = parameters.settings[i];
 

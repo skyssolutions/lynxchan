@@ -88,6 +88,7 @@ threads: stores board's threads.
         mime: mimetype of the file.
         width(Number): width of the file, if image or video.
         height(Number): height of the file, if image or video.
+    sfw(Boolean): pre-aggregated value indicating if the thread was made on a SFW board at the time.
 
 ----------------------------------------------------------------------------------------
 
@@ -267,6 +268,7 @@ latestPosts: stores metadata from global latest posts.
 
 overboardThreads: stores aggregated data of threads on the overboard.
     thread*: _id of the document of the thread.
+    sfw(Boolean): indicates if the thread is part of the SFW overboard.
 
 ----------------------------------------------------------------------------------------
 

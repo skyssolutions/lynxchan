@@ -19,6 +19,7 @@ var boards = db.boards();
 var verbose;
 var overboard;
 var lang;
+var sfwOverboard;
 var logOps;
 var referenceHandler;
 var overboardOps;
@@ -30,6 +31,7 @@ var collectionsToClean = [ reports, posts, threads, flags, hashBans,
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  sfwOverboard = settings.sfwOverboard;
   verbose = settings.verbose;
   overboard = settings.overboard;
 };
@@ -206,7 +208,7 @@ exports.deleteBoardContent = function(board, callback, index) {
       frontPage : true
     });
 
-    if (overboard) {
+    if (overboard || sfwOverboard) {
       overboardOps.reaggregate({
         overboard : true,
         reaggregate : true

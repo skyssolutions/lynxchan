@@ -7,12 +7,14 @@ var settings;
 var gridFsHandler;
 var miscOps;
 var overboard;
+var sfwOverboard;
 var boardCreationRequirement;
 
 exports.loadSettings = function() {
 
   settings = require('../settingsHandler').getGeneralSettings();
 
+  sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
   boardCreationRequirement = settings.boardCreationRequirement;
 };
@@ -452,7 +454,7 @@ exports.boardModeration = function(boardData, ownerData) {
   return JSON.stringify({
     owner : ownerData.login,
     specialSettings : boardData.specialSettings || [],
-    lastSeen: ownerData.lastSeen 
+    lastSeen : ownerData.lastSeen
   });
 
 };
@@ -512,7 +514,7 @@ exports.globalSettings = function() {
 };
 
 exports.overboard = function(foundThreads, previewRelation, callback,
-    multiboard) {
+    multiboard, sfw) {
 
   var threadsToAdd = [];
 
@@ -535,7 +537,7 @@ exports.overboard = function(foundThreads, previewRelation, callback,
       threads : threadsToAdd
     }));
   } else {
-    var url = '/' + overboard + '/1.json';
+    var url = '/' + (sfw ? sfwOverboard : overboard) + '/1.json';
 
     gridFsHandler.writeData(JSON.stringify({
       threads : threadsToAdd

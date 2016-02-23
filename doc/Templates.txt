@@ -1253,6 +1253,10 @@ linkOverboard:
     use: have it's src manipulated or might be removed.
     description: link to the overboard.
 
+linkSfwOver:
+    use: have it's src manipulated or might be removed.
+    description: link to the sfw overboard.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::34

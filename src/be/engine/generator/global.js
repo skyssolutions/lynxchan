@@ -30,6 +30,7 @@ var jsonBuilder;
 var miscOps;
 var rssBuilder;
 var overboard;
+var sfwOverboard;
 var globalStats;
 var fePath;
 var overBoardThreadCount;
@@ -43,6 +44,7 @@ exports.loadSettings = function() {
   globalLatestImages = settings.globalLatestImages;
   overboard = settings.overboard;
   fePath = settings.fePath;
+  sfwOverboard = settings.sfwOverboard;
   globalStats = settings.frontPageStats;
   overBoardThreadCount = settings.overBoardThreadCount;
 };
@@ -307,7 +309,7 @@ exports.frontPage = function(callback) {
 
 // Section 2: Overboard {
 exports.buildJsonAndRssOverboard = function(foundThreads, previewRelation,
-    callback) {
+    callback, sfw) {
 
   jsonBuilder.overboard(foundThreads, previewRelation,
       function builtJsonOverboard(error) {
@@ -316,15 +318,26 @@ exports.buildJsonAndRssOverboard = function(foundThreads, previewRelation,
           callback(error);
         } else {
           rssBuilder.board({
-            boardUri : overboard
-          }, foundThreads, callback);
+            boardUri : sfw ? sfwOverboard : overboard
+          }, foundThreads, function rebuilt(error) {
+
+            if (error) {
+              callback(error);
+            } else if (!sfw && sfwOverboard) {
+
+              exports.overboard(callback, true);
+            } else {
+              callback();
+            }
+
+          });
         }
 
-      });
+      }, null, sfw);
 
 };
 
-exports.getOverboardPosts = function(foundThreads, callback) {
+exports.getOverboardPosts = function(foundThreads, callback, sfw) {
 
   var previewRelation = {};
 
@@ -388,10 +401,10 @@ exports.getOverboardPosts = function(foundThreads, callback) {
                   callback(error);
                 } else {
                   exports.buildJsonAndRssOverboard(foundThreads,
-                      previewRelation, callback);
+                      previewRelation, callback, sfw);
 
                 }
-              });
+              }, null, sfw);
           // style exception, too simple
 
         }
@@ -400,7 +413,7 @@ exports.getOverboardPosts = function(foundThreads, callback) {
 
 };
 
-exports.getOverboardThreads = function(ids, callback) {
+exports.getOverboardThreads = function(ids, callback, sfw) {
 
   threads.find({
     _id : {
@@ -413,17 +426,34 @@ exports.getOverboardThreads = function(ids, callback) {
         if (error) {
           callback(error);
         } else if (!foundThreads.length) {
-          callback();
+
+          if (!sfw && sfwOverboard) {
+
+            exports.overboard(callback, true);
+          } else {
+            callback();
+          }
+
         } else {
-          exports.getOverboardPosts(foundThreads, callback);
+          exports.getOverboardPosts(foundThreads, callback, sfw);
         }
       });
 
 };
 
-exports.overboard = function(callback) {
+exports.overboard = function(callback, sfw) {
 
-  if (!overboard) {
+  if (!overboard && !sfw) {
+
+    if (!sfw && sfwOverboard) {
+
+      exports.overboard(callback, true);
+    } else {
+      callback();
+    }
+
+    return;
+  } else if (sfw && !sfwOverboard) {
     callback();
     return;
   }
@@ -432,7 +462,11 @@ exports.overboard = function(callback) {
     console.log('Building overboard');
   }
 
-  overboardThreads.find({}, {
+  overboardThreads.find({
+    sfw : sfw ? true : {
+      $ne : true
+    }
+  }, {
     _id : 0,
     thread : 1
   }).toArray(function gotOverBoardThreads(error, foundOverboardThreads) {
@@ -446,7 +480,7 @@ exports.overboard = function(callback) {
         ids.push(new ObjectID(foundOverboardThreads[i].thread));
       }
 
-      exports.getOverboardThreads(ids, callback);
+      exports.getOverboardThreads(ids, callback, sfw);
 
     }
   });

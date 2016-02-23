@@ -20,6 +20,7 @@ var lang;
 var miscOps;
 var captchaOps;
 var overboard;
+var sfwOverboard;
 
 var autoLockLimit;
 var bumpLimit;
@@ -31,6 +32,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
   verbose = settings.verbose;
   bumpLimit = settings.autoSageLimit;
@@ -225,12 +227,13 @@ exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
     });
   }
 
-  if (overboard) {
+  if (overboard || sfwOverboard) {
     overboardOps.reaggregate({
       overboard : true,
       _id : thread._id,
       post : true,
-      bump : bump
+      bump : bump,
+      sfw : thread.sfw
     });
   }
 
@@ -474,6 +477,7 @@ exports.getThread = function(req, parameters, userData, board, callback) {
     threadId : parameters.threadId
   }, {
     _id : 1,
+    sfw : 1,
     salt : 1,
     page : 1,
     cyclic : 1,

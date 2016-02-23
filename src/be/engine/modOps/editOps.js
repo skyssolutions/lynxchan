@@ -14,6 +14,7 @@ var postOps;
 var overboardOps;
 var common;
 var r9k;
+var sfwOverboard;
 var overboard;
 
 var editArguments = [ {
@@ -25,6 +26,7 @@ var editArguments = [ {
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
 };
 
@@ -215,7 +217,7 @@ exports.queueRebuild = function(page, board, posting, callback) {
     thread : posting.threadId
   });
 
-  if (overboard) {
+  if (overboard || sfwOverboard) {
     overboardOps.reaggregate({
       overboard : true
     });

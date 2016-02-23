@@ -21,11 +21,13 @@ var captchaOps;
 var overboard;
 var threadLimit;
 var globalLatestPosts;
+var sfwOverboard;
 
 exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
   verbose = settings.verbose;
   threadLimit = settings.maxThreadCount;
@@ -94,10 +96,11 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
     });
   }
 
-  if (overboard) {
+  if (overboard || sfwOverboard) {
     overboardOps.reaggregate({
       overboard : true,
-      _id : thread._id
+      _id : thread._id,
+      sfw : thread.sfw
     });
   }
 
@@ -166,11 +169,10 @@ exports.createThread = function(req, userData, parameters, board, threadId,
       threadId + parameters.toString() + Math.random() + new Date()).digest(
       'hex');
 
-  var hideId = board.settings.indexOf('disableIds') > -1;
-
   var ip = logger.ip(req);
 
-  var id = hideId ? null : common.createId(salt, parameters.boardUri, ip);
+  var id = board.settings.indexOf('disableIds') > -1 ? null : common.createId(
+      salt, parameters.boardUri, ip);
 
   var nameToUse = parameters.name || board.anonymousName;
   nameToUse = nameToUse || common.defaultAnonymousName;
@@ -193,6 +195,10 @@ exports.createThread = function(req, userData, parameters, board, threadId,
     message : parameters.message,
     email : parameters.email
   };
+
+  if (board.specialSettings && board.specialSettings.indexOf('sfw') > -1) {
+    threadToAdd.sfw = true;
+  }
 
   if (parameters.flag) {
     threadToAdd.flagName = parameters.flagName;
@@ -468,6 +474,7 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
     maxFiles : 1,
     maxFileSizeMB : 1,
     usesCustomSpoiler : 1,
+    specialSettings : 1,
     maxThreadCount : 1,
     captchaMode : 1,
     lockedUntil : 1,

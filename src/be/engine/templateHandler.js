@@ -253,7 +253,7 @@ exports.getPageTests = function() {
       },
       {
         template : 'boardsPage',
-        fields : [ 'divBoards', 'divPages', 'linkOverboard' ]
+        fields : [ 'divBoards', 'divPages', 'linkOverboard', 'linkSfwOver' ]
       },
       {
         template : 'noCookieCaptchaPage',

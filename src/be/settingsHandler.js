@@ -146,9 +146,15 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
 
   if (checkOverboardChanged(settings)) {
 
+    var reaggregate = settings.overboard && !generalSettings.overboard;
+
+    if (!reaggregate) {
+      reaggregate = settings.sfwOverboard && !generalSettings.sfwOverboard;
+    }
+
     require('./engine/overboardOps').reaggregate({
       overboard : true,
-      reaggregate : settings.overboard && !generalSettings.overboard
+      reaggregate : reaggregate
     });
 
   }
