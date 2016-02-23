@@ -10,6 +10,7 @@ var crypto = require('crypto');
 var users = db.users();
 var reports = db.reports();
 var formOps;
+var CSP;
 var lang;
 var clearIpMinRole;
 
@@ -19,6 +20,7 @@ exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
 
+  CSP = settings.CSP;
   clearIpMinRole = settings.clearIpMinRole;
   verbose = settings.verbose;
 
@@ -103,6 +105,10 @@ exports.corsHeader = function(contentType, auth) {
 
   var header = [ [ 'Content-Type', contentType ],
       [ 'access-control-allow-origin', '*' ] ];
+
+  if (CSP) {
+    header.push([ 'Content-Security-Policy', CSP ]);
+  }
 
   if (auth && auth.authStatus === 'expired') {
     header.push([ 'Set-Cookie', 'hash=' + auth.newHash + ';path=/' ]);
@@ -303,6 +309,11 @@ exports.getParametersArray = function() {
     type : 'string',
     setting : 'torSource',
     element : 'fieldTorSource'
+  }, {
+    param : 'CSP',
+    type : 'string',
+    setting : 'CSP',
+    element : 'fieldCSP'
   }, {
     param : 'languagePack',
     type : 'string',

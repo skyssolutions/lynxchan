@@ -1564,6 +1564,10 @@ fieldSfwOverboard:
     use: have it's value manipulated.
     description: field that displays sfw overboard uri.
 
+fieldCSP:
+    use: have it's value manipulated.
+    description: field that displays the content used for the CSP header.
+
 fieldFePath:
     use: have it's value manipulated.
     description: field that displays the path used to the front-end.

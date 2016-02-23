@@ -305,7 +305,7 @@ exports.getPageTests = function() {
             'fieldSiteTitle', 'fieldMaxRequestSize', 'fieldMaxFileSize',
             'fieldAcceptedMimes', 'fieldMaxFiles', 'fieldBanMessage',
             'fieldAnonymousName', 'fieldTopBoardsCount', 'fieldBoardsPerPage',
-            'fieldTorSource', 'fieldLanguagePack', 'fieldMaxRules',
+            'fieldTorSource', 'fieldLanguagePack', 'fieldMaxRules', 'fieldCSP',
             'fieldThumbSize', 'fieldMaxFilters', 'fieldMaxVolunteers',
             'fieldMaxBannerSize', 'fieldMaxFlagSize', 'fieldFloodInterval',
             'checkboxVerbose', 'checkboxDisable304', 'comboMinClearIpRole',

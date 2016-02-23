@@ -657,6 +657,8 @@ Json output(Object): object with data regarding the available boards. Contains t
         postsPerHour(Number): how many posts this board received in the last hour.
         tags(Array): array with strings identifying the subjects of the board.
         uniqueIps(Number): how many unique ips posted on the board in the last 24 hours.
+        specialSettings(Array): array of the board's special settings. May hold the following values:
+            sfw: indicates the board is sfw.
 
 ------------------------------------------------------------------------------------------
 
@@ -928,6 +930,7 @@ Json output(Object): object with the current global settings. It contains the fo
     autoPruneFiles(Boolean): makes the engine run a weekly schedule to prune files that are no longer in use.
     torPort(Number): port to be used that will mark any request using it as TOR.
     sfwOverboard: uri for the sfw overboard.
+    CSP: directive used for the content security policy header.
 
 ------------------------------------------------------------------------------------------
 
@@ -1000,6 +1003,7 @@ Parameters:
     autoPruneFiles(Boolean): makes the engine run a weekly schedule to prune files that are no longer in use.
     torPort(Number): port to be used that will mark any request using it as TOR.
     sfwOverboard: uri for the sfw overboard.
+    CSP: directive used for the content security policy header.
 
 ------------------------------------------------------------------------------------------
 

@@ -574,6 +574,7 @@ Parameters:
     autoPruneFiles(Boolean): makes the engine run a weekly schedule to prune files that are no longer in use.
     torPort(Number): port to be used that will mark any request using it as TOR.
     sfwOverboard: uri for the sfw overboard.
+    CSP: directive used for the content security policy header.
 
 ------------------------------------------------------------------------------------------
 
