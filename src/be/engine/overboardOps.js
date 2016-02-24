@@ -156,26 +156,31 @@ function checkForExistance(message) {
 
 }
 
-function finishFullAggregation(message, ids) {
+function finishFullAggregation(message, results) {
 
-  if (!ids.length) {
+  if (!results.length) {
     reaggregating = false;
-
     return;
   }
 
   var operations = [];
 
-  for (var i = 0; i < ids.length; i++) {
+  var ids = [];
+
+  for (var i = 0; i < results.length; i++) {
+
+    var result = results[i];
+    ids.push(result._id);
 
     operations.push({
       updateOne : {
         filter : {
-          thread : ids[i]
+          thread : result._id
         },
         update : {
           $setOnInsert : {
-            thread : ids[i]
+            thread : result._id,
+            sfw : result.sfw
           }
         },
         upsert : true
@@ -208,41 +213,20 @@ function finishFullAggregation(message, ids) {
 
 function reaggregateSfw(message, nsfwIds) {
 
-  if (!sfwOverboard) {
-    finishFullAggregation(message, nsfwIds);
-    return;
-  }
-
-  threads.aggregate([ {
-    $match : {
-      sfw : true
-    }
+  threads.find({
+    sfw : true
   }, {
-    $project : {
-      lastBump : 1
-    }
-  }, {
-    $sort : {
-      lastBump : -1
-    }
-  }, {
-    $limit : overboardSize
-  }, {
-    $group : {
-      _id : 0,
-      ids : {
-        $push : '$_id'
-      }
-    }
-  } ], function gotThreads(error, results) {
+    lastBump : 1,
+    sfw : 1
+  }).sort({
+    lastBump : -1
+  }).limit(overboardSize).toArray(function gotThreads(error, results) {
 
     if (error) {
       reaggregating = false;
       console.log(error);
-    } else if (results.length) {
-      finishFullAggregation(message, nsfwIds.concat(results[0].ids));
     } else {
-      finishFullAggregation(message, nsfwIds);
+      finishFullAggregation(message, nsfwIds.concat(results));
     }
 
   });
@@ -257,43 +241,21 @@ function fullReaggregate(message) {
 
   reaggregating = true;
 
-  if (!overboard) {
-    reaggregateSfw(message, []);
-    return;
-  }
-
-  threads.aggregate([ {
-    $match : {
-      sfw : {
-        $ne : true
-      }
+  threads.find({
+    sfw : {
+      $ne : true
     }
   }, {
-    $project : {
-      lastBump : 1
-    }
-  }, {
-    $sort : {
-      lastBump : -1
-    }
-  }, {
-    $limit : overboardSize
-  }, {
-    $group : {
-      _id : 0,
-      ids : {
-        $push : '$_id'
-      }
-    }
-  } ], function gotThreads(error, results) {
+    lastBump : 1,
+  }).sort({
+    lastBump : -1
+  }).limit(overboardSize).toArray(function gotThreads(error, results) {
 
     if (error) {
       reaggregating = false;
       console.log(error);
-    } else if (results.length) {
-      reaggregateSfw(message, results[0].ids);
     } else {
-      reaggregateSfw(message, []);
+      reaggregateSfw(message, results);
     }
 
   });

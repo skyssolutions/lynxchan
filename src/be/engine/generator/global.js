@@ -462,11 +462,24 @@ exports.overboard = function(callback, sfw) {
     console.log('Building overboard');
   }
 
-  overboardThreads.find({
-    sfw : sfw ? true : {
-      $ne : true
-    }
-  }, {
+  var query;
+
+  if (!sfw && sfwOverboard) {
+    query = {
+      sfw : {
+        $ne : true
+      }
+    };
+
+  } else if (sfw) {
+    query = {
+      sfw : true
+    };
+  } else {
+    query = {};
+  }
+
+  overboardThreads.find(query, {
     _id : 0,
     thread : 1
   }).toArray(function gotOverBoardThreads(error, foundOverboardThreads) {
@@ -477,7 +490,7 @@ exports.overboard = function(callback, sfw) {
       var ids = [];
 
       for (var i = 0; i < foundOverboardThreads.length; i++) {
-        ids.push(new ObjectID(foundOverboardThreads[i].thread));
+        ids.push(foundOverboardThreads[i].thread);
       }
 
       exports.getOverboardThreads(ids, callback, sfw);
