@@ -558,6 +558,7 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
     boardUri : 1,
     usesCustomSpoiler : 1,
     anonymousName : 1,
+    specialSettings : 1,
     acceptedMimes : 1,
     maxFiles : 1,
     captchaMode : 1,

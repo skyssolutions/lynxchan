@@ -139,6 +139,7 @@ Settings files that goes into the settings directory:
 * `torPort`(Number): port that when used, will always mark the request as if it came from a TOR ip.
 * `sfwOverboard`: uri to be used for the sfw overboard.
 * `CSP`: Content security policy directives. Example: `default-src 'self'`
+* `onlySfwLatestImages`(Boolean): makes so only SFW images are displayed on the front-page.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

@@ -931,6 +931,7 @@ Json output(Object): object with the current global settings. It contains the fo
     torPort(Number): port to be used that will mark any request using it as TOR.
     sfwOverboard: uri for the sfw overboard.
     CSP: directive used for the content security policy header.
+    onlySfwLatestImages(Boolean): makes that only images from sfw content is displayed on the front-page.
 
 ------------------------------------------------------------------------------------------
 
@@ -1004,6 +1005,7 @@ Parameters:
     torPort(Number): port to be used that will mark any request using it as TOR.
     sfwOverboard: uri for the sfw overboard.
     CSP: directive used for the content security policy header.
+    onlySfwLatestImages(Boolean): makes that only images from sfw content is displayed on the front-page.
 
 ------------------------------------------------------------------------------------------
 

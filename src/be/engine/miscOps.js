@@ -487,6 +487,11 @@ exports.getParametersArray = function() {
     setting : 'verbose',
     element : 'checkboxVerbose'
   }, {
+    param : 'onlySfwLatestImages',
+    type : 'boolean',
+    setting : 'onlySfwLatestImages',
+    element : 'checkboxSFWLatestImages'
+  }, {
     param : 'autoPruneFiles',
     type : 'boolean',
     setting : 'autoPruneFiles',

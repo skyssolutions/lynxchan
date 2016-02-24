@@ -1712,6 +1712,10 @@ checkboxDisableAccountCreation:
     use: might be turned on.
     description: indicates that account creation is disabled.
 
+checkboxSFWLatestImages:
+    use: might be turned on.
+    description: indicates that only SFW images should be displayed on the front-page.
+
 checkboxDisableFloodCheck:
     use: might be turned on.
     description: indicates that flood checks are disabled.

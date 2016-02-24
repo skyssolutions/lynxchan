@@ -30,6 +30,7 @@ var lang;
 var gsHandler;
 var thumbExtension;
 var mediaThumb;
+var onlySfwImages;
 
 var correctedMimesRelation = {
   'video/webm' : 'audio/webm',
@@ -44,6 +45,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  onlySfwImages = settings.onlySfwLatestImages;
   verbose = settings.verbose;
   thumbSize = settings.thumbSize;
   latestImages = settings.globalLatestImages;
@@ -160,6 +162,10 @@ exports.cleanLatestImages = function(boardData, threadId, postId, file,
       callback(error);
     } else if (!results.length) {
 
+      process.send({
+        frontPage : true
+      });
+
       exports.updatePostingFiles(boardData, threadId, postId, file, callback,
           false, true);
 
@@ -175,6 +181,11 @@ exports.cleanLatestImages = function(boardData, threadId, postId, file,
         if (error) {
           callback(error);
         } else {
+
+          process.send({
+            frontPage : true
+          });
+
           exports.updatePostingFiles(boardData, threadId, postId, file,
               callback, false, true);
         }
@@ -212,6 +223,11 @@ exports.updateLatestImages = function(boardData, threadId, postId, file,
         if (error) {
           callback(error);
         } else if (count <= latestImages) {
+
+          process.send({
+            frontPage : true
+          });
+
           exports.updatePostingFiles(boardData, threadId, postId, file,
               callback, false, true);
         } else {
@@ -248,6 +264,13 @@ exports.updateFileCount = function(threadId, boardData, cb, postId, file) {
 
 };
 
+exports.isBoardSfw = function(boardData) {
+
+  var specialSettings = boardData.specialSettings || [];
+  return specialSettings.indexOf('sfw') > -1;
+
+};
+
 exports.updatePostingFiles = function(boardData, threadId, postId, file,
     callback, updatedFileCount, updatedLatestImages) {
 
@@ -256,9 +279,11 @@ exports.updatePostingFiles = function(boardData, threadId, postId, file,
   // add image to latest images before proceeding
   if (latestImages && !updatedLatestImages && image) {
 
-    exports.updateLatestImages(boardData, threadId, postId, file, callback);
+    if (exports.isBoardSfw(boardData) || !onlySfwImages) {
+      exports.updateLatestImages(boardData, threadId, postId, file, callback);
+      return;
+    }
 
-    return;
   }
 
   // updates thread's file count before proceeding
