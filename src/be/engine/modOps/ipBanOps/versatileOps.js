@@ -13,6 +13,7 @@ var disableFloodCheck;
 var logOps;
 var lang;
 var logger;
+var minClearIpRole;
 var miscOps;
 var torOps;
 var common;
@@ -20,6 +21,7 @@ var common;
 exports.loadSettings = function() {
   var settings = require('../../../settingsHandler').getGeneralSettings();
 
+  minClearIpRole = settings.clearIpMinRole;
   blockTor = settings.torAccess < 1;
   bypassAllowed = settings.bypassMode > 0;
   bypassMandatory = settings.bypassMode > 1;
@@ -283,6 +285,8 @@ exports.liftBan = function(userData, parameters, callback) {
 
   var globalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 
+  var allowedToManageRangeBans = userData.globalRole <= minClearIpRole;
+
   try {
     bans.findOne({
       _id : new ObjectID(parameters.banId)
@@ -295,6 +299,8 @@ exports.liftBan = function(userData, parameters, callback) {
         exports.checkForBoardBanLiftPermission(ban, userData, callback);
       } else if (!globalStaff) {
         callback(lang.errDeniedGlobalBanManagement);
+      } else if (ban.range && !allowedToManageRangeBans) {
+        callback(lang.errDeniedGlobalRangeBanManagement);
       } else {
         exports.removeBan(ban, userData, callback);
       }

@@ -46,7 +46,7 @@ exports.getCellTests = function() {
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkReply', 'linkSelf', 'deletionCheckBox',
             'lockIndicator', 'pinIndicator', 'labelId', 'labelRole',
-            'divBanMessage', 'spanId', 'panelIp', 'labelRange',
+            'divBanMessage', 'spanId', 'panelIp', 'labelRange', 'panelRange',
             'cyclicIndicator', 'linkQuote', 'divPosts', 'labelOmission',
             'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag', 'labelIp',
             'contentOmissionIndicator', 'linkFullText', 'bumpLockIndicator' ]
@@ -55,9 +55,10 @@ exports.getCellTests = function() {
         template : 'postCell',
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkSelf', 'deletionCheckBox', 'labelId',
-            'labelRole', 'divBanMessage', 'spanId', 'panelIp', 'labelRange',
-            'linkQuote', 'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag',
-            'labelIp', 'contentOmissionIndicator', 'linkFullText' ]
+            'panelRange', 'labelRole', 'divBanMessage', 'spanId', 'panelIp',
+            'labelRange', 'linkQuote', 'linkPreview', 'linkEdit',
+            'labelLastEdit', 'imgFlag', 'labelIp', 'contentOmissionIndicator',
+            'linkFullText' ]
       },
       {
         template : 'staffCell',

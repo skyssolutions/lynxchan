@@ -7,6 +7,7 @@ var settings;
 var gridFsHandler;
 var miscOps;
 var overboard;
+var minClearIpRole;
 var sfwOverboard;
 var boardCreationRequirement;
 
@@ -14,6 +15,7 @@ exports.loadSettings = function() {
 
   settings = require('../settingsHandler').getGeneralSettings();
 
+  minClearIpRole = settings.clearIpMinRole;
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
   boardCreationRequirement = settings.boardCreationRequirement;
@@ -79,7 +81,14 @@ exports.getPostObject = function(post, preview, boardData, modding, userRole) {
 
   if (modding && post.ip) {
     toReturn.ip = miscOps.hashIpForDisplay(post.ip, boardData.ipSalt, userRole);
-    toReturn.range = miscOps.getRange(post.ip).join('.');
+
+    var allowedForIps = userRole <= minClearIpRole;
+
+    if (!allowedForIps) {
+      toReturn.range = miscOps.hashIpForDisplay(miscOps.getRange(post.ip),
+          boardData.ipSalt);
+    }
+
   }
 
   if (!preview) {
@@ -139,7 +148,14 @@ exports.getThreadObject = function(thread, posts, board, modding, userRole) {
   if (modding && thread.ip) {
     threadObject.ip = miscOps.hashIpForDisplay(thread.ip, board.ipSalt,
         userRole);
-    threadObject.range = miscOps.getRange(thread.ip).join('.');
+
+    var allowedForIps = userRole <= minClearIpRole;
+
+    if (!allowedForIps) {
+      threadObject.range = miscOps.hashIpForDisplay(
+          miscOps.getRange(thread.ip), board.ipSalt);
+    }
+
   }
 
   return threadObject;
@@ -468,10 +484,18 @@ exports.boards = function(pageCount, boards) {
 
 };
 
-exports.rangeBans = function(rangeBans) {
+exports.rangeBans = function(rangeBans, boardData) {
 
   for (var i = 0; i < rangeBans.length; i++) {
-    rangeBans[i].range = rangeBans[i].range.join('.');
+
+    if (boardData) {
+      rangeBans[i].range = miscOps.hashIpForDisplay(rangeBans[i].range,
+          boardData.ipSalt);
+    } else {
+      rangeBans[i].range = rangeBans[i].range.join('.');
+
+    }
+
   }
 
   return JSON.stringify(rangeBans);

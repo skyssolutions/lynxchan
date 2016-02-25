@@ -9,6 +9,7 @@ var debug = require('../../../kernel').debug();
 var verbose;
 var templateHandler;
 var lang;
+var miscOps;
 var common;
 
 var boardModerationIdentifiers = [ 'boardTransferIdentifier',
@@ -27,6 +28,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  miscOps = require('../../miscOps');
   templateHandler = require('../../templateHandler');
   lang = require('../../langOps').languagePack();
   common = require('..').common;
@@ -119,7 +121,7 @@ exports.closedReports = function(reports, callback) {
 // } Section 2: Closed reports
 
 // Section 3: Range bans {
-exports.setRangeBanCells = function(document, rangeBans) {
+exports.setRangeBanCells = function(document, rangeBans, boardData) {
 
   var bansDiv = document.getElementById('rangeBansDiv');
 
@@ -130,8 +132,15 @@ exports.setRangeBanCells = function(document, rangeBans) {
     banCell.innerHTML = templateHandler.rangeBanCell;
     common.setFormCellBoilerPlate(banCell, '/liftBan.js', 'rangeBanCell');
 
-    banCell.getElementsByClassName('rangeLabel')[0].innerHTML = rangeBan.range
-        .join('.');
+    var rangeToUse;
+
+    if (boardData) {
+      rangeToUse = miscOps.hashIpForDisplay(rangeBan.range, boardData.ipSalt);
+    } else {
+      rangeToUse = rangeBan.range.join('.');
+    }
+
+    banCell.getElementsByClassName('rangeLabel')[0].innerHTML = rangeToUse;
     banCell.getElementsByClassName('idIdentifier')[0].setAttribute('value',
         rangeBan._id);
 
@@ -141,7 +150,7 @@ exports.setRangeBanCells = function(document, rangeBans) {
 
 };
 
-exports.rangeBans = function(rangeBans, boardUri) {
+exports.rangeBans = function(rangeBans, boardData) {
 
   try {
 
@@ -151,13 +160,13 @@ exports.rangeBans = function(rangeBans, boardUri) {
 
     var boardIdentifier = document.getElementById('boardIdentifier');
 
-    if (boardUri) {
-      boardIdentifier.setAttribute('value', boardUri);
+    if (boardData) {
+      boardIdentifier.setAttribute('value', boardData.boardUri);
     } else {
       common.removeElement(boardIdentifier);
     }
 
-    exports.setRangeBanCells(document, rangeBans);
+    exports.setRangeBanCells(document, rangeBans, boardData);
 
     return serializer(document);
 

@@ -8,6 +8,7 @@ exports.loadSettings = function() {
 
   exports.specific.loadSettings();
   exports.versatile.loadSettings();
+  exports.general.loadSettings();
 
 };
 

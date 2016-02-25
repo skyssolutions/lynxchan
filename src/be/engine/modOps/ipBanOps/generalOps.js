@@ -11,6 +11,14 @@ var logger;
 var logOps;
 var captchaOps;
 var lang;
+var minClearIpRole;
+
+exports.loadSettings = function() {
+
+  var settings = require('../../../settingsHandler').getGeneralSettings();
+  minClearIpRole = settings.clearIpMinRole;
+
+};
 
 exports.loadDependencies = function() {
 
@@ -24,7 +32,7 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Read range bans {
-exports.readRangeBans = function(parameters, callback) {
+exports.readRangeBans = function(parameters, callback, boardData) {
   var queryBlock = {
     range : {
       $exists : true
@@ -39,13 +47,13 @@ exports.readRangeBans = function(parameters, callback) {
   }).sort({
     creation : -1
   }).toArray(function gotBans(error, rangeBans) {
-    callback(error, rangeBans);
+    callback(error, rangeBans, boardData);
   });
 };
 
 exports.getRangeBans = function(userData, parameters, callback) {
 
-  var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
+  var isOnGlobalStaff = userData.globalRole <= minClearIpRole;
 
   if (parameters.boardUri) {
 
@@ -61,7 +69,7 @@ exports.getRangeBans = function(userData, parameters, callback) {
       } else if (!common.isInBoardStaff(userData, board, 2)) {
         callback(lang.errDeniedBoardRangeBanManagement);
       } else {
-        exports.readRangeBans(parameters, callback);
+        exports.readRangeBans(parameters, callback, board);
       }
     });
   } else if (!isOnGlobalStaff) {
@@ -153,7 +161,7 @@ exports.createRangeBan = function(userData, parameters, callback) {
 
 exports.checkRangeBanPermission = function(userData, parameters, callback) {
 
-  var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
+  var isOnGlobalStaff = userData.globalRole <= minClearIpRole;
 
   if (parameters.boardUri) {
 

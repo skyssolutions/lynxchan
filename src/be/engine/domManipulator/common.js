@@ -8,6 +8,7 @@ var latestPostCount;
 var lang;
 var templateHandler;
 var miscOps;
+var minClearIpRole;
 
 exports.indicatorsRelation = {
   pinned : 'pinIndicator',
@@ -24,6 +25,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  minClearIpRole = settings.clearIpMinRole;
   allowedJs = settings.allowBoardCustomJs;
   forceCaptcha = settings.forceCaptcha;
   latestPostCount = settings.latestPostCount;
@@ -94,8 +96,13 @@ exports.getReportLink = function(report) {
 
 exports.setPostingIp = function(cell, postingData, boardData, userRole) {
 
-  var labelRange = cell.getElementsByClassName('labelRange')[0];
-  labelRange.innerHTML = miscOps.getRange(postingData.ip).join('.');
+  if (userRole <= minClearIpRole) {
+    exports.removeElement(cell.getElementsByClassName('panelRange')[0]);
+  } else {
+    var labelRange = cell.getElementsByClassName('labelRange')[0];
+    labelRange.innerHTML = miscOps.hashIpForDisplay(miscOps
+        .getRange(postingData.ip), boardData.ipSalt);
+  }
 
   var labelIp = cell.getElementsByClassName('labelIp')[0];
   labelIp.innerHTML = miscOps.hashIpForDisplay(postingData.ip,

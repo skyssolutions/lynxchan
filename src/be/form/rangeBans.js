@@ -10,7 +10,7 @@ var modOps = require('../engine/modOps').ipBan.general;
 function getRangeBans(userData, parameters, res, auth) {
 
   modOps.getRangeBans(userData, parameters, function gotRangeBans(error,
-      rangeBans) {
+      rangeBans, boardData) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
@@ -20,9 +20,9 @@ function getRangeBans(userData, parameters, res, auth) {
           : 'text/html', auth));
 
       if (json) {
-        res.end(jsonBuilder.rangeBans(rangeBans));
+        res.end(jsonBuilder.rangeBans(rangeBans, boardData));
       } else {
-        res.end(dom.rangeBans(rangeBans, parameters.boardUri));
+        res.end(dom.rangeBans(rangeBans, boardData));
       }
 
     }

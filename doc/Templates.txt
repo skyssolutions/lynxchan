@@ -282,6 +282,10 @@ labelIp:
     use: have it's innerHTML manipulated or might be removed.
     description: label used to display the hashed ip of the poster to the staff.
 
+panelRange:
+    use: might be removed. 
+    description: panel that contains the range of the poster's ip.
+
 linkEdit:
     use: have it's href manipulated or may be removed.
     description: link that opens the page used to edit the message of the OP.
@@ -427,6 +431,10 @@ linkPreview:
 panelIp:
     use: might be removed. 
     description: object to be removed if the range and ip are not going to be informed.
+
+panelRange:
+    use: might be removed. 
+    description: panel that contains the range of the poster's ip.
 
 labelRange:
     use: have it's innerHTML manipulated. 
