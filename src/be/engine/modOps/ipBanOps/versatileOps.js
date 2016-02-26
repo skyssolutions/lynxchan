@@ -208,19 +208,8 @@ exports.getLiftedBanLogMessage = function(ban, userData) {
       logMessage += pieces.boardBanPiece.replace('{$board}', ban.boardUri);
     }
 
-    logMessage += pieces.finalBanPiece.replace('{$ban}', ban._id).replace(
+    logMessage += pieces.finalPiece.replace('{$ban}', ban._id).replace(
         '{$expiration}', ban.expiration);
-  } else if (ban.range) {
-
-    if (!ban.boardUri) {
-      logMessage += pieces.globalRangeBanPiece;
-    } else {
-      logMessage += pieces.boardRangeBanPiece.replace('{$board}', ban.boardUri);
-    }
-
-    logMessage += pieces.finalRangeBanPIece.replace('{$range}', ban.range
-        .join('.'));
-
   } else {
     logMessage += pieces.unknownPiece.replace('{$ban}', ban._id);
   }
@@ -238,6 +227,11 @@ exports.removeBan = function(ban, userData, callback) {
       callback(error);
     } else {
 
+      if (ban.range) {
+        callback(null, true, ban.boardUri);
+        return;
+      }
+
       // style exception, too simple
       var logMessage = exports.getLiftedBanLogMessage(ban, userData);
 
@@ -250,7 +244,7 @@ exports.removeBan = function(ban, userData, callback) {
         boardUri : ban.boardUri
       }, function insertedLog() {
 
-        callback(null, ban.range ? true : false, ban.boardUri);
+        callback(null, false, ban.boardUri);
       });
       // style exception, too simple
 

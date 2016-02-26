@@ -9,11 +9,11 @@
 See other branches named like `1.1.x` for stable versions. They will receive only critical bug fixes and as long as they live, they will be maintained. Remember to use a compatible version of your front-end with these stable versions. Newer versions might not have required elements on the templates for these versions.
 
 # Required software
-* [Node.js](http://nodejs.org) 5.6.0, I suggest installing from source code. DO NOT build the master's HEAD.
-* [MongoDB](https://www.mongodb.org/) 3.2.2
-* [ImageMagick](http://www.imagemagick.org/script/index.php) 6.7.7-10
+* [Node.js](http://nodejs.org) 5.7.0, I suggest installing from source code. DO NOT build the master's HEAD.
+* [MongoDB](https://www.mongodb.org/) 3.2.3
+* [ImageMagick](http://www.imagemagick.org/script/index.php) 6.7.8-9
 * [A front-end](https://gitgud.io/LynxChan/LynxChanFront-Placeholder) that must either be placed on the `src/fe` directory or have it's absolute path set on the general.json file. Read the readme.md on src/be for more information about how to configure the path for the front-end.
-* [ffmpeg](https://www.ffmpeg.org/) (Optional) 2.8.6 if mediaThumb setting is enabled. Requires zlib-devel on centOS to work properly when installed from source.
+* [ffmpeg](https://www.ffmpeg.org/) (Optional) 3.0 if mediaThumb setting is enabled. Requires zlib-devel on centOS to work properly when installed from source.
 
 The dependencies versions are not exactly mandatory and only reflect the version that I am sure that will work with the current version of the engine at the moment.
 

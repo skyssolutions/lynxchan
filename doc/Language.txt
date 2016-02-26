@@ -107,7 +107,6 @@ errDuplicateFileBeingPosted: error thrown when R9K is enforcing file uniqueness 
 errFileTooLargeForBoard: error thrown when a file being uploaded is too large for that board in specific.
 errInvalidMimeForBoard: error thrown when a file being uploaded isn't allowed by the board in specific.
 guiTypeBan: label used for logs of bans.
-guiTypeRange: label used for logs of range bans.
 guiTypeBanLift: label used for logs of ban lifts.
 guiTypeDeletion: label used for logs of deletions.
 guiTypeReportClosure: label used for logs of report closures.
@@ -163,16 +162,8 @@ logBanLift: object with the pieces used on the log of ban lift. Contains the fol
     startPiece: piece used at the beginning. Replaces: {$login}.
     globalBanPiece: piece used to indicate it is a global ban.
     boardBanPiece: piece used to indicate the board of the ban. Replaces: {$board}.
-    finalBanPiece: final piece used for regular bans. Replaces: {$ban}, {$expiration}.
-    globalRangeBanPiece: piece used to indicate it is a global range ban.
-    boardRangeBanPiece: piece used to indicate the board of the range ban. Replaces: {$board}.
-    finalRangeBanPIece: final piece used for range bans. Replaces: {$range}.
+    finalPiece: final piece used for regular bans. Replaces: {$ban}, {$expiration}.
     unknownPiece: piece used for bans which type could not be identififed. Replaces: {$ban}.
-logRangeBan: object containing the pieces used for logs of range bans. Contains the following fields:
-    startPiece: piece used at the beginning. Replaces: {$login}.
-    globalPiece: piece used to indicate it is a global range ban.
-    boardPiece: piece used to indicate the board of the ban. Replaces: {$board}.
-    finalPiece: final piece. Replaces: {$range}.
 logHashBan: object containing the pieces used for logs of hash bans. Contains the following fields:
     startPiece: piece used at the beginning. Replaces: {$login}.
     globalPiece: piece used to indicate it is a hash ban.

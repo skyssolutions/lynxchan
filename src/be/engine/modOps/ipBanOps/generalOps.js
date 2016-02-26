@@ -82,32 +82,6 @@ exports.getRangeBans = function(userData, parameters, callback) {
 // } Section 1: Read range bans
 
 // Section 2: Create range ban {
-exports.logRangeBanCreation = function(userData, parameters, callback) {
-
-  var pieces = lang.logRangeBan;
-
-  var logMessage = pieces.startPiece.replace('{$login}', userData.login);
-
-  if (parameters.boardUri) {
-    logMessage += pieces.boardPiece.replace('{$board}', parameters.boardUri);
-  } else {
-    logMessage += pieces.globalPiece;
-  }
-
-  logMessage += pieces.finalPiece.replace('{$range}', parameters.range
-      .join('.'));
-
-  logOps.insertLog({
-    user : userData.login,
-    global : parameters.boardUri ? false : true,
-    time : new Date(),
-    description : logMessage,
-    type : 'rangeBan',
-    boardUri : parameters.boardUri
-  }, callback);
-
-};
-
 exports.createRangeBan = function(userData, parameters, callback) {
 
   parameters.range = miscOps.sanitizeIp(parameters.range);
@@ -143,15 +117,7 @@ exports.createRangeBan = function(userData, parameters, callback) {
         rangeBan.boardUri = parameters.boardUri;
       }
 
-      // style exception,too simple
-      bans.insertOne(rangeBan, function insertedBan(error) {
-        if (error) {
-          callback(error);
-        } else {
-          exports.logRangeBanCreation(userData, parameters, callback);
-        }
-      });
-      // style exception,too simple
+      bans.insertOne(rangeBan, callback);
 
     }
 

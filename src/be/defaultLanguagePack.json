@@ -52,7 +52,6 @@
   "errDeniedBoardDeletion": "You are not allowed to delete this board.",
   "titDefaultChanTitle": "My chan",
   "guiTypeBan": "Ban",
-  "guiTypeRange": "Range ban",
   "guiTypeBanLift": "Ban lift",
   "guiTypeDeletion": "Posting deletion",
   "guiTypeReportClosure": "Report closures",
@@ -141,19 +140,10 @@
     "startPiece": "User {$login} lifted a ",
     "globalBanPiece": "global ban ",
     "boardBanPiece": "ban on board {$board} ",
-    "finalBanPiece": "with id {$ban} set to expire at {$expiration}.",
-    "globalRangeBanPiece": "global range ban ",
-    "boardRangeBanPiece": "range ban on board {$board} ",
-    "finalRangeBanPIece": "on range {$range}.",
+    "finalPiece": "with id {$ban} set to expire at {$expiration}.",
     "unknownPiece": "unknown type of ban with id {$ban}."
   },
   "errDeniedThreadManagement": "You are not allowed to change thread settings in this board.",
-  "logRangeBan": {
-    "startPiece": "User {$login} placed a ",
-    "globalPiece": "global range ban ",
-    "boardPiece": "range ban on board {$board} ",
-    "finalPiece": "on range {$range}."
-  },
   "logHashBan": {
     "startPiece": "User {$login} placed a ",
     "globalPiece": "global hash ban ",

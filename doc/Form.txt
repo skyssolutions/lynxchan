@@ -267,6 +267,7 @@ Name: contentActions
 Description: ban, deletes or reports posts and threads. The inputs of the posts will have their names generated on the page generation stage. If the password is not provided for deletion, authentication is required.
 
 Parameters:
+    range: if anything is informed, the bans will be range bans instead of specific.
     password: password to be used for deletion.
     reason: reason of the report.
     banMessage: message to be displayed in the banned content.

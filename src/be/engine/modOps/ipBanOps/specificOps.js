@@ -11,6 +11,7 @@ var defaultBanMessage;
 var logger;
 var logOps;
 var miscOps;
+var minClearIps;
 var captchaOps;
 var common;
 var lang;
@@ -35,6 +36,8 @@ exports.loadSettings = function() {
 
   var settings = require('../../../settingsHandler').getGeneralSettings();
   defaultBanMessage = settings.defaultBanMessage;
+
+  minClearIps = settings.clearIpMinRole;
 
   if (!defaultBanMessage) {
     defaultBanMessage = lang.miscDefaultBanMessage;
@@ -247,11 +250,16 @@ exports.createBans = function(foundIps, parentThreads, pages, board, userData,
   for (var i = 0; i < foundIps.length; i++) {
 
     var ban = {
-      reason : parameters.reason,
-      expiration : parameters.expiration,
-      ip : foundIps[i],
       appliedBy : userData.login
     };
+
+    if (parameters.range) {
+      ban.range = miscOps.getRange(foundIps[i]);
+    } else {
+      ban.ip = foundIps[i];
+      ban.reason = parameters.reason;
+      ban.expiration = parameters.expiration;
+    }
 
     if (!parameters.global) {
       ban.boardUri = board;
@@ -270,8 +278,13 @@ exports.createBans = function(foundIps, parentThreads, pages, board, userData,
     if (error) {
       callback(error);
     } else {
-      exports.updateThreadsBanMessage(pages, parentThreads, userData,
-          parameters, callback, informedThreads, informedPosts, board);
+      if (!parameters.range) {
+
+        exports.updateThreadsBanMessage(pages, parentThreads, userData,
+            parameters, callback, informedThreads, informedPosts, board);
+      } else {
+        callback();
+      }
     }
   });
 
@@ -446,25 +459,35 @@ exports.iterateBoards = function(foundBoards, userData, reportedObjects,
 
 };
 
+exports.parseExpiration = function(parameters) {
+
+  var expiration = Date.parse(parameters.expiration || '');
+
+  if (isNaN(expiration)) {
+    return true;
+  } else {
+    parameters.expiration = new Date(expiration);
+  }
+
+};
+
 exports.isolateBoards = function(userData, reportedObjects, parameters,
     callback) {
 
   miscOps.sanitizeStrings(parameters, banArguments);
 
-  var expiration = Date.parse(parameters.expiration || '');
-
-  if (isNaN(expiration)) {
+  if (!parameters.range && exports.parseExpiration(parameters)) {
     callback(lang.errInvalidExpiration);
-
-    return;
-  } else {
-    parameters.expiration = new Date(expiration);
   }
 
   var allowedToGlobalBan = userData.globalRole < miscOps.getMaxStaffRole();
 
+  var allowedGlobalRangeBan = userData.globalRole <= minClearIps;
+
   if (parameters.global && !allowedToGlobalBan) {
     callback(lang.errDeniedGlobalBanManagement);
+  } else if (!allowedGlobalRangeBan && parameters.global && parameters.range) {
+    callback(lang.errDeniedGlobalRangeBanManagement);
   } else {
     var foundBoards = [];
 

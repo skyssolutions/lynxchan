@@ -41,7 +41,6 @@ exports.loadDependencies = function() {
   gridFs = require('../gridFsHandler');
   availableLogTypes = {
     ban : lang.guiTypeBan,
-    rangeBan : lang.guiTypeRange,
     banLift : lang.guiTypeBanLift,
     deletion : lang.guiTypeDeletion,
     fileDeletion : lang.guiTypeFileDeletion,
