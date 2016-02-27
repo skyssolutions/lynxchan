@@ -140,6 +140,7 @@ Settings files that goes into the settings directory:
 * `sfwOverboard`: uri to be used for the sfw overboard.
 * `CSP`: Content security policy directives. Example: `default-src 'self'`
 * `onlySfwLatestImages`(Boolean): makes so only SFW images are displayed on the front-page.
+* `inactivityThreshold`(Number): amount of days an user must be inactive so he and his boards will be marked as inactive.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

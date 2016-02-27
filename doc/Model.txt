@@ -47,6 +47,7 @@ boards: stores boards.
     captchaMode(Number): indicates the captcha mode for the board. 0 means no captcha, 1 means only for new threads and 2 means for all posts on the board.
     specialSettings(Array): array of settings that only the global staff are allowed to change. May hold the following values:
         sfw: indicates the board is sfw.
+    inactive(Boolean): indicates the board owner is inactive.
 
 ----------------------------------------------------------------------------------------
 
@@ -146,6 +147,7 @@ users: stores users.
     settings(Array): array with the account settings. May hold the following values:
         alwaysSignRole: indicates the user wishes to always use his role signature on posts.
         lockEnabled: indicates the user wishes to have it's account locked after 10 consecutive failed login attempts.
+    inactive(Boolean): indicates the account is inactive.
 
 ----------------------------------------------------------------------------------------
 

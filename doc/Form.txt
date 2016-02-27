@@ -933,6 +933,7 @@ Json output(Object): object with the current global settings. It contains the fo
     sfwOverboard: uri for the sfw overboard.
     CSP: directive used for the content security policy header.
     onlySfwLatestImages(Boolean): makes that only images from sfw content is displayed on the front-page.
+    inactivityThreshold(Number): amount of days an user must be inactive so he and his boards will be marked as inactive.
 
 ------------------------------------------------------------------------------------------
 
@@ -1007,6 +1008,7 @@ Parameters:
     sfwOverboard: uri for the sfw overboard.
     CSP: directive used for the content security policy header.
     onlySfwLatestImages(Boolean): makes that only images from sfw content is displayed on the front-page.
+    inactivityThreshold(Number): amount of days an user must be inactive so he and his boards will be marked as inactive.
 
 ------------------------------------------------------------------------------------------
 

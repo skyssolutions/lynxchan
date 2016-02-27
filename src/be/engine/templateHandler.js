@@ -321,7 +321,7 @@ exports.getPageTests = function() {
             'checkboxGlobalCaptcha', 'fieldRssDomain', 'fieldOverboard',
             'comboBypassMode', 'fieldBypassHours', 'fieldBypassPosts',
             'fieldMultiBoardThreadCount', 'fieldConcurrentRebuildMessages',
-            'checkboxSFWLatestImages' ]
+            'checkboxSFWLatestImages', 'fieldInactivityThreshold' ]
       }, {
         template : 'hashBanPage',
         fields : [ 'hashBansPanel' ]

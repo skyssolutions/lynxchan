@@ -15,6 +15,7 @@ var boards = db.boards();
 var stats = db.stats();
 var uniqueIps = db.uniqueIps();
 var files = db.files();
+var users = db.users();
 var torHandler = require('./engine/torOps');
 var graphOps = require('./graphsOps');
 var referenceHandler = require('./engine/referenceHandler');
@@ -50,6 +51,10 @@ exports.start = function() {
 
     if (settings.autoPruneFiles) {
       autoFilePruning();
+    }
+
+    if (settings.inactivityThreshold) {
+      inactivityTagging();
     }
 
   }
@@ -588,3 +593,116 @@ function autoFilePruning() {
 
 }
 // } Section 7: Automatic file pruning
+
+// Section 8: Inactivity check
+function setInactiveAccounts(inactiveUsers) {
+
+  users.updateMany({
+    login : {
+      $in : inactiveUsers
+    }
+  }, {
+    $set : {
+      inactive : true
+    }
+  }, function updatedUsers(error) {
+
+    if (error) {
+      console.log(error);
+    }
+
+    inactivityTagging();
+
+  });
+
+}
+
+function getInactiveAccounts() {
+
+  var limitDate = new Date();
+  var dayToSet = limitDate.getUTCDate() - settings.inactivityThreshold;
+
+  limitDate.setUTCDate(dayToSet);
+
+  users.find({
+    inactive : {
+      $ne : true
+    },
+    lastSeen : {
+      $lt : limitDate
+    }
+  }, {
+    login : 1,
+    ownedBoards : 1,
+    _id : 0
+  }).toArray(function gotInactiveUsers(error, foundUsers) {
+
+    if (error) {
+      console.log(error);
+
+      inactivityTagging();
+    } else if (!foundUsers.length) {
+      inactivityTagging();
+    } else {
+
+      var inactiveUsers = [];
+      var inactiveBoards = [];
+
+      for (var i = 0; i < foundUsers.length; i++) {
+        var user = foundUsers[i];
+
+        inactiveUsers.push(user.login);
+
+        if (user.ownedBoards) {
+          inactiveBoards = inactiveBoards.concat(user.ownedBoards);
+        }
+
+      }
+
+      if (inactiveBoards.length) {
+
+        // style exception, too simple
+        boards.updateMany({
+          boardUri : {
+            $in : inactiveBoards
+          }
+        }, {
+          $set : {
+            inactive : true
+          }
+        }, function updatedBoards(error) {
+
+          if (error) {
+            console.log(error);
+          } else {
+            setInactiveAccounts(inactiveUsers);
+          }
+
+        });
+        // style exception, too simple
+
+      } else {
+        setInactiveAccounts(inactiveUsers);
+      }
+
+    }
+
+  });
+
+}
+
+function inactivityTagging() {
+
+  var nextCheck = new Date();
+
+  nextCheck.setUTCMilliseconds(0);
+  nextCheck.setUTCSeconds(0);
+  nextCheck.setUTCMinutes(0);
+  nextCheck.setUTCHours(0);
+  nextCheck.setUTCDate(nextCheck.getUTCDate() + 1);
+
+  setTimeout(function() {
+    getInactiveAccounts();
+  }, nextCheck.getTime() - new Date().getTime());
+}
+// } Section 8: Inactivity check

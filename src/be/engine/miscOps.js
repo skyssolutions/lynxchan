@@ -346,6 +346,11 @@ exports.getParametersArray = function() {
     setting : 'globalLatestImages',
     element : 'fieldGlobalLatestImages'
   }, {
+    param : 'inactivityThreshold',
+    type : 'number',
+    setting : 'inactivityThreshold',
+    element : 'fieldInactivityThreshold'
+  }, {
     param : 'torPort',
     type : 'number',
     setting : 'torPort',
