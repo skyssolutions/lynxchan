@@ -305,6 +305,12 @@ exports.setBoardCell = function(board, boardCell) {
     common.removeElement(boardCell.getElementsByClassName('indicatorSfw')[0]);
   }
 
+  if (!board.inactive) {
+    var inactiveIndicator = boardCell
+        .getElementsByClassName('indicatorInactive')[0];
+    common.removeElement(inactiveIndicator);
+  }
+
   if (board.tags) {
     labelTags.innerHTML = board.tags.join(', ');
   } else {
@@ -312,33 +318,44 @@ exports.setBoardCell = function(board, boardCell) {
   }
 };
 
+exports.getBoardPageLinkBoilerPlate = function(parameters) {
+
+  var href = '';
+
+  if (parameters.boardUri) {
+    href += '&boardUri=' + parameters.boardUri;
+  }
+
+  if (parameters.sfw) {
+    href += '&sfw=1';
+  }
+
+  if (parameters.tags) {
+    href += '&tags=' + parameters.tags;
+  }
+
+  if (parameters.inactive) {
+    href += '&inactive=1';
+  }
+
+  if (parameters.sorting) {
+    href += '&sorting=' + parameters.sorting;
+  }
+
+  return href;
+
+};
+
 exports.setPages = function(parameters, document, pageCount) {
   var pagesDiv = document.getElementById('divPages');
+
+  var boilerPlate = exports.getBoardPageLinkBoilerPlate(parameters);
 
   for (var j = 1; j <= pageCount; j++) {
 
     var link = document.createElement('a');
     link.innerHTML = j;
-
-    var href = '/boards.js?page=' + j;
-
-    if (parameters.boardUri) {
-      href += '&boardUri=' + parameters.boardUri;
-    }
-
-    if (parameters.sfw) {
-      href += '&sfw=1';
-    }
-
-    if (parameters.tags) {
-      href += '&tags=' + parameters.tags;
-    }
-
-    if (parameters.sorting) {
-      href += '&sorting=' + parameters.sorting;
-    }
-
-    link.href = href;
+    link.href = '/boards.js?page=' + j + boilerPlate;
 
     pagesDiv.appendChild(link);
   }

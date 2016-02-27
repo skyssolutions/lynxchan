@@ -103,8 +103,7 @@ exports.sanitizeStrings = function(object, parameters) {
 // Currently it just allows everything.
 exports.corsHeader = function(contentType, auth) {
 
-  var header = [ [ 'Content-Type', contentType ],
-      [ 'access-control-allow-origin', '*' ] ];
+  var header = [ [ 'Content-Type', contentType ] ];
 
   if (CSP) {
     header.push([ 'Content-Security-Policy', CSP ]);

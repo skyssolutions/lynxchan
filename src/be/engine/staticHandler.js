@@ -46,8 +46,8 @@ exports.respond = function(fileContent, header, res) {
 
 exports.readAndRespond = function(pathName, modifiedTime, header, res, cb) {
 
-  header.push([ 'last-modified', modifiedTime.toString() ]);
-  header.push([ 'expires', new Date().toString() ]);
+  header.push([ 'last-modified', modifiedTime.toUTCString() ]);
+  header.push([ 'expires', new Date().toUTCString() ]);
 
   fs.readFile(fePath + '/static' + pathName, function(error, data) {
 

@@ -624,66 +624,64 @@ function getInactiveAccounts() {
 
   limitDate.setUTCDate(dayToSet);
 
-  users.find({
-    inactive : {
-      $ne : true
-    },
-    lastSeen : {
-      $lt : limitDate
+  users.aggregate([ {
+    $match : {
+      inactive : {
+        $ne : true
+      },
+      $or : [ {
+        lastSeen : {
+          $exists : false
+        }
+      }, {
+        lastSeen : {
+          $lt : limitDate
+        }
+      } ]
     }
   }, {
-    login : 1,
-    ownedBoards : 1,
-    _id : 0
-  }).toArray(function gotInactiveUsers(error, foundUsers) {
+    $project : {
+      login : 1,
+      _id : 0
+    }
+  }, {
+    $group : {
+      _id : 0,
+      logins : {
+        $push : '$login'
+      }
+    }
+  } ]).toArray(function gotInactiveUsers(error, results) {
 
     if (error) {
       console.log(error);
 
       inactivityTagging();
-    } else if (!foundUsers.length) {
+    } else if (!results.length) {
       inactivityTagging();
     } else {
 
-      var inactiveUsers = [];
-      var inactiveBoards = [];
+      var inactiveUsers = results[0].logins;
 
-      for (var i = 0; i < foundUsers.length; i++) {
-        var user = foundUsers[i];
+      // style exception, too simple
+      boards.updateMany({
+        owner : {
+          $in : inactiveUsers
+        }
+      }, {
+        $set : {
+          inactive : true
+        }
+      }, function updatedBoards(error) {
 
-        inactiveUsers.push(user.login);
-
-        if (user.ownedBoards) {
-          inactiveBoards = inactiveBoards.concat(user.ownedBoards);
+        if (error) {
+          console.log(error);
+        } else {
+          setInactiveAccounts(inactiveUsers);
         }
 
-      }
-
-      if (inactiveBoards.length) {
-
-        // style exception, too simple
-        boards.updateMany({
-          boardUri : {
-            $in : inactiveBoards
-          }
-        }, {
-          $set : {
-            inactive : true
-          }
-        }, function updatedBoards(error) {
-
-          if (error) {
-            console.log(error);
-          } else {
-            setInactiveAccounts(inactiveUsers);
-          }
-
-        });
-        // style exception, too simple
-
-      } else {
-        setInactiveAccounts(inactiveUsers);
-      }
+      });
+      // style exception, too simple
 
     }
 

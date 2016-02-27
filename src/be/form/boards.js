@@ -42,6 +42,10 @@ function getQueryBlock(parameters) {
     queryBlock.specialSettings = 'sfw';
   }
 
+  if (parameters.inactive) {
+    queryBlock.inactive = true;
+  }
+
   if (parameters.tags && parameters.tags.length) {
 
     queryBlock.tags = {
@@ -140,6 +144,7 @@ exports.process = function(req, res) {
         _id : 0,
         boardName : 1,
         boardUri : 1,
+        inactive : 1,
         specialSettings : 1,
         uniqueIps : 1,
         tags : 1,

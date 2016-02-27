@@ -362,13 +362,15 @@ exports.logTransfer = function(userData, parameters, oldOwner, callback) {
 
 };
 
-exports.performTransfer = function(oldOwner, userData, parameters, callback) {
+exports.performTransfer = function(oldOwner, userData, newOwnerData,
+    parameters, callback) {
 
   boards.updateOne({
     boardUri : parameters.boardUri
   }, {
     $set : {
-      owner : parameters.login
+      owner : parameters.login,
+      inactive : newOwnerData.inactive
     },
     $pull : {
       volunteers : parameters.login
@@ -419,7 +421,8 @@ exports.transfer = function(userData, parameters, callback) {
         } else if (!user) {
           callback(lang.errUserNotFound);
         } else {
-          exports.performTransfer(board.owner, userData, parameters, callback);
+          exports.performTransfer(board.owner, userData, user, parameters,
+              callback);
         }
       });
       // style exception, too simple

@@ -95,7 +95,8 @@ exports.getCellTests = function() {
       {
         template : 'boardsCell',
         fields : [ 'linkBoard', 'labelPostsPerHour', 'labelPostCount',
-            'divDescription', 'labelTags', 'labelUniqueIps', 'indicatorSfw' ]
+            'divDescription', 'labelTags', 'labelUniqueIps', 'indicatorSfw',
+            'indicatorInactive' ]
       },
       {
         template : 'rangeBanCell',

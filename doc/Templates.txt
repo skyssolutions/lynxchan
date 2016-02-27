@@ -1279,6 +1279,10 @@ indicatorSfw:
     use: might be removed.
     description: element that is displayed only for SFW boards.
 
+indicatorInactive:
+    use: might be removed.
+    description: element that is displayed for inactive boards, because their owner didn`t logged in too long.
+
 labelUniqueIps:
     use: have it's innerHTML manipulated.
     description: label that holds how many unique ips posted on the board in the latest 24 hours.

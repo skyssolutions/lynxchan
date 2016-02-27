@@ -126,7 +126,7 @@ exports.setExpiration = function(header, stats) {
     expiration.setFullYear(expiration.getFullYear() + 1);
   }
 
-  header.push([ 'expires', expiration.toString() ]);
+  header.push([ 'expires', expiration.toUTCString() ]);
 };
 
 exports.setCookies = function(header, cookies) {
@@ -138,7 +138,7 @@ exports.setCookies = function(header, cookies) {
       var toPush = [ 'Set-Cookie', cookie.field + '=' + cookie.value ];
 
       if (cookie.expiration) {
-        toPush[1] += '; expires=' + cookie.expiration.toString();
+        toPush[1] += '; expires=' + cookie.expiration.toUTCString();
       }
 
       if (cookie.path) {
@@ -274,7 +274,7 @@ exports.streamRange = function(range, gs, header, res, stats, callback) {
 exports.getHeader = function(stats, req, cookies) {
   var header = miscOps.corsHeader(stats.contentType);
   var lastM = stats.metadata.lastModified || stats.uploadDate;
-  header.push([ 'last-modified', lastM.toString() ]);
+  header.push([ 'last-modified', lastM.toUTCString() ]);
 
   exports.setExpiration(header, stats);
 

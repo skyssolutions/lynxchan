@@ -634,6 +634,7 @@ Name: boards
 Description: displays all existing boards. Uses get parameters.
 
 Parameters:
+    inactive: displays only inactive boards if anything is informed.
     sfw: displays only sfw boards if anything is informed.
     page: page to be viewed.
     boardUri: uri to be searched partially.
@@ -650,6 +651,7 @@ Parameters:
 
 Json output(Object): object with data regarding the available boards. Contains the following fields:
     pageCount: total amount of available pages.
+    inactive(Boolean): indicates the board has been marked inactive due to its owner not logging in for too long.
     boards(Array): array with the available boards. Each object contains the following fields:
         boardUri: uri of the board.
         boardName: name of the board.

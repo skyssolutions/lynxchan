@@ -4,6 +4,7 @@
 
 var db = require('../db');
 var users = db.users();
+var boards = db.boards();
 var requests = db.recoveryRequests();
 var bcrypt = require('bcrypt');
 var crypto = require('crypto');
@@ -276,6 +277,36 @@ exports.login = function(parameters, callback) {
 };
 // } Section 3: Login
 
+// Section 4: Validate {
+exports.checkExpiration = function(user, now, callback) {
+
+  if (user.renewExpiration < now) {
+
+    // style exception, too simple
+    exports.createSession(user.login, function createdSession(error, hash) {
+
+      if (error) {
+        callback(error);
+      } else {
+
+        callback(null, {
+          authStatus : 'expired',
+          newHash : hash
+        }, user);
+
+      }
+
+    });
+    // style exception, too simple
+
+  } else {
+    callback(null, {
+      authStatus : 'ok'
+    }, user);
+  }
+
+};
+
 exports.validate = function(auth, callback) {
 
   if (!auth || !auth.hash || !auth.login) {
@@ -293,41 +324,48 @@ exports.validate = function(auth, callback) {
     }
   }, {
     $set : {
-      lastSeen : now
+      lastSeen : now,
+      inactive : false
     }
   }, function foundUser(error, result) {
     if (error) {
       callback(error);
     } else if (!result.value) {
       callback(lang.errInvalidAccount);
-    } else if (result.value.renewExpiration < now) {
-
-      // style exception, too simple
-      exports.createSession(auth.login, function createdSession(error, hash) {
-
-        if (error) {
-          callback(error);
-        } else {
-
-          callback(null, {
-            authStatus : 'expired',
-            newHash : hash
-          }, result.value);
-
-        }
-
-      });
-      // style exception, too simple
-
     } else {
-      callback(null, {
-        authStatus : 'ok'
-      }, result.value);
+
+      var user = result.value;
+
+      if (user.inactive && user.ownedBoards && user.ownedBoards.length) {
+
+        // style exception, too simple
+        boards.updateMany({
+          owner : user.login
+        }, {
+          $set : {
+            inactive : false
+          }
+        }, function updatedBoards(error) {
+
+          if (error) {
+            callback(error);
+          } else {
+            exports.checkExpiration(user, now, callback);
+          }
+
+        });
+        // style exception, too simple
+
+      } else {
+        exports.checkExpiration(user, now, callback);
+      }
+
     }
   });
 };
+// } Section 4: Validate
 
-// Section 4: Reset request {
+// Section 5: Reset request {
 exports.emailUserOfRequest = function(domain, login, email, hash, callback) {
 
   var recoveryLink = domain + '/recoverAccount.js?hash=' + hash + '&login=';
@@ -429,7 +467,7 @@ exports.requestRecovery = function(domain, parameters, captchaId, callback) {
 };
 // } Section 5: Reset request
 
-// Section 5: Password reset {
+// Section 6: Password reset {
 exports.emailUserNewPassword = function(email, newPass, callback) {
 
   var content = domManipulator.resetEmail(newPass);
@@ -494,7 +532,7 @@ exports.recoverAccount = function(parameters, callback) {
     }
   });
 };
-// } Section 5: Reset request
+// } Section 6: Reset request
 
 exports.changeSettings = function(userData, parameters, callback) {
 
@@ -513,7 +551,7 @@ exports.changeSettings = function(userData, parameters, callback) {
 
 };
 
-// Section 6: Password change {
+// Section 7: Password change {
 exports.updatePassword = function(userData, parameters, callback) {
 
   exports.setUserPassword(userData.login, parameters.newPassword,
@@ -563,7 +601,7 @@ exports.changePassword = function(userData, parameters, callback) {
   });
 
 };
-// } Section 6: Password change
+// } Section 7: Password change
 
 exports.passwordMatches = function(userData, password, callback) {
 

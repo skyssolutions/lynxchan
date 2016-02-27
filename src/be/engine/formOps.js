@@ -320,7 +320,7 @@ exports.setCookies = function(header, cookies) {
     var toPush = [ 'Set-Cookie', cookie.field + '=' + cookie.value ];
 
     if (cookie.expiration) {
-      toPush[1] += '; expires=' + cookie.expiration.toString();
+      toPush[1] += '; expires=' + cookie.expiration.toUTCString();
     }
 
     if (cookie.path) {
