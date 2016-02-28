@@ -188,6 +188,7 @@ miscBoardOwner: label for board owner.
 miscBoardVolunteer: label for board volunteer.
 miscRoles: array with the global roles. First element is for the root role, second for admin, third for global volunteer, fourth for global janitor, fifth for regular users.
 msgChangedPassword: message used after a password change.
+msgMediaDeleted: message used after deleting media files.
 msgAccountSettingsSaved: message used after saving the account settings.
 msgThreadSettingsSaved: message used after saving a thread's settings.
 msgReportClosed: message used after closing a report.

@@ -1977,7 +1977,7 @@ thumbImg:
     description: img element that will display the thumbnail of the file.
 
 fileLink:
-    use: have it's href manipulated.
+    use: have it's href and innerHTML manipulated.
     description: link that leads to the file.
 
 referencesLabel:

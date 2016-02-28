@@ -7,6 +7,7 @@ var serializer = require('jsdom').serializeDocument;
 var debug = require('../../../kernel').debug();
 var settings;
 var verbose;
+var minClearIpRole;
 var globalBoardModeration;
 var customJs;
 var common;
@@ -80,6 +81,7 @@ exports.loadSettings = function() {
   customJs = settings.allowBoardCustomJs;
   displayMaxBannerSize = common.formatFileSize(settings.maxBannerSizeB);
   displayMaxFlagSize = common.formatFileSize(settings.maxFlagSizeB);
+  minClearIpRole = settings.clearIpMinRole;
 
 };
 
@@ -371,8 +373,13 @@ exports.setGlobalManagementLinks = function(userRole, document) {
 
   if (!displayBans) {
     common.removeElement(document.getElementById('hashBansLink'));
-    common.removeElement(document.getElementById('rangeBansLink'));
     common.removeElement(document.getElementById('bansLink'));
+  }
+
+  var displayRangeBans = userRole <= minClearIpRole;
+
+  if (!displayRangeBans) {
+    common.removeElement(document.getElementById('rangeBansLink'));
   }
 
   if (userRole !== 0) {
@@ -805,8 +812,9 @@ exports.setMediaManagementCells = function(document, media) {
 
     var link = cell.getElementsByClassName('fileLink')[0];
     link.href = '/.media/' + file.identifier;
+    link.innerHTML = file.identifier;
 
-    cell.getElementsByClassName('identifierCheckbox')[0].setAttribute('value',
+    cell.getElementsByClassName('identifierCheckbox')[0].setAttribute('name',
         file.identifier);
 
     var thumbImg = cell.getElementsByClassName('thumbImg')[0];

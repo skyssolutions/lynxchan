@@ -296,5 +296,6 @@
   ],
   "msgBoardSpecialSettingsSaved": "Board special settings saved.",
   "titMediaManagement": "Media management",
-  "errDeniedMediaManagement": "You are not allowed to manage media files."
+  "errDeniedMediaManagement": "You are not allowed to manage media files.",
+  "msgMediaDeleted": "Media files deleted."
 }

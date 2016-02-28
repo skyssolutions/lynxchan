@@ -210,7 +210,7 @@ exports.clearBoardReferences = function(boardUri, callback) {
 // } Section 1: Reference decrease
 
 // Section 2: File pruning {
-exports.deleteFiles = function(files, callback) {
+exports.deletePrunedFiles = function(files, callback) {
 
   gridFsHandler.removeFiles(files, function deletedFiles(error) {
 
@@ -287,7 +287,7 @@ exports.prune = function(callback) {
           }, callback);
 
         } else {
-          exports.deleteFiles(results[0].files, callback);
+          exports.deletePrunedFiles(results[0].files, callback);
         }
 
       });
@@ -300,7 +300,6 @@ exports.prune = function(callback) {
 };
 // } Section 2: File pruning
 
-// Section 3: Media management data {
 exports.getMedia = function(userData, parameters, callback) {
 
   var globalStaff = userData.globalRole <= maxGlobalStaffRole;
@@ -351,4 +350,69 @@ exports.getMedia = function(userData, parameters, callback) {
   });
 
 };
-// } Section 3: Media management data
+
+exports.deleteFiles = function(identifiers, userData, callback) {
+
+  var allowed = userData.globalRole <= maxGlobalStaffRole;
+
+  if (!allowed) {
+    callback(lang.errDeniedMediaManagement);
+
+    return;
+  } else if (!identifiers || !identifiers.length) {
+    callback();
+    return;
+  }
+
+  files.aggregate([ {
+    $match : {
+      'metadata.identifier' : {
+        $in : identifiers
+      }
+    }
+  }, {
+    $project : {
+      filename : 1,
+      _id : 0
+    }
+  }, {
+    $group : {
+      _id : 0,
+      files : {
+        $push : '$filename'
+      }
+    }
+  } ], function gotNames(error, results) {
+
+    if (error) {
+      callback(error);
+    } else if (!results.length) {
+
+      references.removeMany({
+        identifier : {
+          $in : identifiers
+        }
+      }, callback);
+
+    } else {
+
+      // style exception, too simple
+      gridFsHandler.removeFiles(results[0].files, function deletedFiles(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          references.removeMany({
+            identifier : {
+              $in : identifiers
+            }
+          }, callback);
+        }
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
