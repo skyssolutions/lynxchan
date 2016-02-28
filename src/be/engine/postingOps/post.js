@@ -44,7 +44,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   overboardOps = require('../overboardOps');
-  referenceHandler = require('../referenceHandler');
+  referenceHandler = require('../mediaHandler');
   gsHandler = require('../gridFsHandler');
   generator = require('../generator').board;
   r9k = require('../r9k');

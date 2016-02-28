@@ -665,7 +665,7 @@ function checkFilePruning() {
 
   if (informedArguments.pruneFiles.informed) {
 
-    require('./engine/referenceHandler').prune(function pruned(error) {
+    require('./engine/mediaHandler').prune(function pruned(error) {
 
       if (error) {
 

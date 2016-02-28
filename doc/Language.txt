@@ -94,6 +94,7 @@ errTorFilesBlocked: error thrown when TOR users are not allowed to post files.
 errNoFileAndMessage: error thrown when an operation requires either a message or files uploaded. Used when replying a thread.
 errDeniedThreadTransfer: error thrown when the user is not allowed to move a thread between boards.
 errDeniedSpoilered: error thrown when the user is not allowed to spoil existing files.
+errDeniedMediaManagement: error thrown when the user is not allowed to manage media files.
 errBoardDelConfirmation: error thrown when the user fails to send the confirmation to delete a board.
 errInvalidIp: error thrown when an invalid ip is informed.
 errDisabledBypass: error thrown when block bypass is not enabled.
@@ -241,6 +242,7 @@ subPasswordReset: subject of the e-mail informing the new password of the user's
 subPasswordRequest: subject of the e-mail of a password reset request.
 subLockedAccount: subject of the e-mail used when the user got his account locked.
 titDefaultChanTitle: title of the front-page.
+titMediaManagement: title of the media management page.
 titBanners: title for the banner management page. Replaces: {$board}.
 titBan: title for the page displaying the user ban.
 titError: title for the error page.

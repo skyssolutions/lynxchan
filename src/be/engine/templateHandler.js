@@ -110,27 +110,39 @@ exports.getCellTests = function() {
         template : 'uploadCell',
         fields : [ 'sizeLabel', 'imgLink', 'nameLink', 'divHash', 'labelHash',
             'originalNameLink', 'dimensionLabel' ]
-      }, {
+      },
+      {
         template : 'ruleManagementCell',
         fields : [ 'indexIdentifier', 'boardIdentifier', 'textLabel' ]
-      }, {
+      },
+      {
         template : 'ruleCell',
         fields : [ 'indexLabel', 'textLabel' ]
-      }, {
+      },
+      {
         template : 'flagCell',
         fields : [ 'flagImg', 'nameLabel', 'idIdentifier' ]
-      }, {
+      },
+      {
         template : 'hashBanCellDisplay',
         fields : [ 'labelFile', 'labelBoard' ]
-      }, {
+      },
+      {
         template : 'latestPostCell',
         fields : [ 'labelPreview', 'linkPost' ]
-      }, {
+      },
+      {
         template : 'logIndexCell',
         fields : [ 'dateLink' ]
-      }, {
+      },
+      {
         template : 'graphIndexCell',
         fields : [ 'dateLink' ]
+      },
+      {
+        template : 'mediaCell',
+        fields : [ 'identifierCheckbox', 'thumbImg', 'fileLink',
+            'referencesLabel' ]
       } ];
 
 };
@@ -338,6 +350,9 @@ exports.getPageTests = function() {
       }, {
         template : 'graphsIndexPage',
         fields : [ 'divDates' ]
+      }, {
+        template : 'mediaManagementPage',
+        fields : [ 'filesDiv', 'pagesDiv' ]
       } ];
 
 };

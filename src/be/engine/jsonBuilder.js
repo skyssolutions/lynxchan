@@ -584,3 +584,12 @@ exports.log = function(date, logs, callback) {
 exports.graphs = function(dates) {
   return JSON.stringify(dates);
 };
+
+exports.mediaManagement = function(media, pages) {
+
+  return JSON.stringify({
+    pages : pages,
+    media : media
+  });
+
+};

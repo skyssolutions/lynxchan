@@ -18,7 +18,7 @@ var files = db.files();
 var users = db.users();
 var torHandler = require('./engine/torOps');
 var graphOps = require('./graphsOps');
-var referenceHandler = require('./engine/referenceHandler');
+var referenceHandler = require('./engine/mediaHandler');
 
 // handles schedules in general.
 // currently it handles the removal of expired captcha's images, applies board

@@ -1946,5 +1946,45 @@ dateLink:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::63
+
+mediaManagementPage: page that allows the global staff to manage the uploaded media files.
+
+Elements:
+filesDiv:
+    use: have children appended to it.
+    description: div that contains the uploaded files.
+
+pagesDiv:
+    use: have children appended to it.
+    description: div that displays the available pages.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::64
+
+mediaCell*: cell that represents a media element for management.
+
+Root element: div.
+
+Elements:
+identifierCheckbox:
+    use: have it's value manipulated.
+    description: checkbox used to select the file.
+
+thumbImg:
+    use: have it's src manipulated.
+    description: img element that will display the thumbnail of the file.
+
+fileLink:
+    use: have it's href manipulated.
+    description: link that leads to the file.
+
+referencesLabel:
+    use: have it's innerHTML manipulated.
+    description: label that shows how many references this file has.
+
+------------------------------------------------------------------------------------------
+
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.
 

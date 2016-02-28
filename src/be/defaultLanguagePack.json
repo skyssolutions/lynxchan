@@ -294,5 +294,7 @@
     "Only for threads",
     "For all posts"
   ],
-  "msgBoardSpecialSettingsSaved": "Board special settings saved."
+  "msgBoardSpecialSettingsSaved": "Board special settings saved.",
+  "titMediaManagement": "Media management",
+  "errDeniedMediaManagement": "You are not allowed to manage media files."
 }

@@ -5,10 +5,16 @@ var threads = db.threads();
 var posts = db.posts();
 var files = db.files();
 var references = db.uploadReferences();
+var maxGlobalStaffRole;
 var gridFsHandler;
+var lang;
+var maxFilesToDisplay = 100;// TODO
 
 exports.loadDependencies = function() {
   gridFsHandler = require('./gridFsHandler');
+  lang = require('./langOps').languagePack();
+
+  maxGlobalStaffRole = require('./miscOps').getMaxStaffRole();
 };
 
 // Section 1: Reference decrease {
@@ -293,3 +299,56 @@ exports.prune = function(callback) {
 
 };
 // } Section 2: File pruning
+
+// Section 3: Media management data {
+exports.getMedia = function(userData, parameters, callback) {
+
+  var globalStaff = userData.globalRole <= maxGlobalStaffRole;
+
+  if (!globalStaff) {
+
+    callback(lang.errDeniedMediaManagement);
+
+    return;
+  }
+
+  var queryBlock = {};
+
+  if (parameters.orphaned) {
+    queryBlock.references = {
+      $lt : 1
+    };
+  }
+
+  references.count(queryBlock, function counted(error, count) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      var pageCount = Math.floor(count / maxFilesToDisplay);
+      pageCount += (count % maxFilesToDisplay ? 1 : 0);
+
+      pageCount = pageCount || 1;
+
+      var page = parameters.page || 1;
+
+      // style exception, too simple
+      references.find(queryBlock, {
+        _id : 0,
+        references : 1,
+        identifier : 1
+      }).sort({
+        _id : -1
+      }).skip((page - 1) * maxFilesToDisplay).limit(maxFilesToDisplay).toArray(
+          function gotReferences(error, foundReferences) {
+            callback(error, foundReferences, pageCount);
+          });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+// } Section 3: Media management data

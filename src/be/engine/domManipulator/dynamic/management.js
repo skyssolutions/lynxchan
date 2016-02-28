@@ -767,3 +767,87 @@ exports.bannerManagement = function(boardUri, banners) {
 
 };
 // } Section 7: Banners
+
+// Section 8: Media management {
+exports.setMediaManagementPages = function(pages, document, parameters) {
+
+  var pagesDiv = document.getElementById('pagesDiv');
+
+  var boilerPlate = '';
+
+  if (parameters.orphaned) {
+    boilerPlate += '&orphaned=1';
+  }
+
+  for (var i = 1; i <= pages; i++) {
+
+    var link = document.createElement('a');
+    link.innerHTML = i;
+    link.href = '/mediaManagement.js?page=' + i + boilerPlate;
+
+    pagesDiv.appendChild(link);
+
+  }
+
+};
+
+exports.setMediaManagementCells = function(document, media) {
+
+  var filesDiv = document.getElementById('filesDiv');
+
+  for (var i = 0; i < media.length; i++) {
+
+    var file = media[i];
+
+    var cell = document.createElement('div');
+    cell.innerHTML = templateHandler.mediaCell;
+    cell.setAttribute('class', 'mediaCell');
+
+    var link = cell.getElementsByClassName('fileLink')[0];
+    link.href = '/.media/' + file.identifier;
+
+    cell.getElementsByClassName('identifierCheckbox')[0].setAttribute('value',
+        file.identifier);
+
+    var thumbImg = cell.getElementsByClassName('thumbImg')[0];
+    thumbImg.setAttribute('src', '/.media/t_' + file.identifier);
+
+    var referencesLabel = cell.getElementsByClassName('referencesLabel')[0];
+    referencesLabel.innerHTML = file.references;
+
+    filesDiv.appendChild(cell);
+
+  }
+
+};
+
+exports.mediaManagement = function(media, pages, parameters) {
+
+  try {
+
+    var document = jsdom(templateHandler.mediaManagementPage);
+
+    document.title = lang.titMediaManagement;
+
+    exports.setMediaManagementPages(pages, document, parameters);
+
+    exports.setMediaManagementCells(document, media);
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+
+  }
+
+};
+
+// } Section 8: Media management

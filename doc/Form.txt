@@ -1141,5 +1141,23 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::66
+
+Name: mediaManagement
+
+Description: displays the uploaded files and allows to manage them. Requires authentication. Reserved for the global staff. Uses get parameters.
+
+Parameters:
+    orphaned: if informed, only orphaned files will be displayed.
+    page: page the user wishes to see.
+
+JSON output(Object): object with the media information. Contains the following fields:
+    pages(Number): amount of pages available.
+    media(Array): array with the media files for the page. Each element is an object with the following fields:
+        identifier: identifier of the file.
+        references(Number): amount of references the file has.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

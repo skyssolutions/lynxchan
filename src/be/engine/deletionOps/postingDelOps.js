@@ -40,7 +40,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   logOps = require('../logOps');
-  referenceHandler = require('../referenceHandler');
+  referenceHandler = require('../mediaHandler');
   overboardOps = require('../overboardOps');
   gridFs = require('../gridFsHandler');
   lang = require('../langOps').languagePack();
