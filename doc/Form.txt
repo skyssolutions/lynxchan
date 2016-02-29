@@ -7,7 +7,7 @@ Files should be sent with an input of type "file" using name "files".
 Pages that require proper validation will redirect the user to /login.html if authentication fails. Validation will require both the login and hash cookies to be set. The hash is the hash created when an account is created or performs login.
 Array parameters will be split using commas and spaces will be ignored.
 Boolean parameters will be just checked if they return a true condition on the server using simple js evaluation (if(parameters.X)).
-Pages with optional json output will require the get parameter "json" with any value to output the data in json form. 
+Pages with optional json output will require the get parameter "json" with any value to output the data in json form.
 
 ------------------------------------------------------------------------------------------
 
@@ -89,7 +89,7 @@ Name: login
 Description: performs login of the user.
 
 Parameters: 
-    login: login of the account. 
+    login: login of the account.
     password: password of the account.
 
 ------------------------------------------------------------------------------------------
@@ -310,7 +310,7 @@ Name: closedReports
 Description: display the list of closed reports. Requires authentication. It uses get parameters instead of post.
 
 Parameters:
-    boardUri: board to display the closed reports of. If not informed, global reports will be displayed instead. 
+    boardUri: board to display the closed reports of. If not informed, global reports will be displayed instead.
 
 Json output(Array): array with the closed reports. Each object contains the following fields:
     _id: unique id of the report.
@@ -400,7 +400,7 @@ Name: bans
 Description: displays the global or board bans. Requires authentication. Uses get parameters instead of post.
 
 Parameters:
-    boardUri: board to display the bans of. If not informed, global bans will be displayed instead. 
+    boardUri: board to display the bans of. If not informed, global bans will be displayed instead.
 
 Json output(Array): array with the bans. Each object contains the following values:
     _id: unique id of the ban.
@@ -647,7 +647,7 @@ Parameters:
         4: from highest PPH to lowest PPH.
         5: from lowest PPH to highest PPH.
         6: alphabetic order.
-        7: reverse alphabetic order. 
+        7: reverse alphabetic order.
         Anything else sort them from most popular to least popular.
 
 Json output(Object): object with data regarding the available boards. Contains the following fields:
@@ -975,7 +975,7 @@ Parameters:
     maxFilters(Number): maximum amount of filters a board can have.
     maxVolunteers(Number): maximum amount of volunteers a board can have.
     maxBannerSize(Number): maximum size in KB allowed for banners.
-    maxFlagSize(Number): maximum size in KB allowed for flags. 
+    maxFlagSize(Number): maximum size in KB allowed for flags.
     floodInterval(Number): amount of seconds users must wait before posting again so their post won't be discarded as flood.
     disable304(Boolean): disabled http response 304.
     verbose(Boolean): enables verbose mode on the server.

@@ -105,8 +105,9 @@ function getRebuildBoards(settings) {
   var rebuildBoards = generalSettings.pageSize !== settings.pageSize;
   var fileSizeDelta = generalSettings.maxFileSizeMB !== settings.maxFileSizeMB;
   var globalCChanged = generalSettings.forceCaptcha ^ settings.forceCaptcha;
+  var fileCChanged = generalSettings.maxFiles !== settings.maxFiles;
 
-  return rebuildBoards || fileSizeDelta || globalCChanged;
+  return fileCChanged || rebuildBoards || fileSizeDelta || globalCChanged;
 
 }
 
@@ -207,15 +208,13 @@ function prepareSettingsForChangeCheck(settings, callback) {
 
   // these fields won`t be set with the current values if none is provided
   // because we want them to be null when comparing
-  var defaultToNull = [ 'siteTitle', 'pageSize', 'globalLatestImages',
-      'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage',
-      'disableTopBoards', 'allowBoardCustomJs', 'topBoardsCount',
-      'globalLatestPosts', 'forceCaptcha', 'overboard', 'frontPageStats',
-      'disableAccountCreation' ];
+  var defaultToNull = [ 'siteTitle', 'globalLatestImages', 'languagePackPath',
+      'defaultAnonymousName', 'defaultBanMessage', 'disableTopBoards',
+      'allowBoardCustomJs', 'topBoardsCount', 'globalLatestPosts',
+      'forceCaptcha', 'overboard', 'frontPageStats', 'disableAccountCreation' ];
 
-  // these ones default to the default values if they are on the previous
-  // list
-  var defaultToDefault = [ 'pageSize' ];
+  // these ones default to the default values
+  var defaultToDefault = [ 'pageSize', 'maxFileSizeMB', 'maxFiles' ];
 
   var defaults = exports.getDefaultSettings();
 
@@ -225,11 +224,11 @@ function prepareSettingsForChangeCheck(settings, callback) {
       continue;
     }
 
-    if (defaultToNull.indexOf(key) === -1) {
+    if (defaultToDefault.indexOf(key) > -1) {
+      settings[key] = defaults[key];
+    } else if (defaultToNull.indexOf(key) === -1) {
 
       settings[key] = generalSettings[key];
-    } else if (defaultToDefault.indexOf(key) > -1) {
-      settings[key] = defaults[key];
     }
   }
 

@@ -541,7 +541,7 @@ Parameters:
     maxFilters(Number): maximum amount of filters a board can have.
     maxVolunteers(Number): maximum amount of volunteers a board can have.
     maxBannerSize(Number): maximum size in KB allowed for banners.
-    maxFlagSize(Number): maximum size in KB allowed for flags. 
+    maxFlagSize(Number): maximum size in KB allowed for flags.
     floodInterval(Number): amount of seconds users must wait before posting again so their post won't be discarded as flood.
     disable304(Boolean): disabled http response 304.
     verbose(Boolean): enables verbose mode on the server.
@@ -665,7 +665,7 @@ Name: renewBypass
 Description: allows the user to renew his block bypass.
 
 Parameters:
-    captcha: captcha input. 
+    captcha: captcha input.
 
 Output: id of the new block bypass.
 
@@ -679,7 +679,7 @@ Description: appeals a ban.
 
 Parameters:
     banId: id of the ban being appealed.
-    appeal: appeal. 
+    appeal: appeal.
 
 ------------------------------------------------------------------------------------------
 

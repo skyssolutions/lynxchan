@@ -25,6 +25,8 @@ var boardProjection = {
   boardUri : 1,
   threadCount : 1,
   boardName : 1,
+  maxFiles : 1,
+  maxFileSizeMB : 1,
   captchaMode : 1,
   boardMarkdown : 1,
   usesCustomJs : 1,

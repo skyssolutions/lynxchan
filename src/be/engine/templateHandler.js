@@ -8,6 +8,7 @@ var verbose;
 var fePath;
 var fs = require('fs');
 var jsdom = require('jsdom').jsdom;
+var templateSettings;
 
 require('jsdom').defaultDocumentFeatures = {
   FetchExternalResources : false,
@@ -19,6 +20,7 @@ require('jsdom').defaultDocumentFeatures = {
 exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
+  templateSettings = settingsHandler.getTemplateSettings();
   verbose = settings.verbose;
   fePath = settings.fePath;
 
@@ -186,7 +188,7 @@ exports.getPageTests = function() {
             'boardIdentifier', 'linkManagement', 'bannerImage', 'captchaDiv',
             'divName', 'linkModeration', 'labelMaxFileSize', 'linkPrevious',
             'linkNext', 'flagsDiv', 'flagCombobox', 'panelMessage',
-            'divMessage' ]
+            'divMessage', 'labelMaxFiles' ]
       },
       {
         template : 'threadPage',
@@ -197,7 +199,7 @@ exports.getPageTests = function() {
             'bannerImage', 'captchaDiv', 'divName', 'labelMaxFileSize',
             'checkboxCyclic', 'flagsDiv', 'flagCombobox', 'panelMessage',
             'divMessage', 'formTransfer', 'transferBoardIdentifier',
-            'transferThreadIdentifier', 'ipDeletionForm' ]
+            'transferThreadIdentifier', 'ipDeletionForm', 'labelMaxFiles' ]
       },
       {
         template : 'messagePage',
@@ -375,65 +377,69 @@ exports.testPageFields = function(document, page, errors) {
   return error;
 };
 
+exports.processPage = function(errors, page) {
+
+  var fullPath = fePath + '/templates/';
+  fullPath += templateSettings[page.template];
+
+  try {
+    var template = fs.readFileSync(fullPath);
+  } catch (error) {
+    errors.push('\nError loading ' + page.template + '.');
+    errors.push('\n' + error);
+
+    return;
+  }
+
+  exports[page.template] = template;
+
+  var document = jsdom(template);
+
+  var error = exports.testPageFields(document, page, errors);
+
+  if (error.length) {
+
+    errors.push('\nPage ' + page.template + error);
+  }
+
+};
+
 exports.loadPages = function(errors) {
 
   var pages = exports.getPageTests();
-
-  var templateSettings = settingsHandler.getTemplateSettings();
 
   for (var i = 0; i < pages.length; i++) {
 
     var page = pages[i];
 
-    var fullPath = fePath + '/templates/';
-    fullPath += templateSettings[page.template];
+    if (!templateSettings[page.template]) {
+      errors.push('\nTemplate ' + page.template + ' is not defined.');
 
-    try {
-      var template = fs.readFileSync(fullPath);
-    } catch (error) {
-      console.log('Error loading ' + page.template + '.');
-      throw error;
+      continue;
     }
 
-    exports[page.template] = template;
+    exports.processPage(errors, page);
 
-    var document = jsdom(template);
-
-    var error = exports.testPageFields(document, page, errors);
-
-    if (error.length) {
-
-      errors.push('\nPage ' + page.template + error);
-    }
   }
-};
-
-exports.getTestCell = function(document, name) {
-
-  var toReturn = document.createElement('div');
-
-  var templateSettings = settingsHandler.getTemplateSettings();
-
-  var fullPath = fePath + '/templates/' + templateSettings[name];
-
-  try {
-    var template = fs.readFileSync(fullPath);
-  } catch (error) {
-    console.log('Error loading ' + name + '.');
-    throw error;
-  }
-
-  exports[name] = template;
-
-  toReturn.innerHTML = template;
-
-  return toReturn;
 };
 
 exports.testCell = function(document, cell) {
   var error = '';
 
-  var cellElement = exports.getTestCell(document, cell.template);
+  var cellElement = document.createElement('div');
+
+  var fullPath = fePath + '/templates/' + templateSettings[cell.template];
+
+  try {
+    var template = fs.readFileSync(fullPath);
+  } catch (thrownError) {
+    error += '\nError loading ' + cell.template + '.\n' + thrownError;
+    return error;
+  }
+
+  exports[cell.template] = template;
+
+  cellElement.innerHTML = template;
 
   for (var j = 0; j < cell.fields.length; j++) {
 
@@ -460,7 +466,11 @@ exports.loadCells = function(errors) {
 
     var cell = cells[i];
 
-    var errorFound = false;
+    if (!templateSettings[cell.template]) {
+      errors.push('\nTemplate ' + cell.template + ' is not defined.');
+
+      continue;
+    }
 
     var error = exports.testCell(document, cell);
 

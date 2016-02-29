@@ -8,7 +8,9 @@ var latestPostCount;
 var lang;
 var templateHandler;
 var miscOps;
+var maxAllowedFiles;
 var minClearIpRole;
+var maxFileSizeMB;
 
 exports.indicatorsRelation = {
   pinned : 'pinIndicator',
@@ -25,9 +27,11 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  maxAllowedFiles = settings.maxFiles;
   minClearIpRole = settings.clearIpMinRole;
   allowedJs = settings.allowBoardCustomJs;
   forceCaptcha = settings.forceCaptcha;
+  maxFileSizeMB = settings.maxFileSizeMB;
   latestPostCount = settings.latestPostCount;
   displayMaxSize = exports.formatFileSize(settings.maxFileSizeB);
 
@@ -236,33 +240,6 @@ exports.setBoardToggleableElements = function(boardData, document, thread) {
   } else {
     exports.removeElement(document.getElementById('panelMessage'));
   }
-};
-
-exports.setHeader = function(document, board, boardData, flagData, thread) {
-
-  var titleHeader = document.getElementById('labelName');
-  titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
-
-  var descriptionHeader = document.getElementById('labelDescription');
-  descriptionHeader.innerHTML = boardData.boardDescription;
-
-  var linkBanner = '/randomBanner.js?boardUri=' + board;
-  document.getElementById('bannerImage').src = linkBanner;
-
-  exports.setBoardToggleableElements(boardData, document, thread);
-
-  if (boardData.usesCustomCss) {
-    exports.setCustomCss(board, document);
-  }
-
-  if (boardData.usesCustomJs && allowedJs) {
-    exports.setCustomJs(board, document);
-  }
-
-  exports.setFlags(document, board, flagData);
-
-  document.getElementById('labelMaxFileSize').innerHTML = displayMaxSize;
-
 };
 
 exports.setSharedHideableElements = function(posting, cell) {
@@ -786,3 +763,57 @@ exports.setBanList = function(document, div, bans) {
 
 };
 // } Section 3: Ban div
+
+// Section 4: Header {
+exports.setFileLimits = function(document, bData) {
+
+  var fileLimitToUse;
+
+  if (bData.maxFiles) {
+    fileLimitToUse = bData.maxFiles < maxAllowedFiles ? bData.maxFiles
+        : maxAllowedFiles;
+  } else {
+    fileLimitToUse = maxAllowedFiles;
+  }
+
+  document.getElementById('labelMaxFiles').innerHTML = fileLimitToUse;
+
+  var sizeToUse;
+
+  if (bData.maxFileSizeMB && bData.maxFileSizeMB < maxFileSizeMB) {
+    sizeToUse = bData.maxFileSizeMB + ' MB';
+  } else {
+    sizeToUse = displayMaxSize;
+  }
+
+  document.getElementById('labelMaxFileSize').innerHTML = sizeToUse;
+
+};
+
+exports.setHeader = function(document, board, boardData, flagData, thread) {
+
+  var titleHeader = document.getElementById('labelName');
+  titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
+
+  var descriptionHeader = document.getElementById('labelDescription');
+  descriptionHeader.innerHTML = boardData.boardDescription;
+
+  var linkBanner = '/randomBanner.js?boardUri=' + board;
+  document.getElementById('bannerImage').src = linkBanner;
+
+  exports.setBoardToggleableElements(boardData, document, thread);
+
+  if (boardData.usesCustomCss) {
+    exports.setCustomCss(board, document);
+  }
+
+  if (boardData.usesCustomJs && allowedJs) {
+    exports.setCustomJs(board, document);
+  }
+
+  exports.setFlags(document, board, flagData);
+
+  exports.setFileLimits(document, boardData);
+
+};
+// } Section 4: Header

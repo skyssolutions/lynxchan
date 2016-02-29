@@ -123,6 +123,10 @@ linkNext:
     use: have it's href manipulated and might be removed.
     description: link to the board next page.
 
+labelMaxFiles:
+    use: have it's innerHTML manipulated.
+    description: label that displays the maximum amount of files allowed to be posted.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::03
@@ -194,15 +198,15 @@ controlThreadIdentifier:
     use: have it's value manipulated.
     description: hidden input to identify the thread for the controls page.
 
-checkboxLock:    
+checkboxLock:
     use: might be turned on.
     description: check-box indicating if the thread is locked.
 
-checkboxPin:    
+checkboxPin:
     use: might be turned on.
     description: check-box indicating if the thread is pinned.
 
-checkboxCyclic:    
+checkboxCyclic:
     use: might be turned on.
     description: check-box indicating if the thread is cyclic.
 
@@ -233,6 +237,10 @@ transferBoardIdentifier:
 transferThreadIdentifier:
     use: have it's value manipulated.
     description: hidden identifier that identifies the thread being transferred.
+
+labelMaxFiles:
+    use: have it's innerHTML manipulated.
+    description: label that displays the maximum amount of files allowed to be posted.
 
 ------------------------------------------------------------------------------------------
 
@@ -328,7 +336,7 @@ divMessage:
 
 divPosts:
     use: have children appended to it.
-    description: contains the thread's posts. 
+    description: contains the thread's posts.
 
 linkReply:
     use: have it's href manipulated.
@@ -401,7 +409,7 @@ labelIp:
     description: label used to display the hashed ip of the poster to the staff.
 
 divBanMessage:
-    use: have it's innerHTML manipulated or might be removed. 
+    use: have it's innerHTML manipulated or might be removed.
     description: holds the ban message, if the content was used for a ban.
 
 imgFlag:
@@ -421,15 +429,15 @@ linkPreview:
     description: link to the post's preview.
 
 panelIp:
-    use: might be removed. 
+    use: might be removed.
     description: object to be removed if the range and ip are not going to be informed.
 
 panelRange:
-    use: might be removed. 
+    use: might be removed.
     description: panel that contains the range of the poster's ip.
 
 labelRange:
-    use: have it's innerHTML manipulated. 
+    use: have it's innerHTML manipulated.
     description: contains the poster's first two parts of his ip.
 
 panelUploads:
@@ -437,7 +445,7 @@ panelUploads:
     description: contains the uploads for the post.
 
 labelRole:
-    use: have it's innerHTML manipulated or might be removed. 
+    use: have it's innerHTML manipulated or might be removed.
     description: holds the role of the user in the board. If the user doesn't have a role in the board, it will display its global role, if the user is not a regular user.
 
 linkName:
@@ -562,7 +570,7 @@ userLabel:
 
 addStaffForm:
     use: might be removed.
-    description: form used to add a new user to the global staff. 
+    description: form used to add a new user to the global staff.
 
 newStaffCombo:
     use: will have option elements appended to it.
@@ -730,11 +738,11 @@ boardSettingsIdentifier:
 
 disableIdsCheckbox:
     use: might be turned on.
-    description: check-box that indicates if the option to disable ids is turned on. 
+    description: check-box that indicates if the option to disable ids is turned on.
 
 allowCodeCheckbox:
     use: might be turned on.
-    description: check-box that indicates if the option to allow code tags is on. 
+    description: check-box that indicates if the option to allow code tags is on.
 
 early404Checkbox:
     use: might be turned on.
@@ -742,7 +750,7 @@ early404Checkbox:
 
 captchaModeComboBox:
     use: have children appended to it.
-    description: combobox indicating the captcha mode for the board. 
+    description: combobox indicating the captcha mode for the board.
 
 unindexCheckbox:
     use: might be turned on.
@@ -750,7 +758,7 @@ unindexCheckbox:
 
 forceAnonymityCheckbox:
     use: might be turned on.
-    description: check-box that indicates if the option to force anonymity is turned on. 
+    description: check-box that indicates if the option to force anonymity is turned on.
 
 filterManagementLink:
     use: have it's href manipulated.
@@ -791,7 +799,7 @@ userIdentifier:
 
 userLabel:
     use: have it's innerHTML manipulated.
-    description: label used to identify the user. 
+    description: label used to identify the user.
 
 ------------------------------------------------------------------------------------------
 
@@ -973,7 +981,7 @@ reasonLabel:
     use: have it's innerHTML manipulated.
     description: holds the reason of the ban.
 
-expirationLabel:     
+expirationLabel:
     use: have it's innerHTML manipulated.
     description: holds the expiration of the ban.
 
@@ -1197,7 +1205,7 @@ filterIdentifier:
 
 labelCaseInsensitive:
     use: might be removed.
-    description: label that indicates if the filter is case-insensitive. 
+    description: label that indicates if the filter is case-insensitive.
 
 ------------------------------------------------------------------------------------------
 
@@ -1312,7 +1320,7 @@ divSolvedCaptcha:
 
 labelCaptchaId:
     use: have it's innerHTML manipulated.
-    description: displays the solved captcha id. 
+    description: displays the solved captcha id.
 
 inputCaptchaId:
     use: have it's value manipulated.
@@ -1859,7 +1867,7 @@ labelPreview:
 
 linkPost:
     use: have it's innerHTML and href manipulated.
-    description: link to the post. 
+    description: link to the post.
 
 ------------------------------------------------------------------------------------------
 

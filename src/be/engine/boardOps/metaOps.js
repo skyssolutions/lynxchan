@@ -127,7 +127,13 @@ exports.checkBoardRebuild = function(board, params) {
 
   var settingsChanged = exports.captchaOrAnonimityChanged(board, params);
 
-  if (didFieldsChanged || settingsChanged) {
+  var fileLimitsChanged = +board.maxFiles !== +params.maxFiles;
+
+  if (!fileLimitsChanged) {
+    fileLimitsChanged = +board.maxFileSizeMB !== +params.maxFileSizeMB;
+  }
+
+  if (didFieldsChanged || settingsChanged || fileLimitsChanged) {
 
     process.send({
       board : params.boardUri,
