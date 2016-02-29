@@ -144,6 +144,15 @@ function checkOverboardChanged(settings) {
 
 function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
 
+  var rebuildLogin = settings.disableAccountCreation
+      ^ generalSettings.disableAccountCreation;
+
+  if (rebuildLogin) {
+    reloadsToMake.push({
+      login : true
+    });
+  }
+
   if (checkOverboardChanged(settings)) {
 
     var reaggregate = settings.overboard && !generalSettings.overboard;
@@ -201,7 +210,8 @@ function prepareSettingsForChangeCheck(settings, callback) {
   var defaultToNull = [ 'siteTitle', 'pageSize', 'globalLatestImages',
       'languagePackPath', 'defaultAnonymousName', 'defaultBanMessage',
       'disableTopBoards', 'allowBoardCustomJs', 'topBoardsCount',
-      'globalLatestPosts', 'forceCaptcha', 'overboard', 'frontPageStats' ];
+      'globalLatestPosts', 'forceCaptcha', 'overboard', 'frontPageStats',
+      'disableAccountCreation' ];
 
   // these ones default to the default values if they are on the previous
   // list

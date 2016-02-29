@@ -191,12 +191,12 @@
   "msgCssSet": "CSS uploaded.",
   "msgCssDeleted": "CSS deleted.",
   "errFileTooLarge": "A file sent was too large.",
-  "guiOmmitedInfo": {
+  "guiOmittedInfo": {
     "startPiece": "{$postAmount} post ",
     "startPiecePlural": "{$postAmount} posts ",
     "filesPiece": "and {$imageAmount} image ",
     "filesPiecePlural": "and {$imageAmount} images ",
-    "finalPiece": "ommited."
+    "finalPiece": "omitted."
   },
   "errDeniedRuleManagement": "You are not allowed to manage rules for this board.",
   "titRuleManagement": "Rule management",

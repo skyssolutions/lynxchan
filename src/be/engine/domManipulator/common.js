@@ -361,7 +361,7 @@ exports.setThreadHiddeableElements = function(thread, cell, modding, boardUri,
 exports.assembleOmissionContent = function(thread, displayedImages,
     displayedPosts) {
 
-  var pieces = lang.guiOmmitedInfo;
+  var pieces = lang.guiOmittedInfo;
   var postDifference = thread.postCount - displayedPosts;
   var startPiece = postDifference > 1 ? pieces.startPiecePlural
       : pieces.startPiece;

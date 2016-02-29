@@ -7,6 +7,7 @@
 // messages can have the following keys:
 // globalRebuild (Boolean): rebuilds every single page.
 // log(Boolean): rebuild log pages.
+// login(Boolean): rebuilds login page.
 // date(Date): indicates to rebuild only a specific date for logs.
 // overboard (Boolean): rebuilds the overboard.
 // allBoards (Boolean): rebuilds all boards.
@@ -48,6 +49,7 @@ var queueTree = {};
 // so we can just tell it is rebuilding everything and ignore any incoming
 // requests
 var rebuildingAll = false;
+var rebuildingLogin = false;
 var rebuildingAllBoards = false;
 var rebuildingAllLogs = false;
 var rebuildingOverboard = false;
@@ -111,10 +113,20 @@ function clearGlobalRebuilding() {
 
   rebuildingAllLogs = false;
   rebuildingAll = false;
+  rebuildingLogin = false;
   rebuildingOverboard = false;
   rebuildingAllBoards = false;
   rebuildingFrontPage = false;
 
+}
+
+function clearLog(message) {
+  if (message.date) {
+    logDates.splice(logDates.indexOf(message.date), 1);
+  } else {
+    logDates = [];
+    rebuildingAllLogs = false;
+  }
 }
 
 function clearTree(message) {
@@ -124,13 +136,7 @@ function clearTree(message) {
     return;
   } else if (message.log) {
 
-    if (message.date) {
-      logDates.splice(logDates.indexOf(message.date), 1);
-    } else {
-      logDates = [];
-      rebuildingAllLogs = false;
-    }
-
+    clearLog(message);
     return;
 
   } else if (message.overboard) {
@@ -141,6 +147,9 @@ function clearTree(message) {
     return;
   } else if (message.frontPage) {
     rebuildingFrontPage = false;
+    return;
+  } else if (message.login) {
+    rebuildingLogin = false;
     return;
   }
 
@@ -203,6 +212,8 @@ exports.processMessage = function(message, callback) {
     generator.board.boards(callback);
   } else if (message.frontPage) {
     generator.global.frontPage(callback);
+  } else if (message.login) {
+    generator.global.login(callback);
   } else {
     processMessageForBoards(message, callback);
   }
@@ -538,7 +549,7 @@ function checkForFullBoardRebuild(message) {
 
 }
 
-exports.checkForOverBoard = function(message) {
+exports.checkForOverBoardAndLogin = function(message) {
 
   if (rebuildingOverboard && message.overboard) {
     return;
@@ -549,6 +560,16 @@ exports.checkForOverBoard = function(message) {
 
     putInQueue(message, null, 30);
 
+    return;
+  }
+
+  if (rebuildingLogin && message.login) {
+    return;
+  }
+
+  if (message.login) {
+    rebuildingLogin = true;
+    putInQueue(message, null, 60);
     return;
   }
 
@@ -577,7 +598,7 @@ exports.checkForLog = function(message) {
     return;
   }
 
-  exports.checkForOverBoard(message);
+  exports.checkForOverBoardAndLogin(message);
 };
 
 exports.queue = function(message) {

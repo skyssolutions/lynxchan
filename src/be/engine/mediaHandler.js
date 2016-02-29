@@ -8,7 +8,7 @@ var references = db.uploadReferences();
 var maxGlobalStaffRole;
 var gridFsHandler;
 var lang;
-var maxFilesToDisplay;// TODO
+var maxFilesToDisplay;
 
 exports.loadDependencies = function() {
   gridFsHandler = require('./gridFsHandler');
