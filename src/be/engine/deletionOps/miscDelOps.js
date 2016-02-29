@@ -172,7 +172,7 @@ exports.cleanThreads = function(boardUri, limit, callback) {
 
       // style exception, too simple
       referenceHandler
-          .clearPostingReferences(boardUri, prunedThreads, null, false,
+          .clearPostingReferences(boardUri, prunedThreads, null, false, false,
               function removedReferences(error) {
 
                 if (error) {

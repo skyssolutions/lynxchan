@@ -8,13 +8,20 @@ var references = db.uploadReferences();
 var maxGlobalStaffRole;
 var gridFsHandler;
 var lang;
-var maxFilesToDisplay = 100;// TODO
+var maxFilesToDisplay;// TODO
 
 exports.loadDependencies = function() {
   gridFsHandler = require('./gridFsHandler');
   lang = require('./langOps').languagePack();
 
   maxGlobalStaffRole = require('./miscOps').getMaxStaffRole();
+};
+
+exports.loadSettings = function() {
+
+  var settings = require('../settingsHandler').getGeneralSettings();
+  maxFilesToDisplay = settings.mediaPageSize;
+
 };
 
 // Section 1: Reference decrease {
@@ -92,24 +99,42 @@ exports.getOperations = function(postReferences, threadReferences) {
 };
 
 exports.updateReferencesCount = function(postReferences, threadReferences,
-    callback) {
+    deleteMedia, callback) {
 
-  var operations = exports.getOperations(postReferences, threadReferences);
+  if (deleteMedia) {
 
-  if (!operations.length) {
-    callback();
-    return;
+    var identifiers = [];
+
+    var groupedReferences = postReferences.concat(threadReferences);
+
+    for (var i = 0; i < groupedReferences.length; i++) {
+
+      var reference = groupedReferences[i];
+      identifiers.push(reference._id.replace('/', ''));
+
+    }
+
+    exports.deleteFiles(identifiers, null, callback, true);
+
+  } else {
+
+    var operations = exports.getOperations(postReferences, threadReferences);
+
+    if (!operations.length) {
+      callback();
+      return;
+    }
+
+    references.bulkWrite(operations, callback);
   }
-
-  references.bulkWrite(operations, callback);
 
 };
 
 exports.getThreadReferences = function(postReferences, boardUri,
-    threadsToClear, callback, boardDeletion) {
+    threadsToClear, deleteMedia, callback, boardDeletion) {
 
   if ((!threadsToClear || !threadsToClear.length) && !boardDeletion) {
-    exports.updateReferencesCount(postReferences, [], callback);
+    exports.updateReferencesCount(postReferences, [], deleteMedia, callback);
 
     return;
   }
@@ -133,7 +158,8 @@ exports.getThreadReferences = function(postReferences, boardUri,
         if (error) {
           callback(error);
         } else {
-          exports.updateReferencesCount(postReferences, results, callback);
+          exports.updateReferencesCount(postReferences, results, deleteMedia,
+              callback);
         }
 
       });
@@ -141,7 +167,7 @@ exports.getThreadReferences = function(postReferences, boardUri,
 };
 
 exports.clearPostingReferences = function(boardUri, threadsToClear,
-    postsToClear, onlyFilesDeletion, callback) {
+    postsToClear, onlyFilesDeletion, mediaDeletion, callback) {
 
   var query = {
     boardUri : boardUri,
@@ -169,7 +195,8 @@ exports.clearPostingReferences = function(boardUri, threadsToClear,
   }
 
   if (!addedLimiter) {
-    exports.getThreadReferences([], boardUri, threadsToClear, callback);
+    exports.getThreadReferences([], boardUri, threadsToClear, mediaDeletion,
+        callback);
 
     return;
   }
@@ -182,7 +209,7 @@ exports.clearPostingReferences = function(boardUri, threadsToClear,
         } else {
 
           exports.getThreadReferences(results, boardUri, threadsToClear,
-              callback);
+              mediaDeletion, callback);
         }
 
       });
@@ -201,7 +228,8 @@ exports.clearBoardReferences = function(boardUri, callback) {
     if (error) {
       callback(error);
     } else {
-      exports.getThreadReferences(results, boardUri, null, callback, true);
+      exports.getThreadReferences(results, boardUri, null, false, callback,
+          true);
     }
 
   });
@@ -351,14 +379,16 @@ exports.getMedia = function(userData, parameters, callback) {
 
 };
 
-exports.deleteFiles = function(identifiers, userData, callback) {
+exports.deleteFiles = function(identifiers, userData, callback, override) {
 
-  var allowed = userData.globalRole <= maxGlobalStaffRole;
+  if (!override) {
+    var allowed = userData.globalRole <= maxGlobalStaffRole;
+    if (!allowed) {
 
-  if (!allowed) {
-    callback(lang.errDeniedMediaManagement);
+      callback(lang.errDeniedMediaManagement);
 
-    return;
+      return;
+    }
   } else if (!identifiers || !identifiers.length) {
     callback();
     return;

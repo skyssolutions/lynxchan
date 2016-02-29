@@ -267,6 +267,7 @@ Name: contentActions
 Description: ban, deletes or reports posts and threads. The inputs of the posts will have their names generated on the page generation stage. If the password is not provided for deletion, authentication is required.
 
 Parameters:
+    deleteMedia: if anything is informed and the user is part of the global staff, when deleting files or postings, the actual media files will be removed from the server.
     range: if anything is informed, the bans will be range bans instead of specific.
     password: password to be used for deletion.
     reason: reason of the report.
@@ -936,6 +937,7 @@ Json output(Object): object with the current global settings. It contains the fo
     CSP: directive used for the content security policy header.
     onlySfwLatestImages(Boolean): makes that only images from sfw content is displayed on the front-page.
     inactivityThreshold(Number): amount of days an user must be inactive so he and his boards will be marked as inactive.
+    mediaPageSize(Number): amount of files to be displayed on the media management page.
 
 ------------------------------------------------------------------------------------------
 
@@ -1011,6 +1013,7 @@ Parameters:
     CSP: directive used for the content security policy header.
     onlySfwLatestImages(Boolean): makes that only images from sfw content is displayed on the front-page.
     inactivityThreshold(Number): amount of days an user must be inactive so he and his boards will be marked as inactive.
+    mediaPageSize(Number): amount of files to be displayed on the media management page.
 
 ------------------------------------------------------------------------------------------
 

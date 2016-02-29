@@ -178,17 +178,9 @@ linkMod:
     use: have it's href manipulated.
     description: link to the moderation page of the thread.
 
-inputBan:
+divMod:
     use: might be removed.
-    description: submit input used to ban users.
-
-inputSpoil:
-    use: might be removed.
-    description: submit input used to spoil files.
-
-divBanInput:
-    use: might be removed.
-    description: area to input information specific to bans.
+    description: area that contains moderation specific elements.
 
 divControls:
     use: might be removed.
@@ -1815,6 +1807,14 @@ fieldSlaves:
 fieldTorPort:
     use: have it's value manipulated.
     description: field that displays the port that will mark any incoming request through it as TOR.
+
+fieldInactivityThreshold:
+    use: have it's value manipulated.
+    description: field that displays how long one must be inactive until it's account is marked as such.
+
+fieldMediaPageSize:
+    use: have it's value manipulated.
+    description: field that displays how many files should be displayed at once on the media management page.
 
 ------------------------------------------------------------------------------------------
 

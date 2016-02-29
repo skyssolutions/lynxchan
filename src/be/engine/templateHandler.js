@@ -192,12 +192,12 @@ exports.getPageTests = function() {
         template : 'threadPage',
         fields : [ 'labelName', 'labelDescription', 'divThreads',
             'boardIdentifier', 'linkManagement', 'threadIdentifier', 'linkMod',
-            'inputBan', 'divBanInput', 'divControls', 'controlBoardIdentifier',
+            'divMod', 'divControls', 'controlBoardIdentifier',
             'controlThreadIdentifier', 'checkboxLock', 'checkboxPin',
             'bannerImage', 'captchaDiv', 'divName', 'labelMaxFileSize',
             'checkboxCyclic', 'flagsDiv', 'flagCombobox', 'panelMessage',
             'divMessage', 'formTransfer', 'transferBoardIdentifier',
-            'transferThreadIdentifier', 'inputSpoil', 'ipDeletionForm' ]
+            'transferThreadIdentifier', 'ipDeletionForm' ]
       },
       {
         template : 'messagePage',
@@ -334,7 +334,8 @@ exports.getPageTests = function() {
             'checkboxGlobalCaptcha', 'fieldRssDomain', 'fieldOverboard',
             'comboBypassMode', 'fieldBypassHours', 'fieldBypassPosts',
             'fieldMultiBoardThreadCount', 'fieldConcurrentRebuildMessages',
-            'checkboxSFWLatestImages', 'fieldInactivityThreshold' ]
+            'checkboxSFWLatestImages', 'fieldInactivityThreshold',
+            'fieldMediaPageSize' ]
       }, {
         template : 'hashBanPage',
         fields : [ 'hashBansPanel' ]

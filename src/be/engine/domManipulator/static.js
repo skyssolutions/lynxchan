@@ -134,9 +134,7 @@ exports.setModdingInformation = function(document, boardUri, boardData,
 
 exports.hideModElements = function(document) {
 
-  common.removeElement(document.getElementById('inputBan'));
-  common.removeElement(document.getElementById('inputSpoil'));
-  common.removeElement(document.getElementById('divBanInput'));
+  common.removeElement(document.getElementById('divMod'));
   common.removeElement(document.getElementById('divControls'));
 
 };

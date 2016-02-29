@@ -475,6 +475,11 @@ exports.getParametersArray = function() {
     setting : 'concurrentRebuildMessages',
     element : 'fieldConcurrentRebuildMessages'
   }, {
+    param : 'mediaPageSize',
+    type : 'number',
+    setting : 'mediaPageSize',
+    element : 'fieldMediaPageSize'
+  }, {
     // boolean
     param : 'disable304',
     type : 'boolean',

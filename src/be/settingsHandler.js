@@ -408,6 +408,7 @@ exports.getDefaultSettings = function() {
     emailSender : 'noreply@mychan.com',
     captchaExpiration : 5,
     maxRequestSizeMB : 2,
+    mediaPageSize : 100,
     maxFileSizeMB : Infinity,
     acceptedMimes : [ 'image/png', 'image/jpeg', 'image/gif', 'image/bmp',
         'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg', 'audio/ogg',

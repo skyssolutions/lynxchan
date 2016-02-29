@@ -81,7 +81,7 @@ exports.readFileStats = function(pathName, lastSeen, header, req, res, cb) {
 
       gridFs.outputFile('/404.html', req, res, cb);
 
-    } else if (lastSeen === stats.mtime.toString() && !disable304) {
+    } else if (lastSeen === stats.mtime.toUTCString() && !disable304) {
       if (verbose) {
         console.log('304');
       }
@@ -113,7 +113,7 @@ exports.outputFile = function(req, pathName, res, callback) {
 
   if (!file) {
     exports.readFileStats(pathName, lastSeen, header, req, res, callback);
-  } else if (lastSeen === file.mtime.toString() && !disable304) {
+  } else if (lastSeen === file.mtime.toUTCString() && !disable304) {
 
     if (verbose) {
       console.log('304');

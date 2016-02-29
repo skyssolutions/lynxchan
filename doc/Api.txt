@@ -194,6 +194,7 @@ Name: deleteContent
 Description: deletes posts or threads. If the password is not provided, authentication is required.
 
 Parameters:
+    deleteMedia(Boolean): causes the actual media files to be deleted. Ignored if user didn't authenticate or isn't on the global staff.
     password: password to be used for deletion.
     deleteUploads(Boolean): indicates that only the files, and not the threads and posts are to be deleted.
     postings(Array): array of content to be deleted. Contains objects with the following fields:
@@ -578,6 +579,7 @@ Parameters:
     CSP: directive used for the content security policy header.
     onlySfwLatestImages(Boolean): makes that only images from sfw content is displayed on the front-page.
     inactivityThreshold(Number): amount of days an user must be inactive so he and his boards will be marked as inactive.
+    mediaPageSize(Number): amount of files to be displayed on the media management page.
 
 ------------------------------------------------------------------------------------------
 

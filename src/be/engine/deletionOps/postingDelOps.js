@@ -725,8 +725,8 @@ exports.getPostsToDelete = function(userData, board, postsToDelete, parameters,
 
       // style exception, too simple
       referenceHandler.clearPostingReferences(board.boardUri, foundThreads,
-          foundPosts, parameters.deleteUploads, function clearedReferences(
-              error) {
+          foundPosts, parameters.deleteUploads, parameters.deleteMedia,
+          function clearedReferences(error) {
 
             if (error) {
               cb(error);
@@ -858,6 +858,20 @@ exports.printAuth = function(userData, parameters, threadsToDelete,
   console.log('Deleting posts: ' + JSON.stringify(postsToDelete, null, 2));
 };
 
+exports.adjustMediaDeletion = function(parameters, userData) {
+
+  if (parameters.deleteMedia) {
+
+    if (!userData) {
+      parameters.deleteMedia = false;
+    } else {
+      parameters.deleteMedia = userData.globalRole <= miscOps.getMaxStaffRole();
+    }
+
+  }
+
+};
+
 exports.posting = function(userData, parameters, threadsToDelete,
     postsToDelete, callback) {
 
@@ -867,6 +881,8 @@ exports.posting = function(userData, parameters, threadsToDelete,
 
     exports.printAuth(userData, parameters, threadsToDelete, postsToDelete);
   }
+
+  exports.adjustMediaDeletion(parameters, userData);
 
   for ( var key in threadsToDelete) {
 

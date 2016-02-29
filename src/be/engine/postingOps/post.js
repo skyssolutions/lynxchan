@@ -170,7 +170,7 @@ exports.cleanThreadPosts = function(boardUri, threadId, postId, callback) {
 
       // style exception, too simple
       referenceHandler.clearPostingReferences(boardUri, null, postsToDelete,
-          false, function removedReferences(error) {
+          false, false, function removedReferences(error) {
 
             if (error) {
               callback(error);

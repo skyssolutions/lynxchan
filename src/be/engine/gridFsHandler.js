@@ -360,7 +360,7 @@ exports.shouldOutput304 = function(lastSeen, stats) {
 
   var lastM = stats.metadata.lastModified || stats.uploadDate;
 
-  var mTimeMatches = lastSeen === lastM.toString();
+  var mTimeMatches = lastSeen === lastM.toUTCString();
 
   return mTimeMatches && !disable304 && !stats.metadata.status;
 };
