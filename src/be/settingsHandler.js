@@ -214,7 +214,7 @@ function prepareSettingsForChangeCheck(settings, callback) {
       'forceCaptcha', 'overboard', 'frontPageStats', 'disableAccountCreation' ];
 
   // these ones default to the default values
-  var defaultToDefault = [ 'pageSize', 'maxFileSizeMB', 'maxFiles' ];
+  var defaultToDefault = [ 'pageSize', 'maxFileSizeMB', 'maxFiles', 'fePath' ];
 
   var defaults = exports.getDefaultSettings();
 

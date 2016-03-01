@@ -166,6 +166,8 @@ exports.process = function(req, res) {
           boardUri : 1,
           ipSalt : 1,
           boardName : 1,
+          maxFiles : 1,
+          maxFileSizeMB : 1,
           settings : 1,
           captchaMode : 1,
           boardMarkdown : 1,

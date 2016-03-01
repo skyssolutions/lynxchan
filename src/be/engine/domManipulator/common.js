@@ -781,7 +781,7 @@ exports.setFileLimits = function(document, bData) {
   var sizeToUse;
 
   if (bData.maxFileSizeMB && bData.maxFileSizeMB < maxFileSizeMB) {
-    sizeToUse = bData.maxFileSizeMB + ' MB';
+    sizeToUse = exports.formatFileSize(bData.maxFileSizeMB * 1048576);
   } else {
     sizeToUse = displayMaxSize;
   }
