@@ -86,7 +86,7 @@ exports.readFileStats = function(pathName, lastSeen, header, req, res, cb) {
         console.log('304');
       }
 
-      res.writeHead(304);
+      res.writeHead(304, [ [ 'expires', new Date().toUTCString() ] ]);
       res.end();
     } else {
       exports.readAndRespond(pathName, stats.mtime, header, res, cb);
@@ -120,11 +120,14 @@ exports.outputFile = function(req, pathName, res, callback) {
 
     }
 
-    res.writeHead(304);
+    res.writeHead(304, [ [ 'expires', new Date().toUTCString() ] ]);
     res.end();
 
   } else {
-    exports.respond(file.content, header, res);
+
+    exports.respond(file.content, header.concat([
+        [ 'last-modified', file.mtime.toUTCString() ],
+        [ 'expires', new Date().toUTCString() ] ]), res);
   }
 
 };

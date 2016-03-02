@@ -310,6 +310,10 @@ uploadReferences: stores reference count to uploaded files.
 
 ----------------------------------------------------------------------------------------
 
+rebuildMessages: internal usage collection that stores rebuild message that were not completed yet.
+
+----------------------------------------------------------------------------------------
+
 *: duplicated data, foreign key.
 **: unique key
 ***:part of a unique key combination.

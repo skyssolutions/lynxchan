@@ -20,6 +20,7 @@ var cachedDb;
 
 var maxIndexesSet = 18;
 
+var cachedMessages;
 var cachedUploadReferences;
 var cachedLatestImages;
 var cachedAggregatedLogs;
@@ -596,6 +597,10 @@ function initStats(callback) {
 // end of index initialization
 
 // start of getters
+exports.messages = function() {
+  return cachedMessages;
+};
+
 exports.conn = function() {
   return cachedDb;
 };
@@ -691,7 +696,6 @@ exports.aggregatedLogs = function() {
 exports.uploadReferences = function() {
   return cachedUploadReferences;
 };
-
 // end of getters
 
 function initGlobalIndexes(callback) {
@@ -767,6 +771,7 @@ function initGlobalIndexedCollections(callback) {
   cachedFlood = cachedDb.collection('floodRecord');
   cachedCaptchas = cachedDb.collection('captchas');
   cachedTorIps = cachedDb.collection('torIps');
+  cachedMessages = cachedDb.collection('rebuildMessages');
   cachedRecoveryRequests = cachedDb.collection('recoveryRequests');
   cachedUsers = cachedDb.collection('users');
   cachedUploadReferences = cachedDb.collection('uploadReferences');

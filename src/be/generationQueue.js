@@ -59,12 +59,31 @@ var kernel = require('./kernel');
 var debug = kernel.debug();
 var generator = require('./engine/generator');
 var http = require('http');
+var db = require('./db');
+var rebuildMessages = db.messages();
 var settings = require('./settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var currentSlave = 0;
 var concurrentMessages = 0;
 var MAX_TRIES = 4;
 var maxConcurrentMessages = settings.concurrentRebuildMessages;
+
+exports.loadUnfinishedMessages = function() {
+
+  rebuildMessages.find().toArray(function gotMessages(error, messages) {
+
+    if (error) {
+      console.log(error);
+    } else {
+      for (var i = 0; i < messages.length; i++) {
+        exports.queue(messages[i]);
+      }
+
+    }
+
+  });
+
+};
 
 exports.reload = function() {
   generator = require('./engine/generator');
@@ -131,14 +150,17 @@ function clearLog(message) {
 
 function clearTree(message) {
 
+  if (message._id) {
+    rebuildMessages.deleteOne({
+      _id : message._id
+    });
+  }
+
   if (message.globalRebuild) {
     clearGlobalRebuilding();
     return;
   } else if (message.log) {
-
-    clearLog(message);
-    return;
-
+    return clearLog(message);
   } else if (message.overboard) {
     rebuildingOverboard = false;
     return;
@@ -380,6 +402,25 @@ function processQueue() {
 
 }
 
+function checkMessageCount() {
+
+  if (verbose) {
+    console.log('Current queue tree :\n' + JSON.stringify(queueTree, null, 2));
+    console
+        .log('Current queue array :\n' + JSON.stringify(queueArray, null, 2));
+  }
+
+  if (concurrentMessages < maxConcurrentMessages) {
+
+    if (verbose) {
+      console.log('Idle, running processQueue');
+    }
+
+    processQueue();
+  }
+
+}
+
 function putInQueue(message, boardInformation, priority, clearBeforeRebuild) {
 
   if (boardInformation) {
@@ -397,19 +438,18 @@ function putInQueue(message, boardInformation, priority, clearBeforeRebuild) {
 
   queueArray.push(message);
 
-  if (verbose) {
-    console.log('Current queue tree :\n' + JSON.stringify(queueTree, null, 2));
-    console
-        .log('Current queue array :\n' + JSON.stringify(queueArray, null, 2));
-  }
+  if (!message._id) {
+    rebuildMessages.insertOne(message, function insertedMessage(error) {
 
-  if (concurrentMessages < maxConcurrentMessages) {
+      if (error) {
+        console.log();
+      }
 
-    if (verbose) {
-      console.log('Idle, running processQueue');
-    }
+      checkMessageCount();
 
-    processQueue();
+    });
+  } else {
+    checkMessageCount();
   }
 
 }

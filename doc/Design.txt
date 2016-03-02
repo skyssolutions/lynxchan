@@ -1,0 +1,10 @@
+This document lays out the design tenants being used to guide the development of features. These are not goals, but the means by which said goals should be achieved.
+
+1: Main concern of site owners is accountability. Main concern of board owners is spam.
+    When running a site, the worst that could happen to the site owner is having his site shutdown. However for the board owner, he is not concerned with that, he is not the person paying for the site. For the board owner, the worst that could happen is having his content disrupted. So settings that prevent spam should be primarily given to board owners, while settings that ensure posting accountability are given to site owners.
+
+2: TOR users are a matter of accountability, not spam.
+    Currently is too easy to get a botnet and spam with a thousand different ips, so using TOR isn't too much of a mass spam enabler. What TOR causes is to eliminate posting accountability. So settings that control TOR should be given to the site owner, given the previous tenant.
+
+3: Spam is prevented, not mitigated.
+    If spam is handled AFTER it happens, the site will still be disrupted before its handled by the engine. So to ensure the site gives the best user experience, spam should be handled so it doesn't happen in the first place.

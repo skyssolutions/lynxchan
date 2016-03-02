@@ -403,7 +403,11 @@ exports.outputFile = function(file, req, res, callback, cookies, retry) {
         console.log('304');
 
       }
-      res.writeHead(304);
+
+      var header = [];
+      exports.setExpiration(header, fileStats);
+
+      res.writeHead(304, header);
       res.end();
     } else {
       exports.streamFile(fileStats, req, callback, cookies, res);

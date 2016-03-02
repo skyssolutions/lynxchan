@@ -322,6 +322,8 @@ function bootWorkers() {
 
   genQueue = require('./generationQueue');
 
+  genQueue.loadUnfinishedMessages();
+
   var workerLimit;
 
   var coreCount = require('os').cpus().length;
