@@ -1,6 +1,6 @@
 'use strict';
 
-var ipv6 = require('ip-address');
+var BigInteger = require('jsbn').BigInteger;
 
 exports.MIMETYPES = {
   a : 'application/octet-stream',
@@ -158,16 +158,67 @@ exports.formatedDate = function(time) {
   return time.getUTCFullYear() + '-' + monthString + '-' + dayString;
 };
 
+exports.completeIp = function(parts) {
+
+  for (var i = 0; i < parts.length; i++) {
+
+    if (!parts[i].length) {
+      parts[i] = '0';
+
+      while (parts.length < 8) {
+        parts.splice(i, 0, '0');
+      }
+
+      break;
+
+    }
+  }
+
+};
+
+exports.parseIpv6 = function(ip) {
+
+  var parts = ip.split(':');
+
+  if (parts.length < 8) {
+    exports.completeIp(parts);
+  }
+
+  parts = parts.map(function padOctets(part) {
+    if (part.length < 4) {
+      return ('0000' + part).slice(-4);
+    }
+
+    return part;
+  });
+
+  var toBig = new BigInteger(parts.join(''), 16);
+
+  return toBig.toByteArray().map(function unsignByte(b) {
+    return b & 0xFF;
+  });
+
+};
+
 exports.convertIpToArray = function(ip) {
 
   if (!ip) {
     return null;
   }
 
-  if (ip.match(/\d+.\d+.\d+.\d+/)) {
-    return ipv6.Address6.fromAddress4(ip).toUnsignedByteArray().slice(-4);
+  var ipv4Match = ip.match(/(\d+).(\d+).(\d+).(\d+)/);
+
+  if (ipv4Match) {
+
+    var parsedIp = [];
+
+    for (var i = 0; i < 4; i++) {
+      parsedIp[i] = +ipv4Match[i + 1];
+    }
+
+    return parsedIp;
   } else {
-    return new ipv6.Address6(ip).toUnsignedByteArray();
+    return exports.parseIpv6(ip);
   }
 };
 

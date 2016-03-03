@@ -5,7 +5,7 @@ Required modules:
 * multiparty: used when parsing requests to the form api.
 * bcrypt: used for encrypting passwords.
 * nodemailer: used to send e-mails for people resetting account passwords.
-* ip-address: used to handle ips.
+* jsbn: used on ipv6 conversion.
 * http-proxy: used on sharding so the master server can act as a reverse-proxy and pass the request to slaves.
 
 The version of each one is specified on the package.json file.
