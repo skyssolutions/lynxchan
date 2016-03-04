@@ -588,7 +588,18 @@ exports.checkForThumb = function(identifier, boardData, threadId, postId, file,
 
 };
 
-exports.undoReference = function(error, identifier, callback) {
+exports.undoReference = function(error, identifier, callback, removal) {
+
+  if (removal) {
+
+    uploadReferences.deleteOne({
+      identifier : identifier
+    }, function removed(undoingError) {
+      callback(undoingError || error);
+    });
+
+    return;
+  }
 
   uploadReferences.updateOne({
     identifier : identifier
@@ -627,16 +638,14 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
   }, function updatedReference(error, result) {
 
     if (error) {
-
-      exports.undoReference(error, identifier, callback);
-
+      callback(error);
     } else if (!result.lastErrorObject.updatedExisting) {
 
       // style exception, too simple
       exports.generateThumb(identifier, file, function savedFile(error) {
 
         if (error) {
-          exports.undoReference(error, identifier, callback);
+          exports.undoReference(error, identifier, callback, true);
         } else {
           exports.updatePostingWithNewUpload(parameters, identifier, boardData,
               threadId, postId, file, callback);

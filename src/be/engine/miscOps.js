@@ -238,347 +238,276 @@ exports.getParametersArray = function() {
 
   return [ {
     // array
-    param : 'addons',
     type : 'array',
     setting : 'addons',
     element : 'fieldAddons'
   }, {
-    param : 'acceptedMimes',
     type : 'array',
     setting : 'acceptedMimes',
     element : 'fieldAcceptedMimes'
   }, {
-    param : 'slaves',
     type : 'array',
     setting : 'slaves',
     element : 'fieldSlaves'
   }, {
     // string
-    param : 'address',
     type : 'string',
     setting : 'address',
     element : 'fieldAddress'
   }, {
-    param : 'fePath',
     type : 'string',
     setting : 'fePath',
     element : 'fieldFePath'
   }, {
-    param : 'master',
     type : 'string',
     setting : 'master',
     element : 'fieldMaster'
   }, {
-    param : 'tempDir',
     type : 'string',
     setting : 'tempDirectory',
     element : 'fieldTempDir'
   }, {
-    param : 'rssDomain',
     type : 'string',
     setting : 'rssDomain',
     element : 'fieldRssDomain'
   }, {
-    param : 'sslPass',
     type : 'string',
     setting : 'sslPass',
     element : 'fieldSslPass'
   }, {
-    param : 'senderEmail',
     type : 'string',
     setting : 'emailSender',
     element : 'fieldSenderEmail'
   }, {
-    param : 'siteTitle',
     type : 'string',
     setting : 'siteTitle',
     element : 'fieldSiteTitle'
   }, {
-    param : 'banMessage',
     type : 'string',
     setting : 'defaultBanMessage',
     element : 'fieldBanMessage'
   }, {
-    param : 'anonymousName',
     type : 'string',
     setting : 'defaultAnonymousName',
     element : 'fieldAnonymousName'
   }, {
-    param : 'torSource',
     type : 'string',
     setting : 'torSource',
     element : 'fieldTorSource'
   }, {
-    param : 'CSP',
     type : 'string',
     setting : 'CSP',
     element : 'fieldCSP'
   }, {
-    param : 'languagePack',
     type : 'string',
     setting : 'languagePackPath',
     element : 'fieldLanguagePack'
   }, {
-    param : 'overboard',
     type : 'string',
     setting : 'overboard',
     element : 'fieldOverboard'
   }, {
-    param : 'sfwOverboard',
     type : 'string',
     setting : 'sfwOverboard',
     element : 'fieldSfwOverboard'
   }, {
-    param : 'thumbExtension',
     type : 'string',
     setting : 'thumbExtension',
     element : 'fieldThumbExtension'
   }, {
     // number
-    param : 'port',
     type : 'number',
     setting : 'port',
     element : 'fieldPort'
   }, {
-    param : 'globalLatestImages',
     type : 'number',
     setting : 'globalLatestImages',
     element : 'fieldGlobalLatestImages'
   }, {
-    param : 'inactivityThreshold',
     type : 'number',
     setting : 'inactivityThreshold',
     element : 'fieldInactivityThreshold'
   }, {
-    param : 'torPort',
     type : 'number',
     setting : 'torPort',
     element : 'fieldTorPort'
   }, {
-    param : 'captchaExpiration',
     type : 'number',
     setting : 'captchaExpiration',
     element : 'fieldCaptchaExpiration'
   }, {
-    param : 'overBoardThreadCount',
     type : 'number',
     setting : 'overBoardThreadCount',
     element : 'fieldOverBoardThreads'
   }, {
-    param : 'boardPageSize',
     type : 'number',
     setting : 'pageSize',
     element : 'fieldPageSize'
   }, {
-    param : 'latestPostsCount',
     type : 'number',
     setting : 'latestPostCount',
     element : 'fieldLatestPostsCount'
   }, {
-    param : 'autoSageLimit',
     type : 'number',
     setting : 'autoSageLimit',
     element : 'fieldAutoSageLimit'
   }, {
-    param : 'multiboardThreadCount',
     type : 'number',
     setting : 'multiboardThreadCount',
     element : 'fieldMultiBoardThreadCount'
   }, {
-    param : 'threadLimit',
     type : 'number',
     setting : 'maxThreadCount',
     element : 'fieldThreadLimit'
   }, {
-    param : 'maxRequestSize',
     type : 'number',
     setting : 'maxRequestSizeMB',
     element : 'fieldMaxRequestSize'
   }, {
-    param : 'maxFileSize',
     type : 'number',
     setting : 'maxFileSizeMB',
     element : 'fieldMaxFileSize'
   }, {
-    param : 'maxFiles',
     type : 'number',
     setting : 'maxFiles',
     element : 'fieldMaxFiles'
   }, {
-    param : 'bypassDurationHours',
     type : 'number',
     setting : 'bypassDurationHours',
     element : 'fieldBypassHours'
   }, {
-    param : 'bypassMaxPosts',
     type : 'number',
     setting : 'bypassMaxPosts',
     element : 'fieldBypassPosts'
   }, {
-    param : 'topBoardsCount',
     type : 'number',
     setting : 'topBoardsCount',
     element : 'fieldTopBoardsCount'
   }, {
-    param : 'boardsPerPage',
     type : 'number',
     setting : 'boardsPerPage',
     element : 'fieldBoardsPerPage'
   }, {
-    param : 'thumbSize',
     type : 'number',
     setting : 'thumbSize',
     element : 'fieldThumbSize'
   }, {
-    param : 'maxRules',
     type : 'number',
     setting : 'maxBoardRules',
     element : 'fieldMaxRules'
   }, {
-    param : 'maxTags',
     type : 'number',
     setting : 'maxBoardTags',
     element : 'fieldMaxTags'
   }, {
-    param : 'maxFilters',
     type : 'number',
     setting : 'maxFilters',
     element : 'fieldMaxFilters'
   }, {
-    param : 'maxVolunteers',
     type : 'number',
     setting : 'maxBoardVolunteers',
     element : 'fieldMaxVolunteers'
   }, {
-    param : 'maxBannerSize',
     type : 'number',
     setting : 'maxBannerSizeKB',
     element : 'fieldMaxBannerSize'
   }, {
-    param : 'maxFlagSize',
     type : 'number',
     setting : 'maxFlagSizeKB',
     element : 'fieldMaxFlagSize'
   }, {
-    param : 'floodInterval',
     type : 'number',
     setting : 'floodTimerSec',
     element : 'fieldFloodInterval'
   }, {
-    param : 'globalLatestPosts',
     type : 'number',
     setting : 'globalLatestPosts',
     element : 'fieldGlobalLatestPosts'
   }, {
-    param : 'concurrentRebuildMessages',
     type : 'number',
     setting : 'concurrentRebuildMessages',
     element : 'fieldConcurrentRebuildMessages'
   }, {
-    param : 'mediaPageSize',
     type : 'number',
     setting : 'mediaPageSize',
     element : 'fieldMediaPageSize'
   }, {
     // boolean
-    param : 'disable304',
     type : 'boolean',
     setting : 'disable304',
     element : 'checkboxDisable304'
   }, {
-    param : 'verbose',
     type : 'boolean',
     setting : 'verbose',
     element : 'checkboxVerbose'
   }, {
-    param : 'verbose',
-    type : 'boolean',
-    setting : 'verbose',
-    element : 'checkboxVerbose'
-  }, {
-    param : 'onlySfwLatestImages',
     type : 'boolean',
     setting : 'onlySfwLatestImages',
     element : 'checkboxSFWLatestImages'
   }, {
-    param : 'autoPruneFiles',
     type : 'boolean',
     setting : 'autoPruneFiles',
     element : 'checkboxAutoPruneFiles'
   }, {
-    param : 'useGlobalBanners',
     type : 'boolean',
     setting : 'useGlobalBanners',
     element : 'checkboxGlobalBanners'
   }, {
-    param : 'disableFloodCheck',
     type : 'boolean',
     setting : 'disableFloodCheck',
     element : 'checkboxDisableFloodCheck'
   }, {
-    param : 'mediaThumb',
     type : 'boolean',
     setting : 'mediaThumb',
     element : 'checkboxMediaThumb'
   }, {
-    param : 'allowGlobalBoardModeration',
     type : 'boolean',
     setting : 'allowGlobalBoardModeration',
     element : 'checkboxGlobalBoardModeration'
   }, {
-    param : 'maintenance',
     type : 'boolean',
     setting : 'maintenance',
     element : 'checkboxMaintenance'
   }, {
-    param : 'disableAccountCreation',
     type : 'boolean',
     setting : 'disableAccountCreation',
     element : 'checkboxDisableAccountCreation'
   }, {
-    param : 'allowBoardCustomJs',
     type : 'boolean',
     setting : 'allowBoardCustomJs',
     element : 'checkboxAllowCustomJs'
   }, {
-    param : 'multipleReports',
     type : 'boolean',
     setting : 'multipleReports',
     element : 'checkboxMultipleReports'
   }, {
-    param : 'ssl',
     type : 'boolean',
     setting : 'ssl',
     element : 'checkboxSsl'
   }, {
-    param : 'frontPageStats',
     type : 'boolean',
     setting : 'frontPageStats',
     element : 'checkboxFrontPageStats'
   }, {
     // range
-    param : 'bypassMode',
     type : 'range',
     limit : 2,
     options : lang.guiBypassModes,
     setting : 'bypassMode',
     element : 'comboBypassMode'
   }, {
-    param : 'torAccess',
     type : 'range',
     limit : 2,
     setting : 'torAccess',
     element : 'comboTorAccess',
     options : lang.guiTorLevels
   }, {
-    param : 'clearIpMinRole',
     type : 'range',
     setting : 'clearIpMinRole',
     limit : 3,
     element : 'comboMinClearIpRole',
     options : lang.miscRoles
   }, {
-    param : 'boardCreationRequirement',
     type : 'range',
     setting : 'boardCreationRequirement',
     limit : 4,
@@ -632,7 +561,7 @@ exports.arraysDiff = function(defaultArray, processedArray) {
 exports.processArraySetting = function(item, parameters, newSettings,
     defaultSettings) {
 
-  var processedParameter = parameters[item.param];
+  var processedParameter = parameters[item.setting];
 
   if (processedParameter && processedParameter.length) {
 
@@ -645,7 +574,7 @@ exports.processArraySetting = function(item, parameters, newSettings,
 exports.processStringSetting = function(item, parameters, defaultSettings,
     newSettings) {
 
-  var processedParameter = parameters[item.param];
+  var processedParameter = parameters[item.setting];
 
   if (processedParameter) {
     processedParameter = processedParameter.toString().trim();
@@ -660,7 +589,7 @@ exports.processStringSetting = function(item, parameters, defaultSettings,
 exports.processRangeSetting = function(item, parameters, defaultSettings,
     newSettings) {
 
-  var processedParameter = +parameters[item.param];
+  var processedParameter = +parameters[item.setting];
 
   if (processedParameter) {
     if (processedParameter !== defaultSettings[item.setting]) {
@@ -673,7 +602,7 @@ exports.processRangeSetting = function(item, parameters, defaultSettings,
 exports.processNumberSetting = function(parameters, defaultSettings, item,
     newSettings) {
 
-  var processedParameter = +parameters[item.param];
+  var processedParameter = +parameters[item.setting];
 
   if (processedParameter) {
     if (processedParameter !== defaultSettings[item.setting]) {
@@ -713,7 +642,7 @@ exports.setGlobalSettings = function(userData, parameters, callback) {
       break;
 
     case 'boolean':
-      if (parameters[item.param]) {
+      if (parameters[item.setting]) {
         newSettings[item.setting] = true;
       }
       break;
