@@ -652,9 +652,9 @@ Parameters:
 
 Json output(Object): object with data regarding the available boards. Contains the following fields:
     pageCount: total amount of available pages.
-    inactive(Boolean): indicates the board has been marked inactive due to its owner not logging in for too long.
     boards(Array): array with the available boards. Each object contains the following fields:
         boardUri: uri of the board.
+        inactive(Boolean): indicates the board has been marked inactive due to its owner not logging in for too long.
         boardName: name of the board.
         boardDescription: description of the board.
         lastPostId(Number): total amount of posts made on this board so far.

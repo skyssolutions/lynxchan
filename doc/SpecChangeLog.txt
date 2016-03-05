@@ -1,3 +1,324 @@
+1.6.0:
+
+**Api.txt**
+
+Now one can inform the md5 and mime fields on uploaded files instead of content to only reference and existing file instead of uploading it.
+
+deleteContent:
+
+New parameter:
+deleteMedia
+
+---------------------------------------
+
+banUsers:
+
+New parameter:
+range 
+
+---------------------------------------
+
+setBoardSettings:
+
+Removed parameters:
+disableCaptcha
+archive
+
+New parameter:
+captchaMode
+
+---------------------------------------
+
+saveGlobalSettings:
+
+Now the parameters are the same as global settings.
+
+---------------------------------------
+
+Removed pages:
+
+deleteArchivedBoard
+deleteArchivedThread
+deleteArchivedUpload
+
+New pages:
+setSpecialBoardSettings
+deleteMedia
+
+---------------------------------------
+
+**Form.txt**
+
+boardManagement:
+
+New field on json output:
+captchaMode
+
+Removed fields on json output:
+disableCaptcha
+archive
+
+---------------------------------------
+
+contentActions:
+
+New parameters:
+deleteMedia
+range
+
+---------------------------------------
+
+mod:
+
+Removed fields on json output:
+files.name
+posts.files.name
+
+---------------------------------------
+
+setBoardSettings:
+
+Removed parameters:
+disableCaptcha
+archive
+
+New parameter:
+captchaMode
+
+---------------------------------------
+
+boardModeration:
+
+New fields on json output:
+lastSeen
+specialSettings
+
+---------------------------------------
+
+boards:
+
+New parameters:
+inactive
+sfw
+
+New fields on json output:
+boards.inactive
+boards.specialSettings
+
+---------------------------------------
+
+globalSettings:
+
+Now its json output is the same as global settings.
+
+---------------------------------------
+
+saveGlobalSettings:
+
+Now the parameters it takes are the same as global settings.
+
+---------------------------------------
+
+Removed pages:
+archiveDeletion
+deleteArchivedBoard
+deleteArchivedThread
+deleteArchivedUpload
+
+New pages:
+checkFileIdentifier
+setSpecialBoardSettings
+mediaManagement
+deleteMedia
+
+---------------------------------------
+
+**Json.txt**
+
+index.json:
+
+Removed field:
+totalFiles
+
+---------------------------------------
+
+<board>/res/<thread>.json:
+
+Removed fields:
+files.name
+posts.files.name
+
+---------------------------------------
+
+<board>/preview/<posting>.json:
+
+New field:
+files
+
+---------------------------------------
+
+<board>/<page>.json:
+
+Removed fields:
+threads.files.name
+threads.posts.files.name
+
+---------------------------------------
+
+**Language.txt**
+
+Removed entries:
+errNotServingArchives
+errArchiveNotLoaded
+errDeniedArchiveDeletion
+errUnknownExtension
+guiAllTypes
+guiTypeRange
+guiArchiveLevels
+guiTypeArchiveDeletion
+logBanLift.globalRangeBanPiece
+logBanLift.boardRangeBanPiece
+logBanLift.finalRangeBanPIece
+logRangeBan
+msgArchiveRemoved
+logArchiveDeletion
+titMainArchive
+titBoardArchive
+titArchiveDeletion
+
+New entries:
+errDeniedMediaManagement
+msgBoardSpecialSettingsSaved
+titMediaManagement
+msgMediaDeleted
+guiCaptchaModes
+
+Renamed entries:
+guiOmmitedInfo -> guiOmittedInfo
+logBanLift.finalBanPiece -> logBanLift.finalPiece
+
+---------------------------------------
+
+**Templates.txt**
+
+index:
+
+Removed elements:
+labelTotalFiles
+
+---------------------------------------
+
+boardPage:
+
+New element:
+labelMaxFiles
+
+---------------------------------------
+
+threadPage:
+
+Removed elements:
+inputBan
+inputSpoil
+divBanInput
+
+New elements:
+divMod
+labelMaxFiles
+
+---------------------------------------
+
+opCell:
+
+New element:
+panelRange
+
+---------------------------------------
+
+postCell:
+
+New element:
+panelRange
+
+---------------------------------------
+
+gManagement:
+
+Removed element:
+archiveDeletionLink
+
+---------------------------------------
+
+bManagement:
+
+Removed elements:
+disableCaptchaCheckbox
+enableArchiveCheckbox
+
+New element:
+captchaModeComboBox
+
+---------------------------------------
+
+uploadCell:
+
+Changed usage:
+nameLink
+
+---------------------------------------
+
+boardModerationPage:
+
+New elements:
+specialSettingsIdentifier
+checkboxSfw
+
+---------------------------------------
+
+boardsPage:
+
+New element:
+linkSfwOver
+
+---------------------------------------
+
+boardsCell:
+
+New elements:
+indicatorSfw
+indicatorInactive
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldSfwOverboard
+fieldCSP
+checkboxSFWLatestImages
+fieldTorPort
+fieldInactivityThreshold
+fieldMediaPageSize
+
+Removed elements:
+checkboxServeArchive
+comboArchive
+
+---------------------------------------
+
+Removed templates:
+mainArchivePage
+mainArchiveCell
+boardArchivePage
+boardArchiveCell
+archiveDeletionPage
+
+New templates:
+mediaManagementPage
+mediaCell
+
+---------------------------------------
+
 1.5.0:
 
 **Api.txt**

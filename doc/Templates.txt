@@ -897,7 +897,7 @@ reasonLabel:
 expirationLabel:
     use: have it's innerHTML manipulated.
     description: holds the expiration of the ban.
-    
+
 appealPanel:
     use: might be removed.
     description: panel used to display the appeal, if any.
