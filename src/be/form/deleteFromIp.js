@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
-var delOps = require('../engine/deletionOps').postingDeletions;
+var delOps = require('../engine/deletionOps');
 var mandatoryParameters = [ 'ip' ];
 
 function deleteFromIp(userData, parameters, res, auth) {

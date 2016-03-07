@@ -18,7 +18,7 @@ var multiBoard = require('./multiBoardHandler');
 var multiBoardAllowed;
 var verbose;
 var maintenance;
-var debug = require('../kernel').debug();
+var feDebug = require('../kernel').feDebug();
 var formOps;
 var apiOps;
 var miscOps;
@@ -135,6 +135,10 @@ exports.processFormRequest = function(req, pathName, res) {
         modulePath = '../form/addon.js';
       } else {
         modulePath = '../form' + pathName;
+      }
+
+      if (feDebug) {
+        require('./templateHandler').loadTemplates();
       }
 
       require(modulePath).process(req, res);

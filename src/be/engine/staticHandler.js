@@ -8,6 +8,9 @@ var settingsHandler = require('../settingsHandler');
 var verbose;
 var disable304;
 var debug = kernel.debug();
+if (!debug) {
+  debug = kernel.feDebug();
+}
 var fs = require('fs');
 var url = require('url');
 var gridFs;

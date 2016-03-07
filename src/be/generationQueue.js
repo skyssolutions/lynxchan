@@ -57,6 +57,7 @@ var rebuildingOverboard = false;
 var rebuildingFrontPage = false;
 var kernel = require('./kernel');
 var debug = kernel.debug();
+var feDebug = kernel.feDebug();
 var generator = require('./engine/generator');
 var http = require('http');
 var db = require('./db');
@@ -216,6 +217,8 @@ exports.processMessage = function(message, callback) {
 
   if (debug) {
     debugPreGeneration();
+  } else if (feDebug) {
+    require('./engine/templateHandler').loadTemplates();
   }
 
   if (message.globalRebuild) {

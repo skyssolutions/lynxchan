@@ -165,6 +165,10 @@ exports.debug = function() {
   return debug;
 };
 
+exports.feDebug = function() {
+  return informedArguments.frontDebug.informed;
+};
+
 exports.torDebug = function() {
   return informedArguments.torDebug.informed;
 };
@@ -322,7 +326,9 @@ function bootWorkers() {
 
   genQueue = require('./generationQueue');
 
-  genQueue.loadUnfinishedMessages();
+  if (!settingsHandler.getGeneralSettings().master) {
+    genQueue.loadUnfinishedMessages();
+  }
 
   var workerLimit;
 

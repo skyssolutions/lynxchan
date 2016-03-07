@@ -23,6 +23,11 @@ var informedArguments = {
     long : '--tor-debug',
     type : 'boolean'
   },
+  frontDebug : {
+    short : '-fd',
+    long : '--fe-debug',
+    type : 'boolean'
+  },
   maintenance : {
     short : '-m',
     long : '--maintenance',

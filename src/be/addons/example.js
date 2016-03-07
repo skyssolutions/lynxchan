@@ -17,7 +17,7 @@ var staticPages = domManipulator.staticPages;
 // You can omit parts of the version or omit it altogether.
 // And addon with 1.5 as a version will be compatible with any 1.5.x version,
 // like 1.5.1, 1.5.13
-exports.engineVersion = '1.5';
+exports.engineVersion = '1.6';
 
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
@@ -26,10 +26,10 @@ exports.init = function() {
 
   // Initializing addon. At this point its safe to reference different addons
 
-  var originalLatestPosts = staticPages.setLatestPosts;
+  var originalSetEngineInfo = staticPages.setEngineInfo;
 
   // pick an exposed function of the module and replace it
-  staticPages.setLatestPosts = function(latestPosts, latestPostsDiv, document) {
+  staticPages.setEngineInfo = function(document) {
 
     if (verbose) {
       console.log('Example addon is running');
@@ -40,7 +40,7 @@ exports.init = function() {
 
     document.getElementsByTagName('body')[0].appendChild(footer);
 
-    originalLatestPosts(latestPosts, latestPostsDiv, document);
+    originalSetEngineInfo(document);
 
   };
 
