@@ -486,6 +486,10 @@ exports.getParametersArray = function() {
     element : 'checkboxSsl'
   }, {
     type : 'boolean',
+    setting : 'forceCaptcha',
+    element : 'checkboxGlobalCaptcha'
+  }, {
+    type : 'boolean',
     setting : 'frontPageStats',
     element : 'checkboxFrontPageStats'
   }, {
