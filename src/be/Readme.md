@@ -162,6 +162,7 @@ Meta-data of files on gridfs will have the following values:
 * `boards`(Array): array of boards present on the multi-board page cache.
 * `expiration`(Date): date of the expiration of the file, marking it to be removed.
 * `threadId`(Number): id of the thread the file belongs to.
+* `compressed`(Boolean): if true, it means the file has or is a compressed version.
 * `postId`(Number): id of the post the file belongs to.
 * `status`(Number): http status to be used when outputting this page. Defaults to 200 when outputting.
 * `date`(Number): date to which the file refers to.

@@ -368,6 +368,10 @@ exports.handle = function(req, res) {
     return;
   }
 
+  if (req.headers['accept-encoding']) {
+    req.compressed = req.headers['accept-encoding'].indexOf('gzip') > -1;
+  }
+
   var pathName = url.parse(req.url).pathname;
 
   if (exports.checkForRedirection(req, pathName, res)) {

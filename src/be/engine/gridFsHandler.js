@@ -10,6 +10,7 @@ var disable304;
 var verbose;
 var noDaemon = require('../kernel').noDaemon();
 var miscOps;
+var zlib = require('zlib');
 
 var chunkSize = 1024 * 255;
 var streamableMimes = [ 'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg',
@@ -30,24 +31,47 @@ exports.loadDependencies = function() {
 
 // start of writing data
 exports.writeDataOnOpenFile = function(gs, data, callback, meta, mime,
-    destination) {
+    destination, compressed) {
 
   if (typeof (data) === 'string') {
     data = new Buffer(data, 'utf-8');
   }
 
   gs.write(data, true, function wroteData(error) {
-    callback(error);
+
+    if (!compressed && meta.compressed) {
+
+      // style exception, too simple
+      zlib.gzip(data, function gotCompressedData(error, data) {
+        if (error) {
+          callback(error);
+        } else {
+          exports.writeData(data, destination + '.gz', mime, meta, callback,
+              true);
+        }
+
+      });
+      // style exception, too simple
+
+    } else {
+      callback(error);
+    }
   });
 
 };
 
-exports.writeData = function(data, dest, mime, meta, callback) {
+exports.writeData = function(data, dest, mime, meta, callback, compressed) {
 
-  meta.lastModified = new Date();
+  if (!compressed) {
+    meta.lastModified = new Date();
+  }
 
   if (verbose) {
     console.log('Writing data on gridfs under \'' + dest + '\'');
+  }
+
+  if (mime.indexOf('text/') === 0) {
+    meta.compressed = true;
   }
 
   var gs = mongo.GridStore(conn, dest, 'w', {
@@ -60,7 +84,8 @@ exports.writeData = function(data, dest, mime, meta, callback) {
     if (error) {
       callback(error);
     } else {
-      exports.writeDataOnOpenFile(gs, data, callback, meta, mime, dest);
+      exports.writeDataOnOpenFile(gs, data, callback, meta, mime, dest,
+          compressed);
     }
   });
 
@@ -310,6 +335,16 @@ exports.streamFile = function(stats, req, callback, cookies, res, retries) {
           if (!wrote) {
             wrote = true;
             header.push([ 'Content-Length', stats.length ]);
+
+            if (stats.metadata.compressed) {
+
+              if (req.compressed) {
+                header.push([ 'Content-Encoding', 'gzip' ]);
+              }
+
+              header.push([ 'Vary', 'Accept-Encoding' ]);
+            }
+
             res.writeHead(stats.metadata.status || 200, header);
           }
 
@@ -365,9 +400,23 @@ exports.shouldOutput304 = function(lastSeen, stats) {
   return mTimeMatches && !disable304 && !stats.metadata.status;
 };
 
+exports.decideOnCompression = function(req, res, fileStats, compressed, file,
+    cookies, retry, callback) {
+
+  if (req.compressed && fileStats.metadata.compressed && !compressed) {
+    file += '.gz';
+
+    exports.outputFile(file, req, res, callback, cookies, retry, true);
+  } else {
+    exports.streamFile(fileStats, req, callback, cookies, res);
+  }
+
+};
+
 // retry means it has already failed to get a page and now is trying to get the
 // 404 page. It prevents infinite recursion
-exports.outputFile = function(file, req, res, callback, cookies, retry) {
+exports.outputFile = function(file, req, res, callback, cookies, retry,
+    compressed) {
 
   if (verbose) {
     console.log('Outputting \'' + file + '\' from gridfs');
@@ -382,6 +431,7 @@ exports.outputFile = function(file, req, res, callback, cookies, retry) {
     'metadata.lastModified' : 1,
     'metadata.status' : 1,
     'metadata.type' : 1,
+    'metadata.compressed' : 1,
     length : 1,
     contentType : 1,
     filename : 1,
@@ -407,10 +457,15 @@ exports.outputFile = function(file, req, res, callback, cookies, retry) {
       var header = [];
       exports.setExpiration(header, fileStats);
 
+      if (fileStats.metadata.compressed) {
+        header.push([ 'Vary', 'Accept-Encoding' ]);
+      }
+
       res.writeHead(304, header);
       res.end();
     } else {
-      exports.streamFile(fileStats, req, callback, cookies, res);
+      exports.decideOnCompression(req, res, fileStats, compressed, file,
+          cookies, retry, callback);
     }
   });
 
