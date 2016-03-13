@@ -486,14 +486,12 @@ exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
 
   message = message.replace(/(http|https)\:\/\/\S+/g, function links(match) {
 
-    match = match.replace(/>/g, '&gt');
+    match = match.replace(/>/g, '&gt').replace(/[_='~*]/g,
+        function sanitization(innerMatch) {
+          return exports.linkSanitizationRelation[innerMatch];
+        });
 
-    var htmlContent = match.replace(/[_='~*]/g, function sanitization(
-        innerMatch) {
-      return exports.linkSanitizationRelation[innerMatch];
-    });
-
-    return '<a target="blank" href="' + match + '">' + htmlContent + '</a>';
+    return '<a target="blank" href="' + match + '">' + match + '</a>';
 
   });
 

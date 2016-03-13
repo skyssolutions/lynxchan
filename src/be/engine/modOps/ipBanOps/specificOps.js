@@ -491,11 +491,11 @@ exports.isolateBoards = function(userData, reportedObjects, parameters,
   } else {
     var foundBoards = [];
 
-    for (var i = 0; i < reportedObjects.length; i++) {
+    for (var i = 0; i < reportedObjects.length && i < 1000; i++) {
       var report = reportedObjects[i];
 
-      if (foundBoards.indexOf(report.board) === -1) {
-        foundBoards.push(report.board);
+      if (report.board && foundBoards.indexOf(report.board) === -1) {
+        foundBoards.push(report.board.toString());
       }
     }
 

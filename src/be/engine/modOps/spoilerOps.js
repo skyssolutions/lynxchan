@@ -373,7 +373,7 @@ exports.spoiler = function(userData, reportedElements, callback) {
   var elementRelation = {};
   var foundBoards = [];
 
-  for (var i = 0; i < reportedElements.length; i++) {
+  for (var i = 0; i < reportedElements.length && i < 1000; i++) {
     var element = reportedElements[i];
     var board = element.board;
 
@@ -383,7 +383,7 @@ exports.spoiler = function(userData, reportedElements, callback) {
     };
 
     if (foundBoards.indexOf(board) === -1) {
-      foundBoards.push(board);
+      foundBoards.push(board.toString());
     }
 
     if (element.post) {

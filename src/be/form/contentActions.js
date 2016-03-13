@@ -78,6 +78,7 @@ function processSplitKeyForGeneralUse(splitKey, reportedObjects) {
 function getProcessedObjects(parameters, threads, posts, reportedObjects) {
 
   var redirectBoard;
+  var i = 0;
 
   for ( var key in parameters) {
     if (parameters.hasOwnProperty(key)) {
@@ -94,7 +95,14 @@ function getProcessedObjects(parameters, threads, posts, reportedObjects) {
       } else {
         processSplitKeyForGeneralUse(splitKey, reportedObjects);
       }
+
+      if (i < 1000) {
+        i++;
+      } else {
+        break;
+      }
     }
+
   }
 
   return redirectBoard;

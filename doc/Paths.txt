@@ -7,7 +7,7 @@ Here are documented the general paths used by the engine to find resources. * me
 
 Anything else is used to access files saved on mongo. 
 
-/.media/ are used to store stores uploaded files.
+/.media/ are used to store uploaded files.
 The engine stores global files on the following paths:
 /.global/logs/ stores staff logs pages.
 /.global/banners/ stores global banners.

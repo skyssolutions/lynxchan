@@ -8,6 +8,12 @@ function processReceivedPosting(threadsToDelete, postsToDelete, posting,
     onlyFiles) {
   var boardObject;
 
+  if (!posting.board || !posting.thread) {
+    return;
+  }
+
+  posting.board = posting.board.toString();
+
   if (posting.post) {
     var testThreadObject = threadsToDelete[posting.board] || [];
 
@@ -38,7 +44,7 @@ function processParameters(userData, parameters, res, auth) {
   var postsToDelete = {};
   var threadsToDelete = {};
 
-  for (var i = 0; i < parameters.postings.length; i++) {
+  for (var i = 0; i < parameters.postings.length && i < 1000; i++) {
     processReceivedPosting(threadsToDelete, postsToDelete,
         parameters.postings[i], parameters.deleteUploads);
   }

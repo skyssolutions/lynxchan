@@ -188,7 +188,16 @@ exports.report = function(req, reportedContent, parameters, captchaId, cb) {
         if (error) {
           cb(error);
         } else {
-          exports.iterateReports(req, reportedContent, parameters, cb);
+
+          var isArray = Object.prototype.toString.call(reportedContent);
+          if (isArray !== '[object Array]') {
+            cb();
+          } else {
+            reportedContent = reportedContent.slice(0, 1000);
+
+            exports.iterateReports(req, reportedContent, parameters, cb);
+          }
+
         }
 
       });
