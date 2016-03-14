@@ -2,6 +2,9 @@
 
 // handles request for static files
 
+var zlib = require('zlib');
+var fs = require('fs');
+var url = require('url');
 var kernel = require('../kernel');
 var logger = require('../logger');
 var settingsHandler = require('../settingsHandler');
@@ -11,8 +14,6 @@ var debug = kernel.debug();
 if (!debug) {
   debug = kernel.feDebug();
 }
-var fs = require('fs');
-var url = require('url');
 var gridFs;
 var miscOps;
 var fePath;
@@ -39,98 +40,148 @@ exports.dropCache = function() {
   filesCache = {};
 };
 
-exports.respond = function(fileContent, header, res) {
+// Section 1: File reading {
+exports.compress = function(pathName, file, mime, callback) {
 
-  res.writeHead(200, header);
-
-  res.end(fileContent, 'binary');
-
-};
-
-exports.readAndRespond = function(pathName, modifiedTime, header, res, cb) {
-
-  header.push([ 'last-modified', modifiedTime.toUTCString() ]);
-  header.push([ 'expires', new Date().toUTCString() ]);
-
-  fs.readFile(fePath + '/static' + pathName, function(error, data) {
-
-    if (error) {
-      cb(error);
-      return;
-    }
-
-    var file = {
-      mtime : modifiedTime,
-      content : data
-    };
+  if (mime.indexOf('text/') !== 0) {
 
     if (!debug) {
       filesCache[pathName] = file;
     }
 
-    exports.respond(data, header, res);
+    callback(null, file);
+    return;
+  }
+
+  zlib.gzip(file.content, function compressed(error, data) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      file.compressed = data;
+
+      if (!debug) {
+        filesCache[pathName] = file;
+      }
+
+      callback(null, file);
+
+    }
 
   });
+
 };
 
-// reads file stats to find out if theres a new version
-exports.readFileStats = function(pathName, lastSeen, header, req, res, cb) {
+exports.getFile = function(pathName, mime, callback) {
 
-  fs.stat(fePath + '/static' + pathName, function gotStats(error, stats) {
+  var file = filesCache[pathName];
+
+  if (file) {
+    callback(null, file);
+
+    return;
+  }
+
+  var finalPath = fePath + '/static' + pathName;
+
+  fs.stat(finalPath, function gotStats(error, stats) {
     if (error) {
-      if (debug) {
-        console.log(error);
-      }
-
-      gridFs.outputFile('/404.html', req, res, cb);
-
-    } else if (lastSeen === stats.mtime.toUTCString() && !disable304) {
-      if (verbose) {
-        console.log('304');
-      }
-
-      res.writeHead(304, [ [ 'expires', new Date().toUTCString() ] ]);
-      res.end();
+      callback(error);
     } else {
-      exports.readAndRespond(pathName, stats.mtime, header, res, cb);
+
+      // style exception, too simple
+      fs.readFile(finalPath, function(error, data) {
+
+        if (error) {
+          callback(error);
+          return;
+        } else {
+
+          file = {
+            mtime : stats.mtime.toUTCString(),
+            content : data
+          };
+
+          exports.compress(pathName, file, mime, callback);
+        }
+
+      });
+      // style exception, too simple
+
     }
   });
+
+};
+// } Section 1: File reading
+
+// Section 2: File output {
+exports.writeFile = function(req, file, mime, res) {
+
+  var header = miscOps.corsHeader(mime).concat(
+      [ [ 'last-modified', file.mtime ],
+          [ 'expires', new Date().toUTCString() ] ]);
+
+  var outputCompressed = false;
+
+  if (file.compressed) {
+    header.push([ 'Vary', 'Accept-Encoding' ]);
+
+    if (req.compressed) {
+      header.push([ 'Content-Encoding', 'gzip' ]);
+      outputCompressed = true;
+    }
+
+  }
+
+  res.writeHead(200, header);
+
+  res.end(outputCompressed ? file.compressed : file.content, 'binary');
 
 };
 
 exports.outputFile = function(req, pathName, res, callback) {
 
-  var lastSeen = req.headers ? req.headers['if-modified-since'] : null;
-
   if (verbose) {
     console.log('Outputting static file \'' + pathName + '\'');
   }
 
-  var header = miscOps.corsHeader(logger.getMime(pathName));
+  var mime = logger.getMime(pathName);
 
-  var file;
+  exports.getFile(pathName, mime, function gotFile(error, file) {
 
-  if (!debug) {
-    file = filesCache[pathName];
-  }
+    if (error) {
+      if (debug) {
+        console.log(error);
+      }
 
-  if (!file) {
-    exports.readFileStats(pathName, lastSeen, header, req, res, callback);
-  } else if (lastSeen === file.mtime.toUTCString() && !disable304) {
+      gridFs.outputFile('/404.html', req, res, callback);
+    } else {
 
-    if (verbose) {
-      console.log('304');
+      var lastSeen = req.headers ? req.headers['if-modified-since'] : null;
+
+      if (lastSeen === file.mtime && !disable304) {
+
+        if (verbose) {
+          console.log('304');
+        }
+
+        var header = [ [ 'expires', new Date().toUTCString() ] ];
+
+        if (file.compressed) {
+          header.push([ 'Vary', 'Accept-Encoding' ]);
+        }
+
+        res.writeHead(304, header);
+        res.end();
+
+      } else {
+        exports.writeFile(req, file, mime, res);
+      }
 
     }
 
-    res.writeHead(304, [ [ 'expires', new Date().toUTCString() ] ]);
-    res.end();
-
-  } else {
-
-    exports.respond(file.content, header.concat([
-        [ 'last-modified', file.mtime.toUTCString() ],
-        [ 'expires', new Date().toUTCString() ] ]), res);
-  }
+  });
 
 };
+// } Section 2: File output
