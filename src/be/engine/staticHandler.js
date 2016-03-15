@@ -95,7 +95,6 @@ exports.getFile = function(pathName, mime, callback) {
 
         if (error) {
           callback(error);
-          return;
         } else {
 
           file = {

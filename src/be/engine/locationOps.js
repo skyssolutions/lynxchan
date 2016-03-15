@@ -154,7 +154,7 @@ exports.getIpInfo = function(ip, callback) {
   fs.stat(compiledIps, function gotStats(error, stats) {
 
     if (error) {
-      throw error;
+      callback(error);
     } else {
 
       // style exception
@@ -268,7 +268,7 @@ exports.searchIpLocation = function(geoId, callback) {
   fs.stat(compiledLocations, function gotStats(error, stats) {
 
     if (error) {
-      throw error;
+      callback(error);
     } else {
 
       // style exception
