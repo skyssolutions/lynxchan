@@ -442,7 +442,7 @@ PAG_ID::23
 
 Name: captcha
 
-Description: returns a captcha image in png format. Uses get parameters.
+Description: returns a captcha image in png format. Uses get parameters. It sets too cookies: captchaid and captchaexpiration.
 
 Parameters:
     captchaId: optional parameter used to specify the id of the captcha image to be displayed instead of using the id provided by the cookie.

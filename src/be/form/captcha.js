@@ -8,29 +8,41 @@ var captchaOps = require('../engine/captchaOps');
 var formOps = require('../engine/formOps');
 var gridFsHandler = require('../engine/gridFsHandler');
 
-function showCaptcha(req, id, res, cookies) {
-  gridFsHandler.outputFile(id + '.jpg', req, res, function streamedFile(error) {
-    if (error) {
+function showCaptcha(req, captchaData, res) {
 
-      if (settingsHandler.getGeneralSettings().verbose) {
-        console.log(error);
-      }
+  var cookies = [ {
+    field : 'captchaid',
+    value : captchaData._id,
+    path : '/'
+  }, {
+    field : 'captchaexpiration',
+    value : captchaData.expiration.toUTCString(),
+    path : '/'
+  } ];
 
-      if (debug) {
-        throw error;
-      }
+  gridFsHandler.outputFile(captchaData._id + '.jpg', req, res,
+      function streamedFile(error) {
+        if (error) {
 
-      formOps.outputError(error, 500, res);
+          if (settingsHandler.getGeneralSettings().verbose) {
+            console.log(error);
+          }
 
-    }
-  }, cookies);
+          if (debug) {
+            throw error;
+          }
+
+          formOps.outputError(error, 500, res);
+
+        }
+      }, cookies);
 }
 
 exports.process = function(req, res) {
 
   var verbose = settingsHandler.getGeneralSettings().verbose;
 
-  captchaOps.checkForCaptcha(req, function checked(error, id) {
+  captchaOps.checkForCaptcha(req, function checked(error, captchaData) {
 
     if (error) {
 
@@ -43,12 +55,12 @@ exports.process = function(req, res) {
       }
 
       formOps.outputError(error, 500, res);
-    } else if (!id) {
+    } else if (!captchaData) {
       if (verbose) {
         console.log('No captcha found');
       }
 
-      captchaOps.generateCaptcha(function(error, id) {
+      captchaOps.generateCaptcha(function(error, captchaData) {
 
         if (error) {
 
@@ -62,15 +74,11 @@ exports.process = function(req, res) {
 
           formOps.outputError(error, 500, res);
         } else {
-          showCaptcha(req, id, res, [ {
-            field : 'captchaid',
-            value : id,
-            path : '/'
-          } ]);
+          showCaptcha(req, captchaData, res);
         }
       });
     } else {
-      showCaptcha(req, id, res);
+      showCaptcha(req, captchaData, res);
     }
   });
 };

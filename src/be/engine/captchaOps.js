@@ -219,9 +219,9 @@ exports.createMask = function(text) {
 
 };
 
-exports.generateImage = function(text, id, callback) {
+exports.generateImage = function(text, captchaData, callback) {
 
-  var path = tempDirectory + '/' + id + '.jpg';
+  var path = tempDirectory + '/' + captchaData._id + '.jpg';
 
   var command = exports.createMask();
 
@@ -240,8 +240,8 @@ exports.generateImage = function(text, id, callback) {
     } else {
 
       // style exceptiom, too simple
-      exports.transferToGfs(path, id, function saved(error) {
-        callback(error, id);
+      exports.transferToGfs(path, captchaData._id, function saved(error) {
+        callback(error, captchaData);
       });
       // style exceptiom, too simple
 
@@ -269,7 +269,7 @@ exports.generateCaptcha = function(callback) {
     if (error) {
       callback(error);
     } else {
-      exports.generateImage(text, toInsert._id, callback);
+      exports.generateImage(text, toInsert, callback);
     }
   });
 
@@ -298,9 +298,7 @@ exports.checkForCaptcha = function(req, callback) {
       expiration : {
         $gt : new Date()
       }
-    }, function foundCaptcha(error, captcha) {
-      callback(error, captcha ? captcha._id : null);
-    });
+    }, callback);
   } catch (error) {
     callback(error);
   }
