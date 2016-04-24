@@ -10,13 +10,13 @@ exports.process = function(req, res) {
 
   var parameters = url.parse(req.url, true).query;
 
-  captchaOps.generateCaptcha(function generatedCaptcha(error, captchaId) {
+  captchaOps.generateCaptcha(function generatedCaptcha(error, captchaData) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
       res.writeHead(200, miscOps.corsHeader('text/html'));
 
-      res.end(domManipulator.noCookieCaptcha(parameters, captchaId));
+      res.end(domManipulator.noCookieCaptcha(parameters, captchaData._id));
     }
 
   });
