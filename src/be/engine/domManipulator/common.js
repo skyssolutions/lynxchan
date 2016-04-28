@@ -4,7 +4,6 @@
 
 var allowedJs;
 var forceCaptcha;
-var latestPostCount;
 var lang;
 var templateHandler;
 var miscOps;
@@ -32,7 +31,6 @@ exports.loadSettings = function() {
   allowedJs = settings.allowBoardCustomJs;
   forceCaptcha = settings.forceCaptcha;
   maxFileSizeMB = settings.maxFileSizeMB;
-  latestPostCount = settings.latestPostCount;
   displayMaxSize = exports.formatFileSize(settings.maxFileSizeB);
 
 };
@@ -362,10 +360,7 @@ exports.setOmittedInformation = function(thread, threadCell, posts, innerPage) {
 
   var omissionLabel = threadCell.getElementsByClassName('labelOmission')[0];
 
-  var notEnougPosts = !thread.postCount;
-  notEnougPosts = notEnougPosts || thread.postCount <= latestPostCount;
-
-  if (innerPage || notEnougPosts) {
+  if (innerPage || (thread.postCount || 0) <= (posts ? posts.length : 0)) {
     exports.removeElement(omissionLabel);
 
     return;
