@@ -6,9 +6,9 @@ The master has two roles:
 1: to act as a load balancer, passing requests to the slaves.
 2: to distribute the centralized queue for generating pages.
 
-The first item is fairly simple, the master just acts as a reverse-proxy. Currently, it is unable to pass requests using https to slaves, that should be eventually fixed. However, it is able to pass incoming https requests using plain http to slaves. So you can either trust no one will sniff your traffic between slaves and the master or deploy webservers to take in http and pass using https to slaves.
+The first item is fairly simple, the master just acts as a reverse-proxy. The master will use plain http to forward plain http requests and https to forward https requests.
 
-The requests will be passed using the port the master is listening to when using http and 443 when using https (when its fixed, of course). 
+The requests will be passed using the port the master is listening to when using http and 443 when using https. 
 So if your master listens on port 8080, it will try to pass the request to slaves on port 8080.
 
 The second item works as follows:
