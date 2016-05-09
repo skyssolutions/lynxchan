@@ -453,19 +453,30 @@ exports.setPostHideableElements = function(postCell, post) {
   exports.setSharedHideableElements(post, postCell);
 };
 
-exports.setPostLinks = function(postCell, post, boardUri, link, threadId,
-    linkQuote, deletionCheckbox) {
+exports.setPostLinks = function(postCell, post, boardUri, threadId, preview) {
+
+  var link = postCell.getElementsByClassName('linkSelf')[0];
+
+  var linkQuote = postCell.getElementsByClassName('linkQuote')[0];
+  linkQuote.innerHTML = post.postId;
 
   var linkStart = '/' + boardUri + '/res/' + threadId + '.html#';
   link.href = linkStart + post.postId;
   linkQuote.href = linkStart + 'q' + post.postId;
 
-  var checkboxName = boardUri + '-' + threadId + '-' + post.postId;
-  deletionCheckbox.setAttribute('name', checkboxName);
-
   var linkPreview = '/' + boardUri + '/preview/' + post.postId + '.html';
+  var deletionCheckbox = postCell.getElementsByClassName('deletionCheckBox')[0];
 
-  postCell.getElementsByClassName('linkPreview')[0].href = linkPreview;
+  if (!preview) {
+
+    var checkboxName = boardUri + '-' + threadId + '-' + post.postId;
+    deletionCheckbox.setAttribute('name', checkboxName);
+
+    postCell.getElementsByClassName('linkPreview')[0].href = linkPreview;
+  } else {
+    exports.removeElement(postCell.getElementsByClassName('linkPreview')[0]);
+    exports.removeElement(deletionCheckbox);
+  }
 };
 
 exports.setPostComplexElements = function(postCell, post, boardUri, threadId,
@@ -473,20 +484,7 @@ exports.setPostComplexElements = function(postCell, post, boardUri, threadId,
 
   exports.setRoleSignature(postCell, post);
 
-  var link = postCell.getElementsByClassName('linkSelf')[0];
-
-  var linkQuote = postCell.getElementsByClassName('linkQuote')[0];
-  linkQuote.innerHTML = post.postId;
-
-  var deletionCheckbox = postCell.getElementsByClassName('deletionCheckBox')[0];
-
-  if (!preview) {
-    exports.setPostLinks(postCell, post, boardUri, link, threadId, linkQuote,
-        deletionCheckbox);
-  } else {
-    exports.removeElement(deletionCheckbox);
-    exports.removeElement(postCell.getElementsByClassName('linkPreview')[0]);
-  }
+  exports.setPostLinks(postCell, post, boardUri, threadId, preview);
 
   exports.setUploadCell(document, postCell
       .getElementsByClassName('panelUploads')[0], post.files, modding);
