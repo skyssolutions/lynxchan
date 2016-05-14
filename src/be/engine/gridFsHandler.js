@@ -64,14 +64,14 @@ exports.writeData = function(data, dest, mime, meta, callback, compressed) {
 
   if (!compressed) {
     meta.lastModified = new Date();
+
+    if (miscOps.isPlainText(mime)) {
+      meta.compressed = true;
+    }
   }
 
   if (verbose) {
     console.log('Writing data on gridfs under \'' + dest + '\'');
-  }
-
-  if (mime.indexOf('text/') === 0) {
-    meta.compressed = true;
   }
 
   var gs = mongo.GridStore(conn, dest, 'w', {

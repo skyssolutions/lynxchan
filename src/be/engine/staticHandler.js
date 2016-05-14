@@ -43,7 +43,7 @@ exports.dropCache = function() {
 // Section 1: File reading {
 exports.compress = function(pathName, file, mime, callback) {
 
-  if (mime.indexOf('text/') !== 0) {
+  if (miscOps.isPlainText(mime)) {
 
     if (!debug) {
       filesCache[pathName] = file;

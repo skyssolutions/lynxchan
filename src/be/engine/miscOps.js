@@ -15,6 +15,8 @@ var lang;
 var clearIpMinRole;
 
 var MAX_STAFF_ROLE = 3;
+var compressableMimes = [ 'application/x-javascript', 'application/json',
+    'application/rss+xml' ];
 
 exports.loadSettings = function() {
 
@@ -99,11 +101,22 @@ exports.sanitizeStrings = function(object, parameters) {
 
 };
 
+exports.isPlainText = function(mime) {
+
+  if (!mime.indexOf('text/') || compressableMimes.indexOf(mime) > -1) {
+    return true;
+  }
+
+};
+
 // It uses the provided contentType and builds a header ready for CORS.
 // Currently it just allows everything.
 exports.corsHeader = function(contentType, auth) {
 
-  var header = [ [ 'Content-Type', contentType ] ];
+  var isPlainText = exports.isPlainText(contentType);
+
+  var header = [ [ 'Content-Type',
+      contentType + (isPlainText ? '; charset=utf-8' : '') ] ];
 
   if (CSP) {
     header.push([ 'Content-Security-Policy', CSP ]);
