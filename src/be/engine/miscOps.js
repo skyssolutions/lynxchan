@@ -15,7 +15,7 @@ var lang;
 var clearIpMinRole;
 
 var MAX_STAFF_ROLE = 3;
-var compressableMimes = [ 'application/x-javascript', 'application/json',
+var plainTextMimes = [ 'application/x-javascript', 'application/json',
     'application/rss+xml' ];
 
 exports.loadSettings = function() {
@@ -103,7 +103,7 @@ exports.sanitizeStrings = function(object, parameters) {
 
 exports.isPlainText = function(mime) {
 
-  if (!mime.indexOf('text/') || compressableMimes.indexOf(mime) > -1) {
+  if (!mime.indexOf('text/') || plainTextMimes.indexOf(mime) > -1) {
     return true;
   }
 

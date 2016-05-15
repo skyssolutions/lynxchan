@@ -37,16 +37,16 @@ fi
 if [ "$answerStable" == "y" ]; then
 
   cd ..
- 
-  git checkout 1.5.x
-   
+
+  git checkout 1.6.x
+
   cd src/fe
-   
-  git checkout 1.5.0
+
+  git checkout 1.6.0
 
   cd ../../aux
 
-  echo "Changed to latest stable version: 1.5.x"
+  echo "Changed to latest stable version: 1.6.x"
 
 fi
 
@@ -75,6 +75,6 @@ fi
 if [ "$answerLocation" == "y" ]; then
 
   git clone https://gitgud.io/LynxChan/LynxChan-LocationData.git ../src/be/locationData
-  
+
 fi
 
