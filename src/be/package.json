@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://gitgud.io/LynxChan/LynxChan.git"
   },
-  "version": "1.6.0",
+  "version": "1.7.0",
   "dependencies": {
     "mongodb": "2.1.7",
     "jsdom": "8.0.2",

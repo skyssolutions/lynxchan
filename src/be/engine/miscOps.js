@@ -113,10 +113,13 @@ exports.isPlainText = function(mime) {
 // Currently it just allows everything.
 exports.corsHeader = function(contentType, auth) {
 
-  var isPlainText = exports.isPlainText(contentType);
+  var header = [];
 
-  var header = [ [ 'Content-Type',
-      contentType + (isPlainText ? '; charset=utf-8' : '') ] ];
+  if (contentType) {
+    var isPlainText = exports.isPlainText(contentType);
+    header.push([ 'Content-Type',
+        contentType + (isPlainText ? '; charset=utf-8' : '') ]);
+  }
 
   if (CSP) {
     header.push([ 'Content-Security-Policy', CSP ]);
