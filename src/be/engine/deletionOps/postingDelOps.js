@@ -213,38 +213,56 @@ exports.signalAndLoop = function(parentThreads, board, parameters,
   callback();
 };
 
+exports.reaggregateThreadForDeletion = function(board, parentThreads,
+    parameters, foundThreads, foundPosts, callback) {
+
+  exports.reaggregateThread(board, parentThreads, function reaggregated(error) {
+    if (error) {
+      callback(error);
+    } else {
+      exports.signalAndLoop(parentThreads, board, parameters, foundThreads,
+          foundPosts, callback);
+    }
+  });
+
+};
+
 exports.updateBoardAndThreads = function(board, parameters, cb, foundThreads,
     foundPosts, parentThreads) {
 
   if (!parameters.deleteUploads) {
 
-    boards.updateOne({
+    threads.count({
       boardUri : board.boardUri
-    }, {
-      $inc : {
-        threadCount : -foundThreads.length
-      }
-    }, function updatedThreadCount(error) {
+    }, function counted(error, count) {
+
       if (error) {
         cb(error);
       } else {
 
         // style exception, too simple
-        exports.reaggregateThread(board, parentThreads, function reaggregated(
-            error) {
+        boards.updateOne({
+          boardUri : board.boardUri
+        }, {
+          $set : {
+            threadCount : count
+          }
+        }, function updatedThreadCount(error) {
+
           if (error) {
             cb(error);
           } else {
-            exports.signalAndLoop(parentThreads, board, parameters,
-                foundThreads, foundPosts, cb);
-
+            exports.reaggregateThreadForDeletion(board, parentThreads,
+                parameters, foundThreads, foundPosts, cb);
           }
+
         });
         // style exception, too simple
 
       }
 
     });
+
   } else {
     exports.signalAndLoop(parentThreads, board, parameters, foundThreads,
         foundPosts, cb);

@@ -61,14 +61,24 @@ exports.removeThreads = function(boardUri, threadsToDelete, callback) {
     } else {
 
       // style exception, too simple
-      boards.updateOne({
+      threads.count({
         boardUri : boardUri
-      }, {
-        $inc : {
-          threadCount : -threadsToDelete.length
+      }, function counted(error, count) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          boards.updateOne({
+            boardUri : boardUri
+          }, {
+            $set : {
+              threadCount : count
+            }
+          }, callback);
+
         }
-      }, function updatedThreadCount(error) {
-        callback(error);
+
       });
       // style exception, too simple
 
