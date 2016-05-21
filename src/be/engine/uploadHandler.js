@@ -540,8 +540,8 @@ exports.updatePostingWithNewUpload = function(parameters, identifier,
 };
 // } Section 2.1: New file
 
-exports.checkForThumb = function(identifier, boardData, threadId, postId, file,
-    parameters, callback) {
+exports.checkForThumb = function(reference, identifier, boardData, threadId,
+    postId, file, parameters, callback) {
 
   if (parameters.spoiler || file.spoiler) {
 
@@ -561,6 +561,12 @@ exports.checkForThumb = function(identifier, boardData, threadId, postId, file,
   }
 
   var possibleThumbName = '/.media/t_' + identifier;
+
+  if (reference.hasThumb) {
+    file.thumbPath = possibleThumbName;
+    exports.updatePostingFiles(boardData, threadId, postId, file, callback);
+    return;
+  }
 
   files.findOne({
     filename : possibleThumbName
@@ -613,6 +619,22 @@ exports.undoReference = function(error, identifier, callback, removal) {
 
 };
 
+exports.willRequireThumb = function(file) {
+
+  var tooSmall = file.height <= thumbSize && file.width <= thumbSize;
+
+  var gifCondition = thumbExtension || tooSmall;
+
+  if (file.mime === 'image/gif' && gifCondition) {
+    return true;
+  } else if (file.mime.indexOf('image/') > -1 && !tooSmall) {
+    return true;
+  } else if (videoMimes.indexOf(file.mime) > -1 && mediaThumb) {
+    return true;
+  }
+
+};
+
 exports.processFile = function(boardData, threadId, postId, file, parameters,
     callback) {
 
@@ -630,7 +652,8 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
       identifier : identifier,
       size : file.size,
       width : file.width,
-      height : file.height
+      height : file.height,
+      hasThumb : exports.willRequireThumb(file)
     }
   }, {
     upsert : true,
@@ -656,8 +679,8 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
 
     } else {
 
-      exports.checkForThumb(identifier, boardData, threadId, postId, file,
-          parameters, function updatedPosting(error) {
+      exports.checkForThumb(result.value, identifier, boardData, threadId,
+          postId, file, parameters, function updatedPosting(error) {
 
             if (error) {
               exports.undoReference(error, identifier, callback);

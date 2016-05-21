@@ -307,6 +307,7 @@ uploadReferences: stores reference count to uploaded files.
     width(Number): pre-aggregated width of the file, if any.
     height(Number): pre-aggregated height of the file, if any.
     size(Number): pre-aggregated size in bytes of the file.
+    hasThumb(Boolean): if true, the file did generate a thumbnail. However, not all files with thumbnails will signal it using this field.
 
 ----------------------------------------------------------------------------------------
 
