@@ -35,6 +35,7 @@ var cachedBans;
 var cachedUsers;
 var cachedCaptchas;
 var cachedFiles;
+var cachedChunks;
 var cachedTripcodes;
 var cachedLog;
 var cachedLatestPosts;
@@ -65,7 +66,6 @@ function registerLatestVersion(callback) {
       callback();
     } else {
 
-      // style exception, too simple
       if (verbose) {
         console.log('Registering current version as ' + dbVersion);
       }
@@ -75,11 +75,7 @@ function registerLatestVersion(callback) {
         deploy : new Date(),
         active : true,
         upgraded : false
-      }, function addedVersion(error) {
-        callback(error);
-
-      });
-      // style exception, too simple
+      }, callback);
 
     }
   });
@@ -601,6 +597,10 @@ exports.messages = function() {
   return cachedMessages;
 };
 
+exports.chunks = function() {
+  return cachedChunks;
+};
+
 exports.conn = function() {
   return cachedDb;
 };
@@ -788,6 +788,7 @@ function initCollections(callback) {
   cachedOverboard = cachedDb.collection('overboardThreads');
   cachedLatestPosts = cachedDb.collection('latestPosts');
   cachedFiles = cachedDb.collection('fs.files');
+  cachedChunks = cachedDb.collection('fs.chunks');
   cachedLog = cachedDb.collection('staffLogs');
 
   initGlobalIndexedCollections(callback);

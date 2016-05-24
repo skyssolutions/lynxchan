@@ -2,10 +2,13 @@
 
 // handles every gridfs operation.
 
+var fs = require('fs');
 var db = require('../db');
 var files = db.files();
+var chunks = db.chunks();
 var conn = db.conn();
 var mongo = require('mongodb');
+var bucket = new mongo.GridFSBucket(conn);
 var disable304;
 var verbose;
 var noDaemon = require('../kernel').noDaemon();
@@ -29,38 +32,78 @@ exports.loadDependencies = function() {
   miscOps = require('./miscOps');
 };
 
-// start of writing data
-exports.writeDataOnOpenFile = function(gs, data, callback, meta, mime,
-    destination, compressed) {
+exports.removeDuplicates = function(uploadStream, callback) {
 
-  if (typeof (data) === 'string') {
-    data = new Buffer(data, 'utf-8');
-  }
+  files.aggregate([ {
+    $match : {
+      _id : {
+        $ne : uploadStream.id
+      },
+      filename : uploadStream.filename
+    }
+  }, {
+    $group : {
+      _id : 0,
+      ids : {
+        $push : '$_id'
+      }
+    }
+  } ]).toArray(function gotArray(error, results) {
 
-  gs.write(data, true, function wroteData(error) {
+    if (error) {
+      callback(error);
+    } else if (!results.length) {
+      callback();
+    } else {
 
-    if (!compressed && meta.compressed) {
+      var ids = results[0].ids;
 
       // style exception, too simple
-      zlib.gzip(data, function gotCompressedData(error, data) {
+      chunks.removeMany({
+        'files_id' : {
+          $in : ids
+        }
+      }, function removedChunks(error) {
+
         if (error) {
           callback(error);
         } else {
-          exports.writeData(data, destination + '.gz', mime, meta, callback,
-              true);
+
+          files.removeMany({
+            _id : {
+              $in : ids
+            }
+          }, callback);
+
         }
 
       });
       // style exception, too simple
 
-    } else {
-      callback(error);
     }
+  });
+};
+
+// start of writing data
+exports.compressData = function(data, dest, mime, meta, callback) {
+
+  zlib.gzip(data, function gotCompressedData(error, data) {
+    if (error) {
+      callback(error);
+    } else {
+      exports.writeData(data, dest + '.gz', mime, meta, callback, true);
+    }
+
   });
 
 };
 
 exports.writeData = function(data, dest, mime, meta, callback, compressed) {
+
+  if (typeof (data) === 'string') {
+
+    data = new Buffer(data, 'utf-8');
+  }
 
   if (!compressed) {
     meta.lastModified = new Date();
@@ -74,37 +117,41 @@ exports.writeData = function(data, dest, mime, meta, callback, compressed) {
     console.log('Writing data on gridfs under \'' + dest + '\'');
   }
 
-  var gs = mongo.GridStore(conn, dest, 'w', {
-    'content_type' : mime,
+  var uploadStream = bucket.openUploadStream(dest, {
+    contentType : mime,
     metadata : meta
   });
 
-  gs.open(function openedGs(error, gs) {
+  uploadStream.on('error', callback);
 
-    if (error) {
-      callback(error);
-    } else {
-      exports.writeDataOnOpenFile(gs, data, callback, meta, mime, dest,
-          compressed);
-    }
-  });
-
-};
-// end of writing data
-
-// start of transferring file to gridfs
-exports.writeFileOnOpenFile = function(gs, path, callback, destination, meta,
-    mime) {
-  gs.writeFile(path, function wroteFile(error) {
+  uploadStream.on('finish', function finished() {
 
     // style exception, too simple
-    gs.close(function closed(closeError, result) {
-      callback(error || closeError);
+    exports.removeDuplicates(uploadStream, function removedDuplicates(error) {
+
+      if (error) {
+        callback(error);
+      } else {
+
+        if (!compressed && meta.compressed) {
+          exports.compressData(data, dest, mime, meta, callback);
+        } else {
+          callback();
+        }
+
+      }
+
     });
     // style exception, too simple
 
   });
+
+  uploadStream.write(data);
+
+  uploadStream.end();
+
 };
+// end of writing data
 
 exports.writeFile = function(path, dest, mime, meta, callback) {
 
@@ -116,22 +163,23 @@ exports.writeFile = function(path, dest, mime, meta, callback) {
     console.log(message);
   }
 
-  var gs = mongo.GridStore(conn, dest, 'w', {
-    'content_type' : mime,
+  var readStream = fs.createReadStream(path);
+
+  var uploadStream = bucket.openUploadStream(dest, {
+    contentType : mime,
     metadata : meta
   });
 
-  gs.open(function openedGs(error, gs) {
+  readStream.on('error', callback);
+  uploadStream.on('error', callback);
 
-    if (error) {
-      callback(error);
-    } else {
-      exports.writeFileOnOpenFile(gs, path, callback, dest, meta, mime);
-    }
+  uploadStream.once('finish', function uploaded() {
+    exports.removeDuplicates(uploadStream, callback);
   });
 
+  readStream.pipe(uploadStream);
+
 };
-// end of transferring file to gridfs
 
 exports.removeFiles = function(name, callback) {
 

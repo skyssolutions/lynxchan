@@ -109,8 +109,6 @@ exports.isPlainText = function(mime) {
 
 };
 
-// It uses the provided contentType and builds a header ready for CORS.
-// Currently it just allows everything.
 exports.corsHeader = function(contentType, auth) {
 
   var header = [];
