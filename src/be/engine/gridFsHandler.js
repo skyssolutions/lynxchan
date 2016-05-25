@@ -6,16 +6,13 @@ var fs = require('fs');
 var db = require('../db');
 var files = db.files();
 var chunks = db.chunks();
-var conn = db.conn();
-var mongo = require('mongodb');
-var bucket = new mongo.GridFSBucket(conn);
+var bucket = new (require('mongodb')).GridFSBucket(db.conn());
 var disable304;
 var verbose;
 var noDaemon = require('../kernel').noDaemon();
 var miscOps;
 var zlib = require('zlib');
 
-var chunkSize = 1024 * 255;
 var streamableMimes = [ 'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg',
     'audio/ogg', 'audio/webm' ];
 var permanentTypes = [ 'media', 'graph' ];
@@ -183,12 +180,60 @@ exports.writeFile = function(path, dest, mime, meta, callback) {
 
 exports.removeFiles = function(name, callback) {
 
-  mongo.GridStore.unlink(conn, name, function deleted(error) {
-    if (callback) {
-      callback(error);
+  if (typeof (name) === 'string') {
+    name = [ name ];
+  }
+
+  files.aggregate([ {
+    $match : {
+      filename : {
+        $in : name
+      }
+    }
+  }, {
+    $group : {
+      _id : 0,
+      ids : {
+        $push : '$_id'
+      }
+    }
+  } ], function gotFiles(error, results) {
+
+    if (error) {
+      if (callback) {
+        callback();
+      }
+    } else if (!results.length) {
+      callback();
+    } else {
+
+      var ids = results[0].ids;
+
+      // style exception, too simple
+      chunks.removeMany({
+        'files_id' : {
+          $in : ids
+        }
+      }, function removedChunks(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          files.removeMany({
+            _id : {
+              $in : ids
+            }
+          }, callback);
+
+        }
+
+      });
+      // style exception, too simple
     }
 
   });
+
 };
 
 // start of outputting file
@@ -251,99 +296,6 @@ exports.readRangeHeader = function(range, totalLength) {
   return result;
 };
 
-exports.finishPartialStream = function(res, gs, callback) {
-  res.end();
-  gs.close();
-  callback();
-};
-
-exports.readParts = function(currentPosition, res, range, gs, callback) {
-
-  var toRead = chunkSize;
-
-  if (range.end - currentPosition < chunkSize) {
-    toRead = range.end - currentPosition + 1;
-  }
-
-  if (verbose) {
-    var message = 'About to read ' + toRead + ' bytes from position ';
-    message += currentPosition;
-
-    console.log(message);
-
-  }
-
-  gs.read(toRead, function readChunk(error, chunk) {
-    if (error) {
-      callback(error);
-      gs.close();
-    } else {
-      if (verbose) {
-        console.log('Read ' + chunk.length + ' bytes.');
-      }
-
-      currentPosition += chunk.length;
-
-      res.write(chunk);
-
-      if (currentPosition >= range.end || gs.eof()) {
-
-        if (verbose) {
-          console.log('Finished reading.');
-        }
-
-        exports.finishPartialStream(res, gs, callback);
-
-      } else {
-        if (verbose) {
-          console.log(range.end - currentPosition + ' bytes left to read.');
-        }
-
-        exports.readParts(currentPosition, res, range, gs, callback);
-      }
-
-    }
-  });
-
-};
-
-exports.streamRange = function(range, gs, header, res, stats, callback) {
-
-  if (verbose) {
-    console.log('Outputting range ' + JSON.stringify(range, null, 2));
-  }
-
-  // If the range can't be fulfilled.
-  if (range.start >= stats.length || range.end >= stats.length) {
-
-    if (verbose) {
-      console.log('416');
-    }
-
-    header.push([ 'Content-Range', 'bytes */' + stats.length ]);
-    res.writeHead(416, header);
-
-    res.end();
-    return;
-  }
-
-  header.push([ 'Content-Range',
-      'bytes ' + range.start + '-' + range.end + '/' + stats.length ]);
-
-  res.writeHead(206, header);
-
-  gs.seek(range.start, function skipped(error) {
-    if (error) {
-      callback(error);
-      gs.close();
-    } else {
-      exports.readParts(range.start, res, range, gs, callback);
-
-    }
-  });
-
-};
-
 exports.getHeader = function(stats, req, cookies) {
   var header = miscOps.corsHeader(stats.contentType);
   var lastM = stats.metadata.lastModified || stats.uploadDate;
@@ -356,7 +308,84 @@ exports.getHeader = function(stats, req, cookies) {
   return header;
 };
 
-exports.streamFile = function(stats, req, callback, cookies, res, retries) {
+// Side effects: push data to the header and adds fields to options
+exports.isRangeValid = function(range, options, stats, header, res) {
+
+  // If the range can't be fulfilled.
+  if (range.start >= stats.length || range.end >= stats.length) {
+
+    if (verbose) {
+      console.log('416');
+    }
+
+    header.push([ 'Content-Range', 'bytes */' + stats.length ]);
+    res.writeHead(416, header);
+
+    res.end();
+    return false;
+  }
+
+  header.push([ 'Content-Range',
+      'bytes ' + range.start + '-' + range.end + '/' + stats.length ]);
+
+  options.start = range.start;
+  options.end = range.end;
+
+  return true;
+
+};
+
+exports.streamFile = function(stream, range, stats, req, res, header, cookies,
+    retries, callback) {
+
+  var wrote = false;
+
+  stream.on('data', function(chunk) {
+
+    if (!wrote) {
+      wrote = true;
+
+      if (stats.metadata.compressed) {
+
+        if (req.compressed) {
+          header.push([ 'Content-Encoding', 'gzip' ]);
+        }
+
+        header.push([ 'Vary', 'Accept-Encoding' ]);
+      }
+
+      res.writeHead(range ? 206 : (stats.metadata.status || 200), header);
+    }
+
+    res.write(chunk);
+
+  });
+
+  stream.on('end', function() {
+    res.end();
+    callback();
+  });
+
+  stream.on('error', function(error) {
+
+    retries = retries || 0;
+
+    if (wrote || retries >= 9) {
+      callback(error);
+    } else {
+
+      // We failed before writing anything, wait 10ms and try again
+      setTimeout(function() {
+        exports.prepareStream(stats, req, callback, cookies, res, ++retries);
+      }, 10);
+
+    }
+
+  });
+
+};
+
+exports.prepareStream = function(stats, req, callback, cookies, res, retries) {
 
   var header = exports.getHeader(stats, req, cookies);
 
@@ -367,73 +396,29 @@ exports.streamFile = function(stats, req, callback, cookies, res, retries) {
     header.push([ 'Accept-Ranges', 'bytes' ]);
   }
 
-  var gs = mongo.GridStore(conn, stats.filename, 'r');
+  var options = {
+    revision : 0
+  };
 
-  gs.open(function openedGs(error, gs) {
+  var length;
 
-    if (!error) {
-      if (!range) {
+  if (range) {
 
-        var stream = gs.stream();
-
-        var wrote = false;
-
-        stream.on('data', function(chunk) {
-
-          if (!wrote) {
-            wrote = true;
-            header.push([ 'Content-Length', stats.length ]);
-
-            if (stats.metadata.compressed) {
-
-              if (req.compressed) {
-                header.push([ 'Content-Encoding', 'gzip' ]);
-              }
-
-              header.push([ 'Vary', 'Accept-Encoding' ]);
-            }
-
-            res.writeHead(stats.metadata.status || 200, header);
-          }
-
-          res.write(chunk);
-
-        });
-
-        stream.on('error', function(error) {
-
-          gs.close();
-          retries = retries || 0;
-
-          if (wrote || retries >= 9) {
-            callback(error);
-          } else {
-
-            // We failed before writing anything, wait 100ms and try again
-            setTimeout(
-                function() {
-                  exports.streamFile(stats, req, callback, cookies, res,
-                      ++retries);
-                }, 10);
-
-          }
-
-        });
-
-        stream.on('end', function() {
-
-          gs.close();
-          res.end();
-          callback();
-        });
-
-      } else {
-        exports.streamRange(range, gs, header, res, stats, callback);
-      }
-    } else {
-      callback(error);
+    if (!exports.isRangeValid(range, options, stats, header, res)) {
+      callback();
+      return;
     }
-  });
+
+    length = range.end - range.start + 1;
+
+  } else {
+    length = stats.length;
+  }
+
+  header.push([ 'Content-Length', length ]);
+
+  exports.streamFile(bucket.openDownloadStreamByName(stats.filename, options),
+      range, stats, req, res, header, cookies, retries, callback);
 
 };
 
@@ -456,7 +441,7 @@ exports.decideOnCompression = function(req, res, fileStats, compressed, file,
 
     exports.outputFile(file, req, res, callback, cookies, retry, true);
   } else {
-    exports.streamFile(fileStats, req, callback, cookies, res);
+    exports.prepareStream(fileStats, req, callback, cookies, res);
   }
 
 };

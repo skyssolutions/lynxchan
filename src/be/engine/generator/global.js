@@ -426,14 +426,7 @@ exports.getOverboardThreads = function(ids, callback, sfw) {
         if (error) {
           callback(error);
         } else if (!foundThreads.length) {
-
-          if (!sfw && sfwOverboard) {
-
-            exports.overboard(callback, true);
-          } else {
-            callback();
-          }
-
+          callback();
         } else {
           exports.getOverboardPosts(foundThreads, callback, sfw);
         }
@@ -444,14 +437,7 @@ exports.getOverboardThreads = function(ids, callback, sfw) {
 exports.overboard = function(callback, sfw) {
 
   if (!overboard && !sfw) {
-
-    if (!sfw && sfwOverboard) {
-
-      exports.overboard(callback, true);
-    } else {
-      callback();
-    }
-
+    exports.overboard(callback, true);
     return;
   } else if (sfw && !sfwOverboard) {
     callback();
@@ -459,43 +445,30 @@ exports.overboard = function(callback, sfw) {
   }
 
   if (verbose) {
-    console.log('Building overboard');
+    console.log('Building overboard ' + (sfw ? 'SFW' : 'NSFW'));
   }
 
-  var query;
-
-  if (!sfw && sfwOverboard) {
-    query = {
-      sfw : {
-        $ne : true
-      }
-    };
-
-  } else if (sfw) {
-    query = {
+  overboardThreads.aggregate([ {
+    $match : sfw ? {
       sfw : true
-    };
-  } else {
-    query = {};
-  }
+    } : {}
+  }, {
+    $group : {
+      _id : 0,
+      ids : {
+        $push : '$thread'
+      }
+    }
+  } ], function gotOverBoardThreads(error, results) {
 
-  overboardThreads.find(query, {
-    _id : 0,
-    thread : 1
-  }).toArray(function gotOverBoardThreads(error, foundOverboardThreads) {
     if (error) {
       callback(error);
+    } else if (!results.length) {
+      callback();
     } else {
-
-      var ids = [];
-
-      for (var i = 0; i < foundOverboardThreads.length; i++) {
-        ids.push(foundOverboardThreads[i].thread);
-      }
-
-      exports.getOverboardThreads(ids, callback, sfw);
-
+      exports.getOverboardThreads(results[0].ids, callback, sfw);
     }
+
   });
 
 };
