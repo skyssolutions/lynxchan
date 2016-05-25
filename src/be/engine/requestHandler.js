@@ -152,13 +152,6 @@ exports.processFormRequest = function(req, pathName, res) {
 
 exports.getPathNameForGfs = function(pathName) {
 
-  // look at the alias starting from the second character so a board named
-  // /alias/ won't return a false negative
-  var aliasIndex = pathName.indexOf('/alias/', 1);
-  if (aliasIndex > -1) {
-    pathName = pathName.substring(0, aliasIndex);
-  }
-
   // these rules are to conform with how the files are saved on gridfs
   if (pathName.length > 1) {
 

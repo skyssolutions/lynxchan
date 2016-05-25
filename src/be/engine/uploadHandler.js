@@ -31,6 +31,7 @@ var gsHandler;
 var thumbExtension;
 var mediaThumb;
 var onlySfwImages;
+var apngThreshold = 25 * 1024;
 
 var correctedMimesRelation = {
   'video/webm' : 'audio/webm',
@@ -475,11 +476,14 @@ exports.generateThumb = function(identifier, file, callback) {
 
   var gifCondition = thumbExtension || tooSmall;
 
+  var apngCondition = gifCondition && file.size > apngThreshold;
+  apngCondition = apngCondition && file.mime === 'image/png';
+
   if (file.mime === 'image/gif' && gifCondition) {
 
     exports.generateGifThumb(identifier, file, callback);
 
-  } else if (file.mime.indexOf('image/') > -1 && !tooSmall) {
+  } else if (apngCondition || file.mime.indexOf('image/') > -1 && !tooSmall) {
 
     exports.generateImageThumb(identifier, file, callback);
 
@@ -625,9 +629,12 @@ exports.willRequireThumb = function(file) {
 
   var gifCondition = thumbExtension || tooSmall;
 
+  var apngCondition = gifCondition && file.size > apngThreshold;
+  apngCondition = apngCondition && file.mime === 'image/png';
+
   if (file.mime === 'image/gif' && gifCondition) {
     return true;
-  } else if (file.mime.indexOf('image/') > -1 && !tooSmall) {
+  } else if (apngCondition || file.mime.indexOf('image/') > -1 && !tooSmall) {
     return true;
   } else if (videoMimes.indexOf(file.mime) > -1 && mediaThumb) {
     return true;

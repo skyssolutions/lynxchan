@@ -932,8 +932,8 @@ dimensionLabel:
     description: holds the file dimensions, if any.
 
 originalNameLink:
-    use: have it's innerHTML and href manipulated.
-    description: link used to open the file with it's original name.
+    use: have it's innerHTML, download and href manipulated.
+    description: link used to download the file with it's original name.
 
 imgLink:
     use: have it's href manipulated and a child appended to it.
