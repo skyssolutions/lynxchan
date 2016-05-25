@@ -9,6 +9,7 @@ var miscOps;
 var overboard;
 var minClearIpRole;
 var sfwOverboard;
+var version;
 var boardCreationRequirement;
 
 exports.loadSettings = function() {
@@ -25,6 +26,7 @@ exports.loadDependencies = function() {
 
   miscOps = require('../engine/miscOps');
   gridFsHandler = require('./gridFsHandler');
+  version = require('./addonOps').getEngineInfo().version;
 
 };
 
@@ -145,6 +147,10 @@ exports.getThreadObject = function(thread, posts, board, modding, userRole) {
     posts : exports.buildThreadPosts(posts, board, modding, userRole)
   };
 
+  if (posts && posts.length < thread.postCount) {
+    threadObject.ommitedPosts = thread.postCount - posts.length;
+  }
+
   if (modding && thread.ip) {
     threadObject.ip = miscOps.hashIpForDisplay(thread.ip, board.ipSalt,
         userRole);
@@ -259,7 +265,8 @@ exports.frontPage = function(boards, globalLatestPosts, globalLatestImages,
   var object = {
     topBoards : topBoards,
     latestPosts : exports.getLatestPosts(globalLatestPosts),
-    latestImages : latestImages
+    latestImages : latestImages,
+    version : version
   };
 
   exports.setGlobalStats(globalStats, object);

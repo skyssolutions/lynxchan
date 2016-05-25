@@ -111,7 +111,7 @@ exports.initAddons = function(addons) {
 
 };
 
-exports.testAddons = function(addons, engineInfo) {
+exports.testAddons = function(addons) {
 
   for (var i = 0; i < addons.length; i++) {
 
@@ -151,7 +151,7 @@ exports.startAddons = function() {
     return;
   }
 
-  exports.testAddons(addons, engineInfo);
+  exports.testAddons(addons);
 
   exports.initAddons(addons);
 

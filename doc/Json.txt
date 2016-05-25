@@ -25,6 +25,7 @@ Root(Object):
         thumb: path of the image's thumbnail.
     totalPosts(Number): total amount of posts made on existing boards.
     totalIps(Number): total amount of unique ips on existing boards in the past 24 hours.
+    version: engine version used by the site.
 
 ------------------------------------------------------------------------------------------
 
@@ -130,6 +131,7 @@ Root(Object):
     settings: settings enabled in the board.
     threads(Array): threads in this page. Each object contains the following fields:
         signedRole: role of the user that posted the thread.
+        ommitedPosts(Number): ammount of posts in this thread that are not being shown.
         boardUri: uri of the board where the thread belongs to.
         banMessage: message to be displayed indicating this message was a cause to a ban.
         id: thread-wise id of the poster.
