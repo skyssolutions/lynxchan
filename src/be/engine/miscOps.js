@@ -339,6 +339,10 @@ exports.getParametersArray = function() {
     element : 'fieldGlobalLatestImages'
   }, {
     type : 'number',
+    setting : 'messageLength',
+    element : 'fieldMessageLenght'
+  }, {
+    type : 'number',
     setting : 'inactivityThreshold',
     element : 'fieldInactivityThreshold'
   }, {

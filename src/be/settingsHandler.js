@@ -439,7 +439,8 @@ exports.getDefaultSettings = function() {
     bypassDurationHours : 24,
     bypassMode : 0,
     rssDomain : '',
-    slaves : []
+    slaves : [],
+    messageLength : 4096
   };
 
 };

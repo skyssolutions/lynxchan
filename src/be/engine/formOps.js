@@ -382,50 +382,51 @@ exports.outputError = function(error, code, res) {
 
 };
 
-exports.checkBlankParameters = function(object, parameters, res) {
+exports.failCheck = function(parameter, reason, res) {
 
-  function failCheck(parameter, reason) {
-
-    if (verbose) {
-      console.log('Blank reason: ' + reason);
-    }
-
-    if (res) {
-      var message = lang.errBlankParameter.replace('{$parameter}', parameter)
-          .replace('{$reason}', reason);
-
-      exports.outputError(message, 400, res);
-    }
-
-    return true;
+  if (verbose) {
+    console.log('Blank reason: ' + reason);
   }
 
+  if (res) {
+    var message = lang.errBlankParameter.replace('{$parameter}', parameter)
+        .replace('{$reason}', reason);
+
+    exports.outputError(message, 400, res);
+  }
+
+  return true;
+
+};
+
+exports.checkBlankParameters = function(object, parameters, res) {
+
   if (!object) {
+    return exports.failCheck();
+  }
 
-    failCheck();
-
-    return true;
-
+  if (!object.hasOwnProperty) {
+    object = JSON.parse(JSON.stringify(object));
   }
 
   for (var i = 0; i < parameters.length; i++) {
     var parameter = parameters[i];
 
     if (!object.hasOwnProperty(parameter)) {
-      return failCheck(parameter, lang.miscReasonNotPresent);
+      return exports.failCheck(parameter, lang.miscReasonNotPresent, res);
 
     }
 
     if (object[parameter] === null) {
-      return failCheck(parameter, lang.miscReasonNnull);
+      return exports.failCheck(parameter, lang.miscReasonNnull, res);
     }
 
     if (object[parameter] === undefined) {
-      return failCheck(parameter, lang.miscReasonUndefined);
+      return exports.failCheck(parameter, lang.miscReasonUndefined, res);
     }
 
     if (!object[parameter].trim().length) {
-      return failCheck(parameter, lang.miscReasonNoLength);
+      return exports.failCheck(parameter, lang.miscReasonNoLength, res);
     }
   }
 

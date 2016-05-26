@@ -19,12 +19,13 @@ var overboard;
 
 var editArguments = [ {
   field : 'message',
-  length : 4096,
   removeHTML : false
 } ];
 
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
+
+  editArguments[0].length = settings.messageLength;
 
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;

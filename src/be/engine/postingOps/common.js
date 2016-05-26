@@ -50,8 +50,7 @@ exports.postingParameters = [ {
   length : 32,
   removeHTML : true
 }, {
-  field : 'message',
-  length : 4096
+  field : 'message'
 }, {
   field : 'password',
   length : 8
@@ -60,6 +59,8 @@ exports.postingParameters = [ {
 exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
+
+  exports.postingParameters[3].length = settings.messageLength;
 
   exports.defaultAnonymousName = settings.defaultAnonymousName;
 

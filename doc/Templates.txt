@@ -1824,6 +1824,10 @@ fieldMediaPageSize:
     use: have it's value manipulated.
     description: field that displays how many files should be displayed at once on the media management page.
 
+fieldMessageLenght:
+    use: have it`s value manipulated.
+    description: field that displays the limit for posted messages.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::53
