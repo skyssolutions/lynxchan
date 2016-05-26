@@ -240,6 +240,13 @@ exports.setBoardToggleableElements = function(boardData, document, thread) {
   } else {
     exports.removeElement(document.getElementById('panelMessage'));
   }
+
+  if (settings.indexOf('textBoard') > -1) {
+    exports.removeElement(document.getElementById('divUpload'));
+  } else {
+    exports.setFileLimits(document, boardData);
+  }
+
 };
 
 exports.setSharedHideableElements = function(posting, cell) {
@@ -810,8 +817,6 @@ exports.setHeader = function(document, board, boardData, flagData, thread) {
   }
 
   exports.setFlags(document, board, flagData);
-
-  exports.setFileLimits(document, boardData);
 
 };
 // } Section 4: Header

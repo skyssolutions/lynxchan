@@ -570,10 +570,14 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
 
     var boardLimitError = common.checkBoardFileLimits(parameters.files, board);
 
+    var textBoard = board ? board.settings.indexOf('textBoard') > -1 : null;
+
     if (error) {
       callback(error);
     } else if (!board) {
       callback(lang.errBoardNotFound);
+    } else if (textBoard && parameters.files.length) {
+      callback(lang.errTextBoard);
     } else if (boardLimitError) {
       callback(boardLimitError);
     } else {

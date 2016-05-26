@@ -370,6 +370,7 @@ Parameters:
         uniqueFiles: enforces unique files on posting.
         uniquePosts: enforces unique messages on posting.
         locationFlags: users will have location flags on their posts.
+        textBoard: upload of files is not allowed on the board.
 
 ------------------------------------------------------------------------------------------
 

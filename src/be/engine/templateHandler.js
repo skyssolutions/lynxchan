@@ -188,13 +188,13 @@ exports.getPageTests = function() {
             'boardIdentifier', 'linkManagement', 'bannerImage', 'captchaDiv',
             'divName', 'linkModeration', 'labelMaxFileSize', 'linkPrevious',
             'linkNext', 'flagsDiv', 'flagCombobox', 'panelMessage',
-            'divMessage', 'labelMaxFiles', 'labelMessageLength' ]
+            'divMessage', 'labelMaxFiles', 'labelMessageLength', 'divUpload' ]
       },
       {
         template : 'threadPage',
         fields : [ 'labelName', 'labelDescription', 'divThreads',
             'boardIdentifier', 'linkManagement', 'threadIdentifier', 'linkMod',
-            'divMod', 'divControls', 'controlBoardIdentifier',
+            'divMod', 'divControls', 'controlBoardIdentifier', 'divUpload',
             'controlThreadIdentifier', 'checkboxLock', 'checkboxPin',
             'bannerImage', 'captchaDiv', 'divName', 'labelMaxFileSize',
             'checkboxCyclic', 'flagsDiv', 'flagCombobox', 'panelMessage',
@@ -234,7 +234,7 @@ exports.getPageTests = function() {
             'filterManagementLink', 'anonymousNameField', 'boardLabel',
             'customCssIdentifier', 'ruleManagementLink', 'allowCodeCheckbox',
             'flagManagementLink', 'early404Checkbox', 'hourlyThreadLimitField',
-            'autoCaptchaThresholdField', 'hashBansLink',
+            'autoCaptchaThresholdField', 'hashBansLink', 'textBoardCheckbox',
             'customSpoilerIndicator', 'tagsField', 'customJsForm',
             'customJsIdentifier', 'blockDeletionCheckbox',
             'requireFileCheckbox', 'appealedBansPanel', 'linkSelf',

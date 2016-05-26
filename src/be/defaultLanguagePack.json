@@ -40,6 +40,7 @@
   "errNotAnImage": "File is not an image.",
   "errBannerNotFound": "Banner not found.",
   "errDeniedBoardMod": "You are not allowed to moderate boards.",
+  "errTextBoard": "You are not allowed to post files on textboards.",
   "logPostingDeletion": {
     "uploadStartPiece": "User {$login} deleted the files of the following",
     "startPiece": "User {$login} deleted the following",

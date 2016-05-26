@@ -488,13 +488,19 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
 
     var boardLimitError = common.checkBoardFileLimits(parameters.files, board);
 
+    var textBoard = board ? board.settings.indexOf('textBoard') > -1 : null;
+    var requireFile = board ? board.settings.indexOf('requireThreadFile') > -1
+        : null;
+
     if (error) {
       cb(error);
     } else if (!board) {
       cb(lang.errBoardNotFound);
     } else if (board.lockedUntil > new Date()) {
       cb(lang.errBoardLocked);
-    } else if (board.settings.indexOf('requireThreadFile') > -1 && noFiles) {
+    } else if (textBoard && !noFiles) {
+      cb(lang.errTextBoard);
+    } else if (requireFile && !textBoard && noFiles) {
       cb(lang.msgErrThreadFileRequired);
     } else if (boardLimitError) {
       cb(boardLimitError);

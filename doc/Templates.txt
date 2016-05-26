@@ -131,6 +131,10 @@ labelMessageLength:
     use: have it's innerHTML manipulated.
     description: label that displays the maximum allowed lenght of posted messages.
 
+divUpload:
+    use: might be removed.
+    description: div removed for textboards.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::03
@@ -249,6 +253,10 @@ labelMaxFiles:
 labelMessageLength:
     use: have it's innerHTML manipulated.
     description: label that displays the maximum allowed lenght of posted messages.
+
+divUpload:
+    use: might be removed.
+    description: div removed for textboards.
 
 ------------------------------------------------------------------------------------------
 
@@ -787,6 +795,10 @@ hashBansLink:
 boardMessageField:
     use: have it's value manipulated.
     description: field with the board message.
+
+textBoardCheckbox:
+    use: might be turned on.
+    description: checkbox that indicates if the board is a textboard.
 
 ------------------------------------------------------------------------------------------
 

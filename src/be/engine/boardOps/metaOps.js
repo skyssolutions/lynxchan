@@ -82,7 +82,7 @@ exports.loadDependencies = function() {
 exports.getValidSettings = function() {
   return [ 'disableIds', 'forceAnonymity', 'allowCode', 'early404', 'unindex',
       'blockDeletion', 'requireThreadFile', 'uniqueFiles', 'uniquePosts',
-      'locationFlags' ];
+      'locationFlags', 'textBoard' ];
 };
 
 exports.getValidSpecialSettings = function() {
@@ -90,7 +90,7 @@ exports.getValidSpecialSettings = function() {
 };
 
 // Section 1: New settings {
-exports.captchaOrAnonimityChanged = function(board, params) {
+exports.captchaTextOrAnonimityChanged = function(board, params) {
 
   var oldSettings = board.settings;
   var newSettings = params.settings;
@@ -102,7 +102,12 @@ exports.captchaOrAnonimityChanged = function(board, params) {
 
   var anonChanged = hadAnon !== hasAnon;
 
-  return anonChanged || (captchaChanged && !forcedCaptcha);
+  var wasText = oldSettings.indexOf('textBoard') === -1;
+  var isText = newSettings.indexOf('textBoard') === -1;
+
+  var textChanged = wasText !== isText;
+
+  return textChanged || anonChanged || (captchaChanged && !forcedCaptcha);
 
 };
 
@@ -125,7 +130,7 @@ exports.checkBoardRebuild = function(board, params) {
 
   var didFieldsChanged = exports.fieldsChanged(board, params);
 
-  var settingsChanged = exports.captchaOrAnonimityChanged(board, params);
+  var settingsChanged = exports.captchaTextOrAnonimityChanged(board, params);
 
   var fileLimitsChanged = +board.maxFiles !== +params.maxFiles;
 
