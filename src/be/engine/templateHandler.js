@@ -188,7 +188,7 @@ exports.getPageTests = function() {
             'boardIdentifier', 'linkManagement', 'bannerImage', 'captchaDiv',
             'divName', 'linkModeration', 'labelMaxFileSize', 'linkPrevious',
             'linkNext', 'flagsDiv', 'flagCombobox', 'panelMessage',
-            'divMessage', 'labelMaxFiles' ]
+            'divMessage', 'labelMaxFiles', 'labelMessageLength' ]
       },
       {
         template : 'threadPage',
@@ -199,7 +199,8 @@ exports.getPageTests = function() {
             'bannerImage', 'captchaDiv', 'divName', 'labelMaxFileSize',
             'checkboxCyclic', 'flagsDiv', 'flagCombobox', 'panelMessage',
             'divMessage', 'formTransfer', 'transferBoardIdentifier',
-            'transferThreadIdentifier', 'ipDeletionForm', 'labelMaxFiles' ]
+            'transferThreadIdentifier', 'ipDeletionForm', 'labelMaxFiles',
+            'labelMessageLength' ]
       },
       {
         template : 'messagePage',
@@ -307,7 +308,7 @@ exports.getPageTests = function() {
       {
         template : 'editPage',
         fields : [ 'fieldMessage', 'boardIdentifier', 'threadIdentifier',
-            'postIdentifier' ]
+            'postIdentifier', 'labelMessageLength' ]
       },
       {
         template : 'flagsPage',

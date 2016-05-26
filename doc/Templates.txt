@@ -127,6 +127,10 @@ labelMaxFiles:
     use: have it's innerHTML manipulated.
     description: label that displays the maximum amount of files allowed to be posted.
 
+labelMessageLength:
+    use: have it's innerHTML manipulated.
+    description: label that displays the maximum allowed lenght of posted messages.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::03
@@ -241,6 +245,10 @@ transferThreadIdentifier:
 labelMaxFiles:
     use: have it's innerHTML manipulated.
     description: label that displays the maximum amount of files allowed to be posted.
+
+labelMessageLength:
+    use: have it's innerHTML manipulated.
+    description: label that displays the maximum allowed lenght of posted messages.
 
 ------------------------------------------------------------------------------------------
 
@@ -1512,6 +1520,10 @@ threadIdentifier:
 postIdentifier: 
     use: have it's value manipulated or might be removed.
     description: hidden input used to identify the post being edited. Will be removed if the posting being edited is a thread.
+
+labelMessageLength:
+    use: have it's innerHTML manipulated.
+    description: label that displays the maximum allowed lenght of posted messages.
 
 ------------------------------------------------------------------------------------------
 

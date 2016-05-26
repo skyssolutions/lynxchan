@@ -10,6 +10,7 @@ var miscOps;
 var maxAllowedFiles;
 var minClearIpRole;
 var maxFileSizeMB;
+var messageLength;
 
 exports.indicatorsRelation = {
   pinned : 'pinIndicator',
@@ -26,6 +27,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  messageLength = settings.messageLength;
   maxAllowedFiles = settings.maxFiles;
   minClearIpRole = settings.clearIpMinRole;
   allowedJs = settings.allowBoardCustomJs;
@@ -788,6 +790,8 @@ exports.setHeader = function(document, board, boardData, flagData, thread) {
 
   var titleHeader = document.getElementById('labelName');
   titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
+
+  document.getElementById('labelMessageLength').innerHTML = messageLength;
 
   var descriptionHeader = document.getElementById('labelDescription');
   descriptionHeader.innerHTML = boardData.boardDescription;

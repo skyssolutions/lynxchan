@@ -14,6 +14,7 @@ var lang;
 var common;
 var miscOps;
 var boardCreationRequirement;
+var messageLength;
 
 exports.optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
 
@@ -25,6 +26,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../../settingsHandler').getGeneralSettings();
 
+  messageLength = settings.messageLength;
   verbose = settings.verbose;
   overboard = settings.overboard;
   sfwOverboard = settings.sfwOverboard;
@@ -612,6 +614,8 @@ exports.edit = function(parameters, message) {
   try {
 
     var document = jsdom(templateHandler.editPage);
+
+    document.getElementById('labelMessageLength').innerHTML = messageLength;
 
     document.title = lang.titEdit;
 
