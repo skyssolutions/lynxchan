@@ -124,6 +124,9 @@ Path:/<board>/<page>.json
 Root(Object):
     pageCount(Number): amount of pages this board has.
     boardName: name of the board.
+    maxMessageLength(Number): maximum allowed size for posted messages.
+    maxFileCount(Number): maximum allowed amount of files per post, may vary from board to board.
+    maxFileSize: label indicating the maximum allowed size for individual posted files.
     flagData(Array): array with the available flags for the board. Each element contains the following fields:
         _id: id of the flag.
         name: name of the flag.

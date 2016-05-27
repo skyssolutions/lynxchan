@@ -365,7 +365,7 @@ exports.getMedia = function(userData, parameters, callback) {
         _id : 0,
         references : 1,
         identifier : 1,
-        extension : 1,
+        extension : 1
       }).sort({
         _id : -1
       }).skip((page - 1) * maxFilesToDisplay).limit(maxFilesToDisplay).toArray(

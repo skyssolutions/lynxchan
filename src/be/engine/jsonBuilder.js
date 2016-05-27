@@ -11,20 +11,32 @@ var minClearIpRole;
 var sfwOverboard;
 var version;
 var boardCreationRequirement;
+var displayMaxSize;
+var maxAllowedFiles;
+var maxFileSizeMB;
+var domManipulator;
+var messageLength;
 
 exports.loadSettings = function() {
 
   settings = require('../settingsHandler').getGeneralSettings();
 
+  messageLength = settings.messageLength;
+  maxAllowedFiles = settings.maxFiles;
+  maxFileSizeMB = settings.maxFileSizeMB;
   minClearIpRole = settings.clearIpMinRole;
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
   boardCreationRequirement = settings.boardCreationRequirement;
+
+  displayMaxSize = domManipulator.formatFileSize(settings.maxFileSizeB);
+
 };
 
 exports.loadDependencies = function() {
 
-  miscOps = require('../engine/miscOps');
+  domManipulator = require('./domManipulator').common;
+  miscOps = require('./miscOps');
   gridFsHandler = require('./gridFsHandler');
   version = require('./addonOps').getEngineInfo().version;
 
@@ -301,6 +313,24 @@ exports.preview = function(postingData, callback) {
 
 };
 
+exports.setFileLimits = function(toWrite, bData) {
+
+  if (bData.maxFiles) {
+    toWrite.maxFileCount = bData.maxFiles < maxAllowedFiles ? bData.maxFiles
+        : maxAllowedFiles;
+  } else {
+    toWrite.maxFileCount = maxAllowedFiles;
+  }
+
+  if (bData.maxFileSizeMB && bData.maxFileSizeMB < maxFileSizeMB) {
+    toWrite.maxFileSize = domManipulator
+        .formatFileSize(bData.maxFileSizeMB * 1048576);
+  } else {
+    toWrite.maxFileSize = displayMaxSize;
+  }
+
+};
+
 exports.page = function(boardUri, page, threads, pageCount, boardData,
     flagData, latestPosts, callback) {
 
@@ -333,8 +363,11 @@ exports.page = function(boardUri, page, threads, pageCount, boardData,
     boardName : boardData.boardName,
     boardDescription : boardData.boardDescription,
     settings : boardData.settings,
-    threads : threadsToAdd
+    threads : threadsToAdd,
+    maxMessageLength : messageLength
   };
+
+  exports.setFileLimits(toWrite, boardData);
 
   if (flagData && flagData.length) {
     toWrite.flagData = flagData;
