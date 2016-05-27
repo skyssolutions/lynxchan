@@ -799,6 +799,18 @@ exports.setMediaManagementPages = function(pages, document, parameters) {
 
 };
 
+exports.getFileLink = function(file) {
+
+  var filePath = '/.media/' + file.identifier;
+
+  if (file.extension) {
+    filePath += '.' + file.extension;
+  }
+
+  return filePath;
+
+};
+
 exports.setMediaManagementCells = function(document, media) {
 
   var filesDiv = document.getElementById('filesDiv');
@@ -812,7 +824,7 @@ exports.setMediaManagementCells = function(document, media) {
     cell.setAttribute('class', 'mediaCell');
 
     var link = cell.getElementsByClassName('fileLink')[0];
-    link.href = '/.media/' + file.identifier;
+    link.href = exports.getFileLink(file);
     link.innerHTML = file.identifier;
 
     cell.getElementsByClassName('identifierCheckbox')[0].setAttribute('name',

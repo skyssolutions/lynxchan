@@ -122,6 +122,12 @@ exports.MIMETYPES = {
   zip : 'application/zip'
 };
 
+exports.reverseMimes = {};
+
+for ( var key in exports.MIMETYPES) {
+  exports.reverseMimes[exports.MIMETYPES[key]] = key;
+}
+
 exports.getMime = function(pathName) {
 
   var pathParts = pathName.split('.');

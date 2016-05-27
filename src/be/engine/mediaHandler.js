@@ -364,7 +364,8 @@ exports.getMedia = function(userData, parameters, callback) {
       references.find(queryBlock, {
         _id : 0,
         references : 1,
-        identifier : 1
+        identifier : 1,
+        extension : 1,
       }).sort({
         _id : -1
       }).skip((page - 1) * maxFilesToDisplay).limit(maxFilesToDisplay).toArray(

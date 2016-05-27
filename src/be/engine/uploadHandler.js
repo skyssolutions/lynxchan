@@ -647,6 +647,8 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
 
   var identifier = file.md5 + '-' + file.mime.replace('/', '');
 
+  var extension = logger.reverseMimes[file.mime];
+
   file.path = '/.media/' + identifier;
 
   uploadReferences.findOneAndUpdate({
@@ -658,6 +660,7 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
     $setOnInsert : {
       identifier : identifier,
       size : file.size,
+      extension : extension,
       width : file.width,
       height : file.height,
       hasThumb : exports.willRequireThumb(file)
@@ -670,6 +673,8 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
     if (error) {
       callback(error);
     } else if (!result.lastErrorObject.updatedExisting) {
+
+      file.path += '.' + extension;
 
       // style exception, too simple
       exports.generateThumb(identifier, file, function savedFile(error) {
@@ -685,6 +690,10 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
       // style exception, too simple
 
     } else {
+
+      if (result.value.extension) {
+        file.path += '.' + result.value.extension;
+      }
 
       exports.checkForThumb(result.value, identifier, boardData, threadId,
           postId, file, parameters, function updatedPosting(error) {
