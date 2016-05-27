@@ -26,6 +26,10 @@ Root(Object):
     totalPosts(Number): total amount of posts made on existing boards.
     totalIps(Number): total amount of unique ips on existing boards in the past 24 hours.
     version: engine version used by the site.
+    totalPPH: current global PPH.
+    totalBoards(Number): amount of boards on the site.
+    totalFiles(Number): total amount of files on the server.
+    totalSize(Number): total size of stored files.
 
 ------------------------------------------------------------------------------------------
 

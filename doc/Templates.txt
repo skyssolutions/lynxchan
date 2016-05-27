@@ -48,6 +48,14 @@ labelTotalPPH:
     use: have it's innerHTML manipulated.
     description: label with the total PPH of the site for the past hour.
 
+labelTotalFiles:
+    use: have it's innerHTML manipulated.
+    description: label iwth the total amount of files saved.
+
+labelTotalSize:
+    use: have it's innerHTML manipulated.
+    description: label with the total size of files saved.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::02

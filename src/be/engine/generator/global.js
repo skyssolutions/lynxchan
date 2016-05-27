@@ -10,6 +10,7 @@ var logs = db.logs();
 var aggregatedLogs = db.aggregatedLogs();
 var overboardThreads = db.overboardThreads();
 var threads = db.threads();
+var uploadReferences = db.uploadReferences();
 var posts = db.posts();
 var boards = db.boards();
 var latestPostsCol = db.latestPosts();
@@ -33,6 +34,7 @@ var overboard;
 var sfwOverboard;
 var globalStats;
 var fePath;
+var commonDomManipulator;
 var overBoardThreadCount;
 
 exports.loadSettings = function() {
@@ -54,7 +56,9 @@ exports.loadDependencies = function() {
   var rootModule = require('.');
   postProjection = rootModule.postProjection;
   threadProjection = rootModule.threadProjection;
-  domManipulator = require('../domManipulator').staticPages;
+  var rootDomManipulator = require('../domManipulator');
+  commonDomManipulator = rootDomManipulator.common;
+  domManipulator = rootDomManipulator.staticPages;
   gfsHandler = require('../gridFsHandler');
   miscOps = require('../miscOps');
   jsonBuilder = require('../jsonBuilder');
@@ -149,7 +153,24 @@ exports.notFound = function(callback) {
 
 // Section 1: Front-page {
 exports.saveFrontPage = function(foundBoards, globalLatestPosts,
-    globalLatestImages, globalStats, callback) {
+    globalLatestImages, globalStats, mediaData, callback) {
+
+  if (globalStats || mediaData) {
+
+    globalStats = globalStats || {};
+    mediaData = mediaData || {};
+
+    for ( var key in mediaData) {
+      if (mediaData.hasOwnProperty(key)) {
+        globalStats[key] = mediaData[key];
+      }
+    }
+
+    if (globalStats.totalSize) {
+      globalStats.totalSize = commonDomManipulator
+          .formatFileSize(globalStats.totalSize);
+    }
+  }
 
   domManipulator.frontPage(foundBoards, globalLatestPosts, globalLatestImages,
       globalStats, function savedHtml(error) {
@@ -169,7 +190,7 @@ exports.fetchGlobalStats = function(foundBoards, globalLatestPosts,
 
   if (!globalStats) {
     exports.saveFrontPage(foundBoards, globalLatestPosts, globalLatestImages,
-        null, callback);
+        null, null, callback);
 
     return;
   }
@@ -196,13 +217,36 @@ exports.fetchGlobalStats = function(foundBoards, globalLatestPosts,
         $sum : '$postsPerHour'
       }
     }
-  } ], function gotGlobalStats(error, results) {
+  } ], function gotBoardStats(error, results) {
 
     if (error) {
       callback(error);
     } else {
-      exports.saveFrontPage(foundBoards, globalLatestPosts, globalLatestImages,
-          results.length ? results[0] : null, callback);
+
+      // style exception, too simple
+      uploadReferences.aggregate([ {
+        $group : {
+          _id : 0,
+          totalFiles : {
+            $sum : 1
+          },
+          totalSize : {
+            $sum : '$size'
+          }
+        }
+      } ], function gotMediaStats(error, mediaResults) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.saveFrontPage(foundBoards, globalLatestPosts,
+              globalLatestImages, results.length ? results[0] : null,
+              mediaResults.length ? mediaResults[0] : null, callback);
+        }
+
+      });
+      // style exception, too simple
+
     }
 
   });
