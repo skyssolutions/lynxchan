@@ -654,6 +654,8 @@ Parameters:
 
 Json output(Object): object with data regarding the available boards. Contains the following fields:
     pageCount: total amount of available pages.
+    overboard: uri of the overboard, if any.
+    sfwOverboard: uri of the sfw overboard, if any.
     boards(Array): array with the available boards. Each object contains the following fields:
         boardUri: uri of the board.
         inactive(Boolean): indicates the board has been marked inactive due to its owner not logging in for too long.

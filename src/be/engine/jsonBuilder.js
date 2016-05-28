@@ -16,11 +16,13 @@ var maxAllowedFiles;
 var maxFileSizeMB;
 var domManipulator;
 var messageLength;
+var globalCaptcha;
 
 exports.loadSettings = function() {
 
   settings = require('../settingsHandler').getGeneralSettings();
 
+  globalCaptcha = settings.forceCaptcha;
   messageLength = settings.messageLength;
   maxAllowedFiles = settings.maxFiles;
   maxFileSizeMB = settings.maxFileSizeMB;
@@ -366,7 +368,9 @@ exports.page = function(boardUri, page, threads, pageCount, boardData,
     boardDescription : boardData.boardDescription,
     settings : boardData.settings,
     threads : threadsToAdd,
-    maxMessageLength : messageLength
+    maxMessageLength : messageLength,
+    globalCaptcha : globalCaptcha,
+    captchaMode : boardData.captchaMode
   };
 
   exports.setFileLimits(toWrite, boardData);
@@ -521,7 +525,9 @@ exports.boards = function(pageCount, boards) {
 
   return JSON.stringify({
     pageCount : pageCount,
-    boards : boards
+    boards : boards,
+    overboard : overboard,
+    sfwOverboard : sfwOverboard
   });
 
 };
