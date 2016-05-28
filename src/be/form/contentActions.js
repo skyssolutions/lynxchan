@@ -166,14 +166,15 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
   } else {
 
     deleteOps.posting(userData, parameters, threads, posts,
-        function deletedPostings(error) {
+        function deletedPostings(error, removedThreads, removedPosts) {
 
           if (error) {
             formOps.outputError(error, 500, res);
           } else {
 
-            formOps.outputResponse(lang.msgContentDeleted, redirectBoard, res,
-                null, auth);
+            formOps.outputResponse(lang.msgContentDeleted.replace('{$threads}',
+                removedThreads).replace('{$posts}', removedPosts),
+                redirectBoard, res, null, auth);
           }
 
         });

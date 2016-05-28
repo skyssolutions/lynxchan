@@ -210,7 +210,7 @@ exports.signalAndLoop = function(parentThreads, board, parameters,
     });
   }
 
-  callback();
+  callback(null, foundThreads.length, foundPosts.length);
 };
 
 exports.reaggregateThreadForDeletion = function(board, parentThreads,
@@ -799,7 +799,11 @@ exports.getThreadsToDelete = function(userData, board, threadsToDelete,
 };
 
 exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
-    postsToDelete, foundBoards, callback) {
+    postsToDelete, foundBoards, callback, removedThreadsSoFar,
+    removedPostsSoFar) {
+
+  removedThreadsSoFar = removedThreadsSoFar || 0;
+  removedPostsSoFar = removedPostsSoFar || 0;
 
   if (!foundBoards.length) {
 
@@ -810,7 +814,7 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
       });
     }
 
-    callback();
+    callback(null, removedThreadsSoFar, removedPostsSoFar);
     return;
   }
 
@@ -839,19 +843,19 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
       }
 
       exports.getThreadsToDelete(userData, board, threadsToDelete,
-          postsToDelete, parameters, function removedBoardPostings(error) {
+          postsToDelete, parameters, function removedBoardPostings(error,
+              removedThreadsCount, removedPostsCount) {
+
             if (error) {
-
-              try {
-                callback(error);
-
-              } catch (error) {
-                throw error;
-              }
-
+              callback(error);
             } else {
+
+              removedThreadsSoFar += removedThreadsCount;
+              removedPostsSoFar += removedPostsCount;
+
               exports.iterateBoardsToDelete(userData, parameters,
-                  threadsToDelete, postsToDelete, foundBoards, callback);
+                  threadsToDelete, postsToDelete, foundBoards, callback,
+                  removedThreadsSoFar, removedPostsSoFar);
             }
           });
     }

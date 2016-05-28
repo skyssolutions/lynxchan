@@ -50,12 +50,15 @@ function processParameters(userData, parameters, res, auth) {
   }
 
   deleteOps.posting(userData, parameters, threadsToDelete, postsToDelete,
-      function deletedPostings(error) {
+      function deletedPostings(error, removedThreads, removedPosts) {
 
         if (error) {
           apiOps.outputError(error, res);
         } else {
-          apiOps.outputResponse(auth, null, 'ok', res);
+          apiOps.outputResponse(auth, {
+            removedThreads : removedThreads,
+            removedPosts : removedPosts
+          }, 'ok', res);
         }
       });
 }

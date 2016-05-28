@@ -202,6 +202,10 @@ Parameters:
         thread: thread to be deleted or that contains the post to be deleted.
         post: post to be deleted.
 
+Output(Object): object with the amount of removed content. It contains the following fields:
+    removedThreads(Number): amount of deleted threads.
+    removedPosts(Number): amount of deleted posts.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::11

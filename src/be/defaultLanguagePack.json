@@ -163,7 +163,7 @@
   "msgReportClosed": "Report closed.",
   "msgContentReported": "Content reported.",
   "msgUsersBanned": "Users banned.",
-  "msgContentDeleted": "Content deleted.",
+  "msgContentDeleted": "{$threads} threads and {$posts} posts where successfully deleted.",
   "msgBannerCreated": "Banner created.",
   "msgBoardCreated": "Board created.",
   "msgFilterCreated": "Filter created.",
