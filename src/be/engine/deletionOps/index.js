@@ -4,7 +4,9 @@ exports.miscDeletions = require('./miscDelOps');
 exports.postingDeletions = require('./postingDelOps');
 var db = require('../../db');
 var posts = db.posts();
+var boards = db.boards();
 var threads = db.threads();
+var posts = db.posts();
 var lang;
 var miscOps;
 var clearIpMinRole;
@@ -26,6 +28,234 @@ exports.loadDependencies = function() {
   exports.postingDeletions.loadDependencies();
 
 };
+
+// Section 1: Board ip deletion {
+exports.gatherContentToDelete = function(boardUri, ips, userData, callback) {
+
+  var queryBlock = {
+    boardUri : boardUri,
+    ip : {
+      $in : ips
+    }
+  };
+
+  threads.aggregate([ {
+    $match : queryBlock
+  }, {
+    $project : {
+      boardUri : 1,
+      threadId : 1
+    }
+  }, {
+    $group : {
+      _id : '$boardUri',
+      threads : {
+        $push : '$threadId'
+      }
+    }
+  } ], function gotThreads(error, results) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      var foundThreads = {};
+
+      for (var i = 0; i < results.length; i++) {
+
+        var result = results[i];
+
+        foundThreads[result._id] = result.threads;
+
+      }
+
+      // style exception, too simple
+      posts.aggregate([ {
+        $match : queryBlock
+      }, {
+        $project : {
+          boardUri : 1,
+          postId : 1
+        }
+      }, {
+        $group : {
+          _id : '$boardUri',
+          posts : {
+            $push : '$postId'
+          }
+        }
+      } ], function gotPosts(error, results) {
+        if (error) {
+          callback(error);
+        } else {
+
+          var foundPosts = {};
+
+          for (var i = 0; i < results.length; i++) {
+
+            var result = results[i];
+
+            foundPosts[result._id] = result.posts;
+
+          }
+
+          exports.postingDeletions.posting(userData, {}, foundThreads,
+              foundPosts, callback);
+
+        }
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.gatherIpsToDelete = function(objects, userData, callback) {
+
+  var board = objects[0].board;
+
+  var selectedThreads = [];
+  var selectedPosts = [];
+
+  for (var i = 0; i < objects.length; i++) {
+
+    var object = objects[i];
+
+    if (object.board !== board) {
+      continue;
+    }
+
+    if (board.post) {
+      selectedPosts.push(+object.post);
+    } else {
+      selectedThreads.push(+object.thread);
+    }
+
+  }
+
+  threads.aggregate([ {
+    $match : {
+      boardUri : board,
+      ip : {
+        $exists : true
+      },
+      threadId : {
+        $in : selectedThreads
+      }
+    }
+  }, {
+    $group : {
+      _id : 0,
+      ips : {
+        $push : '$ip'
+      }
+    }
+  } ], function gotThreads(error, results) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      var ips = results.length ? results[0].ips : [];
+
+      // style exception, too simple
+      posts.aggregate([ {
+        $match : {
+          boardUri : board,
+          ip : {
+            $exists : true,
+            $nin : ips
+          },
+          postId : {
+            $in : selectedPosts
+          }
+        }
+      }, {
+        $group : {
+          _id : 0,
+          ips : {
+            $push : '$ip'
+          }
+        }
+      } ], function gotPosts(error, results) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          if (results.length) {
+            ips = ips.concat(results[0].ips);
+          }
+
+          if (ips.length) {
+            exports.gatherContentToDelete(board, ips, userData, callback);
+          } else {
+            callback();
+          }
+
+        }
+
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.deleteFromIpOnBoard = function(objects, userData, callback, cleared) {
+
+  if (!objects.length) {
+    callback();
+    return;
+  }
+
+  if (!cleared) {
+
+    if (userData.globalRole <= miscOps.getMaxStaffRole()) {
+      exports.deleteFromIpOnBoard(objects, userData, callback, true);
+      return;
+
+    }
+
+    boards.findOne({
+      boardUri : objects[0].board
+    }, {
+      owner : 1,
+      volunteers : 1
+    }, function gotBoard(error, board) {
+
+      if (error) {
+        callback(error);
+      } else if (!board) {
+        callback(lang.errBoardNotFound);
+      } else {
+
+        board.volunteers = board.volunteers || [];
+
+        var owner = userData.login === board.owner;
+        var volunteer = board.volunteers.indexOf(userData.login) > -1;
+
+        if (owner || volunteer) {
+          exports.deleteFromIpOnBoard(objects, userData, callback, true);
+        } else {
+          callback(lang.errDeniedBoardIpDeletion);
+        }
+
+      }
+
+    });
+
+    return;
+  }
+
+  exports.gatherIpsToDelete(objects, userData, callback);
+
+};
+// } Section 1: Board ip deletion
 
 exports.deleteFromIp = function(parameters, userData, callback) {
 

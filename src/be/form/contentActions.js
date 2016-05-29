@@ -7,7 +7,7 @@ var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var lang = require('../engine/langOps').languagePack();
 var lang = require('../engine/langOps').languagePack();
 var miscOps = require('../engine/miscOps');
-var deleteOps = require('../engine/deletionOps').postingDeletions;
+var deleteOps = require('../engine/deletionOps');
 
 function processPostForDeletion(board, thread, splitKey, threadsToDelete,
     postsToDelete, onlyFiles) {
@@ -163,9 +163,23 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
           }
         });
 
+  } else if (parameters.action.toLowerCase() === 'ip-deletion') {
+
+    deleteOps.deleteFromIpOnBoard(reportedObjects, userData, function deleted(
+        error) {
+
+      if (error) {
+        formOps.outputError(error, 500, res);
+      } else {
+        formOps.outputResponse(lang.msgDeletedFromIp, redirectBoard, res, null,
+            auth);
+      }
+
+    });
+
   } else {
 
-    deleteOps.posting(userData, parameters, threads, posts,
+    deleteOps.postingDeletions.posting(userData, parameters, threads, posts,
         function deletedPostings(error, removedThreads, removedPosts) {
 
           if (error) {
@@ -202,9 +216,10 @@ exports.process = function(req, res) {
 
       var deleting = action === 'delete';
       var banning = action === 'ban';
+      var ipDeleting = action === 'ip-deletion';
       var spoiling = action === 'spoil';
       var authenticate = banning || (!parameters.password && deleting);
-      authenticate = authenticate || spoiling;
+      authenticate = authenticate || spoiling || ipDeleting;
 
       if (authenticate) {
 

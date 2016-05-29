@@ -505,7 +505,7 @@ PAG_ID::32
 
 Name: deleteFlag
 
-Description: Deletes a flag. Requires authentication, reserved for the board owner.
+Description: deletes a flag. Requires authentication, reserved for the board owner.
 
 Parameters:
     flagId: id of the flag to be deleted.
@@ -677,6 +677,20 @@ Description: completely deletes media files from the database. Requires authenti
 
 Parameters:
     identifiers(Array): array of identififers to be wiped from the database.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::47
+
+Name: deleteFromIpOnBoard
+
+Description: deletes all posts from the ips of the informed posts, but only on the board of the first post. Requires authentication. Reserved for global staff and board staff.
+
+Parameters:
+    postings(Array): array of content containing ips to be used for deletion. Contains objects with the following fields:
+        board: board to which the content belongs.
+        thread: thread with the selected ip.
+        post: post with the selected ip.
 
 ------------------------------------------------------------------------------------------
 

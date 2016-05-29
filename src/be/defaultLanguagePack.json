@@ -163,7 +163,7 @@
   "msgReportClosed": "Report closed.",
   "msgContentReported": "Content reported.",
   "msgUsersBanned": "Users banned.",
-  "msgContentDeleted": "{$threads} threads and {$posts} posts where successfully deleted.",
+  "msgContentDeleted": "{$threads} threads and {$posts} posts were successfully deleted.",
   "msgBannerCreated": "Banner created.",
   "msgBoardCreated": "Board created.",
   "msgFilterCreated": "Filter created.",
@@ -298,5 +298,6 @@
   "msgBoardSpecialSettingsSaved": "Board special settings saved.",
   "titMediaManagement": "Media management",
   "errDeniedMediaManagement": "You are not allowed to manage media files.",
-  "msgMediaDeleted": "Media files deleted."
+  "msgMediaDeleted": "Media files deleted.",
+  "errDeniedBoardIpDeletion": "You are not allowed to delete posts based on ips on this board."
 }
