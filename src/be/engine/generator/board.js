@@ -113,6 +113,8 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
     }, boardProjection, function gotBoard(error, board) {
       if (error) {
         callback(error);
+      } else if (!board) {
+        callback('Board not found');
       } else {
         exports.thread(boardUri, threadId, callback, board);
       }
@@ -434,7 +436,13 @@ exports.catalog = function(boardUri, callback, boardData) {
     boards.findOne({
       boardUri : boardUri
     }, boardProjection, function gotBoardData(error, boardData) {
-      exports.catalog(boardUri, callback, boardData);
+      if (error) {
+        callback(error);
+      } else if (!boardData) {
+        callback('Board not found');
+      } else {
+        exports.catalog(boardUri, callback, boardData);
+      }
     });
 
     return;
