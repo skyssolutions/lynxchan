@@ -242,9 +242,13 @@ exports.getManagementData = function(userRole, userLogin, callback) {
 };
 // } Section 1: Global management data
 
-exports.getRange = function(ip) {
+exports.getRange = function(ip, threeQuarters) {
 
-  return ip ? ip.slice(0, ip.length / 2) : null;
+  if (!ip) {
+    return null;
+  }
+
+  return ip.slice(0, ip.length * (threeQuarters ? 0.75 : 0.5));
 
 };
 

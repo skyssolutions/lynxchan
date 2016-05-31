@@ -269,7 +269,7 @@ Description: ban, deletes or reports posts and threads. The inputs of the posts 
 
 Parameters:
     deleteMedia: if anything is informed and the user is part of the global staff, when deleting files or postings, the actual media files will be removed from the server.
-    range: if anything is informed, the bans will be range bans instead of specific.
+    banType: type of ban. 0 bans only the ips of the selected posts and requires a valid expiration. 1 creates range bans off the first half of the ips and 2 creates range bans off the first 3/4 of the ips.
     password: password to be used for deletion.
     reason: reason of the report.
     banMessage: message to be displayed in the banned content.

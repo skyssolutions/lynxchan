@@ -271,7 +271,7 @@ Description: ban the ips of the selected posts and/or threads.
 
 Parameters:
     captcha: captcha input.
-    range(Boolean): indicates if the bans are not specific, but range bans.
+    banType(Number): type of ban. 0 bans only the ips of the selected posts and requires a valid expiration. 1 creates range bans off the first half of the ips and 2 creates range bans off the first 3/4 of the ips.
     reason: reason of the report. 256 characters.
     expiration: date able to be converted to a new Date of when the bans should expire.
     global(Boolean): indicates if the bans are global.

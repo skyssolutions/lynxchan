@@ -48,19 +48,20 @@ exports.getCellTests = function() {
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkReply', 'linkSelf', 'deletionCheckBox',
             'lockIndicator', 'pinIndicator', 'labelId', 'labelRole',
-            'divBanMessage', 'spanId', 'panelIp', 'labelRange', 'panelRange',
-            'cyclicIndicator', 'linkQuote', 'divPosts', 'labelOmission',
-            'linkPreview', 'linkEdit', 'labelLastEdit', 'imgFlag', 'labelIp',
-            'contentOmissionIndicator', 'linkFullText', 'bumpLockIndicator' ]
+            'divBanMessage', 'spanId', 'panelIp', 'labelBroadRange',
+            'panelRange', 'cyclicIndicator', 'linkQuote', 'divPosts',
+            'labelOmission', 'linkPreview', 'linkEdit', 'labelLastEdit',
+            'imgFlag', 'labelIp', 'contentOmissionIndicator', 'linkFullText',
+            'bumpLockIndicator', 'labelNarrowRange' ]
       },
       {
         template : 'postCell',
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkSelf', 'deletionCheckBox', 'labelId',
             'panelRange', 'labelRole', 'divBanMessage', 'spanId', 'panelIp',
-            'labelRange', 'linkQuote', 'linkPreview', 'linkEdit',
+            'labelBroadRange', 'linkQuote', 'linkPreview', 'linkEdit',
             'labelLastEdit', 'imgFlag', 'labelIp', 'contentOmissionIndicator',
-            'linkFullText' ]
+            'linkFullText', 'labelNarrowRange' ]
       },
       {
         template : 'staffCell',

@@ -342,9 +342,13 @@ panelIp:
     use: might be removed.
     description: object to be removed if the range and ip are not going to be informed.
 
-labelRange:
+labelBroadRange:
     use: have it's innerHTML manipulated.
-    description: contains the poster's first two parts of his ip.
+    description: contains the poster's first half of his ip.
+
+labelNarrowRange:
+    use: have it's innerHTML manipulated.
+    description: contains the poster's first three quarters of his ip.
 
 labelSubject:
     use: have it's innerHTML manipulated or might be removed.
@@ -460,9 +464,13 @@ panelRange:
     use: might be removed.
     description: panel that contains the range of the poster's ip.
 
-labelRange:
+labelBroadRange:
     use: have it's innerHTML manipulated.
-    description: contains the poster's first two parts of his ip.
+    description: contains the poster's first half of his ip.
+
+labelNarrowRange:
+    use: have it's innerHTML manipulated.
+    description: contains the poster's first three quarters of his ip.
 
 panelUploads:
     use: have children appended to it.

@@ -253,8 +253,8 @@ exports.createBans = function(foundIps, parentThreads, pages, board, userData,
       appliedBy : userData.login
     };
 
-    if (parameters.range) {
-      ban.range = miscOps.getRange(foundIps[i]);
+    if (parameters.banType) {
+      ban.range = miscOps.getRange(foundIps[i], +parameters.banType > 1);
     } else {
       ban.ip = foundIps[i];
       ban.reason = parameters.reason;
@@ -476,8 +476,9 @@ exports.isolateBoards = function(userData, reportedObjects, parameters,
 
   miscOps.sanitizeStrings(parameters, banArguments);
 
-  if (!parameters.range && exports.parseExpiration(parameters)) {
+  if (!parameters.banType && exports.parseExpiration(parameters)) {
     callback(lang.errInvalidExpiration);
+    return;
   }
 
   var allowedToGlobalBan = userData.globalRole < miscOps.getMaxStaffRole();

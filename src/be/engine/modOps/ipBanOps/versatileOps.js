@@ -100,8 +100,6 @@ exports.getBans = function(userData, parameters, callback) {
 // Section 2: Ban check {
 exports.getActiveBan = function(ip, boardUri, callback) {
 
-  var range = miscOps.getRange(ip);
-
   var singleBanAnd = {
     $and : [ {
       expiration : {
@@ -113,7 +111,9 @@ exports.getActiveBan = function(ip, boardUri, callback) {
   };
 
   var rangeBanCondition = {
-    range : range
+    range : {
+      $in : [ miscOps.getRange(ip), miscOps.getRange(ip, true) ]
+    }
   };
 
   var globalOrLocalOr = {

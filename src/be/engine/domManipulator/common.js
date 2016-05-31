@@ -103,9 +103,13 @@ exports.setPostingIp = function(cell, postingData, boardData, userRole) {
   if (userRole <= minClearIpRole) {
     exports.removeElement(cell.getElementsByClassName('panelRange')[0]);
   } else {
-    var labelRange = cell.getElementsByClassName('labelRange')[0];
-    labelRange.innerHTML = miscOps.hashIpForDisplay(miscOps
+    var labelBroadRange = cell.getElementsByClassName('labelBroadRange')[0];
+    labelBroadRange.innerHTML = miscOps.hashIpForDisplay(miscOps
         .getRange(postingData.ip), boardData.ipSalt);
+
+    var labelNarrowRange = cell.getElementsByClassName('labelNarrowRange')[0];
+    labelNarrowRange.innerHTML = miscOps.hashIpForDisplay(miscOps.getRange(
+        postingData.ip, true), boardData.ipSalt);
   }
 
   var labelIp = cell.getElementsByClassName('labelIp')[0];
