@@ -136,7 +136,6 @@
     "postPiece": "posts: ",
     "endPiece": " from board /{$board}/ until {$expiration} with reason \"{$reason}\"."
   },
-  "errInvalidExpiration": "Invalid expiration.",
   "logBanLift": {
     "startPiece": "User {$login} lifted a ",
     "globalBanPiece": "global ban ",

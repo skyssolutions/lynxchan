@@ -464,7 +464,13 @@ exports.parseExpiration = function(parameters) {
   var expiration = Date.parse(parameters.expiration || '');
 
   if (isNaN(expiration)) {
-    return true;
+
+    expiration = new Date();
+
+    expiration.setUTCFullYear(expiration.getUTCFullYear() + 5);
+
+    parameters.expiration = expiration;
+
   } else {
     parameters.expiration = new Date(expiration);
   }
@@ -476,9 +482,8 @@ exports.isolateBoards = function(userData, reportedObjects, parameters,
 
   miscOps.sanitizeStrings(parameters, banArguments);
 
-  if (!parameters.banType && exports.parseExpiration(parameters)) {
-    callback(lang.errInvalidExpiration);
-    return;
+  if (!parameters.banType) {
+    exports.parseExpiration(parameters);
   }
 
   var allowedToGlobalBan = userData.globalRole < miscOps.getMaxStaffRole();
@@ -508,6 +513,12 @@ exports.isolateBoards = function(userData, reportedObjects, parameters,
 
 exports.ban = function(userData, reportedObjects, parameters, captchaId,
     callback) {
+
+  if (userData.globalRole <= miscOps.getMaxStaffRole()) {
+    exports.isolateBoards(userData, reportedObjects, parameters, callback);
+
+    return;
+  }
 
   captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
       function solvedCaptcha(error) {

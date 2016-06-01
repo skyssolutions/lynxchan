@@ -61,7 +61,6 @@ errDeniedGlobalReportManagement: error thrown when the user is not allowed to ma
 errBlockedTor: error thrown to TOR users when TOR is blocked on the chan.
 errReportNotFound: error thrown when the specified report can't be found.
 errReportAlreadyClosed: error thrown when the user is trying to close a report that has been already closed.
-errInvalidExpiration: erro thrown when the informed expiration of a date is invalid.
 errDeniedThreadManagement: error thrown when the user is not allowed to manage a thread.
 errOnlyCssAllowed: error thrown on custom CSS selection when the user tries to upload something that is not a CSS.
 errDeniedCssManagement: error thrown when the user is not allowed to manage CSS for a board.
