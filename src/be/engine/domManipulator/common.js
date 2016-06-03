@@ -336,7 +336,9 @@ exports.setThreadHiddeableElements = function(thread, cell, modding, boardUri,
   }
 
   if (thread.id) {
-    cell.getElementsByClassName('labelId')[0].innerHTML = thread.id;
+    var labelId = cell.getElementsByClassName('labelId')[0];
+    labelId.setAttribute('style', 'background-color: #' + thread.id);
+    labelId.innerHTML = thread.id;
   } else {
     exports.removeElement(cell.getElementsByClassName('spanId')[0]);
   }
@@ -450,7 +452,9 @@ exports.setPostHideableElements = function(postCell, post) {
   }
 
   if (post.id) {
-    postCell.getElementsByClassName('labelId')[0].innerHTML = post.id;
+    var labelId = postCell.getElementsByClassName('labelId')[0];
+    labelId.setAttribute('style', 'background-color: #' + post.id);
+    labelId.innerHTML = post.id;
   } else {
     exports.removeElement(postCell.getElementsByClassName('spanId')[0]);
   }

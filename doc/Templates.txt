@@ -403,7 +403,7 @@ spanId:
     description: object that contains the label with the poster id.
 
 labelId:
-    use: have it's innerHTML manipulated.
+    use: have it's innerHTML and style attribute manipulated.
     description: holds the poster's thread-wise id.
 
 labelRole:
@@ -513,7 +513,7 @@ spanId:
     description: object that contains the label with the poster id.
 
 labelId:
-    use: have it's innerHTML manipulated.
+    use: have it's innerHTML and style attribute manipulated.
     description: holds the poster's thread-wise id.
 
 ------------------------------------------------------------------------------------------
