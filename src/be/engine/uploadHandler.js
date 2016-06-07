@@ -20,6 +20,7 @@ var files = db.files();
 var videoDimensionsCommand = 'ffprobe -v error -show_entries ';
 videoDimensionsCommand += 'stream=width,height ';
 var videoThumbCommand = 'ffmpeg -i {$path} -y -vframes 1 -vf scale=';
+var ffmpegGifCommand = 'ffmpeg -i {$path} -y -vf scale=';
 var mp3ThumbCommand = 'ffmpeg -i {$path} -y -an -vcodec copy {$destination}';
 mp3ThumbCommand += ' && mogrify -resize {$dimension} {$destination}';
 var verbose;
@@ -30,6 +31,7 @@ var lang;
 var gsHandler;
 var thumbExtension;
 var mediaThumb;
+var ffmpegGif;
 var onlySfwImages;
 var apngThreshold = 25 * 1024;
 
@@ -46,6 +48,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  ffmpegGif = settings.ffmpegGifs;
   onlySfwImages = settings.onlySfwLatestImages;
   verbose = settings.verbose;
   thumbSize = settings.thumbSize;
@@ -445,20 +448,45 @@ exports.generateGifThumb = function(identifier, file, cb) {
   });
 };
 
+exports.getFfmpegGifCommand = function(file, thumbDestination) {
+
+  var command = ffmpegGifCommand.replace('{$path}', file.pathInDisk);
+
+  if (file.width > file.height) {
+    command += thumbSize + ':-1';
+  } else {
+    command += '-1:' + thumbSize;
+  }
+
+  command += ' ' + thumbDestination;
+
+  return command;
+
+};
+
 exports.generateImageThumb = function(identifier, file, callback) {
 
   var thumbDestination = file.pathInDisk + '_t';
 
-  if (thumbExtension) {
-    thumbDestination += '.' + thumbExtension;
+  var command;
+
+  if (file.mime !== 'image/gif' || !ffmpegGif) {
+
+    if (thumbExtension) {
+      thumbDestination += '.' + thumbExtension;
+    }
+
+    command = 'convert ' + file.pathInDisk + ' -coalesce -resize ';
+    command += thumbSize + 'x' + thumbSize + ' ' + thumbDestination;
+  } else {
+
+    thumbDestination += '.gif';
+    command = exports.getFfmpegGifCommand(file, thumbDestination);
   }
 
   file.thumbOnDisk = thumbDestination;
   file.thumbMime = file.mime;
   file.thumbPath = '/.media/t_' + identifier;
-
-  var command = 'convert ' + file.pathInDisk + ' -coalesce -resize ';
-  command += thumbSize + 'x' + thumbSize + ' ' + thumbDestination;
 
   exec(command, function(error) {
     if (error) {

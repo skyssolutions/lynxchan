@@ -340,7 +340,7 @@ exports.getPageTests = function() {
             'comboBypassMode', 'fieldBypassHours', 'fieldBypassPosts',
             'fieldMultiBoardThreadCount', 'fieldConcurrentRebuildMessages',
             'checkboxSFWLatestImages', 'fieldInactivityThreshold',
-            'fieldMediaPageSize', 'fieldMessageLenght' ]
+            'fieldMediaPageSize', 'fieldMessageLenght', 'checkboxFfmpegGifs' ]
       }, {
         template : 'hashBanPage',
         fields : [ 'hashBansPanel' ]

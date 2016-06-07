@@ -468,6 +468,10 @@ exports.getParametersArray = function() {
     element : 'checkboxSFWLatestImages'
   }, {
     type : 'boolean',
+    setting : 'ffmpegGifs',
+    element : 'checkboxFfmpegGifs'
+  }, {
+    type : 'boolean',
     setting : 'autoPruneFiles',
     element : 'checkboxAutoPruneFiles'
   }, {
