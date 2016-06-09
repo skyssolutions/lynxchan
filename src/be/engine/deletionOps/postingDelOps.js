@@ -19,6 +19,7 @@ var lang;
 var overboard;
 var sfwOverboard;
 var referenceHandler;
+var boardOps;
 var overboardOps;
 var miscOps;
 var logOps;
@@ -37,6 +38,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  boardOps = require('../boardOps').meta;
   logOps = require('../logOps');
   referenceHandler = require('../mediaHandler');
   overboardOps = require('../overboardOps');
@@ -232,22 +234,8 @@ exports.updateBoardAndThreads = function(board, parameters, cb, foundThreads,
 
   if (!parameters.deleteUploads) {
 
-    threads.count({
-      boardUri : board.boardUri
-    }, function counted(error, count) {
-
-      if (error) {
-        cb(error);
-      } else {
-
-        // style exception, too simple
-        boards.updateOne({
-          boardUri : board.boardUri
-        }, {
-          $set : {
-            threadCount : count
-          }
-        }, function updatedThreadCount(error) {
+    boardOps.aggregateThreadCount(board.boardUri,
+        function aggregatedThreadCount(error) {
 
           if (error) {
             cb(error);
@@ -257,11 +245,6 @@ exports.updateBoardAndThreads = function(board, parameters, cb, foundThreads,
           }
 
         });
-        // style exception, too simple
-
-      }
-
-    });
 
   } else {
     exports.signalAndLoop(parentThreads, board, parameters, foundThreads,

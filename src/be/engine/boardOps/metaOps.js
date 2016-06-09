@@ -10,6 +10,7 @@ var reports = db.reports();
 var bans = db.bans();
 var users = db.users();
 var boards = db.boards();
+var threads = db.threads();
 var captchaOps;
 var logOps;
 var postingOps;
@@ -765,6 +766,29 @@ exports.setSpecialSettings = function(userData, parameters, callback) {
       callback(lang.errBoardNotFound);
     } else {
       callback();
+    }
+
+  });
+
+};
+exports.aggregateThreadCount = function(boardUri, callback) {
+
+  threads.count({
+    boardUri : boardUri
+  }, function gotCount(error, count) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      boards.updateOne({
+        boardUri : boardUri
+      }, {
+        $set : {
+          threadCount : count
+        }
+      }, callback);
+
     }
 
   });

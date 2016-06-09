@@ -55,57 +55,87 @@ exports.loadDependencies = function() {
 
 };
 
-exports.cleanPostFiles = function(files, postId, callback) {
+exports.reaggregateThread = function(boardUri, threadId, postId, callback) {
 
-  gsHandler.removeFiles(files, function removedFiles(error) {
-    callback(error, postId);
-  });
-
-};
-
-exports.updateThreadAfterCleanUp = function(boardUri, threadId, removedPosts,
-    postId, removedFileCount, callback) {
-
-  threads.updateOne({
-    boardUri : boardUri,
-    threadId : threadId
-  }, {
-    $inc : {
-      postCount : -removedPosts.length,
-      fileCount : -removedFileCount
+  posts.aggregate([ {
+    $match : {
+      boardUri : boardUri,
+      threadId : threadId
     }
-  }, function updatedThread(error) {
+  }, {
+    $group : {
+      _id : 0,
+      postCount : {
+        $sum : 1
+      },
+      fileCount : {
+        $sum : {
+          $size : {
+            $ifNull : [ '$files', [] ]
+          }
+        }
+      }
+    }
+  } ], function aggregated(error, results) {
+
     if (error) {
       callback(error);
     } else {
 
+      var data = results.length ? results[0] : {
+        postCount : 0,
+        fileCount : 0
+      };
+
       // style exception, too simple
-      files.aggregate([ {
-        $match : {
-          'metadata.boardUri' : boardUri,
-          'metadata.postId' : {
-            $in : removedPosts
-          }
-        }
+      threads.updateOne({
+        threadId : threadId,
+        boardUri : boardUri
       }, {
-        $group : {
-          _id : 0,
-          files : {
-            $push : '$filename'
-          }
+        $set : {
+          postCount : data.postCount,
+          fileCount : data.fileCount
         }
-      } ], function gotFileNames(error, results) {
+      }, function updatedThread(error) {
+
         if (error) {
           callback(error);
-        } else if (!results.length) {
-          callback(null, postId);
         } else {
-          exports.cleanPostFiles(results[0].files, postId, callback);
+          callback(null, postId);
         }
 
       });
       // style exception, too simple
 
+    }
+
+  });
+
+};
+
+exports.cleanPostFiles = function(postsToDelete, boardUri, callback) {
+
+  files.aggregate([ {
+    $match : {
+      'metadata.boardUri' : boardUri,
+      'metadata.postId' : {
+        $in : postsToDelete
+      }
+    }
+  }, {
+    $group : {
+      _id : 0,
+      files : {
+        $push : '$filename'
+      }
+    }
+  } ], function gotFileNames(error, results) {
+    if (error) {
+      callback(error);
+    } else if (!results.length) {
+      callback();
+    } else {
+      gsHandler.removeFiles(results[0].files, callback);
     }
 
   });
@@ -124,8 +154,20 @@ exports.removeCleanedPosts = function(postsToDelete, boardUri, threadId,
     if (error) {
       callback(error);
     } else {
-      exports.updateThreadAfterCleanUp(boardUri, threadId, postsToDelete,
-          postId, removedFileCount, callback);
+
+      // style exception, too simple
+      exports.cleanPostFiles(postsToDelete, boardUri, function cleanedFiles(
+          error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.reaggregateThread(boardUri, threadId, postId, callback);
+        }
+
+      });
+      // style exception, too simple
+
     }
   });
 
@@ -246,7 +288,7 @@ exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
       exports.cleanThreadPosts(parameters.boardUri, parameters.threadId,
           postId, callback);
     } else {
-      callback(error, postId);
+      callback(null, postId);
     }
 
   });

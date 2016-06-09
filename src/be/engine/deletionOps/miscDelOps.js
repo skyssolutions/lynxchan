@@ -21,6 +21,7 @@ var overboard;
 var lang;
 var sfwOverboard;
 var logOps;
+var boardOps;
 var referenceHandler;
 var overboardOps;
 var gridFs;
@@ -43,7 +44,7 @@ exports.loadDependencies = function() {
   referenceHandler = require('../mediaHandler');
   lang = require('../langOps').languagePack();
   gridFs = require('../gridFsHandler');
-
+  boardOps = require('../boardOps').meta;
 };
 
 // Section 1: Thread cleanup {
@@ -59,29 +60,7 @@ exports.removeThreads = function(boardUri, threadsToDelete, callback) {
     if (error) {
       callback(error);
     } else {
-
-      // style exception, too simple
-      threads.count({
-        boardUri : boardUri
-      }, function counted(error, count) {
-
-        if (error) {
-          callback(error);
-        } else {
-
-          boards.updateOne({
-            boardUri : boardUri
-          }, {
-            $set : {
-              threadCount : count
-            }
-          }, callback);
-
-        }
-
-      });
-      // style exception, too simple
-
+      boardOps.aggregateThreadCount(boardUri, callback);
     }
 
   });
