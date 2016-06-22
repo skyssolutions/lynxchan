@@ -18,6 +18,7 @@ var miscOps;
 var torOps;
 var spamOps;
 var common;
+var spamBypass;
 
 exports.loadSettings = function() {
   var settings = require('../../../settingsHandler').getGeneralSettings();
@@ -27,6 +28,7 @@ exports.loadSettings = function() {
   bypassAllowed = settings.bypassMode > 0;
   bypassMandatory = settings.bypassMode > 1;
   disableFloodCheck = settings.disableFloodCheck;
+  spamBypass = settings.allowSpamBypass;
 
 };
 
@@ -160,7 +162,33 @@ exports.checkForFlood = function(req, boardUri, callback) {
     } else if (flood && !disableFloodCheck) {
       callback(lang.errFlood);
     } else {
-      exports.getActiveBan(ip, boardUri, callback);
+
+      // style exception, too simple
+      spamOps.checkIp(logger.ip(req), function checked(error, spammer) {
+
+        if (error) {
+          callback(error);
+        } else if (spammer) {
+
+          if (spamBypass && bypassAllowed) {
+
+            if (!req.bypassed) {
+              callback(null, null, true);
+            } else {
+              exports.getActiveBan(ip, boardUri, callback);
+            }
+
+          } else {
+            callback(lang.errSpammer);
+          }
+
+        } else {
+          exports.getActiveBan(ip, boardUri, callback);
+        }
+
+      });
+      // style exception, too simple
+
     }
   });
 
@@ -187,22 +215,7 @@ exports.checkForBan = function(req, boardUri, callback) {
       }
 
     } else {
-
-      // style exception, too simple
-      spamOps.checkIp(logger.ip(req), function checked(error, spammer) {
-
-        if (error) {
-          callback(error);
-        } else if (spammer) {
-          // TODO bypass implementation
-          callback(lang.errSpammer);
-        } else {
-          exports.checkForFlood(req, boardUri, callback);
-        }
-
-      });
-      // style exception, too simple
-
+      exports.checkForFlood(req, boardUri, callback);
     }
 
   });

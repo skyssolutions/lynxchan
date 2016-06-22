@@ -4,8 +4,7 @@ var fs = require('fs');
 var exec = require('child_process').exec;
 var logger = require('../logger');
 var command = 'curl {$host} | gunzip -';
-// TODO use setting to determine the source
-var ipSource = 'https://www.stopforumspam.com/downloads/bannedips.zip';
+var ipSource;
 var ipLineSize = 4;
 var locationOps;
 
@@ -13,15 +12,17 @@ exports.loadDependencies = function() {
   locationOps = require('./locationOps');
 };
 
+exports.loadSettings = function() {
+  ipSource = require('../settingsHandler').getGeneralSettings().spamIpsSource;
+};
+
 exports.spamDataPath = __dirname + '/../spamData';
 
 // Section 1: Updating spammer list {
 exports.writeIpToStream = function(ip, fileStream) {
 
-  var buffer = new Buffer(4);
-
+  var buffer = new Buffer(ipLineSize);
   buffer.writeUInt32BE(ip);
-
   fileStream.write(buffer);
 
 };

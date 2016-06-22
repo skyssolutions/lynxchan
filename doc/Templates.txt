@@ -1600,6 +1600,11 @@ TEM_ID::51
 globalSettingsPage: page used to change global settings.
 
 Elements:
+
+fieldSpamIpsSource:
+    use: have it's value manipulated.
+    description: field that displays the url being used to fetch spammer's ips.
+
 fieldAddress:
     use: have it's value manipulated.
     description: field that displays the address being used.
@@ -1771,6 +1776,10 @@ checkboxSFWLatestImages:
 checkboxDisableFloodCheck:
     use: might be turned on.
     description: indicates that flood checks are disabled.
+
+checkboxSpamBypass:
+    use: might be turned on.
+    description: indicates that people caught on the spam list are allowed to use the block bypass.
 
 comboBoardCreationRequirement:
     use: have children appended to it.

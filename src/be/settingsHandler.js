@@ -440,7 +440,8 @@ exports.getDefaultSettings = function() {
     bypassMode : 0,
     rssDomain : '',
     slaves : [],
-    messageLength : 4096
+    messageLength : 4096,
+    spamIpsSource : 'https://www.stopforumspam.com/downloads/bannedips.zip'
   };
 
 };

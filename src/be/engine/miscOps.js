@@ -330,6 +330,10 @@ exports.getParametersArray = function() {
     element : 'fieldSfwOverboard'
   }, {
     type : 'string',
+    setting : 'spamIpsSource',
+    element : 'fieldSpamIpsSource'
+  }, {
+    type : 'string',
     setting : 'thumbExtension',
     element : 'fieldThumbExtension'
   }, {
@@ -514,6 +518,10 @@ exports.getParametersArray = function() {
     type : 'boolean',
     setting : 'forceCaptcha',
     element : 'checkboxGlobalCaptcha'
+  }, {
+    type : 'boolean',
+    setting : 'allowSpamBypass',
+    element : 'checkboxSpamBypass'
   }, {
     type : 'boolean',
     setting : 'frontPageStats',

@@ -144,7 +144,9 @@ Settings files that goes into the settings directory:
 * `inactivityThreshold`(Number): amount of days an user must be inactive so he and his boards will be marked as inactive.
 * `mediaPageSize`(Number): amount of files to be displayed at once on the media management page. Defaults to 100.
 * `messageLength`(Number): character limit for posted messages. Defaults to 4096.
-* `ffmpegGifs`(Boolean): indicates if ffmpeg should be used to generate animated gif thumbnails. It yields lower quality thumbnails but they are smaller and are processed much faster
+* `ffmpegGifs`(Boolean): indicates if ffmpeg should be used to generate animated gif thumbnails. It yields lower quality thumbnails but they are smaller and are processed much faster.
+* `spamIpsSource`: complete url to be used to fetch spammer's ips. It has to be able to be processed by the `unzip` command and contain the ips in plain text separated by commas. Defaults to `https://www.stopforumspam.com/downloads/bannedips.zip`. The ip list is downloaded every midnight UTC or if the file `spamData` can't be found on the `src/be` directory.
+* `allowSpamBypass`(Boolean): indicates if people caught in the spam list are allowed to use the block bypass, given the block bypass is not disabled.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.
