@@ -16,6 +16,7 @@ var logger;
 var minClearIpRole;
 var miscOps;
 var torOps;
+var spamOps;
 var common;
 
 exports.loadSettings = function() {
@@ -37,6 +38,7 @@ exports.loadDependencies = function() {
   logger = require('../../../logger');
   lang = require('../../langOps').languagePack();
   miscOps = require('../../miscOps');
+  spamOps = require('../../spamOps');
 
 };
 
@@ -145,7 +147,7 @@ exports.getActiveBan = function(ip, boardUri, callback) {
 
 exports.checkForFlood = function(req, boardUri, callback) {
 
-  var ip = logger.ip(req, true);
+  var ip = logger.ip(req);
 
   flood.findOne({
     ip : ip,
@@ -185,7 +187,22 @@ exports.checkForBan = function(req, boardUri, callback) {
       }
 
     } else {
-      exports.checkForFlood(req, boardUri, callback);
+
+      // style exception, too simple
+      spamOps.checkIp(logger.ip(req), function checked(error, spammer) {
+
+        if (error) {
+          callback(error);
+        } else if (spammer) {
+          // TODO bypass implementation
+          callback(lang.errSpammer);
+        } else {
+          exports.checkForFlood(req, boardUri, callback);
+        }
+
+      });
+      // style exception, too simple
+
     }
 
   });

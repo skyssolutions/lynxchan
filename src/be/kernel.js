@@ -669,6 +669,26 @@ function initTorControl() {
   });
 }
 
+function initSpamData() {
+
+  require('./engine/spamOps').init(function initializedSpamData(error) {
+
+    if (error) {
+
+      if (debug) {
+        throw error;
+      }
+
+      console.log(error);
+
+    }
+
+    initTorControl();
+
+  });
+
+}
+
 function checkFilePruning() {
 
   if (informedArguments.pruneFiles.informed) {
@@ -680,12 +700,12 @@ function checkFilePruning() {
         console.log(error);
       }
 
-      initTorControl();
+      initSpamData();
 
     });
 
   } else {
-    initTorControl();
+    initSpamData();
   }
 
 }

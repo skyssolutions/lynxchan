@@ -5,4 +5,5 @@
 /src/be/locationData
 /src/fe
 /src/be/addons
+/src/be/spamData
 !/src/be/addons/example.js

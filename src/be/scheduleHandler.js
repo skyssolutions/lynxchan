@@ -17,6 +17,7 @@ var uniqueIps = db.uniqueIps();
 var files = db.files();
 var users = db.users();
 var torHandler = require('./engine/torOps');
+var spamOps = require('./engine/spamOps');
 var graphOps = require('./graphsOps');
 var referenceHandler = require('./engine/mediaHandler');
 
@@ -45,7 +46,7 @@ exports.start = function() {
   if (!settings.master) {
     expiredCaptcha(true);
     boardsStats();
-    torRefresh();
+    dailyRefresh();
     early404(true);
     uniqueIpCount();
 
@@ -92,25 +93,39 @@ function early404(immediate) {
 // } Section 1: Early 404 check
 
 // Section 2: TOR refresh {
-function refreshTorEntries() {
+function refreshIpEntries() {
 
   torHandler.updateIps(function updatedTorIps(error) {
     if (error) {
 
-      console.log(error);
-
       if (debug) {
         throw error;
       }
+
+      console.log(error);
     }
 
-    torRefresh();
+    // style exception, too simple
+    spamOps.updateSpammers(function updatedSpammers(error) {
+
+      if (error) {
+        if (debug) {
+          throw error;
+        }
+
+        console.log(error);
+      }
+
+      dailyRefresh();
+
+    });
+    // style exception, too simple
 
   });
 
 }
 
-function torRefresh() {
+function dailyRefresh() {
 
   var nextRefresh = new Date();
 
@@ -120,7 +135,7 @@ function torRefresh() {
   nextRefresh.setUTCDate(nextRefresh.getUTCDate() + 1);
 
   setTimeout(function() {
-    refreshTorEntries();
+    refreshIpEntries();
   }, nextRefresh.getTime() - new Date().getTime());
 
 }

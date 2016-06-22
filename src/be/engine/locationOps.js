@@ -99,7 +99,7 @@ exports.getFirstAndLastIp = function(fd, ip, fileSize, callback) {
 
       var lastIndex = (fileSize / ipLineSize) - 1;
 
-      // style exception
+      // style exception, too simple
       fs.read(fd, new Buffer(ipLineSize), 0, ipLineSize,
           lastIndex * ipLineSize, function read(error, readBytes, buffer) {
 
@@ -129,7 +129,7 @@ exports.getFirstAndLastIp = function(fd, ip, fileSize, callback) {
             }
 
           });
-      // style exception
+      // style exception, too simple
 
     }
 
@@ -157,7 +157,7 @@ exports.getIpInfo = function(ip, callback) {
       callback(error);
     } else {
 
-      // style exception
+      // style exception, too simple
       fs.open(compiledIps, 'r', function openedFile(error, fd) {
 
         if (error) {
@@ -167,7 +167,7 @@ exports.getIpInfo = function(ip, callback) {
         }
 
       });
-      // style exception
+      // style exception, too simple
 
     }
   });
@@ -222,7 +222,7 @@ exports.getFirstAndLastLocation = function(fd, geoId, fileSize, callback) {
 
           var lastIndex = (fileSize / locationLineSize) - 1;
 
-          // style exception
+          // style exception, too simple
           fs
               .read(fd, new Buffer(locationLineSize), 0, locationLineSize,
                   lastIndex * locationLineSize, function read(error, readBytes,
@@ -256,7 +256,8 @@ exports.getFirstAndLastLocation = function(fd, geoId, fileSize, callback) {
                     }
 
                   });
-          // style exception
+          // style exception, too simple
+
         }
 
       });
@@ -271,7 +272,7 @@ exports.searchIpLocation = function(geoId, callback) {
       callback(error);
     } else {
 
-      // style exception
+      // style exception, too simple
       fs.open(compiledLocations, 'r', function openedFile(error, fd) {
 
         if (error) {
@@ -281,7 +282,7 @@ exports.searchIpLocation = function(geoId, callback) {
         }
 
       });
-      // style exception
+      // style exception, too simple
 
     }
   });

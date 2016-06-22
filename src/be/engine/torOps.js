@@ -19,13 +19,14 @@ exports.loadSettings = function() {
 
 };
 
-// start of update
+// Section 1: Update {
 exports.processData = function(data, callback) {
 
   var match = data.match(/\d+\.\d+\.\d+\.\d+/g);
 
   if (!match) {
-    callback('No ips found in the provided list of TOR exit nodes.');
+    console.log('No ips found in the provided list of TOR exit nodes.');
+    callback();
     return;
   }
 
@@ -78,7 +79,7 @@ exports.updateIps = function(callback) {
 
   var operationToUse = ipSource.indexOf('https') > -1 ? https : http;
 
-  operationToUse.request(ipSource, function gotData(res) {
+  var req = operationToUse.request(ipSource, function gotData(res) {
 
     // style exception, too simple
     res.on('data', function(chunk) {
@@ -90,11 +91,18 @@ exports.updateIps = function(callback) {
     });
     // style exception, too simple
 
-  }).end();
+  });
+
+  req.on('error', function(error) {
+    console.log(error);
+    callback();
+  });
+
+  req.end();
 
 };
+// } Section 1: Update
 
-// end of update
 exports.markAsTor = function(req, callback) {
 
   if (req.isTor) {

@@ -108,6 +108,7 @@ errFileTooLargeForBoard: error thrown when a file being uploaded is too large fo
 errInvalidMimeForBoard: error thrown when a file being uploaded isn't allowed by the board in specific.
 errTextBoard: error thrown when the user tries to post a file to a textboard.
 errDeniedBoardIpDeletion: error thrown when the user is not allowed to delete posts from ips on a specific board.
+errSpammer: error thrown when the user ip was found on the known spammer ip list.
 guiTypeBan: label used for logs of bans.
 guiTypeBanLift: label used for logs of ban lifts.
 guiTypeDeletion: label used for logs of deletions.
