@@ -1757,6 +1757,10 @@ checkboxMediaThumb:
     use: might be turned on.
     description: indicates the server is generating thumbnails for audio and video files.
 
+checkboxDisableSpamCheck:
+    use: might be turned on.
+    description: indicates if the check against spammer ips is disabled.
+
 checkboxMaintenance:
     use: might be turned on.
     description: indicates the server is on maintenance mode.

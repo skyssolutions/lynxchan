@@ -696,7 +696,6 @@ function checkFilePruning() {
     require('./engine/mediaHandler').prune(function pruned(error) {
 
       if (error) {
-
         console.log(error);
       }
 
@@ -769,7 +768,7 @@ if (cluster.isMaster) {
       if (!settingsHandler.getGeneralSettings().master) {
         checkDbVersions();
       } else {
-        initTorControl();
+        initSpamData();
       }
 
     }

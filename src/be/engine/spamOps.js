@@ -4,8 +4,9 @@ var fs = require('fs');
 var exec = require('child_process').exec;
 var logger = require('../logger');
 var command = 'curl {$host} | gunzip -';
-var ipSource;
 var ipLineSize = 4;
+var ipSource;
+var disabled;
 var locationOps;
 
 exports.loadDependencies = function() {
@@ -13,7 +14,10 @@ exports.loadDependencies = function() {
 };
 
 exports.loadSettings = function() {
-  ipSource = require('../settingsHandler').getGeneralSettings().spamIpsSource;
+  var settings = require('../settingsHandler').getGeneralSettings();
+
+  disabled = settings.disableSpamCheck;
+  ipSource = settings.spamIpsSource;
 };
 
 exports.spamDataPath = __dirname + '/../spamData';
@@ -195,6 +199,11 @@ exports.getFirstAndLastIp = function(fd, ip, fileSize, callback) {
 };
 
 exports.checkIp = function(ip, callback) {
+
+  if (disabled) {
+    callback();
+    return;
+  }
 
   fs.stat(exports.spamDataPath, function gotStats(error, stats) {
 

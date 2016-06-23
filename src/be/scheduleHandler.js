@@ -21,10 +21,6 @@ var spamOps = require('./engine/spamOps');
 var graphOps = require('./graphsOps');
 var referenceHandler = require('./engine/mediaHandler');
 
-// handles schedules in general.
-// currently it handles the removal of expired captcha's images, applies board
-// hourly stats and removes invalid temporary files.
-
 exports.reload = function() {
 
   settings = settingsHandler.getGeneralSettings();
@@ -43,10 +39,12 @@ exports.start = function() {
     tempFiles(true);
   }
 
+  spamIpRefresh();
+
   if (!settings.master) {
     expiredCaptcha(true);
     boardsStats();
-    dailyRefresh();
+    torRefresh();
     early404(true);
     uniqueIpCount();
 
@@ -93,7 +91,7 @@ function early404(immediate) {
 // } Section 1: Early 404 check
 
 // Section 2: TOR refresh {
-function refreshIpEntries() {
+function refreshTorEntries() {
 
   torHandler.updateIps(function updatedTorIps(error) {
     if (error) {
@@ -105,27 +103,13 @@ function refreshIpEntries() {
       console.log(error);
     }
 
-    // style exception, too simple
-    spamOps.updateSpammers(function updatedSpammers(error) {
-
-      if (error) {
-        if (debug) {
-          throw error;
-        }
-
-        console.log(error);
-      }
-
-      dailyRefresh();
-
-    });
-    // style exception, too simple
+    torRefresh();
 
   });
 
 }
 
-function dailyRefresh() {
+function torRefresh() {
 
   var nextRefresh = new Date();
 
@@ -135,7 +119,7 @@ function dailyRefresh() {
   nextRefresh.setUTCDate(nextRefresh.getUTCDate() + 1);
 
   setTimeout(function() {
-    refreshIpEntries();
+    refreshTorEntries();
   }, nextRefresh.getTime() - new Date().getTime());
 
 }
@@ -719,3 +703,38 @@ function inactivityTagging() {
   }, nextCheck.getTime() - new Date().getTime());
 }
 // } Section 8: Inactivity check
+
+// Section 9: Spammer ip refresh {
+function refreshSpammerIps() {
+
+  spamOps.updateSpammers(function updatedSpammers(error) {
+
+    if (error) {
+      if (debug) {
+        throw error;
+      }
+
+      console.log(error);
+    }
+
+    spamIpRefresh();
+
+  });
+
+}
+
+function spamIpRefresh() {
+
+  var nextRefresh = new Date();
+
+  nextRefresh.setUTCSeconds(0);
+  nextRefresh.setUTCMinutes(0);
+  nextRefresh.setUTCHours(0);
+  nextRefresh.setUTCDate(nextRefresh.getUTCDate() + 1);
+
+  setTimeout(function() {
+    refreshSpammerIps();
+  }, nextRefresh.getTime() - new Date().getTime());
+
+}
+// } Section9: Spammer ip refresh

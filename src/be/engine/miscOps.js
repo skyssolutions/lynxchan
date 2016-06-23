@@ -488,6 +488,10 @@ exports.getParametersArray = function() {
     element : 'checkboxDisableFloodCheck'
   }, {
     type : 'boolean',
+    setting : 'disableSpamCheck',
+    element : 'checkboxDisableSpamCheck'
+  }, {
+    type : 'boolean',
     setting : 'mediaThumb',
     element : 'checkboxMediaThumb'
   }, {

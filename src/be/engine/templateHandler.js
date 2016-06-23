@@ -341,7 +341,8 @@ exports.getPageTests = function() {
             'fieldMultiBoardThreadCount', 'fieldConcurrentRebuildMessages',
             'checkboxSFWLatestImages', 'fieldInactivityThreshold',
             'fieldMediaPageSize', 'fieldMessageLenght', 'checkboxFfmpegGifs',
-            'fieldSpamIpsSource', 'checkboxSpamBypass' ]
+            'fieldSpamIpsSource', 'checkboxSpamBypass',
+            'checkboxDisableSpamCheck' ]
       }, {
         template : 'hashBanPage',
         fields : [ 'hashBansPanel' ]
