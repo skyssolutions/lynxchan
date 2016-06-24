@@ -135,14 +135,10 @@ exports.getMime = function(pathName) {
   var mime;
 
   if (pathParts.length) {
-    var extension = pathParts[pathParts.length - 1];
-    mime = exports.MIMETYPES[extension.toLowerCase()] || 'text/plain';
-
-  } else {
-    mime = 'text/plain';
+    mime = exports.MIMETYPES[pathParts[pathParts.length - 1].toLowerCase()];
   }
 
-  return mime;
+  return mime || 'application/octet-stream';
 };
 
 // Creates an UCT formated date in 'yyyy-MM-dd' format
