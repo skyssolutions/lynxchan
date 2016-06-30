@@ -6,6 +6,7 @@ var crypto = require('crypto');
 var db = require('../../db');
 var threads = db.threads();
 var boards = db.boards();
+var generator = require('../generator').board;
 var debug = require('../../kernel').debug();
 var verbose;
 var logger = require('../../logger');
@@ -77,12 +78,6 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
     });
   } else {
 
-    // signal rebuild of thread
-    process.send({
-      board : boardUri,
-      thread : threadId
-    });
-
     // signal rebuild of preview
     process.send({
       board : boardUri,
@@ -104,11 +99,22 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
     });
   }
 
-  common.addPostToStats(thread.ip, boardUri, function updatedStats(error) {
+  generator.thread(boardUri, threadId, function generateThread(error) {
+
     if (error) {
-      console.log(error.toString());
+      console.log(error);
     }
-    exports.addThreadToLatestPosts(thread, threadId, callback);
+
+    // style exception, too simple
+    common.addPostToStats(thread.ip, boardUri, function updatedStats(error) {
+      if (error) {
+        console.log(error.toString());
+      }
+
+      exports.addThreadToLatestPosts(thread, threadId, callback);
+    });
+    // style exception, too simple
+
   });
 
 };
