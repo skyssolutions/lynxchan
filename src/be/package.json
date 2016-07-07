@@ -9,7 +9,7 @@
   "version": "1.7.0",
   "dependencies": {
     "mongodb": "2.1.18",
-    "jsdom": "9.2.1",
+    "jsdom": "9.4.1",
     "nodemailer": "2.4.2",
     "multiparty": "4.1.2",
     "bcrypt": "0.8.7",

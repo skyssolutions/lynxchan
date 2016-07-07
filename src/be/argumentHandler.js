@@ -174,7 +174,7 @@ for ( var key in informedArguments) {
   case 'value':
     var elementIndex = args.indexOf(element.short);
     if (elementIndex === -1) {
-      elementIndex = args.indexOf(elementIndex);
+      elementIndex = args.indexOf(element.long);
     }
 
     if (elementIndex !== -1) {
