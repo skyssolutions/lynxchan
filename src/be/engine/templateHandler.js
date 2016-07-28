@@ -73,7 +73,7 @@ exports.getCellTests = function() {
       },
       {
         template : 'reportCell',
-        fields : [ 'reasonLabel', 'link', 'idIdentifier' ]
+        fields : [ 'reasonLabel', 'link', 'closureCheckbox' ]
       },
       {
         template : 'closedReportCell',

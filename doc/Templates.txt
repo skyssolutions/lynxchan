@@ -843,7 +843,7 @@ TEM_ID::14
 
 reportCell*: cell used to list open reports.
 
-Root element: form
+Root element: div
 
 Elements:
 reasonLabel:
@@ -854,9 +854,9 @@ link:
     use: have it's href manipulated.
     description: link to the reported content.
 
-idIdentifier:
-    use: have it's value manipulated.
-    description: hidden input holding the identification of the report.
+closureCheckbox:
+    use: have it's name manipulated.
+    description: checkbox that can be selected to close the report. The value for "name" will be "id-x", with x being the id of the report.
 
 ------------------------------------------------------------------------------------------
 
@@ -1415,7 +1415,7 @@ rangeLabel:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::37
+TEM_ID::39
 
 hashBansPage: page used to list hash bans.
 
@@ -1430,7 +1430,7 @@ boardIdentifier:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::38
+TEM_ID::40
 
 hashBanCell*: cell used to list hash bans.
 
@@ -1447,7 +1447,7 @@ idIdentifier:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::38
+TEM_ID::41
 
 ruleManagementPage: page used to manage a board's rules.
 
@@ -1463,7 +1463,7 @@ boardIdentifier:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::39
+TEM_ID::42
 
 ruleManagementCell*: cell used to list existing rules.
 
@@ -1484,7 +1484,7 @@ boardIdentifier:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::40
+TEM_ID::43
 
 rulesPage: page used to build the one that will list the board rules for users.
 
@@ -1499,7 +1499,7 @@ divRules:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::41
+TEM_ID::44
 
 ruleCell*: cell used to list rules for users.
 
@@ -1516,19 +1516,19 @@ textLabel:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::42
+TEM_ID::45
 
 notFoundPage: 404 page.
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::43
+TEM_ID::46
 
 maintenancePage: page used by the form api to indicate the site is under maintenance.
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::44
+TEM_ID::47
 
 editPage: page used to edit posts.
 
@@ -1555,7 +1555,7 @@ labelMessageLength:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::45
+TEM_ID::48
 
 flagsPage: page used to manage flags.
 
@@ -1574,7 +1574,7 @@ maxSizeLabel:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::46
+TEM_ID::49
 
 flagCell*: cell used to list flags.
 
@@ -1595,7 +1595,7 @@ idIdentifier:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::51
+TEM_ID::50
 
 globalSettingsPage: page used to change global settings.
 
@@ -1887,7 +1887,7 @@ checkboxFfmpegGifs:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::53
+TEM_ID::51
 
 hashBanPage: page used to inform an user which files he tried to post were banned.
 
@@ -1898,7 +1898,7 @@ hashBansPanel:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::54
+TEM_ID::52
 
 hashBanCellDisplay*: cell used to list banned files an user tried to post.
 
@@ -1915,7 +1915,7 @@ labelBoard:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::55
+TEM_ID::53
 
 latestPostCell*: cell used to list the latest posts on the whole site on the front-page.
 
@@ -1932,7 +1932,7 @@ linkPost:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::56
+TEM_ID::54
 
 overboard: page used to create the overboard and multi-board.
 
@@ -1943,7 +1943,7 @@ divThreads:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::57
+TEM_ID::55
 
 bypassPage: page used to renew the user's bypass token.
 
@@ -1954,7 +1954,7 @@ indicatorValidBypass:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::58
+TEM_ID::56
 
 logIndexPage: page that lists the available dates to read logs from.
 
@@ -1965,7 +1965,7 @@ divDates:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::59
+TEM_ID::57
 
 logIndexCell*: cell used to list dates that contains logs.
 
@@ -1978,7 +1978,7 @@ dateLink:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::60
+TEM_ID::58
 
 latestImageCell*: cell used to list global latest images on the front-page.
 
@@ -1991,7 +1991,7 @@ linkPost:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::61
+TEM_ID::59
 
 graphsIndexPage: page that lists the available dates that contain daily graphs for a specific year.
 
@@ -2002,7 +2002,7 @@ divDates:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::62
+TEM_ID::60
 
 graphIndexCell*: cell used to list dates that contains graphs.
 
@@ -2015,7 +2015,7 @@ dateLink:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::63
+TEM_ID::61
 
 mediaManagementPage: page that allows the global staff to manage the uploaded media files.
 
@@ -2030,7 +2030,7 @@ pagesDiv:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::64
+TEM_ID::62
 
 mediaCell*: cell that represents a media element for management.
 

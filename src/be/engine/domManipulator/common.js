@@ -160,19 +160,17 @@ exports.setReportList = function(document, reports) {
   for (var i = 0; i < reports.length; i++) {
     var report = reports[i];
 
-    var cell = document.createElement('form');
+    var cell = document.createElement('div');
 
     cell.innerHTML = templateHandler.reportCell;
-
-    exports.setFormCellBoilerPlate(cell, '/closeReport.js', 'reportCell');
 
     if (report.reason) {
       var reason = cell.getElementsByClassName('reasonLabel')[0];
       reason.innerHTML = report.reason;
     }
 
-    var identifier = cell.getElementsByClassName('idIdentifier')[0];
-    identifier.setAttribute('value', report._id);
+    var checkbox = cell.getElementsByClassName('closureCheckbox')[0];
+    checkbox.setAttribute('name', 'report-' + report._id);
 
     var reportLink = cell.getElementsByClassName('link')[0];
     reportLink.setAttribute('href', exports.getReportLink(report));

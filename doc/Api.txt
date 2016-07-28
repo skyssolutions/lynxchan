@@ -234,17 +234,17 @@ Parameters:
         board: board to which the content belongs.
         thread: thread to be reported or that contains the post to be reported.
         post: post to be reported.
-    
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::13
 
-Name: closeReport
+Name: closeReports
 
-Description: closes a report. Requires authentication.
+Description: closes reports. Requires authentication.
 
 Parameters:
-    reportId: id of the report to be closed.
+    reports(Array): ids of the reports to be closed.
 
 ------------------------------------------------------------------------------------------
 

@@ -13,9 +13,7 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Log insertion {
-exports.aggregateLog = function(entry, callback) {
-
-  var entryTime = new Date(entry.time);
+exports.aggregateLog = function(entryTime, collectedIds, callback) {
 
   entryTime.setUTCHours(0);
   entryTime.setUTCMinutes(0);
@@ -26,7 +24,9 @@ exports.aggregateLog = function(entry, callback) {
     date : entryTime
   }, {
     $push : {
-      logs : entry._id
+      logs : {
+        $each : collectedIds
+      }
     },
     $setOnInsert : {
       date : entryTime
@@ -54,21 +54,28 @@ exports.aggregateLog = function(entry, callback) {
 
 exports.insertLog = function(entry, callback) {
 
-  logs.insertOne(entry, function addedLog(error) {
+  if (Object.prototype.toString.call(entry) !== '[object Array]') {
+    entry = [ entry ];
+  }
+
+  logs.insertMany(entry, function addedLog(error) {
 
     if (error) {
-      var outputMessage = 'Could not log message "' + entry.description;
-      outputMessage += '" due to error ' + error.toString() + '.';
-
-      console.log(outputMessage);
-
+      console.log(error);
       callback();
     } else {
 
-      exports.aggregateLog(entry, callback);
+      var collectedIds = [];
+
+      for (var i = 0; i < entry.length; i++) {
+        collectedIds.push(entry[i]._id);
+      }
+
+      exports.aggregateLog(entry[0].time, collectedIds, callback);
     }
 
   });
 
 };
 // } Section 1: Log insertion
+

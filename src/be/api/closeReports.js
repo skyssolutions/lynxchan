@@ -5,7 +5,7 @@ var modOps = require('../engine/modOps').report;
 
 function closeReport(auth, userData, parameters, res) {
 
-  modOps.closeReport(userData, parameters, function reportClosed(error) {
+  modOps.closeReports(userData, parameters, function reportClosed(error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {

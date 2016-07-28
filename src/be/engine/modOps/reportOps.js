@@ -206,101 +206,156 @@ exports.report = function(req, reportedContent, parameters, captchaId, cb) {
 // } Section 2: Create report
 
 // Section 3: Close report {
-exports.updateReport = function(report, userData, callback) {
-  reports.updateOne({
-    _id : new ObjectID(report._id)
+exports.updateReports = function(foundReports, ids, userData, callback) {
+
+  var closureDate = new Date();
+
+  reports.updateMany({
+    _id : {
+      $in : ids
+    }
   }, {
     $set : {
       closedBy : userData.login,
-      closing : new Date()
+      closing : closureDate
     }
-  }, function closedReport(error) {
+  }, function closedReports(error) {
     if (error) {
       callback(error);
-    } else
+    } else {
 
-    {
-      // style exception, too simple
+      var logs = [];
 
-      var pieces = lang.logReportClosure;
+      for (var i = 0; i < foundReports.length; i++) {
 
-      var logMessage = pieces.startPiece.replace('{$login}', userData.login);
+        var report = foundReports[i];
 
-      if (report.global) {
-        logMessage += pieces.globalPiece;
+        var pieces = lang.logReportClosure;
+
+        var logMessage = pieces.startPiece.replace('{$login}', userData.login);
+
+        if (report.global) {
+          logMessage += pieces.globalPiece;
+        }
+
+        logMessage += pieces.midPiece;
+
+        if (report.postId) {
+          logMessage += pieces.postPiece.replace('{$post}', report.postId);
+        }
+
+        logMessage += pieces.finalPiece.replace('{$thread}', report.threadId)
+            .replace('{$board}', report.boardUri).replace('{$reason}',
+                report.reason || '');
+
+        logs.push({
+          user : userData.login,
+          global : report.global,
+          description : logMessage,
+          time : closureDate,
+          boardUri : report.boardUri,
+          type : 'reportClosure'
+        });
+
       }
 
-      logMessage += pieces.midPiece;
-
-      if (report.postId) {
-        logMessage += pieces.postPiece.replace('{$post}', report.postId);
-      }
-
-      logMessage += pieces.finalPiece.replace('{$thread}', report.threadId)
-          .replace('{$board}', report.boardUri).replace('{$reason}',
-              report.reason || '');
-
-      logOps.insertLog({
-        user : userData.login,
-        global : report.global,
-        description : logMessage,
-        time : new Date(),
-        boardUri : report.boardUri,
-        type : 'reportClosure'
-      }, function insertedLog() {
-
-        callback(null, report.global, report.boardUri);
+      logOps.insertLog(logs, function insertedLog() {
+        callback(null, foundReports[0].global, foundReports[0].boardUri);
       });
 
-      // style exception, too simple
     }
 
   });
 };
 
-exports.closeReport = function(userData, parameters, callback) {
-
-  var isOnGlobalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+exports.closeReports = function(userData, parameters, callback) {
 
   try {
-    reports.findOne({
-      _id : new ObjectID(parameters.reportId)
-    }, function gotReport(error, report) {
-      if (error) {
-        callback(error);
-      } else if (!report) {
-        callback(lang.errReportNotFound);
-      } else if (report.closedBy) {
-        callback(lang.errReportAlreadyClosed);
-      } else if (report.global && !isOnGlobalStaff) {
-        callback(lang.errDeniedGlobalReportManagement);
-      } else if (!report.global) {
+    var ids = [];
 
-        // style exception, too simple
-        boards.findOne({
-          boardUri : report.boardUri
-        }, function gotBoard(error, board) {
-          if (error) {
-            callback(error);
-          } else if (!board) {
-            callback(lang.errBoardNotFound);
-          } else if (!common.isInBoardStaff(userData, board)) {
-            callback(lang.errDeniedBoardReportManagement);
-          } else {
-            exports.updateReport(report, userData, callback);
-          }
+    var reportList = parameters.reports || [];
 
-        });
-        // style exception, too simple
+    if (!reportList.length) {
+      callback(lang.errNoReportsInformed);
+      return;
+    }
 
-      } else {
-        exports.updateReport(report, userData, callback);
-      }
+    for (var i = 0; i < reportList.length; i++) {
+      ids.push(new ObjectID(reportList[i]));
+    }
 
-    });
   } catch (error) {
     callback(error);
+    return;
   }
+
+  reports.find({
+    _id : {
+      $in : ids
+    }
+  }).toArray(function gotReports(error, foundReports) {
+
+    if (error) {
+      callback(error);
+    } else if (foundReports.length < ids.length) {
+      callback(lang.errReportNotFound);
+    } else {
+
+      var foundBoardsUris = [];
+
+      var isOnGlobalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+
+      // Get boards for non-global reports, check if reports have been already
+      // closed and global permissions
+      for (i = 0; i < foundReports.length; i++) {
+        var report = foundReports[i];
+
+        var alreadyIncluded = foundBoardsUris.indexOf(report.boardUri) > -1;
+
+        if (report.closedBy) {
+          callback(lang.errReportAlreadyClosed);
+          return;
+        } else if (report.global && !isOnGlobalStaff) {
+          callback(lang.errDeniedGlobalReportManagement);
+          return;
+        } else if (!report.global && !alreadyIncluded) {
+          foundBoardsUris.push(report.boardUri);
+        }
+
+      }
+
+      // style exception, too simple
+      boards.find({
+        boardUri : {
+          $in : foundBoardsUris
+        }
+      }).toArray(function gotBoards(error, foundBoards) {
+        if (error) {
+          callback(error);
+        } else if (foundBoards.length < foundBoardsUris.length) {
+          callback(lang.errBoardNotFound);
+        } else {
+
+          for (i = 0; i < foundBoards.length; i++) {
+
+            if (!common.isInBoardStaff(userData, foundBoards[i])) {
+              callback(lang.errDeniedBoardReportManagement);
+              return;
+            }
+
+          }
+
+          exports.updateReports(foundReports, ids, userData, callback);
+
+        }
+
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
 };
 // } Section 3: Close report
 

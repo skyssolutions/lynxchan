@@ -109,6 +109,7 @@ errInvalidMimeForBoard: error thrown when a file being uploaded isn't allowed by
 errTextBoard: error thrown when the user tries to post a file to a textboard.
 errDeniedBoardIpDeletion: error thrown when the user is not allowed to delete posts from ips on a specific board.
 errSpammer: error thrown when the user ip was found on the known spammer ip list.
+errNoReportsInformed: error thrown when the user fails to inform any report.
 guiTypeBan: label used for logs of bans.
 guiTypeBanLift: label used for logs of ban lifts.
 guiTypeDeletion: label used for logs of deletions.
@@ -193,7 +194,7 @@ msgChangedPassword: message used after a password change.
 msgMediaDeleted: message used after deleting media files.
 msgAccountSettingsSaved: message used after saving the account settings.
 msgThreadSettingsSaved: message used after saving a thread's settings.
-msgReportClosed: message used after closing a report.
+msgReportsClosed: message used after closing reports.
 msgContentReported: message used after reporting content.
 msgUsersBanned: message used after banning users.
 msgContentDeleted: message used after deleting content. Replaces: {$threads}, {$posts}.
