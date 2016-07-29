@@ -161,6 +161,7 @@ exports.setReportList = function(document, reports) {
     var report = reports[i];
 
     var cell = document.createElement('div');
+    cell.setAttribute('class', 'reportCell');
 
     cell.innerHTML = templateHandler.reportCell;
 
