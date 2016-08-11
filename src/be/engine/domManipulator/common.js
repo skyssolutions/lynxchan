@@ -272,6 +272,10 @@ exports.setSharedHideableElements = function(posting, cell) {
   if (posting.flag) {
     imgFlag.src = posting.flag;
     imgFlag.title = posting.flagName;
+
+    if (posting.flagCode) {
+      imgFlag.className += ' flag' + posting.flagCode;
+    }
   } else {
     exports.removeElement(imgFlag);
   }

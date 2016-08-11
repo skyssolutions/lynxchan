@@ -718,12 +718,15 @@ exports.addPostToLatestPosts = function(posting, callback) {
 // } Section 3: Global latest posts
 
 // Section 4: Flag selection {
-exports.getCurrentObject = function(ipData, field, currentObject, flags) {
+exports.getCurrentObject = function(ipData, field, currentObject, flags,
+    locationCode) {
 
   var location = ipData[field];
 
   if (location) {
     currentObject = currentObject ? currentObject[location] : flags[location];
+    currentObject.code = (currentObject.code || '');
+    currentObject.code += '-' + location.toLowerCase();
   } else {
     currentObject = null;
   }
@@ -796,7 +799,7 @@ exports.readFlagData = function(locationData, callback) {
 
       var flagData = exports.searchLocation(data, locationData);
 
-      callback(data.flagsUrl + flagData.flag, flagData.name);
+      callback(data.flagsUrl + flagData.flag, flagData.name, flagData.code);
 
     }
   });

@@ -431,6 +431,7 @@ exports.createPost = function(req, parameters, userData, postId, thread, board,
 
   if (parameters.flag) {
     postToAdd.flagName = parameters.flagName;
+    postToAdd.flagCode = parameters.flagCode;
     postToAdd.flag = parameters.flag;
   }
 
@@ -462,10 +463,11 @@ exports.getPostFlag = function(req, parameters, userData, postId, thread,
     board, wishesToSign, cb) {
 
   common.getFlagUrl(parameters.flag, logger.ip(req), board,
-      function gotFlagUrl(flagUrl, flagName) {
+      function gotFlagUrl(flagUrl, flagName, flagCode) {
 
         parameters.flagName = flagName;
         parameters.flag = flagUrl;
+        parameters.flagCode = flagCode;
 
         exports.createPost(req, parameters, userData, postId, thread, board,
             wishesToSign, cb);

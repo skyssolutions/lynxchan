@@ -315,7 +315,7 @@ linkEdit:
     description: link that opens the page used to edit the message of the OP.
 
 imgFlag:
-    use: have it's src and title manipulated or may be removed.
+    use: have it's src and title manipulated or may be removed. It might have a second class indicating its country appended to it using the format flag-xx.
     description: img used to display the poster's selected flag.
 
 labelLastEdit:
@@ -441,7 +441,7 @@ divBanMessage:
     description: holds the ban message, if the content was used for a ban.
 
 imgFlag:
-    use: have it's src and title manipulated or may be removed.
+    use: have it's src and title manipulated or may be removed. It might have a second class indicating its country appended to it using the format flag-xx.
     description: img used to display the poster's selected flag.
 
 labelLastEdit:

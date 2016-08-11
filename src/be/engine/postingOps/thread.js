@@ -209,6 +209,7 @@ exports.createThread = function(req, userData, parameters, board, threadId,
   if (parameters.flag) {
     threadToAdd.flagName = parameters.flagName;
     threadToAdd.flag = parameters.flag;
+    threadToAdd.flagCode = parameters.flagCode;
   }
 
   if (parameters.password) {
@@ -401,8 +402,9 @@ exports.getNewThreadId = function(req, userData, parameters, board,
 
       // style exception, too simple
       common.getFlagUrl(parameters.flag, logger.ip(req), board,
-          function gotFlagUrl(flagUrl, flagName) {
+          function gotFlagUrl(flagUrl, flagName, flagCode) {
 
+            parameters.flagCode = flagCode;
             parameters.flagName = flagName;
             parameters.flag = flagUrl;
 

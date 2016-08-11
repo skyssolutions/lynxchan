@@ -9,7 +9,6 @@ var chunks = db.chunks();
 var bucket = new (require('mongodb')).GridFSBucket(db.conn());
 var disable304;
 var verbose;
-var noDaemon = require('../kernel').noDaemon();
 var miscOps;
 var zlib = require('zlib');
 

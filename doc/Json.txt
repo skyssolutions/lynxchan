@@ -52,6 +52,7 @@ Root(Object):
     subject: subject of the thread.
     lastEditTime(Date): date of the last time the message of the thread message was edited.
     flagName: name of the used flag.
+    flagCode: location code of the flag.
     lastEditLogin: Login of the last user to edit the thread message.
     message: text of the post.
     name: name of the poster.
@@ -73,6 +74,7 @@ Root(Object):
         signedRole: role of the user that posted the thread.
         email: email of the poster.
         flag: url of the used flag.
+        flagCode: location code of the flag.
         flagName: name of the used flag.
         lastEditTime(Date): date of the last time the message of the thread message was edited.
         lastEditLogin: Login of the last user to edit the thread message.
@@ -105,6 +107,7 @@ Root(Object):
     email: email of the poster.
     flag: url of the used flag.
     flagName: name of the used flag.
+    flagCode: location code of the flag.
     markdown: message with html markdown applied.
     subject: subject of the thread.
     name: name of the poster.
@@ -151,6 +154,7 @@ Root(Object):
         message: text of the post.
         flag: url of the used flag.
         flagName: name of the used flag.
+        flagCode: location code of the flag.
         lastEditTime(Date): date of the last time the message of the thread message was edited.
         lastEditLogin: Login of the last user to edit the thread message.
         name: name of the poster.
@@ -172,6 +176,7 @@ Root(Object):
             signedRole: role of the user that posted the thread.
             markdown: message with html markdown applied.
             email: email of the poster.
+            flagCode: location code of the flag.
             flag: url of the used flag.
             flagName: name of the used flag.
             lastEditTime(Date): date of the last time the message of the thread message was edited.
