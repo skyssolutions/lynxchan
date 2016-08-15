@@ -18,7 +18,7 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 18;
+var maxIndexesSet = 19;
 
 var cachedMessages;
 var cachedUploadReferences;
@@ -522,6 +522,21 @@ function initThreads(callback) {
     threadId : 1
   }, {
     unique : true
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+
+  cachedThreads.ensureIndex({
+    pinned : 1,
+    lastBump : 1
   }, function setIndex(error, index) {
     if (error) {
       if (loading) {
