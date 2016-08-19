@@ -348,7 +348,7 @@ exports.getParametersArray = function() {
   }, {
     type : 'number',
     setting : 'messageLength',
-    element : 'fieldMessageLenght'
+    element : 'fieldMessageLength'
   }, {
     type : 'number',
     setting : 'inactivityThreshold',

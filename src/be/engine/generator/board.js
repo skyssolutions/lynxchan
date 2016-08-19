@@ -430,7 +430,7 @@ exports.buildCatalogJsonAndRss = function(boardData, threads, callback) {
 
 };
 
-exports.catalog = function(boardUri, callback, boardData) {
+exports.catalog = function(boardUri, callback, boardData, flagData) {
 
   if (!boardData) {
 
@@ -447,6 +447,23 @@ exports.catalog = function(boardUri, callback, boardData) {
     });
 
     return;
+  } else if (!flagData) {
+
+    flags.find({
+      boardUri : boardUri
+    }, {
+      name : 1
+    }).sort({
+      name : 1
+    }).toArray(function gotFlags(error, foundFlags) {
+      if (error) {
+        callback(error);
+      } else {
+        exports.catalog(boardUri, callback, boardData, foundFlags);
+      }
+    });
+
+    return;
   }
 
   if (verbose) {
@@ -458,19 +475,21 @@ exports.catalog = function(boardUri, callback, boardData) {
   }, threadProjection).sort({
     pinned : -1,
     lastBump : -1
-  }).toArray(function gotThreads(error, threads) {
-    if (error) {
-      callback(error);
-    } else {
+  }).toArray(
+      function gotThreads(error, threads) {
+        if (error) {
+          callback(error);
+        } else {
 
-      // style exception, too simple
-      domManipulator.catalog(boardData, threads, function savedHTML(error) {
-        exports.buildCatalogJsonAndRss(boardData, threads, callback);
+          // style exception, too simple
+          domManipulator.catalog(boardData, threads, flagData,
+              function savedHTML(error) {
+                exports.buildCatalogJsonAndRss(boardData, threads, callback);
+              });
+          // style exception, too simple
+
+        }
       });
-      // style exception, too simple
-
-    }
-  });
 
 };
 // } Section 1.1.3: Catalog

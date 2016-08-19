@@ -137,7 +137,7 @@ labelMaxFiles:
 
 labelMessageLength:
     use: have it's innerHTML manipulated.
-    description: label that displays the maximum allowed lenght of posted messages.
+    description: label that displays the maximum allowed length of posted messages.
 
 divUpload:
     use: might be removed.
@@ -260,7 +260,7 @@ labelMaxFiles:
 
 labelMessageLength:
     use: have it's innerHTML manipulated.
-    description: label that displays the maximum allowed lenght of posted messages.
+    description: label that displays the maximum allowed length of posted messages.
 
 divUpload:
     use: might be removed.
@@ -1084,6 +1084,38 @@ labelBoard:
     use: have it's innerHTML manipulated.
     description: holds the board title.
 
+flagsDiv:
+    use: might be removed.
+    description: element containing the flag selection.
+
+flagCombobox:
+    use: have children appended to it.
+    description: combobox used to select a flag.
+
+boardIdentifier:
+    use: have it's value manipulated.
+    description: hidden input used to identify the board the page belongs to.
+
+captchaDiv:
+    use: might be removed.
+    description: holds the captcha elements.
+
+labelMaxFileSize:
+    use: have it's innerHTML manipulated.
+    description: holds the maximum allowed file size for uploads.
+
+labelMaxFiles:
+    use: have it's innerHTML manipulated.
+    description: label that displays the maximum amount of files allowed to be posted.
+
+labelMessageLength:
+    use: have it's innerHTML manipulated.
+    description: label that displays the maximum allowed length of posted messages.
+
+divUpload:
+    use: might be removed.
+    description: div removed for textboards.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::25
@@ -1551,7 +1583,7 @@ postIdentifier:
 
 labelMessageLength:
     use: have it's innerHTML manipulated.
-    description: label that displays the maximum allowed lenght of posted messages.
+    description: label that displays the maximum allowed length of posted messages.
 
 ------------------------------------------------------------------------------------------
 
@@ -1834,7 +1866,7 @@ fieldOverBoardThreads:
     description: indicates how many threads are to be displayed on the overboard.
 
 comboBypassMode:
-    use:  have children appended to it.
+    use: have children appended to it.
     description: indicates the bypass mode selected.
 
 fieldBypassHours:
@@ -1877,7 +1909,7 @@ fieldMediaPageSize:
     use: have it's value manipulated.
     description: field that displays how many files should be displayed at once on the media management page.
 
-fieldMessageLenght:
+fieldMessageLength:
     use: have it`s value manipulated.
     description: field that displays the limit for posted messages.
 

@@ -159,7 +159,9 @@ exports.getPageTests = function() {
       },
       {
         template : 'catalogPage',
-        fields : [ 'divThreads', 'labelBoard' ]
+        fields : [ 'divThreads', 'labelBoard', 'flagsDiv', 'divUpload',
+            'labelMessageLength', 'labelMaxFiles', 'labelMaxFileSize',
+            'captchaDiv', 'boardIdentifier', 'flagCombobox' ]
       },
       {
         template : 'resetEmail',
@@ -340,7 +342,7 @@ exports.getPageTests = function() {
             'comboBypassMode', 'fieldBypassHours', 'fieldBypassPosts',
             'fieldMultiBoardThreadCount', 'fieldConcurrentRebuildMessages',
             'checkboxSFWLatestImages', 'fieldInactivityThreshold',
-            'fieldMediaPageSize', 'fieldMessageLenght', 'checkboxFfmpegGifs',
+            'fieldMediaPageSize', 'fieldMessageLength', 'checkboxFfmpegGifs',
             'fieldSpamIpsSource', 'checkboxSpamBypass',
             'checkboxDisableSpamCheck' ]
       }, {

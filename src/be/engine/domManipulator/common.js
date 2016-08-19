@@ -225,7 +225,8 @@ exports.setFlags = function(document, board, flagData) {
 
 };
 
-exports.setBoardToggleableElements = function(boardData, document, thread) {
+exports.setBoardPosting = function(boardData, document, thread) {
+
   var settings = boardData.settings;
 
   var captchaMode = boardData.captchaMode || 0;
@@ -238,17 +239,17 @@ exports.setBoardToggleableElements = function(boardData, document, thread) {
     exports.removeElement(document.getElementById('divName'));
   }
 
-  if (boardData.boardMarkdown && boardData.boardMarkdown.length) {
-    document.getElementById('divMessage').innerHTML = boardData.boardMarkdown;
-  } else {
-    exports.removeElement(document.getElementById('panelMessage'));
-  }
-
   if (settings.indexOf('textBoard') > -1) {
     exports.removeElement(document.getElementById('divUpload'));
   } else {
     exports.setFileLimits(document, boardData);
   }
+
+  var boardIdentifyInput = document.getElementById('boardIdentifier');
+
+  boardIdentifyInput.setAttribute('value', boardData.boardUri);
+
+  document.getElementById('labelMessageLength').innerHTML = messageLength;
 
 };
 
@@ -804,20 +805,10 @@ exports.setFileLimits = function(document, bData) {
 
 };
 
-exports.setHeader = function(document, board, boardData, flagData, thread) {
-
-  var titleHeader = document.getElementById('labelName');
-  titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
-
-  document.getElementById('labelMessageLength').innerHTML = messageLength;
+exports.setBoardCustomization = function(boardData, document, board) {
 
   var descriptionHeader = document.getElementById('labelDescription');
   descriptionHeader.innerHTML = boardData.boardDescription;
-
-  var linkBanner = '/randomBanner.js?boardUri=' + board;
-  document.getElementById('bannerImage').src = linkBanner;
-
-  exports.setBoardToggleableElements(boardData, document, thread);
 
   if (boardData.usesCustomCss) {
     exports.setCustomCss(board, document);
@@ -826,6 +817,26 @@ exports.setHeader = function(document, board, boardData, flagData, thread) {
   if (boardData.usesCustomJs && allowedJs) {
     exports.setCustomJs(board, document);
   }
+
+  if (boardData.boardMarkdown && boardData.boardMarkdown.length) {
+    document.getElementById('divMessage').innerHTML = boardData.boardMarkdown;
+  } else {
+    exports.removeElement(document.getElementById('panelMessage'));
+  }
+
+};
+
+exports.setHeader = function(document, board, boardData, flagData, thread) {
+
+  var titleHeader = document.getElementById('labelName');
+  titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
+
+  var linkBanner = '/randomBanner.js?boardUri=' + board;
+  document.getElementById('bannerImage').src = linkBanner;
+
+  exports.setBoardPosting(boardData, document, thread);
+
+  exports.setBoardCustomization(boardData, document, board);
 
   exports.setFlags(document, board, flagData);
 

@@ -94,9 +94,6 @@ exports.login = function(callback) {
 
 // Section 1: Thread {
 exports.setThreadHiddenIdentifiers = function(document, boardUri, threadData) {
-  var boardIdentifyInput = document.getElementById('boardIdentifier');
-  boardIdentifyInput.setAttribute('value', boardUri);
-
   var threadIdentifyInput = document.getElementById('threadIdentifier');
   threadIdentifyInput.setAttribute('value', threadData.threadId);
 
@@ -292,10 +289,6 @@ exports.page = function(board, page, threads, pageCount, boardData, flagData,
     var linkModeration = document.getElementById('linkModeration');
     linkModeration.href = '/boardModeration.js?boardUri=' + board;
 
-    var boardIdentifyInput = document.getElementById('boardIdentifier');
-
-    boardIdentifyInput.setAttribute('value', board);
-
     common.setHeader(document, board, boardData, flagData);
 
     exports.addPagesLinks(document, pageCount, page);
@@ -363,7 +356,7 @@ exports.setCell = function(boardUri, document, thread) {
 
 };
 
-exports.catalog = function(boardData, threads, callback) {
+exports.catalog = function(boardData, threads, flagData, callback) {
 
   try {
 
@@ -378,6 +371,10 @@ exports.catalog = function(boardData, threads, callback) {
     document.title = lang.titCatalog.replace('{$board}', boardUri);
 
     document.getElementById('labelBoard').innerHTML = '/' + boardUri + '/';
+
+    common.setBoardPosting(boardData, document);
+
+    common.setFlags(document, boardUri, flagData);
 
     var threadsDiv = document.getElementById('divThreads');
 
