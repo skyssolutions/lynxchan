@@ -40,8 +40,8 @@ It accepts the following arguments:
 * `--no-fork`, `-nf`: prevents the engine from spawning aditional processes to run commands. It will also make the engine stop after a rebuild error. Meant for internal usage, but hey, I`m not your dad or anything to tell you how to use your computer. :^)
 * `--password`, `-p`: informs a password.
 * `--board`, `-b`: informs a board uri.
-* `--thread`, `-t`: informs a thread id. Not threadId, but the document _id.
-* `--post`, `-po`: informs a post id. Not postId, but the document _id.
+* `--thread`, `-t`: informs a thread id. Not threadId, but the document `_id`.
+* `--post`, `-po`: informs a post id. Not postId, but the document `_id`.
 * `--interval`, `-i`: informs an interval.
 * `--global-role`, `-gr`: informs a role from 0 to 4, 0 meaning root user, 1 admin, 2 global volunteer, 3 global janitor and 4 regular user.
 * `--set-role`, `-sr`: set a new role for an existing account. Will not be used if `-ca` is used. Takes a login and global role.
@@ -148,6 +148,7 @@ Settings files that goes into the settings directory:
 * `spamIpsSource`: complete url to be used to fetch spammer's ips. It has to be able to be processed by the `unzip` command and contain the ips in plain text separated by commas. Defaults to `https://www.stopforumspam.com/downloads/bannedips.zip`. The ip list is downloaded every midnight UTC or if the file `spamData` can't be found on the `src/be` directory.
 * `allowSpamBypass`(Boolean): indicates if people caught in the spam list are allowed to use the block bypass, given the block bypass is not disabled.
 * `disableSpamCheck`(Boolean): indicates if the spam check should be skipped. Meant to be used on emergencies where its not possible at all to obtain the spam ip list.
+* `disableCatalogPosting`(Boolean): removes the thread creation form from the board`s catalogs.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

@@ -20,6 +20,7 @@ var mbHandler;
 var boardOps;
 var rssBuilder;
 var jsonBuilder;
+var disableCatalogPosting;
 
 var boardProjection = {
   boardUri : 1,
@@ -40,6 +41,7 @@ exports.loadSettings = function() {
   var settings = settingsHandler.getGeneralSettings();
   pageSize = settings.pageSize;
   verbose = settings.verbose;
+  disableCatalogPosting = settings.disableCatalogPosting;
 
 };
 
@@ -447,7 +449,7 @@ exports.catalog = function(boardUri, callback, boardData, flagData) {
     });
 
     return;
-  } else if (!flagData) {
+  } else if (!flagData && !disableCatalogPosting) {
 
     flags.find({
       boardUri : boardUri

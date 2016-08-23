@@ -17,12 +17,14 @@ var overboard;
 var sfwOverboard;
 var siteTitle;
 var engineInfo;
+var disableCatalogPosting;
 
 var availableLogTypes;
 
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  disableCatalogPosting = settings.disableCatalogPosting;
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
   accountCreationDisabled = settings.disableAccountCreation;
@@ -356,6 +358,18 @@ exports.setCell = function(boardUri, document, thread) {
 
 };
 
+exports.setCatalogPosting = function(boardData, boardUri, flagData, document) {
+
+  if (!disableCatalogPosting) {
+
+    common.setBoardPosting(boardData, document);
+    common.setFlags(document, boardUri, flagData);
+  } else {
+    common.removeElement(document.getElementById('postingForm'));
+  }
+
+};
+
 exports.catalog = function(boardData, threads, flagData, callback) {
 
   try {
@@ -372,9 +386,7 @@ exports.catalog = function(boardData, threads, flagData, callback) {
 
     document.getElementById('labelBoard').innerHTML = '/' + boardUri + '/';
 
-    common.setBoardPosting(boardData, document);
-
-    common.setFlags(document, boardUri, flagData);
+    exports.setCatalogPosting(boardData, boardUri, flagData, document);
 
     var threadsDiv = document.getElementById('divThreads');
 

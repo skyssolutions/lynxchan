@@ -161,7 +161,7 @@ exports.getPageTests = function() {
         template : 'catalogPage',
         fields : [ 'divThreads', 'labelBoard', 'flagsDiv', 'divUpload',
             'labelMessageLength', 'labelMaxFiles', 'labelMaxFileSize',
-            'captchaDiv', 'boardIdentifier', 'flagCombobox' ]
+            'captchaDiv', 'boardIdentifier', 'flagCombobox', 'postingForm' ]
       },
       {
         template : 'resetEmail',
@@ -344,7 +344,7 @@ exports.getPageTests = function() {
             'checkboxSFWLatestImages', 'fieldInactivityThreshold',
             'fieldMediaPageSize', 'fieldMessageLength', 'checkboxFfmpegGifs',
             'fieldSpamIpsSource', 'checkboxSpamBypass',
-            'checkboxDisableSpamCheck' ]
+            'checkboxDisableSpamCheck', 'checkboxDisableCatalogPosting' ]
       }, {
         template : 'hashBanPage',
         fields : [ 'hashBansPanel' ]

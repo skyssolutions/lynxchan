@@ -531,6 +531,10 @@ exports.getParametersArray = function() {
     setting : 'frontPageStats',
     element : 'checkboxFrontPageStats'
   }, {
+    type : 'boolean',
+    setting : 'disableCatalogPosting',
+    element : 'checkboxDisableCatalogPosting'
+  }, {
     // range
     type : 'range',
     limit : 2,

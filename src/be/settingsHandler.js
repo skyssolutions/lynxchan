@@ -106,6 +106,11 @@ function getRebuildBoards(settings) {
   var fileSizeDelta = generalSettings.maxFileSizeMB !== settings.maxFileSizeMB;
   var globalCChanged = generalSettings.forceCaptcha ^ settings.forceCaptcha;
   var fileCChanged = generalSettings.maxFiles !== settings.maxFiles;
+  var catalogPostingChanged = generalSettings.disableCatalogPosting
+      ^ settings.disableCatalogPosting;
+  var mLengthChanged = generalSettings.messageLength !== settings.messageLength;
+
+  rebuildBoards = rebuildBoards || catalogPostingChanged || mLengthChanged;
 
   return fileCChanged || rebuildBoards || fileSizeDelta || globalCChanged;
 
@@ -211,10 +216,12 @@ function prepareSettingsForChangeCheck(settings, callback) {
   var defaultToNull = [ 'siteTitle', 'globalLatestImages', 'languagePackPath',
       'defaultAnonymousName', 'defaultBanMessage', 'disableTopBoards',
       'allowBoardCustomJs', 'topBoardsCount', 'globalLatestPosts',
-      'forceCaptcha', 'overboard', 'frontPageStats', 'disableAccountCreation' ];
+      'forceCaptcha', 'overboard', 'frontPageStats', 'disableAccountCreation',
+      'disableCatalogPosting' ];
 
   // these ones default to the default values
-  var defaultToDefault = [ 'pageSize', 'maxFileSizeMB', 'maxFiles', 'fePath' ];
+  var defaultToDefault = [ 'pageSize', 'maxFileSizeMB', 'maxFiles', 'fePath',
+      'messageLength' ];
 
   var defaults = exports.getDefaultSettings();
 

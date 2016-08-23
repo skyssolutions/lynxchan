@@ -1076,6 +1076,10 @@ TEM_ID::24
 catalogPage: template for board's catalogs.
 
 Elements:
+postingForm:
+    use: might be removed.
+    description: element removed when the site disables thread creation from catalogs.
+
 divThreads:
     use: have children appended to it.
     description: holds the threads in the board.
@@ -1784,6 +1788,10 @@ checkboxFrontPageStats:
 checkboxSsl:
     use: might be turned on.
     description: indicates the server has ssl enabled.
+
+checkboxDisableCatalogPosting:
+  use: might be turned on.
+  description: indicates if thread creation from the catalog is disabled.
 
 checkboxMediaThumb:
     use: might be turned on.
