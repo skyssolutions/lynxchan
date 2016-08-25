@@ -351,6 +351,10 @@ exports.getParametersArray = function() {
     element : 'fieldMessageLength'
   }, {
     type : 'number',
+    setting : 'ipExpirationDays',
+    element : 'fieldIpExpiration'
+  }, {
+    type : 'number',
     setting : 'inactivityThreshold',
     element : 'fieldInactivityThreshold'
   }, {

@@ -5,6 +5,7 @@ var kernel = require('./kernel');
 var settingsHandler = require('./settingsHandler');
 var settings = settingsHandler.getGeneralSettings();
 var verbose = settings.verbose;
+var ipExpiration = settings.ipExpirationDays;
 var tempDirectory = settings.tempDirectory;
 var captchaExpiration = settings.captchaExpiration;
 var debug = kernel.debug();
@@ -13,6 +14,8 @@ var db = require('./db');
 var delOps = require('./engine/deletionOps').miscDeletions;
 var boards = db.boards();
 var stats = db.stats();
+var threads = db.threads();
+var posts = db.posts();
 var uniqueIps = db.uniqueIps();
 var files = db.files();
 var users = db.users();
@@ -25,6 +28,7 @@ exports.reload = function() {
 
   settings = settingsHandler.getGeneralSettings();
 
+  ipExpiration = settings.ipExpirationDays;
   verbose = settings.verbose;
   tempDirectory = settings.tempDirectory;
   captchaExpiration = settings.captchaExpiration;
@@ -233,6 +237,64 @@ function getStats() {
 
 }
 
+function clearIps() {
+
+  var now = new Date();
+
+  now.setUTCHours(now.getUTCHours() - ipExpiration);
+
+  threads.updateMany({
+    ip : {
+      $exists : true
+    },
+    creation : {
+      $lt : now
+    }
+  }, {
+    $unset : {
+      ip : 1
+    }
+  }, function clearedThreadIps(error) {
+
+    if (error) {
+      if (debug) {
+        throw error;
+      }
+
+      console.log(error);
+    } else {
+
+      // style exception, too simple
+      posts.updateMany({
+        ip : {
+          $exists : true
+        },
+        creation : {
+          $lt : now
+        }
+      }, {
+        $unset : {
+          ip : 1
+        }
+      }, function clearedThreadIps(error) {
+
+        if (error) {
+          if (debug) {
+            throw error;
+          }
+
+          console.log(error);
+        }
+
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+}
+
 function boardsStats() {
 
   var tickTime = new Date();
@@ -247,6 +309,10 @@ function boardsStats() {
   setTimeout(function() {
 
     getStats();
+
+    if (ipExpiration >= 1) {
+      clearIps();
+    }
 
   }, tickTime.getTime() - current);
 }

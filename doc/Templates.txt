@@ -1636,6 +1636,9 @@ TEM_ID::50
 globalSettingsPage: page used to change global settings.
 
 Elements:
+fieldIpExpiration:
+    use: have it's value manipulated.
+    description: field that displays how many days to wait before removing a posting's ip.
 
 fieldSpamIpsSource:
     use: have it's value manipulated.
