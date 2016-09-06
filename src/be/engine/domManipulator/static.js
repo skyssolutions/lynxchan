@@ -3,6 +3,7 @@
 // handles static pages. Note: thread pages can also be output as a dynamic
 // page by form/mod.js
 
+var individualCaches;
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
 var logger = require('../../logger');
@@ -25,6 +26,7 @@ var availableLogTypes;
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  individualCaches = settings.individualCaches;
   disableCatalogPosting = settings.disableCatalogPosting;
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
@@ -602,13 +604,16 @@ exports.getPreviewCellDocument = function(postingData) {
   // Because of how threads are not displayed the same way on previews,
   // its not possible to either use their cache on previews or
   // to store the generated HTML from here.
-  if (!postingData[cacheField] || postingData.postId === postingData.threadId) {
+  var notUseCache = !individualCaches || !postingData[cacheField];
+  notUseCache = notUseCache || postingData.postId === postingData.threadId;
+
+  if (notUseCache) {
     innerCell.innerHTML = templateHandler.postCell;
 
     common.setPostInnerElements(document, postingData.boardUri,
         postingData.threadId, postingData, innerCell, true);
 
-    if (postingData.postId !== postingData.threadId) {
+    if (postingData.postId !== postingData.threadId && individualCaches) {
       common.saveCache(cacheField, innerCell, postsCollection,
           postingData.boardUri, 'postId', postingData.postId);
     }

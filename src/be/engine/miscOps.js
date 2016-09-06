@@ -536,6 +536,10 @@ exports.getParametersArray = function() {
     element : 'checkboxFrontPageStats'
   }, {
     type : 'boolean',
+    setting : 'individualCaches',
+    element : 'checkBoxIndividualCaches'
+  }, {
+    type : 'boolean',
     setting : 'disableCatalogPosting',
     element : 'checkboxDisableCatalogPosting'
   }, {

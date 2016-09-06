@@ -530,6 +530,12 @@ exports.removeFoundContent = function(userData, board, parameters, cb,
     }, {
       $set : {
         files : []
+      },
+      $unset : {
+        innerCache : 1,
+        outerCache : 1,
+        clearCache : 1,
+        hashedCache : 1
       }
     }, function removedThreadFiles(error) {
       if (error) {
@@ -545,6 +551,12 @@ exports.removeFoundContent = function(userData, board, parameters, cb,
         }, {
           $set : {
             files : []
+          },
+          $unset : {
+            innerCache : 1,
+            outerCache : 1,
+            clearCache : 1,
+            hashedCache : 1
           }
         }, function removedPostFiles(error) {
           if (error) {

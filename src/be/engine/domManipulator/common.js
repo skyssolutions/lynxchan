@@ -5,6 +5,7 @@
 var allowedJs;
 var forceCaptcha;
 var lang;
+var individualCaches;
 var db = require('../../db');
 var threadsCollection = db.threads();
 var postsCollection = db.posts();
@@ -31,6 +32,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  individualCaches = settings.individualCaches;
   clearIpRole = settings.clearIpMinRole;
   messageLength = settings.messageLength;
   maxAllowedFiles = settings.maxFiles;
@@ -450,14 +452,16 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
 
   var cacheField = exports.getCacheField(innerPage, modding, userRole);
 
-  if (!thread[cacheField]) {
+  if (!thread[cacheField] || !individualCaches) {
     threadCell.innerHTML = templateHandler.opCell;
 
     exports.setThreadContent(thread, threadCell, posts, innerPage, boardUri,
         modding, userRole, document, boardData);
 
-    exports.saveCache(cacheField, threadCell, threadsCollection, boardUri,
-        'threadId', thread.threadId);
+    if (individualCaches) {
+      exports.saveCache(cacheField, threadCell, threadsCollection, boardUri,
+          'threadId', thread.threadId);
+    }
 
   } else {
     threadCell.innerHTML = thread[cacheField];
@@ -615,31 +619,41 @@ exports.saveCache = function(cacheField, cell, collection, boardUri,
 
 };
 
+exports.getPostCellBase = function(document, boardUri, post) {
+
+  var postCell = document.createElement('div');
+  postCell.setAttribute('class', 'postCell');
+  postCell.setAttribute('data-boarduri', boardUri);
+  postCell.id = post.postId;
+
+  if (post.files && post.files.length > 1) {
+    postCell.className += ' multipleUploads';
+  }
+
+  return postCell;
+
+};
+
 exports.addPosts = function(document, posts, boardUri, threadId, modding,
     divPosts, boardData, userRole, innerPage) {
 
   for (var i = 0; i < posts.length; i++) {
-    var postCell = document.createElement('div');
-    postCell.setAttribute('class', 'postCell');
-    postCell.setAttribute('data-boarduri', boardUri);
-
     var post = posts[i];
-    if (post.files && post.files.length > 1) {
-      postCell.className += ' multipleUploads';
-    }
 
-    postCell.id = post.postId;
+    var postCell = exports.getPostCellBase(document, boardUri, post);
 
     var cacheField = exports.getCacheField(innerPage, modding, userRole);
 
-    if (!post[cacheField]) {
+    if (!post[cacheField] || !individualCaches) {
       postCell.innerHTML = templateHandler.postCell;
 
       exports.setPostInnerElements(document, boardUri, threadId, post,
           postCell, false, modding, boardData, userRole, innerPage);
 
-      exports.saveCache(cacheField, postCell, postsCollection, boardUri,
-          'postId', post.postId);
+      if (individualCaches) {
+        exports.saveCache(cacheField, postCell, postsCollection, boardUri,
+            'postId', post.postId);
+      }
 
     } else {
       postCell.innerHTML = post[cacheField];

@@ -1800,6 +1800,10 @@ checkboxMediaThumb:
     use: might be turned on.
     description: indicates the server is generating thumbnails for audio and video files.
 
+checkBoxIndividualCaches:
+    use: might be turned on.
+    description: indicates that individual caches are being used for postings.
+
 checkboxDisableSpamCheck:
     use: might be turned on.
     description: indicates if the check against spammer ips is disabled.

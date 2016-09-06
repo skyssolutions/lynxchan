@@ -59,6 +59,12 @@ exports.getOperations = function(threadOps, postOps, filesToDelete,
           $set : {
             files : exports.getAdaptedFileArray(board, thread.files,
                 filesToDelete)
+          },
+          $unset : {
+            innerCache : 1,
+            outerCache : 1,
+            clearCache : 1,
+            hashedCache : 1
           }
         }
       }
@@ -79,6 +85,12 @@ exports.getOperations = function(threadOps, postOps, filesToDelete,
           $set : {
             files : exports.getAdaptedFileArray(board, post.files,
                 filesToDelete)
+          },
+          $unset : {
+            innerCache : 1,
+            outerCache : 1,
+            clearCache : 1,
+            hashedCache : 1
           }
         }
       }

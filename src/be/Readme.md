@@ -151,6 +151,7 @@ Settings files that goes into the settings directory:
 * `disableSpamCheck`(Boolean): indicates if the spam check should be skipped. Meant to be used on emergencies where its not possible at all to obtain the spam ip list.
 * `disableCatalogPosting`(Boolean): removes the thread creation form from the board`s catalogs.
 * `ipExpirationDays`(Number): amount of days to wait before removing the ip from postings counting from it's date of creation. Null or any value below 1 means that ips should never be removed. The schedule that clears the ips is run hourly.
+* `individualCaches`(Boolean): enables individual HTML caches for postings. Keep this in mind when working on the front-end, for nothing will remove this cache unless the actual posting is edited or all caches are manually deleted when this setting is selected.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.
