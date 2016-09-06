@@ -3,6 +3,11 @@
 // Handles the reading of terminal arguments
 
 var informedArguments = {
+  clearCache : {
+    short : '-cc',
+    long : '--clear-posting-cache',
+    type : 'boolean'
+  },
   debug : {
     short : '-d',
     long : '--debug',

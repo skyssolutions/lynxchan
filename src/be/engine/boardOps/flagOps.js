@@ -134,7 +134,11 @@ exports.cleanFlagFromPostings = function(flagUrl, boardUri, callback) {
   }, {
     $unset : {
       flag : 1,
-      flagName : 1
+      flagName : 1,
+      innerCache : 1,
+      outerCache : 1,
+      clearCache : 1,
+      hashedCache : 1
     }
   }, function cleanedThreads() {
 
@@ -145,7 +149,11 @@ exports.cleanFlagFromPostings = function(flagUrl, boardUri, callback) {
     }, {
       $unset : {
         flag : 1,
-        flagName : 1
+        flagName : 1,
+        innerCache : 1,
+        outerCache : 1,
+        clearCache : 1,
+        hashedCache : 1
       }
     }, function cleanedPosts() {
       process.send({

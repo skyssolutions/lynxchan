@@ -121,6 +121,12 @@ exports.setNewThreadSettings = function(parameters, thread, callback) {
       pinned : parameters.pin,
       cyclic : parameters.cyclic,
       autoSage : thread.autoSage && !parameters.cyclic
+    },
+    $unset : {
+      innerCache : 1,
+      outerCache : 1,
+      clearCache : 1,
+      hashedCache : 1
     }
   }, function updatedThread(error) {
 
@@ -261,6 +267,12 @@ exports.recordEdit = function(parameters, login, callback) {
       hash : parameters.hash,
       markdown : parameters.markdown,
       message : parameters.message
+    },
+    $unset : {
+      innerCache : 1,
+      outerCache : 1,
+      clearCache : 1,
+      hashedCache : 1
     }
   }, function savedEdit(error, posting) {
     if (error) {

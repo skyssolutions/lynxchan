@@ -193,15 +193,60 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
   }
 }
 
+exports.clearPostingCaches = function(callback) {
+
+  require('./db').threads().updateMany({}, {
+    $unset : {
+      innerCache : 1,
+      outerCache : 1,
+      clearCache : 1,
+      hashedCache : 1
+    }
+  }, function clearedThreads(error) {
+
+    if (error) {
+      console.log(error);
+    }
+
+    // style exception, too simple
+    require('./db').posts().updateMany({}, {
+      $unset : {
+        innerCache : 1,
+        outerCache : 1,
+        clearCache : 1,
+        hashedCache : 1
+      }
+    }, function clearedPosts(error) {
+
+      if (error) {
+        console.log(error);
+      }
+
+      if (callback) {
+        callback();
+      }
+
+    });
+    // style exception, too simple
+
+  });
+
+};
+
 function checkSettingsChanges(settings, callback) {
   var reloadsToMake = [];
 
   if (generalSettings.fePath !== settings.fePath) {
-    reloadsToMake.push({
-      globalRebuild : true
+
+    exports.clearPostingCaches(function clearedIndividualCaches() {
+
+      reloadsToMake.push({
+        globalRebuild : true
+      });
+
+      broadCastReload(reloadsToMake, callback, true);
     });
 
-    broadCastReload(reloadsToMake, callback, true);
     return;
   }
 

@@ -5,9 +5,13 @@
 var allowedJs;
 var forceCaptcha;
 var lang;
+var db = require('../../db');
+var threadsCollection = db.threads();
+var postsCollection = db.posts();
 var templateHandler;
 var miscOps;
 var maxAllowedFiles;
+var clearIpRole;
 var minClearIpRole;
 var maxFileSizeMB;
 var messageLength;
@@ -27,6 +31,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  clearIpRole = settings.clearIpMinRole;
   messageLength = settings.messageLength;
   maxAllowedFiles = settings.maxFiles;
   minClearIpRole = settings.clearIpMinRole;
@@ -404,7 +409,8 @@ exports.setOmittedInformation = function(thread, threadCell, posts, innerPage) {
 exports.getThreadCellBase = function(document, thread) {
 
   var threadCell = document.createElement('div');
-  threadCell.innerHTML = templateHandler.opCell;
+
+  threadCell.setAttribute('data-boarduri', thread.boardUri);
   threadCell.setAttribute('class', 'opCell');
   threadCell.id = thread.threadId;
   if (thread.files && thread.files.length > 1) {
@@ -414,13 +420,8 @@ exports.getThreadCellBase = function(document, thread) {
   return threadCell;
 };
 
-exports.addThread = function(document, thread, posts, innerPage, modding,
-    boardData, userRole) {
-
-  var boardUri = thread.boardUri;
-
-  var threadCell = exports.getThreadCellBase(document, thread);
-  threadCell.setAttribute('data-boarduri', boardUri);
+exports.setThreadContent = function(thread, threadCell, posts, innerPage,
+    boardUri, modding, userRole, document, boardData) {
 
   exports.setOmittedInformation(thread, threadCell, posts, innerPage);
 
@@ -437,6 +438,30 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
 
   exports.setUploadCell(document, threadCell
       .getElementsByClassName('panelUploads')[0], thread.files, modding);
+
+};
+
+exports.addThread = function(document, thread, posts, innerPage, modding,
+    boardData, userRole) {
+
+  var boardUri = thread.boardUri;
+
+  var threadCell = exports.getThreadCellBase(document, thread);
+
+  var cacheField = exports.getCacheField(innerPage, modding, userRole);
+
+  if (!thread[cacheField]) {
+    threadCell.innerHTML = templateHandler.opCell;
+
+    exports.setThreadContent(thread, threadCell, posts, innerPage, boardUri,
+        modding, userRole, document, boardData);
+
+    exports.saveCache(cacheField, threadCell, threadsCollection, boardUri,
+        'threadId', thread.threadId);
+
+  } else {
+    threadCell.innerHTML = thread[cacheField];
+  }
 
   document.getElementById('divThreads').appendChild(threadCell);
 
@@ -557,12 +582,44 @@ exports.setPostInnerElements = function(document, boardUri, threadId, post,
       preview, modding);
 };
 
+exports.getCacheField = function(innerPage, modding, userRole) {
+
+  if (!innerPage) {
+    return 'outerCache';
+  } else if (!modding) {
+    return 'innerCache';
+  } else if (userRole <= clearIpRole) {
+    return 'clearCache';
+  } else {
+    return 'hashedCache';
+  }
+
+};
+
+exports.saveCache = function(cacheField, cell, collection, boardUri,
+    postingIdField, postingId) {
+
+  var updateBlock = {
+    $set : {}
+  };
+
+  updateBlock.$set[cacheField] = cell.innerHTML;
+
+  var queryBlock = {
+    boardUri : boardUri
+  };
+
+  queryBlock[postingIdField] = postingId;
+
+  collection.updateOne(queryBlock, updateBlock);
+
+};
+
 exports.addPosts = function(document, posts, boardUri, threadId, modding,
     divPosts, boardData, userRole, innerPage) {
 
   for (var i = 0; i < posts.length; i++) {
     var postCell = document.createElement('div');
-    postCell.innerHTML = templateHandler.postCell;
     postCell.setAttribute('class', 'postCell');
     postCell.setAttribute('data-boarduri', boardUri);
 
@@ -573,8 +630,20 @@ exports.addPosts = function(document, posts, boardUri, threadId, modding,
 
     postCell.id = post.postId;
 
-    exports.setPostInnerElements(document, boardUri, threadId, post, postCell,
-        false, modding, boardData, userRole, innerPage);
+    var cacheField = exports.getCacheField(innerPage, modding, userRole);
+
+    if (!post[cacheField]) {
+      postCell.innerHTML = templateHandler.postCell;
+
+      exports.setPostInnerElements(document, boardUri, threadId, post,
+          postCell, false, modding, boardData, userRole, innerPage);
+
+      exports.saveCache(cacheField, postCell, postsCollection, boardUri,
+          'postId', post.postId);
+
+    } else {
+      postCell.innerHTML = post[cacheField];
+    }
 
     divPosts.appendChild(postCell);
   }

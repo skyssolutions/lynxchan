@@ -344,6 +344,19 @@ exports.getBumpLimit = function(boardData) {
 
 };
 
+exports.setUpdateBlockForAutoSage = function(updateBlock) {
+
+  updateBlock.$set.autoSage = true;
+
+  updateBlock.$unset = {
+    innerCache : 1,
+    outerCache : 1,
+    clearCache : 1,
+    hashedCache : 1
+  };
+
+};
+
 exports.updateThread = function(boardData, parameters, postId, thread,
     callback, post) {
 
@@ -370,7 +383,7 @@ exports.updateThread = function(boardData, parameters, postId, thread,
         cleanPosts = true;
         bump = !saged;
       } else {
-        updateBlock.$set.autoSage = true;
+        exports.setUpdateBlockForAutoSage(updateBlock);
       }
 
     } else {

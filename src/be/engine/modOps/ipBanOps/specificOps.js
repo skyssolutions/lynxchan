@@ -203,6 +203,12 @@ exports.updateThreadsBanMessage = function(pages, parentThreads, userData,
   }, {
     $set : {
       banMessage : parameters.banMessage || defaultBanMessage
+    },
+    $unset : {
+      innerCache : 1,
+      outerCache : 1,
+      clearCache : 1,
+      hashedCache : 1
     }
   }, function setMessage(error) {
 
@@ -219,6 +225,12 @@ exports.updateThreadsBanMessage = function(pages, parentThreads, userData,
       }, {
         $set : {
           banMessage : parameters.banMessage || defaultBanMessage
+        },
+        $unset : {
+          innerCache : 1,
+          outerCache : 1,
+          clearCache : 1,
+          hashedCache : 1
         }
       }, function setMessage(error) {
         if (error) {

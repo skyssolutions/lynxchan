@@ -6,6 +6,7 @@
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
 var logger = require('../../logger');
+var postsCollection = require('../../db').posts();
 var accountCreationDisabled;
 var common;
 var templateHandler;
@@ -588,10 +589,42 @@ exports.setMetadata = function(metadata, postingData, path) {
 
 };
 
+exports.getPreviewCellDocument = function(postingData) {
+
+  var document = jsdom(templateHandler.previewPage);
+
+  var innerCell = document.createElement('div');
+  innerCell.innerHTML = templateHandler.postCell;
+  innerCell.setAttribute('class', 'postCell');
+
+  var cacheField = common.getCacheField(false);
+
+  // Because of how threads are not displayed the same way on previews,
+  // its not possible to either use their cache on previews or
+  // to store the generated HTML from here.
+  if (!postingData[cacheField] || postingData.postId === postingData.threadId) {
+    innerCell.innerHTML = templateHandler.postCell;
+
+    common.setPostInnerElements(document, postingData.boardUri,
+        postingData.threadId, postingData, innerCell, true);
+
+    if (postingData.postId !== postingData.threadId) {
+      common.saveCache(cacheField, innerCell, postsCollection,
+          postingData.boardUri, 'postId', postingData.postId);
+    }
+
+  } else {
+    innerCell.innerHTML = postingData[cacheField];
+  }
+
+  document.getElementById('panelContent').appendChild(innerCell);
+
+  return document;
+
+};
+
 exports.preview = function(postingData, callback) {
   try {
-
-    var document = jsdom(templateHandler.previewPage);
 
     var path = '/' + postingData.boardUri + '/preview/';
 
@@ -605,14 +638,7 @@ exports.preview = function(postingData, callback) {
 
     path += '.html';
 
-    var innerCell = document.createElement('div');
-    innerCell.innerHTML = templateHandler.postCell;
-    innerCell.setAttribute('class', 'postCell');
-
-    common.setPostInnerElements(document, postingData.boardUri,
-        postingData.threadId, postingData, innerCell, true);
-
-    document.getElementById('panelContent').appendChild(innerCell);
+    var document = exports.getPreviewCellDocument(postingData);
 
     if (postingData.postId === postingData.threadId) {
       delete postingData.postId;
