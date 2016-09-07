@@ -7,7 +7,9 @@ var individualCaches;
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
 var logger = require('../../logger');
-var postsCollection = require('../../db').posts();
+var db = require('../../db');
+var postsCollection = db.posts();
+var staffLogs = db.logs();
 var accountCreationDisabled;
 var common;
 var templateHandler;
@@ -771,6 +773,35 @@ exports.setLogEntry = function(logCell, log) {
 
 };
 
+exports.addLogEntry = function(logEntry, document, div) {
+
+  var logCell = document.createElement('div');
+  logCell.setAttribute('class', 'logCell');
+
+  if (!logEntry.cache || !individualCaches) {
+
+    logCell.innerHTML = templateHandler.logCell;
+
+    exports.setLogEntry(logCell, logEntry);
+
+    if (individualCaches) {
+      staffLogs.updateOne({
+        _id : logEntry._id
+      }, {
+        $set : {
+          cache : logCell.innerHTML
+        }
+      });
+    }
+
+  } else {
+    logCell.innerHTML = logEntry.cache;
+  }
+
+  div.appendChild(logCell);
+
+};
+
 exports.log = function(date, logs, callback) {
 
   try {
@@ -783,13 +814,7 @@ exports.log = function(date, logs, callback) {
     var div = document.getElementById('divLogs');
 
     for (var i = 0; i < logs.length; i++) {
-      var logCell = document.createElement('div');
-      logCell.innerHTML = templateHandler.logCell;
-      logCell.setAttribute('class', 'logCell');
-
-      exports.setLogEntry(logCell, logs[i]);
-
-      div.appendChild(logCell);
+      exports.addLogEntry(logs[i], document, div);
     }
 
     var path = '/.global/logs/';

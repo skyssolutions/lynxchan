@@ -689,11 +689,11 @@ function initSpamData() {
 
 }
 
-function checkPostingCacheDeletion() {
+function checkIndividualCacheDeletion() {
 
   if (informedArguments.clearCache.informed) {
 
-    settingsHandler.clearPostingCaches(function clearedCaches() {
+    settingsHandler.clearIndividualCaches(function clearedCaches() {
       initSpamData();
     });
 
@@ -713,12 +713,12 @@ function checkFilePruning() {
         console.log(error);
       }
 
-      checkPostingCacheDeletion();
+      checkIndividualCacheDeletion();
 
     });
 
   } else {
-    checkPostingCacheDeletion();
+    checkIndividualCacheDeletion();
   }
 
 }

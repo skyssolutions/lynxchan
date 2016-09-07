@@ -584,9 +584,9 @@ exports.log = function(date, callback, logData) {
       $in : toFind
     }
   }, {
-    _id : 0,
     type : 1,
     user : 1,
+    cache : 1,
     time : 1,
     boardUri : 1,
     description : 1,

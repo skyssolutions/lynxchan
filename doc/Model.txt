@@ -133,7 +133,7 @@ posts: stores posts.
         mime: mimetype of the file.
         width(Number): width of the file, if image or video.
         height(Number): height of the file, if image or video.
- 
+
 ----------------------------------------------------------------------------------------
 
 users: stores users.
@@ -235,7 +235,8 @@ staffLogs: stores log activity from staff.
     time(Date): date and time of when the event occurred.
     boardUri*: board related to the event.
     description: string describing the event.
-    global(Boolean): indicates if the event was global. 
+    global(Boolean): indicates if the event was global.
+    cache: individual HTML cache.
 
 ----------------------------------------------------------------------------------------
 
@@ -313,7 +314,7 @@ uniqueIpAggregation: stores daily unique ip's hashes on boards.
 ----------------------------------------------------------------------------------------
 
 uploadReferences: stores reference count to uploaded files.
-    references(Number): amount of references to this file.    
+    references(Number): amount of references to this file.
     identifier: combination of hash plus mime used to identify the file. Example: 'hash-mime'. The slash will be removed from the mime part.
     width(Number): pre-aggregated width of the file, if any.
     height(Number): pre-aggregated height of the file, if any.

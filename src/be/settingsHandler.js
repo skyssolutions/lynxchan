@@ -193,7 +193,27 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
   }
 }
 
-exports.clearPostingCaches = function(callback) {
+function clearStaffIndividualCaches(callback) {
+
+  require('./db').logs().updateMany({}, {
+    $unset : {
+      cache : 1
+    }
+  }, function clearedCaches(error) {
+
+    if (error) {
+      console.log(error);
+    }
+
+    if (callback) {
+      callback();
+    }
+
+  });
+
+}
+
+exports.clearIndividualCaches = function(callback) {
 
   require('./db').threads().updateMany({}, {
     $unset : {
@@ -222,9 +242,7 @@ exports.clearPostingCaches = function(callback) {
         console.log(error);
       }
 
-      if (callback) {
-        callback();
-      }
+      clearStaffIndividualCaches(callback);
 
     });
     // style exception, too simple
@@ -238,7 +256,7 @@ function checkSettingsChanges(settings, callback) {
 
   if (generalSettings.fePath !== settings.fePath) {
 
-    exports.clearPostingCaches(function clearedIndividualCaches() {
+    exports.clearIndividualCaches(function clearedIndividualCaches() {
 
       reloadsToMake.push({
         globalRebuild : true
