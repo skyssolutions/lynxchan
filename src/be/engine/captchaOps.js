@@ -10,7 +10,6 @@ var crypto = require('crypto');
 var verbose;
 var forceCaptcha;
 var captchaExpiration;
-var tempDirectory;
 var url = require('url');
 var miscOps;
 var lang;
@@ -45,7 +44,6 @@ exports.loadSettings = function() {
   verbose = settings.verbose;
   forceCaptcha = settings.forceCaptcha;
   captchaExpiration = settings.captchaExpiration;
-  tempDirectory = settings.tempDirectory;
 
 };
 
@@ -169,21 +167,16 @@ exports.distortImage = function() {
 
 };
 
-exports.transferToGfs = function(path, id, callback) {
+exports.transferToGfs = function(result, id, callback) {
 
   var expiration = new Date();
   expiration.setUTCMinutes(expiration.getUTCMinutes() + captchaExpiration);
 
-  gridFsHandler.writeFile(path, id + '.jpg', 'image/jpeg', {
-    type : 'captcha',
-    expiration : expiration
-  }, function saved(error) {
-
-    uploadHandler.removeFromDisk(path);
-
-    callback(error);
-
-  });
+  gridFsHandler.writeData(new Buffer(result, 'binary'), id + '.jpg',
+      'image/jpeg', {
+        type : 'captcha',
+        expiration : expiration
+      }, callback);
 
 };
 
@@ -221,8 +214,6 @@ exports.createMask = function(text) {
 
 exports.generateImage = function(text, captchaData, callback) {
 
-  var path = tempDirectory + '/' + captchaData._id + '.jpg';
-
   var command = exports.createMask();
 
   command += 'xc: -pointsize 70 -gravity center -draw ';
@@ -231,19 +222,22 @@ exports.generateImage = function(text, captchaData, callback) {
   command += 'mpr:original -negate -write mpr:negated +delete';
 
   command += ' mpr:negated mpr:original mpr:mask -composite ';
-  command += exports.distortImage() + ' -blur 0x1 ' + path;
+  command += exports.distortImage() + ' -blur 0x1 jpg:-';
 
-  exec(command, function generatedImage(error) {
+  exec(command, {
+    encoding : 'binary',
+    maxBuffer : Infinity
+  }, function generatedImage(error, result) {
 
     if (error) {
       callback(error);
     } else {
 
-      // style exceptiom, too simple
-      exports.transferToGfs(path, captchaData._id, function saved(error) {
+      // style exception, too simple
+      exports.transferToGfs(result, captchaData._id, function saved(error) {
         callback(error, captchaData);
       });
-      // style exceptiom, too simple
+      // style exception, too simple
 
     }
 

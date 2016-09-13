@@ -770,7 +770,7 @@ function checkDbVersions() {
   });
 }
 
-if (cluster.isMaster) {
+function bootDb() {
 
   db.init(function bootedDb(error) {
 
@@ -788,6 +788,30 @@ if (cluster.isMaster) {
     }
 
   });
+
+}
+
+if (cluster.isMaster) {
+
+  try {
+
+    fs.statSync(settingsHandler.getGeneralSettings().tempDirectory);
+
+    bootDb();
+
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      console.log('Creating temporary directory.');
+      require('child_process').exec(
+          'mkdir -p ' + settingsHandler.getGeneralSettings().tempDirectory,
+          function createdDirectory() {
+            bootDb();
+          });
+    } else {
+      throw error;
+    }
+
+  }
 
 } else {
 
