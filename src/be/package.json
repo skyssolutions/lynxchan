@@ -8,13 +8,13 @@
   },
   "version": "1.7.0",
   "dependencies": {
-    "mongodb": "2.2.9",
+    "mongodb": "2.2.10",
     "jsdom": "9.5.0",
     "nodemailer": "2.6.0",
     "multiparty": "4.1.2",
     "bcrypt": "0.8.7",
     "jsbn": "0.1.0",
-    "http-proxy": "1.14.0"
+    "http-proxy": "1.15.1"
   },
   "author": "Stephen Lynx",
   "license": "MIT"

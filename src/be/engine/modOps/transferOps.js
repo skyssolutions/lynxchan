@@ -4,7 +4,6 @@
 
 var mongo = require('mongodb');
 var spoilerPath = require('../../kernel').spoilerImage();
-var ObjectID = mongo.ObjectID;
 var logger = require('../../logger');
 var db = require('../../db');
 var boards = db.boards();
@@ -91,14 +90,16 @@ exports.revertThreadCount = function(revertOps, originalError, callback) {
 exports.revertThread = function(thread, originalError, callback) {
 
   threads.updateOne({
-    _id : new ObjectID(thread._id)
+    _id : thread._id
   }, {
-    boardUri : thread.boardUri,
-    threadId : thread.threadId,
-    files : thread.files,
-    flag : thread.flag,
-    latestPosts : thread.latestPosts,
-    flagName : thread.flagName
+    $set : {
+      boardUri : thread.boardUri,
+      threadId : thread.threadId,
+      files : thread.files,
+      flag : thread.flag,
+      latestPosts : thread.latestPosts,
+      flagName : thread.flagName
+    }
   }, function revertedThread(error) {
 
     if (error) {
@@ -202,10 +203,14 @@ exports.getFileUpdateOps = function(newPostIdRelation, originalThread,
     var newPath = exports.getNewPath(newBoard, file.filename.split('/')[3],
         originalThread, newThreadId, newPostId, file);
 
+    if (file.filename.indexOf('gz') === file.filename.length - 2) {
+      newPath += '.gz';
+    }
+
     updateOps.push({
       updateOne : {
         filter : {
-          _id : new ObjectID(file._id)
+          _id : file._id
         },
         update : {
           $set : {
@@ -294,7 +299,7 @@ exports.getPostsOps = function(newPostIdRelation, newBoard, foundPosts,
     revertOps.push({
       updateOne : {
         filter : {
-          _id : new ObjectID(post._id)
+          _id : post._id
         },
         update : {
           $set : {
@@ -316,7 +321,7 @@ exports.getPostsOps = function(newPostIdRelation, newBoard, foundPosts,
     updateOps.push({
       updateOne : {
         filter : {
-          _id : new ObjectID(post._id)
+          _id : post._id
         },
         update : {
           $set : {
@@ -328,7 +333,11 @@ exports.getPostsOps = function(newPostIdRelation, newBoard, foundPosts,
           },
           $unset : {
             flag : 1,
-            flagName : 1
+            flagName : 1,
+            innerCache : 1,
+            outerCache : 1,
+            clearCache : 1,
+            hashedCache : 1
           }
         }
       }
@@ -513,7 +522,7 @@ exports.updateThread = function(userData, parameters, originalThread, newBoard,
   }
 
   threads.updateOne({
-    _id : new ObjectID(originalThread._id)
+    _id : originalThread._id
   }, {
     $set : {
       boardUri : parameters.boardUriDestination,
@@ -524,7 +533,11 @@ exports.updateThread = function(userData, parameters, originalThread, newBoard,
     },
     $unset : {
       flag : 1,
-      flagName : 1
+      flagName : 1,
+      innerCache : 1,
+      outerCache : 1,
+      clearCache : 1,
+      hashedCache : 1
     }
   }, function updatedThread(error) {
     if (error) {
