@@ -543,18 +543,20 @@ exports.getParametersArray = function() {
     setting : 'disableCatalogPosting',
     element : 'checkboxDisableCatalogPosting'
   }, {
+    type : 'boolean',
+    setting : 'allowTorPosting',
+    element : 'checkboxAllowTorPosting'
+  }, {
+    type : 'boolean',
+    setting : 'allowTorFiles',
+    element : 'checkboxAllowTorFiles'
+  }, {
     // range
     type : 'range',
     limit : 2,
     options : lang.guiBypassModes,
     setting : 'bypassMode',
     element : 'comboBypassMode'
-  }, {
-    type : 'range',
-    limit : 2,
-    setting : 'torAccess',
-    element : 'comboTorAccess',
-    options : lang.guiTorLevels
   }, {
     type : 'range',
     setting : 'clearIpMinRole',

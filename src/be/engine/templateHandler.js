@@ -330,7 +330,7 @@ exports.getPageTests = function() {
             'fieldThumbSize', 'fieldMaxFilters', 'fieldMaxVolunteers',
             'fieldMaxBannerSize', 'fieldMaxFlagSize', 'fieldFloodInterval',
             'checkboxVerbose', 'checkboxDisable304', 'comboMinClearIpRole',
-            'comboTorAccess', 'checkboxMediaThumb', 'checkboxMaintenance',
+            'checkboxMediaThumb', 'checkboxMaintenance',
             'checkboxMultipleReports', 'fieldMaster', 'checkboxAutoPruneFiles',
             'checkboxDisableAccountCreation', 'comboBoardCreationRequirement',
             'fieldMaxTags', 'fieldGlobalLatestImages', 'fieldTorPort',
@@ -344,7 +344,8 @@ exports.getPageTests = function() {
             'checkboxSFWLatestImages', 'fieldInactivityThreshold',
             'fieldMediaPageSize', 'fieldMessageLength', 'checkboxFfmpegGifs',
             'fieldSpamIpsSource', 'checkboxSpamBypass',
-            'checkboxDisableSpamCheck', 'checkboxDisableCatalogPosting' ]
+            'checkboxDisableSpamCheck', 'checkboxDisableCatalogPosting',
+            'checkboxAllowTorPosting', 'checkboxAllowTorFiles' ]
       }, {
         template : 'hashBanPage',
         fields : [ 'hashBansPanel' ]

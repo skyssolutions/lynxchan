@@ -1836,10 +1836,6 @@ comboBoardCreationRequirement:
     use: have children appended to it.
     description: indicates the minimum global role required for people to create boards.
 
-comboTorAccess:
-    use: have children appended to it.
-    description: indicates the level of access TOR users have.
-
 comboMinClearIpRole:
     use: have children appended to it.
     description: indicates the minimum global role required so user are able to see clear ips from users.
@@ -1931,6 +1927,14 @@ fieldMessageLength:
 checkboxFfmpegGifs:
     use: might be turned on.
     description: checkbox that indicates if ffmpeg will be used to thumbnail animated gifs.
+
+checkboxAllowTorPosting:
+    use: might be turned on.
+    description: checkbox that indicates TOR users are allowed to post.
+
+checkboxAllowTorFiles:
+    use: might be turned on.
+    description: checkbox that indicates if TOR users are allowed to post files.
 
 ------------------------------------------------------------------------------------------
 

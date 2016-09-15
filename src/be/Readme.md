@@ -116,7 +116,6 @@ Settings files that goes into the settings directory:
 * `floodTimerSec`(Number): time in seconds required between postings from the same ip. Not applicable to TOR users. Defaults to 10.
 * `maxBoardTags`(Number): maximum amount of tags each board can have. Defaults to 5.
 * `disableFloodCheck`(Boolean): indicates if the flood checks should be disabled. This shouldn't affect performance at all, since it's meant to be used for benchmarking purposes.
-* `torAccess`(Number): access allowed for TOR users. 0 will block them completely, 1 will allow them to post without uploads, 2 will allow for them to post normally. Defaults to 0.
 * `clearIpMinRole`(Number): minimum global role required for users to see non-hashed ips from posts and perform global deletions from ip.
 * `thumbExtension`: forces all thumbs to use this extension. Keeps gifs from being animated as a side-effect, even if `gif` is used.
 * `allowGlobalBoardModeration`(Boolean): if true, global staff will be allowed to act as board moderators too.
@@ -152,6 +151,8 @@ Settings files that goes into the settings directory:
 * `disableCatalogPosting`(Boolean): removes the thread creation form from the board`s catalogs.
 * `ipExpirationDays`(Number): amount of days to wait before removing the ip from postings counting from it's date of creation. Null or any value below 1 means that ips should never be removed. The schedule that clears the ips is run hourly.
 * `individualCaches`(Boolean): enables individual HTML caches for postings and log entries. Keep this in mind when working on the front-end, for nothing will remove this cache unless the actual posting is edited or all caches are manually deleted when this setting is selected.
+* `allowTorPosting`(Boolean): allows TOR users to post. If bypass block is not disabled, they will still be able to post if they use it.
+* `allowTorFiles`(Boolean): when posting, allows TOR users to post files.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

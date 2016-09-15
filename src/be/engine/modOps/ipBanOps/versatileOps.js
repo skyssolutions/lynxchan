@@ -6,7 +6,7 @@ var db = require('../../../db');
 var bans = db.bans();
 var flood = db.flood();
 var boards = db.boards();
-var blockTor;
+var torAllowed;
 var bypassAllowed;
 var bypassMandatory;
 var disableFloodCheck;
@@ -24,7 +24,7 @@ exports.loadSettings = function() {
   var settings = require('../../../settingsHandler').getGeneralSettings();
 
   minClearIpRole = settings.clearIpMinRole;
-  blockTor = settings.torAccess < 1;
+  torAllowed = settings.allowTorPosting;
   bypassAllowed = settings.bypassMode > 0;
   bypassMandatory = settings.bypassMode > 1;
   disableFloodCheck = settings.disableFloodCheck;
@@ -209,9 +209,9 @@ exports.checkForBan = function(req, boardUri, callback) {
       if (req.bypassed) {
         callback();
       } else {
-        var errorToReturn = blockTor ? lang.errBlockedTor : null;
+        var errorToReturn = torAllowed ? null : lang.errBlockedTor;
 
-        callback(errorToReturn, null, bypassAllowed && blockTor);
+        callback(errorToReturn, null, bypassAllowed && !torAllowed);
       }
 
     } else {

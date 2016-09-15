@@ -501,7 +501,6 @@ exports.getDefaultSettings = function() {
     maxBannerSizeKB : 200,
     maxFlagSizeKB : 32,
     floodTimerSec : 10,
-    torAccess : 0,
     clearIpMinRole : 0,
     boardCreationRequirement : 4,
     overBoardThreadCount : 50,

@@ -5,7 +5,7 @@
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var logger = require('../../logger');
-var torBlocked;
+var allowTor;
 var db = require('../../db');
 var boards = db.boards();
 var hashBans = db.hashBans();
@@ -24,7 +24,7 @@ var hashBanArguments = [ {
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
-  torBlocked = settings.torAccess < 2;
+  allowTor = settings.allowTorFiles;
 };
 
 exports.loadDependencies = function() {
@@ -300,7 +300,7 @@ exports.checkForHashBans = function(parameters, req, callback) {
   if (!files.length) {
     callback();
     return;
-  } else if (torBlocked && req.isTor) {
+  } else if (!allowTor && req.isTor) {
 
     callback(lang.errTorFilesBlocked);
     return;
