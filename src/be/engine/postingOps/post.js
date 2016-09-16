@@ -6,6 +6,7 @@ var db = require('../../db');
 var boards = db.boards();
 var files = db.files();
 var posts = db.posts();
+var reports = db.reports();
 var threads = db.threads();
 var logger = require('../../logger');
 var debug = require('../../kernel').debug();
@@ -142,6 +143,26 @@ exports.cleanPostFiles = function(postsToDelete, boardUri, callback) {
 
 };
 
+exports.removeCleanedPostsReports = function(postsToDelete, boardUri, threadId,
+    postId, callback) {
+
+  reports.deleteMany({
+    boardUri : boardUri,
+    postId : {
+      $in : postsToDelete
+    }
+  }, function deletedReports(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.reaggregateThread(boardUri, threadId, postId, callback);
+    }
+
+  });
+
+};
+
 exports.removeCleanedPosts = function(postsToDelete, boardUri, threadId,
     postId, removedFileCount, callback) {
 
@@ -162,7 +183,8 @@ exports.removeCleanedPosts = function(postsToDelete, boardUri, threadId,
         if (error) {
           callback(error);
         } else {
-          exports.reaggregateThread(boardUri, threadId, postId, callback);
+          exports.removeCleanedPostsReports(postsToDelete, boardUri, threadId,
+              postId, callback);
         }
 
       });

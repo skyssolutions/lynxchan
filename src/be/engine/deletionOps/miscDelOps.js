@@ -50,17 +50,31 @@ exports.loadDependencies = function() {
 // Section 1: Thread cleanup {
 exports.removeThreads = function(boardUri, threadsToDelete, callback) {
 
-  threads.deleteMany({
+  var queryBlock = {
     boardUri : boardUri,
     threadId : {
       $in : threadsToDelete
     }
-  }, function removedThreads(error, result) {
+  };
+
+  threads.removeMany(queryBlock, function removedThreads(error, result) {
 
     if (error) {
       callback(error);
     } else {
-      boardOps.aggregateThreadCount(boardUri, callback);
+
+      // style exception, too simple
+      reports.removeMany(queryBlock, function removedReports(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          boardOps.aggregateThreadCount(boardUri, callback);
+        }
+
+      });
+      // style exception, too simple
+
     }
 
   });
@@ -435,6 +449,22 @@ exports.removeEarly404Files = function(results, callback) {
   });
 };
 
+exports.removeEarly404Reports = function(results, orArray, callback) {
+
+  reports.deleteMany({
+    $or : orArray
+  }, function removedReports(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.removeEarly404Files(results, callback);
+    }
+
+  });
+
+};
+
 exports.removeEarly404Posts = function(results, callback) {
 
   if (verbose) {
@@ -470,7 +500,7 @@ exports.removeEarly404Posts = function(results, callback) {
         if (error) {
           callback(error);
         } else {
-          exports.removeEarly404Files(results, callback);
+          exports.removeEarly404Reports(results, orArray, callback);
         }
       });
       // style exception, too simple

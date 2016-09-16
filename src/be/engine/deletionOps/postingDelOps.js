@@ -10,6 +10,7 @@ var globalLatestPosts = db.latestPosts();
 var globalLatestImages = db.latestImages();
 var boards = db.boards();
 var files = db.files();
+var reports = db.reports();
 var verbose;
 var globalLatestPostsCount;
 var globalLatestImagesCount;
@@ -253,10 +254,10 @@ exports.updateBoardAndThreads = function(board, parameters, cb, foundThreads,
 
 };
 
-exports.removeGlobalLatestImages = function(board, parameters, cb,
+exports.removeReportsAndGlobalLatestImages = function(board, parameters, cb,
     foundThreads, foundPosts, parentThreads) {
 
-  globalLatestImages.removeMany({
+  var matchBlock = {
     boardUri : board.boardUri,
     $or : [ {
       threadId : {
@@ -267,13 +268,34 @@ exports.removeGlobalLatestImages = function(board, parameters, cb,
         $in : foundPosts
       }
     } ]
-  }, function removedLatesImages(error) {
+  };
+
+  globalLatestImages.removeMany(matchBlock, function removedLatesImages(error) {
 
     if (error) {
       cb(error);
     } else {
-      exports.updateBoardAndThreads(board, parameters, cb, foundThreads,
-          foundPosts, parentThreads);
+
+      if (!parameters.deleteUploads) {
+
+        // style exception, too simple
+        reports.removeMany(matchBlock, function removedReports(error) {
+
+          if (error) {
+            cb(error);
+          } else {
+            exports.updateBoardAndThreads(board, parameters, cb, foundThreads,
+                foundPosts, parentThreads);
+          }
+
+        });
+        // style exception, too simple
+
+      } else {
+        exports.updateBoardAndThreads(board, parameters, cb, foundThreads,
+            foundPosts, parentThreads);
+      }
+
     }
 
   });
@@ -285,8 +307,8 @@ exports.removeContentFiles = function(board, parameters, cb, foundThreads,
 
   if (parameters.deleteUploads) {
 
-    exports.removeGlobalLatestImages(board, parameters, cb, foundThreads,
-        foundPosts, parentThreads);
+    exports.removeReportsAndGlobalLatestImages(board, parameters, cb,
+        foundThreads, foundPosts, parentThreads);
 
     return;
   }
@@ -324,8 +346,8 @@ exports.removeContentFiles = function(board, parameters, cb, foundThreads,
           cb(error);
         } else {
 
-          exports.removeGlobalLatestImages(board, parameters, cb, foundThreads,
-              foundPosts, parentThreads);
+          exports.removeReportsAndGlobalLatestImages(board, parameters, cb,
+              foundThreads, foundPosts, parentThreads);
 
         }
       });
