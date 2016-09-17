@@ -12,12 +12,15 @@ The version of each one is specified on the package.json file.
 
 A package.json file is included, so you can install all of them by just running `npm install` on this directory.
 
+# Individual HTML cache
+The engine will generate HTML caches for postings and log entries. These caches are for the whole cell containing the posting. Keep that in mind when developing, since it will be used unless the engine is running on debug or debug mode. You can flush them too, the command for doing so is in the list of arguments below.
+
 # Application usage
 `boot.js` is the main file, run it using Node.js to start the system. Keep in mind that if you ran `aux/setup.sh`, you can just run the `lynxchan` command or start the `lynxchan` service.
 It accepts the following arguments:
-* `--debug`, `-d`: for development. Will not cache static files and will reload any module besides the ones directly under the be directory and the front-end templates. It will also cause errors to crash and will clean any file in the temporary directory older than one minute every minute.
+* `--debug`, `-d`: for development. Will not cache static files, disable individual HTML caches and reload not only any module besides the ones directly under the be directory but also the front-end templates. It will also cause errors to crash and will clean any file in the temporary directory older than one minute every minute.
 * `--tor-debug`, `-td`: tor debug. Will cause any request to be marked as a if it were coming from a TOR exit node.
-* `--fe-debug`, `-fd`: front-end debug. Will not cache static files and will reload the front-end templates.
+* `--fe-debug`, `-fd`: front-end debug. Will not cache static files, disable individual HTML caches and reload the front-end templates.
 * `--reload`, `-r`: will rebuild all pages on boot.
 * `--reload-previews`, `-rp`: will rebuild previews on boot.
 * `--reload-login`, `-rl`: will rebuild login page on boot.
@@ -34,7 +37,7 @@ It accepts the following arguments:
 * `--reload-front-end`, `-rfe`: reloads the front-end files on a running instance, including cached static files. Will be ignored if maintenance mode is being changed on the same command or if no daemon was not informed.
 * `--prune-files`, `-pf`: prunes files that no longer contains references to them. Its advisable to turn on maintenance mode before using this command to avoid race conditions.
 * `--reload-graphs`, `-rg`: redraws daily graphs.
-* `--no-daemon`, `-nd`: will not start listening. For running commands while having a server running.
+* `--no-daemon`, `-nd`: will not start listening to HTTP requests. For running commands while having a server running.
 * `--create-account`, `-ca`: will create a new account. Require the use of the login, role and password parameters.
 * `--login`, `-l`: informs a login.
 * `--no-fork`, `-nf`: prevents the engine from spawning aditional processes to run commands. It will also make the engine stop after a rebuild error. Meant for internal usage, but hey, I`m not your dad or anything to tell you how to use your computer. :^)
@@ -46,7 +49,7 @@ It accepts the following arguments:
 * `--global-role`, `-gr`: informs a role from 0 to 4, 0 meaning root user, 1 admin, 2 global volunteer, 3 global janitor and 4 regular user.
 * `--set-role`, `-sr`: set a new role for an existing account. Will not be used if `-ca` is used. Takes a login and global role.
 * `--maintenance`, `-m`: indicates a new value for maintenance mode on a running instance. The value will be parsed as JSON, so informing `true` or `false` will work, so as informing numbers that evaluate to false or true. Will be ignored if no daemon was not informed.
-* `--clear-posting-cache`, `-cc`: clears individual cache of postings.
+* `--clear-individual-cache`, `-cc`: clears individual cache of postings and log entries.
 
 Arguments that are meant to inform values should be used in the following manner:
 `argument value`
@@ -150,7 +153,6 @@ Settings files that goes into the settings directory:
 * `disableSpamCheck`(Boolean): indicates if the spam check should be skipped. Meant to be used on emergencies where its not possible at all to obtain the spam ip list.
 * `disableCatalogPosting`(Boolean): removes the thread creation form from the board`s catalogs.
 * `ipExpirationDays`(Number): amount of days to wait before removing the ip from postings counting from it's date of creation. Null or any value below 1 means that ips should never be removed. The schedule that clears the ips is run hourly.
-* `individualCaches`(Boolean): enables individual HTML caches for postings and log entries. Keep this in mind when working on the front-end, for nothing will remove this cache unless the actual posting is edited or all caches are manually deleted when this setting is selected.
 * `allowTorPosting`(Boolean): allows TOR users to post. If bypass block is not disabled, they will still be able to post if they use it.
 * `allowTorFiles`(Boolean): when posting, allows TOR users to post files.
 

@@ -5,7 +5,7 @@
 var informedArguments = {
   clearCache : {
     short : '-cc',
-    long : '--clear-posting-cache',
+    long : '--clear-individual-cache',
     type : 'boolean'
   },
   debug : {

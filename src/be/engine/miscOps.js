@@ -9,6 +9,7 @@ var bans = db.bans();
 var crypto = require('crypto');
 var users = db.users();
 var reports = db.reports();
+var reportOps;
 var formOps;
 var CSP;
 var lang;
@@ -36,6 +37,7 @@ exports.htmlReplaceTable = {
 exports.loadDependencies = function() {
 
   formOps = require('./formOps');
+  reportOps = require('./modOps').report;
   lang = require('./langOps').languagePack();
 
 };
@@ -177,6 +179,25 @@ exports.getAppealedBans = function(users, reports, callback) {
 
 };
 
+exports.getReportsAssociations = function(userRole, foundUsers, foundReports,
+    callback) {
+
+  reportOps.associateContent(foundReports, function associatedContent(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      if (userRole < 3) {
+        exports.getAppealedBans(foundUsers, foundReports, callback);
+      } else {
+        callback(null, users, foundReports);
+      }
+    }
+
+  });
+
+};
+
 exports.getManagementData = function(userRole, userLogin, callback) {
 
   var globalStaff = userRole <= MAX_STAFF_ROLE;
@@ -201,43 +222,42 @@ exports.getManagementData = function(userRole, userLogin, callback) {
       globalRole : 1
     }).sort({
       login : 1
-    }).toArray(function gotUsers(error, users) {
+    }).toArray(
+        function gotUsers(error, foundUsers) {
 
-      if (error) {
-        callback(error);
-      } else {
-
-        // style exception, too simple
-        reports.find({
-          global : true,
-          closedBy : {
-            $exists : false
-          }
-        }, {
-          boardUri : 1,
-          reason : 1,
-          threadId : 1,
-          creation : 1,
-          postId : 1
-        }).sort({
-          creation : -1
-        }).toArray(function(gotReportserror, reports) {
           if (error) {
             callback(error);
           } else {
 
-            if (userRole < 3) {
-              exports.getAppealedBans(users, reports, callback);
-            } else {
-              callback(null, users, reports);
+            // style exception, too simple
+            reports.find({
+              global : true,
+              closedBy : {
+                $exists : false
+              }
+            }, {
+              boardUri : 1,
+              reason : 1,
+              threadId : 1,
+              creation : 1,
+              postId : 1
+            }).sort({
+              creation : -1
+            }).toArray(
+                function gotReports(error, foundReports) {
 
-            }
+                  if (error) {
+                    callback(error);
+                  } else {
+                    exports.getReportsAssociations(userRole, foundUsers,
+                        foundReports, callback);
+                  }
+
+                });
           }
-        });
-      }
-      // style exception, too simple
+          // style exception, too simple
 
-    });
+        });
   }
 };
 // } Section 1: Global management data
@@ -534,10 +554,6 @@ exports.getParametersArray = function() {
     type : 'boolean',
     setting : 'frontPageStats',
     element : 'checkboxFrontPageStats'
-  }, {
-    type : 'boolean',
-    setting : 'individualCaches',
-    element : 'checkBoxIndividualCaches'
   }, {
     type : 'boolean',
     setting : 'disableCatalogPosting',

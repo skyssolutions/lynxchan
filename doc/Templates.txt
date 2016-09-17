@@ -854,6 +854,10 @@ link:
     use: have it's href manipulated.
     description: link to the reported content.
 
+postingDiv:
+    use: have it`s innerHTML manipulated.
+    description: container used to display the reported posting.
+
 closureCheckbox:
     use: have it's name manipulated.
     description: checkbox that can be selected to close the report. The value for "name" will be "id-x", with x being the id of the report.
@@ -1799,10 +1803,6 @@ checkboxDisableCatalogPosting:
 checkboxMediaThumb:
     use: might be turned on.
     description: indicates the server is generating thumbnails for audio and video files.
-
-checkBoxIndividualCaches:
-    use: might be turned on.
-    description: indicates that individual caches are being used for postings.
 
 checkboxDisableSpamCheck:
     use: might be turned on.

@@ -13,6 +13,7 @@ var logger = require('../../logger');
 var multipleReports;
 var logOps;
 var miscOps;
+var generator;
 var moduleRoot;
 var ipBan;
 var common;
@@ -36,6 +37,7 @@ exports.loadDependencies = function() {
 
   logOps = require('../logOps');
   miscOps = require('../miscOps');
+  generator = require('../generator');
   moduleRoot = require('.');
   ipBan = moduleRoot.ipBan.versatile;
   common = moduleRoot.common;
@@ -359,3 +361,130 @@ exports.closeReports = function(userData, parameters, callback) {
 };
 // } Section 3: Close report
 
+// Section 4: Reported content association {
+exports.associateFoundThreads = function(reports, foundThreads) {
+
+  for (var i = 0; i < reports.length; i++) {
+
+    var report = reports[i];
+
+    for (var j = 0; j < foundThreads.length; j++) {
+
+      var thread = foundThreads[j];
+
+      var matches = thread.boardUri === report.boardUri;
+      matches = matches && thread.threadId === report.threadId;
+
+      if (matches && !report.postId) {
+
+        thread.postId = thread.threadId;
+        report.associatedPost = thread;
+        foundThreads.splice(foundThreads.indexOf(thread), 1);
+
+        break;
+      }
+
+    }
+
+  }
+
+};
+
+exports.associateFoundPosts = function(reports, foundPosts) {
+
+  for (var i = 0; i < reports.length; i++) {
+
+    var report = reports[i];
+
+    for (var j = 0; j < foundPosts.length; j++) {
+      var post = foundPosts[j];
+
+      var matches = report.boardUri === post.boardUri;
+      matches = matches && report.postId === post.postId;
+
+      if (matches) {
+        report.associatedPost = post;
+        foundPosts.splice(foundPosts.indexOf(post), 1);
+        break;
+      }
+
+    }
+
+  }
+
+};
+
+exports.associatePostsContent = function(reports, postsOrArray, callback) {
+
+  if (!postsOrArray.length) {
+    callback();
+
+    return;
+  }
+
+  posts.find({
+    $or : postsOrArray
+  }, generator.postProjection).toArray(function gotPosts(error, foundPosts) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      exports.associateFoundPosts(reports, foundPosts);
+
+      callback();
+
+    }
+
+  });
+
+};
+
+exports.associateContent = function(reports, callback) {
+
+  var postsOrArray = [];
+  var threadsOrArray = [];
+
+  for (var i = 0; i < reports.length; i++) {
+
+    var report = reports[i];
+
+    var matchObject = {
+      boardUri : report.boardUri,
+      postId : report.postId,
+      threadId : report.threadId
+    };
+
+    if (report.postId) {
+      postsOrArray.push(matchObject);
+    } else {
+      threadsOrArray.push(matchObject);
+    }
+
+  }
+
+  if (threadsOrArray.length) {
+
+    threads.find({
+      $or : threadsOrArray
+    }, generator.threadProjection).toArray(
+        function gotThreads(error, foundThreads) {
+
+          if (error) {
+            callback(error);
+          } else {
+
+            exports.associateFoundThreads(reports, foundThreads);
+
+            exports.associatePostsContent(reports, postsOrArray, callback);
+
+          }
+
+        });
+
+  } else {
+    exports.associatePostsContent(reports, postsOrArray, callback);
+  }
+
+};
+// } Section 4: Reported content association

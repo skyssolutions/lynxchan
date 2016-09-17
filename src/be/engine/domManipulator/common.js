@@ -1,11 +1,12 @@
 'use strict';
 
 // contains common operations to the multiple parts of the domManipulator module
-
+var kernel = require('../../kernel');
+var individualCaches = !kernel.debug();
+individualCaches = individualCaches && !kernel.feDebug();
 var allowedJs;
 var forceCaptcha;
 var lang;
-var individualCaches;
 var db = require('../../db');
 var threadsCollection = db.threads();
 var postsCollection = db.posts();
@@ -32,7 +33,6 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
-  individualCaches = settings.individualCaches;
   clearIpRole = settings.clearIpMinRole;
   messageLength = settings.messageLength;
   maxAllowedFiles = settings.maxFiles;
@@ -92,19 +92,6 @@ exports.setRoleSignature = function(postingCell, posting) {
   }
 };
 
-exports.getReportLink = function(report) {
-  var link = '/' + report.boardUri + '/res/';
-  link += report.threadId + '.html#';
-
-  if (report.postId) {
-    link += report.postId;
-  } else {
-    link += report.threadId;
-  }
-
-  return link;
-};
-
 exports.setPostingIp = function(cell, postingData, boardData, userRole) {
 
   if (userRole <= minClearIpRole) {
@@ -159,35 +146,6 @@ exports.formatDateToDisplay = function(d, noTime) {
   return toReturn + ' (' + weekDay + ') ' + hour + ':' + minute + ':' + second;
 };
 // } Section 1: Date formatting functions
-
-exports.setReportList = function(document, reports) {
-
-  var reportDiv = document.getElementById('reportDiv');
-
-  for (var i = 0; i < reports.length; i++) {
-    var report = reports[i];
-
-    var cell = document.createElement('div');
-    cell.setAttribute('class', 'reportCell');
-
-    cell.innerHTML = templateHandler.reportCell;
-
-    if (report.reason) {
-      var reason = cell.getElementsByClassName('reasonLabel')[0];
-      reason.innerHTML = report.reason;
-    }
-
-    var checkbox = cell.getElementsByClassName('closureCheckbox')[0];
-    checkbox.setAttribute('name', 'report-' + report._id);
-
-    var reportLink = cell.getElementsByClassName('link')[0];
-    reportLink.setAttribute('href', exports.getReportLink(report));
-
-    reportDiv.appendChild(cell);
-
-  }
-
-};
 
 exports.setCustomCss = function(board, document) {
   var link = document.createElement('link');
@@ -925,3 +883,82 @@ exports.setHeader = function(document, board, boardData, flagData, thread) {
 
 };
 // } Section 4: Header
+
+// Setion 5: Open reports {
+exports.getReportLink = function(report) {
+
+  var link = '/mod.js?boardUri=' + report.boardUri + '&threadId=';
+  link += report.threadId + '#';
+
+  if (report.postId) {
+    link += report.postId;
+  } else {
+    link += report.threadId;
+  }
+
+  return link;
+
+};
+
+exports.setReportPosting = function(cell, posting, document) {
+
+  if (!posting) {
+    return;
+  }
+
+  var postingDiv = cell.getElementsByClassName('postingDiv')[0];
+
+  var cacheField = exports.getCacheField();
+
+  // Same cache rules as for the preview pages.
+  var notUseCache = !individualCaches || !posting[cacheField];
+  notUseCache = notUseCache || posting.postId === posting.threadId;
+
+  if (notUseCache) {
+    postingDiv.innerHTML = templateHandler.postCell;
+
+    exports.setPostInnerElements(document, posting.boardUri, posting.threadId,
+        posting, postingDiv, true);
+
+    if (posting.postId !== posting.threadId && individualCaches) {
+      exports.saveCache(cacheField, postingDiv, postsCollection,
+          posting.boardUri, 'postId', posting.postId);
+    }
+
+  } else {
+    postingDiv.innerHTML = posting[cacheField];
+  }
+
+};
+
+exports.setReportList = function(document, reports) {
+
+  var reportDiv = document.getElementById('reportDiv');
+
+  for (var i = 0; i < reports.length; i++) {
+    var report = reports[i];
+
+    var cell = document.createElement('div');
+    cell.setAttribute('class', 'reportCell');
+
+    cell.innerHTML = templateHandler.reportCell;
+
+    if (report.reason) {
+      var reason = cell.getElementsByClassName('reasonLabel')[0];
+      reason.innerHTML = report.reason;
+    }
+
+    var checkbox = cell.getElementsByClassName('closureCheckbox')[0];
+    checkbox.setAttribute('name', 'report-' + report._id);
+
+    var reportLink = cell.getElementsByClassName('link')[0];
+    reportLink.setAttribute('href', exports.getReportLink(report));
+
+    exports.setReportPosting(cell, report.associatedPost, document);
+
+    reportDiv.appendChild(cell);
+
+  }
+
+};
+// } Section 5: Open reports

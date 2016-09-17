@@ -14,6 +14,7 @@ var threads = db.threads();
 var captchaOps;
 var logOps;
 var postingOps;
+var reportOps;
 var miscOps;
 var modCommonOps;
 var lang;
@@ -70,6 +71,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   logOps = require('../logOps');
+  reportOps = require('../modOps').report;
   captchaOps = require('../captchaOps');
   postingOps = require('../postingOps').common;
   miscOps = require('../miscOps');
@@ -662,15 +664,29 @@ exports.getBoardReports = function(boardData, callback) {
     reason : 1
   }).sort({
     creation : -1
-  }).toArray(function(error, foundReports) {
+  }).toArray(
+      function(error, foundReports) {
 
-    if (error) {
-      callback(error);
-    } else {
-      exports.getAppealedBans(boardData, foundReports, callback);
-    }
+        if (error) {
+          callback(error);
+        } else {
 
-  });
+          // style exception, too simple
+          reportOps.associateContent(foundReports, function associatedContent(
+              error) {
+
+            if (error) {
+              callback(error);
+            } else {
+              exports.getAppealedBans(boardData, foundReports, callback);
+            }
+
+          });
+          // style exception, too simple
+
+        }
+
+      });
 
 };
 
