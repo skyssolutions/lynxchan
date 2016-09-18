@@ -125,6 +125,7 @@ exports.setNewThreadSettings = function(parameters, thread, callback) {
     $unset : {
       innerCache : 1,
       outerCache : 1,
+      previewCache : 1,
       clearCache : 1,
       hashedCache : 1
     }
@@ -271,6 +272,7 @@ exports.recordEdit = function(parameters, login, callback) {
     $unset : {
       innerCache : 1,
       outerCache : 1,
+      previewCache : 1,
       clearCache : 1,
       hashedCache : 1
     }

@@ -11,6 +11,7 @@ var serializer = require('jsdom').serializeDocument;
 var logger = require('../../logger');
 var db = require('../../db');
 var postsCollection = db.posts();
+var threadsCollection = db.threads();
 var staffLogs = db.logs();
 var accountCreationDisabled;
 var common;
@@ -601,23 +602,21 @@ exports.getPreviewCellDocument = function(postingData) {
   var innerCell = document.createElement('div');
   innerCell.setAttribute('class', 'postCell');
 
-  var cacheField = common.getCacheField();
+  var cacheField = common.getCacheField(true);
 
-  // Because of how threads are not displayed the same way on previews,
-  // its not possible to either use their cache on previews or
-  // to store the generated HTML from here.
-  var notUseCache = !individualCaches || !postingData[cacheField];
-  notUseCache = notUseCache || postingData.postId === postingData.threadId;
-
-  if (notUseCache) {
+  if (!individualCaches || !postingData[cacheField]) {
     innerCell.innerHTML = templateHandler.postCell;
 
     common.setPostInnerElements(document, postingData.boardUri,
         postingData.threadId, postingData, innerCell, true);
 
-    if (postingData.postId !== postingData.threadId && individualCaches) {
-      common.saveCache(cacheField, innerCell, postsCollection,
-          postingData.boardUri, 'postId', postingData.postId);
+    if (individualCaches) {
+
+      var isAThread = postingData.threadId === postingData.postId;
+
+      common.saveCache(cacheField, innerCell, isAThread ? threadsCollection
+          : postsCollection, postingData.boardUri, isAThread ? 'threadId'
+          : 'postId', postingData.postId);
     }
 
   } else {

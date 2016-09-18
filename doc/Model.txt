@@ -84,6 +84,7 @@ threads: stores board's threads.
     lastEditLogin: Login of the last user to edit the thread message.
     innerCache: html cache for the version on thread pages.
     outerCache: html cache for the version on board pages.
+    previewCache: html cache for preview.
     clearCache: html cache for the mod version with clear ips.
     hashedCache: html cache for the mod version with hashed ips.
     files(Array): pre-aggregated array of files uploaded with the thread. Each object contains the following fields:
@@ -122,6 +123,7 @@ posts: stores posts.
     lastEditLogin: Login of the last user to edit the thread message.
     innerCache: html cache for the version on thread pages.
     outerCache: html cache for the version on board pages.
+    previewCache: html cache for preview.
     clearCache: html cache for the mod version with clear ips.
     hashedCache: html cache for the mod version with hashed ips.
     files(Array): pre-aggregated array of files uploaded with the post. Each object contains the following fields:

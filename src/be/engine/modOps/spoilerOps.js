@@ -63,6 +63,7 @@ exports.getOperations = function(threadOps, postOps, filesToDelete,
           $unset : {
             innerCache : 1,
             outerCache : 1,
+            previewCache : 1,
             clearCache : 1,
             hashedCache : 1
           }
@@ -89,6 +90,7 @@ exports.getOperations = function(threadOps, postOps, filesToDelete,
           $unset : {
             innerCache : 1,
             outerCache : 1,
+            previewCache : 1,
             clearCache : 1,
             hashedCache : 1
           }

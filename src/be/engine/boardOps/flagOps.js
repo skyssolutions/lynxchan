@@ -137,6 +137,7 @@ exports.cleanFlagFromPostings = function(flagUrl, boardUri, callback) {
       flagName : 1,
       innerCache : 1,
       outerCache : 1,
+      previewCache : 1,
       clearCache : 1,
       hashedCache : 1
     }
@@ -152,6 +153,7 @@ exports.cleanFlagFromPostings = function(flagUrl, boardUri, callback) {
         flagName : 1,
         innerCache : 1,
         outerCache : 1,
+        previewCache : 1,
         clearCache : 1,
         hashedCache : 1
       }

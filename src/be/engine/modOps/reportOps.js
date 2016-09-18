@@ -13,6 +13,7 @@ var logger = require('../../logger');
 var multipleReports;
 var logOps;
 var miscOps;
+var delOps;
 var generator;
 var moduleRoot;
 var ipBan;
@@ -35,6 +36,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  delOps = require('../deletionOps').postingDeletions;
   logOps = require('../logOps');
   miscOps = require('../miscOps');
   generator = require('../generator');
@@ -208,7 +210,86 @@ exports.report = function(req, reportedContent, parameters, captchaId, cb) {
 // } Section 2: Create report
 
 // Section 3: Close report {
-exports.updateReports = function(foundReports, ids, userData, callback) {
+exports.logReportClosure = function(foundReports, userData, closureDate,
+    callback) {
+
+  var logs = [];
+
+  for (var i = 0; i < foundReports.length; i++) {
+
+    var report = foundReports[i];
+
+    var pieces = lang.logReportClosure;
+
+    var logMessage = pieces.startPiece.replace('{$login}', userData.login);
+
+    if (report.global) {
+      logMessage += pieces.globalPiece;
+    }
+
+    logMessage += pieces.midPiece;
+
+    if (report.postId) {
+      logMessage += pieces.postPiece.replace('{$post}', report.postId);
+    }
+
+    logMessage += pieces.finalPiece.replace('{$thread}', report.threadId)
+        .replace('{$board}', report.boardUri).replace('{$reason}',
+            report.reason || '');
+
+    logs.push({
+      user : userData.login,
+      global : report.global,
+      description : logMessage,
+      time : closureDate,
+      boardUri : report.boardUri,
+      type : 'reportClosure'
+    });
+
+  }
+
+  logOps.insertLog(logs, function insertedLog() {
+    callback(null, foundReports[0].global, foundReports[0].boardUri);
+  });
+
+};
+
+exports.deleteClosedContent = function(foundReports, userData, closureDate,
+    callback) {
+
+  var postsToDelete = {};
+  var threadsToDelete = {};
+
+  for (var i = 0; i < foundReports.length; i++) {
+
+    var report = foundReports[i];
+
+    var listToUse = report.postId ? postsToDelete : threadsToDelete;
+
+    var subListToUse = listToUse[report.boardUri] || [];
+
+    subListToUse.push(report.postId || report.threadId);
+
+    listToUse[report.boardUri] = subListToUse;
+
+  }
+
+  delOps.posting(userData, {}, threadsToDelete, postsToDelete,
+      function deleted(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.logReportClosure(foundReports, userData, closureDate,
+              callback);
+        }
+
+      });
+
+};
+
+exports.updateReports = function(deleteReportedContent, foundReports, ids,
+    userData, callback) {
 
   var closureDate = new Date();
 
@@ -221,53 +302,79 @@ exports.updateReports = function(foundReports, ids, userData, callback) {
       closedBy : userData.login,
       closing : closureDate
     }
-  }, function closedReports(error) {
-    if (error) {
-      callback(error);
-    } else {
+  },
+      function closedReports(error) {
+        if (error) {
+          callback(error);
+        } else {
 
-      var logs = [];
+          if (deleteReportedContent) {
+            exports.deleteClosedContent(foundReports, userData, closureDate,
+                callback);
+          } else {
+            exports.logReportClosure(foundReports, userData, closureDate,
+                callback);
+          }
 
-      for (var i = 0; i < foundReports.length; i++) {
-
-        var report = foundReports[i];
-
-        var pieces = lang.logReportClosure;
-
-        var logMessage = pieces.startPiece.replace('{$login}', userData.login);
-
-        if (report.global) {
-          logMessage += pieces.globalPiece;
         }
 
-        logMessage += pieces.midPiece;
-
-        if (report.postId) {
-          logMessage += pieces.postPiece.replace('{$post}', report.postId);
-        }
-
-        logMessage += pieces.finalPiece.replace('{$thread}', report.threadId)
-            .replace('{$board}', report.boardUri).replace('{$reason}',
-                report.reason || '');
-
-        logs.push({
-          user : userData.login,
-          global : report.global,
-          description : logMessage,
-          time : closureDate,
-          boardUri : report.boardUri,
-          type : 'reportClosure'
-        });
-
-      }
-
-      logOps.insertLog(logs, function insertedLog() {
-        callback(null, foundReports[0].global, foundReports[0].boardUri);
       });
+};
 
+exports.closeFoundReports = function(deleteContent, ids, userData,
+    foundReports, callback) {
+
+  var foundBoardsUris = [];
+
+  var isOnGlobalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+
+  // Get boards for non-global reports, check if reports have been
+  // already closed and global permissions
+  for (var i = 0; i < foundReports.length; i++) {
+    var report = foundReports[i];
+
+    var alreadyIncluded = foundBoardsUris.indexOf(report.boardUri) > -1;
+
+    if (report.closedBy) {
+      callback(lang.errReportAlreadyClosed);
+      return;
+    } else if (report.global && !isOnGlobalStaff) {
+      callback(lang.errDeniedGlobalReportManagement);
+      return;
+    } else if (!report.global && !alreadyIncluded) {
+      foundBoardsUris.push(report.boardUri);
     }
 
-  });
+  }
+
+  boards.find({
+    boardUri : {
+      $in : foundBoardsUris
+    }
+  }).toArray(
+      function gotBoards(error, foundBoards) {
+        if (error) {
+          callback(error);
+        } else if (foundBoards.length < foundBoardsUris.length) {
+          callback(lang.errBoardNotFound);
+        } else {
+
+          for (i = 0; i < foundBoards.length; i++) {
+
+            if (!common.isInBoardStaff(userData, foundBoards[i])) {
+              callback(lang.errDeniedBoardReportManagement);
+              return;
+            }
+
+          }
+
+          exports.updateReports(deleteContent, foundReports, ids, userData,
+              callback);
+
+        }
+
+      });
+
 };
 
 exports.closeReports = function(userData, parameters, callback) {
@@ -295,68 +402,19 @@ exports.closeReports = function(userData, parameters, callback) {
     _id : {
       $in : ids
     }
-  }).toArray(function gotReports(error, foundReports) {
+  }).toArray(
+      function gotReports(error, foundReports) {
 
-    if (error) {
-      callback(error);
-    } else if (foundReports.length < ids.length) {
-      callback(lang.errReportNotFound);
-    } else {
-
-      var foundBoardsUris = [];
-
-      var isOnGlobalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
-
-      // Get boards for non-global reports, check if reports have been already
-      // closed and global permissions
-      for (i = 0; i < foundReports.length; i++) {
-        var report = foundReports[i];
-
-        var alreadyIncluded = foundBoardsUris.indexOf(report.boardUri) > -1;
-
-        if (report.closedBy) {
-          callback(lang.errReportAlreadyClosed);
-          return;
-        } else if (report.global && !isOnGlobalStaff) {
-          callback(lang.errDeniedGlobalReportManagement);
-          return;
-        } else if (!report.global && !alreadyIncluded) {
-          foundBoardsUris.push(report.boardUri);
-        }
-
-      }
-
-      // style exception, too simple
-      boards.find({
-        boardUri : {
-          $in : foundBoardsUris
-        }
-      }).toArray(function gotBoards(error, foundBoards) {
         if (error) {
           callback(error);
-        } else if (foundBoards.length < foundBoardsUris.length) {
-          callback(lang.errBoardNotFound);
+        } else if (foundReports.length < ids.length) {
+          callback(lang.errReportNotFound);
         } else {
-
-          for (i = 0; i < foundBoards.length; i++) {
-
-            if (!common.isInBoardStaff(userData, foundBoards[i])) {
-              callback(lang.errDeniedBoardReportManagement);
-              return;
-            }
-
-          }
-
-          exports.updateReports(foundReports, ids, userData, callback);
-
+          exports.closeFoundReports(parameters.deleteContent, ids, userData,
+              foundReports, callback);
         }
 
       });
-      // style exception, too simple
-
-    }
-
-  });
 
 };
 // } Section 3: Close report

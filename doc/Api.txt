@@ -245,6 +245,7 @@ Description: closes reports. Requires authentication.
 
 Parameters:
     reports(Array): ids of the reports to be closed.
+    deleteContent(Boolean): if true, will delete the reported content after closing the reports.
 
 ------------------------------------------------------------------------------------------
 

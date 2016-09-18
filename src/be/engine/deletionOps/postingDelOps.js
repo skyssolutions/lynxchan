@@ -556,6 +556,7 @@ exports.removeFoundContent = function(userData, board, parameters, cb,
       $unset : {
         innerCache : 1,
         outerCache : 1,
+        previewCache : 1,
         clearCache : 1,
         hashedCache : 1
       }
@@ -577,6 +578,7 @@ exports.removeFoundContent = function(userData, board, parameters, cb,
           $unset : {
             innerCache : 1,
             outerCache : 1,
+            previewCache : 1,
             clearCache : 1,
             hashedCache : 1
           }

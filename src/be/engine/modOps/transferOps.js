@@ -336,6 +336,7 @@ exports.getPostsOps = function(newPostIdRelation, newBoard, foundPosts,
             flagName : 1,
             innerCache : 1,
             outerCache : 1,
+            previewCache : 1,
             clearCache : 1,
             hashedCache : 1
           }
@@ -536,6 +537,7 @@ exports.updateThread = function(userData, parameters, originalThread, newBoard,
       flagName : 1,
       innerCache : 1,
       outerCache : 1,
+      previewCache : 1,
       clearCache : 1,
       hashedCache : 1
     }

@@ -408,7 +408,7 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
 
   var threadCell = exports.getThreadCellBase(document, thread);
 
-  var cacheField = exports.getCacheField(innerPage, modding, userRole);
+  var cacheField = exports.getCacheField(false, innerPage, modding, userRole);
 
   if (!thread[cacheField] || !individualCaches) {
     threadCell.innerHTML = templateHandler.opCell;
@@ -544,9 +544,11 @@ exports.setPostInnerElements = function(document, boardUri, threadId, post,
       preview, modding);
 };
 
-exports.getCacheField = function(innerPage, modding, userRole) {
+exports.getCacheField = function(preview, innerPage, modding, userRole) {
 
-  if (!innerPage) {
+  if (preview) {
+    return 'previewCache';
+  } else if (!innerPage) {
     return 'outerCache';
   } else if (!modding) {
     return 'innerCache';
@@ -600,7 +602,7 @@ exports.addPosts = function(document, posts, boardUri, threadId, modding,
 
     var postCell = exports.getPostCellBase(document, boardUri, post);
 
-    var cacheField = exports.getCacheField(innerPage, modding, userRole);
+    var cacheField = exports.getCacheField(false, innerPage, modding, userRole);
 
     if (!post[cacheField] || !individualCaches) {
       postCell.innerHTML = templateHandler.postCell;
@@ -908,19 +910,15 @@ exports.setReportPosting = function(cell, posting, document) {
 
   var postingDiv = cell.getElementsByClassName('postingDiv')[0];
 
-  var cacheField = exports.getCacheField();
+  var cacheField = exports.getCacheField(true);
 
-  // Same cache rules as for the preview pages.
-  var notUseCache = !individualCaches || !posting[cacheField];
-  notUseCache = notUseCache || posting.postId === posting.threadId;
-
-  if (notUseCache) {
+  if (!individualCaches || !posting[cacheField]) {
     postingDiv.innerHTML = templateHandler.postCell;
 
     exports.setPostInnerElements(document, posting.boardUri, posting.threadId,
         posting, postingDiv, true);
 
-    if (posting.postId !== posting.threadId && individualCaches) {
+    if (individualCaches) {
       exports.saveCache(cacheField, postingDiv, postsCollection,
           posting.boardUri, 'postId', posting.postId);
     }

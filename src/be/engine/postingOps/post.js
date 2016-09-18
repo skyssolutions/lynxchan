@@ -373,6 +373,7 @@ exports.setUpdateBlockForAutoSage = function(updateBlock) {
   updateBlock.$unset = {
     innerCache : 1,
     outerCache : 1,
+    previewCache : 1,
     clearCache : 1,
     hashedCache : 1
   };
