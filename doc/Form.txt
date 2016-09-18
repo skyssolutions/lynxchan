@@ -275,7 +275,7 @@ Parameters:
     banMessage: message to be displayed in the banned content.
     action: action to be performed. 'ban', 'spoil', 'delete', 'ip-deletion' and 'report' may be used, case insensitive.
     global: if any value is passed, indicates the reports are global.
-    expiration: date able to be converted to a new Date of when the bans should expire. If not informed or an invalid date, defaults to 5 years from the current date.
+    duration: duration of the ban. Defaults to 5 years. See the back-end readme for details.
     captcha: captcha input. Used for banning and reporting. Ignored for bans when the user is part of the global staff.
     deleteUploads: if informed, only the uploads and not the posts and threads will be deleted.
 

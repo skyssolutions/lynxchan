@@ -32,6 +32,14 @@ var banArguments = [ {
   removeHTML : true
 } ];
 
+var regexRelation = {
+  FullYear : new RegExp(/(\d+)y/),
+  Month : new RegExp(/(\d+)M/),
+  Date : new RegExp(/(\d+)d/),
+  Hours : new RegExp(/(\d+)h/),
+  Minutes : new RegExp(/(\d+)m/)
+};
+
 exports.loadSettings = function() {
 
   var settings = require('../../../settingsHandler').getGeneralSettings();
@@ -475,19 +483,28 @@ exports.iterateBoards = function(foundBoards, userData, reportedObjects,
 
 exports.parseExpiration = function(parameters) {
 
-  var expiration = Date.parse(parameters.expiration || '');
+  var expiration = new Date();
 
-  if (isNaN(expiration)) {
+  var informedDuration = (parameters.duration || '').toString().trim();
 
-    expiration = new Date();
+  var foundDuration = false;
 
-    expiration.setUTCFullYear(expiration.getUTCFullYear() + 5);
+  for ( var key in regexRelation) {
 
-    parameters.expiration = expiration;
+    var durationMatch = informedDuration.match(regexRelation[key]);
 
-  } else {
-    parameters.expiration = new Date(expiration);
+    if (durationMatch) {
+      foundDuration = true;
+      expiration['set' + key](expiration['get' + key]() + (+durationMatch[1]));
+    }
+
   }
+
+  if (!foundDuration) {
+    expiration.setUTCFullYear(expiration.getUTCFullYear() + 5);
+  }
+
+  parameters.expiration = expiration;
 
 };
 

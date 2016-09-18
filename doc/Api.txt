@@ -274,7 +274,7 @@ Parameters:
     captcha: captcha input. Ignored if user is part of global staff.
     banType(Number): type of ban. 0 bans only the ips of the selected posts and requires a valid expiration. 1 creates range bans off the first half of the ips and 2 creates range bans off the first 3/4 of the ips.
     reason: reason of the report. 256 characters.
-    expiration: date able to be converted to a new Date of when the bans should expire. If not informed or an invalid date, defaults to 5 years from the current date.
+    duration: duration of the ban. Defaults to 5 years. See the back-end readme for details.
     global(Boolean): indicates if the bans are global.
     banMessage: message to be displayed in the banned content.
     postings(Array): array of content to be banned. Contains objects with the following fields:

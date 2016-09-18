@@ -66,10 +66,19 @@ The `engine` directory will hold all scripts that provide functionality but are 
 The `addons` directory are used to store the addons that can be loaded. After placing an addon on this directory, it should also be included in the `addons` general setting array.
 And finally, the `settings` directory hold the settings files.
 
-
 The following directories will be expected on the front-end directory:
 * `static`: static files to be accessed by using the `/.static/` path.
 * `templates`: will hold the templates, so only the files will have to be specified on the settings.
+
+# Ban duration
+The syntax for setting ban durations uses the following fields:
+* `y`: year.
+* `M`: month.
+* `d`: day.
+* `h`: hour.
+* `m`: minute.
+
+So if you write "2d 1h" it will create a 49 hour ban. The order of amounts and spacing doesn`t matter. The same could be "1h 2d".
 
 # Templates
 A file called `templateSettings.json` should be located on the front-end directory pointing the correct templates to be used, located on the templates directory. Inform only the name of the file. Refer to `doc/Templates.txt` for information on how to structure the templates.
