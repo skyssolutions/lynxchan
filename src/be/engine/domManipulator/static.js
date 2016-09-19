@@ -114,8 +114,8 @@ exports.setThreadHiddenIdentifiers = function(document, boardUri, threadData) {
 
 };
 
-exports.setModdingInformation = function(document, boardUri, boardData,
-    threadData, posts, callback) {
+exports.setModdingInformation = function(document, boardUri, threadData,
+    callback) {
 
   if (threadData.locked) {
     document.getElementById('checkboxLock').setAttribute('checked', true);
@@ -135,13 +135,6 @@ exports.setModdingInformation = function(document, boardUri, boardData,
       threadData.threadId);
 
   callback(null, serializer(document));
-
-};
-
-exports.hideModElements = function(document) {
-
-  common.removeElement(document.getElementById('divMod'));
-  common.removeElement(document.getElementById('divControls'));
 
 };
 
@@ -173,11 +166,13 @@ exports.setModElements = function(modding, document, boardUri, boardData,
 
   if (modding) {
 
-    exports.setModdingInformation(document, boardUri, boardData, threadData,
-        posts, callback);
+    exports.setModdingInformation(document, boardUri, threadData, callback);
 
   } else {
-    exports.hideModElements(document);
+
+    common.removeElement(document.getElementById('divMod'));
+    common.removeElement(document.getElementById('divControls'));
+
     var ownName = 'res/' + threadData.threadId + '.html';
 
     gridFs.writeData(serializer(document), '/' + boardUri + '/' + ownName,

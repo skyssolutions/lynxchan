@@ -1,6 +1,6 @@
 'use strict';
 
-var dbVersion = 10;
+var dbVersion = 11;
 
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
@@ -9,6 +9,7 @@ var mongo = require('mongodb');
 var cluster = require('cluster');
 var kernel = require('./kernel');
 var migrations;
+var newerMigrations;
 var settings = require('./settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var noDaemon = kernel.noDaemon();
@@ -123,6 +124,10 @@ function upgrade(version, callback) {
     migrations.deduplicateFiles(callback);
     break;
 
+  case 10:
+    newerMigrations.removeGhostReports(callback);
+    break;
+
   default:
     callback('Cannot upgrade from version ' + version);
   }
@@ -132,6 +137,7 @@ function upgrade(version, callback) {
 function iterateUpgrades(currentVersion, callback) {
 
   migrations = migrations || require('./dbMigrations');
+  newerMigrations = newerMigrations || require('./newerMigrations');
 
   if (verbose) {
     console.log('Iterating db version ' + currentVersion);
