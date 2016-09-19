@@ -595,40 +595,6 @@ exports.setMetadata = function(metadata, postingData, path) {
 
 };
 
-exports.getPreviewCellDocument = function(postingData) {
-
-  var document = jsdom(templateHandler.previewPage);
-
-  var innerCell = document.createElement('div');
-  innerCell.setAttribute('class', 'postCell');
-
-  var cacheField = common.getCacheField(true);
-
-  if (!individualCaches || !postingData[cacheField]) {
-    innerCell.innerHTML = templateHandler.postCell;
-
-    common.setPostInnerElements(document, postingData.boardUri,
-        postingData.threadId, postingData, innerCell, true);
-
-    if (individualCaches) {
-
-      var isAThread = postingData.threadId === postingData.postId;
-
-      common.saveCache(cacheField, innerCell, isAThread ? threadsCollection
-          : postsCollection, postingData.boardUri, isAThread ? 'threadId'
-          : 'postId', postingData.postId);
-    }
-
-  } else {
-    innerCell.innerHTML = postingData[cacheField];
-  }
-
-  document.getElementById('panelContent').appendChild(innerCell);
-
-  return document;
-
-};
-
 exports.preview = function(postingData, callback) {
   try {
 
@@ -644,7 +610,14 @@ exports.preview = function(postingData, callback) {
 
     path += '.html';
 
-    var document = exports.getPreviewCellDocument(postingData);
+    var document = jsdom(templateHandler.previewPage);
+
+    var innerCell = document.createElement('div');
+    innerCell.setAttribute('class', 'postCell');
+
+    common.setPostInnerElements(document, postingData, innerCell, true);
+
+    document.getElementById('panelContent').appendChild(innerCell);
 
     if (postingData.postId === postingData.threadId) {
       delete postingData.postId;

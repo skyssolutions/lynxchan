@@ -270,6 +270,8 @@ exports.getLatestPosts = function(boardUri, page, threadsArray, pageCount,
       _id : '$threadId',
       latestPosts : {
         $push : {
+          boardUri : '$boardUri',
+          threadId : '$threadId',
           postId : '$postId',
           banMessage : '$banMessage',
           flag : '$flag',

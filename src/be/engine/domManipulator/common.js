@@ -248,18 +248,19 @@ exports.setSharedHideableElements = function(posting, cell) {
 
 };
 
-exports.addMessage = function(innerPage, cell, markdown, boardUri, threadId,
-    postId) {
+exports.addMessage = function(innerPage, cell, post) {
+
+  var markdown = post.markdown;
 
   if (!innerPage && (markdown.match(/<br>/g) || []).length > maxPreviewBreaks) {
     markdown = markdown.split('<br>', maxPreviewBreaks + 1).join('<br>');
 
     var link = cell.getElementsByClassName('linkFullText')[0];
 
-    var href = '/' + boardUri + '/res/' + threadId + '.html';
+    var href = '/' + post.boardUri + '/res/' + post.threadId + '.html';
 
-    if (postId) {
-      href += '#' + (postId || threadId);
+    if (post.postId) {
+      href += '#' + (post.postId || post.threadId);
     }
 
     link.href = href;
@@ -427,9 +428,8 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
 
   document.getElementById('divThreads').appendChild(threadCell);
 
-  exports.addPosts(document, posts || [], boardUri, thread.threadId, modding,
-      threadCell.getElementsByClassName('divPosts')[0], boardData, userRole,
-      innerPage);
+  exports.addPosts(document, posts || [], modding, threadCell
+      .getElementsByClassName('divPosts')[0], boardData, userRole, innerPage);
 };
 
 // Section 2.1: Post content {
@@ -461,23 +461,23 @@ exports.setPostHideableElements = function(postCell, post) {
   exports.setSharedHideableElements(post, postCell);
 };
 
-exports.setPostLinks = function(postCell, post, boardUri, threadId, preview) {
+exports.setPostLinks = function(postCell, post, preview) {
 
   var link = postCell.getElementsByClassName('linkSelf')[0];
 
   var linkQuote = postCell.getElementsByClassName('linkQuote')[0];
   linkQuote.innerHTML = post.postId;
 
-  var linkStart = '/' + boardUri + '/res/' + threadId + '.html#';
+  var linkStart = '/' + post.boardUri + '/res/' + post.threadId + '.html#';
   link.href = linkStart + post.postId;
   linkQuote.href = linkStart + 'q' + post.postId;
 
-  var linkPreview = '/' + boardUri + '/preview/' + post.postId + '.html';
+  var linkPreview = '/' + post.boardUri + '/preview/' + post.postId + '.html';
   var deletionCheckbox = postCell.getElementsByClassName('deletionCheckBox')[0];
 
   if (!preview) {
 
-    var checkboxName = boardUri + '-' + threadId + '-' + post.postId;
+    var checkboxName = post.boardUri + '-' + post.threadId + '-' + post.postId;
     deletionCheckbox.setAttribute('name', checkboxName);
 
     postCell.getElementsByClassName('linkPreview')[0].href = linkPreview;
@@ -487,19 +487,19 @@ exports.setPostLinks = function(postCell, post, boardUri, threadId, preview) {
   }
 };
 
-exports.setPostComplexElements = function(postCell, post, boardUri, threadId,
-    document, preview, modding) {
+exports.setPostComplexElements = function(postCell, post, document, preview,
+    modding) {
 
   exports.setRoleSignature(postCell, post);
 
-  exports.setPostLinks(postCell, post, boardUri, threadId, preview);
+  exports.setPostLinks(postCell, post, preview);
 
   exports.setUploadCell(document, postCell
       .getElementsByClassName('panelUploads')[0], post.files, modding);
 };
 
-exports.setPostModElements = function(post, modding, postCell, boardUri,
-    threadId, boardData, userRole) {
+exports.setPostModElements = function(post, modding, postCell, boardData,
+    userRole) {
 
   if (modding && post.ip) {
     exports.setPostingIp(postCell, post, boardData, userRole);
@@ -508,7 +508,8 @@ exports.setPostModElements = function(post, modding, postCell, boardUri,
   }
 
   if (modding) {
-    var editLink = '/edit.js?boardUri=' + boardUri + '&postId=' + post.postId;
+    var editLink = '/edit.js?boardUri=' + boardData.boardUri + '&postId=';
+    editLink += post.postId;
 
     postCell.getElementsByClassName('linkEdit')[0].href = editLink;
   } else {
@@ -516,8 +517,7 @@ exports.setPostModElements = function(post, modding, postCell, boardUri,
   }
 };
 
-exports.setPostInnerElements = function(document, boardUri, threadId, post,
-    postCell, preview, modding, boardData, userRole, innerPage) {
+exports.setPostLinkName = function(postCell, post) {
 
   var linkName = postCell.getElementsByClassName('linkName')[0];
 
@@ -529,19 +529,43 @@ exports.setPostInnerElements = function(document, boardUri, threadId, post,
     linkName.className += ' noEmailName';
   }
 
+};
+
+exports.setPostInnerElements = function(document, post, postCell, preview,
+    modding, boardData, userRole, innerPage) {
+
+  var cacheField = exports.getCacheField(preview, innerPage, modding, userRole);
+
+  if (individualCaches && post[cacheField]) {
+
+    postCell.innerHTML = post[cacheField];
+    return;
+  }
+
+  postCell.innerHTML = templateHandler.postCell;
+
+  exports.setPostLinkName(postCell, post);
+
   var labelCreated = postCell.getElementsByClassName('labelCreated')[0];
   labelCreated.innerHTML = exports.formatDateToDisplay(post.creation);
 
-  exports.addMessage(innerPage, postCell, post.markdown, boardUri, threadId,
-      post.postId);
+  exports.addMessage(innerPage, postCell, post);
 
   exports.setPostHideableElements(postCell, post);
 
-  exports.setPostModElements(post, modding, postCell, boardUri, threadId,
-      boardData, userRole);
+  exports.setPostModElements(post, modding, postCell, boardData, userRole);
 
-  exports.setPostComplexElements(postCell, post, boardUri, threadId, document,
-      preview, modding);
+  exports.setPostComplexElements(postCell, post, document, preview, modding);
+
+  if (individualCaches) {
+
+    var isAThread = post.threadId === post.postId;
+
+    exports.saveCache(cacheField, postCell, isAThread ? threadsCollection
+        : postsCollection, post.boardUri, isAThread ? 'threadId' : 'postId',
+        post.postId);
+  }
+
 };
 
 exports.getCacheField = function(preview, innerPage, modding, userRole) {
@@ -579,11 +603,11 @@ exports.saveCache = function(cacheField, cell, collection, boardUri,
 
 };
 
-exports.getPostCellBase = function(document, boardUri, post) {
+exports.getPostCellBase = function(document, post) {
 
   var postCell = document.createElement('div');
   postCell.setAttribute('class', 'postCell');
-  postCell.setAttribute('data-boarduri', boardUri);
+  postCell.setAttribute('data-boarduri', post.boardUri);
   postCell.id = post.postId;
 
   if (post.files && post.files.length > 1) {
@@ -594,30 +618,16 @@ exports.getPostCellBase = function(document, boardUri, post) {
 
 };
 
-exports.addPosts = function(document, posts, boardUri, threadId, modding,
-    divPosts, boardData, userRole, innerPage) {
+exports.addPosts = function(document, posts, modding, divPosts, boardData,
+    userRole, innerPage) {
 
   for (var i = 0; i < posts.length; i++) {
     var post = posts[i];
 
-    var postCell = exports.getPostCellBase(document, boardUri, post);
+    var postCell = exports.getPostCellBase(document, post);
 
-    var cacheField = exports.getCacheField(false, innerPage, modding, userRole);
-
-    if (!post[cacheField] || !individualCaches) {
-      postCell.innerHTML = templateHandler.postCell;
-
-      exports.setPostInnerElements(document, boardUri, threadId, post,
-          postCell, false, modding, boardData, userRole, innerPage);
-
-      if (individualCaches) {
-        exports.saveCache(cacheField, postCell, postsCollection, boardUri,
-            'postId', post.postId);
-      }
-
-    } else {
-      postCell.innerHTML = post[cacheField];
-    }
+    exports.setPostInnerElements(document, post, postCell, false, modding,
+        boardData, userRole, innerPage);
 
     divPosts.appendChild(postCell);
   }
@@ -685,8 +695,7 @@ exports.setThreadSimpleElements = function(threadCell, thread, innerPage) {
   var labelCreation = threadCell.getElementsByClassName('labelCreated')[0];
   labelCreation.innerHTML = exports.formatDateToDisplay(thread.creation);
 
-  exports.addMessage(innerPage, threadCell, thread.markdown, thread.boardUri,
-      thread.threadId);
+  exports.addMessage(innerPage, threadCell, thread);
 
 };
 
@@ -902,30 +911,33 @@ exports.getReportLink = function(report) {
 
 };
 
-exports.setReportPosting = function(cell, posting, document) {
+exports.setReportCell = function(document, report) {
 
-  if (!posting) {
-    return;
+  var cell = document.createElement('div');
+  cell.setAttribute('class', 'reportCell');
+
+  cell.innerHTML = templateHandler.reportCell;
+
+  if (report.reason) {
+    var reason = cell.getElementsByClassName('reasonLabel')[0];
+    reason.innerHTML = report.reason;
   }
 
-  var postingDiv = cell.getElementsByClassName('postingDiv')[0];
+  var checkbox = cell.getElementsByClassName('closureCheckbox')[0];
+  checkbox.setAttribute('name', 'report-' + report._id);
 
-  var cacheField = exports.getCacheField(true);
+  var reportLink = cell.getElementsByClassName('link')[0];
+  reportLink.setAttribute('href', exports.getReportLink(report));
 
-  if (!individualCaches || !posting[cacheField]) {
-    postingDiv.innerHTML = templateHandler.postCell;
+  var posting = report.associatedPost;
 
-    exports.setPostInnerElements(document, posting.boardUri, posting.threadId,
-        posting, postingDiv, true);
+  if (posting) {
 
-    if (individualCaches) {
-      exports.saveCache(cacheField, postingDiv, postsCollection,
-          posting.boardUri, 'postId', posting.postId);
-    }
-
-  } else {
-    postingDiv.innerHTML = posting[cacheField];
+    exports.setPostInnerElements(document, posting, cell
+        .getElementsByClassName('postingDiv')[0], true);
   }
+
+  return cell;
 
 };
 
@@ -934,28 +946,7 @@ exports.setReportList = function(document, reports) {
   var reportDiv = document.getElementById('reportDiv');
 
   for (var i = 0; i < reports.length; i++) {
-    var report = reports[i];
-
-    var cell = document.createElement('div');
-    cell.setAttribute('class', 'reportCell');
-
-    cell.innerHTML = templateHandler.reportCell;
-
-    if (report.reason) {
-      var reason = cell.getElementsByClassName('reasonLabel')[0];
-      reason.innerHTML = report.reason;
-    }
-
-    var checkbox = cell.getElementsByClassName('closureCheckbox')[0];
-    checkbox.setAttribute('name', 'report-' + report._id);
-
-    var reportLink = cell.getElementsByClassName('link')[0];
-    reportLink.setAttribute('href', exports.getReportLink(report));
-
-    exports.setReportPosting(cell, report.associatedPost, document);
-
-    reportDiv.appendChild(cell);
-
+    reportDiv.appendChild(exports.setReportCell(document, reports[i]));
   }
 
 };
