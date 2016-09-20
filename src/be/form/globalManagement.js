@@ -8,7 +8,7 @@ var miscOps = require('../engine/miscOps');
 
 function getManagementData(userData, res, json, auth) {
 
-  miscOps.getManagementData(userData.globalRole, userData.login,
+  miscOps.getManagementData(userData.globalRole, userData.login, !json,
       function gotData(error, globalStaff, globalReports, appealedBans) {
         if (error) {
           formOps.outputError(error, 500, res);

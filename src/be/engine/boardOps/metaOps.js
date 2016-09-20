@@ -648,7 +648,7 @@ exports.getAppealedBans = function(boardData, reports, callback) {
 
 };
 
-exports.getBoardReports = function(boardData, callback) {
+exports.getBoardReports = function(boardData, associatePosts, callback) {
 
   reports.find({
     boardUri : boardData.boardUri,
@@ -671,18 +671,25 @@ exports.getBoardReports = function(boardData, callback) {
           callback(error);
         } else {
 
-          // style exception, too simple
-          reportOps.associateContent(foundReports, function associatedContent(
-              error) {
+          if (associatePosts) {
 
-            if (error) {
-              callback(error);
-            } else {
-              exports.getAppealedBans(boardData, foundReports, callback);
-            }
+            // style exception, too simple
+            reportOps.associateContent(foundReports,
+                function associatedContent(error) {
 
-          });
-          // style exception, too simple
+                  if (error) {
+                    callback(error);
+                  } else {
+                    exports.getAppealedBans(boardData, foundReports, callback);
+                  }
+
+                });
+            // style exception, too simple
+
+          } else {
+            exports.getAppealedBans(boardData, foundReports, callback);
+
+          }
 
         }
 
@@ -690,7 +697,8 @@ exports.getBoardReports = function(boardData, callback) {
 
 };
 
-exports.getBoardManagementData = function(userData, board, callback) {
+exports.getBoardManagementData = function(userData, board,
+    associateReportContent, callback) {
 
   boards.findOne({
     boardUri : board
@@ -721,7 +729,7 @@ exports.getBoardManagementData = function(userData, board, callback) {
     } else if (!boardData) {
       callback(lang.errBoardNotFound);
     } else if (modCommonOps.isInBoardStaff(userData, boardData)) {
-      exports.getBoardReports(boardData, callback);
+      exports.getBoardReports(boardData, associateReportContent, callback);
     } else {
       callback(lang.errDeniedManageBoard);
     }

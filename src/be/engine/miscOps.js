@@ -153,29 +153,33 @@ exports.getGlobalSettingsData = function(userData, callback) {
 };
 
 // Section 1: Global management data {
-exports.getAppealedBans = function(users, reports, callback) {
+exports.getAppealedBans = function(userRole, users, reports, callback) {
 
-  bans.find({
-    boardUri : {
-      $exists : false
-    },
-    appeal : {
-      $exists : true
-    },
-    denied : {
-      $exists : false
-    }
-  }, {
-    reason : 1,
-    appeal : 1,
-    denied : 1,
-    expiration : 1,
-    appliedBy : 1
-  }).toArray(function gotBans(error, foundBans) {
+  if (userRole < 3) {
 
-    callback(error, users, reports, foundBans);
+    bans.find({
+      boardUri : {
+        $exists : false
+      },
+      appeal : {
+        $exists : true
+      },
+      denied : {
+        $exists : false
+      }
+    }, {
+      reason : 1,
+      appeal : 1,
+      denied : 1,
+      expiration : 1,
+      appliedBy : 1
+    }).toArray(function gotBans(error, foundBans) {
+      callback(error, users, reports, foundBans);
+    });
 
-  });
+  } else {
+    callback(null, users, reports);
+  }
 
 };
 
@@ -187,25 +191,20 @@ exports.getReportsAssociations = function(userRole, foundUsers, foundReports,
     if (error) {
       callback(error);
     } else {
-      if (userRole < 3) {
-        exports.getAppealedBans(foundUsers, foundReports, callback);
-      } else {
-        callback(null, users, foundReports);
-      }
+      exports.getAppealedBans(userRole, foundUsers, foundReports, callback);
     }
 
   });
 
 };
 
-exports.getManagementData = function(userRole, userLogin, callback) {
+exports.getManagementData = function(userRole, userLogin, associateContent,
+    callback) {
 
   var globalStaff = userRole <= MAX_STAFF_ROLE;
 
   if (!globalStaff) {
-
     callback(lang.errDeniedGlobalManagement);
-
   } else {
 
     users.find({
@@ -249,13 +248,19 @@ exports.getManagementData = function(userRole, userLogin, callback) {
                   if (error) {
                     callback(error);
                   } else {
-                    exports.getReportsAssociations(userRole, foundUsers,
-                        foundReports, callback);
+                    if (!associateContent) {
+                      exports.getAppealedBans(userRole, foundUsers,
+                          foundReports, callback);
+                    } else {
+                      exports.getReportsAssociations(userRole, foundUsers,
+                          foundReports, callback);
+                    }
                   }
 
                 });
+            // style exception, too simple
+
           }
-          // style exception, too simple
 
         });
   }

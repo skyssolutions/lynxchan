@@ -1040,6 +1040,7 @@ JSON output(Object): object with the media information. Contains the following f
     media(Array): array with the media files for the page. Each element is an object with the following fields:
         identifier: identifier of the file.
         references(Number): amount of references the file has.
+        extension: extension used when the file was store. It is not used for the thumbnail, only the main file. Might be null, in which case the file didn't use an extension when being saved.
 
 ------------------------------------------------------------------------------------------
 

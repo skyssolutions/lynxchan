@@ -9,22 +9,22 @@ var formOps = require('../engine/formOps');
 
 function getBoardManagementData(board, userData, res, json, auth) {
 
-  boardOps.getBoardManagementData(userData, board, function gotManagementData(
-      error, boardData, reports, bans) {
-    if (error) {
-      formOps.outputError(error, 500, res);
-    } else {
-      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-          : 'text/html', auth));
+  boardOps.getBoardManagementData(userData, board, !json,
+      function gotManagementData(error, boardData, reports, bans) {
+        if (error) {
+          formOps.outputError(error, 500, res);
+        } else {
+          res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+              : 'text/html', auth));
 
-      if (json) {
-        res.end(jsonB.boardManagement(userData, boardData, reports, bans));
-      } else {
-        res.end(dom.boardManagement(userData, boardData, reports, bans));
-      }
+          if (json) {
+            res.end(jsonB.boardManagement(userData, boardData, reports, bans));
+          } else {
+            res.end(dom.boardManagement(userData, boardData, reports, bans));
+          }
 
-    }
-  });
+        }
+      });
 }
 
 exports.process = function(req, res) {
