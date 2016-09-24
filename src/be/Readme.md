@@ -125,7 +125,7 @@ Settings files that goes into the settings directory:
 * `maxBoardVolunteers`(Number: maximum amount of volunteers a board can have. Defaults to 20.
 * `maxBannerSizeKB`(Number): maximum size in kilobytes for board banners. Defaults to 200KB.
 * `maxFlagSizeKB`(Number): maximum size in kilobytes for board flags. Defaults to 32KB.
-* `floodTimerSec`(Number): time in seconds required between postings from the same ip. Not applicable to TOR users. Defaults to 10.
+* `floodTimerSec`(Number): time in seconds required between postings from the same ip. Not applicable to TOR users, but applicable to block bypasses. Defaults to 10.
 * `maxBoardTags`(Number): maximum amount of tags each board can have. Defaults to 5.
 * `disableFloodCheck`(Boolean): indicates if the flood checks should be disabled. This shouldn't affect performance at all, since it's meant to be used for benchmarking purposes.
 * `clearIpMinRole`(Number): minimum global role required for users to see non-hashed ips from posts and perform global deletions from ip.

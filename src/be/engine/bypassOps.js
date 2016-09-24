@@ -3,23 +3,29 @@
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var db = require('../db');
+var lang;
 var bypasses = db.bypasses();
 var expirationToAdd;
 var captchaOps;
+var floodDisabled;
+var floodExpiration;
 var bypassMaxPosts;
 var bypassMode;
 
 exports.loadSettings = function() {
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  floodExpiration = settings.floodTimerSec;
   bypassMaxPosts = settings.bypassMaxPosts;
   bypassMode = settings.bypassMode;
+  floodDisabled = settings.disableFloodCheck;
   expirationToAdd = 1000 * 60 * 60 * settings.bypassDurationHours;
 };
 
 exports.loadDependencies = function() {
 
   captchaOps = require('./captchaOps');
+  lang = require('./langOps').languagePack();
 
 };
 
@@ -91,6 +97,10 @@ exports.useBypass = function(bypassId, req, callback) {
 
   try {
 
+    var nextUse = new Date();
+
+    nextUse.setUTCSeconds(nextUse.getUTCSeconds() + floodExpiration);
+
     bypasses.findOneAndUpdate({
       _id : new ObjectID(bypassId),
       usesLeft : {
@@ -102,20 +112,26 @@ exports.useBypass = function(bypassId, req, callback) {
     }, {
       $inc : {
         usesLeft : -1
+      },
+      $set : {
+        nextUsage : nextUse
       }
     }, function updatedPass(error, result) {
 
+      var errorToReturn;
+
       if (error) {
-        callback(error);
-      } else {
-
-        if (result.value) {
-          req.bypassed = true;
-        }
-
+        errorToReturn = error;
+      } else if (!result.value) {
         callback(null, req);
-
+        return;
+      } else if (!floodDisabled && result.value.nextUsage > new Date()) {
+        errorToReturn = lang.errFlood;
+      } else {
+        req.bypassed = true;
       }
+
+      callback(errorToReturn, req);
 
     });
 
