@@ -23,7 +23,7 @@ boards: stores boards.
         uniquePosts: board uses R9K to enforce unique posts.
         requireThreadFile: threads can only be created with a file.
         allowCode: allows the usage of [code] on postings.
-        early404: makes threads with less than 5 replies to be deleted after an hour.
+        early404: makes threads with less than 5 replies to be deleted after they leave the top 1/3 threads.
         blockDeletion: makes it impossible for users to delete their own posts.
         locationFlags: board uses location flags for users.
         textBoard: upload of files is not allowed.

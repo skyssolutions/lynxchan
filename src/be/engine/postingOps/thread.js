@@ -148,7 +148,8 @@ exports.updateBoardForThreadCreation = function(boardData, threadId,
       if (threadCount > limitToUse) {
 
         // style exception, too simple
-        delOps.cleanThreads(boardUri, limitToUse,
+        delOps.cleanThreads(boardUri,
+            boardData.settings.indexOf('early404') > -1, limitToUse,
             function cleanedThreads(error) {
               if (error) {
                 callback(error);

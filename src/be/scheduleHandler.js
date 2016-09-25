@@ -11,7 +11,6 @@ var captchaExpiration = settings.captchaExpiration;
 var debug = kernel.debug();
 var gridFsHandler = require('./engine/gridFsHandler');
 var db = require('./db');
-var delOps = require('./engine/deletionOps').miscDeletions;
 var boards = db.boards();
 var stats = db.stats();
 var threads = db.threads();
@@ -33,7 +32,6 @@ exports.reload = function() {
   tempDirectory = settings.tempDirectory;
   captchaExpiration = settings.captchaExpiration;
   gridFsHandler = require('./engine/gridFsHandler');
-  delOps = require('./engine/deletionOps').miscDeletions;
   torHandler = require('./engine/torOps');
 };
 
@@ -49,7 +47,6 @@ exports.start = function() {
     expiredCaptcha(true);
     boardsStats();
     torRefresh();
-    early404(true);
     uniqueIpCount();
 
     if (settings.autoPruneFiles) {
@@ -64,37 +61,7 @@ exports.start = function() {
 
 };
 
-// Section 1: Early 404 check {
-function cleanEarly404() {
-
-  delOps.cleanEarly404(function cleanedUp(error) {
-    if (error) {
-
-      console.log(error);
-
-      if (debug) {
-        throw error;
-      }
-    }
-
-    early404();
-  });
-}
-
-function early404(immediate) {
-
-  if (immediate) {
-    cleanEarly404();
-  } else {
-
-    setTimeout(function() {
-      cleanEarly404();
-    }, 1000 * 60 * 30);
-  }
-}
-// } Section 1: Early 404 check
-
-// Section 2: TOR refresh {
+// Section 1: TOR refresh {
 function refreshTorEntries() {
 
   torHandler.updateIps(function updatedTorIps(error) {
@@ -127,9 +94,9 @@ function torRefresh() {
   }, nextRefresh.getTime() - new Date().getTime());
 
 }
-// } Section 2: TOR refresh
+// } Section 1: TOR refresh
 
-// Section 3: Board stats recording {
+// Section 2: Board stats recording {
 function applyStats(stats) {
 
   var operations = [];
@@ -320,9 +287,9 @@ function boardsStats() {
 
   }, tickTime.getTime() - current);
 }
-// } Section 3: Board stats recording
+// } Section 2: Board stats recording
 
-// Section 4: Temp files cleanup {
+// Section 3: Temp files cleanup {
 function oldEnoughToDelete(date) {
 
   date.setMinutes(date.getMinutes() + 1);
@@ -386,9 +353,9 @@ function tempFiles(immediate) {
   }
 
 }
-// } Section 4: Temp files cleanup
+// } Section 3: Temp files cleanup
 
-// Section 5: Captcha cleanup {
+// Section 4: Captcha cleanup {
 function expiredCaptcha(immediate) {
   if (immediate) {
     checkExpiredCaptchas();
@@ -461,9 +428,9 @@ function checkExpiredCaptchas() {
   });
 
 }
-// } Section 5: Captcha cleanup
+// } Section 4: Captcha cleanup
 
-// Section 6: Unique IP counting {
+// Section 5: Unique IP counting {
 function setUniqueIpCount(results) {
 
   var operations = [];
@@ -602,9 +569,9 @@ function uniqueIpCount() {
   }, nextRefresh.getTime() - new Date().getTime());
 
 }
-// } Section 6: Unique IP counting
+// } Section 5: Unique IP counting
 
-// Section 7: Automatic file pruning {
+// Section 6: Automatic file pruning {
 function commitPruning(takeOffMaintenance) {
 
   referenceHandler.prune(function prunedFiles(error) {
@@ -661,9 +628,9 @@ function autoFilePruning() {
   }, nextPrune.getTime() - new Date().getTime());
 
 }
-// } Section 7: Automatic file pruning
+// } Section 6: Automatic file pruning
 
-// Section 8: Inactivity check
+// Section 7: Inactivity check
 function setInactiveAccounts(inactiveUsers) {
 
   users.updateMany({
@@ -772,9 +739,9 @@ function inactivityTagging() {
     getInactiveAccounts();
   }, nextCheck.getTime() - new Date().getTime());
 }
-// } Section 8: Inactivity check
+// } Section 7: Inactivity check
 
-// Section 9: Spammer ip refresh {
+// Section 8: Spammer ip refresh {
 function refreshSpammerIps() {
 
   spamOps.updateSpammers(function updatedSpammers(error) {
@@ -807,4 +774,4 @@ function spamIpRefresh() {
   }, nextRefresh.getTime() - new Date().getTime());
 
 }
-// } Section9: Spammer ip refresh
+// } Section 8: Spammer ip refresh

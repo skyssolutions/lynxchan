@@ -338,23 +338,6 @@ exports.addPostToGlobalLatest = function(post, thread, parameters, cleanPosts,
   }
 };
 
-exports.getLatestPosts = function(thread, postId) {
-  var latestPosts = thread.latestPosts || [];
-
-  latestPosts.push(postId);
-
-  latestPosts = latestPosts.sort(function compareNumbers(a, b) {
-    return a - b;
-  });
-
-  if (latestPosts.length > latestPostsCount) {
-    latestPosts.splice(0, latestPosts.length - latestPostsCount);
-  }
-
-  return latestPosts;
-
-};
-
 exports.getBumpLimit = function(boardData) {
 
   // No need to check if the number here is greater than 0, since it will be
@@ -380,17 +363,46 @@ exports.setUpdateBlockForAutoSage = function(updateBlock) {
 
 };
 
-exports.updateThread = function(boardData, parameters, postId, thread,
-    callback, post) {
+exports.getSetBlock = function(thread, postId) {
+
+  var latestPosts = thread.latestPosts || [];
+
+  latestPosts.push(postId);
+
+  latestPosts = latestPosts.sort(function compareNumbers(a, b) {
+    return a - b;
+  });
+
+  var newOmittedPosts = false;
+
+  if (latestPosts.length > latestPostsCount) {
+    newOmittedPosts = true;
+    latestPosts.splice(0, latestPosts.length - latestPostsCount);
+  }
 
   var updateBlock = {
     $set : {
-      latestPosts : exports.getLatestPosts(thread, postId)
+      latestPosts : latestPosts
     },
     $inc : {
       postCount : 1
     }
   };
+
+  if (newOmittedPosts) {
+    updateBlock.$unset = {
+      outerCache : 1
+    };
+  }
+
+  return updateBlock;
+
+};
+
+exports.updateThread = function(boardData, parameters, postId, thread,
+    callback, post) {
+
+  var updateBlock = exports.getSetBlock(thread, postId);
 
   var cleanPosts = false;
   var saged = parameters.email === 'sage';

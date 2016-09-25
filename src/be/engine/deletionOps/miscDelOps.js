@@ -2,7 +2,6 @@
 
 // handles automatic deletions and board deletion
 
-var logger = require('../../logger');
 var db = require('../../db');
 var threads = db.threads();
 var files = db.files();
@@ -140,16 +139,10 @@ exports.getThreadFilesToRemove = function(boardUri, threadsToRemove, callback) {
 
 };
 
-exports.cleanThreads = function(boardUri, limit, callback) {
-
-  if (verbose) {
-    console.log('Cleaning threads of ' + boardUri);
-  }
+exports.pruneThreadsForQuery = function(matchBlock, limit, boardUri, callback) {
 
   threads.aggregate([ {
-    $match : {
-      boardUri : boardUri
-    }
+    $match : matchBlock
   }, {
     $sort : {
       pinned : -1,
@@ -189,6 +182,40 @@ exports.cleanThreads = function(boardUri, limit, callback) {
 
     }
   });
+
+};
+
+exports.cleanThreads = function(boardUri, early404, limit, callback) {
+
+  if (verbose) {
+    console.log('Cleaning threads of ' + boardUri);
+  }
+
+  if (early404) {
+
+    exports.pruneThreadsForQuery({
+      boardUri : boardUri,
+      postCount : {
+        $not : {
+          $gte : 5
+        }
+      }
+    }, Math.floor(limit / 3), boardUri, function cleaned404(error) {
+
+      if (error) {
+        callback(error);
+      } else {
+        exports.cleanThreads(boardUri, false, limit, callback);
+      }
+
+    });
+
+    return;
+  }
+
+  exports.pruneThreadsForQuery({
+    boardUri : boardUri
+  }, limit, boardUri, callback);
 
 };
 // } Section 1: Thread cleanup
@@ -379,195 +406,3 @@ exports.board = function(userData, parameters, callback) {
 
 };
 // } Section 2: Board deletion
-
-// Section 3: Early 404 removal {
-exports.removeEarly404Files = function(results, callback) {
-
-  var orArray = [];
-
-  var operations = [];
-
-  var genQueue = require('../../generationQueue');
-
-  for (var i = 0; i < results.length; i++) {
-    var board = results[i];
-
-    genQueue.queue({
-      board : board._id
-    });
-
-    operations.push({
-      updateOne : {
-        filter : {
-          boardUri : board._id
-        },
-        update : {
-          $inc : {
-            threadCount : -board.threads.length
-          }
-        }
-      }
-    });
-
-    orArray.push({
-      'metadata.boardUri' : board._id,
-      'metadata.threadId' : {
-        $in : board.threads
-      }
-    });
-  }
-
-  files.aggregate([ {
-    $match : {
-      $or : orArray
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $addToSet : '$filename'
-      }
-    }
-  } ], function gotFiles(error, results) {
-    if (error) {
-      callback(error);
-    } else {
-
-      // style exception, too simple
-      gridFs.removeFiles(results[0].files, function deletedFiles(error) {
-
-        if (error) {
-          callback(error);
-        } else {
-          boards.bulkWrite(operations, callback);
-        }
-
-      });
-      // style exception, too simple
-
-    }
-  });
-};
-
-exports.removeEarly404Reports = function(results, orArray, callback) {
-
-  reports.deleteMany({
-    $or : orArray
-  }, function removedReports(error) {
-
-    if (error) {
-      callback(error);
-    } else {
-      exports.removeEarly404Files(results, callback);
-    }
-
-  });
-
-};
-
-exports.removeEarly404Posts = function(results, callback) {
-
-  if (verbose) {
-    var msg = 'Cleaning threads for early 404: ';
-    msg += JSON.stringify(results, null, 2);
-    console.log(msg);
-  }
-
-  var orArray = [];
-
-  for (var i = 0; i < results.length; i++) {
-    var board = results[i];
-
-    orArray.push({
-      boardUri : board._id,
-      threadId : {
-        $in : board.threads
-      }
-    });
-  }
-
-  threads.deleteMany({
-    $or : orArray
-  }, function removedThreads(error) {
-    if (error) {
-      callback(error);
-    } else {
-
-      // style exception, too simple
-      posts.deleteMany({
-        $or : orArray
-      }, function removedPosts(error) {
-        if (error) {
-          callback(error);
-        } else {
-          exports.removeEarly404Reports(results, orArray, callback);
-        }
-      });
-      // style exception, too simple
-
-    }
-  });
-
-};
-
-exports.cleanEarly404 = function(callback) {
-
-  boards.aggregate([ {
-    $match : {
-      settings : {
-        $elemMatch : {
-          $eq : 'early404'
-        }
-      }
-    }
-  }, {
-    $group : {
-      _id : 0,
-      boards : {
-        $addToSet : '$boardUri'
-      }
-    }
-  } ], function gotBoards(error, results) {
-    if (!results || !results.length) {
-      callback(error);
-    } else {
-
-      var oldestAge = new Date(new Date().getTime() - (1000 * 60 * 60));
-
-      // style exception, too simple
-      threads.aggregate([ {
-        $match : {
-          postCount : {
-            $not : {
-              $gte : 5
-            }
-          },
-          boardUri : {
-            $in : results[0].boards
-          },
-          creation : {
-            $lte : oldestAge
-          }
-        }
-
-      }, {
-        $group : {
-          _id : '$boardUri',
-          threads : {
-            $addToSet : '$threadId'
-          }
-        }
-      } ], function gotThreads(error, results) {
-        if (!results || !results.length) {
-          callback(error);
-        } else {
-          exports.removeEarly404Posts(results, callback);
-        }
-      });
-      // style exception, too simple
-
-    }
-  });
-
-};
-// } Section 3: Early 404 removal
