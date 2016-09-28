@@ -9,7 +9,7 @@
 See other branches named like `1.1.x` for stable versions. They will receive only critical bug fixes and will be maintained for at least one year after release. Remember to use a compatible version of your front-end with these stable versions. Newer versions might not have required elements on the templates for these versions.
 
 # Required software
-* [Node.js](http://nodejs.org) 6.6.0, I suggest installing from source code. DO NOT build the master's HEAD.
+* [Node.js](http://nodejs.org) 6.7.0, I suggest installing from source code. DO NOT build the master's HEAD.
 * [MongoDB](https://www.mongodb.org/) 3.2.9
 * [UnZip](http://www.info-zip.org) 6.00, this is probably already include in your distro, though.
 * [cUrl](http://curl.haxx.se) 7.29.0, this is usually included too.
@@ -32,7 +32,6 @@ The dependencies versions are not exactly mandatory and only reflect the version
 # Important details
 * Do not use root on any process of the engine install, except when running root-setup.sh.
 * If you didn't use git clone to get this repository, the setup script won't be able to change to the latest stable version, since it requires moving to a different branch.
-* Set both the `api` and `static` sub-domains pointing to the server. `static` is used to reach static files on the front-end and `api` is used to perform JSON requests to the server.
 * Pages that are generated, like board and thread pages, won't reflect template changes immediatly. Consult src/be's readme to learn how to manually reload these pages. And even then, keep in mind the server will cache templates when not running on debug mode, so even if you reload the page, a running server might use outdated versions of templates when regenerating pages.
 * There is no default admin account. Consult the src/be readme to see how to use the terminal to create a root account or convert an existing one to root.
 * If you start the engine on the master branch and then checkout a stable version that is too old, the database might not work or even get corrupted. So if you started it on the master branch and you wish to use a stable version, drop the database if anything weird happens.
