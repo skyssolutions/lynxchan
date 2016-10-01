@@ -1,3 +1,281 @@
+1.7.0:
+
+**Api.txt**
+
+deleteContent:
+
+Added output to it with information on deleted content.
+
+---------------------------------------
+
+banUsers:
+
+captcha is now ignored for global staff.
+
+Removed parameters:
+range
+expiration
+
+New parameters:
+banType
+duration
+
+---------------------------------------
+
+setBoardSettings:
+
+New parameters:
+textBoard
+
+---------------------------------------
+
+Removed pages:
+closeReport
+
+New pages:
+closeReports
+deleteFromIpOnBoard
+
+---------------------------------------
+
+**Form.txt**
+
+boardManagement:
+
+New fields on json output:
+settings.textBoard
+
+---------------------------------------
+
+contentActions:
+
+Removed parameters:
+range
+expiration
+
+New parameters:
+banType
+duration
+
+---------------------------------------
+
+mod:
+
+New fields on json output:
+flagCode
+posts.flagCode
+
+---------------------------------------
+
+setBoardSettings:
+
+New parameters:
+textBoard
+
+---------------------------------------
+
+boards:
+
+New fields on json output:
+overboard
+sfwOverboard
+
+---------------------------------------
+
+mediaManagement:
+
+New fields on json output:
+media.extension
+
+---------------------------------------
+
+Removed pages:
+closeReport
+
+New pages:
+closeReports
+
+---------------------------------------
+
+**Json.txt**
+
+index.json:
+
+New fields:
+version
+totalPPH
+totalBoards
+totalFiles
+totalSize
+
+---------------------------------------
+
+/<board>/res/<thread>.json:
+
+New fields:
+flagCode
+posts.flagCode
+
+---------------------------------------
+
+/<board>/preview/<posting>.json:
+flagCode
+
+---------------------------------------
+
+/<board>/<page>.json:
+
+New fields:
+globalCaptcha
+captchaMode
+maxMessageLength
+maxFileCount
+maxFileSize
+threads.ommitedPosts
+threads.flagCode
+threads.posts.flagCode
+
+---------------------------------------
+
+**Language.txt**
+
+Removed fields:
+errInvalidExpiration
+msgReportClosed
+
+New fields:
+errTextBoard
+errDeniedBoardIpDeletion
+errSpammer
+errNoReportsInformed
+msgReportsClosed
+
+Changed fields:
+msgContentDeleted, now it has two replace tokens.
+
+---------------------------------------
+
+**Templates.txt**
+
+index:
+
+New elements:
+labelTotalFiles
+labelTotalSize
+
+---------------------------------------
+
+boardPage:
+
+New elements:
+labelMessageLength
+divUpload
+
+---------------------------------------
+
+threadPage:
+
+New elements:
+labelMessageLength
+divUpload
+
+---------------------------------------
+
+opCell:
+
+Removed elements:
+labelRange
+
+New elements:
+labelBroadRange
+labelNarrowRange
+
+Changed use:
+labelId: now it also sets an inlined style.
+
+---------------------------------------
+
+postCell:
+
+Removed elements:
+labelRange
+
+New elements:
+labelBroadRange
+labelNarrowRange
+
+Changed use:
+labelId: now it also sets an inlined style.
+
+---------------------------------------
+
+bManagement:
+
+New elements:
+textBoardCheckbox
+
+---------------------------------------
+
+reportCell:
+
+Changed root elements from form to div.
+
+Removed elements:
+idIdentifier
+
+New elements:
+postingDiv
+closureCheckbox
+
+---------------------------------------
+
+uploadCell:
+
+CHanged use:
+originalNameLink: now the download attribute is manipulated too.
+
+---------------------------------------
+
+catalogPage:
+
+New elements:
+postingForm
+flagsDiv
+flagCombobox
+boardIdentifier
+captchaDiv
+labelMaxFileSize
+labelMaxFiles
+labelMessageLength
+divUpload
+
+---------------------------------------
+
+editPage:
+
+New elements:
+labelMessageLength
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldIpExpiration
+fieldSpamIpsSource
+checkboxDisableCatalogPosting
+checkboxDisableSpamCheck
+checkboxSpamBypass
+fieldMessageLength
+checkboxFfmpegGifs
+checkboxAllowTorPosting
+checkboxAllowTorFiles
+
+Removed elements:
+comboTorAccess
+
+---------------------------------------
+
 1.6.0:
 
 **Api.txt**
