@@ -231,7 +231,7 @@ closureCheckbox
 
 uploadCell:
 
-CHanged use:
+Changed use:
 originalNameLink: now the download attribute is manipulated too.
 
 ---------------------------------------
