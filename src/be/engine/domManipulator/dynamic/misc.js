@@ -547,52 +547,6 @@ exports.hashBan = function(hashBans) {
 };
 // } Section 5: Hash ban page
 
-// Section 6: Message page {
-exports.setMessageRedirect = function(document, link) {
-
-  var redirectLink = document.getElementById('linkRedirect');
-
-  redirectLink.href = link;
-
-  var meta = document.createElement('META');
-
-  meta.httpEquiv = 'refresh';
-  meta.content = '3; url=' + link;
-
-  document.getElementsByTagName('head')[0].appendChild(meta);
-
-};
-
-exports.message = function(message, link) {
-
-  try {
-
-    var document = jsdom(templateHandler.messagePage);
-
-    document.title = message;
-
-    var messageLabel = document.getElementById('labelMessage');
-
-    messageLabel.innerHTML = message;
-
-    exports.setMessageRedirect(document, link);
-
-    return serializer(document);
-  } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
-    if (debug) {
-      throw error;
-    }
-
-    return error.toString;
-  }
-
-};
-// } Section 6: Message page
-
 // Section 7: Edit page {
 exports.setEditIdentifiers = function(parameters, document) {
 
@@ -761,3 +715,34 @@ exports.graphs = function(dates) {
 
 };
 // } Section 9: graphs
+
+exports.message = function(message, link) {
+
+  try {
+
+    var document = jsdom(templateHandler.messagePage);
+
+    document.title = message;
+
+    var messageLabel = document.getElementById('labelMessage');
+
+    messageLabel.innerHTML = message;
+
+    var redirectLink = document.getElementById('linkRedirect');
+
+    redirectLink.href = link;
+
+    return serializer(document);
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString;
+  }
+
+};

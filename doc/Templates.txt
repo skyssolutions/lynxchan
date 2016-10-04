@@ -281,9 +281,6 @@ linkRedirect:
     use: have it's href manipulated.
     description: link to the redirection of the page.
 
-Required tags:
-head
-
 ------------------------------------------------------------------------------------------
 
 TEM_ID::05
