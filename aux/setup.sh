@@ -74,7 +74,9 @@ fi
 
 if [ "$answerLocation" == "y" ]; then
 
-  git clone https://gitgud.io/LynxChan/LynxChan-LocationData.git ../src/be/locationData
+  git clone https://gitgud.io/LynxChan/LynxChan-LocationDownloader.git ../src/be/locationData
+  cd ../src/be/locationData
+  ./updateData
 
 fi
 
