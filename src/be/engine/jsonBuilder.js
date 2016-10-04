@@ -102,8 +102,11 @@ exports.getPostObject = function(post, preview, boardData, modding, userRole) {
     var allowedForIps = userRole <= minClearIpRole;
 
     if (!allowedForIps) {
-      toReturn.range = miscOps.hashIpForDisplay(miscOps.getRange(post.ip),
+      toReturn.broadRange = miscOps.hashIpForDisplay(miscOps.getRange(post.ip),
           boardData.ipSalt);
+
+      toReturn.narrowRange = miscOps.hashIpForDisplay(miscOps.getRange(post.ip,
+          true), boardData.ipSalt);
     }
 
   }
@@ -174,8 +177,11 @@ exports.getThreadObject = function(thread, posts, board, modding, userRole) {
     var allowedForIps = userRole <= minClearIpRole;
 
     if (!allowedForIps) {
-      threadObject.range = miscOps.hashIpForDisplay(
-          miscOps.getRange(thread.ip), board.ipSalt);
+      threadObject.broadRange = miscOps.hashIpForDisplay(miscOps
+          .getRange(thread.ip), board.ipSalt);
+
+      threadObject.narrowRange = miscOps.hashIpForDisplay(miscOps.getRange(
+          thread.ip, true), board.ipSalt);
     }
 
   }

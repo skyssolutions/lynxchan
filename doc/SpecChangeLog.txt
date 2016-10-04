@@ -61,9 +61,17 @@ duration
 
 mod:
 
+Removed fields on json output:
+range
+posts.range
+
 New fields on json output:
 flagCode
 posts.flagCode
+narrowRange
+broadRange
+posts.narrowRange
+posts.broadRange
 
 ---------------------------------------
 

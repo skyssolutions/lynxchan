@@ -353,7 +353,8 @@ Json output(Object): object with the data of the thread.
     message: text of the post.
     name: name of the poster.
     ip: hashed and salted ip of the poster.
-    range: range of the poster.
+    narrowRange: hashed and salted narrow range of the poster, representing 3/4 of his ip.
+    broadRange: hashed and salted broad range of the poster, representing 1/2 of his ip.
     creation(Date): time when the post was created.
     locked(Boolean: indicates if the thread is locked and cannot be replied to.
     cyclic(Boolean): indicates if the thread is cyclic.
@@ -379,6 +380,9 @@ Json output(Object): object with the data of the thread.
         lastEditLogin: Login of the last user to edit the thread message.
         postId(Number): unique id of the post inside the board.
         id: thread-wise id of the poster.
+        ip: hashed and salted ip of the poster.
+        narrowRange: hashed and salted narrow range of the poster, representing 3/4 of his ip.
+        broadRange: hashed and salted broad range of the poster, representing 1/2 of his ip.
         markdown: message with html markdown applied.
         subject: subject of the thread.
         message: text of the post.
