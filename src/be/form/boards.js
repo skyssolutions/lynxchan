@@ -56,6 +56,14 @@ function getQueryBlock(parameters) {
     delete parameters.tags;
   }
 
+  queryBlock.settings = {
+    $not : {
+      $elemMatch : {
+        $in : [ 'unindex' ]
+      }
+    }
+  };
+
   return queryBlock;
 
 }
@@ -130,14 +138,6 @@ exports.process = function(req, res) {
       pageCount = pageCount || 1;
 
       var toSkip = (parameters.page - 1) * pageSize;
-
-      queryBlock.settings = {
-        $not : {
-          $elemMatch : {
-            $in : [ 'unindex' ]
-          }
-        }
-      };
 
       // style exception, too simple
       boards.find(queryBlock, {
