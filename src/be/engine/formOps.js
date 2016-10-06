@@ -2,12 +2,13 @@
 
 // general operations for the form api
 
-var bans = require('../db').bans();
 var fs = require('fs');
 var crypto = require('crypto');
+var url = require('url');
 var debug = require('../kernel').debug();
 var multiParty = require('multiparty');
 var jsdom = require('jsdom').jsdom;
+var bans = require('../db').bans();
 var verbose;
 var uploadDir;
 var maxRequestSize;
@@ -278,8 +279,28 @@ exports.getPostData = function(req, res, callback, exceptionalMimes) {
 
 };
 
+exports.checkReferer = function(req) {
+
+  if (!req.headers.referer) {
+    return false;
+  }
+
+  var parsedReferer = url.parse(req.headers.referer);
+
+  var finalReferer = parsedReferer.hostname;
+  finalReferer += (parsedReferer.port ? ':' + parsedReferer.port : '');
+
+  return finalReferer === req.headers.host;
+
+};
+
 exports.getAuthenticatedPost = function(req, res, getParameters, callback,
     optionalAuth, exceptionalMimes) {
+
+  if (!exports.checkReferer(req)) {
+    exports.redirectToLogin(res);
+    return;
+  }
 
   if (getParameters) {
 

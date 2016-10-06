@@ -9,11 +9,6 @@ var url = require('url');
 var proxy = require('http-proxy').createProxyServer({
   secure : false
 });
-
-proxy.on('proxyReq', function(proxyReq, req, res, options) {
-  proxyReq.setHeader('x-forwarded-for', logger.getRawIp(req));
-});
-
 var multiBoard = require('./multiBoardHandler');
 var multiBoardAllowed;
 var verbose;
@@ -29,6 +24,9 @@ var lastSlaveIndex = 0;
 var slaves;
 var master;
 var port;
+proxy.on('proxyReq', function(proxyReq, req, res, options) {
+  proxyReq.setHeader('x-forwarded-for', logger.getRawIp(req));
+});
 
 exports.loadSettings = function() {
 
@@ -215,14 +213,6 @@ exports.outputGfsFile = function(req, pathName, res) {
 
   if (firstPart.indexOf('.js', firstPart.length - 3) !== -1) {
 
-    if (!exports.checkReferer(req)) {
-
-      res.writeHead(200, miscOps.corsHeader('text/plain'));
-      res.end('Referer mismatch');
-
-      return;
-    }
-
     exports.processFormRequest(req, pathName, res);
 
   } else if (gotSecondString && !/\W/.test(splitArray[1])) {
@@ -358,21 +348,6 @@ exports.serve = function(req, pathName, res) {
   } else {
     exports.outputGfsFile(req, pathName, res);
   }
-
-};
-
-exports.checkReferer = function(req) {
-
-  if (!req.headers.referer) {
-    return false;
-  }
-
-  var parsedReferer = url.parse(req.headers.referer);
-
-  var finalReferer = parsedReferer.hostname;
-  finalReferer += (parsedReferer.port ? ':' + parsedReferer.port : '');
-
-  return finalReferer === req.headers.host;
 
 };
 
