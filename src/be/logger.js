@@ -119,7 +119,8 @@ exports.MIMETYPES = {
   xpm : 'image/x-xpixmap',
   xsl : 'application/xml',
   xwd : 'image/x-xwindowdump',
-  zip : 'application/zip'
+  zip : 'application/zip',
+  svg : 'image/svg+xml'
 };
 
 exports.reverseMimes = {};
