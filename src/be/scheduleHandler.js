@@ -208,7 +208,7 @@ function clearIps() {
 
   var now = new Date();
 
-  now.setUTCHours(now.getUTCHours() - ipExpiration);
+  now.setUTCDate(now.getUTCDate() - ipExpiration);
 
   threads.updateMany({
     ip : {
