@@ -5,7 +5,6 @@
 var fs = require('fs');
 var debug = require('../kernel').debug();
 var verbose;
-var languagePackPath;
 
 var languagePack = {};
 
@@ -14,7 +13,6 @@ exports.loadSettings = function() {
   var settings = require('../settingsHandler').getGeneralSettings();
 
   verbose = settings.verbose;
-  languagePackPath = settings.languagePackPath;
 };
 
 exports.languagePack = function() {
@@ -81,7 +79,7 @@ exports.processObject = function(defaultObject, chosenObject, missingKeys,
   }
 };
 
-exports.loadLanguagePack = function(defaultPack) {
+exports.loadLanguagePack = function(defaultPack, languagePackPath) {
 
   var chosenPack = JSON.parse(fs.readFileSync(languagePackPath));
 
@@ -113,8 +111,12 @@ exports.init = function() {
 
   var defaultPack = JSON.parse(fs.readFileSync(defaultLanguagePath));
 
+  var settings = require('../settingsHandler').getGeneralSettings();
+
+  var languagePackPath = settings.languagePackPath;
+
   if (languagePackPath) {
-    exports.loadLanguagePack(defaultPack);
+    exports.loadLanguagePack(defaultPack, languagePackPath);
   } else {
     languagePack = defaultPack;
   }
