@@ -12,19 +12,35 @@ socketLocation += '/unix.socket';
 var verbose = settings.verbose;
 var kernel = require('./kernel');
 var debug = kernel.debug();
+var server;
 
 function processTask(task) {
 
   switch (task.type) {
-  case 'maintenance':
+  case 'maintenance': {
     settingsHandler.changeMaintenanceMode(task.value);
     break;
+  }
 
-  case 'reloadFE':
+  case 'reloadFE': {
     kernel.broadCastTopDownMessage({
       reloadFE : true
     });
     break;
+  }
+
+  case 'shutdown': {
+    server.close();
+    
+    kernel.broadCastTopDownMessage({
+      shutdown : true
+    });
+
+    break;
+  }
+
+  default:
+    console.log('Unknown task type ' + task.type);
   }
 
 }
@@ -57,7 +73,7 @@ exports.start = function() {
     }
 
     // style exception, too simple
-    var server = net.createServer(function(socket) {
+    server = net.createServer(function(socket) {
 
       exports.handleSocket(socket);
 

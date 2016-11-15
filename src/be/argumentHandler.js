@@ -8,6 +8,11 @@ var informedArguments = {
     long : '--clear-individual-cache',
     type : 'boolean'
   },
+  shutdown : {
+    short : '-s',
+    long : '--shutdown',
+    type : 'boolean'
+  },
   debug : {
     short : '-d',
     long : '--debug',

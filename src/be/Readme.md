@@ -50,6 +50,7 @@ It accepts the following arguments:
 * `--set-role`, `-sr`: set a new role for an existing account. Will not be used if `-ca` is used. Takes a login and global role.
 * `--maintenance`, `-m`: indicates a new value for maintenance mode on a running instance. The value will be parsed as JSON, so informing `true` or `false` will work, so as informing numbers that evaluate to false or true. Will be ignored if no daemon was not informed.
 * `--clear-individual-cache`, `-cc`: clears individual cache of postings and log entries.
+* `--shutdown`, `-s`: orders a running instance to shut down. Will be ignored if no daemon was not informed or if either maintenance mode is being changed or if the front-end is being reloaded on the same command.
 
 Arguments that are meant to inform values should be used in the following manner:
 `argument value`

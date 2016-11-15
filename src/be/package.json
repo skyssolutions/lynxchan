@@ -6,15 +6,15 @@
     "type": "git",
     "url": "https://gitgud.io/LynxChan/LynxChan.git"
   },
-  "version": "1.7.0",
+  "version": "1.8.0",
   "dependencies": {
-    "mongodb": "2.2.10",
-    "jsdom": "9.5.0",
+    "mongodb": "2.2.11",
+    "jsdom": "9.8.3",
     "nodemailer": "2.6.4",
     "multiparty": "4.1.2",
     "bcrypt": "0.8.7",
     "jsbn": "0.1.0",
-    "http-proxy": "1.15.1"
+    "http-proxy": "1.15.2"
   },
   "author": "Stephen Lynx",
   "license": "MIT"

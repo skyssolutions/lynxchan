@@ -377,7 +377,7 @@ function getNextQueueItem() {
 
 function processQueue() {
 
-  if (!queueArray.length) {
+  if (!queueArray.length || kernel.shuttingDown) {
     return;
   }
 

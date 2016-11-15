@@ -22,6 +22,7 @@ var torHandler = require('./engine/torOps');
 var spamOps = require('./engine/spamOps');
 var graphOps = require('./graphsOps');
 var referenceHandler = require('./engine/mediaHandler');
+var schedules = {};
 
 exports.reload = function() {
 
@@ -33,6 +34,18 @@ exports.reload = function() {
   captchaExpiration = settings.captchaExpiration;
   gridFsHandler = require('./engine/gridFsHandler');
   torHandler = require('./engine/torOps');
+};
+
+exports.stop = function() {
+
+  for ( var key in schedules) {
+
+    if (schedules.hasOwnProperty(key)) {
+      clearTimeout(schedules[key]);
+    }
+
+  }
+
 };
 
 exports.start = function() {
@@ -89,7 +102,7 @@ function torRefresh() {
   nextRefresh.setUTCHours(0);
   nextRefresh.setUTCDate(nextRefresh.getUTCDate() + 1);
 
-  setTimeout(function() {
+  schedules.torRefresh = setTimeout(function() {
     refreshTorEntries();
   }, nextRefresh.getTime() - new Date().getTime());
 
@@ -277,7 +290,7 @@ function boardsStats() {
   tickTime.setUTCMinutes(0);
   tickTime.setUTCHours(tickTime.getUTCHours() + 1);
 
-  setTimeout(function() {
+  schedules.boardsStats = setTimeout(function() {
 
     getStats();
 
@@ -347,7 +360,7 @@ function tempFiles(immediate) {
   if (immediate) {
     removeExpiredTempFiles();
   } else {
-    setTimeout(function() {
+    schedules.tempFiles = setTimeout(function() {
       removeExpiredTempFiles();
     }, 1000 * 60);
   }
@@ -361,7 +374,7 @@ function expiredCaptcha(immediate) {
     checkExpiredCaptchas();
   } else {
 
-    setTimeout(function() {
+    schedules.expiredCaptcha = setTimeout(function() {
       checkExpiredCaptchas();
     }, captchaExpiration * 1000 * 1);
 
@@ -564,7 +577,7 @@ function uniqueIpCount() {
   nextRefresh.setUTCHours(0);
   nextRefresh.setUTCDate(nextRefresh.getUTCDate() + 1);
 
-  setTimeout(function() {
+  schedules.uniqueIpCount = setTimeout(function() {
     updateUniqueIpCount();
   }, nextRefresh.getTime() - new Date().getTime());
 
@@ -601,7 +614,9 @@ function startPruning() {
     commitAt.setUTCSeconds(0);
     commitAt.setUTCMinutes(commitAt.getUTCMinutes() + 1);
 
-    setTimeout(function() {
+    schedules.pruningWaiting = setTimeout(function() {
+      delete schedules.pruningWaiting;
+
       commitPruning(true);
     }, commitAt.getTime() - new Date().getTime());
 
@@ -621,10 +636,8 @@ function autoFilePruning() {
   nextPrune.setUTCHours(0);
   nextPrune.setUTCDate(nextPrune.getUTCDate() + 7 - nextPrune.getUTCDay());
 
-  setTimeout(function() {
-
+  schedules.filePruning = setTimeout(function() {
     startPruning();
-
   }, nextPrune.getTime() - new Date().getTime());
 
 }
@@ -735,7 +748,7 @@ function inactivityTagging() {
   nextCheck.setUTCHours(0);
   nextCheck.setUTCDate(nextCheck.getUTCDate() + 1);
 
-  setTimeout(function() {
+  schedules.inactivityTagging = setTimeout(function() {
     getInactiveAccounts();
   }, nextCheck.getTime() - new Date().getTime());
 }
@@ -769,7 +782,7 @@ function spamIpRefresh() {
   nextRefresh.setUTCHours(0);
   nextRefresh.setUTCDate(nextRefresh.getUTCDate() + 1);
 
-  setTimeout(function() {
+  schedules.spamIpRefresh = setTimeout(function() {
     refreshSpammerIps();
   }, nextRefresh.getTime() - new Date().getTime());
 

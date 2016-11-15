@@ -279,6 +279,23 @@ exports.processTopDownMessage = function(message) {
     reloadFe();
   }
 
+  if (message.shutdown) {
+
+    if (cluster.isMaster) {
+
+      exports.shuttingDown = true;
+      require('./scheduleHandler').stop();
+
+    } else {
+
+      require('./workerBoot').stopServers(function serversStoppedCallback() {
+        db.conn().close();
+        process.exit(0);
+      });
+
+    }
+  }
+
 };
 
 // Processes and broadcasts messages coming from master to workers.
@@ -315,6 +332,28 @@ function processBottomTopMessage(message) {
   }
 
 }
+
+var workerExitCallback = function(worker, code, signal) {
+
+  if (exports.shuttingDown) {
+
+    if (!Object.keys(cluster.workers).length) {
+      db.conn().close();
+    }
+
+    return;
+  }
+
+  console.log('Server worker ' + worker.id + ' crashed.');
+
+  if (new Date().getTime() - forkTime[worker.id] < MINIMUM_WORKER_UPTIME) {
+    console.log('Crash on boot, not restarting it.');
+  } else {
+    cluster.fork();
+  }
+
+  delete forkTime[worker.id];
+};
 
 // after everything is all right, call this function to start the workers
 function bootWorkers() {
@@ -354,17 +393,7 @@ function bootWorkers() {
 
   });
 
-  cluster.on('exit', function(worker, code, signal) {
-    console.log('Server worker ' + worker.id + ' crashed.');
-
-    if (new Date().getTime() - forkTime[worker.id] < MINIMUM_WORKER_UPTIME) {
-      console.log('Crash on boot, not restarting it.');
-    } else {
-      cluster.fork();
-    }
-
-    delete forkTime[worker.id];
-  });
+  cluster.on('exit', workerExitCallback);
 }
 
 function regenerateAll() {
@@ -604,6 +633,17 @@ exports.startEngine = function() {
 var socketLocation = settingsHandler.getGeneralSettings().tempDirectory;
 socketLocation += '/unix.socket';
 
+function transmitSocketData(data) {
+
+  var client = new require('net').Socket();
+
+  client.connect(socketLocation, function() {
+    client.write(JSON.stringify(data));
+    client.destroy();
+  });
+
+}
+
 function checkMaintenanceMode() {
 
   var parsedValue = JSON.parse(informedArguments.maintenance.value) ? true
@@ -614,15 +654,12 @@ function checkMaintenanceMode() {
   var changed = parsedValue !== current;
 
   if (changed) {
-    var client = new require('net').Socket();
 
-    client.connect(socketLocation, function() {
-      client.write(JSON.stringify({
-        type : 'maintenance',
-        value : parsedValue
-      }));
-      client.destroy();
+    transmitSocketData({
+      type : 'maintenance',
+      value : parsedValue
     });
+
   }
 }
 
@@ -641,18 +678,15 @@ function initTorControl() {
           checkMaintenanceMode();
         } else if (informedArguments.reloadFrontEnd.informed) {
 
-          var client = new require('net').Socket();
-
-          // style exception, too simple
-          client.connect(socketLocation, function() {
-            client.write(JSON.stringify({
-              type : 'reloadFE'
-            }));
-
-            client.destroy();
-
+          transmitSocketData({
+            type : 'reloadFE'
           });
-          // style exception, too simple
+
+        } else if (informedArguments.shutdown.informed) {
+
+          transmitSocketData({
+            type : 'shutdown'
+          });
 
         }
 

@@ -11,6 +11,8 @@ var verbose = settings.verbose;
 var cluster = require('cluster');
 var fs = require('fs');
 var requestHandler;
+var servers = [];
+var stoppedServers = 0;
 
 // kernel variables
 var serverBooted = false;
@@ -24,6 +26,24 @@ exports.reload = function() {
 };
 
 // functions
+var serverStoppedCallback = function(callback) {
+
+  stoppedServers++;
+
+  if (stoppedServers === servers.length) {
+    callback();
+  }
+
+};
+
+exports.stopServers = function(callback) {
+
+  for (var i = 0; i < servers.length; i++) {
+    servers[i].close(serverStoppedCallback(callback));
+  }
+
+};
+
 function main(req, res) {
 
   if (!serverBooted) {
@@ -62,6 +82,8 @@ function startSSL() {
       main(req, res);
     }).listen(443, settings.address);
 
+    servers.push(server);
+
     server.on('error', function handle(error) {
 
       if (verbose) {
@@ -95,6 +117,8 @@ function startTorPort() {
 
   }).listen(settings.torPort, settings.address);
 
+  servers.push(server);
+
   server.on('error', function handleError(error) {
 
     if (debug) {
@@ -121,6 +145,8 @@ function startListening() {
     main(req, res);
 
   }).listen(settings.port, settings.address);
+
+  servers.push(server);
 
   server.on('listening', function booted() {
 
