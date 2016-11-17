@@ -331,6 +331,13 @@ rebuildMessages: internal usage collection that stores rebuild message that were
 
 ----------------------------------------------------------------------------------------
 
+languages: stores alternative languages.
+    frontEnd: path for the language's front-end.
+    languagePack: path for the language's language pack.
+    headerValues(Array): array with the possible values that will use this language.
+
+----------------------------------------------------------------------------------------
+
 *: duplicated data, foreign key.
 **: unique key
 ***:part of a unique key combination.

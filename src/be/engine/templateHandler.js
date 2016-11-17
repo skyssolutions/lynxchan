@@ -146,6 +146,11 @@ exports.getCellTests = function() {
         template : 'mediaCell',
         fields : [ 'identifierCheckbox', 'thumbImg', 'fileLink',
             'referencesLabel' ]
+      },
+      {
+        template : 'languageCell',
+        fields : [ 'languageIdentifier', 'frontEndLabel', 'languagePackLabel',
+            'headerValuesLabel' ]
       } ];
 
 };
@@ -224,7 +229,8 @@ exports.getPageTests = function() {
         template : 'gManagement',
         fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
             'reportDiv', 'bansLink', 'rangeBansLink', 'hashBansLink',
-            'globalSettingsLink', 'globalBannersLink', 'appealedBansPanel' ]
+            'globalSettingsLink', 'globalBannersLink', 'appealedBansPanel',
+            'languagesLink' ]
       },
       {
         template : 'bManagement',
@@ -364,6 +370,9 @@ exports.getPageTests = function() {
       }, {
         template : 'mediaManagementPage',
         fields : [ 'filesDiv', 'pagesDiv' ]
+      }, {
+        template : 'languagesManagementPage',
+        fields : [ 'languagesDiv' ]
       } ];
 
 };

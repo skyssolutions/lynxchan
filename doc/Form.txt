@@ -1056,5 +1056,43 @@ Description: completely deletes media files from the database. Requires authenti
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::68
+
+Name: languages
+
+Description: displays the alternative languages management page. Requires authentication. Reserved for users with global role lesser than 2.
+
+JSON output(Array): array with the existing alternative languages. Each object contains the following fields:
+    _id: language's id.
+    frontEnd: path for the language's front-end.
+    languagePack: path for the language's language pack.
+    headerValues(Array): array with the possible values that will use this language.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::69
+
+Name: addLanguage
+
+Description: adds a new alternative languages. Requires authentication. Reserved for users with global role lesser than 2.
+
+Parameters:
+    frontEnd: path for the language's front-end.
+    languagePack: path for the language's language pack.
+    headerValues(Array): values sent on the header that will cause the language to be used.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::70
+
+Name: deleteLanguage
+
+Description: deletes an alternative language. Requires authentication. Reserved for users with global role lesser than 2.
+
+Parameters:
+  languageId: id of the language to be deleted.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

@@ -1,9 +1,12 @@
 'use strict';
 
-// Handles the language package
+// Handles the language package and alternative languages
 
 var fs = require('fs');
+var mongo = require('mongodb');
+var ObjectID = mongo.ObjectID;
 var debug = require('../kernel').debug();
+var dbLanguages = require('../db').languages();
 var verbose;
 
 var languagePack = {};
@@ -119,6 +122,57 @@ exports.init = function() {
     exports.loadLanguagePack(defaultPack, languagePackPath);
   } else {
     languagePack = defaultPack;
+  }
+
+};
+
+exports.getLanguagesData = function(userRole, callback) {
+
+  var admin = userRole <= 1;
+
+  if (!admin) {
+    callback(languagePack.errDeniedLanguageManagement);
+    return;
+  }
+
+  dbLanguages.find({}).toArray(callback);
+
+};
+
+exports.addLanguage = function(userRole, parameters, callback) {
+
+  var admin = userRole <= 1;
+
+  if (!admin) {
+    callback(languagePack.errDeniedLanguageManagement);
+    return;
+  }
+
+  dbLanguages.insertOne({
+    frontEnd : parameters.frontEnd,
+    languagePack : parameters.languagePack,
+    headerValues : parameters.headerValues
+  }, callback);
+
+};
+
+exports.deleteLanguage = function(userRole, languageId, callback) {
+
+  var admin = userRole <= 1;
+
+  if (!admin) {
+    callback(languagePack.errDeniedLanguageManagement);
+    return;
+  }
+
+  try {
+
+    dbLanguages.deleteOne({
+      _id : new ObjectID(languageId)
+    }, callback);
+
+  } catch (error) {
+    callback(error);
   }
 
 };

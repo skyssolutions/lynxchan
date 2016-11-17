@@ -385,6 +385,7 @@ exports.setGlobalManagementLinks = function(userRole, document) {
 
   if (userRole !== 0) {
     common.removeElement(document.getElementById('globalSettingsLink'));
+    common.removeElement(document.getElementById('languagesLink'));
   }
 
   var admin = userRole < 2;
@@ -398,13 +399,9 @@ exports.processHideableElements = function(document, userRole, staff) {
 
   if (userRole < 2) {
     exports.setNewStaffComboBox(document, userRole);
-  } else {
-    common.removeElement(document.getElementById('addStaffForm'));
-  }
-
-  if (userRole < 2) {
     exports.fillStaffDiv(document, exports.getPossibleRoles(userRole), staff);
   } else {
+    common.removeElement(document.getElementById('addStaffForm'));
     common.removeElement(document.getElementById('divStaff'));
   }
 
@@ -870,5 +867,57 @@ exports.mediaManagement = function(media, pages, parameters) {
   }
 
 };
-
 // } Section 8: Media management
+
+// Section 9: Language management {
+exports.addLanguageCell = function(document, language) {
+
+  var cell = document.createElement('form');
+
+  common.setFormCellBoilerPlate(cell, '/deleteLanguage.js', 'languageCell');
+
+  cell.innerHTML = templateHandler.languageCell;
+
+  cell.getElementsByClassName('languageIdentifier')[0].setAttribute('value',
+      language._id);
+  cell.getElementsByClassName('frontEndLabel')[0].innerHTML = language.frontEnd;
+
+  var languagePackLabel = cell.getElementsByClassName('languagePackLabel')[0];
+  languagePackLabel.innerHTML = language.languagePack;
+
+  var headerValuesLabel = cell.getElementsByClassName('headerValuesLabel')[0];
+  headerValuesLabel.innerHTML = language.headerValues.join(', ');
+
+  document.getElementById('languagesDiv').appendChild(cell);
+
+};
+
+exports.languages = function(languages) {
+
+  try {
+
+    var document = jsdom(templateHandler.languagesManagementPage);
+
+    document.title = lang.titLanguages;
+
+    for (var i = 0; i < languages.length; i++) {
+      exports.addLanguageCell(document, languages[i]);
+    }
+
+    return serializer(document);
+
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+
+    if (debug) {
+      throw error;
+    }
+
+    return error.toString();
+
+  }
+
+};
+// } Section 9: Language management

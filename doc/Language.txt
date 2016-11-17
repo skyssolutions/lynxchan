@@ -110,6 +110,7 @@ errTextBoard: error thrown when the user tries to post a file to a textboard.
 errDeniedBoardIpDeletion: error thrown when the user is not allowed to delete posts from ips on a specific board.
 errSpammer: error thrown when the user ip was found on the known spammer ip list.
 errNoReportsInformed: error thrown when the user fails to inform any report.
+errDeniedLanguageManagement: error thrown when the user is not allowed to manage alternative languages.
 guiTypeBan: label used for logs of bans.
 guiTypeBanLift: label used for logs of ban lifts.
 guiTypeDeletion: label used for logs of deletions.
@@ -242,6 +243,8 @@ msgAccountUnlocked: message displayed when the user's account is unlocked.
 msgBanAppealed: message displayed after appealing a ban.
 msgAppealDenied: message displayed after denying an appeal.
 msgBoardSpecialSettingsSaved: message displayed after setting the special settings for a board.
+msgLanguageAdded: message displayed after adding a new alternative language.
+msgLanguageDeleted: message displayed after deleting an alternative language.
 subPasswordReset: subject of the e-mail informing the new password of the user's account.
 subPasswordRequest: subject of the e-mail of a password reset request.
 subLockedAccount: subject of the e-mail used when the user got his account locked.
@@ -276,3 +279,4 @@ titBlockbypass: title of the page used to renew the block bypass.
 titLogPage: title for log pages. Replaces: {$date}.
 titMultiboard: title of the multi-board.
 titGraphs: title for the graphs page.
+titLanguages: title for the language management page.

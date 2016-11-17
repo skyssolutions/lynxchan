@@ -22,6 +22,7 @@ var cachedDb;
 var maxIndexesSet = 19;
 
 var cachedMessages;
+var cachedLanguages;
 var cachedUploadReferences;
 var cachedLatestImages;
 var cachedAggregatedLogs;
@@ -618,6 +619,10 @@ exports.messages = function() {
   return cachedMessages;
 };
 
+exports.languages = function() {
+  return cachedLanguages;
+};
+
 exports.chunks = function() {
   return cachedChunks;
 };
@@ -810,6 +815,7 @@ function initCollections(callback) {
   cachedLatestPosts = cachedDb.collection('latestPosts');
   cachedFiles = cachedDb.collection('fs.files');
   cachedChunks = cachedDb.collection('fs.chunks');
+  cachedLanguages = cachedDb.collection('languages');
   cachedLog = cachedDb.collection('staffLogs');
 
   initGlobalIndexedCollections(callback);

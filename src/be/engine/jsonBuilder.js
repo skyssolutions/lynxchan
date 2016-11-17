@@ -649,3 +649,7 @@ exports.mediaManagement = function(media, pages) {
   });
 
 };
+
+exports.languages = function(languages) {
+  return JSON.stringify(languages);
+};

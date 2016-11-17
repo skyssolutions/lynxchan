@@ -300,5 +300,9 @@
   "msgMediaDeleted": "Media files deleted.",
   "errDeniedBoardIpDeletion": "You are not allowed to delete posts based on ips on this board.",
   "errSpammer": "Your ip was recognized as a known spammer.",
-  "errNoReportsInformed": "No reports were informed."
+  "errNoReportsInformed": "No reports were informed.",
+  "errDeniedLanguageManagement": "You are not allowed to manage alternative languages.",
+  "titLanguages": "Alternative languages",
+  "msgLanguageAdded": "New language added.",
+  "msgLanguageDeleted": "Language deleted."
 }
