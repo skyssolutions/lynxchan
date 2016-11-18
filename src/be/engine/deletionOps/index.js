@@ -127,7 +127,7 @@ exports.gatherIpsToDelete = function(objects, userData, callback) {
       continue;
     }
 
-    if (board.post) {
+    if (object.post) {
       selectedPosts.push(+object.post);
     } else {
       selectedThreads.push(+object.thread);
