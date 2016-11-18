@@ -572,6 +572,10 @@ exports.getParametersArray = function() {
     setting : 'allowTorFiles',
     element : 'checkboxAllowTorFiles'
   }, {
+    type : 'boolean',
+    setting : 'useAlternativeLanguages',
+    element : 'checkboxUseAlternativeLanguages'
+  }, {
     // range
     type : 'range',
     limit : 2,

@@ -165,6 +165,7 @@ Settings files that goes into the settings directory:
 * `ipExpirationDays`(Number): amount of days to wait before removing the ip from postings counting from it's date of creation. Null or any value below 1 means that ips should never be removed. The schedule that clears the ips is run hourly.
 * `allowTorPosting`(Boolean): allows TOR users to post. If bypass block is not disabled, they will still be able to post if they use it.
 * `allowTorFiles`(Boolean): when posting, allows TOR users to post files.
+* `useAlternativeLanguages`(Boolean): enables checking for user's language so one of the alternative languages can be used for his request.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

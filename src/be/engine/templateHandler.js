@@ -351,7 +351,8 @@ exports.getPageTests = function() {
             'fieldMediaPageSize', 'fieldMessageLength', 'checkboxFfmpegGifs',
             'fieldSpamIpsSource', 'checkboxSpamBypass',
             'checkboxDisableSpamCheck', 'checkboxDisableCatalogPosting',
-            'checkboxAllowTorPosting', 'checkboxAllowTorFiles' ]
+            'checkboxAllowTorPosting', 'checkboxAllowTorFiles',
+            'checkboxUseAlternativeLanguages' ]
       }, {
         template : 'hashBanPage',
         fields : [ 'hashBansPanel' ]

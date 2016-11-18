@@ -4,6 +4,7 @@
 // are not handled
 
 var logger = require('../logger');
+var kernel = require('../kernel');
 var indexString = 'index.html';
 var url = require('url');
 var proxy = require('http-proxy').createProxyServer({
@@ -13,7 +14,10 @@ var multiBoard = require('./multiBoardHandler');
 var multiBoardAllowed;
 var verbose;
 var maintenance;
-var feDebug = require('../kernel').feDebug();
+var feDebug = kernel.feDebug();
+var debug = kernel.debug();
+var langs = require('../db').languages();
+var useLanguages;
 var formOps;
 var apiOps;
 var miscOps;
@@ -35,6 +39,7 @@ exports.loadSettings = function() {
   multiBoardAllowed = settings.multiboardThreadCount;
   verbose = settings.verbose;
   slaves = settings.slaves;
+  useLanguages = settings.useAlternativeLanguages;
   master = settings.master;
   maintenance = settings.maintenance && !master;
   port = settings.port;
@@ -331,7 +336,86 @@ exports.checkForRedirection = function(req, pathName, res) {
 
 };
 
-exports.serve = function(req, pathName, res) {
+exports.pickFromPossibleLanguages = function(languages, returnedLanguages) {
+
+  for (var i = 0; i < languages.length; i++) {
+
+    for (var j = 0; j < returnedLanguages.length; j++) {
+
+      var returnedLanguage = returnedLanguages[j];
+
+      if (returnedLanguage.headerValues.indexOf(languages[i].language) >= 0) {
+        return returnedLanguage;
+      }
+
+    }
+
+  }
+
+};
+
+exports.getLanguageToUse = function(req, callback) {
+
+  var languages = req.headers['accept-language'].substring(0, 64).split(',')
+      .map(function(element) {
+        element = element.trim();
+
+        if (element.indexOf(';q=') < 0) {
+          return {
+            language : element,
+            priority : 1
+          };
+        } else {
+
+          var matches = element.match(/([a-zA-Z-]+);q\=([0-9\.]+)/);
+
+          if (!matches) {
+            return {
+              language : 'invalid',
+              priority : 0
+            };
+          }
+
+          return {
+            language : matches[1],
+            priority : +matches[2]
+          };
+
+        }
+
+      });
+
+  languages.sort(function(a, b) {
+    return b.priority - a.priority;
+  });
+
+  var acceptableLanguages = [];
+
+  for (var i = 0; i < languages.length; i++) {
+    acceptableLanguages.push(languages[i].language);
+  }
+
+  langs.find({
+    headerValues : {
+      $in : acceptableLanguages
+    }
+  }).toArray(
+      function gotLanguages(error, returnedLanguages) {
+
+        if (error) {
+          callback(error);
+        } else if (!returnedLanguages.length) {
+          callback();
+        } else {
+          callback(null, exports.pickFromPossibleLanguages(languages,
+              returnedLanguages));
+        }
+
+      });
+
+};
+
+exports.decideRouting = function(req, pathName, res) {
 
   if (pathName.indexOf('/.api/') === 0) {
     exports.processApiRequest(req, pathName.substring(5), res);
@@ -351,16 +435,48 @@ exports.serve = function(req, pathName, res) {
 
 };
 
+exports.serve = function(req, pathName, res) {
+
+  if (req.headers['accept-encoding']) {
+    req.compressed = req.headers['accept-encoding'].indexOf('gzip') > -1;
+  }
+
+  if (req.headers['accept-language'] && useLanguages) {
+
+    exports.getLanguageToUse(req, function gotLanguage(error, language) {
+
+      if (error) {
+
+        if (debug) {
+          throw error;
+        }
+
+        if (verbose) {
+          console.log(error);
+        }
+
+      }
+
+      if (language) {
+        req.language = language.headerValues.join('-');
+      }
+
+      exports.decideRouting(req, pathName, res);
+
+    });
+
+  } else {
+    exports.decideRouting(req, pathName, res);
+  }
+
+};
+
 exports.handle = function(req, res) {
 
   if (!req.headers || !req.headers.host) {
     res.writeHead(200, miscOps.corsHeader('text/plain'));
     res.end('get fucked, m8 :^)');
     return;
-  }
-
-  if (req.headers['accept-encoding']) {
-    req.compressed = req.headers['accept-encoding'].indexOf('gzip') > -1;
   }
 
   var pathName = url.parse(req.url).pathname;
