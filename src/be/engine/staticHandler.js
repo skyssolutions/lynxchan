@@ -16,7 +16,7 @@ if (!debug) {
 }
 var gridFs;
 var miscOps;
-var fePath;
+var defaultFePath;
 
 var filesCache = {};
 
@@ -24,7 +24,7 @@ exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
 
-  fePath = settings.fePath;
+  defaultFePath = settings.fePath;
   verbose = settings.verbose;
   disable304 = settings.disable304;
 };
@@ -73,17 +73,15 @@ exports.compress = function(pathName, file, mime, callback) {
 
 };
 
-exports.getFile = function(pathName, mime, callback) {
+exports.getFile = function(finalPath, mime, callback) {
 
-  var file = filesCache[pathName];
+  var file = filesCache[finalPath];
 
   if (file) {
     callback(null, file);
 
     return;
   }
-
-  var finalPath = fePath + '/static' + pathName;
 
   fs.stat(finalPath, function gotStats(error, stats) {
     if (error) {
@@ -102,7 +100,7 @@ exports.getFile = function(pathName, mime, callback) {
             content : data
           };
 
-          exports.compress(pathName, file, mime, callback);
+          exports.compress(finalPath, file, mime, callback);
         }
 
       });
@@ -119,9 +117,14 @@ exports.writeFile = function(req, file, mime, res) {
 
   var header = miscOps.corsHeader(mime).concat(
       [ [ 'last-modified', file.mtime ],
-          [ 'expires', new Date().toUTCString() ] ]);
+          [ 'expires', new Date().toUTCString() ],
+          [ 'Vary', 'Accept-Language' ] ]);
 
   var outputCompressed = false;
+
+  if (req.language) {
+    header.push([ 'Content-Language', req.language.headerValues.join(', ') ]);
+  }
 
   if (file.compressed) {
     header.push([ 'Vary', 'Accept-Encoding' ]);
@@ -139,6 +142,14 @@ exports.writeFile = function(req, file, mime, res) {
 
 };
 
+exports.getFilePath = function(req, pathName) {
+
+  var feToUse = req.language ? req.language.frontEnd : defaultFePath;
+
+  return feToUse + '/static' + pathName;
+
+};
+
 exports.outputFile = function(req, pathName, res, callback) {
 
   if (verbose) {
@@ -147,7 +158,8 @@ exports.outputFile = function(req, pathName, res, callback) {
 
   var mime = logger.getMime(pathName);
 
-  exports.getFile(pathName, mime, function gotFile(error, file) {
+  exports.getFile(exports.getFilePath(req, pathName), mime, function gotFile(
+      error, file) {
 
     if (error) {
       if (debug) {
@@ -165,7 +177,8 @@ exports.outputFile = function(req, pathName, res, callback) {
           console.log('304');
         }
 
-        var header = [ [ 'expires', new Date().toUTCString() ] ];
+        var header = [ [ 'expires', new Date().toUTCString() ],
+            [ 'Vary', 'Accept-Language' ] ];
 
         if (file.compressed) {
           header.push([ 'Vary', 'Accept-Encoding' ]);

@@ -371,7 +371,6 @@ exports.getLanguageToUse = function(req, callback) {
 
           if (!matches) {
             return {
-              language : 'invalid',
               priority : 0
             };
           }
@@ -392,7 +391,12 @@ exports.getLanguageToUse = function(req, callback) {
   var acceptableLanguages = [];
 
   for (var i = 0; i < languages.length; i++) {
-    acceptableLanguages.push(languages[i].language);
+
+    var language = languages[i];
+
+    if (language.priority) {
+      acceptableLanguages.push(language.language);
+    }
   }
 
   langs.find({
@@ -457,9 +461,7 @@ exports.serve = function(req, pathName, res) {
 
       }
 
-      if (language) {
-        req.language = language.headerValues.join('-');
-      }
+      req.language = language;
 
       exports.decideRouting(req, pathName, res);
 
