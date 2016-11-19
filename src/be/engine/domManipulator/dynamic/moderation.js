@@ -29,7 +29,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   miscOps = require('../../miscOps');
-  templateHandler = require('../../templateHandler');
+  templateHandler = require('../../templateHandler').getTemplates;
   lang = require('../../langOps').languagePack();
   common = require('..').common;
 
@@ -40,7 +40,7 @@ exports.bans = function(bans) {
 
   try {
 
-    var document = jsdom(templateHandler.bansPage);
+    var document = jsdom(templateHandler().bansPage);
 
     document.title = lang.titBansManagement;
 
@@ -67,7 +67,7 @@ exports.bans = function(bans) {
 // Section 2: Closed reports {
 exports.setClosedReportCell = function(cell, report) {
 
-  cell.innerHTML = templateHandler.closedReportCell;
+  cell.innerHTML = templateHandler().closedReportCell;
   cell.setAttribute('class', 'closedReportCell');
 
   if (report.reason) {
@@ -88,7 +88,7 @@ exports.setClosedReportCell = function(cell, report) {
 exports.closedReports = function(reports, callback) {
 
   try {
-    var document = jsdom(templateHandler.closedReportsPage);
+    var document = jsdom(templateHandler().closedReportsPage);
 
     document.title = lang.titClosedReports;
 
@@ -129,7 +129,7 @@ exports.setRangeBanCells = function(document, rangeBans, boardData) {
     var rangeBan = rangeBans[i];
 
     var banCell = document.createElement('form');
-    banCell.innerHTML = templateHandler.rangeBanCell;
+    banCell.innerHTML = templateHandler().rangeBanCell;
     common.setFormCellBoilerPlate(banCell, '/liftBan.js', 'rangeBanCell');
 
     var rangeToUse;
@@ -154,7 +154,7 @@ exports.rangeBans = function(rangeBans, boardData) {
 
   try {
 
-    var document = jsdom(templateHandler.rangeBansPage);
+    var document = jsdom(templateHandler().rangeBansPage);
 
     document.title = lang.titRangeBans;
 
@@ -194,7 +194,7 @@ exports.setHashBanCells = function(document, hashBans) {
     var hashBan = hashBans[i];
 
     var banCell = document.createElement('form');
-    banCell.innerHTML = templateHandler.hashBanCell;
+    banCell.innerHTML = templateHandler().hashBanCell;
     common.setFormCellBoilerPlate(banCell, '/liftHashBan.js', 'hashBanCell');
 
     banCell.getElementsByClassName('hashLabel')[0].innerHTML = hashBan.md5;
@@ -210,7 +210,7 @@ exports.hashBans = function(hashBans, boardUri) {
 
   try {
 
-    var document = jsdom(templateHandler.hashBansPage);
+    var document = jsdom(templateHandler().hashBansPage);
 
     document.title = lang.titHashBans;
 
@@ -269,7 +269,7 @@ exports.boardModeration = function(boardData, ownerData) {
 
   try {
 
-    var document = jsdom(templateHandler.boardModerationPage);
+    var document = jsdom(templateHandler().boardModerationPage);
 
     document.title = lang.titBoardModeration.replace('{$board}',
         boardData.boardUri);

@@ -218,7 +218,9 @@ exports.processMessage = function(message, callback) {
   if (debug) {
     debugPreGeneration();
   } else if (feDebug) {
-    require('./engine/templateHandler').loadTemplates();
+    var templateHandler = require('./engine/templateHandler');
+    templateHandler.dropAlternativeTemplates();
+    templateHandler.loadTemplates();
   }
 
   if (message.globalRebuild) {

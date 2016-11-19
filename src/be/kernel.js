@@ -68,6 +68,8 @@ exports.reload = function() {
 
   settingsHandler.loadSettings();
 
+  require('./engine/langOps').init();
+
   checkImagesSet();
 
   setDefaultImages();
@@ -103,7 +105,10 @@ function reloadSettings() {
 
 function reloadFe() {
 
-  require('./engine/templateHandler').loadTemplates();
+  var templateHandler = require('./engine/templateHandler');
+
+  templateHandler.dropAlternativeTemplates();
+  templateHandler.loadTemplates();
   require('./engine/staticHandler').dropCache();
 
 }
@@ -811,6 +816,9 @@ function bootDb() {
     if (error) {
       throw error;
     } else {
+
+      require('./engine/langOps').init();
+
       exports.startEngine();
 
       if (!settingsHandler.getGeneralSettings().master) {

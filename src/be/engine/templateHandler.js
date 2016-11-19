@@ -5,10 +5,10 @@
 var debug = require('../kernel').debug();
 var settingsHandler = require('../settingsHandler');
 var verbose;
-var fePath;
 var fs = require('fs');
 var jsdom = require('jsdom').jsdom;
-var templateSettings;
+var defaultTemplates = {};
+var alternativeTemplates = {};
 
 require('jsdom').defaultDocumentFeatures = {
   FetchExternalResources : false,
@@ -17,12 +17,29 @@ require('jsdom').defaultDocumentFeatures = {
   MutationEvents : false
 };
 
+exports.getTemplates = function(language) {
+
+  if (language) {
+    var toReturn = alternativeTemplates[language._id];
+
+    if (!toReturn) {
+      exports.loadTemplates(language);
+
+      toReturn = alternativeTemplates[language._id];
+    }
+
+    return toReturn || defaultTemplates;
+
+  } else {
+    return defaultTemplates;
+  }
+
+};
+
 exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
-  templateSettings = settingsHandler.getTemplateSettings();
   verbose = settings.verbose;
-  fePath = settings.fePath;
 
 };
 
@@ -395,7 +412,8 @@ exports.testPageFields = function(document, page, errors) {
   return error;
 };
 
-exports.processPage = function(errors, page) {
+exports.processPage = function(errors, page, fePath, templateSettings,
+    templateObject) {
 
   var fullPath = fePath + '/templates/';
   fullPath += templateSettings[page.template];
@@ -409,7 +427,7 @@ exports.processPage = function(errors, page) {
     return;
   }
 
-  exports[page.template] = template;
+  templateObject[page.template] = template;
 
   var document = jsdom(template);
 
@@ -422,7 +440,7 @@ exports.processPage = function(errors, page) {
 
 };
 
-exports.loadPages = function(errors) {
+exports.loadPages = function(errors, fePath, templateSettings, templateObject) {
 
   var pages = exports.getPageTests();
 
@@ -436,12 +454,13 @@ exports.loadPages = function(errors) {
       continue;
     }
 
-    exports.processPage(errors, page);
+    exports.processPage(errors, page, fePath, templateSettings, templateObject);
 
   }
 };
 
-exports.testCell = function(document, cell) {
+exports.testCell = function(document, cell, fePath, templateSettings,
+    templateObject) {
   var error = '';
 
   var cellElement = document.createElement('div');
@@ -455,7 +474,7 @@ exports.testCell = function(document, cell) {
     return error;
   }
 
-  exports[cell.template] = template;
+  templateObject[cell.template] = template;
 
   cellElement.innerHTML = template;
 
@@ -474,7 +493,7 @@ exports.testCell = function(document, cell) {
   return error;
 };
 
-exports.loadCells = function(errors) {
+exports.loadCells = function(errors, fePath, templateSettings, templateObject) {
 
   var document = jsdom('<html></html>');
 
@@ -490,7 +509,8 @@ exports.loadCells = function(errors) {
       continue;
     }
 
-    var error = exports.testCell(document, cell);
+    var error = exports.testCell(document, cell, fePath, templateSettings,
+        templateObject);
 
     if (error.length) {
       errors.push('\nCell ' + cell.template + error);
@@ -498,34 +518,63 @@ exports.loadCells = function(errors) {
   }
 };
 
-exports.loadTemplates = function() {
+exports.handleLoadingErrors = function(errors) {
+
+  if (!errors.length) {
+    return;
+  }
+
+  console.log('Were found issues with templates.');
+
+  if (verbose) {
+
+    for (var i = 0; i < errors.length; i++) {
+
+      var error = errors[i];
+
+      console.log(error);
+
+    }
+  } else {
+    console.log('Enable verbose mode to output them.');
+  }
+
+  if (debug) {
+    throw 'Fix the issues on the templates or run without debug mode';
+  }
+
+};
+
+exports.loadTemplates = function(language) {
 
   var errors = [];
 
-  exports.loadCells(errors);
-
-  exports.loadPages(errors);
-
-  if (errors.length) {
-
-    console.log('Were found issues with templates.');
+  if (!language) {
+    var fePath = settingsHandler.getGeneralSettings().fePath;
+    var templateSettings = settingsHandler.getTemplateSettings();
+    var templateObject = defaultTemplates;
+  } else {
 
     if (verbose) {
-
-      for (var i = 0; i < errors.length; i++) {
-
-        var error = errors[i];
-
-        console.log(error);
-
-      }
-    } else {
-      console.log('Enable verbose mode to output them.');
+      console.log('Loading alternative front-end: ' + language.headerValues);
     }
 
-    if (debug) {
-      throw 'Fix the issues on the templates or run without debug mode';
-    }
+    fePath = language.frontEnd;
+    templateObject = {};
+    alternativeTemplates[language._id] = templateObject;
+
+    var finalPath = fePath + '/templateSettings.json';
+    templateSettings = JSON.parse(fs.readFileSync(finalPath));
 
   }
+
+  exports.loadCells(errors, fePath, templateSettings, templateObject);
+  exports.loadPages(errors, fePath, templateSettings, templateObject);
+
+  exports.handleLoadingErrors(errors);
+
+};
+
+exports.dropAlternativeTemplates = function() {
+  alternativeTemplates = {};
 };

@@ -181,6 +181,9 @@ exports.boot = function() {
     if (error) {
       console.log(error);
     } else {
+
+      require('./engine/langOps').init();
+
       kernel.startEngine();
 
       startListening();

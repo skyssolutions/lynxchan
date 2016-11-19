@@ -47,7 +47,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   lang = require('../langOps').languagePack();
-  templateHandler = require('../templateHandler');
+  templateHandler = require('../templateHandler').getTemplates;
   miscOps = require('../miscOps');
 
 };
@@ -412,7 +412,7 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
   var cacheField = exports.getCacheField(false, innerPage, modding, userRole);
 
   if (!thread[cacheField] || !individualCaches) {
-    threadCell.innerHTML = templateHandler.opCell;
+    threadCell.innerHTML = templateHandler().opCell;
 
     exports.setThreadContent(thread, threadCell, posts, innerPage, boardUri,
         modding, userRole, document, boardData);
@@ -542,7 +542,7 @@ exports.setPostInnerElements = function(document, post, postCell, preview,
     return;
   }
 
-  postCell.innerHTML = templateHandler.postCell;
+  postCell.innerHTML = templateHandler().postCell;
 
   exports.setPostLinkName(postCell, post);
 
@@ -743,7 +743,7 @@ exports.setUploadModElements = function(modding, cell, file) {
 exports.getUploadCellBase = function(document) {
 
   var cell = document.createElement('figure');
-  cell.innerHTML = templateHandler.uploadCell;
+  cell.innerHTML = templateHandler().uploadCell;
   cell.setAttribute('class', 'uploadCell');
 
   return cell;
@@ -820,7 +820,7 @@ exports.setBanList = function(document, div, bans) {
 
     var ban = bans[i];
     var cell = document.createElement('div');
-    cell.innerHTML = templateHandler.banCell;
+    cell.innerHTML = templateHandler().banCell;
 
     cell.setAttribute('class', 'banCell');
 
@@ -916,7 +916,7 @@ exports.setReportCell = function(document, report) {
   var cell = document.createElement('div');
   cell.setAttribute('class', 'reportCell');
 
-  cell.innerHTML = templateHandler.reportCell;
+  cell.innerHTML = templateHandler().reportCell;
 
   if (report.reason) {
     var reason = cell.getElementsByClassName('reasonLabel')[0];

@@ -141,7 +141,11 @@ exports.processFormRequest = function(req, pathName, res) {
       }
 
       if (feDebug) {
-        require('./templateHandler').loadTemplates();
+
+        var templateHandler = require('./templateHandler');
+
+        templateHandler.dropAlternativeTemplates();
+        templateHandler.loadTemplates();
       }
 
       require(modulePath).process(req, res);

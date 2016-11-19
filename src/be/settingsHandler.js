@@ -467,8 +467,6 @@ exports.loadSettings = function() {
 
   templateSettings = JSON.parse(fs.readFileSync(templateSettingsPath));
 
-  require('./engine/langOps').init();
-
 };
 // } Section 2: Load settings
 

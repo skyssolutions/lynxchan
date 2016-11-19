@@ -45,7 +45,7 @@ exports.loadDependencies = function() {
   miscOps = require('../miscOps');
   engineInfo = require('../addonOps').getEngineInfo();
   common = require('.').common;
-  templateHandler = require('../templateHandler');
+  templateHandler = require('../templateHandler').getTemplates;
   lang = require('../langOps').languagePack();
   gridFs = require('../gridFsHandler');
   availableLogTypes = {
@@ -68,7 +68,7 @@ exports.loadDependencies = function() {
 exports.notFound = function(callback) {
 
   try {
-    var document = jsdom(templateHandler.notFoundPage);
+    var document = jsdom(templateHandler().notFoundPage);
 
     document.title = lang.titNotFound;
 
@@ -84,7 +84,7 @@ exports.notFound = function(callback) {
 exports.login = function(callback) {
 
   try {
-    var document = jsdom(templateHandler.loginPage);
+    var document = jsdom(templateHandler().loginPage);
 
     document.title = lang.titLogin;
 
@@ -188,7 +188,7 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
     callback, modding, userRole) {
 
   try {
-    var document = jsdom(templateHandler.threadPage);
+    var document = jsdom(templateHandler().threadPage);
 
     exports.setThreadTitle(document, boardUri, threadData);
 
@@ -283,7 +283,7 @@ exports.page = function(board, page, threads, pageCount, boardData, flagData,
 
   try {
 
-    var document = jsdom(templateHandler.boardPage);
+    var document = jsdom(templateHandler().boardPage);
 
     document.title = '/' + board + '/' + ' - ' + boardData.boardName;
 
@@ -335,7 +335,7 @@ exports.setCell = function(boardUri, document, thread) {
 
   var cell = document.createElement('div');
 
-  cell.innerHTML = templateHandler.catalogCell;
+  cell.innerHTML = templateHandler().catalogCell;
   cell.setAttribute('class', 'catalogCell');
 
   exports.setCellThumb(cell.getElementsByClassName('linkThumb')[0], boardUri,
@@ -376,7 +376,7 @@ exports.catalog = function(boardData, threads, flagData, callback) {
 
   try {
 
-    var document = jsdom(templateHandler.catalogPage);
+    var document = jsdom(templateHandler().catalogPage);
 
     var boardUri = boardData.boardUri;
 
@@ -417,7 +417,7 @@ exports.setLatestImages = function(latestImages, latestImagesDiv, document) {
     var image = latestImages[i];
 
     var cell = document.createElement('div');
-    cell.innerHTML = templateHandler.latestImageCell;
+    cell.innerHTML = templateHandler().latestImageCell;
     cell.setAttribute('class', 'latestImageCell');
 
     var link = cell.getElementsByClassName('linkPost')[0];
@@ -472,7 +472,7 @@ exports.setLatestPosts = function(latestPosts, latestPostsDiv, document) {
     var post = latestPosts[i];
 
     var cell = document.createElement('div');
-    cell.innerHTML = templateHandler.latestPostCell;
+    cell.innerHTML = templateHandler().latestPostCell;
     cell.setAttribute('class', 'latestPostCell');
 
     var previewLabel = cell.getElementsByClassName('labelPreview')[0];
@@ -551,7 +551,7 @@ exports.frontPage = function(boards, latestPosts, latestImages, globalStats,
 
   try {
 
-    var document = jsdom(templateHandler.index);
+    var document = jsdom(templateHandler().index);
 
     document.title = siteTitle;
 
@@ -605,7 +605,7 @@ exports.preview = function(postingData, callback) {
 
     path += '.html';
 
-    var document = jsdom(templateHandler.previewPage);
+    var document = jsdom(templateHandler().previewPage);
 
     var innerCell = document.createElement('div');
     innerCell.setAttribute('class', 'postCell');
@@ -630,7 +630,7 @@ exports.preview = function(postingData, callback) {
 exports.rules = function(boardUri, rules, callback) {
   try {
 
-    var document = jsdom(templateHandler.rulesPage);
+    var document = jsdom(templateHandler().rulesPage);
 
     document.title = lang.titRules.replace('{$board}', boardUri);
     document.getElementById('boardLabel').innerHTML = boardUri;
@@ -638,7 +638,7 @@ exports.rules = function(boardUri, rules, callback) {
 
     for (var i = 0; i < rules.length; i++) {
       var cell = document.createElement('div');
-      cell.innerHTML = templateHandler.ruleCell;
+      cell.innerHTML = templateHandler().ruleCell;
       cell.setAttribute('class', 'ruleCell');
 
       cell.getElementsByClassName('textLabel')[0].innerHTML = rules[i];
@@ -661,7 +661,7 @@ exports.rules = function(boardUri, rules, callback) {
 exports.maintenance = function(callback) {
   try {
 
-    var document = jsdom(templateHandler.maintenancePage);
+    var document = jsdom(templateHandler().maintenancePage);
 
     document.title = lang.titMaintenance;
 
@@ -697,7 +697,7 @@ exports.overboard = function(foundThreads, previewRelation, callback,
 
   try {
 
-    var document = jsdom(templateHandler.overboard);
+    var document = jsdom(templateHandler().overboard);
 
     exports.addOverBoardThreads(foundThreads, previewRelation, document);
 
@@ -747,7 +747,7 @@ exports.addLogEntry = function(logEntry, document, div) {
 
   if (!logEntry.cache || !individualCaches) {
 
-    logCell.innerHTML = templateHandler.logCell;
+    logCell.innerHTML = templateHandler().logCell;
 
     exports.setLogEntry(logCell, logEntry);
 
@@ -773,7 +773,7 @@ exports.log = function(date, logs, callback) {
 
   try {
 
-    var document = jsdom(templateHandler.logsPage);
+    var document = jsdom(templateHandler().logsPage);
 
     document.title = lang.titLogPage.replace('{$date}', common
         .formatDateToDisplay(date, true));

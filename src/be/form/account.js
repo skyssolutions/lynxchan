@@ -19,7 +19,7 @@ exports.process = function(req, res) {
         if (json) {
           res.end(jsonBuilder.account(userData));
         } else {
-          res.end(domManipulator.account(userData));
+          res.end(domManipulator.account(userData, req.language));
         }
 
       });

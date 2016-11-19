@@ -89,7 +89,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   common = require('..').common;
-  templateHandler = require('../../templateHandler');
+  templateHandler = require('../../templateHandler').getTemplates;
   lang = require('../../langOps').languagePack();
   miscOps = require('../../miscOps');
 
@@ -177,7 +177,7 @@ exports.setVolunteersDiv = function(document, boardData) {
   for (var i = 0; i < volunteers.length; i++) {
 
     var cell = document.createElement('form');
-    cell.innerHTML = templateHandler.volunteerCell;
+    cell.innerHTML = templateHandler().volunteerCell;
 
     common.setFormCellBoilerPlate(cell, '/setVolunteer.js', 'volunteerCell');
 
@@ -259,7 +259,7 @@ exports.boardManagement = function(userData, boardData, reports, bans) {
 
   try {
 
-    var document = jsdom(templateHandler.bManagement);
+    var document = jsdom(templateHandler().bManagement);
 
     document.title = lang.titBoardManagement.replace('{$board}',
         boardData.boardUri);
@@ -319,7 +319,7 @@ exports.fillStaffDiv = function(document, possibleRoles, staff) {
     var user = staff[i];
 
     var cell = document.createElement('form');
-    cell.innerHTML = templateHandler.staffCell;
+    cell.innerHTML = templateHandler().staffCell;
 
     common.setFormCellBoilerPlate(cell, '/setGlobalRole.js', 'staffCell');
 
@@ -436,7 +436,7 @@ exports.globalManagement = function(userRole, userLogin, staff, reports,
     appealedBans) {
 
   try {
-    var document = jsdom(templateHandler.gManagement);
+    var document = jsdom(templateHandler().gManagement);
 
     document.title = lang.titGlobalManagement;
 
@@ -470,7 +470,7 @@ exports.setFilterCell = function(document, boardUri, filter) {
 
   var cell = document.createElement('form');
 
-  cell.innerHTML = templateHandler.filterCell;
+  cell.innerHTML = templateHandler().filterCell;
 
   common.setFormCellBoilerPlate(cell, '/deleteFilter.js', 'filterCell');
 
@@ -498,7 +498,7 @@ exports.filterManagement = function(boardUri, filters) {
 
   try {
 
-    var document = jsdom(templateHandler.filterManagement);
+    var document = jsdom(templateHandler().filterManagement);
 
     document.title = lang.titFilters.replace('{$board}', boardUri);
 
@@ -537,7 +537,7 @@ exports.setRuleManagementCells = function(document, boardUri, rules) {
 
     var cell = document.createElement('form');
     common.setFormCellBoilerPlate(cell, '/deleteRule.js', 'ruleManagementCell');
-    cell.innerHTML = templateHandler.ruleManagementCell;
+    cell.innerHTML = templateHandler().ruleManagementCell;
     cell.getElementsByClassName('textLabel')[0].innerHTML = rule;
 
     cell.getElementsByClassName('boardIdentifier')[0].setAttribute('value',
@@ -552,7 +552,7 @@ exports.ruleManagement = function(boardUri, rules) {
 
   try {
 
-    var document = jsdom(templateHandler.ruleManagementPage);
+    var document = jsdom(templateHandler().ruleManagementPage);
 
     document.title = lang.titRuleManagement;
 
@@ -591,7 +591,7 @@ exports.addFlagCells = function(document, flags, boardUri) {
 
     common.setFormCellBoilerPlate(cell, '/deleteFlag.js', 'flagCell');
 
-    cell.innerHTML = templateHandler.flagCell;
+    cell.innerHTML = templateHandler().flagCell;
 
     var flagUrl = '/' + boardUri + '/flags/' + flag._id;
 
@@ -610,7 +610,7 @@ exports.addFlagCells = function(document, flags, boardUri) {
 exports.flagManagement = function(boardUri, flags, callback) {
   try {
 
-    var document = jsdom(templateHandler.flagsPage);
+    var document = jsdom(templateHandler().flagsPage);
 
     document.title = lang.titFlagManagement;
 
@@ -662,7 +662,7 @@ exports.globalSettings = function() {
 
   try {
 
-    var document = jsdom(templateHandler.globalSettingsPage);
+    var document = jsdom(templateHandler().globalSettingsPage);
 
     var siteSettingsRelation = miscOps.getParametersArray();
 
@@ -721,7 +721,7 @@ exports.addBannerCells = function(document, banners) {
     var banner = banners[i];
 
     var cell = document.createElement('form');
-    cell.innerHTML = templateHandler.bannerCell;
+    cell.innerHTML = templateHandler().bannerCell;
 
     common.setFormCellBoilerPlate(cell, '/deleteBanner.js', 'bannerCell');
 
@@ -739,7 +739,7 @@ exports.bannerManagement = function(boardUri, banners) {
 
   try {
 
-    var document = jsdom(templateHandler.bannerManagementPage);
+    var document = jsdom(templateHandler().bannerManagementPage);
 
     if (boardUri) {
       document.title = lang.titBanners.replace('{$board}', boardUri);
@@ -817,7 +817,7 @@ exports.setMediaManagementCells = function(document, media) {
     var file = media[i];
 
     var cell = document.createElement('div');
-    cell.innerHTML = templateHandler.mediaCell;
+    cell.innerHTML = templateHandler().mediaCell;
     cell.setAttribute('class', 'mediaCell');
 
     var link = cell.getElementsByClassName('fileLink')[0];
@@ -843,7 +843,7 @@ exports.mediaManagement = function(media, pages, parameters) {
 
   try {
 
-    var document = jsdom(templateHandler.mediaManagementPage);
+    var document = jsdom(templateHandler().mediaManagementPage);
 
     document.title = lang.titMediaManagement;
 
@@ -876,7 +876,7 @@ exports.addLanguageCell = function(document, language) {
 
   common.setFormCellBoilerPlate(cell, '/deleteLanguage.js', 'languageCell');
 
-  cell.innerHTML = templateHandler.languageCell;
+  cell.innerHTML = templateHandler().languageCell;
 
   cell.getElementsByClassName('languageIdentifier')[0].setAttribute('value',
       language._id);
@@ -896,7 +896,7 @@ exports.languages = function(languages) {
 
   try {
 
-    var document = jsdom(templateHandler.languagesManagementPage);
+    var document = jsdom(templateHandler().languagesManagementPage);
 
     document.title = lang.titLanguages;
 

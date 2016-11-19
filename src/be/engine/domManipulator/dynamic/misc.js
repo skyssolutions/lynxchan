@@ -36,7 +36,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
-  templateHandler = require('../../templateHandler');
+  templateHandler = require('../../templateHandler').getTemplates;
   lang = require('../../langOps').languagePack();
 
   common = require('..').common;
@@ -48,7 +48,7 @@ exports.error = function(code, message) {
 
   try {
 
-    var document = jsdom(templateHandler.errorPage);
+    var document = jsdom(templateHandler().errorPage);
 
     document.title = lang.titError;
 
@@ -77,7 +77,7 @@ exports.resetEmail = function(password) {
 
   try {
 
-    var document = jsdom(templateHandler.resetEmail);
+    var document = jsdom(templateHandler().resetEmail);
 
     var link = document.getElementById('labelNewPass');
     link.innerHTML = password;
@@ -101,7 +101,7 @@ exports.recoveryEmail = function(recoveryLink) {
 
   try {
 
-    var document = jsdom(templateHandler.recoveryEmail);
+    var document = jsdom(templateHandler().recoveryEmail);
 
     var link = document.getElementById('linkRecovery');
     link.href = recoveryLink;
@@ -188,10 +188,10 @@ exports.setTitleLoginAndStaff = function(document, userData) {
 
 };
 
-exports.account = function(userData) {
+exports.account = function(userData, language) {
 
   try {
-    var document = jsdom(templateHandler.accountPage);
+    var document = jsdom(templateHandler(language).accountPage);
 
     exports.setTitleLoginAndStaff(document, userData);
 
@@ -228,7 +228,7 @@ exports.account = function(userData) {
 exports.setLogIndexCell = function(dateCell, date) {
 
   dateCell.setAttribute('class', 'logIndexCell');
-  dateCell.innerHTML = templateHandler.logIndexCell;
+  dateCell.innerHTML = templateHandler().logIndexCell;
 
   var link = dateCell.getElementsByClassName('dateLink')[0];
   link.innerHTML = common.formatDateToDisplay(date, true);
@@ -241,7 +241,7 @@ exports.logs = function(dates) {
 
   try {
 
-    var document = jsdom(templateHandler.logIndexPage);
+    var document = jsdom(templateHandler().logIndexPage);
 
     document.title = lang.titLogs;
 
@@ -371,7 +371,7 @@ exports.setBoards = function(boards, document) {
     var board = boards[i];
 
     var boardCell = document.createElement('div');
-    boardCell.innerHTML = templateHandler.boardsCell;
+    boardCell.innerHTML = templateHandler().boardsCell;
     boardCell.setAttribute('class', 'boardsCell');
 
     exports.setBoardCell(board, boardCell);
@@ -403,7 +403,7 @@ exports.setOverboardLinks = function(document) {
 
 exports.boards = function(parameters, boards, pageCount) {
   try {
-    var document = jsdom(templateHandler.boardsPage);
+    var document = jsdom(templateHandler().boardsPage);
 
     document.title = lang.titBoards;
 
@@ -466,9 +466,9 @@ exports.ban = function(ban, board) {
     var templateToUse;
 
     if (ban.range) {
-      templateToUse = templateHandler.rangeBanPage;
+      templateToUse = templateHandler().rangeBanPage;
     } else {
-      templateToUse = templateHandler.banPage;
+      templateToUse = templateHandler().banPage;
     }
 
     var document = jsdom(templateToUse);
@@ -505,7 +505,7 @@ exports.setHashBanCells = function(document, hashBans) {
     var hashBan = hashBans[i];
 
     var cell = document.createElement('div');
-    cell.innerHTML = templateHandler.hashBanCellDisplay;
+    cell.innerHTML = templateHandler().hashBanCellDisplay;
     cell.setAttribute('class', 'hashBanCellDisplay');
 
     cell.getElementsByClassName('labelFile')[0].innerHTML = hashBan.file;
@@ -524,7 +524,7 @@ exports.hashBan = function(hashBans) {
 
   try {
 
-    var document = jsdom(templateHandler.hashBanPage);
+    var document = jsdom(templateHandler().hashBanPage);
 
     document.title = lang.titHashBan;
 
@@ -567,7 +567,7 @@ exports.setEditIdentifiers = function(parameters, document) {
 exports.edit = function(parameters, message) {
   try {
 
-    var document = jsdom(templateHandler.editPage);
+    var document = jsdom(templateHandler().editPage);
 
     document.getElementById('labelMessageLength').innerHTML = messageLength;
 
@@ -610,7 +610,7 @@ exports.noCookieCaptcha = function(parameters, captchaId) {
 
   try {
 
-    var document = jsdom(templateHandler.noCookieCaptchaPage);
+    var document = jsdom(templateHandler().noCookieCaptchaPage);
 
     document.title = lang.titNoCookieCaptcha;
 
@@ -644,7 +644,7 @@ exports.blockBypass = function(valid) {
 
   try {
 
-    var document = jsdom(templateHandler.bypassPage);
+    var document = jsdom(templateHandler().bypassPage);
 
     document.title = lang.titBlockbypass;
 
@@ -671,7 +671,7 @@ exports.blockBypass = function(valid) {
 exports.setGraphIndexCell = function(dateCell, date) {
 
   dateCell.setAttribute('class', 'graphIndexCell');
-  dateCell.innerHTML = templateHandler.graphIndexCell;
+  dateCell.innerHTML = templateHandler().graphIndexCell;
 
   var link = dateCell.getElementsByClassName('dateLink')[0];
   link.innerHTML = common.formatDateToDisplay(date, true);
@@ -684,7 +684,7 @@ exports.graphs = function(dates) {
 
   try {
 
-    var document = jsdom(templateHandler.graphsIndexPage);
+    var document = jsdom(templateHandler().graphsIndexPage);
 
     document.title = lang.titGraphs;
 
@@ -720,7 +720,7 @@ exports.message = function(message, link) {
 
   try {
 
-    var document = jsdom(templateHandler.messagePage);
+    var document = jsdom(templateHandler().messagePage);
 
     document.title = message;
 
