@@ -25,7 +25,7 @@ function changeSettings(userData, parameters, res, auth, language) {
       error) {
 
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       formOps.outputResponse(lang.msgAccountSettingsSaved, '/account.js', res,
           null, auth, language);

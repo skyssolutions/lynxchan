@@ -40,7 +40,7 @@ function changeGlobalSettings(userData, parameters, res, auth, language) {
       function changedGlobalSettings(error) {
 
         if (error) {
-          formOps.outputError(error, 500, res);
+          formOps.outputError(error, 500, res, language);
         } else {
           formOps.outputResponse(lang.msgSavedGlobalSettings,
               '/globalSettings.js', res, null, auth, language);

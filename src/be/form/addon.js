@@ -12,7 +12,7 @@ exports.process = function(req, res) {
   var loadedAddons = settingsHandler.getGeneralSettings().addons || [];
 
   if (loadedAddons.indexOf(requestedAddon) === -1) {
-    formOps.outputError(lang.errUnloadedAddon, 500, res);
+    formOps.outputError(lang.errUnloadedAddon, 500, res, req.language);
   } else {
     require('../addons/' + requestedAddon).formRequest(req, res);
   }

@@ -8,7 +8,7 @@ var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var modOps = require('../engine/modOps').edit;
 var mandatoryParameters = [ 'boardUri' ];
 
-function getPostingToEdit(userData, parameters, res, auth) {
+function getPostingToEdit(userData, parameters, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -17,7 +17,7 @@ function getPostingToEdit(userData, parameters, res, auth) {
   modOps.getPostingToEdit(userData, parameters, function gotPostingToEdit(
       error, message) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       var json = parameters.json;
 
@@ -42,7 +42,7 @@ exports.process = function(req, res) {
 
         var parameters = url.parse(req.url, true).query;
 
-        getPostingToEdit(userData, parameters, res, auth);
+        getPostingToEdit(userData, parameters, res, auth, req.language);
 
       });
 

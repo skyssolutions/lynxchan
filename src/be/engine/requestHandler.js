@@ -152,7 +152,7 @@ exports.processFormRequest = function(req, pathName, res) {
     }
 
   } catch (error) {
-    formOps.outputError(error, 500, res);
+    formOps.outputError(error, 500, res, req.language);
   }
 
 };
@@ -239,7 +239,7 @@ exports.outputGfsFile = function(req, pathName, res) {
         error) {
 
       if (error) {
-        formOps.outputError(error, 500, res);
+        formOps.outputError(error, 500, res, req.language);
       }
 
     });

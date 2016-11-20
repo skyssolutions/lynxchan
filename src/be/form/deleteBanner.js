@@ -9,7 +9,7 @@ function deleteBanner(parameters, userData, res, auth, language) {
   bannerOps.deleteBanner(userData, parameters, function deletedBanner(error,
       board) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       var redirectLink = '/bannerManagement.js';
 

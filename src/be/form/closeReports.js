@@ -25,7 +25,7 @@ function closeReport(userData, parameters, res, auth, language) {
   modOps.closeReports(userData, parameters, function reportClosed(error,
       global, board) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
 
       var redirect = global ? '/globalManagement.js'

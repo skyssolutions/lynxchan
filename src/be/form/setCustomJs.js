@@ -10,7 +10,7 @@ function setCustomJs(userData, parameters, res, auth, language) {
     boardOps.setCustomJs(userData, parameters.boardUri, parameters.files[0],
         function customJsSet(error, boardUri) {
           if (error) {
-            formOps.outputError(error, 500, res);
+            formOps.outputError(error, 500, res, language);
           } else {
 
             var redirect = '/boardManagement.js?boardUri=';
@@ -24,7 +24,7 @@ function setCustomJs(userData, parameters, res, auth, language) {
     boardOps.deleteCustomJs(userData, parameters.boardUri, function deletedJs(
         error) {
       if (error) {
-        formOps.outputError(error, 500, res);
+        formOps.outputError(error, 500, res, language);
       } else {
 
         var redirect = '/boardManagement.js?boardUri=';

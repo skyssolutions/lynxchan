@@ -14,7 +14,7 @@ function saveEdit(parameters, userData, res, auth, language) {
 
   modOps.saveEdit(userData, parameters, function editSaved(error, filters) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       var redirect = '/edit.js?boardUri=' + parameters.boardUri;
       if (parameters.threadId) {

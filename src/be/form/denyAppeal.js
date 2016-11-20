@@ -9,7 +9,7 @@ function denyAppeal(userData, parameters, res, auth, language) {
   modOps.denyAppeal(userData, parameters.banId, function appealDenied(error,
       board) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       var redirect = '/bans.js';
 

@@ -9,7 +9,7 @@ function changePassword(userData, parameters, res, language) {
       error, newHash) {
 
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       formOps.outputResponse(lang.msgChangedPassword, '/account.js', res, [ {
         field : 'hash',

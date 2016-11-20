@@ -18,7 +18,7 @@ function deleteMedia(auth, parameters, userData, res, language) {
       function deletedFiles(error) {
 
         if (error) {
-          formOps.outputError(error, 500, res);
+          formOps.outputError(error, 500, res, language);
         } else {
 
           formOps.outputResponse(lang.msgMediaDeleted, '/mediaManagement.js',

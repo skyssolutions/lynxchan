@@ -12,7 +12,7 @@ function createPost(req, userData, parameters, captchaId, res, auth) {
   postingOps.newPost(req, userData, parameters, captchaId,
       function postCreated(error, id) {
         if (error) {
-          formOps.outputError(error, 500, res);
+          formOps.outputError(error, 500, res, req.language);
         } else {
           var redirectLink = '../' + parameters.boardUri;
           redirectLink += '/res/' + parameters.threadId;
@@ -34,14 +34,14 @@ function checkBans(req, res, parameters, userData, captchaId, auth) {
       function checkedBan(error) {
 
         if (error) {
-          formOps.outputError(error, 500, res);
+          formOps.outputError(error, 500, res, req.language);
         } else {
 
           // style exception, too simple
           formOps.checkForHashBan(parameters, req, res,
               function checkedHashBans(error) {
                 if (error) {
-                  formOps.outputError(error, 500, res);
+                  formOps.outputError(error, 500, res, req.language);
                 } else {
                   createPost(req, userData, parameters, captchaId, res, auth);
                 }
@@ -59,7 +59,7 @@ function useBypass(req, res, parameters, userData, captchaId, bypassId, auth) {
   bypassOps.useBypass(bypassId, req, function usedBypass(error) {
 
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, req.language);
     } else {
       checkBans(req, res, parameters, userData, captchaId, auth);
     }

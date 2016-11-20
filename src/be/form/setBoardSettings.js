@@ -36,7 +36,7 @@ function setBoardSettings(userData, parameters, res, auth, language) {
 
   boardOps.setSettings(userData, parameters, function settingsSaved(error) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       var redirect = '/boardManagement.js?boardUri=' + parameters.boardUri;
 

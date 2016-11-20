@@ -7,12 +7,12 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var modOps = require('../engine/modOps').ipBan.general;
 
-function getRangeBans(userData, parameters, res, auth) {
+function getRangeBans(userData, parameters, res, auth, language) {
 
   modOps.getRangeBans(userData, parameters, function gotRangeBans(error,
       rangeBans, boardData) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       var json = parameters.json;
 
@@ -37,7 +37,7 @@ exports.process = function(req, res) {
 
         var parameters = url.parse(req.url, true).query;
 
-        getRangeBans(userData, parameters, res, auth);
+        getRangeBans(userData, parameters, res, auth, req.language);
 
       });
 

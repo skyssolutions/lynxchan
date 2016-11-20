@@ -44,11 +44,11 @@ exports.loadDependencies = function() {
 
 };
 
-exports.error = function(code, message) {
+exports.error = function(code, message, language) {
 
   try {
 
-    var document = jsdom(templateHandler().errorPage);
+    var document = jsdom(templateHandler(language).errorPage);
 
     document.title = lang.titError;
 

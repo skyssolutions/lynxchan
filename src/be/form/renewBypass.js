@@ -13,7 +13,7 @@ function renewBypass(auth, parameters, res, language) {
       function renewedBypass(error, bypassId) {
 
         if (error) {
-          formOps.outputError(error, 500, res);
+          formOps.outputError(error, 500, res, language);
         } else {
 
           formOps.outputResponse(lang.msgBypassRenewed, '/blockBypass.js', res,
@@ -30,7 +30,7 @@ function renewBypass(auth, parameters, res, language) {
 exports.process = function(req, res) {
 
   if (!settingsHandler.getGeneralSettings().bypassMode) {
-    formOps.outputError(lang.errDisabledBypass, 500, res);
+    formOps.outputError(lang.errDisabledBypass, 500, res, req.language);
 
     return;
   }

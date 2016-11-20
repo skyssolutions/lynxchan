@@ -8,7 +8,7 @@ function createBanner(parameters, userData, res, auth, language) {
 
   bannerOps.addBanner(userData, parameters, function createdBanner(error) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
 
       var redirectLink = '/bannerManagement.js';

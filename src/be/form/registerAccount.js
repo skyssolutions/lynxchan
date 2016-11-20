@@ -13,7 +13,7 @@ function createAccount(parameters, res, captchaId, language) {
 
   accountOps.registerUser(parameters, function userCreated(error, hash) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       formOps.outputResponse(lang.msgAccountCreated, '/account.js', res, [ {
         field : 'login',

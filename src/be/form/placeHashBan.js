@@ -14,7 +14,7 @@ function placeHashBan(userData, parameters, captchaId, res, auth, language) {
   modOps.placeHashBan(userData, parameters, captchaId, function hashBanPlaced(
       error) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       var redirectLink = '/hashBans.js';
 

@@ -130,7 +130,7 @@ exports.process = function(req, res) {
 
   boards.count(queryBlock, function(error, count) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, req.language);
     } else {
       var pageCount = Math.floor(count / pageSize);
       pageCount += (count % pageSize ? 1 : 0);
@@ -154,7 +154,7 @@ exports.process = function(req, res) {
       }).sort(getSortBlock(parameters)).skip(toSkip).limit(pageSize).toArray(
           function(error, foundBoards) {
             if (error) {
-              formOps.outputError(error, 500, res);
+              formOps.outputError(error, 500, res, req.language);
             } else {
               var json = parameters.json;
 

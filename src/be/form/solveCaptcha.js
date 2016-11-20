@@ -11,7 +11,7 @@ exports.process = function(req, res) {
     // style exception, too simple
     captchaOps.solveCaptcha(parameters, function solvedCaptcha(error) {
       if (error) {
-        formOps.outputError(error, 500, res);
+        formOps.outputError(error, 500, res, req.language);
       } else {
         var redirectLink = '/noCookieCaptcha.js?solvedCaptcha=';
         redirectLink += parameters.captchaId;

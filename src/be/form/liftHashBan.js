@@ -9,7 +9,7 @@ function liftHashBan(userData, parameters, res, auth, language) {
   modOps.liftHashBan(userData, parameters, function hashBanLifted(error,
       boardUri) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
 
       var redirect = '/hashBans.js';

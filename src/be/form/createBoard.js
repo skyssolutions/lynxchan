@@ -14,7 +14,7 @@ function createBoard(userData, parameters, res, captchaId, auth, language) {
   boardOps.createBoard(captchaId, parameters, userData, function boardCreated(
       error) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       var redirectLink = '/' + parameters.boardUri + '/';
 

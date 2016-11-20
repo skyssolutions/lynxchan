@@ -10,7 +10,7 @@ var lang = require('../engine/langOps').languagePack();
 exports.process = function(req, res) {
 
   if (!settingsHandler.getGeneralSettings().bypassMode) {
-    formOps.outputError(lang.errDisabledBypass, 500, res);
+    formOps.outputError(lang.errDisabledBypass, 500, res, req.language);
 
     return;
   }
@@ -19,7 +19,7 @@ exports.process = function(req, res) {
       error, valid) {
 
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, req.language);
     } else {
       res.writeHead(200, miscOps.corsHeader('text/html'));
 

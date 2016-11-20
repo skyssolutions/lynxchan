@@ -32,7 +32,7 @@ function showCaptcha(req, captchaData, res) {
             throw error;
           }
 
-          formOps.outputError(error, 500, res);
+          formOps.outputError(error, 500, res, req.language);
 
         }
       }, cookies);
@@ -54,7 +54,7 @@ exports.process = function(req, res) {
         throw error;
       }
 
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, req.language);
     } else if (!captchaData) {
       if (verbose) {
         console.log('No captcha found');
@@ -72,7 +72,7 @@ exports.process = function(req, res) {
             throw error;
           }
 
-          formOps.outputError(error, 500, res);
+          formOps.outputError(error, 500, res, req.language);
         } else {
           showCaptcha(req, captchaData, res);
         }

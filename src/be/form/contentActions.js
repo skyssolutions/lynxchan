@@ -125,7 +125,7 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
 
     modOps.spoiler.spoiler(userData, reportedObjects, function(error) {
       if (error) {
-        formOps.outputError(error, 500, res);
+        formOps.outputError(error, 500, res, req.language);
       } else {
         formOps.outputResponse(lang.msgContentSpoilered, redirectBoard, res,
             null, auth, req.language);
@@ -137,7 +137,7 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
     modOps.report.report(req, reportedObjects, parameters, captchaId,
         function createdReports(error, ban) {
           if (error) {
-            formOps.outputError(error, 500, res);
+            formOps.outputError(error, 500, res, req.language);
           } else if (ban) {
             res.writeHead(200, miscOps.corsHeader('text/html'));
 
@@ -158,7 +158,7 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
     modOps.ipBan.specific.ban(userData, reportedObjects, parameters, captchaId,
         function(error) {
           if (error) {
-            formOps.outputError(error, 500, res);
+            formOps.outputError(error, 500, res, req.language);
           } else {
             formOps.outputResponse(lang.msgUsersBanned, redirectBoard, res,
                 null, auth, req.language);
@@ -171,7 +171,7 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
         error) {
 
       if (error) {
-        formOps.outputError(error, 500, res);
+        formOps.outputError(error, 500, res, req.language);
       } else {
         formOps.outputResponse(lang.msgDeletedFromIp, redirectBoard, res, null,
             auth, req.language);
@@ -185,7 +185,7 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
         function deletedPostings(error, removedThreads, removedPosts) {
 
           if (error) {
-            formOps.outputError(error, 500, res);
+            formOps.outputError(error, 500, res, req.language);
           } else {
 
             formOps.outputResponse(lang.msgContentDeleted.replace('{$threads}',
@@ -228,7 +228,7 @@ exports.process = function(req, res) {
         // style exception,too simple
         accountOps.validate(auth, function validated(error, newAuth, userData) {
           if (error) {
-            formOps.outputError(error, 500, res);
+            formOps.outputError(error, 500, res, req.language);
           } else {
             processParameters(req, userData, parameters, res, auth.captchaid,
                 newAuth);
@@ -242,7 +242,7 @@ exports.process = function(req, res) {
 
     });
   } catch (error) {
-    formOps.outputError(error, 500, res);
+    formOps.outputError(error, 500, res, req.language);
   }
 
 };

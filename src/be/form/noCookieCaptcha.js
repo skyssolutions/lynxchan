@@ -12,7 +12,7 @@ exports.process = function(req, res) {
 
   captchaOps.generateCaptcha(function generatedCaptcha(error, captchaData) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, req.language);
     } else {
       res.writeHead(200, miscOps.corsHeader('text/html'));
 

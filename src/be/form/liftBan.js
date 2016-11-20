@@ -9,7 +9,7 @@ function liftBan(userData, parameters, res, auth, language) {
   modOps.liftBan(userData, parameters, function banLifted(error, rangeBan,
       boardUri) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
 
       var redirect = '/';

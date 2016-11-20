@@ -15,7 +15,7 @@ function createFilter(parameters, userData, res, auth, language) {
   boardOps.createFilter(userData, parameters, function filterCreated(error,
       filters) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       var redirect = '/filterManagement.js?boardUri=' + parameters.boardUri;
       formOps.outputResponse(lang.msgFilterCreated, redirect, res, null, auth,

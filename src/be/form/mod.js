@@ -14,7 +14,7 @@ var modOps = require('../engine/modOps').common;
 var formOps = require('../engine/formOps');
 
 function outputModData(bData, flagData, thread, posts, res, json, userRole,
-    auth) {
+    auth, language) {
 
   var header = miscOps.corsHeader(json ? 'application/json' : 'text/html');
 
@@ -34,7 +34,7 @@ function outputModData(bData, flagData, thread, posts, res, json, userRole,
     domManipulator.thread(bData.boardUri, bData, flagData, thread, posts,
         function gotThreadContent(error, content) {
           if (error) {
-            formOps.outputError(error, 500, res);
+            formOps.outputError(error, 500, res, language);
           } else {
 
             res.end(content);
@@ -45,7 +45,7 @@ function outputModData(bData, flagData, thread, posts, res, json, userRole,
 }
 
 function getPostingData(boardData, flagData, parameters, res, json, userRole,
-    auth) {
+    auth, language) {
 
   threads.findOne({
     threadId : +parameters.threadId,
@@ -78,9 +78,9 @@ function getPostingData(boardData, flagData, parameters, res, json, userRole,
     markdown : 1
   }, function gotThread(error, thread) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else if (!thread) {
-      formOps.outputError(lang.errThreadNotFound, 500, res);
+      formOps.outputError(lang.errThreadNotFound, 500, res, language);
     } else {
 
       // style exception, too simple
@@ -115,10 +115,10 @@ function getPostingData(boardData, flagData, parameters, res, json, userRole,
       }).toArray(
           function gotPosts(error, posts) {
             if (error) {
-              formOps.outputError(error, 500, res);
+              formOps.outputError(error, 500, res, language);
             } else {
               outputModData(boardData, flagData, thread, posts, res, json,
-                  userRole, auth);
+                  userRole, auth, language);
             }
 
           });
@@ -130,7 +130,7 @@ function getPostingData(boardData, flagData, parameters, res, json, userRole,
 
 }
 
-function getFlags(board, parameters, res, json, userRole, auth) {
+function getFlags(board, parameters, res, json, userRole, auth, language) {
 
   flags.find({
     boardUri : parameters.boardUri
@@ -138,13 +138,15 @@ function getFlags(board, parameters, res, json, userRole, auth) {
     name : 1
   }).sort({
     name : 1
-  }).toArray(function gotFlags(error, flagData) {
-    if (error) {
-      formOps.outputError(error, 500, res);
-    } else {
-      getPostingData(board, flagData, parameters, res, json, userRole, auth);
-    }
-  });
+  }).toArray(
+      function gotFlags(error, flagData) {
+        if (error) {
+          formOps.outputError(error, 500, res, language);
+        } else {
+          getPostingData(board, flagData, parameters, res, json, userRole,
+              auth, language);
+        }
+      });
 
 }
 
@@ -183,14 +185,15 @@ exports.process = function(req, res) {
           volunteers : 1
         }, function gotBoard(error, board) {
           if (error) {
-            formOps.outputError(error, 500, res);
+            formOps.outputError(error, 500, res, req.language);
           } else if (!board) {
-            formOps.outputError(lang.errBoardNotFound, 500, res);
+            formOps.outputError(lang.errBoardNotFound, 500, res, req.language);
           } else if (!modOps.isInBoardStaff(userData, board) && !globalStaff) {
-            formOps.outputError(lang.errDeniedManageBoard, 500, res);
+            formOps.outputError(lang.errDeniedManageBoard, 500, res,
+                req.language);
           } else {
             getFlags(board, parameters, res, parameters.json,
-                userData.globalRole, auth);
+                userData.globalRole, auth, req.language);
           }
         });
         // style exception, too simple

@@ -10,7 +10,7 @@ function setCustomCss(userData, parameters, res, auth, language) {
     boardOps.setCustomCss(userData, parameters.boardUri, parameters.files[0],
         function customCssSet(error, boardUri) {
           if (error) {
-            formOps.outputError(error, 500, res);
+            formOps.outputError(error, 500, res, language);
           } else {
 
             var redirect = '/boardManagement.js?boardUri=';
@@ -24,7 +24,7 @@ function setCustomCss(userData, parameters, res, auth, language) {
     boardOps.deleteCustomCss(userData, parameters.boardUri,
         function deletedCss(error) {
           if (error) {
-            formOps.outputError(error, 500, res);
+            formOps.outputError(error, 500, res, language);
           } else {
 
             var redirect = '/boardManagement.js?boardUri=';

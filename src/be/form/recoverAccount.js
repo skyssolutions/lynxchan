@@ -12,7 +12,7 @@ exports.process = function(req, res) {
 
   accountOps.recoverAccount(parameters, function recoveredAccount(error) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, req.language);
     } else {
       formOps.outputResponse(lang.msgPasswordReset, '/account.js', res, null,
           null, req.language);

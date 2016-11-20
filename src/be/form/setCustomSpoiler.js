@@ -10,7 +10,7 @@ function setCustomSpoiler(userData, parameters, res, auth, language) {
     boardOps.setCustomSpoiler(userData, parameters.boardUri,
         parameters.files[0], function customSpoilerSet(error, boardUri) {
           if (error) {
-            formOps.outputError(error, 500, res);
+            formOps.outputError(error, 500, res, language);
           } else {
 
             var redirect = '/boardManagement.js?boardUri=';
@@ -24,7 +24,7 @@ function setCustomSpoiler(userData, parameters, res, auth, language) {
     boardOps.deleteCustomSpoiler(userData, parameters.boardUri,
         function deletedSpoiler(error) {
           if (error) {
-            formOps.outputError(error, 500, res);
+            formOps.outputError(error, 500, res, language);
           } else {
 
             var redirect = '/boardManagement.js?boardUri=';

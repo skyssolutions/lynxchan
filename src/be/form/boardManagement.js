@@ -7,12 +7,12 @@ var jsonB = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 var formOps = require('../engine/formOps');
 
-function getBoardManagementData(board, userData, res, json, auth) {
+function getBoardManagementData(board, userData, res, json, auth, language) {
 
   boardOps.getBoardManagementData(userData, board, !json,
       function gotManagementData(error, boardData, reports, bans) {
         if (error) {
-          formOps.outputError(error, 500, res);
+          formOps.outputError(error, 500, res, language);
         } else {
           res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
               : 'text/html', auth));
@@ -34,6 +34,6 @@ exports.process = function(req, res) {
         var parameters = url.parse(req.url, true).query;
 
         getBoardManagementData(parameters.boardUri, userData, res,
-            parameters.json, auth);
+            parameters.json, auth, req.language);
       });
 };

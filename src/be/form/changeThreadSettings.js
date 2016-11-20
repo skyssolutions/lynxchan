@@ -14,7 +14,7 @@ function saveThreadSettings(userData, parameters, res, auth, language) {
   modOps.setThreadSettings(userData, parameters, function setThreadSettings(
       error) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       var redirectLink = '/mod.js?boardUri=' + parameters.boardUri;
       redirectLink += '&threadId=' + parameters.threadId;

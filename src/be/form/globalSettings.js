@@ -6,11 +6,11 @@ var url = require('url');
 var jsonBuilder = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
-function getGlobalSettings(userData, res, json, auth) {
+function getGlobalSettings(userData, res, json, auth, language) {
 
   miscOps.getGlobalSettingsData(userData, function gotBannerData(error) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
           : 'text/html', auth));
@@ -31,7 +31,7 @@ exports.process = function(req, res) {
       function gotData(auth, userData) {
 
         getGlobalSettings(userData, res, url.parse(req.url, true).query.json,
-            auth);
+            auth, req.language);
 
       });
 

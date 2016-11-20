@@ -13,7 +13,7 @@ function requestRecovery(domain, parameters, res, captchaId, language) {
   accountOps.requestRecovery(domain, parameters, captchaId,
       function requestCreated(error) {
         if (error) {
-          formOps.outputError(error, 500, res);
+          formOps.outputError(error, 500, res, language);
         } else {
           formOps.outputResponse(lang.msgRequestCreated, '/login.html', res,
               null, null, language);

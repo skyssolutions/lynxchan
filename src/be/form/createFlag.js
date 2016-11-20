@@ -13,7 +13,7 @@ function createFlag(parameters, userData, res, auth, language) {
 
   boardOps.createFlag(userData, parameters, function createdFlag(error) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
 
       var url = '/flags.js?boardUri=' + parameters.boardUri;

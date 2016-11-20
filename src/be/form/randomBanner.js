@@ -34,7 +34,7 @@ exports.process = function(req, res) {
     'metadata.type' : 'banner'
   }).toArray(function(error, banners) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, req.language);
     } else if (!banners.length) {
       outputFile(defaultBanner, res);
     } else {

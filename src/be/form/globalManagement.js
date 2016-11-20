@@ -6,12 +6,12 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var url = require('url');
 var miscOps = require('../engine/miscOps');
 
-function getManagementData(userData, res, json, auth) {
+function getManagementData(userData, res, json, auth, language) {
 
   miscOps.getManagementData(userData.globalRole, userData.login, !json,
       function gotData(error, globalStaff, globalReports, appealedBans) {
         if (error) {
-          formOps.outputError(error, 500, res);
+          formOps.outputError(error, 500, res, language);
         } else {
 
           res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
@@ -33,12 +33,12 @@ function getManagementData(userData, res, json, auth) {
 
 exports.process = function(req, res) {
 
-  formOps.getAuthenticatedPost(req, res, false,
-      function gotData(auth, userData, parameters) {
+  formOps.getAuthenticatedPost(req, res, false, function gotData(auth,
+      userData, parameters) {
 
-        getManagementData(userData, res, url.parse(req.url, true).query.json,
-            auth);
+    getManagementData(userData, res, url.parse(req.url, true).query.json, auth,
+        req.language);
 
-      });
+  });
 
 };

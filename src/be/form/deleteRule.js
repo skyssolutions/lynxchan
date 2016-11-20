@@ -13,7 +13,7 @@ function deleteRule(parameters, userData, res, auth, language) {
 
   boardOps.deleteRule(parameters, userData, function deletedRule(error) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       var redirectLink = '/rules.js?boardUri=' + parameters.boardUri;
 

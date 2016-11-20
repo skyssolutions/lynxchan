@@ -29,7 +29,7 @@ function setBoardSpecialSettings(userData, parameters, res, auth, language) {
   boardOps.setSpecialSettings(userData, parameters,
       function specialSettingsSaved(error) {
         if (error) {
-          formOps.outputError(error, 500, res);
+          formOps.outputError(error, 500, res, language);
         } else {
           var redirect = '/boardModeration.js?boardUri=' + parameters.boardUri;
 

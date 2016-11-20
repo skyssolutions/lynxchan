@@ -14,7 +14,7 @@ function appealBan(ip, parameters, res, language) {
 
   modOps.appealBan(ip, parameters, function banAppealed(error) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       formOps.outputResponse(lang.msgBanAppealed, '/', res, null, null,
           language);

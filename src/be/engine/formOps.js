@@ -142,7 +142,7 @@ exports.getFileData = function(file, fields, mime, callback) {
 };
 
 exports.transferFileInformation = function(files, fields, parsedCookies, cb,
-    res, exceptionalMimes) {
+    res, exceptionalMimes, language) {
 
   if (files.files.length && fields.files.length < maxFiles) {
 
@@ -150,7 +150,7 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
 
     if (!file.headers['content-type']) {
       exports.transferFileInformation(files, fields, parsedCookies, cb, res,
-          exceptionalMimes);
+          exceptionalMimes, language);
 
       return;
     }
@@ -160,7 +160,7 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
     var acceptableSize = file.size && file.size < maxFileSize;
 
     if (validMimes.indexOf(mime) === -1 && !exceptionalMimes && file.size) {
-      exports.outputError(lang.errFormatNotAllowed, 500, res);
+      exports.outputError(lang.errFormatNotAllowed, 500, res, language);
     } else if (acceptableSize) {
 
       exports.getFileData(file, fields, mime, function gotFileData(error) {
@@ -176,14 +176,14 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
         }
 
         exports.transferFileInformation(files, fields, parsedCookies, cb, res,
-            exceptionalMimes);
+            exceptionalMimes, language);
 
       });
     } else if (file.size) {
-      exports.outputError(lang.errFileTooLarge, 500, res);
+      exports.outputError(lang.errFileTooLarge, 500, res, language);
     } else {
       exports.transferFileInformation(files, fields, parsedCookies, cb, res,
-          exceptionalMimes);
+          exceptionalMimes, language);
     }
 
   } else {
@@ -198,7 +198,7 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
 // } Section 1.1: File processing
 
 exports.processParsedRequest = function(res, fields, files, callback,
-    parsedCookies, exceptionalMimes) {
+    parsedCookies, exceptionalMimes, language) {
 
   for ( var key in fields) {
     if (fields.hasOwnProperty(key)) {
@@ -211,7 +211,7 @@ exports.processParsedRequest = function(res, fields, files, callback,
   if (files.files) {
 
     exports.transferFileInformation(files, fields, parsedCookies, callback,
-        res, exceptionalMimes);
+        res, exceptionalMimes, language);
 
   } else {
     if (verbose) {
@@ -268,10 +268,10 @@ exports.getPostData = function(req, res, callback, exceptionalMimes) {
   parser.parse(req, function parsed(error, fields, files) {
 
     if (error) {
-      exports.outputError(error, 500, res);
+      exports.outputError(error, 500, res, req.language);
     } else {
       exports.processParsedRequest(res, fields, files, callback, exports
-          .getCookies(req), exceptionalMimes);
+          .getCookies(req), exceptionalMimes, req.language);
 
     }
 
@@ -383,7 +383,7 @@ exports.outputResponse = function(message, redirect, res, cookies, authBlock,
 
 };
 
-exports.outputError = function(error, code, res) {
+exports.outputError = function(error, code, res, language) {
 
   if (verbose) {
     console.log(error);
@@ -400,11 +400,11 @@ exports.outputError = function(error, code, res) {
 
   res.writeHead(code, miscOps.corsHeader('text/html'));
 
-  res.end(domManipulator.error(code, error.toString()));
+  res.end(domManipulator.error(code, error.toString(), language));
 
 };
 
-exports.failCheck = function(parameter, reason, res) {
+exports.failCheck = function(parameter, reason, res, language) {
 
   if (verbose) {
     console.log('Blank reason: ' + reason);
@@ -414,17 +414,17 @@ exports.failCheck = function(parameter, reason, res) {
     var message = lang.errBlankParameter.replace('{$parameter}', parameter)
         .replace('{$reason}', reason);
 
-    exports.outputError(message, 400, res);
+    exports.outputError(message, 400, res, language);
   }
 
   return true;
 
 };
 
-exports.checkBlankParameters = function(object, parameters, res) {
+exports.checkBlankParameters = function(object, parameters, res, language) {
 
   if (!object) {
-    return exports.failCheck();
+    return exports.failCheck(null, null, null, language);
   }
 
   if (!object.hasOwnProperty) {
@@ -435,20 +435,23 @@ exports.checkBlankParameters = function(object, parameters, res) {
     var parameter = parameters[i];
 
     if (!object.hasOwnProperty(parameter)) {
-      return exports.failCheck(parameter, lang.miscReasonNotPresent, res);
+      return exports.failCheck(parameter, lang.miscReasonNotPresent, res,
+          language);
 
     }
 
     if (object[parameter] === null) {
-      return exports.failCheck(parameter, lang.miscReasonNnull, res);
+      return exports.failCheck(parameter, lang.miscReasonNnull, res, language);
     }
 
     if (object[parameter] === undefined) {
-      return exports.failCheck(parameter, lang.miscReasonUndefined, res);
+      return exports.failCheck(parameter, lang.miscReasonUndefined, res,
+          language);
     }
 
     if (!object[parameter].trim().length) {
-      return exports.failCheck(parameter, lang.miscReasonNoLength, res);
+      return exports.failCheck(parameter, lang.miscReasonNoLength, res,
+          language);
     }
   }
 

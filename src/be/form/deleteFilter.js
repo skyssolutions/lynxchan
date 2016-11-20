@@ -15,7 +15,7 @@ function deleteFilter(parameters, userData, res, auth, language) {
   boardOps.deleteFilter(userData, parameters, function filterDeleted(error,
       filters) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       var redirect = '/filterManagement.js?boardUri=' + parameters.boardUri;
       formOps.outputResponse(lang.msgFilterDeleted, redirect, res, null, auth,

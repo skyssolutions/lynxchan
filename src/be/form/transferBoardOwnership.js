@@ -13,7 +13,7 @@ function transferBoard(userData, parameters, res, auth, language) {
 
   boardOps.transfer(userData, parameters, function transferedBoard(error) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       var redirect = '/' + parameters.boardUri + '/';
 

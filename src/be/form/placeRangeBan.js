@@ -14,7 +14,7 @@ function placeRangeBan(userData, parameters, captchaId, res, auth, language) {
   modOps.placeRangeBan(userData, parameters, captchaId,
       function rangeBanPlaced(error) {
         if (error) {
-          formOps.outputError(error, 500, res);
+          formOps.outputError(error, 500, res, language);
         } else {
           var redirectLink = '/rangeBans.js';
 

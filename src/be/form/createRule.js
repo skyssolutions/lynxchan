@@ -13,7 +13,7 @@ function addRule(parameters, userData, res, auth, language) {
 
   boardOps.addBoardRule(parameters, userData, function addedRule(error) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       var redirectLink = '/rules.js?boardUri=' + parameters.boardUri;
 

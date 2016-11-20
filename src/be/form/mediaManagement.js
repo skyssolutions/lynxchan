@@ -8,13 +8,13 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var domManipulator = require('../engine/domManipulator');
 domManipulator = domManipulator.dynamicPages.managementPages;
 
-function getMedia(auth, userData, parameters, res) {
+function getMedia(auth, userData, parameters, res, language) {
 
   mediaHandler.getMedia(userData, parameters, function gotMedia(error, media,
       pages) {
 
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
 
       var json = parameters.json;
@@ -41,7 +41,7 @@ exports.process = function(req, res) {
 
         var parameters = url.parse(req.url, true).query;
 
-        getMedia(auth, userData, parameters, res);
+        getMedia(auth, userData, parameters, res, req.language);
 
       });
 

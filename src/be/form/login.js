@@ -13,7 +13,7 @@ function login(res, parameters, language) {
 
   accountOps.login(parameters, function loggedIn(error, hash) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       formOps.outputResponse(lang.msgLoginSuccessful, '/account.js', res, [ {
         field : 'login',
