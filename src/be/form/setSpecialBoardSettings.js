@@ -6,7 +6,7 @@ var lang = require('../engine/langOps').languagePack();
 var mandatoryParameters = [ 'boardUri' ];
 var possibleSettings = boardOps.getValidSpecialSettings();
 
-function setBoardSpecialSettings(userData, parameters, res, auth) {
+function setBoardSpecialSettings(userData, parameters, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -34,7 +34,7 @@ function setBoardSpecialSettings(userData, parameters, res, auth) {
           var redirect = '/boardModeration.js?boardUri=' + parameters.boardUri;
 
           formOps.outputResponse(lang.msgBoardSpecialSettingsSaved, redirect,
-              res, null, auth);
+              res, null, auth, language);
         }
 
       });
@@ -46,7 +46,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    setBoardSpecialSettings(userData, parameters, res, auth);
+    setBoardSpecialSettings(userData, parameters, res, auth, req.language);
 
   });
 

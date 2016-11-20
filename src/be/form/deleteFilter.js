@@ -6,7 +6,7 @@ var lang = require('../engine/langOps').languagePack();
 var boardOps = require('../engine/boardOps').filters;
 var mandatoryParameters = [ 'boardUri', 'filterIdentifier' ];
 
-function deleteFilter(parameters, userData, res, auth) {
+function deleteFilter(parameters, userData, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -18,7 +18,8 @@ function deleteFilter(parameters, userData, res, auth) {
       formOps.outputError(error, 500, res);
     } else {
       var redirect = '/filterManagement.js?boardUri=' + parameters.boardUri;
-      formOps.outputResponse(lang.msgFilterDeleted, redirect, res, null, auth);
+      formOps.outputResponse(lang.msgFilterDeleted, redirect, res, null, auth,
+          language);
     }
   });
 
@@ -29,7 +30,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    deleteFilter(parameters, userData, res, auth);
+    deleteFilter(parameters, userData, res, auth, req.language);
 
   });
 

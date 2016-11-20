@@ -3,7 +3,7 @@
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var accountOps = require('../engine/accountOps');
-function changePassword(userData, parameters, res) {
+function changePassword(userData, parameters, res, language) {
 
   accountOps.changePassword(userData, parameters, function changedPassword(
       error, newHash) {
@@ -14,7 +14,7 @@ function changePassword(userData, parameters, res) {
       formOps.outputResponse(lang.msgChangedPassword, '/account.js', res, [ {
         field : 'hash',
         value : newHash
-      } ]);
+      } ], null, language);
     }
 
   });
@@ -26,7 +26,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    changePassword(userData, parameters, res);
+    changePassword(userData, parameters, res, req.language);
 
   });
 

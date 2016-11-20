@@ -16,7 +16,8 @@ exports.process = function(req, res) {
         var redirectLink = '/noCookieCaptcha.js?solvedCaptcha=';
         redirectLink += parameters.captchaId;
 
-        formOps.outputResponse(lang.msgCaptchaSolved, redirectLink, res);
+        formOps.outputResponse(lang.msgCaptchaSolved, redirectLink, res, null,
+            null, req.language);
       }
 
     });

@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var accountOps = require('../engine/accountOps');
 
-function requestRecovery(domain, parameters, res, captchaId) {
+function requestRecovery(domain, parameters, res, captchaId, language) {
 
   if (formOps.checkBlankParameters(parameters, [ 'login' ], res)) {
     return;
@@ -15,7 +15,8 @@ function requestRecovery(domain, parameters, res, captchaId) {
         if (error) {
           formOps.outputError(error, 500, res);
         } else {
-          formOps.outputResponse(lang.msgRequestCreated, '/login.html', res);
+          formOps.outputResponse(lang.msgRequestCreated, '/login.html', res,
+              null, null, language);
         }
       });
 
@@ -23,13 +24,12 @@ function requestRecovery(domain, parameters, res, captchaId) {
 
 exports.process = function(req, res) {
 
-  formOps.getPostData(req, res,
-      function gotData(auth, parameters) {
+  formOps.getPostData(req, res, function gotData(auth, parameters) {
 
-        var cookies = formOps.getCookies(req);
+    var cookies = formOps.getCookies(req);
 
-        requestRecovery(formOps.getDomain(req), parameters, res,
-            cookies.captchaid);
+    requestRecovery(formOps.getDomain(req), parameters, res, cookies.captchaid,
+        req.language);
 
-      });
+  });
 };

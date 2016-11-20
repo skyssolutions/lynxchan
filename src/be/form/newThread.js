@@ -16,7 +16,7 @@ function createThread(req, userData, parameters, captchaId, res, auth) {
           var redirectLink = '../' + parameters.boardUri;
           redirectLink += '/res/' + id + '.html';
           formOps.outputResponse(lang.msgThreadCreated, redirectLink, res,
-              null, auth);
+              null, auth, req.language);
         }
       });
 

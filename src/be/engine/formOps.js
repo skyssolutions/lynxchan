@@ -360,7 +360,8 @@ exports.setCookies = function(header, cookies) {
   }
 };
 
-exports.outputResponse = function(message, redirect, res, cookies, authBlock) {
+exports.outputResponse = function(message, redirect, res, cookies, authBlock,
+    language) {
 
   if (verbose) {
     console.log(message);
@@ -378,7 +379,7 @@ exports.outputResponse = function(message, redirect, res, cookies, authBlock) {
 
   res.writeHead(200, header);
 
-  res.end(domManipulator.message(message, redirect));
+  res.end(domManipulator.message(message, redirect, language));
 
 };
 

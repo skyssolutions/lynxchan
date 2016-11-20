@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var modOps = require('../engine/modOps').report;
 
-function closeReport(userData, parameters, res, auth) {
+function closeReport(userData, parameters, res, auth, language) {
 
   var reports = [];
 
@@ -31,7 +31,8 @@ function closeReport(userData, parameters, res, auth) {
       var redirect = global ? '/globalManagement.js'
           : '/boardManagement.js?boardUri=' + board;
 
-      formOps.outputResponse(lang.msgReportsClosed, redirect, res, null, auth);
+      formOps.outputResponse(lang.msgReportsClosed, redirect, res, null, auth,
+          language);
     }
 
   });
@@ -43,7 +44,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    closeReport(userData, parameters, res, auth);
+    closeReport(userData, parameters, res, auth, req.language);
 
   });
 

@@ -5,7 +5,7 @@ var lang = require('../engine/langOps').languagePack();
 var modOps = require('../engine/modOps').hashBan;
 var mandatoryParameters = [ 'hash' ];
 
-function placeHashBan(userData, parameters, captchaId, res, auth) {
+function placeHashBan(userData, parameters, captchaId, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -23,7 +23,7 @@ function placeHashBan(userData, parameters, captchaId, res, auth) {
       }
 
       formOps.outputResponse(lang.msgHashBanCreated, redirectLink, res, null,
-          auth);
+          auth, language);
     }
   });
 
@@ -35,7 +35,7 @@ exports.process = function(req, res) {
       parameters) {
 
     placeHashBan(userData, parameters, formOps.getCookies(req).captchaid, res,
-        auth);
+        auth, req.language);
 
   });
 

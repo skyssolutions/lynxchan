@@ -11,6 +11,6 @@ exports.process = function(req, res) {
   }, {
     field : 'hash',
     value : 'invalid hash'
-  } ]);
+  } ], null, req.language);
 
 };

@@ -5,7 +5,7 @@ var lang = require('../engine/langOps').languagePack();
 var boardOps = require('../engine/boardOps').rules;
 var mandatoryParameters = [ 'rule', 'boardUri' ];
 
-function addRule(parameters, userData, res, auth) {
+function addRule(parameters, userData, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -17,8 +17,8 @@ function addRule(parameters, userData, res, auth) {
     } else {
       var redirectLink = '/rules.js?boardUri=' + parameters.boardUri;
 
-      formOps
-          .outputResponse(lang.msgRuleCreated, redirectLink, res, null, auth);
+      formOps.outputResponse(lang.msgRuleCreated, redirectLink, res, null,
+          auth, language);
     }
   });
 
@@ -29,7 +29,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    addRule(parameters, userData, res, auth);
+    addRule(parameters, userData, res, auth, req.language);
 
   });
 

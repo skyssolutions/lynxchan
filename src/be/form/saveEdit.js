@@ -6,7 +6,7 @@ var url = require('url');
 var modOps = require('../engine/modOps').edit;
 var mandatoryParameters = [ 'message', 'boardUri' ];
 
-function saveEdit(parameters, userData, res, auth) {
+function saveEdit(parameters, userData, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -23,7 +23,8 @@ function saveEdit(parameters, userData, res, auth) {
         redirect += '&postId=' + parameters.postId;
       }
 
-      formOps.outputResponse(lang.msgPostingEdited, redirect, res, null, auth);
+      formOps.outputResponse(lang.msgPostingEdited, redirect, res, null, auth,
+          language);
     }
   });
 
@@ -34,7 +35,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    saveEdit(parameters, userData, res, auth);
+    saveEdit(parameters, userData, res, auth, req.language);
 
   });
 

@@ -7,7 +7,7 @@ var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var settingsHandler = require('../settingsHandler');
 var lang = require('../engine/langOps').languagePack();
 
-function renewBypass(auth, parameters, res) {
+function renewBypass(auth, parameters, res, language) {
 
   bypassOps.renewBypass(auth.captchaid, parameters.captcha,
       function renewedBypass(error, bypassId) {
@@ -21,7 +21,7 @@ function renewBypass(auth, parameters, res) {
                 field : 'bypass',
                 value : bypassId,
                 path : '/'
-              } ]);
+              } ], null, language);
         }
 
       });
@@ -36,7 +36,7 @@ exports.process = function(req, res) {
   }
 
   formOps.getPostData(req, res, function gotData(auth, parameters) {
-    renewBypass(auth, parameters, res);
+    renewBypass(auth, parameters, res, req.language);
   });
 
 };

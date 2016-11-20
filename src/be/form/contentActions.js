@@ -128,7 +128,7 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
         formOps.outputError(error, 500, res);
       } else {
         formOps.outputResponse(lang.msgContentSpoilered, redirectBoard, res,
-            null, auth);
+            null, auth, req.language);
       }
     });
 
@@ -147,11 +147,13 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
             res.end(domManipulator.ban(ban, board));
           } else {
             formOps.outputResponse(lang.msgContentReported, redirectBoard, res,
-                null, auth);
+                null, auth, req.language);
           }
 
         });
   } else if (parameters.action.toLowerCase() === 'ban') {
+
+    parameters.banType = +parameters.banType;
 
     modOps.ipBan.specific.ban(userData, reportedObjects, parameters, captchaId,
         function(error) {
@@ -159,7 +161,7 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
             formOps.outputError(error, 500, res);
           } else {
             formOps.outputResponse(lang.msgUsersBanned, redirectBoard, res,
-                null, auth);
+                null, auth, req.language);
           }
         });
 
@@ -172,7 +174,7 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
         formOps.outputError(error, 500, res);
       } else {
         formOps.outputResponse(lang.msgDeletedFromIp, redirectBoard, res, null,
-            auth);
+            auth, req.language);
       }
 
     });
@@ -188,7 +190,7 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
 
             formOps.outputResponse(lang.msgContentDeleted.replace('{$threads}',
                 removedThreads).replace('{$posts}', removedPosts),
-                redirectBoard, res, null, auth);
+                redirectBoard, res, null, auth, req.language);
           }
 
         });

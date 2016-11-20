@@ -5,7 +5,7 @@ var lang = require('../engine/langOps').languagePack();
 var transferOps = require('../engine/modOps').transfer;
 var mandatoryParameters = [ 'boardUri', 'threadId', 'boardUriDestination' ];
 
-function transferThread(userData, parameters, res, auth) {
+function transferThread(userData, parameters, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -22,7 +22,7 @@ function transferThread(userData, parameters, res, auth) {
       redirect += newThreadId + '.html';
 
       formOps.outputResponse(lang.msgThreadTransferred, redirect, res, null,
-          auth);
+          auth, language);
     }
 
   });
@@ -33,7 +33,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    transferThread(userData, parameters, res, auth);
+    transferThread(userData, parameters, res, auth, req.language);
 
   });
 };

@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var modOps = require('../engine/modOps').hashBan;
 var lang = require('../engine/langOps').languagePack();
 
-function liftHashBan(userData, parameters, res, auth) {
+function liftHashBan(userData, parameters, res, auth, language) {
 
   modOps.liftHashBan(userData, parameters, function hashBanLifted(error,
       boardUri) {
@@ -18,7 +18,8 @@ function liftHashBan(userData, parameters, res, auth) {
         redirect += '?boardUri=' + boardUri;
       }
 
-      formOps.outputResponse(lang.msgHashBanLifted, redirect, res, null, auth);
+      formOps.outputResponse(lang.msgHashBanLifted, redirect, res, null, auth,
+          language);
     }
   });
 
@@ -29,7 +30,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    liftHashBan(userData, parameters, res, auth);
+    liftHashBan(userData, parameters, res, auth, req.language);
 
   });
 

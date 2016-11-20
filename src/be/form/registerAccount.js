@@ -5,7 +5,7 @@ var accountOps = require('../engine/accountOps');
 var lang = require('../engine/langOps').languagePack();
 var mandatoryParameters = [ 'login' ];
 
-function createAccount(parameters, res, captchaId) {
+function createAccount(parameters, res, captchaId, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -21,7 +21,7 @@ function createAccount(parameters, res, captchaId) {
       }, {
         field : 'hash',
         value : hash
-      } ]);
+      } ], null, language);
     }
 
   }, null, null, captchaId);
@@ -32,7 +32,7 @@ exports.process = function(req, res) {
 
   formOps.getPostData(req, res, function gotFormData(auth, parameters) {
 
-    createAccount(parameters, res, auth.captchaid);
+    createAccount(parameters, res, auth.captchaid, req.language);
 
   });
 

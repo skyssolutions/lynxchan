@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var bannerOps = require('../engine/bannerOps');
 var lang = require('../engine/langOps').languagePack();
 
-function deleteBanner(parameters, userData, res, auth) {
+function deleteBanner(parameters, userData, res, auth, language) {
 
   bannerOps.deleteBanner(userData, parameters, function deletedBanner(error,
       board) {
@@ -18,7 +18,7 @@ function deleteBanner(parameters, userData, res, auth) {
       }
 
       formOps.outputResponse(lang.msgBannerDeleted, redirectLink, res, null,
-          auth);
+          auth, language);
     }
   });
 
@@ -29,7 +29,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    deleteBanner(parameters, userData, res, auth);
+    deleteBanner(parameters, userData, res, auth, req.language);
 
   });
 

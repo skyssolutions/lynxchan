@@ -5,7 +5,7 @@ var miscOps = require('../engine/miscOps');
 var languageOps = require('../engine/langOps');
 var lang = languageOps.languagePack();
 
-function deleteLanguage(auth, parameters, userData, res) {
+function deleteLanguage(auth, parameters, userData, res, language) {
 
   languageOps.deleteLanguage(userData.globalRole, parameters.languageId,
       function deletedLanguage(error) {
@@ -13,7 +13,7 @@ function deleteLanguage(auth, parameters, userData, res) {
           formOps.outputError(error, 500, res);
         } else {
           formOps.outputResponse(lang.msgLanguageDeleted, '/languages.js', res,
-              null, auth);
+              null, auth, language);
 
         }
       });
@@ -23,6 +23,6 @@ exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-    deleteLanguage(auth, parameters, userData, res);
+    deleteLanguage(auth, parameters, userData, res, req.language);
   });
 };

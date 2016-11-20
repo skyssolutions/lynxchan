@@ -346,6 +346,9 @@ exports.updateUsersOwnedBoards = function(oldOwner, parameters, callback) {
       }, {
         $addToSet : {
           ownedBoards : parameters.boardUri
+        },
+        $pull : {
+          volunteeredBoards : parameters.boardUri
         }
       }, function addedToNewOwner(error) {
         callback(error);

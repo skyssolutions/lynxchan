@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack();
 var mediaHandler = require('../engine/mediaHandler');
 
-function deleteMedia(auth, parameters, userData, res) {
+function deleteMedia(auth, parameters, userData, res, language) {
 
   var selectedIdentifiers = [];
 
@@ -22,7 +22,7 @@ function deleteMedia(auth, parameters, userData, res) {
         } else {
 
           formOps.outputResponse(lang.msgMediaDeleted, '/mediaManagement.js',
-              res, null, auth);
+              res, null, auth, language);
 
         }
       });
@@ -34,7 +34,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    deleteMedia(auth, parameters, userData, res);
+    deleteMedia(auth, parameters, userData, res, req.language);
 
   });
 

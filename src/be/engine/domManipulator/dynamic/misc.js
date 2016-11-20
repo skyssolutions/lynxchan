@@ -716,11 +716,11 @@ exports.graphs = function(dates) {
 };
 // } Section 9: graphs
 
-exports.message = function(message, link) {
+exports.message = function(message, link, language) {
 
   try {
 
-    var document = jsdom(templateHandler().messagePage);
+    var document = jsdom(templateHandler(language).messagePage);
 
     document.title = message;
 

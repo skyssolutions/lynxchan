@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var boardOps = require('../engine/boardOps').custom;
 var lang = require('../engine/langOps').languagePack();
 
-function setCustomJs(userData, parameters, res, auth) {
+function setCustomJs(userData, parameters, res, auth, language) {
 
   if (parameters.files.length) {
     boardOps.setCustomJs(userData, parameters.boardUri, parameters.files[0],
@@ -16,7 +16,8 @@ function setCustomJs(userData, parameters, res, auth) {
             var redirect = '/boardManagement.js?boardUri=';
             redirect += parameters.boardUri;
 
-            formOps.outputResponse(lang.msgJsSet, redirect, res, null, auth);
+            formOps.outputResponse(lang.msgJsSet, redirect, res, null, auth,
+                language);
           }
         });
   } else {
@@ -29,7 +30,8 @@ function setCustomJs(userData, parameters, res, auth) {
         var redirect = '/boardManagement.js?boardUri=';
         redirect += parameters.boardUri;
 
-        formOps.outputResponse(lang.msgJsDeleted, redirect, res, null, auth);
+        formOps.outputResponse(lang.msgJsDeleted, redirect, res, null, auth,
+            language);
       }
     });
 
@@ -42,7 +44,7 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    setCustomJs(userData, parameters, res, auth);
+    setCustomJs(userData, parameters, res, auth, req.language);
 
   }, false, true);
 

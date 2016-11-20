@@ -14,7 +14,8 @@ exports.process = function(req, res) {
     if (error) {
       formOps.outputError(error, 500, res);
     } else {
-      formOps.outputResponse(lang.msgPasswordReset, '/account.js', res);
+      formOps.outputResponse(lang.msgPasswordReset, '/account.js', res, null,
+          null, req.language);
     }
 
   });

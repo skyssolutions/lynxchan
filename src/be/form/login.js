@@ -5,7 +5,7 @@ var accountOps = require('../engine/accountOps');
 var mandatoryParameters = [ 'login' ];
 var lang = require('../engine/langOps').languagePack();
 
-function login(res, parameters) {
+function login(res, parameters, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -21,7 +21,7 @@ function login(res, parameters) {
       }, {
         field : 'hash',
         value : hash
-      } ]);
+      } ], null, language);
     }
   });
 
@@ -31,7 +31,7 @@ exports.process = function(req, res) {
 
   formOps.getPostData(req, res, function gotData(auth, parameters) {
 
-    login(res, parameters);
+    login(res, parameters, req.language);
 
   });
 

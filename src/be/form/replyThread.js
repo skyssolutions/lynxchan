@@ -18,7 +18,7 @@ function createPost(req, userData, parameters, captchaId, res, auth) {
           redirectLink += '/res/' + parameters.threadId;
           redirectLink += '.html#' + id;
           formOps.outputResponse(lang.msgPostCreated, redirectLink, res, null,
-              auth);
+              auth, req.language);
         }
       });
 

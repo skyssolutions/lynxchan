@@ -13,11 +13,8 @@ exports.process = function(req, res) {
 
   if (loadedAddons.indexOf(requestedAddon) === -1) {
     formOps.outputError(lang.errUnloadedAddon, 500, res);
-
   } else {
-
     require('../addons/' + requestedAddon).formRequest(req, res);
-
   }
 
 };
