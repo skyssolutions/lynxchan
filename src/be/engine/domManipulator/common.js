@@ -382,7 +382,7 @@ exports.getThreadCellBase = function(document, thread) {
 };
 
 exports.setThreadContent = function(thread, threadCell, posts, innerPage,
-    boardUri, modding, userRole, document, boardData) {
+    boardUri, modding, userRole, document, boardData, language) {
 
   exports.setOmittedInformation(thread, threadCell, posts, innerPage);
 
@@ -398,12 +398,13 @@ exports.setThreadContent = function(thread, threadCell, posts, innerPage,
   exports.setThreadSimpleElements(threadCell, thread, innerPage);
 
   exports.setUploadCell(document, threadCell
-      .getElementsByClassName('panelUploads')[0], thread.files, modding);
+      .getElementsByClassName('panelUploads')[0], thread.files, modding,
+      language);
 
 };
 
 exports.addThread = function(document, thread, posts, innerPage, modding,
-    boardData, userRole) {
+    boardData, userRole, language) {
 
   var boardUri = thread.boardUri;
 
@@ -412,10 +413,10 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
   var cacheField = exports.getCacheField(false, innerPage, modding, userRole);
 
   if (!thread[cacheField] || !individualCaches) {
-    threadCell.innerHTML = templateHandler().opCell;
+    threadCell.innerHTML = templateHandler(language).opCell;
 
     exports.setThreadContent(thread, threadCell, posts, innerPage, boardUri,
-        modding, userRole, document, boardData);
+        modding, userRole, document, boardData, language);
 
     if (individualCaches) {
       exports.saveCache(cacheField, threadCell, threadsCollection, boardUri,
@@ -429,7 +430,8 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
   document.getElementById('divThreads').appendChild(threadCell);
 
   exports.addPosts(document, posts || [], modding, threadCell
-      .getElementsByClassName('divPosts')[0], boardData, userRole, innerPage);
+      .getElementsByClassName('divPosts')[0], boardData, userRole, innerPage,
+      language);
 };
 
 // Section 2.1: Post content {
@@ -488,14 +490,16 @@ exports.setPostLinks = function(postCell, post, preview) {
 };
 
 exports.setPostComplexElements = function(postCell, post, document, preview,
-    modding) {
+    modding, language) {
 
   exports.setRoleSignature(postCell, post);
 
   exports.setPostLinks(postCell, post, preview);
 
-  exports.setUploadCell(document, postCell
-      .getElementsByClassName('panelUploads')[0], post.files, modding);
+  exports
+      .setUploadCell(document,
+          postCell.getElementsByClassName('panelUploads')[0], post.files,
+          modding, language);
 };
 
 exports.setPostModElements = function(post, modding, postCell, boardData,
@@ -532,7 +536,7 @@ exports.setPostLinkName = function(postCell, post) {
 };
 
 exports.setPostInnerElements = function(document, post, postCell, preview,
-    modding, boardData, userRole, innerPage) {
+    modding, boardData, userRole, innerPage, language) {
 
   var cacheField = exports.getCacheField(preview, innerPage, modding, userRole);
 
@@ -542,7 +546,7 @@ exports.setPostInnerElements = function(document, post, postCell, preview,
     return;
   }
 
-  postCell.innerHTML = templateHandler().postCell;
+  postCell.innerHTML = templateHandler(language).postCell;
 
   exports.setPostLinkName(postCell, post);
 
@@ -555,7 +559,8 @@ exports.setPostInnerElements = function(document, post, postCell, preview,
 
   exports.setPostModElements(post, modding, postCell, boardData, userRole);
 
-  exports.setPostComplexElements(postCell, post, document, preview, modding);
+  exports.setPostComplexElements(postCell, post, document, preview, modding,
+      language);
 
   if (individualCaches) {
 
@@ -619,7 +624,7 @@ exports.getPostCellBase = function(document, post) {
 };
 
 exports.addPosts = function(document, posts, modding, divPosts, boardData,
-    userRole, innerPage) {
+    userRole, innerPage, language) {
 
   for (var i = 0; i < posts.length; i++) {
     var post = posts[i];
@@ -627,7 +632,7 @@ exports.addPosts = function(document, posts, modding, divPosts, boardData,
     var postCell = exports.getPostCellBase(document, post);
 
     exports.setPostInnerElements(document, post, postCell, false, modding,
-        boardData, userRole, innerPage);
+        boardData, userRole, innerPage, language);
 
     divPosts.appendChild(postCell);
   }
@@ -740,16 +745,16 @@ exports.setUploadModElements = function(modding, cell, file) {
   }
 };
 
-exports.getUploadCellBase = function(document) {
+exports.getUploadCellBase = function(document, language) {
 
   var cell = document.createElement('figure');
-  cell.innerHTML = templateHandler().uploadCell;
+  cell.innerHTML = templateHandler(language).uploadCell;
   cell.setAttribute('class', 'uploadCell');
 
   return cell;
 };
 
-exports.setUploadCell = function(document, node, files, modding) {
+exports.setUploadCell = function(document, node, files, modding, language) {
 
   if (!files) {
     return;
@@ -758,7 +763,7 @@ exports.setUploadCell = function(document, node, files, modding) {
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
 
-    var cell = exports.getUploadCellBase(document);
+    var cell = exports.getUploadCellBase(document, language);
 
     exports.setUploadLinks(document, cell, file);
 
@@ -814,13 +819,13 @@ exports.setBanCell = function(ban, cell) {
 
 };
 
-exports.setBanList = function(document, div, bans) {
+exports.setBanList = function(document, div, bans, language) {
 
   for (var i = 0; i < bans.length; i++) {
 
     var ban = bans[i];
     var cell = document.createElement('div');
-    cell.innerHTML = templateHandler().banCell;
+    cell.innerHTML = templateHandler(language).banCell;
 
     cell.setAttribute('class', 'banCell');
 
@@ -911,12 +916,12 @@ exports.getReportLink = function(report) {
 
 };
 
-exports.setReportCell = function(document, report) {
+exports.setReportCell = function(document, report, language) {
 
   var cell = document.createElement('div');
   cell.setAttribute('class', 'reportCell');
 
-  cell.innerHTML = templateHandler().reportCell;
+  cell.innerHTML = templateHandler(language).reportCell;
 
   if (report.reason) {
     var reason = cell.getElementsByClassName('reasonLabel')[0];
@@ -934,19 +939,21 @@ exports.setReportCell = function(document, report) {
   if (posting) {
 
     exports.setPostInnerElements(document, posting, cell
-        .getElementsByClassName('postingDiv')[0], true);
+        .getElementsByClassName('postingDiv')[0], true, null, null, null, null,
+        language);
   }
 
   return cell;
 
 };
 
-exports.setReportList = function(document, reports) {
+exports.setReportList = function(document, reports, language) {
 
   var reportDiv = document.getElementById('reportDiv');
 
   for (var i = 0; i < reports.length; i++) {
-    reportDiv.appendChild(exports.setReportCell(document, reports[i]));
+    reportDiv
+        .appendChild(exports.setReportCell(document, reports[i], language));
   }
 
 };

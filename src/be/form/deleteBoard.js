@@ -6,7 +6,7 @@ var deletionOps = require('../engine/deletionOps').miscDeletions;
 
 function deleteBoard(userData, parameters, res, auth, language) {
 
-  if (formOps.checkBlankParameters(parameters, [ 'boardUri' ], res)) {
+  if (formOps.checkBlankParameters(parameters, [ 'boardUri' ], res, language)) {
     return;
   }
 

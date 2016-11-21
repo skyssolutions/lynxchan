@@ -8,7 +8,8 @@ var mandatoryParameters = [ 'banId', 'appeal' ];
 
 function appealBan(ip, parameters, res, language) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
+      language)) {
     return;
   }
 

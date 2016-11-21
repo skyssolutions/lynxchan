@@ -10,7 +10,8 @@ var mandatoryParameters = [ 'boardUri' ];
 
 function getPostingToEdit(userData, parameters, res, auth, language) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
+      language)) {
     return;
   }
 
@@ -27,7 +28,7 @@ function getPostingToEdit(userData, parameters, res, auth, language) {
       if (json) {
         res.end(jsonBuilder.edit(message));
       } else {
-        res.end(domManipulator.edit(parameters, message));
+        res.end(domManipulator.edit(parameters, message, language));
       }
 
     }

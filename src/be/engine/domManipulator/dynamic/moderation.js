@@ -36,15 +36,16 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Bans {
-exports.bans = function(bans) {
+exports.bans = function(bans, language) {
 
   try {
 
-    var document = jsdom(templateHandler().bansPage);
+    var document = jsdom(templateHandler(language).bansPage);
 
     document.title = lang.titBansManagement;
 
-    common.setBanList(document, document.getElementById('bansDiv'), bans);
+    common.setBanList(document, document.getElementById('bansDiv'), bans,
+        language);
 
     return serializer(document);
 
@@ -65,9 +66,9 @@ exports.bans = function(bans) {
 // } Section 1: Bans
 
 // Section 2: Closed reports {
-exports.setClosedReportCell = function(cell, report) {
+exports.setClosedReportCell = function(cell, report, language) {
 
-  cell.innerHTML = templateHandler().closedReportCell;
+  cell.innerHTML = templateHandler(language).closedReportCell;
   cell.setAttribute('class', 'closedReportCell');
 
   if (report.reason) {
@@ -85,10 +86,10 @@ exports.setClosedReportCell = function(cell, report) {
   closedDate.innerHTML = report.closing;
 };
 
-exports.closedReports = function(reports, callback) {
+exports.closedReports = function(reports, language) {
 
   try {
-    var document = jsdom(templateHandler().closedReportsPage);
+    var document = jsdom(templateHandler(language).closedReportsPage);
 
     document.title = lang.titClosedReports;
 
@@ -98,7 +99,7 @@ exports.closedReports = function(reports, callback) {
 
       var cell = document.createElement('div');
 
-      exports.setClosedReportCell(cell, reports[i]);
+      exports.setClosedReportCell(cell, reports[i], language);
 
       reportsDiv.appendChild(cell);
 
@@ -121,7 +122,7 @@ exports.closedReports = function(reports, callback) {
 // } Section 2: Closed reports
 
 // Section 3: Range bans {
-exports.setRangeBanCells = function(document, rangeBans, boardData) {
+exports.setRangeBanCells = function(document, rangeBans, boardData, language) {
 
   var bansDiv = document.getElementById('rangeBansDiv');
 
@@ -129,7 +130,7 @@ exports.setRangeBanCells = function(document, rangeBans, boardData) {
     var rangeBan = rangeBans[i];
 
     var banCell = document.createElement('form');
-    banCell.innerHTML = templateHandler().rangeBanCell;
+    banCell.innerHTML = templateHandler(language).rangeBanCell;
     common.setFormCellBoilerPlate(banCell, '/liftBan.js', 'rangeBanCell');
 
     var rangeToUse;
@@ -150,11 +151,11 @@ exports.setRangeBanCells = function(document, rangeBans, boardData) {
 
 };
 
-exports.rangeBans = function(rangeBans, boardData) {
+exports.rangeBans = function(rangeBans, boardData, language) {
 
   try {
 
-    var document = jsdom(templateHandler().rangeBansPage);
+    var document = jsdom(templateHandler(language).rangeBansPage);
 
     document.title = lang.titRangeBans;
 
@@ -166,7 +167,7 @@ exports.rangeBans = function(rangeBans, boardData) {
       common.removeElement(boardIdentifier);
     }
 
-    exports.setRangeBanCells(document, rangeBans, boardData);
+    exports.setRangeBanCells(document, rangeBans, boardData, language);
 
     return serializer(document);
 
@@ -186,7 +187,7 @@ exports.rangeBans = function(rangeBans, boardData) {
 // } Section 3: Range bans
 
 // Section 4: Hash bans {
-exports.setHashBanCells = function(document, hashBans) {
+exports.setHashBanCells = function(document, hashBans, language) {
 
   var bansDiv = document.getElementById('hashBansDiv');
 
@@ -194,7 +195,7 @@ exports.setHashBanCells = function(document, hashBans) {
     var hashBan = hashBans[i];
 
     var banCell = document.createElement('form');
-    banCell.innerHTML = templateHandler().hashBanCell;
+    banCell.innerHTML = templateHandler(language).hashBanCell;
     common.setFormCellBoilerPlate(banCell, '/liftHashBan.js', 'hashBanCell');
 
     banCell.getElementsByClassName('hashLabel')[0].innerHTML = hashBan.md5;
@@ -206,11 +207,11 @@ exports.setHashBanCells = function(document, hashBans) {
 
 };
 
-exports.hashBans = function(hashBans, boardUri) {
+exports.hashBans = function(hashBans, boardUri, language) {
 
   try {
 
-    var document = jsdom(templateHandler().hashBansPage);
+    var document = jsdom(templateHandler(language).hashBansPage);
 
     document.title = lang.titHashBans;
 
@@ -222,7 +223,7 @@ exports.hashBans = function(hashBans, boardUri) {
       common.removeElement(boardIdentifier);
     }
 
-    exports.setHashBanCells(document, hashBans);
+    exports.setHashBanCells(document, hashBans, language);
 
     return serializer(document);
 
@@ -238,7 +239,6 @@ exports.hashBans = function(hashBans, boardUri) {
     return error.toString();
   }
 };
-
 // } Section 4: Hash bans
 
 // Section 5: Board moderation {
@@ -265,11 +265,11 @@ exports.setSpecialCheckboxesAndIdentifiers = function(document, boardData) {
 
 };
 
-exports.boardModeration = function(boardData, ownerData) {
+exports.boardModeration = function(boardData, ownerData, language) {
 
   try {
 
-    var document = jsdom(templateHandler().boardModerationPage);
+    var document = jsdom(templateHandler(language).boardModerationPage);
 
     document.title = lang.titBoardModeration.replace('{$board}',
         boardData.boardUri);

@@ -22,7 +22,7 @@ function getFlagData(parameters, userData, res, auth, language) {
       if (json) {
         res.end(jsonBuilder.flagManagement(flags));
       } else {
-        res.end(dom.flagManagement(parameters.boardUri, flags));
+        res.end(dom.flagManagement(parameters.boardUri, flags, language));
       }
 
     }

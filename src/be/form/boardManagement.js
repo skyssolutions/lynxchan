@@ -20,7 +20,8 @@ function getBoardManagementData(board, userData, res, json, auth, language) {
           if (json) {
             res.end(jsonB.boardManagement(userData, boardData, reports, bans));
           } else {
-            res.end(dom.boardManagement(userData, boardData, reports, bans));
+            res.end(dom.boardManagement(userData, boardData, reports, bans,
+                language));
           }
 
         }

@@ -7,7 +7,8 @@ var mandatoryParameters = [ 'login' ];
 
 function createAccount(parameters, res, captchaId, language) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
+      language)) {
     return;
   }
 

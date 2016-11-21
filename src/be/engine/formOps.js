@@ -489,7 +489,7 @@ exports.checkForBan = function(req, boardUri, res, callback, auth) {
       var board = ban.boardUri ? '/' + ban.boardUri + '/' : lang.miscAllBoards
           .toLowerCase();
 
-      res.end(domManipulator.ban(ban, board));
+      res.end(domManipulator.ban(ban, board, req.language));
     } else {
       callback();
     }
@@ -506,7 +506,7 @@ exports.checkForHashBan = function(parameters, req, res, callback) {
     } else if (!hashBans) {
       callback();
     } else {
-      res.end(domManipulator.hashBan(hashBans));
+      res.end(domManipulator.hashBan(hashBans, req.language));
     }
   });
 

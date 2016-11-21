@@ -24,7 +24,8 @@ function createThread(req, userData, parameters, captchaId, res, auth) {
 
 function checkBans(req, res, parameters, userData, captchaId, auth) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
+      req.language)) {
     return;
   }
 

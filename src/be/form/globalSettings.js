@@ -18,7 +18,7 @@ function getGlobalSettings(userData, res, json, auth, language) {
       if (json) {
         res.end(jsonBuilder.globalSettings());
       } else {
-        res.end(dom.globalSettings());
+        res.end(dom.globalSettings(language));
       }
     }
   });

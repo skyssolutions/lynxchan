@@ -8,7 +8,8 @@ var mandatoryParameters = [ 'boardUri', 'originalTerm', 'replacementTerm' ];
 
 function createFilter(parameters, userData, res, auth, language) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
+      language)) {
     return;
   }
 

@@ -165,7 +165,7 @@ exports.process = function(req, res) {
                 res.end(jsonBuilder.boards(pageCount, foundBoards));
               } else {
                 res.end(domManipulator.boards(parameters, foundBoards,
-                    pageCount));
+                    pageCount, req.language));
               }
 
             }

@@ -22,7 +22,7 @@ function getRangeBans(userData, parameters, res, auth, language) {
       if (json) {
         res.end(jsonBuilder.rangeBans(rangeBans, boardData));
       } else {
-        res.end(dom.rangeBans(rangeBans, boardData));
+        res.end(dom.rangeBans(rangeBans, boardData, language));
       }
 
     }

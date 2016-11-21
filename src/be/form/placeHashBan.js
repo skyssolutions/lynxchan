@@ -7,7 +7,8 @@ var mandatoryParameters = [ 'hash' ];
 
 function placeHashBan(userData, parameters, captchaId, res, auth, language) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
+      language)) {
     return;
   }
 

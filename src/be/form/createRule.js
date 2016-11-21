@@ -7,7 +7,8 @@ var mandatoryParameters = [ 'rule', 'boardUri' ];
 
 function addRule(parameters, userData, res, auth, language) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
+      language)) {
     return;
   }
 

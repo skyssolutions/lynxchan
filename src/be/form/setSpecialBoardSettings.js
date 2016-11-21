@@ -8,7 +8,8 @@ var possibleSettings = boardOps.getValidSpecialSettings();
 
 function setBoardSpecialSettings(userData, parameters, res, auth, language) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
+      language)) {
     return;
   }
 

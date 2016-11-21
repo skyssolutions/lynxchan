@@ -8,7 +8,8 @@ var mandatoryParameters = [ 'frontEnd', 'languagePack', 'headerValues' ];
 
 function addLanguage(auth, parameters, userData, res, language) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
+      language)) {
     return;
   }
 
@@ -20,7 +21,7 @@ function addLanguage(auth, parameters, userData, res, language) {
   languageOps.addLanguage(userData.globalRole, parameters,
       function addedLanguage(error) {
         if (error) {
-          formOps.outputError(error, 500, res);
+          formOps.outputError(error, 500, res, language);
         } else {
           formOps.outputResponse(lang.msgLanguageAdded, '/languages.js', res,
               null, auth, language);

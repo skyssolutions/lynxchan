@@ -225,10 +225,10 @@ exports.account = function(userData, language) {
 // } Section 1: Account
 
 // Section 2: Logs {
-exports.setLogIndexCell = function(dateCell, date) {
+exports.setLogIndexCell = function(dateCell, date, language) {
 
   dateCell.setAttribute('class', 'logIndexCell');
-  dateCell.innerHTML = templateHandler().logIndexCell;
+  dateCell.innerHTML = templateHandler(language).logIndexCell;
 
   var link = dateCell.getElementsByClassName('dateLink')[0];
   link.innerHTML = common.formatDateToDisplay(date, true);
@@ -237,11 +237,11 @@ exports.setLogIndexCell = function(dateCell, date) {
 
 };
 
-exports.logs = function(dates) {
+exports.logs = function(dates, language) {
 
   try {
 
-    var document = jsdom(templateHandler().logIndexPage);
+    var document = jsdom(templateHandler(language).logIndexPage);
 
     document.title = lang.titLogs;
 
@@ -251,7 +251,7 @@ exports.logs = function(dates) {
 
       var dateCell = document.createElement('div');
 
-      exports.setLogIndexCell(dateCell, dates[i]);
+      exports.setLogIndexCell(dateCell, dates[i], language);
 
       divDates.appendChild(dateCell);
     }
@@ -363,7 +363,7 @@ exports.setPages = function(parameters, document, pageCount) {
   }
 };
 
-exports.setBoards = function(boards, document) {
+exports.setBoards = function(boards, document, language) {
 
   var divBoards = document.getElementById('divBoards');
 
@@ -371,7 +371,7 @@ exports.setBoards = function(boards, document) {
     var board = boards[i];
 
     var boardCell = document.createElement('div');
-    boardCell.innerHTML = templateHandler().boardsCell;
+    boardCell.innerHTML = templateHandler(language).boardsCell;
     boardCell.setAttribute('class', 'boardsCell');
 
     exports.setBoardCell(board, boardCell);
@@ -401,15 +401,15 @@ exports.setOverboardLinks = function(document) {
 
 };
 
-exports.boards = function(parameters, boards, pageCount) {
+exports.boards = function(parameters, boards, pageCount, language) {
   try {
-    var document = jsdom(templateHandler().boardsPage);
+    var document = jsdom(templateHandler(language).boardsPage);
 
     document.title = lang.titBoards;
 
     exports.setOverboardLinks(document);
 
-    exports.setBoards(boards, document);
+    exports.setBoards(boards, document, language);
 
     exports.setPages(parameters, document, pageCount);
 
@@ -459,16 +459,16 @@ exports.setBanPage = function(document, ban, board) {
 
 };
 
-exports.ban = function(ban, board) {
+exports.ban = function(ban, board, language) {
 
   try {
 
     var templateToUse;
 
     if (ban.range) {
-      templateToUse = templateHandler().rangeBanPage;
+      templateToUse = templateHandler(language).rangeBanPage;
     } else {
-      templateToUse = templateHandler().banPage;
+      templateToUse = templateHandler(language).banPage;
     }
 
     var document = jsdom(templateToUse);
@@ -496,7 +496,7 @@ exports.ban = function(ban, board) {
 // } Section 4: Ban
 
 // Section 5: Hash ban page {
-exports.setHashBanCells = function(document, hashBans) {
+exports.setHashBanCells = function(document, hashBans, language) {
 
   var panel = document.getElementById('hashBansPanel');
 
@@ -505,7 +505,7 @@ exports.setHashBanCells = function(document, hashBans) {
     var hashBan = hashBans[i];
 
     var cell = document.createElement('div');
-    cell.innerHTML = templateHandler().hashBanCellDisplay;
+    cell.innerHTML = templateHandler(language).hashBanCellDisplay;
     cell.setAttribute('class', 'hashBanCellDisplay');
 
     cell.getElementsByClassName('labelFile')[0].innerHTML = hashBan.file;
@@ -520,15 +520,15 @@ exports.setHashBanCells = function(document, hashBans) {
 
 };
 
-exports.hashBan = function(hashBans) {
+exports.hashBan = function(hashBans, language) {
 
   try {
 
-    var document = jsdom(templateHandler().hashBanPage);
+    var document = jsdom(templateHandler(language).hashBanPage);
 
     document.title = lang.titHashBan;
 
-    exports.setHashBanCells(document, hashBans);
+    exports.setHashBanCells(document, hashBans, language);
 
     return serializer(document);
 
@@ -564,10 +564,10 @@ exports.setEditIdentifiers = function(parameters, document) {
 
 };
 
-exports.edit = function(parameters, message) {
+exports.edit = function(parameters, message, language) {
   try {
 
-    var document = jsdom(templateHandler().editPage);
+    var document = jsdom(templateHandler(language).editPage);
 
     document.getElementById('labelMessageLength').innerHTML = messageLength;
 
@@ -606,11 +606,11 @@ exports.setCaptchaIdAndImage = function(document, captchaId) {
 
 };
 
-exports.noCookieCaptcha = function(parameters, captchaId) {
+exports.noCookieCaptcha = function(parameters, captchaId, language) {
 
   try {
 
-    var document = jsdom(templateHandler().noCookieCaptchaPage);
+    var document = jsdom(templateHandler(language).noCookieCaptchaPage);
 
     document.title = lang.titNoCookieCaptcha;
 
@@ -640,11 +640,11 @@ exports.noCookieCaptcha = function(parameters, captchaId) {
 };
 // } Section 8: No cookie captcha
 
-exports.blockBypass = function(valid) {
+exports.blockBypass = function(valid, language) {
 
   try {
 
-    var document = jsdom(templateHandler().bypassPage);
+    var document = jsdom(templateHandler(language).bypassPage);
 
     document.title = lang.titBlockbypass;
 
@@ -668,10 +668,10 @@ exports.blockBypass = function(valid) {
 };
 
 // Section 9: Graphs {
-exports.setGraphIndexCell = function(dateCell, date) {
+exports.setGraphIndexCell = function(dateCell, date, language) {
 
   dateCell.setAttribute('class', 'graphIndexCell');
-  dateCell.innerHTML = templateHandler().graphIndexCell;
+  dateCell.innerHTML = templateHandler(language).graphIndexCell;
 
   var link = dateCell.getElementsByClassName('dateLink')[0];
   link.innerHTML = common.formatDateToDisplay(date, true);
@@ -680,11 +680,11 @@ exports.setGraphIndexCell = function(dateCell, date) {
 
 };
 
-exports.graphs = function(dates) {
+exports.graphs = function(dates, language) {
 
   try {
 
-    var document = jsdom(templateHandler().graphsIndexPage);
+    var document = jsdom(templateHandler(language).graphsIndexPage);
 
     document.title = lang.titGraphs;
 
@@ -694,7 +694,7 @@ exports.graphs = function(dates) {
 
       var dateCell = document.createElement('div');
 
-      exports.setGraphIndexCell(dateCell, dates[i]);
+      exports.setGraphIndexCell(dateCell, dates[i], language);
 
       divDates.appendChild(dateCell);
     }

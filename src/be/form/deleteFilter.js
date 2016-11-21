@@ -8,7 +8,8 @@ var mandatoryParameters = [ 'boardUri', 'filterIdentifier' ];
 
 function deleteFilter(parameters, userData, res, auth, language) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
+      language)) {
     return;
   }
 

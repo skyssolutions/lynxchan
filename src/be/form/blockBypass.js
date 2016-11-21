@@ -23,7 +23,7 @@ exports.process = function(req, res) {
     } else {
       res.writeHead(200, miscOps.corsHeader('text/html'));
 
-      res.end(domManipulator.blockBypass(valid));
+      res.end(domManipulator.blockBypass(valid, req.language));
     }
 
   });

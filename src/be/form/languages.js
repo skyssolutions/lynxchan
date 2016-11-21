@@ -7,12 +7,12 @@ var miscOps = require('../engine/miscOps');
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 var languageOps = require('../engine/langOps');
 
-function getLanguages(auth, parameters, userData, res) {
+function getLanguages(auth, parameters, userData, res, language) {
 
   languageOps.getLanguagesData(userData.globalRole, function gotlanguages(
       error, languages) {
     if (error) {
-      formOps.outputError(error, 500, res);
+      formOps.outputError(error, 500, res, language);
     } else {
       var json = parameters.json;
 
@@ -22,7 +22,7 @@ function getLanguages(auth, parameters, userData, res) {
       if (json) {
         res.end(jsonBuilder.languages(languages));
       } else {
-        res.end(dom.languages(languages));
+        res.end(dom.languages(languages, language));
       }
 
     }
@@ -35,6 +35,6 @@ exports.process = function(req, res) {
       function gotData(auth, userData) {
         var parameters = url.parse(req.url, true).query;
 
-        getLanguages(auth, parameters, userData, res);
+        getLanguages(auth, parameters, userData, res, req.language);
       });
 };

@@ -76,7 +76,7 @@ exports.process = function(req, res) {
       if (json) {
         res.end(jsonBuilder.graphs(dates));
       } else {
-        res.end(domManipulator.graphs(dates));
+        res.end(domManipulator.graphs(dates, req.language));
       }
 
     }

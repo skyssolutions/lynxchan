@@ -7,7 +7,8 @@ var mandatoryParameters = [ 'flagName', 'boardUri' ];
 
 function createFlag(parameters, userData, res, auth, language) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
+      language)) {
     return;
   }
 

@@ -22,7 +22,7 @@ function getHashBans(userData, parameters, res, auth, language) {
           if (json) {
             res.end(jsonBuilder.hashBans(hashBans));
           } else {
-            res.end(dom.hashBans(hashBans, parameters.boardUri));
+            res.end(dom.hashBans(hashBans, parameters.boardUri, language));
           }
 
         }

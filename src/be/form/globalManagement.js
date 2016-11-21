@@ -23,7 +23,7 @@ function getManagementData(userData, res, json, auth, language) {
           } else {
 
             res.end(dom.globalManagement(userData.globalRole, userData.login,
-                globalStaff, globalReports, appealedBans));
+                globalStaff, globalReports, appealedBans, language));
           }
 
         }

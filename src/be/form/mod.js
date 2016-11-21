@@ -39,7 +39,7 @@ function outputModData(bData, flagData, thread, posts, res, json, userRole,
 
             res.end(content);
           }
-        }, true, userRole);
+        }, true, userRole, language);
   }
 
 }
@@ -158,7 +158,7 @@ exports.process = function(req, res) {
         var parameters = url.parse(req.url, true).query;
 
         if (formOps.checkBlankParameters(parameters,
-            [ 'boardUri', 'threadId' ], res)) {
+            [ 'boardUri', 'threadId' ], res, req.language)) {
           return;
         }
 

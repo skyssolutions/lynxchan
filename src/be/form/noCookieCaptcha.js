@@ -16,7 +16,8 @@ exports.process = function(req, res) {
     } else {
       res.writeHead(200, miscOps.corsHeader('text/html'));
 
-      res.end(domManipulator.noCookieCaptcha(parameters, captchaData._id));
+      res.end(domManipulator.noCookieCaptcha(parameters, captchaData._id,
+          req.language));
     }
 
   });

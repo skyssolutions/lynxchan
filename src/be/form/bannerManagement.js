@@ -22,7 +22,7 @@ function getBannerData(auth, parameters, userData, res, language) {
       if (json) {
         res.end(jsonBuilder.bannerManagement(parameters.boardUri, banners));
       } else {
-        res.end(dom.bannerManagement(parameters.boardUri, banners));
+        res.end(dom.bannerManagement(parameters.boardUri, banners, language));
       }
 
     }

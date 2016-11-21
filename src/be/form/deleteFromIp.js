@@ -7,7 +7,8 @@ var mandatoryParameters = [ 'ip' ];
 
 function deleteFromIp(userData, parameters, res, auth, language) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
+      language)) {
     return;
   }
 

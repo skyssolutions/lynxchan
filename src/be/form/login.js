@@ -7,7 +7,8 @@ var lang = require('../engine/langOps').languagePack();
 
 function login(res, parameters, language) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
+      language)) {
     return;
   }
 

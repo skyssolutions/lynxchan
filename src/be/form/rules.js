@@ -22,7 +22,7 @@ function getRulesData(parameters, userData, res, auth, language) {
       if (json) {
         res.end(jsonBuilder.ruleManagement(rules));
       } else {
-        res.end(dom.ruleManagement(parameters.boardUri, rules));
+        res.end(dom.ruleManagement(parameters.boardUri, rules, language));
       }
     }
   });

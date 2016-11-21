@@ -185,10 +185,10 @@ exports.setModElements = function(modding, document, boardUri, boardData,
 };
 
 exports.thread = function(boardUri, boardData, flagData, threadData, posts,
-    callback, modding, userRole) {
+    callback, modding, userRole, language) {
 
   try {
-    var document = jsdom(templateHandler().threadPage);
+    var document = jsdom(templateHandler(language).threadPage);
 
     exports.setThreadTitle(document, boardUri, threadData);
 
@@ -206,7 +206,7 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
     exports.setThreadHiddenIdentifiers(document, boardUri, threadData);
 
     common.addThread(document, threadData, posts, true, modding, boardData,
-        userRole);
+        userRole, language);
 
     exports.setModElements(modding, document, boardUri, boardData, threadData,
         posts, userRole, callback);

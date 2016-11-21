@@ -6,7 +6,7 @@ var accountOps = require('../engine/accountOps');
 
 function requestRecovery(domain, parameters, res, captchaId, language) {
 
-  if (formOps.checkBlankParameters(parameters, [ 'login' ], res)) {
+  if (formOps.checkBlankParameters(parameters, [ 'login' ], res, language)) {
     return;
   }
 

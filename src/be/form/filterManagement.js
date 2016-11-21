@@ -22,7 +22,7 @@ function getFilterData(parameters, userData, res, auth, language) {
       if (json) {
         res.end(jsonBuilder.filterManagement(filters));
       } else {
-        res.end(dom.filterManagement(parameters.boardUri, filters));
+        res.end(dom.filterManagement(parameters.boardUri, filters, language));
       }
 
     }

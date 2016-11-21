@@ -7,7 +7,8 @@ var boardOps = require('../engine/boardOps').meta;
 
 function createBoard(userData, parameters, res, captchaId, auth, language) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
+      language)) {
     return;
   }
 

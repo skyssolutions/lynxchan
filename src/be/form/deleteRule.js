@@ -7,7 +7,8 @@ var mandatoryParameters = [ 'boardUri', 'ruleIndex' ];
 
 function deleteRule(parameters, userData, res, auth, language) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
+  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
+      language)) {
     return;
   }
 

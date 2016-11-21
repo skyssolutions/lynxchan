@@ -25,7 +25,8 @@ function getMedia(auth, userData, parameters, res, language) {
       if (parameters.json) {
         res.end(jsonBuilder.mediaManagement(media, pages));
       } else {
-        res.end(domManipulator.mediaManagement(media, pages, parameters));
+        res.end(domManipulator.mediaManagement(media, pages, parameters,
+            language));
       }
 
     }

@@ -169,7 +169,7 @@ exports.setBoardFields = function(document, boardData) {
 
 };
 
-exports.setVolunteersDiv = function(document, boardData) {
+exports.setVolunteersDiv = function(document, boardData, language) {
   var volunteersDiv = document.getElementById('volunteersDiv');
 
   var volunteers = boardData.volunteers || [];
@@ -177,7 +177,7 @@ exports.setVolunteersDiv = function(document, boardData) {
   for (var i = 0; i < volunteers.length; i++) {
 
     var cell = document.createElement('form');
-    cell.innerHTML = templateHandler().volunteerCell;
+    cell.innerHTML = templateHandler(language).volunteerCell;
 
     common.setFormCellBoilerPlate(cell, '/setVolunteer.js', 'volunteerCell');
 
@@ -193,7 +193,7 @@ exports.setVolunteersDiv = function(document, boardData) {
   }
 };
 
-exports.setBoardOwnerControls = function(document, boardData) {
+exports.setBoardOwnerControls = function(document, boardData, language) {
 
   for (var i = 0; i < exports.boardControlIdentifiers.length; i++) {
     document.getElementById(exports.boardControlIdentifiers[i]).setAttribute(
@@ -211,7 +211,7 @@ exports.setBoardOwnerControls = function(document, boardData) {
     common.removeElement(document.getElementById('customSpoilerIndicator'));
   }
 
-  exports.setVolunteersDiv(document, boardData);
+  exports.setVolunteersDiv(document, boardData, language);
 
 };
 
@@ -227,7 +227,8 @@ exports.setBoardManagementLinks = function(document, boardData) {
 
 };
 
-exports.setContent = function(document, boardData, userData, bans, reports) {
+exports.setContent = function(document, boardData, userData, bans, reports,
+    language) {
 
   document.getElementById('boardSettingsIdentifier').setAttribute('value',
       boardData.boardUri);
@@ -243,23 +244,24 @@ exports.setContent = function(document, boardData, userData, bans, reports) {
   var globallyAllowed = globalBoardModeration && userData.globalRole <= 1;
 
   if (userData.login === boardData.owner || globallyAllowed) {
-    exports.setBoardOwnerControls(document, boardData);
+    exports.setBoardOwnerControls(document, boardData, language);
   } else {
     common.removeElement(document.getElementById('ownerControlDiv'));
   }
 
   common.setBanList(document, document.getElementById('appealedBansPanel'),
-      bans);
+      bans, language);
 
-  common.setReportList(document, reports);
+  common.setReportList(document, reports, language);
 
 };
 
-exports.boardManagement = function(userData, boardData, reports, bans) {
+exports.boardManagement = function(userData, boardData, reports, bans,
+    userLanguage) {
 
   try {
 
-    var document = jsdom(templateHandler().bManagement);
+    var document = jsdom(templateHandler(userLanguage).bManagement);
 
     document.title = lang.titBoardManagement.replace('{$board}',
         boardData.boardUri);
@@ -271,7 +273,8 @@ exports.boardManagement = function(userData, boardData, reports, bans) {
     var label = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
     boardLabel.innerHTML = label;
 
-    exports.setContent(document, boardData, userData, bans, reports);
+    exports.setContent(document, boardData, userData, bans, reports,
+        userLanguage);
 
     return serializer(document);
 
@@ -407,14 +410,15 @@ exports.processHideableElements = function(document, userRole, staff) {
 
 };
 
-exports.setGlobalManagementList = function(document, reports, appealedBans) {
+exports.setGlobalManagementList = function(document, reports, appealedBans,
+    language) {
 
-  common.setReportList(document, reports);
+  common.setReportList(document, reports, language);
 
   var banDiv = document.getElementById('appealedBansPanel');
 
   if (appealedBans) {
-    common.setBanList(document, banDiv, appealedBans);
+    common.setBanList(document, banDiv, appealedBans, language);
   } else {
     common.removeElement(banDiv);
   }
@@ -433,14 +437,14 @@ exports.setUserLabel = function(document, userLogin, userRole) {
 };
 
 exports.globalManagement = function(userRole, userLogin, staff, reports,
-    appealedBans) {
+    appealedBans, language) {
 
   try {
-    var document = jsdom(templateHandler().gManagement);
+    var document = jsdom(templateHandler(language).gManagement);
 
     document.title = lang.titGlobalManagement;
 
-    exports.setGlobalManagementList(document, reports, appealedBans);
+    exports.setGlobalManagementList(document, reports, appealedBans, language);
 
     exports.setGlobalManagementLinks(userRole, document);
 
@@ -466,11 +470,11 @@ exports.globalManagement = function(userRole, userLogin, staff, reports,
 
 // Section 3: Filter management {
 
-exports.setFilterCell = function(document, boardUri, filter) {
+exports.setFilterCell = function(document, boardUri, filter, language) {
 
   var cell = document.createElement('form');
 
-  cell.innerHTML = templateHandler().filterCell;
+  cell.innerHTML = templateHandler(language).filterCell;
 
   common.setFormCellBoilerPlate(cell, '/deleteFilter.js', 'filterCell');
 
@@ -494,11 +498,11 @@ exports.setFilterCell = function(document, boardUri, filter) {
   return cell;
 };
 
-exports.filterManagement = function(boardUri, filters) {
+exports.filterManagement = function(boardUri, filters, language) {
 
   try {
 
-    var document = jsdom(templateHandler().filterManagement);
+    var document = jsdom(templateHandler(language).filterManagement);
 
     document.title = lang.titFilters.replace('{$board}', boardUri);
 
@@ -508,7 +512,7 @@ exports.filterManagement = function(boardUri, filters) {
 
     for (var i = 0; i < filters.length; i++) {
       filtersDiv.appendChild(exports.setFilterCell(document, boardUri,
-          filters[i]));
+          filters[i], language));
     }
 
     return serializer(document);
@@ -529,7 +533,7 @@ exports.filterManagement = function(boardUri, filters) {
 // } Section 3: Filter management
 
 // Section 4: Rule management {
-exports.setRuleManagementCells = function(document, boardUri, rules) {
+exports.setRuleManagementCells = function(document, boardUri, rules, language) {
   var rulesDiv = document.getElementById('divRules');
 
   for (var i = 0; i < rules.length; i++) {
@@ -537,7 +541,7 @@ exports.setRuleManagementCells = function(document, boardUri, rules) {
 
     var cell = document.createElement('form');
     common.setFormCellBoilerPlate(cell, '/deleteRule.js', 'ruleManagementCell');
-    cell.innerHTML = templateHandler().ruleManagementCell;
+    cell.innerHTML = templateHandler(language).ruleManagementCell;
     cell.getElementsByClassName('textLabel')[0].innerHTML = rule;
 
     cell.getElementsByClassName('boardIdentifier')[0].setAttribute('value',
@@ -548,11 +552,11 @@ exports.setRuleManagementCells = function(document, boardUri, rules) {
   }
 };
 
-exports.ruleManagement = function(boardUri, rules) {
+exports.ruleManagement = function(boardUri, rules, language) {
 
   try {
 
-    var document = jsdom(templateHandler().ruleManagementPage);
+    var document = jsdom(templateHandler(language).ruleManagementPage);
 
     document.title = lang.titRuleManagement;
 
@@ -560,7 +564,7 @@ exports.ruleManagement = function(boardUri, rules) {
 
     boardIdentifier.setAttribute('value', boardUri);
 
-    exports.setRuleManagementCells(document, boardUri, rules);
+    exports.setRuleManagementCells(document, boardUri, rules, language);
 
     return serializer(document);
 
@@ -580,7 +584,7 @@ exports.ruleManagement = function(boardUri, rules) {
 // } Section 4: Rule management
 
 // Section 5: Flag management {
-exports.addFlagCells = function(document, flags, boardUri) {
+exports.addFlagCells = function(document, flags, boardUri, language) {
 
   var flagsDiv = document.getElementById('flagsDiv');
 
@@ -591,7 +595,7 @@ exports.addFlagCells = function(document, flags, boardUri) {
 
     common.setFormCellBoilerPlate(cell, '/deleteFlag.js', 'flagCell');
 
-    cell.innerHTML = templateHandler().flagCell;
+    cell.innerHTML = templateHandler(language).flagCell;
 
     var flagUrl = '/' + boardUri + '/flags/' + flag._id;
 
@@ -607,10 +611,10 @@ exports.addFlagCells = function(document, flags, boardUri) {
 
 };
 
-exports.flagManagement = function(boardUri, flags, callback) {
+exports.flagManagement = function(boardUri, flags, language) {
   try {
 
-    var document = jsdom(templateHandler().flagsPage);
+    var document = jsdom(templateHandler(language).flagsPage);
 
     document.title = lang.titFlagManagement;
 
@@ -618,7 +622,7 @@ exports.flagManagement = function(boardUri, flags, callback) {
 
     document.getElementById('boardIdentifier').setAttribute('value', boardUri);
 
-    exports.addFlagCells(document, flags, boardUri);
+    exports.addFlagCells(document, flags, boardUri, language);
 
     return serializer(document);
   } catch (error) {
@@ -634,7 +638,6 @@ exports.flagManagement = function(boardUri, flags, callback) {
   }
 
 };
-
 // } Section 5: Flag management
 
 // Section 6: Global settings {
@@ -658,11 +661,11 @@ exports.setComboSetting = function(document, element, setting) {
   }
 };
 
-exports.globalSettings = function() {
+exports.globalSettings = function(language) {
 
   try {
 
-    var document = jsdom(templateHandler().globalSettingsPage);
+    var document = jsdom(templateHandler(language).globalSettingsPage);
 
     var siteSettingsRelation = miscOps.getParametersArray();
 
@@ -713,7 +716,7 @@ exports.globalSettings = function() {
 // } Section 6: Global settings
 
 // Section 7: Banners {
-exports.addBannerCells = function(document, banners) {
+exports.addBannerCells = function(document, banners, language) {
 
   var bannerDiv = document.getElementById('bannersDiv');
 
@@ -721,7 +724,7 @@ exports.addBannerCells = function(document, banners) {
     var banner = banners[i];
 
     var cell = document.createElement('form');
-    cell.innerHTML = templateHandler().bannerCell;
+    cell.innerHTML = templateHandler(language).bannerCell;
 
     common.setFormCellBoilerPlate(cell, '/deleteBanner.js', 'bannerCell');
 
@@ -735,11 +738,11 @@ exports.addBannerCells = function(document, banners) {
 
 };
 
-exports.bannerManagement = function(boardUri, banners) {
+exports.bannerManagement = function(boardUri, banners, language) {
 
   try {
 
-    var document = jsdom(templateHandler().bannerManagementPage);
+    var document = jsdom(templateHandler(language).bannerManagementPage);
 
     if (boardUri) {
       document.title = lang.titBanners.replace('{$board}', boardUri);
@@ -753,7 +756,7 @@ exports.bannerManagement = function(boardUri, banners) {
 
     document.getElementById('maxSizeLabel').innerHTML = displayMaxBannerSize;
 
-    exports.addBannerCells(document, banners);
+    exports.addBannerCells(document, banners, language);
 
     return serializer(document);
 
@@ -808,7 +811,7 @@ exports.getFileLink = function(file) {
 
 };
 
-exports.setMediaManagementCells = function(document, media) {
+exports.setMediaManagementCells = function(document, media, language) {
 
   var filesDiv = document.getElementById('filesDiv');
 
@@ -817,7 +820,7 @@ exports.setMediaManagementCells = function(document, media) {
     var file = media[i];
 
     var cell = document.createElement('div');
-    cell.innerHTML = templateHandler().mediaCell;
+    cell.innerHTML = templateHandler(language).mediaCell;
     cell.setAttribute('class', 'mediaCell');
 
     var link = cell.getElementsByClassName('fileLink')[0];
@@ -839,17 +842,17 @@ exports.setMediaManagementCells = function(document, media) {
 
 };
 
-exports.mediaManagement = function(media, pages, parameters) {
+exports.mediaManagement = function(media, pages, parameters, language) {
 
   try {
 
-    var document = jsdom(templateHandler().mediaManagementPage);
+    var document = jsdom(templateHandler(language).mediaManagementPage);
 
     document.title = lang.titMediaManagement;
 
     exports.setMediaManagementPages(pages, document, parameters);
 
-    exports.setMediaManagementCells(document, media);
+    exports.setMediaManagementCells(document, media, language);
 
     return serializer(document);
 
@@ -870,13 +873,13 @@ exports.mediaManagement = function(media, pages, parameters) {
 // } Section 8: Media management
 
 // Section 9: Language management {
-exports.addLanguageCell = function(document, language) {
+exports.addLanguageCell = function(document, language, userLanguage) {
 
   var cell = document.createElement('form');
 
   common.setFormCellBoilerPlate(cell, '/deleteLanguage.js', 'languageCell');
 
-  cell.innerHTML = templateHandler().languageCell;
+  cell.innerHTML = templateHandler(userLanguage).languageCell;
 
   cell.getElementsByClassName('languageIdentifier')[0].setAttribute('value',
       language._id);
@@ -892,16 +895,16 @@ exports.addLanguageCell = function(document, language) {
 
 };
 
-exports.languages = function(languages) {
+exports.languages = function(languages, language) {
 
   try {
 
-    var document = jsdom(templateHandler().languagesManagementPage);
+    var document = jsdom(templateHandler(language).languagesManagementPage);
 
     document.title = lang.titLanguages;
 
     for (var i = 0; i < languages.length; i++) {
-      exports.addLanguageCell(document, languages[i]);
+      exports.addLanguageCell(document, languages[i], language);
     }
 
     return serializer(document);

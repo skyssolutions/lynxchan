@@ -74,7 +74,7 @@ exports.process = function(req, res) {
       if (json) {
         res.end(jsonBuilder.logs(dates));
       } else {
-        res.end(domManipulator.logs(dates));
+        res.end(domManipulator.logs(dates, req.language));
       }
     }
 

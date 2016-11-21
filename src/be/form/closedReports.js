@@ -22,7 +22,7 @@ function getClosedReports(userData, parameters, res, auth, language) {
       if (json) {
         res.end(jsonBuilder.closedReports(reports));
       } else {
-        res.end(dom.closedReports(reports));
+        res.end(dom.closedReports(reports, language));
       }
 
     }

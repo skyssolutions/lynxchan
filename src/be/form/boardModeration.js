@@ -22,7 +22,7 @@ function getBoardModerationData(parameters, userData, res, auth, language) {
           if (json) {
             res.end(jsonBuilder.boardModeration(boardData, ownerData));
           } else {
-            res.end(dom.boardModeration(boardData, ownerData));
+            res.end(dom.boardModeration(boardData, ownerData, language));
           }
 
         }
