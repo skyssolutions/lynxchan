@@ -410,14 +410,15 @@ exports.catalog = function(boardData, threads, flagData, callback) {
 // } Section 3: Catalog
 
 // Section 4: Front page {
-exports.setLatestImages = function(latestImages, latestImagesDiv, document) {
+exports.setLatestImages = function(latestImages, latestImagesDiv, document,
+    language) {
 
   for (var i = 0; i < latestImages.length; i++) {
 
     var image = latestImages[i];
 
     var cell = document.createElement('div');
-    cell.innerHTML = templateHandler().latestImageCell;
+    cell.innerHTML = templateHandler(language).latestImageCell;
     cell.setAttribute('class', 'latestImageCell');
 
     var link = cell.getElementsByClassName('linkPost')[0];
@@ -466,13 +467,14 @@ exports.setTopBoards = function(document, boards) {
 
 };
 
-exports.setLatestPosts = function(latestPosts, latestPostsDiv, document) {
+exports.setLatestPosts = function(latestPosts, latestPostsDiv, document,
+    language) {
 
   for (var i = 0; i < latestPosts.length; i++) {
     var post = latestPosts[i];
 
     var cell = document.createElement('div');
-    cell.innerHTML = templateHandler().latestPostCell;
+    cell.innerHTML = templateHandler(language).latestPostCell;
     cell.setAttribute('class', 'latestPostCell');
 
     var previewLabel = cell.getElementsByClassName('labelPreview')[0];
@@ -504,14 +506,15 @@ exports.setEngineInfo = function(document) {
 
 };
 
-exports.checkForLatestContent = function(document, latestImages, latestPosts) {
+exports.checkForLatestContent = function(document, latestImages, latestPosts,
+    language) {
 
   var latestPostsDiv = document.getElementById('divLatestPosts');
 
   if (!latestPosts) {
     common.removeElement(latestPostsDiv);
   } else {
-    exports.setLatestPosts(latestPosts, latestPostsDiv, document);
+    exports.setLatestPosts(latestPosts, latestPostsDiv, document, language);
   }
 
   var latestImagesDiv = document.getElementById('divLatestImages');
@@ -519,7 +522,7 @@ exports.checkForLatestContent = function(document, latestImages, latestPosts) {
   if (!latestImages) {
     common.removeElement(latestImagesDiv);
   } else {
-    exports.setLatestImages(latestImages, latestImagesDiv, document);
+    exports.setLatestImages(latestImages, latestImagesDiv, document, language);
   }
 
 };
@@ -546,31 +549,50 @@ exports.setGlobalStats = function(document, globalStats) {
 
 };
 
+exports.setFrontPageContent = function(document, boards, globalStats,
+    latestImages, latestPosts, language) {
+
+  document.title = siteTitle;
+
+  exports.setTopBoards(document, boards);
+
+  if (globalStats) {
+    exports.setGlobalStats(document, globalStats);
+  } else {
+    common.removeElement(document.getElementById('divStats'));
+  }
+
+  exports.checkForLatestContent(document, latestImages, latestPosts, language);
+
+  exports.setEngineInfo(document);
+
+};
+
 exports.frontPage = function(boards, latestPosts, latestImages, globalStats,
-    callback) {
+    language, callback) {
 
   try {
 
-    var document = jsdom(templateHandler().index);
+    var document = jsdom(templateHandler(language).index);
 
-    document.title = siteTitle;
+    exports.setFrontPageContent(document, boards, globalStats, latestImages,
+        latestPosts, language);
 
-    exports.setTopBoards(document, boards);
+    var filePath = '/';
+    var meta = {};
 
-    if (globalStats) {
-      exports.setGlobalStats(document, globalStats);
-    } else {
-      common.removeElement(document.getElementById('divStats'));
+    if (language) {
+      meta.languages = language.headerValues;
+      filePath += language.headerValues.join('-');
     }
 
-    exports.checkForLatestContent(document, latestImages, latestPosts);
+    gridFs.writeData(serializer(document), filePath, 'text/html', meta,
+        callback);
 
-    exports.setEngineInfo(document);
-
-    gridFs.writeData(serializer(document), '/', 'text/html', {}, callback);
   } catch (error) {
     callback(error);
   }
+
 };
 // } Section 4: Front page
 

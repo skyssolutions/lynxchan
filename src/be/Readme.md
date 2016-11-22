@@ -190,6 +190,7 @@ Meta-data of files on gridfs will have the following values:
 * `status`(Number): http status to be used when outputting this page. Defaults to 200 when outputting.
 * `date`(Number): date to which the file refers to.
 * `identifier`: identifier for media files.
+* `languages`(Array): array of languages that this page is aimed at. 
 * `type`: type of file. May hold one of the following values: 
   * `board`
   * `thread` 

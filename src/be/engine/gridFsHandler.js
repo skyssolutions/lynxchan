@@ -102,7 +102,10 @@ exports.writeData = function(data, dest, mime, meta, callback, compressed) {
   }
 
   if (!compressed) {
-    meta.lastModified = new Date();
+
+    if (!meta.languages) {
+      meta.lastModified = new Date();
+    }
 
     if (miscOps.isPlainText(mime)) {
       meta.compressed = true;
@@ -353,6 +356,14 @@ exports.streamFile = function(stream, range, stats, req, res, header, cookies,
         header.push([ 'Vary', 'Accept-Encoding' ]);
       }
 
+      header.push([ 'Vary', 'Accept-Language' ]);
+
+      if (stats.metadata.languages) {
+
+        header
+            .push([ 'Content-Language', stats.metadata.languages.join(', ') ]);
+      }
+
       res.writeHead(range ? 206 : (stats.metadata.status || 200), header);
     }
 
@@ -432,23 +443,75 @@ exports.shouldOutput304 = function(lastSeen, stats) {
   return mTimeMatches && !disable304 && !stats.metadata.status;
 };
 
-exports.decideOnCompression = function(req, res, fileStats, compressed, file,
-    cookies, retry, callback) {
+exports.decideOnCompression = function(req, res, fileStats, compressed,
+    language, file, cookies, retry, callback) {
 
   if (req.compressed && fileStats.metadata.compressed && !compressed) {
     file += '.gz';
 
-    exports.outputFile(file, req, res, callback, cookies, retry, true);
+    exports.outputFile(file, req, res, callback, cookies, retry, true,
+        language, fileStats);
   } else {
     exports.prepareStream(fileStats, req, callback, cookies, res);
   }
 
 };
 
+exports.decideOnLanguage = function(req, res, fileStats, compressed, language,
+    file, cookies, retry, callback) {
+
+  if (req.language && !language) {
+
+    var languageString = req.language.headerValues.join('-');
+
+    files.findOne({
+      filename : file + languageString
+    }, function gotFile(error, result) {
+
+      if (error) {
+        callback(error);
+      } else {
+
+        if (result) {
+          file += languageString;
+        }
+
+        exports.outputFile(file, req, res, callback, cookies, retry, false,
+            true, fileStats);
+
+      }
+
+    });
+
+  } else {
+    exports.decideOnCompression(req, res, fileStats, compressed, language,
+        file, cookies, retry, callback);
+  }
+
+};
+
+exports.output304 = function(fileStats, res) {
+
+  if (verbose) {
+    console.log('304');
+  }
+
+  var header = [ [ 'Vary', 'Accept-Language' ] ];
+  exports.setExpiration(header, fileStats);
+
+  if (fileStats.metadata.compressed) {
+    header.push([ 'Vary', 'Accept-Encoding' ]);
+  }
+
+  res.writeHead(304, header);
+  res.end();
+
+};
+
 // retry means it has already failed to get a page and now is trying to get the
 // 404 page. It prevents infinite recursion
 exports.outputFile = function(file, req, res, callback, cookies, retry,
-    compressed) {
+    compressed, language, originalStats) {
 
   if (verbose) {
     console.log('Outputting \'' + file + '\' from gridfs');
@@ -464,6 +527,7 @@ exports.outputFile = function(file, req, res, callback, cookies, retry,
     'metadata.status' : 1,
     'metadata.type' : 1,
     'metadata.compressed' : 1,
+    'metadata.languages' : 1,
     length : 1,
     contentType : 1,
     filename : 1,
@@ -481,22 +545,14 @@ exports.outputFile = function(file, req, res, callback, cookies, retry,
       }
 
     } else if (exports.shouldOutput304(lastSeen, fileStats)) {
-      if (verbose) {
-        console.log('304');
-
-      }
-
-      var header = [];
-      exports.setExpiration(header, fileStats);
-
-      if (fileStats.metadata.compressed) {
-        header.push([ 'Vary', 'Accept-Encoding' ]);
-      }
-
-      res.writeHead(304, header);
-      res.end();
+      exports.output304(fileStats, res);
     } else {
-      exports.decideOnCompression(req, res, fileStats, compressed, file,
+
+      if (originalStats) {
+        fileStats.metadata.lastModified = originalStats.metadata.lastModified;
+      }
+
+      exports.decideOnLanguage(req, res, fileStats, compressed, language, file,
           cookies, retry, callback);
     }
   });

@@ -15,6 +15,7 @@ var posts = db.posts();
 var boards = db.boards();
 var latestPostsCol = db.latestPosts();
 var latestImagesCol = db.latestImages();
+var languages = db.languages();
 var kernel = require('../../kernel');
 var settingsHandler = require('../../settingsHandler');
 var templateSettings = settingsHandler.getTemplateSettings();
@@ -34,6 +35,7 @@ var overboard;
 var sfwOverboard;
 var globalStats;
 var fePath;
+var altLanguages;
 var commonDomManipulator;
 var overBoardThreadCount;
 
@@ -41,6 +43,7 @@ exports.loadSettings = function() {
   var settings = settingsHandler.getGeneralSettings();
 
   verbose = settings.verbose;
+  altLanguages = settings.useAlternativeLanguages;
   topBoardsCount = settings.topBoardsCount;
   globalLatestPosts = settings.globalLatestPosts;
   globalLatestImages = settings.globalLatestImages;
@@ -152,10 +155,43 @@ exports.notFound = function(callback) {
 };
 
 // Section 1: Front-page {
-exports.saveFrontPage = function(foundBoards, globalLatestPosts,
-    globalLatestImages, globalStats, mediaData, callback) {
+exports.saveFrontPageAlternativeHTML = function(foundBoards, globalLatestPosts,
+    globalLatestImages, globalStats, mediaData, language, callback) {
 
-  if (globalStats || mediaData) {
+  var matchBlock = {};
+
+  if (language) {
+    matchBlock._id = {
+      $gt : language._id
+    };
+  }
+
+  languages.find(matchBlock).sort({
+    _id : 1
+  }).limit(1)
+      .toArray(
+          function gotLanguage(error, results) {
+
+            if (error) {
+              callback(error);
+            } else if (!results.length) {
+
+              jsonBuilder.frontPage(foundBoards, globalLatestPosts,
+                  globalLatestImages, globalStats, callback);
+            } else {
+              exports.saveFrontPage(foundBoards, globalLatestPosts,
+                  globalLatestImages, globalStats, mediaData, callback,
+                  results[0]);
+            }
+
+          });
+
+};
+
+exports.saveFrontPage = function(foundBoards, globalLatestPosts,
+    globalLatestImages, globalStats, mediaData, callback, language) {
+
+  if ((globalStats || mediaData) && !language) {
 
     globalStats = globalStats || {};
     mediaData = mediaData || {};
@@ -173,12 +209,21 @@ exports.saveFrontPage = function(foundBoards, globalLatestPosts,
   }
 
   domManipulator.frontPage(foundBoards, globalLatestPosts, globalLatestImages,
-      globalStats, function savedHtml(error) {
+      globalStats, language, function savedHtml(error) {
         if (error) {
           callback(error);
         } else {
-          jsonBuilder.frontPage(foundBoards, globalLatestPosts,
-              globalLatestImages, globalStats, callback);
+
+          if (altLanguages) {
+
+            exports.saveFrontPageAlternativeHTML(foundBoards,
+                globalLatestPosts, globalLatestImages, globalStats, mediaData,
+                language, callback);
+
+          } else {
+            jsonBuilder.frontPage(foundBoards, globalLatestPosts,
+                globalLatestImages, globalStats, callback);
+          }
         }
 
       });
