@@ -2147,5 +2147,18 @@ headerValuesLabel:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::65
+
+topBoardCell*: cell used for top boards on the front-page.
+
+Root element: div.
+
+Elements:
+boardLink:
+    use: have it's href and innerHTML manipulated.
+    description: link to the board.
+
+------------------------------------------------------------------------------------------
+
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.
 

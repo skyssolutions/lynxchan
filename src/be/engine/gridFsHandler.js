@@ -9,6 +9,7 @@ var chunks = db.chunks();
 var bucket = new (require('mongodb')).GridFSBucket(db.conn());
 var disable304;
 var verbose;
+var alternativeLanguages;
 var miscOps;
 var zlib = require('zlib');
 
@@ -22,6 +23,7 @@ exports.loadSettings = function() {
 
   disable304 = settings.disable304;
   verbose = settings.verbose;
+  alternativeLanguages = settings.useAlternativeLanguages;
 };
 
 exports.loadDependencies = function() {
@@ -110,6 +112,8 @@ exports.writeData = function(data, dest, mime, meta, callback, compressed) {
     if (miscOps.isPlainText(mime)) {
       meta.compressed = true;
     }
+  } else if (meta.languages) {
+    meta.referenceFile += '.gz';
   }
 
   if (verbose) {
@@ -356,7 +360,9 @@ exports.streamFile = function(stream, range, stats, req, res, header, cookies,
         header.push([ 'Vary', 'Accept-Encoding' ]);
       }
 
-      header.push([ 'Vary', 'Accept-Language' ]);
+      if (alternativeLanguages) {
+        header.push([ 'Vary', 'Accept-Language' ]);
+      }
 
       if (stats.metadata.languages) {
 
@@ -444,13 +450,13 @@ exports.shouldOutput304 = function(lastSeen, stats) {
 };
 
 exports.decideOnCompression = function(req, res, fileStats, compressed,
-    language, file, cookies, retry, callback) {
+    language, file, cookies, retry, pickedLanguage, callback) {
 
   if (req.compressed && fileStats.metadata.compressed && !compressed) {
     file += '.gz';
 
     exports.outputFile(file, req, res, callback, cookies, retry, true,
-        language, fileStats);
+        language, fileStats, pickedLanguage);
   } else {
     exports.prepareStream(fileStats, req, callback, cookies, res);
   }
@@ -458,26 +464,23 @@ exports.decideOnCompression = function(req, res, fileStats, compressed,
 };
 
 exports.decideOnLanguage = function(req, res, fileStats, compressed, language,
-    file, cookies, retry, callback) {
+    file, cookies, retry, pickedLanguage, callback) {
 
   if (req.language && !language) {
 
-    var languageString = req.language.headerValues.join('-');
-
     files.findOne({
-      filename : file + languageString
+      'metadata.referenceFile' : file,
+      'metadata.languages' : {
+        $in : req.language.headerValues
+      }
     }, function gotFile(error, result) {
 
       if (error) {
         callback(error);
       } else {
 
-        if (result) {
-          file += languageString;
-        }
-
         exports.outputFile(file, req, res, callback, cookies, retry, false,
-            true, fileStats);
+            true, fileStats, result ? true : false);
 
       }
 
@@ -485,7 +488,7 @@ exports.decideOnLanguage = function(req, res, fileStats, compressed, language,
 
   } else {
     exports.decideOnCompression(req, res, fileStats, compressed, language,
-        file, cookies, retry, callback);
+        file, cookies, retry, pickedLanguage, callback);
   }
 
 };
@@ -496,7 +499,12 @@ exports.output304 = function(fileStats, res) {
     console.log('304');
   }
 
-  var header = [ [ 'Vary', 'Accept-Language' ] ];
+  var header = [];
+
+  if (alternativeLanguages) {
+    header.push([ 'Vary', 'Accept-Language' ]);
+  }
+
   exports.setExpiration(header, fileStats);
 
   if (fileStats.metadata.compressed) {
@@ -511,7 +519,7 @@ exports.output304 = function(fileStats, res) {
 // retry means it has already failed to get a page and now is trying to get the
 // 404 page. It prevents infinite recursion
 exports.outputFile = function(file, req, res, callback, cookies, retry,
-    compressed, language, originalStats) {
+    compressed, language, originalStats, pickedLanguage) {
 
   if (verbose) {
     console.log('Outputting \'' + file + '\' from gridfs');
@@ -519,9 +527,20 @@ exports.outputFile = function(file, req, res, callback, cookies, retry,
 
   var lastSeen = req.headers ? req.headers['if-modified-since'] : null;
 
-  files.findOne({
-    filename : file
-  }, {
+  if (pickedLanguage) {
+    var matchBlock = {
+      'metadata.referenceFile' : file,
+      'metadata.languages' : {
+        $in : req.language.headerValues
+      }
+    };
+  } else {
+    matchBlock = {
+      filename : file
+    };
+  }
+
+  files.findOne(matchBlock, {
     uploadDate : 1,
     'metadata.lastModified' : 1,
     'metadata.status' : 1,
@@ -553,7 +572,7 @@ exports.outputFile = function(file, req, res, callback, cookies, retry,
       }
 
       exports.decideOnLanguage(req, res, fileStats, compressed, language, file,
-          cookies, retry, callback);
+          cookies, retry, pickedLanguage, callback);
     }
   });
 

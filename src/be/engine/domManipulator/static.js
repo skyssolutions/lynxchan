@@ -439,7 +439,7 @@ exports.setLatestImages = function(latestImages, latestImagesDiv, document,
 
 };
 
-exports.setTopBoards = function(document, boards) {
+exports.setTopBoards = function(document, boards, language) {
 
   var boardsDiv = document.getElementById('divBoards');
 
@@ -452,16 +452,15 @@ exports.setTopBoards = function(document, boards) {
 
     var board = boards[i];
 
-    var link = document.createElement('a');
+    var cell = document.createElement('div');
+    cell.innerHTML = templateHandler(language).topBoardCell;
+
+    var link = cell.getElementsByClassName('boardLink')[0];
 
     link.href = '/' + board.boardUri + '/';
     link.innerHTML = '/' + board.boardUri + '/ - ' + board.boardName;
 
-    if (i) {
-      boardsDiv.appendChild(document.createElement('br'));
-    }
-
-    boardsDiv.appendChild(link);
+    boardsDiv.appendChild(cell);
 
   }
 
@@ -554,7 +553,7 @@ exports.setFrontPageContent = function(document, boards, globalStats,
 
   document.title = siteTitle;
 
-  exports.setTopBoards(document, boards);
+  exports.setTopBoards(document, boards, language);
 
   if (globalStats) {
     exports.setGlobalStats(document, globalStats);
@@ -582,6 +581,7 @@ exports.frontPage = function(boards, latestPosts, latestImages, globalStats,
     var meta = {};
 
     if (language) {
+      meta.referenceFile = filePath;
       meta.languages = language.headerValues;
       filePath += language.headerValues.join('-');
     }

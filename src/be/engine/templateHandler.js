@@ -51,6 +51,10 @@ exports.getCellTests = function() {
         fields : [ 'linkPost' ]
       },
       {
+        template : 'topBoardCell',
+        fields : [ 'boardLink' ]
+      },
+      {
         template : 'catalogCell',
         fields : [ 'linkThumb', 'labelReplies', 'labelImages', 'labelPage',
             'labelSubject', 'divMessage', 'lockIndicator', 'pinIndicator',
