@@ -697,7 +697,8 @@ exports.maintenance = function(callback) {
 };
 
 // Section 6: Overboard {
-exports.addOverBoardThreads = function(foundThreads, previewRelation, doc) {
+exports.addOverBoardThreads = function(foundThreads, previewRelation, doc,
+    language) {
 
   for (var i = 0; i < foundThreads.length; i++) {
     var thread = foundThreads[i];
@@ -709,27 +710,37 @@ exports.addOverBoardThreads = function(foundThreads, previewRelation, doc) {
       previews = previewRelation[thread.boardUri][thread.threadId];
     }
 
-    common.addThread(doc, thread, previews);
+    common.addThread(doc, thread, previews, null, null, null, null, language);
   }
 
 };
 
 exports.overboard = function(foundThreads, previewRelation, callback,
-    multiBoard, sfw) {
+    multiBoard, sfw, language) {
 
   try {
 
-    var document = jsdom(templateHandler().overboard);
+    var document = jsdom(templateHandler(language).overboard);
 
-    exports.addOverBoardThreads(foundThreads, previewRelation, document);
+    exports.addOverBoardThreads(foundThreads, previewRelation, document,
+        language);
 
     if (multiBoard) {
       document.title = lang.titMultiboard;
       callback(null, serializer(document));
     } else {
       document.title = '/' + (sfw ? sfwOverboard : overboard) + '/';
-      gridFs.writeData(serializer(document), document.title, 'text/html', {},
-          callback);
+
+      var path = document.title;
+      var meta = {};
+
+      if (language) {
+        meta.referenceFile = path;
+        meta.languages = language.headerValues;
+        path += language.headerValues.join('-');
+      }
+
+      gridFs.writeData(serializer(document), path, 'text/html', meta, callback);
     }
 
   } catch (error) {

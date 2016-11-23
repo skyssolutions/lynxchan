@@ -424,6 +424,54 @@ exports.buildJsonAndRssOverboard = function(foundThreads, previewRelation,
 
 };
 
+exports.buildHTMLOverboard = function(foundThreads, previewRelation, sfw,
+    callback, language) {
+
+  domManipulator.overboard(foundThreads, previewRelation, function rebuildHtml(
+      error) {
+    if (error) {
+      callback(error);
+    } else {
+
+      if (altLanguages) {
+
+        var matchBlock = {};
+
+        if (language) {
+          matchBlock._id = {
+            $gt : language._id
+          };
+        }
+
+        // style exception, too simple
+        languages.find(matchBlock).sort({
+          _id : 1
+        }).limit(1).toArray(
+            function gotLanguage(error, results) {
+
+              if (error) {
+                callback(error);
+              } else if (!results.length) {
+                exports.buildJsonAndRssOverboard(foundThreads, previewRelation,
+                    callback, sfw);
+              } else {
+                exports.buildHTMLOverboard(foundThreads, previewRelation, sfw,
+                    callback, results[0]);
+              }
+
+            });
+        // style exception, too simple
+
+      } else {
+        exports.buildJsonAndRssOverboard(foundThreads, previewRelation,
+            callback, sfw);
+      }
+
+    }
+  }, null, sfw, language);
+
+};
+
 exports.getOverboardPosts = function(foundThreads, callback, sfw) {
 
   var previewRelation = {};
@@ -457,46 +505,34 @@ exports.getOverboardPosts = function(foundThreads, callback, sfw) {
     $or : orArray
   }, postProjection).sort({
     creation : 1
-  }).toArray(
-      function gotPosts(error, foundPosts) {
-        if (error) {
-          callback(error);
-        } else {
+  }).toArray(function gotPosts(error, foundPosts) {
+    if (error) {
+      callback(error);
+    } else {
 
-          var previewRelation = {};
+      var previewRelation = {};
 
-          for (var i = 0; i < foundPosts.length; i++) {
+      for (var i = 0; i < foundPosts.length; i++) {
 
-            var post = foundPosts[i];
+        var post = foundPosts[i];
 
-            var boardElement = previewRelation[post.boardUri] || {};
+        var boardElement = previewRelation[post.boardUri] || {};
 
-            previewRelation[post.boardUri] = boardElement;
+        previewRelation[post.boardUri] = boardElement;
 
-            var threadArray = boardElement[post.threadId] || [];
+        var threadArray = boardElement[post.threadId] || [];
 
-            threadArray.push(post);
+        threadArray.push(post);
 
-            boardElement[post.threadId] = threadArray;
+        boardElement[post.threadId] = threadArray;
 
-          }
+      }
 
-          // style exception, too simple
-          domManipulator.overboard(foundThreads, previewRelation,
-              function rebuildHtml(error) {
-                if (error) {
-                  callback(error);
-                } else {
-                  exports.buildJsonAndRssOverboard(foundThreads,
-                      previewRelation, callback, sfw);
+      exports.buildHTMLOverboard(foundThreads, previewRelation, sfw, callback);
 
-                }
-              }, null, sfw);
-          // style exception, too simple
+    }
 
-        }
-
-      });
+  });
 
 };
 
