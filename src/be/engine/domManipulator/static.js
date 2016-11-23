@@ -81,10 +81,10 @@ exports.notFound = function(callback) {
 
 };
 
-exports.login = function(callback) {
+exports.login = function(language, callback) {
 
   try {
-    var document = jsdom(templateHandler().loginPage);
+    var document = jsdom(templateHandler(language).loginPage);
 
     document.title = lang.titLogin;
 
@@ -92,8 +92,16 @@ exports.login = function(callback) {
       common.removeElement(document.getElementById('divCreation'));
     }
 
-    gridFs.writeData(serializer(document), '/login.html', 'text/html', {},
-        callback);
+    var path = '/login.html';
+    var meta = {};
+
+    if (language) {
+      meta.referenceFile = path;
+      meta.languages = language.headerValues;
+      path += language.headerValues.join('-');
+    }
+
+    gridFs.writeData(serializer(document), path, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);
@@ -680,16 +688,25 @@ exports.rules = function(boardUri, rules, callback) {
   }
 };
 
-exports.maintenance = function(callback) {
+exports.maintenance = function(language, callback) {
   try {
 
-    var document = jsdom(templateHandler().maintenancePage);
+    var document = jsdom(templateHandler(language).maintenancePage);
 
     document.title = lang.titMaintenance;
 
-    gridFs.writeData(serializer(document), '/maintenance.html', 'text/html', {
+    var path = '/maintenance.html';
+    var meta = {
       status : 200
-    }, callback);
+    };
+
+    if (language) {
+      meta.referenceFile = path;
+      meta.languages = language.headerValues;
+      path += language.headerValues.join('-');
+    }
+
+    gridFs.writeData(serializer(document), path, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);

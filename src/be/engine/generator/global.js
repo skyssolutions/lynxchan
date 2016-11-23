@@ -69,22 +69,85 @@ exports.loadDependencies = function() {
 
 };
 
-exports.maintenance = function(callback) {
+exports.maintenance = function(callback, language) {
 
   if (verbose) {
     console.log('Generating maintenance page');
   }
 
-  domManipulator.maintenance(callback);
+  domManipulator.maintenance(language,
+      function generatedMaintenancePage(error) {
+        if (error) {
+          callback(error);
+        } else {
+
+          var matchBlock = {};
+
+          if (language) {
+            matchBlock._id = {
+              $gt : language._id
+            };
+          }
+
+          // style exception, too simple
+          languages.find(matchBlock).sort({
+            _id : 1
+          }).limit(1).toArray(function gotLanguage(error, results) {
+
+            if (error) {
+              callback(error);
+            } else if (!results.length) {
+              callback();
+            } else {
+              exports.maintenance(callback, results[0]);
+            }
+
+          });
+          // style exception, too simple
+
+        }
+      });
 
 };
 
-exports.login = function(callback) {
+exports.login = function(callback, language) {
   if (verbose) {
     console.log('Generating login page');
   }
 
-  domManipulator.login(callback);
+  domManipulator.login(language, function generatedLogin(error) {
+
+    if (error) {
+      callback();
+    } else {
+
+      var matchBlock = {};
+
+      if (language) {
+        matchBlock._id = {
+          $gt : language._id
+        };
+      }
+
+      // style exception, too simple
+      languages.find(matchBlock).sort({
+        _id : 1
+      }).limit(1).toArray(function gotLanguage(error, results) {
+
+        if (error) {
+          callback(error);
+        } else if (!results.length) {
+          callback();
+        } else {
+          exports.login(callback, results[0]);
+        }
+
+      });
+      // style exception, too simple
+
+    }
+
+  });
 
 };
 
