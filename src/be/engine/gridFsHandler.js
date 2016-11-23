@@ -37,7 +37,11 @@ exports.removeDuplicates = function(uploadStream, callback) {
       _id : {
         $ne : uploadStream.id
       },
-      filename : uploadStream.filename
+      $or : [ {
+        filename : uploadStream.filename
+      }, {
+        'metadata.referenceFile' : uploadStream.filename
+      } ]
     }
   }, {
     $group : {
@@ -89,6 +93,9 @@ exports.compressData = function(data, dest, mime, meta, callback) {
     if (error) {
       callback(error);
     } else {
+
+      meta.referenceFile = meta.referenceFile || dest;
+
       exports.writeData(data, dest + '.gz', mime, meta, callback, true);
     }
 
@@ -105,15 +112,11 @@ exports.writeData = function(data, dest, mime, meta, callback, compressed) {
 
   if (!compressed) {
 
-    if (!meta.languages) {
-      meta.lastModified = new Date();
-    }
+    meta.lastModified = new Date();
 
     if (miscOps.isPlainText(mime)) {
       meta.compressed = true;
     }
-  } else if (meta.languages) {
-    meta.referenceFile += '.gz';
   }
 
   if (verbose) {
@@ -125,9 +128,9 @@ exports.writeData = function(data, dest, mime, meta, callback, compressed) {
     metadata : meta
   });
 
-  uploadStream.on('error', callback);
+  uploadStream.once('error', callback);
 
-  uploadStream.on('finish', function finished() {
+  uploadStream.once('finish', function finished() {
 
     // style exception, too simple
     exports.removeDuplicates(uploadStream, function removedDuplicates(error) {
@@ -377,12 +380,12 @@ exports.streamFile = function(stream, range, stats, req, res, header, cookies,
 
   });
 
-  stream.on('end', function() {
+  stream.once('end', function() {
     res.end();
     callback();
   });
 
-  stream.on('error', function(error) {
+  stream.once('error', function(error) {
 
     retries = retries || 0;
 
@@ -438,61 +441,6 @@ exports.prepareStream = function(stats, req, callback, cookies, res, retries) {
 
 };
 
-exports.shouldOutput304 = function(lastSeen, stats) {
-
-  stats.metadata = stats.metadata || {};
-
-  var lastM = stats.metadata.lastModified || stats.uploadDate;
-
-  var mTimeMatches = lastSeen === lastM.toUTCString();
-
-  return mTimeMatches && !disable304 && !stats.metadata.status;
-};
-
-exports.decideOnCompression = function(req, res, fileStats, compressed,
-    language, file, cookies, retry, pickedLanguage, callback) {
-
-  if (req.compressed && fileStats.metadata.compressed && !compressed) {
-    file += '.gz';
-
-    exports.outputFile(file, req, res, callback, cookies, retry, true,
-        language, fileStats, pickedLanguage);
-  } else {
-    exports.prepareStream(fileStats, req, callback, cookies, res);
-  }
-
-};
-
-exports.decideOnLanguage = function(req, res, fileStats, compressed, language,
-    file, cookies, retry, pickedLanguage, callback) {
-
-  if (req.language && !language) {
-
-    files.findOne({
-      'metadata.referenceFile' : file,
-      'metadata.languages' : {
-        $in : req.language.headerValues
-      }
-    }, function gotFile(error, result) {
-
-      if (error) {
-        callback(error);
-      } else {
-
-        exports.outputFile(file, req, res, callback, cookies, retry, false,
-            true, fileStats, result ? true : false);
-
-      }
-
-    });
-
-  } else {
-    exports.decideOnCompression(req, res, fileStats, compressed, language,
-        file, cookies, retry, pickedLanguage, callback);
-  }
-
-};
-
 exports.output304 = function(fileStats, res) {
 
   if (verbose) {
@@ -516,45 +464,98 @@ exports.output304 = function(fileStats, res) {
 
 };
 
+exports.shouldOutput304 = function(req, stats) {
+
+  stats.metadata = stats.metadata || {};
+
+  var lastModified = stats.metadata.lastModified || stats.uploadDate;
+
+  var lastSeen = req.headers ? req.headers['if-modified-since'] : null;
+
+  var mTimeMatches = lastSeen === lastModified.toUTCString();
+
+  return mTimeMatches && !disable304 && !stats.metadata.status;
+
+};
+
+exports.takeLanguageFile = function(file, req) {
+
+  var isCompressed = file.filename.indexOf('.gz') === file.filename.length - 3;
+
+  return (req.compressed ? true : false) === isCompressed;
+
+};
+
+exports.pickFile = function(fileRequested, req, res, cookies, possibleFiles,
+    callback) {
+
+  var vanilla;
+  var compressed;
+  var language;
+
+  for (var i = 0; i < possibleFiles.length; i++) {
+
+    var file = possibleFiles[i];
+
+    if (fileRequested === file.filename) {
+      vanilla = file;
+    } else if (!file.metadata.languages && req.compressed) {
+      compressed = file;
+    } else if (exports.takeLanguageFile(file, req)) {
+      language = file;
+    }
+  }
+
+  var finalPick = language || compressed || vanilla;
+
+  if (!finalPick) {
+    exports.outputFile('/404.html', req, res, callback, cookies, true);
+  } else if (exports.shouldOutput304(req, finalPick)) {
+    exports.output304(finalPick, res);
+  } else {
+    exports.prepareStream(finalPick, req, callback, cookies, res);
+  }
+
+};
+
 // retry means it has already failed to get a page and now is trying to get the
 // 404 page. It prevents infinite recursion
-exports.outputFile = function(file, req, res, callback, cookies, retry,
-    compressed, language, originalStats, pickedLanguage) {
+exports.outputFile = function(file, req, res, callback, cookies, retry) {
 
   if (verbose) {
     console.log('Outputting \'' + file + '\' from gridfs');
   }
 
-  var lastSeen = req.headers ? req.headers['if-modified-since'] : null;
-
-  if (pickedLanguage) {
-    var matchBlock = {
-      'metadata.referenceFile' : file,
+  var languageCondition = req.language ? {
+    $or : [ {
+      'metadata.languages' : {
+        $exists : false
+      }
+    }, {
       'metadata.languages' : {
         $in : req.language.headerValues
       }
-    };
-  } else {
-    matchBlock = {
-      filename : file
-    };
-  }
+    } ]
+  } : {
+    'metadata.languages' : {
+      $exists : false
+    }
+  };
 
-  files.findOne(matchBlock, {
-    uploadDate : 1,
-    'metadata.lastModified' : 1,
-    'metadata.status' : 1,
-    'metadata.type' : 1,
-    'metadata.compressed' : 1,
-    'metadata.languages' : 1,
-    length : 1,
-    contentType : 1,
-    filename : 1,
-    _id : 0
-  }, function gotFile(error, fileStats) {
+  files.find({
+    $or : [ {
+      $and : [ {
+        'metadata.referenceFile' : file
+      }, languageCondition ]
+    }, {
+      filename : file
+    } ]
+  }).toArray(function gotFiles(error, possibleFiles) {
+
     if (error) {
       callback(error);
-    } else if (!fileStats) {
+    } else if (!possibleFiles.length) {
+
       if (retry) {
         callback({
           code : 'ENOENT'
@@ -563,16 +564,8 @@ exports.outputFile = function(file, req, res, callback, cookies, retry,
         exports.outputFile('/404.html', req, res, callback, cookies, true);
       }
 
-    } else if (exports.shouldOutput304(lastSeen, fileStats)) {
-      exports.output304(fileStats, res);
     } else {
-
-      if (originalStats) {
-        fileStats.metadata.lastModified = originalStats.metadata.lastModified;
-      }
-
-      exports.decideOnLanguage(req, res, fileStats, compressed, language, file,
-          cookies, retry, pickedLanguage, callback);
+      exports.pickFile(file, req, res, cookies, possibleFiles, callback);
     }
   });
 

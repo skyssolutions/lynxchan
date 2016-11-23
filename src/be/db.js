@@ -19,7 +19,7 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 19;
+var maxIndexesSet = 20;
 
 var cachedMessages;
 var cachedLanguages;
@@ -612,6 +612,24 @@ function initStats(callback) {
     }
   });
 }
+
+function initFiles(callback) {
+
+  cachedFiles.ensureIndex({
+    'metadata.referenceFile' : 1
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+
+  });
+
+}
 // end of index initialization
 
 // start of getters
@@ -748,6 +766,8 @@ function initGlobalIndexes(callback) {
 
   initUploadReferences(callback);
 
+  initFiles(callback);
+
 }
 
 function initBoardIndexes(callback) {
@@ -801,6 +821,7 @@ function initGlobalIndexedCollections(callback) {
   cachedRecoveryRequests = cachedDb.collection('recoveryRequests');
   cachedUsers = cachedDb.collection('users');
   cachedUploadReferences = cachedDb.collection('uploadReferences');
+  cachedFiles = cachedDb.collection('fs.files');
 
   initBoardIndexedCollections(callback);
 
@@ -813,7 +834,6 @@ function initCollections(callback) {
   cachedAggregatedLogs = cachedDb.collection('aggregatedLogs');
   cachedOverboard = cachedDb.collection('overboardThreads');
   cachedLatestPosts = cachedDb.collection('latestPosts');
-  cachedFiles = cachedDb.collection('fs.files');
   cachedChunks = cachedDb.collection('fs.chunks');
   cachedLanguages = cachedDb.collection('languages');
   cachedLog = cachedDb.collection('staffLogs');

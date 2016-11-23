@@ -126,9 +126,7 @@ exports.defaultBanner = function(callback) {
   filePath += templateSettings.defaultBanner;
 
   gfsHandler.writeFile(filePath, kernel.defaultBanner(), logger.getMime(kernel
-      .defaultBanner()), {
-    status : 200
-  }, callback);
+      .defaultBanner()), {}, callback);
 };
 
 exports.thumb = function(callback) {
