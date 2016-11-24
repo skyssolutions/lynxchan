@@ -478,11 +478,28 @@ exports.shouldOutput304 = function(req, stats) {
 
 };
 
-exports.takeLanguageFile = function(file, req) {
+exports.takeLanguageFile = function(file, req, currentPick) {
 
   var isCompressed = file.filename.indexOf('.gz') === file.filename.length - 3;
 
-  return (req.compressed ? true : false) === isCompressed;
+  var toRet = (req.compressed ? true : false) === isCompressed;
+
+  return toRet || (!currentPick && !isCompressed);
+
+};
+
+exports.handlePickedFile = function(finalPick, req, cookies, res, callback) {
+
+  if (!finalPick) {
+    exports.outputFile('/404.html', req, res, callback, cookies, true);
+  } else if (exports.shouldOutput304(req, finalPick)) {
+    exports.output304(finalPick, res);
+  } else {
+    if (verbose) {
+      console.log('Streaming \'' + finalPick.filename + '\'');
+    }
+    exports.prepareStream(finalPick, req, callback, cookies, res);
+  }
 
 };
 
@@ -501,20 +518,13 @@ exports.pickFile = function(fileRequested, req, res, cookies, possibleFiles,
       vanilla = file;
     } else if (!file.metadata.languages && req.compressed) {
       compressed = file;
-    } else if (exports.takeLanguageFile(file, req)) {
+    } else if (exports.takeLanguageFile(file, req, language)) {
       language = file;
     }
   }
 
-  var finalPick = language || compressed || vanilla;
-
-  if (!finalPick) {
-    exports.outputFile('/404.html', req, res, callback, cookies, true);
-  } else if (exports.shouldOutput304(req, finalPick)) {
-    exports.output304(finalPick, res);
-  } else {
-    exports.prepareStream(finalPick, req, callback, cookies, res);
-  }
+  exports.handlePickedFile(language || compressed || vanilla, req, cookies,
+      res, callback);
 
 };
 

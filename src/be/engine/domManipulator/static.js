@@ -65,16 +65,25 @@ exports.loadDependencies = function() {
 
 };
 
-exports.notFound = function(callback) {
+exports.notFound = function(language, callback) {
 
   try {
-    var document = jsdom(templateHandler().notFoundPage);
+    var document = jsdom(templateHandler(language).notFoundPage);
 
     document.title = lang.titNotFound;
 
-    gridFs.writeData(serializer(document), '/404.html', 'text/html', {
+    var path = '/404.html';
+    var meta = {
       status : 404
-    }, callback);
+    };
+
+    if (language) {
+      meta.referenceFile = path;
+      meta.languages = language.headerValues;
+      path += language.headerValues.join('-');
+    }
+
+    gridFs.writeData(serializer(document), path, 'text/html', meta, callback);
   } catch (error) {
     callback(error);
   }

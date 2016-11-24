@@ -2,6 +2,7 @@
 
 // handles generation of pages not specific to any board
 
+var fs = require('fs');
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var logger = require('../../logger');
@@ -71,7 +72,7 @@ exports.loadDependencies = function() {
 
 exports.maintenance = function(callback, language) {
 
-  if (verbose) {
+  if (verbose && !language) {
     console.log('Generating maintenance page');
   }
 
@@ -80,6 +81,11 @@ exports.maintenance = function(callback, language) {
         if (error) {
           callback(error);
         } else {
+
+          if (!altLanguages) {
+            callback();
+            return;
+          }
 
           var matchBlock = {};
 
@@ -111,7 +117,7 @@ exports.maintenance = function(callback, language) {
 };
 
 exports.login = function(callback, language) {
-  if (verbose) {
+  if (verbose && !language) {
     console.log('Generating login page');
   }
 
@@ -120,6 +126,11 @@ exports.login = function(callback, language) {
     if (error) {
       callback();
     } else {
+
+      if (!altLanguages) {
+        callback();
+        return;
+      }
 
       var matchBlock = {};
 
@@ -151,67 +162,316 @@ exports.login = function(callback, language) {
 
 };
 
-exports.audioThumb = function(callback) {
+exports.audioThumb = function(callback, language) {
 
-  if (verbose) {
+  if (verbose && !language) {
     console.log('Saving audio thumb image');
   }
 
-  var filePath = fePath + '/templates/';
-  filePath += templateSettings.audioThumb;
+  var filePath = (language ? language.frontEnd : fePath) + '/templates/';
 
-  gfsHandler.writeFile(filePath, kernel.genericAudioThumb(), logger
-      .getMime(kernel.genericAudioThumb()), {}, callback);
+  if (language) {
+    var settingsPath = language.frontEnd + '/templateSettings.json';
+
+    var settingsToUse = JSON.parse(fs.readFileSync(settingsPath));
+  } else {
+    settingsToUse = templateSettings;
+  }
+
+  filePath += settingsToUse.audioThumb;
+
+  var path = kernel.genericAudioThumb();
+  var meta = {};
+
+  if (language) {
+    meta.referenceFile = path;
+    meta.languages = language.headerValues;
+    path += language.headerValues.join('-');
+  }
+
+  gfsHandler.writeFile(filePath, path, logger.getMime(filePath), meta,
+      function savedThumb(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          if (!altLanguages) {
+            callback();
+            return;
+          }
+
+          var matchBlock = {};
+
+          if (language) {
+            matchBlock._id = {
+              $gt : language._id
+            };
+          }
+
+          languages.find(matchBlock).sort({
+            _id : 1
+          }).limit(1).toArray(function gotLanguages(error, results) {
+
+            if (error) {
+              callback(error);
+            } else if (!results.length) {
+              callback();
+            } else {
+              exports.audioThumb(callback, results[0]);
+            }
+
+          });
+
+        }
+
+      });
 
 };
 
-exports.spoiler = function(callback) {
+exports.spoiler = function(callback, language) {
 
-  if (verbose) {
+  if (verbose && !language) {
     console.log('Saving spoiler image');
   }
 
-  var filePath = fePath + '/templates/';
-  filePath += templateSettings.spoiler;
+  var filePath = (language ? language.frontEnd : fePath) + '/templates/';
 
-  gfsHandler.writeFile(filePath, kernel.spoilerImage(), logger.getMime(kernel
-      .spoilerImage()), {}, callback);
+  if (language) {
+    var settingsPath = language.frontEnd + '/templateSettings.json';
+
+    var settingsToUse = JSON.parse(fs.readFileSync(settingsPath));
+  } else {
+    settingsToUse = templateSettings;
+  }
+
+  filePath += settingsToUse.spoiler;
+
+  var path = kernel.spoilerImage();
+  var meta = {};
+
+  if (language) {
+    meta.referenceFile = path;
+    meta.languages = language.headerValues;
+    path += language.headerValues.join('-');
+  }
+
+  gfsHandler.writeFile(filePath, path, logger.getMime(filePath), meta,
+      function savedSpoiler(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          if (!altLanguages) {
+            callback();
+            return;
+          }
+
+          var matchBlock = {};
+
+          if (language) {
+            matchBlock._id = {
+              $gt : language._id
+            };
+          }
+
+          languages.find(matchBlock).sort({
+            _id : 1
+          }).limit(1).toArray(function gotLanguages(error, results) {
+
+            if (error) {
+              callback(error);
+            } else if (!results.length) {
+              callback();
+            } else {
+              exports.spoiler(callback, results[0]);
+            }
+
+          });
+
+        }
+
+      });
 
 };
 
-exports.defaultBanner = function(callback) {
+exports.defaultBanner = function(callback, language) {
 
-  if (verbose) {
+  if (verbose && !language) {
     console.log('Saving default banner');
   }
 
-  var filePath = fePath + '/templates/';
-  filePath += templateSettings.defaultBanner;
+  var filePath = (language ? language.frontEnd : fePath) + '/templates/';
 
-  gfsHandler.writeFile(filePath, kernel.defaultBanner(), logger.getMime(kernel
-      .defaultBanner()), {}, callback);
+  if (language) {
+    var settingsPath = language.frontEnd + '/templateSettings.json';
+
+    var settingsToUse = JSON.parse(fs.readFileSync(settingsPath));
+  } else {
+    settingsToUse = templateSettings;
+  }
+
+  filePath += settingsToUse.defaultBanner;
+
+  var path = kernel.defaultBanner();
+  var meta = {};
+
+  if (language) {
+    meta.referenceFile = path;
+    meta.languages = language.headerValues;
+    path += language.headerValues.join('-');
+  }
+
+  gfsHandler.writeFile(filePath, path, logger.getMime(filePath), meta,
+      function savedBanner(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          if (!altLanguages) {
+            callback();
+            return;
+          }
+
+          var matchBlock = {};
+
+          if (language) {
+            matchBlock._id = {
+              $gt : language._id
+            };
+          }
+
+          languages.find(matchBlock).sort({
+            _id : 1
+          }).limit(1).toArray(function gotLanguages(error, results) {
+
+            if (error) {
+              callback(error);
+            } else if (!results.length) {
+              callback();
+            } else {
+              exports.defaultBanner(callback, results[0]);
+            }
+
+          });
+
+        }
+
+      });
+
 };
 
-exports.thumb = function(callback) {
+exports.thumb = function(callback, language) {
 
-  if (verbose) {
+  if (verbose && !language) {
     console.log('Saving generic thumbnail');
   }
 
-  var filePath = fePath + '/templates/';
-  filePath += templateSettings.thumb;
+  var filePath = (language ? language.frontEnd : fePath) + '/templates/';
 
-  gfsHandler.writeFile(filePath, kernel.genericThumb(), logger.getMime(kernel
-      .genericThumb()), {}, callback);
+  if (language) {
+    var settingsPath = language.frontEnd + '/templateSettings.json';
+
+    var settingsToUse = JSON.parse(fs.readFileSync(settingsPath));
+  } else {
+    settingsToUse = templateSettings;
+  }
+
+  filePath += settingsToUse.thumb;
+
+  var path = kernel.genericThumb();
+  var meta = {};
+
+  if (language) {
+    meta.referenceFile = path;
+    meta.languages = language.headerValues;
+    path += language.headerValues.join('-');
+  }
+
+  gfsHandler.writeFile(filePath, path, logger.getMime(filePath), meta,
+      function savedBanner(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          if (!altLanguages) {
+            callback();
+            return;
+          }
+
+          var matchBlock = {};
+
+          if (language) {
+            matchBlock._id = {
+              $gt : language._id
+            };
+          }
+
+          languages.find(matchBlock).sort({
+            _id : 1
+          }).limit(1).toArray(function gotLanguages(error, results) {
+
+            if (error) {
+              callback(error);
+            } else if (!results.length) {
+              callback();
+            } else {
+              exports.thumb(callback, results[0]);
+            }
+
+          });
+
+        }
+
+      });
+
 };
 
-exports.notFound = function(callback) {
+exports.notFound = function(callback, language) {
 
-  if (verbose) {
+  if (verbose && !language) {
     console.log('Generating 404 page');
   }
 
-  domManipulator.notFound(callback);
+  domManipulator.notFound(language, function saved404Page(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      if (!altLanguages) {
+        callback();
+        return;
+      }
+
+      var matchBlock = {};
+
+      if (language) {
+        matchBlock._id = {
+          $gt : language._id
+        };
+      }
+
+      languages.find(matchBlock).sort({
+        _id : 1
+      }).limit(1).toArray(function gotLanguages(error, results) {
+
+        if (error) {
+          callback(error);
+        } else if (!results.length) {
+          callback();
+        } else {
+          exports.notFound(callback, results[0]);
+        }
+
+      });
+
+    }
+
+  });
 
 };
 
