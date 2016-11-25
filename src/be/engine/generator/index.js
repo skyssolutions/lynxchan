@@ -4,6 +4,8 @@
 // personally I don't like putting actual logic on index.js files, but this is
 // just wrapping actual implementations
 
+var languages = require('../../db').languages();
+
 exports.postProjection = {
   subject : 1,
   creation : 1,
@@ -68,6 +70,30 @@ exports.loadSettings = function() {
 
   exports.board.loadSettings();
   exports.global.loadSettings();
+
+};
+
+exports.nextLanguage = function(language, callback) {
+
+  var matchBlock = {};
+
+  if (language) {
+    matchBlock._id = {
+      $gt : language._id
+    };
+  }
+
+  languages.find(matchBlock).sort({
+    _id : 1
+  }).limit(1).toArray(function gotLanguages(error, results) {
+
+    if (error) {
+      callback(error);
+    } else {
+      callback(null, results.length ? results[0] : null);
+    }
+
+  });
 
 };
 

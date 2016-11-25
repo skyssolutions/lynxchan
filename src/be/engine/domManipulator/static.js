@@ -799,14 +799,14 @@ exports.setLogEntry = function(logCell, log) {
 
 };
 
-exports.addLogEntry = function(logEntry, document, div) {
+exports.addLogEntry = function(logEntry, document, div, language) {
 
   var logCell = document.createElement('div');
   logCell.setAttribute('class', 'logCell');
 
   if (!logEntry.cache || !individualCaches) {
 
-    logCell.innerHTML = templateHandler().logCell;
+    logCell.innerHTML = templateHandler(language).logCell;
 
     exports.setLogEntry(logCell, logEntry);
 
@@ -828,11 +828,11 @@ exports.addLogEntry = function(logEntry, document, div) {
 
 };
 
-exports.log = function(date, logs, callback) {
+exports.log = function(language, date, logs, callback) {
 
   try {
 
-    var document = jsdom(templateHandler().logsPage);
+    var document = jsdom(templateHandler(language).logsPage);
 
     document.title = lang.titLogPage.replace('{$date}', common
         .formatDateToDisplay(date, true));
@@ -840,15 +840,23 @@ exports.log = function(date, logs, callback) {
     var div = document.getElementById('divLogs');
 
     for (var i = 0; i < logs.length; i++) {
-      exports.addLogEntry(logs[i], document, div);
+      exports.addLogEntry(logs[i], document, div, language);
     }
 
     var path = '/.global/logs/';
     path += logger.formatedDate(date) + '.html';
 
-    gridFs.writeData(serializer(document), path, 'text/html', {
+    var meta = {
       type : 'log'
-    }, callback);
+    };
+
+    if (language) {
+      meta.languages = language.headerValues;
+      meta.referenceFile = path;
+      path += language.headerValues.join('-');
+    }
+
+    gridFs.writeData(serializer(document), path, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);

@@ -72,12 +72,12 @@ exports.testVersion = function(addonName, addonVersion, engineVersion) {
     msg += '\nAddon engine version: ' + addonVersion + '\nEngine version: ';
     msg += engineVersion;
 
-    if (verbose) {
-      console.log(msg);
-    }
-
     if (debug) {
       throw msg;
+    }
+
+    if (verbose) {
+      console.log(msg);
     }
 
   }
@@ -97,12 +97,12 @@ exports.initAddons = function(addons) {
 
       console.log('Could not initialize addon ' + addon);
 
-      if (verbose) {
-        console.log(error);
-      }
-
       if (debug) {
         throw error;
+      }
+
+      if (verbose) {
+        console.log(error);
       }
 
     }

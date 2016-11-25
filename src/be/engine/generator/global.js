@@ -16,7 +16,7 @@ var posts = db.posts();
 var boards = db.boards();
 var latestPostsCol = db.latestPosts();
 var latestImagesCol = db.latestImages();
-var languages = db.languages();
+var root = require('.');
 var kernel = require('../../kernel');
 var settingsHandler = require('../../settingsHandler');
 var templateSettings = settingsHandler.getTemplateSettings();
@@ -87,28 +87,18 @@ exports.maintenance = function(callback, language) {
             return;
           }
 
-          var matchBlock = {};
-
-          if (language) {
-            matchBlock._id = {
-              $gt : language._id
-            };
-          }
-
           // style exception, too simple
-          languages.find(matchBlock).sort({
-            _id : 1
-          }).limit(1).toArray(function gotLanguage(error, results) {
+          root.nextLanguage(language,
+              function gotNextLanguage(error, language) {
 
-            if (error) {
-              callback(error);
-            } else if (!results.length) {
-              callback();
-            } else {
-              exports.maintenance(callback, results[0]);
-            }
-
-          });
+                if (error) {
+                  callback(error);
+                } else if (!language) {
+                  callback();
+                } else {
+                  exports.maintenance(callback, language);
+                }
+              });
           // style exception, too simple
 
         }
@@ -132,27 +122,16 @@ exports.login = function(callback, language) {
         return;
       }
 
-      var matchBlock = {};
-
-      if (language) {
-        matchBlock._id = {
-          $gt : language._id
-        };
-      }
-
       // style exception, too simple
-      languages.find(matchBlock).sort({
-        _id : 1
-      }).limit(1).toArray(function gotLanguage(error, results) {
+      root.nextLanguage(language, function gotNextLanguage(error, language) {
 
         if (error) {
           callback(error);
-        } else if (!results.length) {
+        } else if (!language) {
           callback();
         } else {
-          exports.login(callback, results[0]);
+          exports.login(callback, language);
         }
-
       });
       // style exception, too simple
 
@@ -201,27 +180,19 @@ exports.audioThumb = function(callback, language) {
             return;
           }
 
-          var matchBlock = {};
+          // style exception, too simple
+          root.nextLanguage(language,
+              function gotNextLanguage(error, language) {
 
-          if (language) {
-            matchBlock._id = {
-              $gt : language._id
-            };
-          }
-
-          languages.find(matchBlock).sort({
-            _id : 1
-          }).limit(1).toArray(function gotLanguages(error, results) {
-
-            if (error) {
-              callback(error);
-            } else if (!results.length) {
-              callback();
-            } else {
-              exports.audioThumb(callback, results[0]);
-            }
-
-          });
+                if (error) {
+                  callback(error);
+                } else if (!language) {
+                  callback();
+                } else {
+                  exports.audioThumb(callback, language);
+                }
+              });
+          // style exception, too simple
 
         }
 
@@ -268,27 +239,19 @@ exports.spoiler = function(callback, language) {
             return;
           }
 
-          var matchBlock = {};
+          // style exception, too simple
+          root.nextLanguage(language,
+              function gotNextLanguage(error, language) {
 
-          if (language) {
-            matchBlock._id = {
-              $gt : language._id
-            };
-          }
-
-          languages.find(matchBlock).sort({
-            _id : 1
-          }).limit(1).toArray(function gotLanguages(error, results) {
-
-            if (error) {
-              callback(error);
-            } else if (!results.length) {
-              callback();
-            } else {
-              exports.spoiler(callback, results[0]);
-            }
-
-          });
+                if (error) {
+                  callback(error);
+                } else if (!language) {
+                  callback();
+                } else {
+                  exports.spoiler(callback, language);
+                }
+              });
+          // style exception, too simple
 
         }
 
@@ -335,27 +298,19 @@ exports.defaultBanner = function(callback, language) {
             return;
           }
 
-          var matchBlock = {};
+          // style exception, too simple
+          root.nextLanguage(language,
+              function gotNextLanguage(error, language) {
 
-          if (language) {
-            matchBlock._id = {
-              $gt : language._id
-            };
-          }
-
-          languages.find(matchBlock).sort({
-            _id : 1
-          }).limit(1).toArray(function gotLanguages(error, results) {
-
-            if (error) {
-              callback(error);
-            } else if (!results.length) {
-              callback();
-            } else {
-              exports.defaultBanner(callback, results[0]);
-            }
-
-          });
+                if (error) {
+                  callback(error);
+                } else if (!language) {
+                  callback();
+                } else {
+                  exports.defaultBanner(callback, language);
+                }
+              });
+          // style exception, too simple
 
         }
 
@@ -402,27 +357,19 @@ exports.thumb = function(callback, language) {
             return;
           }
 
-          var matchBlock = {};
+          // style exception, too simple
+          root.nextLanguage(language,
+              function gotNextLanguage(error, language) {
 
-          if (language) {
-            matchBlock._id = {
-              $gt : language._id
-            };
-          }
-
-          languages.find(matchBlock).sort({
-            _id : 1
-          }).limit(1).toArray(function gotLanguages(error, results) {
-
-            if (error) {
-              callback(error);
-            } else if (!results.length) {
-              callback();
-            } else {
-              exports.thumb(callback, results[0]);
-            }
-
-          });
+                if (error) {
+                  callback(error);
+                } else if (!language) {
+                  callback();
+                } else {
+                  exports.thumb(callback, language);
+                }
+              });
+          // style exception, too simple
 
         }
 
@@ -447,27 +394,18 @@ exports.notFound = function(callback, language) {
         return;
       }
 
-      var matchBlock = {};
-
-      if (language) {
-        matchBlock._id = {
-          $gt : language._id
-        };
-      }
-
-      languages.find(matchBlock).sort({
-        _id : 1
-      }).limit(1).toArray(function gotLanguages(error, results) {
+      // style exception, too simple
+      root.nextLanguage(language, function gotNextLanguage(error, language) {
 
         if (error) {
           callback(error);
-        } else if (!results.length) {
+        } else if (!language) {
           callback();
         } else {
-          exports.notFound(callback, results[0]);
+          exports.notFound(callback, language);
         }
-
       });
+      // style exception, too simple
 
     }
 
@@ -479,33 +417,18 @@ exports.notFound = function(callback, language) {
 exports.saveFrontPageAlternativeHTML = function(foundBoards, globalLatestPosts,
     globalLatestImages, globalStats, mediaData, language, callback) {
 
-  var matchBlock = {};
+  root.nextLanguage(language, function gotNextLanguage(error, language) {
 
-  if (language) {
-    matchBlock._id = {
-      $gt : language._id
-    };
-  }
-
-  languages.find(matchBlock).sort({
-    _id : 1
-  }).limit(1)
-      .toArray(
-          function gotLanguage(error, results) {
-
-            if (error) {
-              callback(error);
-            } else if (!results.length) {
-
-              jsonBuilder.frontPage(foundBoards, globalLatestPosts,
-                  globalLatestImages, globalStats, callback);
-            } else {
-              exports.saveFrontPage(foundBoards, globalLatestPosts,
-                  globalLatestImages, globalStats, mediaData, callback,
-                  results[0]);
-            }
-
-          });
+    if (error) {
+      callback(error);
+    } else if (!language) {
+      jsonBuilder.frontPage(foundBoards, globalLatestPosts, globalLatestImages,
+          globalStats, callback);
+    } else {
+      exports.saveFrontPage(foundBoards, globalLatestPosts, globalLatestImages,
+          globalStats, mediaData, callback, language);
+    }
+  });
 
 };
 
@@ -758,31 +681,20 @@ exports.buildHTMLOverboard = function(foundThreads, previewRelation, sfw,
 
       if (altLanguages) {
 
-        var matchBlock = {};
-
-        if (language) {
-          matchBlock._id = {
-            $gt : language._id
-          };
-        }
-
         // style exception, too simple
-        languages.find(matchBlock).sort({
-          _id : 1
-        }).limit(1).toArray(
-            function gotLanguage(error, results) {
+        root.nextLanguage(language, function gotNextLanguage(error, language) {
 
-              if (error) {
-                callback(error);
-              } else if (!results.length) {
-                exports.buildJsonAndRssOverboard(foundThreads, previewRelation,
-                    callback, sfw);
-              } else {
-                exports.buildHTMLOverboard(foundThreads, previewRelation, sfw,
-                    callback, results[0]);
-              }
+          if (error) {
+            callback(error);
+          } else if (!language) {
+            exports.buildJsonAndRssOverboard(foundThreads, previewRelation,
+                callback, sfw);
+          } else {
+            exports.buildHTMLOverboard(foundThreads, previewRelation, sfw,
+                callback, language);
+          }
 
-            });
+        });
         // style exception, too simple
 
       } else {
@@ -921,14 +833,28 @@ exports.overboard = function(callback, sfw) {
 // } Section 2: Overboard
 
 // Section 3: Logs {
-exports.createLogPage = function(date, foundLogs, callback) {
+exports.createLogPage = function(date, foundLogs, callback, language) {
 
-  domManipulator.log(date, foundLogs, function createdPage(error) {
+  domManipulator.log(language, date, foundLogs, function createdPage(error) {
 
     if (error) {
       callback(error);
     } else {
-      jsonBuilder.log(date, foundLogs, callback);
+
+      // style exception, too simple
+      root.nextLanguage(language, function gotNextLanguage(error, language) {
+
+        if (error) {
+          callback(error);
+        } else if (!language) {
+          jsonBuilder.log(date, foundLogs, callback);
+        } else {
+          exports.createLogPage(date, foundLogs, callback, language);
+        }
+
+      });
+      // style exception, too simple
+
     }
 
   });

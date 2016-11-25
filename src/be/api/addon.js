@@ -7,7 +7,7 @@ var settingsHandler = require('../settingsHandler');
 
 exports.process = function(req, res) {
 
-  var requestedAddon = url.parse(req.url).pathname.split('/')[2];
+  var requestedAddon = url.parse(req.url).pathname.split('/')[3];
   var loadedAddons = settingsHandler.getGeneralSettings().addons || [];
 
   if (loadedAddons.indexOf(requestedAddon) === -1) {
