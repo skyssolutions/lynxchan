@@ -289,13 +289,14 @@ exports.saveBoardHTML = function(boardUri, page, threadsArray, pageCount,
     boardData, flagData, latestPosts, callback, language) {
 
   domManipulator.page(boardUri, page, threadsArray, pageCount, boardData,
-      flagData, latestPosts,language, function savedHTML(error) {
+      flagData, latestPosts, language, function savedHTML(error) {
         if (error) {
           callback(error);
         } else {
 
           if (!altLanguages) {
-            callback();
+            jsonBuilder.page(boardUri, page, threadsArray, pageCount,
+                boardData, flagData, latestPosts, callback);
             return;
           }
 
@@ -463,8 +464,8 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
     var message = 'Generating page ' + page + '/' + pageCount;
     console.log(message + ' of board ' + boardUri);
   }
-  // actual function start
 
+  // actual function start
   var toSkip = (page - 1) * pageSize;
 
   threads.find({
@@ -496,6 +497,44 @@ exports.buildCatalogJsonAndRss = function(boardData, threads, callback) {
           callback(error);
         } else {
           rssBuilder.board(boardData, threads, callback);
+        }
+
+      });
+
+};
+
+exports.buildCatalogHTML = function(boardData, foundThreads, flagData,
+    callback, language) {
+
+  domManipulator.catalog(language, boardData, foundThreads, flagData,
+      function savedHTML(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          if (!altLanguages) {
+            exports.buildCatalogJsonAndRss(boardData, foundThreads, callback);
+            return;
+          }
+
+          // style exception, too simple
+          rootModule.nextLanguage(language,
+              function gotLanguage(error, language) {
+
+                if (error) {
+                  callback(error);
+                } else if (!language) {
+                  exports.buildCatalogJsonAndRss(boardData, foundThreads,
+                      callback);
+                } else {
+                  exports.buildCatalogHTML(boardData, foundThreads, flagData,
+                      callback, language);
+                }
+
+              });
+          // style exception, too simple
+
         }
 
       });
@@ -547,21 +586,13 @@ exports.catalog = function(boardUri, callback, boardData, flagData) {
   }, threadProjection).sort({
     pinned : -1,
     lastBump : -1
-  }).toArray(
-      function gotThreads(error, threads) {
-        if (error) {
-          callback(error);
-        } else {
-
-          // style exception, too simple
-          domManipulator.catalog(boardData, threads, flagData,
-              function savedHTML(error) {
-                exports.buildCatalogJsonAndRss(boardData, threads, callback);
-              });
-          // style exception, too simple
-
-        }
-      });
+  }).toArray(function gotThreads(error, foundThreads) {
+    if (error) {
+      callback(error);
+    } else {
+      exports.buildCatalogHTML(boardData, foundThreads, flagData, callback);
+    }
+  });
 
 };
 // } Section 1.1.3: Catalog

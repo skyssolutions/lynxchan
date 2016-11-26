@@ -367,11 +367,11 @@ exports.setCatalogCellIndicators = function(thread, cell) {
 
 };
 
-exports.setCell = function(boardUri, document, thread) {
+exports.setCell = function(boardUri, document, thread, language) {
 
   var cell = document.createElement('div');
 
-  cell.innerHTML = templateHandler().catalogCell;
+  cell.innerHTML = templateHandler(language).catalogCell;
   cell.setAttribute('class', 'catalogCell');
 
   exports.setCellThumb(cell.getElementsByClassName('linkThumb')[0], boardUri,
@@ -408,11 +408,29 @@ exports.setCatalogPosting = function(boardData, boardUri, flagData, document) {
 
 };
 
-exports.catalog = function(boardData, threads, flagData, callback) {
+exports.storeCatalogPage = function(document, boardUri, language, callback) {
+
+  var meta = {
+    boardUri : boardUri,
+    type : 'catalog'
+  };
+  var path = '/' + boardUri + '/catalog.html';
+
+  if (language) {
+    meta.languges = language.headerValues;
+    meta.referenceFile = path;
+    path += language.headerValues.join('-');
+  }
+
+  gridFs.writeData(serializer(document), path, 'text/html', meta, callback);
+
+};
+
+exports.catalog = function(language, boardData, threads, flagData, callback) {
 
   try {
 
-    var document = jsdom(templateHandler().catalogPage);
+    var document = jsdom(templateHandler(language).catalogPage);
 
     var boardUri = boardData.boardUri;
 
@@ -429,14 +447,11 @@ exports.catalog = function(boardData, threads, flagData, callback) {
     var threadsDiv = document.getElementById('divThreads');
 
     for (var i = 0; i < threads.length; i++) {
-      threadsDiv.appendChild(exports.setCell(boardUri, document, threads[i]));
+      threadsDiv.appendChild(exports.setCell(boardUri, document, threads[i],
+          language));
     }
 
-    gridFs.writeData(serializer(document), '/' + boardUri + '/catalog.html',
-        'text/html', {
-          boardUri : boardUri,
-          type : 'catalog'
-        }, callback);
+    exports.storeCatalogPage(document, boardUri, language, callback);
 
   } catch (error) {
     callback(error);
