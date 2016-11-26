@@ -14,8 +14,10 @@ var settingsHandler = require('../../settingsHandler');
 var pageSize;
 var verbose;
 var domManipulator;
+var altLanguages;
 var postProjection;
 var threadProjection;
+var rootModule;
 var mbHandler;
 var boardOps;
 var rssBuilder;
@@ -40,6 +42,7 @@ exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
   pageSize = settings.pageSize;
+  altLanguages = settings.useAlternativeLanguages;
   verbose = settings.verbose;
   disableCatalogPosting = settings.disableCatalogPosting;
 
@@ -47,7 +50,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
-  var rootModule = require('.');
+  rootModule = require('.');
   mbHandler = require('../multiBoardHandler');
   postProjection = rootModule.postProjection;
   threadProjection = rootModule.threadProjection;
@@ -83,6 +86,41 @@ exports.rules = function(boardUri, callback) {
 // Section 1.1: Board {
 
 // Section 1.1.1: Thread {
+exports.generateThreadHTML = function(boardUri, boardData, flagData,
+    threadData, foundPosts, callback, language) {
+
+  domManipulator.thread(boardUri, boardData, flagData, threadData, foundPosts,
+      function generatedHTML(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          if (!altLanguages) {
+            callback();
+            return;
+          }
+
+          rootModule.nextLanguage(language, function gotNextLanguage(error,
+              language) {
+
+            if (error) {
+              callback(language);
+            } else if (!language) {
+              callback();
+            } else {
+              exports.generateThreadHTML(boardUri, boardData, flagData,
+                  threadData, foundPosts, callback, language);
+            }
+
+          });
+
+        }
+
+      }, null, null, language);
+
+};
+
 exports.thread = function(boardUri, threadId, callback, boardData, threadData,
     flagData) {
 
@@ -155,22 +193,24 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
   }, postProjection).sort({
     creation : 1
   }).toArray(
-      function(error, posts) {
+      function(error, foundPosts) {
         if (error) {
           callback(error);
         } else {
 
           // style exception, too simple
-          jsonBuilder.thread(boardUri, boardData, threadData, posts,
+          jsonBuilder.thread(boardUri, boardData, threadData, foundPosts,
               function savedJson(error) {
 
                 if (error) {
                   callback(error);
                 } else {
+
                   mbHandler.clearCache(boardUri);
 
-                  domManipulator.thread(boardUri, boardData, flagData,
-                      threadData, posts, callback);
+                  exports.generateThreadHTML(boardUri, boardData, flagData,
+                      threadData, foundPosts, callback);
+
                 }
 
               }, null, null, flagData);
@@ -245,6 +285,44 @@ exports.allThreads = function(boardUri, callback, boardData) {
 // } Section 1.1.1: Thread
 
 // Section 1.1.2: Board page {
+exports.saveBoardHTML = function(boardUri, page, threadsArray, pageCount,
+    boardData, flagData, latestPosts, callback, language) {
+
+  domManipulator.page(boardUri, page, threadsArray, pageCount, boardData,
+      flagData, latestPosts,language, function savedHTML(error) {
+        if (error) {
+          callback(error);
+        } else {
+
+          if (!altLanguages) {
+            callback();
+            return;
+          }
+
+          // style exception, too simple
+          rootModule.nextLanguage(language, function gotLanguage(error,
+              language) {
+
+            if (error) {
+              callback(error);
+            } else if (!language) {
+              jsonBuilder.page(boardUri, page, threadsArray, pageCount,
+                  boardData, flagData, latestPosts, callback);
+            } else {
+
+              exports.saveBoardHTML(boardUri, page, threadsArray, pageCount,
+                  boardData, flagData, latestPosts, callback, language);
+
+            }
+
+          });
+          // style exception, too simple
+
+        }
+      });
+
+};
+
 exports.getLatestPosts = function(boardUri, page, threadsArray, pageCount,
     boardData, flagData, callback) {
 
@@ -295,19 +373,8 @@ exports.getLatestPosts = function(boardUri, page, threadsArray, pageCount,
     if (error) {
       callback(error);
     } else {
-
-      // style exception, too simple
-      domManipulator.page(boardUri, page, threadsArray, pageCount, boardData,
-          flagData, latestPosts, function savedHTML(error) {
-            if (error) {
-              callback(error);
-            } else {
-              jsonBuilder.page(boardUri, page, threadsArray, pageCount,
-                  boardData, flagData, latestPosts, callback);
-            }
-          });
-      // style exception, too simple
-
+      exports.saveBoardHTML(boardUri, page, threadsArray, pageCount, boardData,
+          flagData, latestPosts, callback);
     }
   });
 

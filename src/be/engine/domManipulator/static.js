@@ -167,8 +167,32 @@ exports.setThreadTitle = function(document, boardUri, threadData) {
   document.title = title;
 };
 
+exports.saveRegularThreadPage = function(document, boardUri, threadData,
+    callback, language) {
+
+  common.removeElement(document.getElementById('divMod'));
+  common.removeElement(document.getElementById('divControls'));
+
+  var path = '/' + boardUri + '/res/' + threadData.threadId + '.html';
+
+  var meta = {
+    boardUri : boardUri,
+    type : 'thread',
+    threadId : threadData.threadId
+  };
+
+  if (language) {
+    meta.languages = language.headerValues;
+    meta.referenceFile = path;
+    path += language.headerValues.join('-');
+  }
+
+  gridFs.writeData(serializer(document), path, 'text/html', meta, callback);
+
+};
+
 exports.setModElements = function(modding, document, boardUri, boardData,
-    threadData, posts, userRole, callback) {
+    threadData, posts, userRole, callback, language) {
 
   var globalStaff = userRole <= miscOps.getMaxStaffRole();
   if (!globalStaff || !modding) {
@@ -182,22 +206,10 @@ exports.setModElements = function(modding, document, boardUri, boardData,
   }
 
   if (modding) {
-
     exports.setModdingInformation(document, boardUri, threadData, callback);
-
   } else {
-
-    common.removeElement(document.getElementById('divMod'));
-    common.removeElement(document.getElementById('divControls'));
-
-    var ownName = 'res/' + threadData.threadId + '.html';
-
-    gridFs.writeData(serializer(document), '/' + boardUri + '/' + ownName,
-        'text/html', {
-          boardUri : boardUri,
-          type : 'thread',
-          threadId : threadData.threadId
-        }, callback);
+    exports.saveRegularThreadPage(document, boardUri, threadData, callback,
+        language);
   }
 };
 
@@ -226,7 +238,7 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
         userRole, language);
 
     exports.setModElements(modding, document, boardUri, boardData, threadData,
-        posts, userRole, callback);
+        posts, userRole, callback, language);
 
   } catch (error) {
     callback(error);
@@ -237,7 +249,7 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
 
 // Section 2: Board {
 exports.generateThreadListing = function(document, boardUri, page, threads,
-    latestPosts, callback) {
+    latestPosts, language, callback) {
 
   var tempLatest = {};
 
@@ -251,17 +263,24 @@ exports.generateThreadListing = function(document, boardUri, page, threads,
   for (i = 0; i < threads.length; i++) {
     var thread = threads[i];
 
-    common.addThread(document, thread, latestPosts[thread.threadId]);
+    common.addThread(document, thread, latestPosts[thread.threadId], null,
+        null, null, null, language);
 
   }
 
-  var ownName = page === 1 ? '' : page + '.html';
+  var path = '/' + boardUri + '/' + (page === 1 ? '' : page + '.html');
+  var meta = {
+    boardUri : boardUri,
+    type : 'board'
+  };
 
-  gridFs.writeData(serializer(document), '/' + boardUri + '/' + ownName,
-      'text/html', {
-        boardUri : boardUri,
-        type : 'board'
-      }, callback);
+  if (language) {
+    meta.languages = language.headerValues;
+    meta.referenceFile = path;
+    path += language.headerValues.join('-');
+  }
+
+  gridFs.writeData(serializer(document), path, 'text/html', meta, callback);
 };
 
 exports.addPagesLinks = function(document, pageCount, currentPage) {
@@ -296,11 +315,11 @@ exports.addPagesLinks = function(document, pageCount, currentPage) {
 };
 
 exports.page = function(board, page, threads, pageCount, boardData, flagData,
-    latestPosts, cb) {
+    latestPosts, language, cb) {
 
   try {
 
-    var document = jsdom(templateHandler().boardPage);
+    var document = jsdom(templateHandler(language).boardPage);
 
     document.title = '/' + board + '/' + ' - ' + boardData.boardName;
 
@@ -315,7 +334,7 @@ exports.page = function(board, page, threads, pageCount, boardData, flagData,
     exports.addPagesLinks(document, pageCount, page);
 
     exports.generateThreadListing(document, board, page, threads, latestPosts,
-        cb);
+        language, cb);
   } catch (error) {
     cb(error);
   }

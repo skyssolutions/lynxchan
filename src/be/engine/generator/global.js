@@ -16,7 +16,7 @@ var posts = db.posts();
 var boards = db.boards();
 var latestPostsCol = db.latestPosts();
 var latestImagesCol = db.latestImages();
-var root = require('.');
+var rootModule;
 var kernel = require('../../kernel');
 var settingsHandler = require('../../settingsHandler');
 var templateSettings = settingsHandler.getTemplateSettings();
@@ -57,7 +57,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
-  var rootModule = require('.');
+  rootModule = require('.');
   postProjection = rootModule.postProjection;
   threadProjection = rootModule.threadProjection;
   var rootDomManipulator = require('../domManipulator');
@@ -88,17 +88,17 @@ exports.maintenance = function(callback, language) {
           }
 
           // style exception, too simple
-          root.nextLanguage(language,
-              function gotNextLanguage(error, language) {
+          rootModule.nextLanguage(language, function gotNextLanguage(error,
+              language) {
 
-                if (error) {
-                  callback(error);
-                } else if (!language) {
-                  callback();
-                } else {
-                  exports.maintenance(callback, language);
-                }
-              });
+            if (error) {
+              callback(error);
+            } else if (!language) {
+              callback();
+            } else {
+              exports.maintenance(callback, language);
+            }
+          });
           // style exception, too simple
 
         }
@@ -123,7 +123,8 @@ exports.login = function(callback, language) {
       }
 
       // style exception, too simple
-      root.nextLanguage(language, function gotNextLanguage(error, language) {
+      rootModule.nextLanguage(language, function gotNextLanguage(error,
+          language) {
 
         if (error) {
           callback(error);
@@ -181,17 +182,17 @@ exports.audioThumb = function(callback, language) {
           }
 
           // style exception, too simple
-          root.nextLanguage(language,
-              function gotNextLanguage(error, language) {
+          rootModule.nextLanguage(language, function gotNextLanguage(error,
+              language) {
 
-                if (error) {
-                  callback(error);
-                } else if (!language) {
-                  callback();
-                } else {
-                  exports.audioThumb(callback, language);
-                }
-              });
+            if (error) {
+              callback(error);
+            } else if (!language) {
+              callback();
+            } else {
+              exports.audioThumb(callback, language);
+            }
+          });
           // style exception, too simple
 
         }
@@ -240,17 +241,17 @@ exports.spoiler = function(callback, language) {
           }
 
           // style exception, too simple
-          root.nextLanguage(language,
-              function gotNextLanguage(error, language) {
+          rootModule.nextLanguage(language, function gotNextLanguage(error,
+              language) {
 
-                if (error) {
-                  callback(error);
-                } else if (!language) {
-                  callback();
-                } else {
-                  exports.spoiler(callback, language);
-                }
-              });
+            if (error) {
+              callback(error);
+            } else if (!language) {
+              callback();
+            } else {
+              exports.spoiler(callback, language);
+            }
+          });
           // style exception, too simple
 
         }
@@ -299,17 +300,17 @@ exports.defaultBanner = function(callback, language) {
           }
 
           // style exception, too simple
-          root.nextLanguage(language,
-              function gotNextLanguage(error, language) {
+          rootModule.nextLanguage(language, function gotNextLanguage(error,
+              language) {
 
-                if (error) {
-                  callback(error);
-                } else if (!language) {
-                  callback();
-                } else {
-                  exports.defaultBanner(callback, language);
-                }
-              });
+            if (error) {
+              callback(error);
+            } else if (!language) {
+              callback();
+            } else {
+              exports.defaultBanner(callback, language);
+            }
+          });
           // style exception, too simple
 
         }
@@ -358,17 +359,17 @@ exports.thumb = function(callback, language) {
           }
 
           // style exception, too simple
-          root.nextLanguage(language,
-              function gotNextLanguage(error, language) {
+          rootModule.nextLanguage(language, function gotNextLanguage(error,
+              language) {
 
-                if (error) {
-                  callback(error);
-                } else if (!language) {
-                  callback();
-                } else {
-                  exports.thumb(callback, language);
-                }
-              });
+            if (error) {
+              callback(error);
+            } else if (!language) {
+              callback();
+            } else {
+              exports.thumb(callback, language);
+            }
+          });
           // style exception, too simple
 
         }
@@ -395,7 +396,8 @@ exports.notFound = function(callback, language) {
       }
 
       // style exception, too simple
-      root.nextLanguage(language, function gotNextLanguage(error, language) {
+      rootModule.nextLanguage(language, function gotNextLanguage(error,
+          language) {
 
         if (error) {
           callback(error);
@@ -417,7 +419,7 @@ exports.notFound = function(callback, language) {
 exports.saveFrontPageAlternativeHTML = function(foundBoards, globalLatestPosts,
     globalLatestImages, globalStats, mediaData, language, callback) {
 
-  root.nextLanguage(language, function gotNextLanguage(error, language) {
+  rootModule.nextLanguage(language, function gotNextLanguage(error, language) {
 
     if (error) {
       callback(error);
@@ -682,7 +684,8 @@ exports.buildHTMLOverboard = function(foundThreads, previewRelation, sfw,
       if (altLanguages) {
 
         // style exception, too simple
-        root.nextLanguage(language, function gotNextLanguage(error, language) {
+        rootModule.nextLanguage(language, function gotNextLanguage(error,
+            language) {
 
           if (error) {
             callback(error);
@@ -842,7 +845,8 @@ exports.createLogPage = function(date, foundLogs, callback, language) {
     } else {
 
       // style exception, too simple
-      root.nextLanguage(language, function gotNextLanguage(error, language) {
+      rootModule.nextLanguage(language, function gotNextLanguage(error,
+          language) {
 
         if (error) {
           callback(error);
