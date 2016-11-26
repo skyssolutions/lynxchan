@@ -10,14 +10,15 @@ exports.process = function(req, res) {
 
   var parameters = url.parse(req.url, true).query;
 
-  accountOps.recoverAccount(parameters, function recoveredAccount(error) {
-    if (error) {
-      formOps.outputError(error, 500, res, req.language);
-    } else {
-      formOps.outputResponse(lang.msgPasswordReset, '/account.js', res, null,
-          null, req.language);
-    }
+  accountOps.recoverAccount(parameters, req.language,
+      function recoveredAccount(error) {
+        if (error) {
+          formOps.outputError(error, 500, res, req.language);
+        } else {
+          formOps.outputResponse(lang.msgPasswordReset, '/account.js', res,
+              null, null, req.language);
+        }
 
-  });
+      });
 
 };

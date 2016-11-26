@@ -73,11 +73,11 @@ exports.error = function(code, message, language) {
 
 };
 
-exports.resetEmail = function(password) {
+exports.resetEmail = function(password, language) {
 
   try {
 
-    var document = jsdom(templateHandler().resetEmail);
+    var document = jsdom(templateHandler(language).resetEmail);
 
     var link = document.getElementById('labelNewPass');
     link.innerHTML = password;
@@ -97,11 +97,11 @@ exports.resetEmail = function(password) {
   }
 };
 
-exports.recoveryEmail = function(recoveryLink) {
+exports.recoveryEmail = function(recoveryLink, language) {
 
   try {
 
-    var document = jsdom(templateHandler().recoveryEmail);
+    var document = jsdom(templateHandler(language).recoveryEmail);
 
     var link = document.getElementById('linkRecovery');
     link.href = recoveryLink;

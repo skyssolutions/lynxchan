@@ -663,7 +663,23 @@ exports.setMetadata = function(metadata, postingData, path) {
 
 };
 
-exports.preview = function(postingData, callback) {
+exports.getPreviewDocument = function(language, postingData) {
+
+  var document = jsdom(templateHandler(language).previewPage);
+
+  var innerCell = document.createElement('div');
+  innerCell.setAttribute('class', 'postCell');
+
+  common.setPostInnerElements(document, postingData, innerCell, true, null,
+      null, null, null, language);
+
+  document.getElementById('panelContent').appendChild(innerCell);
+
+  return document;
+
+};
+
+exports.preview = function(language, postingData, callback) {
   try {
 
     var path = '/' + postingData.boardUri + '/preview/';
@@ -678,14 +694,13 @@ exports.preview = function(postingData, callback) {
 
     path += '.html';
 
-    var document = jsdom(templateHandler().previewPage);
+    if (language) {
+      metadata.languages = language.headerValues;
+      metadata.referenceFile = path;
+      path += language.headerValues.join('-');
+    }
 
-    var innerCell = document.createElement('div');
-    innerCell.setAttribute('class', 'postCell');
-
-    common.setPostInnerElements(document, postingData, innerCell, true);
-
-    document.getElementById('panelContent').appendChild(innerCell);
+    var document = exports.getPreviewDocument(language, postingData);
 
     if (postingData.postId === postingData.threadId) {
       delete postingData.postId;
@@ -699,37 +714,6 @@ exports.preview = function(postingData, callback) {
   }
 };
 // } Section 5: Preview
-
-exports.rules = function(boardUri, rules, callback) {
-  try {
-
-    var document = jsdom(templateHandler().rulesPage);
-
-    document.title = lang.titRules.replace('{$board}', boardUri);
-    document.getElementById('boardLabel').innerHTML = boardUri;
-    var rulesDiv = document.getElementById('divRules');
-
-    for (var i = 0; i < rules.length; i++) {
-      var cell = document.createElement('div');
-      cell.innerHTML = templateHandler().ruleCell;
-      cell.setAttribute('class', 'ruleCell');
-
-      cell.getElementsByClassName('textLabel')[0].innerHTML = rules[i];
-      cell.getElementsByClassName('indexLabel')[0].innerHTML = i + 1;
-
-      rulesDiv.appendChild(cell);
-    }
-
-    gridFs.writeData(serializer(document), '/' + boardUri + '/rules.html',
-        'text/html', {
-          boardUri : boardUri,
-          type : 'rules'
-        }, callback);
-
-  } catch (error) {
-    callback(error);
-  }
-};
 
 exports.maintenance = function(language, callback) {
   try {
@@ -898,3 +882,51 @@ exports.log = function(language, date, logs, callback) {
 
 };
 // Section 7: Log page {
+
+// Section 8: Rules {
+exports.getRulesDocument = function(language, boardUri, rules) {
+
+  var document = jsdom(templateHandler(language).rulesPage);
+
+  document.title = lang.titRules.replace('{$board}', boardUri);
+  document.getElementById('boardLabel').innerHTML = boardUri;
+  var rulesDiv = document.getElementById('divRules');
+
+  for (var i = 0; i < rules.length; i++) {
+    var cell = document.createElement('div');
+    cell.innerHTML = templateHandler(language).ruleCell;
+    cell.setAttribute('class', 'ruleCell');
+
+    cell.getElementsByClassName('textLabel')[0].innerHTML = rules[i];
+    cell.getElementsByClassName('indexLabel')[0].innerHTML = i + 1;
+
+    rulesDiv.appendChild(cell);
+  }
+
+  return document;
+
+};
+
+exports.rules = function(language, boardUri, rules, callback) {
+  try {
+
+    var path = '/' + boardUri + '/rules.html';
+    var meta = {
+      boardUri : boardUri,
+      type : 'rules'
+    };
+
+    if (language) {
+      meta.referenceFile = path;
+      meta.languages = language.headerValues;
+      path += language.headerValues.join('-');
+    }
+
+    gridFs.writeData(serializer(exports.getRulesDocument(language, boardUri,
+        rules)), path, 'text/html', meta, callback);
+
+  } catch (error) {
+    callback(error);
+  }
+};
+// } Section 8: Rules

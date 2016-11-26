@@ -10,7 +10,7 @@ function requestRecovery(domain, parameters, res, captchaId, language) {
     return;
   }
 
-  accountOps.requestRecovery(domain, parameters, captchaId,
+  accountOps.requestRecovery(domain, language, parameters, captchaId,
       function requestCreated(error) {
         if (error) {
           formOps.outputError(error, 500, res, language);

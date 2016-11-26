@@ -61,26 +61,6 @@ exports.loadDependencies = function() {
 
 };
 
-exports.rules = function(boardUri, callback) {
-
-  boardOps.boardRules(boardUri, null, function gotRules(error, rules) {
-    if (error) {
-      callback(error);
-    } else {
-
-      domManipulator.rules(boardUri, rules, function generatedHTML(error) {
-        if (error) {
-          callback(error);
-        } else {
-          jsonBuilder.rules(boardUri, rules, callback);
-        }
-      });
-
-    }
-  });
-
-};
-
 // Section 1: Boards {
 
 // Section 1.1: Board {
@@ -678,6 +658,56 @@ exports.board = function(boardUri, reloadThreads, reloadRules, cb, boardData) {
 };
 // } Section 1.1: Board
 
+// Section 1.2: Rules {
+exports.buildRulesHTML = function(boardUri, rules, callback, language) {
+
+  domManipulator.rules(language, boardUri, rules,
+      function generatedHTML(error) {
+        if (error) {
+          callback(error);
+        } else {
+
+          if (!altLanguages) {
+            jsonBuilder.rules(boardUri, rules, callback);
+            return;
+          }
+
+          // style exception, too simple
+          rootModule.nextLanguage(language, function gotNextLanguage(error,
+              language) {
+
+            if (error) {
+              callback(error);
+            } else if (!language) {
+              jsonBuilder.rules(boardUri, rules, callback);
+            } else {
+              exports.buildRulesHTML(boardUri, rules, callback, language);
+            }
+          });
+          // style exception, too simple
+
+        }
+      });
+
+};
+
+exports.rules = function(boardUri, callback) {
+
+  if (verbose) {
+    console.log('Building rules for ' + boardUri);
+  }
+
+  boardOps.boardRules(boardUri, null, function gotRules(error, rules) {
+    if (error) {
+      callback(error);
+    } else {
+      exports.buildRulesHTML(boardUri, rules, callback);
+    }
+  });
+
+};
+// } Section 1.2: Rules
+
 exports.iterateBoards = function(callback, lastUri, toSkip, startedSkipping) {
 
   var query = {};
@@ -815,6 +845,38 @@ exports.boards = function(callback) {
 // } Section 1: Boards
 
 // Section 2: Previews {
+exports.buildPreviewHTML = function(postingData, callback, language) {
+
+  domManipulator.preview(language, postingData, function savedHtml(error) {
+    if (error) {
+      callback(error);
+    } else {
+
+      if (!altLanguages) {
+        jsonBuilder.preview(postingData, callback);
+        return;
+      }
+
+      // style exception, too simple
+      rootModule.nextLanguage(language, function gotLanguage(error, language) {
+
+        if (error) {
+          callback(error);
+        } else if (!language) {
+          jsonBuilder.preview(postingData, callback);
+        } else {
+          exports.buildPreviewHTML(postingData, callback, language);
+        }
+
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
 exports.preview = function(boardUri, threadId, postId, callback, postingData) {
 
   if (!postingData) {
@@ -854,14 +916,7 @@ exports.preview = function(boardUri, threadId, postId, callback, postingData) {
       console.log(message);
     }
 
-    domManipulator.preview(postingData, function savedHtml(error) {
-      if (error) {
-        callback(error);
-      } else {
-        jsonBuilder.preview(postingData, callback);
-      }
-
-    });
+    exports.buildPreviewHTML(postingData, callback);
 
   }
 };

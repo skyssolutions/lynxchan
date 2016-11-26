@@ -366,12 +366,13 @@ exports.validate = function(auth, callback) {
 // } Section 4: Validate
 
 // Section 5: Reset request {
-exports.emailUserOfRequest = function(domain, login, email, hash, callback) {
+exports.emailUserOfRequest = function(domain, login, email, hash, language,
+    callback) {
 
   var recoveryLink = domain + '/recoverAccount.js?hash=' + hash + '&login=';
   recoveryLink += login;
 
-  var content = domManipulator.recoveryEmail(recoveryLink);
+  var content = domManipulator.recoveryEmail(recoveryLink, language);
 
   mailer.sendMail({
     from : sender,
@@ -384,7 +385,7 @@ exports.emailUserOfRequest = function(domain, login, email, hash, callback) {
 
 };
 
-exports.generateRequest = function(domain, login, email, callback) {
+exports.generateRequest = function(domain, login, language, email, callback) {
 
   var requestHash = crypto.createHash('sha256').update(login + Math.random())
       .digest('hex');
@@ -400,14 +401,15 @@ exports.generateRequest = function(domain, login, email, callback) {
     if (error) {
       callback(error);
     } else {
-      exports.emailUserOfRequest(domain, login, email, requestHash, callback);
+      exports.emailUserOfRequest(domain, login, email, requestHash, language,
+          callback);
     }
 
   });
 
 };
 
-exports.lookForUserEmailOfRequest = function(domain, login, callback) {
+exports.lookForUserEmailOfRequest = function(domain, login, language, cb) {
 
   users.findOne({
     login : login
@@ -416,19 +418,20 @@ exports.lookForUserEmailOfRequest = function(domain, login, callback) {
     _id : 0
   }, function gotUser(error, user) {
     if (error) {
-      callback(error);
+      cb(error);
     } else if (!user) {
-      callback(lang.errAccountNotFound);
+      cb(lang.errAccountNotFound);
     } else if (!user.email || !user.email.length) {
-      callback(lang.errNoEmailForAccount);
+      cb(lang.errNoEmailForAccount);
     } else {
-      exports.generateRequest(domain, login, user.email, callback);
+      exports.generateRequest(domain, login, language, user.email, cb);
     }
   });
 
 };
 
-exports.requestRecovery = function(domain, parameters, captchaId, callback) {
+exports.requestRecovery = function(domain, language, parameters, captchaId,
+    callback) {
 
   captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
       function solvedCaptcha(error) {
@@ -455,7 +458,7 @@ exports.requestRecovery = function(domain, parameters, captchaId, callback) {
                   request.expiration.toString()));
             } else {
               exports.lookForUserEmailOfRequest(domain, parameters.login,
-                  callback);
+                  language, callback);
             }
           });
           // style exception, too simple
@@ -468,9 +471,9 @@ exports.requestRecovery = function(domain, parameters, captchaId, callback) {
 // } Section 5: Reset request
 
 // Section 6: Password reset {
-exports.emailUserNewPassword = function(email, newPass, callback) {
+exports.emailUserNewPassword = function(email, newPass, callback, language) {
 
-  var content = domManipulator.resetEmail(newPass);
+  var content = domManipulator.resetEmail(newPass, language);
 
   mailer.sendMail({
     from : sender,
@@ -483,7 +486,7 @@ exports.emailUserNewPassword = function(email, newPass, callback) {
 
 };
 
-exports.generateNewPassword = function(login, callback) {
+exports.generateNewPassword = function(login, callback, language) {
 
   var newPass = crypto.createHash('sha256').update(login + Math.random())
       .digest('hex').substring(0, 6);
@@ -497,15 +500,17 @@ exports.generateNewPassword = function(login, callback) {
       // style exception, too simple
       users.findOne({
         login : login
-      }, function gotUser(error, user) {
+      },
+          function gotUser(error, user) {
 
-        if (error) {
-          callback(error);
-        } else {
-          exports.emailUserNewPassword(user.email, newPass, callback);
-        }
+            if (error) {
+              callback(error);
+            } else {
+              exports.emailUserNewPassword(user.email, newPass, callback,
+                  language);
+            }
 
-      });
+          });
       // style exception, too simple
 
     }
@@ -514,7 +519,7 @@ exports.generateNewPassword = function(login, callback) {
 
 };
 
-exports.recoverAccount = function(parameters, callback) {
+exports.recoverAccount = function(parameters, language, callback) {
 
   requests.findOneAndDelete({
     login : parameters.login,
@@ -528,7 +533,7 @@ exports.recoverAccount = function(parameters, callback) {
     } else if (!request.value) {
       callback(lang.errInvalidRequest);
     } else {
-      exports.generateNewPassword(parameters.login, callback);
+      exports.generateNewPassword(parameters.login, callback, language);
     }
   });
 };

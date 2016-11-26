@@ -313,7 +313,7 @@ exports.setRoleComboBox = function(document, node, possibleRoles, user) {
 
 };
 
-exports.fillStaffDiv = function(document, possibleRoles, staff) {
+exports.fillStaffDiv = function(document, possibleRoles, staff, language) {
 
   var divStaff = document.getElementById('divStaff');
 
@@ -322,7 +322,7 @@ exports.fillStaffDiv = function(document, possibleRoles, staff) {
     var user = staff[i];
 
     var cell = document.createElement('form');
-    cell.innerHTML = templateHandler().staffCell;
+    cell.innerHTML = templateHandler(language).staffCell;
 
     common.setFormCellBoilerPlate(cell, '/setGlobalRole.js', 'staffCell');
 
@@ -398,11 +398,12 @@ exports.setGlobalManagementLinks = function(userRole, document) {
   }
 };
 
-exports.processHideableElements = function(document, userRole, staff) {
+exports.processHideableElements = function(document, userRole, staff, lang) {
 
   if (userRole < 2) {
     exports.setNewStaffComboBox(document, userRole);
-    exports.fillStaffDiv(document, exports.getPossibleRoles(userRole), staff);
+    exports.fillStaffDiv(document, exports.getPossibleRoles(userRole), staff,
+        lang);
   } else {
     common.removeElement(document.getElementById('addStaffForm'));
     common.removeElement(document.getElementById('divStaff'));
@@ -448,7 +449,7 @@ exports.globalManagement = function(userRole, userLogin, staff, reports,
 
     exports.setGlobalManagementLinks(userRole, document);
 
-    exports.processHideableElements(document, userRole, staff);
+    exports.processHideableElements(document, userRole, staff, language);
 
     exports.setUserLabel(document, userLogin, userRole);
 
