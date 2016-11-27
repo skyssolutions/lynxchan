@@ -90,14 +90,14 @@ exports.loadDependencies = function() {
 
   common = require('..').common;
   templateHandler = require('../../templateHandler').getTemplates;
-  lang = require('../../langOps').languagePack();
+  lang = require('../../langOps').languagePack;
   miscOps = require('../../miscOps');
 
   exports.boardRangeSettingsRelation = [ {
     limit : 2,
     element : 'captchaModeComboBox',
     setting : 'captchaMode',
-    labels : lang.guiCaptchaModes
+    labels : 'guiCaptchaModes'
   } ];
 
 };
@@ -121,7 +121,7 @@ exports.setBoardControlCheckBoxes = function(document, boardData) {
 
 };
 
-exports.setBoardComboBoxes = function(document, boardData) {
+exports.setBoardComboBoxes = function(document, boardData, language) {
 
   for (var i = 0; i < exports.boardRangeSettingsRelation.length; i++) {
 
@@ -129,7 +129,7 @@ exports.setBoardComboBoxes = function(document, boardData) {
 
     var element = document.getElementById(setting.element);
 
-    var labels = setting.labels;
+    var labels = lang(language)[setting.labels];
 
     for (var j = 0; j <= setting.limit; j++) {
 
@@ -237,7 +237,7 @@ exports.setContent = function(document, boardData, userData, bans, reports,
 
   exports.setBoardControlCheckBoxes(document, boardData);
 
-  exports.setBoardComboBoxes(document, boardData);
+  exports.setBoardComboBoxes(document, boardData, language);
 
   exports.setBoardFields(document, boardData);
 
@@ -263,7 +263,7 @@ exports.boardManagement = function(userData, boardData, reports, bans,
 
     var document = jsdom(templateHandler(userLanguage).bManagement);
 
-    document.title = lang.titBoardManagement.replace('{$board}',
+    document.title = lang(userLanguage).titBoardManagement.replace('{$board}',
         boardData.boardUri);
 
     document.getElementById('linkSelf').href = '/' + boardData.boardUri + '/';
@@ -339,14 +339,14 @@ exports.fillStaffDiv = function(document, possibleRoles, staff, language) {
   }
 };
 
-exports.getPossibleRoles = function(role) {
+exports.getPossibleRoles = function(role, language) {
 
   var roles = [];
 
   for (var i = role + 1; i <= miscOps.getMaxStaffRole() + 1; i++) {
     var toPush = {
       value : i,
-      label : miscOps.getGlobalRoleLabel(i)
+      label : miscOps.getGlobalRoleLabel(i, language)
     };
 
     roles.push(toPush);
@@ -356,7 +356,7 @@ exports.getPossibleRoles = function(role) {
   return roles;
 };
 
-exports.setNewStaffComboBox = function(document, userRole) {
+exports.setNewStaffComboBox = function(document, userRole, language) {
 
   var comboBox = document.getElementById('newStaffCombo');
 
@@ -364,7 +364,7 @@ exports.setNewStaffComboBox = function(document, userRole) {
 
     var option = document.createElement('option');
     option.value = i;
-    option.innerHTML = miscOps.getGlobalRoleLabel(i);
+    option.innerHTML = miscOps.getGlobalRoleLabel(i, language);
 
     comboBox.add(option);
   }
@@ -401,9 +401,9 @@ exports.setGlobalManagementLinks = function(userRole, document) {
 exports.processHideableElements = function(document, userRole, staff, lang) {
 
   if (userRole < 2) {
-    exports.setNewStaffComboBox(document, userRole);
-    exports.fillStaffDiv(document, exports.getPossibleRoles(userRole), staff,
-        lang);
+    exports.setNewStaffComboBox(document, userRole, lang);
+    exports.fillStaffDiv(document, exports.getPossibleRoles(userRole, lang),
+        staff, lang);
   } else {
     common.removeElement(document.getElementById('addStaffForm'));
     common.removeElement(document.getElementById('divStaff'));
@@ -426,12 +426,12 @@ exports.setGlobalManagementList = function(document, reports, appealedBans,
 
 };
 
-exports.setUserLabel = function(document, userLogin, userRole) {
+exports.setUserLabel = function(document, userLogin, userRole, language) {
 
   var userLabel = document.getElementById('userLabel');
 
   var userLabelContent = userLogin + ': ';
-  userLabelContent += miscOps.getGlobalRoleLabel(userRole);
+  userLabelContent += miscOps.getGlobalRoleLabel(userRole, language);
 
   userLabel.innerHTML = userLabelContent;
 
@@ -443,7 +443,7 @@ exports.globalManagement = function(userRole, userLogin, staff, reports,
   try {
     var document = jsdom(templateHandler(language).gManagement);
 
-    document.title = lang.titGlobalManagement;
+    document.title = lang(language).titGlobalManagement;
 
     exports.setGlobalManagementList(document, reports, appealedBans, language);
 
@@ -451,7 +451,7 @@ exports.globalManagement = function(userRole, userLogin, staff, reports,
 
     exports.processHideableElements(document, userRole, staff, language);
 
-    exports.setUserLabel(document, userLogin, userRole);
+    exports.setUserLabel(document, userLogin, userRole, language);
 
     return serializer(document);
   } catch (error) {
@@ -505,7 +505,7 @@ exports.filterManagement = function(boardUri, filters, language) {
 
     var document = jsdom(templateHandler(language).filterManagement);
 
-    document.title = lang.titFilters.replace('{$board}', boardUri);
+    document.title = lang(language).titFilters.replace('{$board}', boardUri);
 
     document.getElementById('boardIdentifier').setAttribute('value', boardUri);
 
@@ -559,7 +559,7 @@ exports.ruleManagement = function(boardUri, rules, language) {
 
     var document = jsdom(templateHandler(language).ruleManagementPage);
 
-    document.title = lang.titRuleManagement;
+    document.title = lang(language).titRuleManagement;
 
     var boardIdentifier = document.getElementById('boardIdentifier');
 
@@ -617,7 +617,7 @@ exports.flagManagement = function(boardUri, flags, language) {
 
     var document = jsdom(templateHandler(language).flagsPage);
 
-    document.title = lang.titFlagManagement;
+    document.title = lang(language).titFlagManagement;
 
     document.getElementById('maxSizeLabel').innerHTML = displayMaxFlagSize;
 
@@ -668,7 +668,7 @@ exports.globalSettings = function(language) {
 
     var document = jsdom(templateHandler(language).globalSettingsPage);
 
-    var siteSettingsRelation = miscOps.getParametersArray();
+    var siteSettingsRelation = miscOps.getParametersArray(language);
 
     for (var i = 0; i < siteSettingsRelation.length; i++) {
 
@@ -698,7 +698,7 @@ exports.globalSettings = function(language) {
 
     }
 
-    document.title = lang.titGlobalSettings;
+    document.title = lang(language).titGlobalSettings;
 
     return serializer(document);
 
@@ -746,12 +746,12 @@ exports.bannerManagement = function(boardUri, banners, language) {
     var document = jsdom(templateHandler(language).bannerManagementPage);
 
     if (boardUri) {
-      document.title = lang.titBanners.replace('{$board}', boardUri);
+      document.title = lang(language).titBanners.replace('{$board}', boardUri);
       document.getElementById('boardIdentifier')
           .setAttribute('value', boardUri);
 
     } else {
-      document.title = lang.titGlobalBanners;
+      document.title = lang(language).titGlobalBanners;
       common.removeElement(document.getElementById('boardIdentifier'));
     }
 
@@ -849,7 +849,7 @@ exports.mediaManagement = function(media, pages, parameters, language) {
 
     var document = jsdom(templateHandler(language).mediaManagementPage);
 
-    document.title = lang.titMediaManagement;
+    document.title = lang(language).titMediaManagement;
 
     exports.setMediaManagementPages(pages, document, parameters);
 
@@ -902,7 +902,7 @@ exports.languages = function(languages, language) {
 
     var document = jsdom(templateHandler(language).languagesManagementPage);
 
-    document.title = lang.titLanguages;
+    document.title = lang(language).titLanguages;
 
     for (var i = 0; i < languages.length; i++) {
       exports.addLanguageCell(document, languages[i], language);

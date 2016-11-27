@@ -36,7 +36,7 @@ function changeGlobalSettings(userData, parameters, res, auth, language) {
 
   }
 
-  miscOps.setGlobalSettings(userData, parameters,
+  miscOps.setGlobalSettings(userData, language, parameters,
       function changedGlobalSettings(error) {
 
         if (error) {

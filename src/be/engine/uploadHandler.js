@@ -752,11 +752,12 @@ exports.saveUploads = function(boardData, threadId, postId, parameters,
         function processedFile(error) {
 
           if (error) {
-            console.log(error);
 
             if (debug) {
               throw error;
             }
+
+            console.log(error);
           }
 
           exports.saveUploads(boardData, threadId, postId, parameters,

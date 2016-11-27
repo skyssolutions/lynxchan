@@ -8,8 +8,8 @@ var miscOps = require('../engine/miscOps');
 
 function getManagementData(userData, res, json, auth, language) {
 
-  miscOps.getManagementData(userData.globalRole, userData.login, !json,
-      function gotData(error, globalStaff, globalReports, appealedBans) {
+  miscOps.getManagementData(userData.globalRole, language, userData.login,
+      !json, function gotData(error, globalStaff, globalReports, appealedBans) {
         if (error) {
           formOps.outputError(error, 500, res, language);
         } else {

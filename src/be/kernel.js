@@ -68,7 +68,7 @@ exports.reload = function() {
 
   settingsHandler.loadSettings();
 
-  require('./engine/langOps').init();
+  require('./engine/langOps').dropCache();
 
   checkImagesSet();
 
@@ -816,8 +816,6 @@ function bootDb() {
     if (error) {
       throw error;
     } else {
-
-      require('./engine/langOps').init();
 
       exports.startEngine();
 

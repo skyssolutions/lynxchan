@@ -9,7 +9,8 @@ var debug = require('../kernel').debug();
 var dbLanguages = require('../db').languages();
 var verbose;
 
-var languagePack = {};
+var languagePack;
+var alternativeLanguages = {};
 
 exports.loadSettings = function() {
 
@@ -18,13 +19,28 @@ exports.loadSettings = function() {
   verbose = settings.verbose;
 };
 
-exports.languagePack = function() {
+exports.languagePack = function(language) {
 
-  if (!languagePack) {
-    exports.init();
+  if (language) {
+    var toReturn = alternativeLanguages[language._id];
+
+    if (!toReturn) {
+      exports.init(language);
+
+      toReturn = alternativeLanguages[language._id];
+    }
   }
 
-  return languagePack;
+  if (!toReturn) {
+
+    if (!languagePack) {
+      exports.init();
+    }
+
+    toReturn = languagePack;
+  }
+
+  return toReturn;
 };
 
 exports.processArray = function(defaultObject, chosenObject, missingKeys,
@@ -105,23 +121,36 @@ exports.loadLanguagePack = function(defaultPack, languagePackPath) {
 
   }
 
-  languagePack = chosenPack;
+  return chosenPack;
 };
 
-exports.init = function() {
+exports.init = function(language) {
 
   var defaultLanguagePath = __dirname + '/../defaultLanguagePack.json';
 
   var defaultPack = JSON.parse(fs.readFileSync(defaultLanguagePath));
 
-  var settings = require('../settingsHandler').getGeneralSettings();
+  if (language) {
 
-  var languagePackPath = settings.languagePackPath;
+    if (verbose) {
+      console
+          .log('Loading alternative language pack: ' + language.headerValues);
+    }
 
-  if (languagePackPath) {
-    exports.loadLanguagePack(defaultPack, languagePackPath);
+    alternativeLanguages[language._id] = exports.loadLanguagePack(defaultPack,
+        language.languagePack);
+
   } else {
-    languagePack = defaultPack;
+
+    var settings = require('../settingsHandler').getGeneralSettings();
+
+    var languagePackPath = settings.languagePackPath;
+
+    if (languagePackPath) {
+      languagePack = exports.loadLanguagePack(defaultPack, languagePackPath);
+    } else {
+      languagePack = defaultPack;
+    }
   }
 
 };
@@ -174,5 +203,12 @@ exports.deleteLanguage = function(userRole, languageId, callback) {
   } catch (error) {
     callback(error);
   }
+
+};
+
+exports.dropCache = function() {
+
+  languagePack = null;
+  alternativeLanguages = {};
 
 };

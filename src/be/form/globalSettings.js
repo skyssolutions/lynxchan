@@ -8,7 +8,8 @@ var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
 function getGlobalSettings(userData, res, json, auth, language) {
 
-  miscOps.getGlobalSettingsData(userData, function gotBannerData(error) {
+  miscOps.getGlobalSettingsData(userData, language, function gotBannerData(
+      error) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {

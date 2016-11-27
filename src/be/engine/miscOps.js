@@ -38,7 +38,7 @@ exports.loadDependencies = function() {
 
   formOps = require('./formOps');
   reportOps = require('./modOps').report;
-  lang = require('./langOps').languagePack();
+  lang = require('./langOps').languagePack;
 
 };
 
@@ -132,20 +132,20 @@ exports.corsHeader = function(contentType, auth) {
   return header;
 };
 
-exports.getGlobalRoleLabel = function(role) {
+exports.getGlobalRoleLabel = function(role, language) {
 
   if (role >= 0 && role <= 3) {
-    return lang.miscRoles[role];
+    return lang(language).miscRoles[role];
   } else {
-    return lang.miscRoles[4];
+    return lang(language).miscRoles[4];
   }
 
 };
 
-exports.getGlobalSettingsData = function(userData, callback) {
+exports.getGlobalSettingsData = function(userData, language, callback) {
 
   if (userData.globalRole !== 0) {
-    callback(lang.errDeniedGlobalSettings);
+    callback(lang(language).errDeniedGlobalSettings);
   } else {
     callback();
   }
@@ -198,13 +198,13 @@ exports.getReportsAssociations = function(userRole, foundUsers, foundReports,
 
 };
 
-exports.getManagementData = function(userRole, userLogin, associateContent,
-    callback) {
+exports.getManagementData = function(userRole, language, userLogin,
+    associateContent, callback) {
 
   var globalStaff = userRole <= MAX_STAFF_ROLE;
 
   if (!globalStaff) {
-    callback(lang.errDeniedGlobalManagement);
+    callback(lang(language).errDeniedGlobalManagement);
   } else {
 
     users.find({
@@ -277,7 +277,7 @@ exports.getRange = function(ip, threeQuarters) {
 
 };
 
-exports.getParametersArray = function() {
+exports.getParametersArray = function(language) {
 
   return [ {
     // array
@@ -579,7 +579,7 @@ exports.getParametersArray = function() {
     // range
     type : 'range',
     limit : 2,
-    options : lang.guiBypassModes,
+    options : lang(language).guiBypassModes,
     setting : 'bypassMode',
     element : 'comboBypassMode'
   }, {
@@ -587,13 +587,13 @@ exports.getParametersArray = function() {
     setting : 'clearIpMinRole',
     limit : 3,
     element : 'comboMinClearIpRole',
-    options : lang.miscRoles
+    options : lang(language).miscRoles
   }, {
     type : 'range',
     setting : 'boardCreationRequirement',
     limit : 4,
     element : 'comboBoardCreationRequirement',
-    options : lang.miscRoles
+    options : lang(language).miscRoles
   } ];
 };
 
@@ -692,15 +692,15 @@ exports.processNumberSetting = function(parameters, defaultSettings, item,
   }
 };
 
-exports.setGlobalSettings = function(userData, parameters, callback) {
+exports.setGlobalSettings = function(userData, language, parameters, callback) {
 
   if (userData.globalRole !== 0) {
-    callback(lang.errDeniedGlobalSettings);
+    callback(lang(language).errDeniedGlobalSettings);
 
     return;
   }
 
-  var parametersArray = exports.getParametersArray();
+  var parametersArray = exports.getParametersArray(language);
 
   var newSettings = {};
 
