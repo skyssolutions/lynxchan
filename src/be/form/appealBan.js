@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var logger = require('../logger');
 var modOps = require('../engine/modOps').ipBan.specific;
 var mandatoryParameters = [ 'banId', 'appeal' ];
@@ -17,8 +17,8 @@ function appealBan(ip, parameters, res, language) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {
-      formOps.outputResponse(lang.msgBanAppealed, '/', res, null, null,
-          language);
+      formOps.outputResponse(lang(language).msgBanAppealed, '/', res, null,
+          null, language);
     }
   });
 

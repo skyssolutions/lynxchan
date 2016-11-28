@@ -5,7 +5,6 @@ var accountOps = require('../engine/accountOps');
 var modOps = require('../engine/modOps');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var lang = require('../engine/langOps').languagePack();
-var lang = require('../engine/langOps').languagePack();
 var miscOps = require('../engine/miscOps');
 var deleteOps = require('../engine/deletionOps');
 
@@ -128,8 +127,8 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
       if (error) {
         formOps.outputError(error, 500, res, req.language);
       } else {
-        formOps.outputResponse(lang.msgContentSpoilered, redirectBoard, res,
-            null, auth, req.language);
+        formOps.outputResponse(lang(req.language).msgContentSpoilered,
+            redirectBoard, res, null, auth, req.language);
       }
     });
 
@@ -143,12 +142,12 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
             res.writeHead(200, miscOps.corsHeader('text/html'));
 
             var board = ban.boardUri ? '/' + ban.boardUri + '/'
-                : lang.miscAllBoards.toLowerCase();
+                : lang(req.language).miscAllBoards.toLowerCase();
 
             res.end(domManipulator.ban(ban, board));
           } else {
-            formOps.outputResponse(lang.msgContentReported, redirectBoard, res,
-                null, auth, req.language);
+            formOps.outputResponse(lang(req.language).msgContentReported,
+                redirectBoard, res, null, auth, req.language);
           }
 
         });
@@ -161,8 +160,8 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
           if (error) {
             formOps.outputError(error, 500, res, req.language);
           } else {
-            formOps.outputResponse(lang.msgUsersBanned, redirectBoard, res,
-                null, auth, req.language);
+            formOps.outputResponse(lang(req.language).msgUsersBanned,
+                redirectBoard, res, null, auth, req.language);
           }
         });
 
@@ -174,28 +173,29 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
           if (error) {
             formOps.outputError(error, 500, res, req.language);
           } else {
-            formOps.outputResponse(lang.msgDeletedFromIp, redirectBoard, res,
-                null, auth, req.language);
+            formOps.outputResponse(lang(req.language).msgDeletedFromIp,
+                redirectBoard, res, null, auth, req.language);
           }
 
         });
 
   } else {
 
-    deleteOps.postingDeletions.posting(userData, parameters, threads, posts,
-        req.language, function deletedPostings(error, removedThreads,
-            removedPosts) {
+    deleteOps.postingDeletions
+        .posting(userData, parameters, threads, posts, req.language,
+            function deletedPostings(error, removedThreads, removedPosts) {
 
-          if (error) {
-            formOps.outputError(error, 500, res, req.language);
-          } else {
+              if (error) {
+                formOps.outputError(error, 500, res, req.language);
+              } else {
 
-            formOps.outputResponse(lang.msgContentDeleted.replace('{$threads}',
-                removedThreads).replace('{$posts}', removedPosts),
-                redirectBoard, res, null, auth, req.language);
-          }
+                formOps.outputResponse(lang(req.language).msgContentDeleted
+                    .replace('{$threads}', removedThreads).replace('{$posts}',
+                        removedPosts), redirectBoard, res, null, auth,
+                    req.language);
+              }
 
-        });
+            });
   }
 
 }

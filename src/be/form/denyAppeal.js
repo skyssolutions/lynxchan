@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var modOps = require('../engine/modOps').ipBan.specific;
 
 function denyAppeal(userData, parameters, res, auth, language) {
@@ -17,8 +17,8 @@ function denyAppeal(userData, parameters, res, auth, language) {
             redirect += '?boardUri=' + board;
           }
 
-          formOps.outputResponse(lang.msgAppealDenied, redirect, res, null,
-              auth, language);
+          formOps.outputResponse(lang(language).msgAppealDenied, redirect, res,
+              null, auth, language);
         }
       });
 

@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var accountOps = require('../engine/accountOps');
 
 function requestRecovery(domain, parameters, res, captchaId, language) {
@@ -15,8 +15,8 @@ function requestRecovery(domain, parameters, res, captchaId, language) {
         if (error) {
           formOps.outputError(error, 500, res, language);
         } else {
-          formOps.outputResponse(lang.msgRequestCreated, '/login.html', res,
-              null, null, language);
+          formOps.outputResponse(lang(language).msgRequestCreated,
+              '/login.html', res, null, null, language);
         }
       });
 

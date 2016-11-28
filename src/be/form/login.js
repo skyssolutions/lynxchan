@@ -3,7 +3,7 @@
 var formOps = require('../engine/formOps');
 var accountOps = require('../engine/accountOps');
 var mandatoryParameters = [ 'login' ];
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 
 function login(res, parameters, language) {
 
@@ -16,13 +16,14 @@ function login(res, parameters, language) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {
-      formOps.outputResponse(lang.msgLoginSuccessful, '/account.js', res, [ {
-        field : 'login',
-        value : parameters.login
-      }, {
-        field : 'hash',
-        value : hash
-      } ], null, language);
+      formOps.outputResponse(lang(language).msgLoginSuccessful, '/account.js',
+          res, [ {
+            field : 'login',
+            value : parameters.login
+          }, {
+            field : 'hash',
+            value : hash
+          } ], null, language);
     }
   });
 

@@ -2,8 +2,8 @@
 
 var formOps = require('../engine/formOps');
 var miscOps = require('../engine/miscOps');
-var lang = require('../engine/langOps').languagePack();
 var languageOps = require('../engine/langOps');
+var lang = languageOps.languagePack;
 var mandatoryParameters = [ 'frontEnd', 'languagePack', 'headerValues' ];
 
 function addLanguage(auth, parameters, userData, res, language) {
@@ -23,8 +23,8 @@ function addLanguage(auth, parameters, userData, res, language) {
         if (error) {
           formOps.outputError(error, 500, res, language);
         } else {
-          formOps.outputResponse(lang.msgLanguageAdded, '/languages.js', res,
-              null, auth, language);
+          formOps.outputResponse(lang(language).msgLanguageAdded,
+              '/languages.js', res, null, auth, language);
 
         }
       });

@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var mandatoryParameters = [ 'boardUri', 'boardName', 'boardDescription' ];
 var boardOps = require('../engine/boardOps').meta;
 
@@ -19,8 +19,8 @@ function createBoard(userData, parameters, res, captchaId, auth, language) {
         } else {
           var redirectLink = '/' + parameters.boardUri + '/';
 
-          formOps.outputResponse(lang.msgBoardCreated, redirectLink, res, null,
-              auth, language);
+          formOps.outputResponse(lang(language).msgBoardCreated, redirectLink,
+              res, null, auth, language);
         }
       });
 

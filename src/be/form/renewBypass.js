@@ -5,7 +5,7 @@ var miscOps = require('../engine/miscOps');
 var bypassOps = require('../engine/bypassOps');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var settingsHandler = require('../settingsHandler');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 
 function renewBypass(auth, parameters, res, language) {
 
@@ -16,8 +16,8 @@ function renewBypass(auth, parameters, res, language) {
           formOps.outputError(error, 500, res, language);
         } else {
 
-          formOps.outputResponse(lang.msgBypassRenewed, '/blockBypass.js', res,
-              [ {
+          formOps.outputResponse(lang(language).msgBypassRenewed,
+              '/blockBypass.js', res, [ {
                 field : 'bypass',
                 value : bypassId,
                 path : '/'
@@ -30,7 +30,8 @@ function renewBypass(auth, parameters, res, language) {
 exports.process = function(req, res) {
 
   if (!settingsHandler.getGeneralSettings().bypassMode) {
-    formOps.outputError(lang.errDisabledBypass, 500, res, req.language);
+    formOps.outputError(lang(req.language).errDisabledBypass, 500, res,
+        req.language);
 
     return;
   }

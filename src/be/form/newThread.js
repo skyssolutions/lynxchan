@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var bypassOps = require('../engine/bypassOps');
 var postingOps = require('../engine/postingOps').thread;
 var captchaOps = require('../engine/captchaOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var mandatoryParameters = [ 'message', 'boardUri' ];
 
 function createThread(req, userData, parameters, captchaId, res, auth) {
@@ -15,8 +15,8 @@ function createThread(req, userData, parameters, captchaId, res, auth) {
         } else {
           var redirectLink = '../' + parameters.boardUri;
           redirectLink += '/res/' + id + '.html';
-          formOps.outputResponse(lang.msgThreadCreated, redirectLink, res,
-              null, auth, req.language);
+          formOps.outputResponse(lang(req.language).msgThreadCreated,
+              redirectLink, res, null, auth, req.language);
         }
       });
 

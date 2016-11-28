@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var url = require('url');
 var modOps = require('../engine/modOps').edit;
 var mandatoryParameters = [ 'message', 'boardUri' ];
@@ -24,8 +24,8 @@ function saveEdit(parameters, userData, res, auth, language) {
         redirect += '&postId=' + parameters.postId;
       }
 
-      formOps.outputResponse(lang.msgPostingEdited, redirect, res, null, auth,
-          language);
+      formOps.outputResponse(lang(language).msgPostingEdited, redirect, res,
+          null, auth, language);
     }
   });
 

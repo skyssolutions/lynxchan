@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var url = require('url');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var boardOps = require('../engine/boardOps').filters;
 var mandatoryParameters = [ 'boardUri', 'filterIdentifier' ];
 
@@ -19,8 +19,8 @@ function deleteFilter(parameters, userData, res, auth, language) {
       formOps.outputError(error, 500, res, language);
     } else {
       var redirect = '/filterManagement.js?boardUri=' + parameters.boardUri;
-      formOps.outputResponse(lang.msgFilterDeleted, redirect, res, null, auth,
-          language);
+      formOps.outputResponse(lang(language).msgFilterDeleted, redirect, res,
+          null, auth, language);
     }
   });
 

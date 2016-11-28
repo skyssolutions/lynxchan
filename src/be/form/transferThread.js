@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var transferOps = require('../engine/modOps').transfer;
 var mandatoryParameters = [ 'boardUri', 'threadId', 'boardUriDestination' ];
 
@@ -22,8 +22,8 @@ function transferThread(userData, parameters, res, auth, language) {
           var redirect = '/' + parameters.boardUriDestination + '/res/';
           redirect += newThreadId + '.html';
 
-          formOps.outputResponse(lang.msgThreadTransferred, redirect, res,
-              null, auth, language);
+          formOps.outputResponse(lang(language).msgThreadTransferred, redirect,
+              res, null, auth, language);
         }
 
       });

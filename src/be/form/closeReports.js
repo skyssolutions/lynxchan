@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var modOps = require('../engine/modOps').report;
 
 function closeReport(userData, parameters, res, auth, language) {
@@ -31,8 +31,8 @@ function closeReport(userData, parameters, res, auth, language) {
       var redirect = global ? '/globalManagement.js'
           : '/boardManagement.js?boardUri=' + board;
 
-      formOps.outputResponse(lang.msgReportsClosed, redirect, res, null, auth,
-          language);
+      formOps.outputResponse(lang(language).msgReportsClosed, redirect, res,
+          null, auth, language);
     }
 
   });

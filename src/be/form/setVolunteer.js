@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var boardOps = require('../engine/boardOps').meta;
 var mandatoryParameters = [ 'boardUri', 'login' ];
 
@@ -21,8 +21,9 @@ function setVolunteer(userData, parameters, res, auth, language) {
       formOps.outputError(error, 500, res, language);
     } else {
       var redirect = '/boardManagement.js?boardUri=' + parameters.boardUri;
-      formOps.outputResponse(parameters.add ? lang.msgVolunteerAdded
-          : lang.msgVolunteerRemoved, redirect, res, null, auth, language);
+      formOps.outputResponse(parameters.add ? lang(language).msgVolunteerAdded
+          : lang(language).msgVolunteerRemoved, redirect, res, null, auth,
+          language);
     }
 
   });

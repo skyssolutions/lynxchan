@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var modOps = require('../engine/modOps').ipBan.general;
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var mandatoryParameters = [ 'range' ];
 
 function placeRangeBan(userData, parameters, captchaId, res, auth, language) {
@@ -23,8 +23,8 @@ function placeRangeBan(userData, parameters, captchaId, res, auth, language) {
             redirectLink += '?boardUri=' + parameters.boardUri;
           }
 
-          formOps.outputResponse(lang.msgRangeBanCreated, redirectLink, res,
-              null, auth, language);
+          formOps.outputResponse(lang(language).msgRangeBanCreated,
+              redirectLink, res, null, auth, language);
         }
       });
 

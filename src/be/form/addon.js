@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var settingsHandler = require('../settingsHandler');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var url = require('url');
 
 exports.process = function(req, res) {
@@ -12,7 +12,8 @@ exports.process = function(req, res) {
   var loadedAddons = settingsHandler.getGeneralSettings().addons || [];
 
   if (loadedAddons.indexOf(requestedAddon) === -1) {
-    formOps.outputError(lang.errUnloadedAddon, 500, res, req.language);
+    formOps.outputError(lang(req.language).errUnloadedAddon, 500, res,
+        req.language);
   } else {
     require('../addons/' + requestedAddon).formRequest(req, res);
   }

@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var modOps = require('../engine/modOps').ipBan.versatile;
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 
 function liftBan(userData, parameters, res, auth, language) {
 
@@ -24,8 +24,8 @@ function liftBan(userData, parameters, res, auth, language) {
         redirect += '?boardUri=' + boardUri;
       }
 
-      formOps.outputResponse(lang.msgBanLifted, redirect, res, null, auth,
-          language);
+      formOps.outputResponse(lang(language).msgBanLifted, redirect, res, null,
+          auth, language);
     }
   });
 

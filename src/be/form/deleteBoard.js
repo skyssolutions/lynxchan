@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var deletionOps = require('../engine/deletionOps').miscDeletions;
 
 function deleteBoard(userData, parameters, res, auth, language) {
@@ -15,8 +15,8 @@ function deleteBoard(userData, parameters, res, auth, language) {
         if (error) {
           formOps.outputError(error, 500, res, language);
         } else {
-          formOps.outputResponse(lang.msgBoardDeleted, '/', res, null, auth,
-              language);
+          formOps.outputResponse(lang(language).msgBoardDeleted, '/', res,
+              null, auth, language);
         }
       });
 

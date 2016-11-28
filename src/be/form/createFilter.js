@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var url = require('url');
 var boardOps = require('../engine/boardOps').filters;
 var mandatoryParameters = [ 'boardUri', 'originalTerm', 'replacementTerm' ];
@@ -19,8 +19,8 @@ function createFilter(parameters, userData, res, auth, language) {
       formOps.outputError(error, 500, res, language);
     } else {
       var redirect = '/filterManagement.js?boardUri=' + parameters.boardUri;
-      formOps.outputResponse(lang.msgFilterCreated, redirect, res, null, auth,
-          language);
+      formOps.outputResponse(lang(language).msgFilterCreated, redirect, res,
+          null, auth, language);
     }
   });
 

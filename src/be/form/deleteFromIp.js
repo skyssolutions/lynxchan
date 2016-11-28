@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var delOps = require('../engine/deletionOps');
 var mandatoryParameters = [ 'ip' ];
 
@@ -18,8 +18,8 @@ function deleteFromIp(userData, parameters, res, auth, language) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {
-      formOps.outputResponse(lang.msgDeletedFromIp, '/globalManagement.js',
-          res, null, auth, language);
+      formOps.outputResponse(lang(language).msgDeletedFromIp,
+          '/globalManagement.js', res, null, auth, language);
     }
 
   });

@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var accountOps = require('../engine/accountOps');
 var validSettings = accountOps.validAccountSettings();
 
@@ -27,8 +27,8 @@ function changeSettings(userData, parameters, res, auth, language) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {
-      formOps.outputResponse(lang.msgAccountSettingsSaved, '/account.js', res,
-          null, auth, language);
+      formOps.outputResponse(lang(language).msgAccountSettingsSaved,
+          '/account.js', res, null, auth, language);
     }
 
   });

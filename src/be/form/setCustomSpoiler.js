@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var boardOps = require('../engine/boardOps').custom;
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 
 function setCustomSpoiler(userData, parameters, res, auth, language) {
 
@@ -17,8 +17,8 @@ function setCustomSpoiler(userData, parameters, res, auth, language) {
             var redirect = '/boardManagement.js?boardUri=';
             redirect += parameters.boardUri;
 
-            formOps.outputResponse(lang.msgSpoilerSet, redirect, res, null,
-                auth, language);
+            formOps.outputResponse(lang(language).msgSpoilerSet, redirect, res,
+                null, auth, language);
           }
         });
   } else {
@@ -31,8 +31,8 @@ function setCustomSpoiler(userData, parameters, res, auth, language) {
             var redirect = '/boardManagement.js?boardUri=';
             redirect += parameters.boardUri;
 
-            formOps.outputResponse(lang.msgSpoilerDeleted, redirect, res, null,
-                auth, language);
+            formOps.outputResponse(lang(language).msgSpoilerDeleted, redirect,
+                res, null, auth, language);
           }
         });
 

@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var bypassOps = require('../engine/bypassOps');
 var postingOps = require('../engine/postingOps').post;
 var captchaOps = require('../engine/captchaOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var mandatoryParameters = [ 'boardUri', 'threadId' ];
 
 function createPost(req, userData, parameters, captchaId, res, auth) {
@@ -17,8 +17,8 @@ function createPost(req, userData, parameters, captchaId, res, auth) {
           var redirectLink = '../' + parameters.boardUri;
           redirectLink += '/res/' + parameters.threadId;
           redirectLink += '.html#' + id;
-          formOps.outputResponse(lang.msgPostCreated, redirectLink, res, null,
-              auth, req.language);
+          formOps.outputResponse(lang(req.language).msgPostCreated,
+              redirectLink, res, null, auth, req.language);
         }
       });
 

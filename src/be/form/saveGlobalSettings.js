@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var miscOps = require('../engine/miscOps');
 var toSanitize = [ 'acceptedMimes', 'addons', 'slaves' ];
 
@@ -42,7 +42,7 @@ function changeGlobalSettings(userData, parameters, res, auth, language) {
         if (error) {
           formOps.outputError(error, 500, res, language);
         } else {
-          formOps.outputResponse(lang.msgSavedGlobalSettings,
+          formOps.outputResponse(lang(language).msgSavedGlobalSettings,
               '/globalSettings.js', res, null, auth, language);
         }
 

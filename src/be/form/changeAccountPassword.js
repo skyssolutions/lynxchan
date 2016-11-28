@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var accountOps = require('../engine/accountOps');
 function changePassword(userData, parameters, res, language) {
 
@@ -11,8 +11,8 @@ function changePassword(userData, parameters, res, language) {
         if (error) {
           formOps.outputError(error, 500, res, language);
         } else {
-          formOps.outputResponse(lang.msgChangedPassword, '/account.js', res,
-              [ {
+          formOps.outputResponse(lang(language).msgChangedPassword,
+              '/account.js', res, [ {
                 field : 'hash',
                 value : newHash
               } ], null, language);

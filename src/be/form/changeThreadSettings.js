@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var modOps = require('../engine/modOps').edit;
 var mandatoryParameters = [ 'boardUri', 'threadId' ];
 
@@ -19,8 +19,8 @@ function saveThreadSettings(userData, parameters, res, auth, language) {
         } else {
           var redirectLink = '/mod.js?boardUri=' + parameters.boardUri;
           redirectLink += '&threadId=' + parameters.threadId;
-          formOps.outputResponse(lang.msgThreadSettingsSaved, redirectLink,
-              res, null, auth, language);
+          formOps.outputResponse(lang(language).msgThreadSettingsSaved,
+              redirectLink, res, null, auth, language);
         }
 
       });

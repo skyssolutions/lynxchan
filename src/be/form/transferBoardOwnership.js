@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var boardOps = require('../engine/boardOps').meta;
 var mandatoryParameters = [ 'boardUri', 'login' ];
 
@@ -19,8 +19,8 @@ function transferBoard(userData, parameters, res, auth, language) {
     } else {
       var redirect = '/' + parameters.boardUri + '/';
 
-      formOps.outputResponse(lang.msgBoardTransferred, redirect, res, null,
-          auth, language);
+      formOps.outputResponse(lang(language).msgBoardTransferred, redirect, res,
+          null, auth, language);
     }
 
   });

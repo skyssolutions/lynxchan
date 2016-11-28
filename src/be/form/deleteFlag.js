@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var boardOps = require('../engine/boardOps').flags;
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 
 function deleteFlag(parameters, userData, res, auth, language) {
 
@@ -14,8 +14,8 @@ function deleteFlag(parameters, userData, res, auth, language) {
 
           var url = '/flags.js?boardUri=' + board;
 
-          formOps.outputResponse(lang.msgFlagDeleted, url, res, null, auth,
-              language);
+          formOps.outputResponse(lang(language).msgFlagDeleted, url, res, null,
+              auth, language);
         }
       });
 

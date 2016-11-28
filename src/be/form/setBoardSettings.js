@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var boardOps = require('../engine/boardOps').meta;
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var mandatoryParameters = [ 'boardUri', 'boardName', 'boardDescription' ];
 var possibleSettings = boardOps.getValidSettings();
 
@@ -42,8 +42,8 @@ function setBoardSettings(userData, parameters, res, auth, language) {
     } else {
       var redirect = '/boardManagement.js?boardUri=' + parameters.boardUri;
 
-      formOps.outputResponse(lang.msgBoardSettingsSaved, redirect, res, null,
-          auth, language);
+      formOps.outputResponse(lang(language).msgBoardSettingsSaved, redirect,
+          res, null, auth, language);
     }
 
   });

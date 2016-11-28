@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var bannerOps = require('../engine/bannerOps');
 
 function createBanner(parameters, userData, res, auth, language) {
@@ -18,8 +18,8 @@ function createBanner(parameters, userData, res, auth, language) {
         redirectLink += '?boardUri=' + parameters.boardUri;
       }
 
-      formOps.outputResponse(lang.msgBannerCreated, redirectLink, res, null,
-          auth, language);
+      formOps.outputResponse(lang(language).msgBannerCreated, redirectLink,
+          res, null, auth, language);
     }
   });
 

@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var boardOps = require('../engine/boardOps').flags;
 var mandatoryParameters = [ 'flagName', 'boardUri' ];
 
@@ -20,8 +20,8 @@ function createFlag(parameters, userData, res, auth, language) {
 
       var url = '/flags.js?boardUri=' + parameters.boardUri;
 
-      formOps.outputResponse(lang.msgFlagCreated, url, res, null, auth,
-          language);
+      formOps.outputResponse(lang(language).msgFlagCreated, url, res, null,
+          auth, language);
     }
   });
 

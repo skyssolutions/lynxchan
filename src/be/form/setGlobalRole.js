@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var accountOps = require('../engine/accountOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var mandatoryParameters = [ 'login', 'role' ];
 
 function setUserRole(userData, parameters, res, auth, language) {
@@ -17,8 +17,8 @@ function setUserRole(userData, parameters, res, auth, language) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {
-      formOps.outputResponse(lang.msgUserRoleChanged, '/globalManagement.js',
-          res, null, auth, language);
+      formOps.outputResponse(lang(language).msgUserRoleChanged,
+          '/globalManagement.js', res, null, auth, language);
     }
   });
 

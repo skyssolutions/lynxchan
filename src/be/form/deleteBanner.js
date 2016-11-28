@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var bannerOps = require('../engine/bannerOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 
 function deleteBanner(parameters, userData, res, auth, language) {
 
@@ -17,8 +17,8 @@ function deleteBanner(parameters, userData, res, auth, language) {
             redirectLink += '?boardUri=' + board;
           }
 
-          formOps.outputResponse(lang.msgBannerDeleted, redirectLink, res,
-              null, auth, language);
+          formOps.outputResponse(lang(language).msgBannerDeleted, redirectLink,
+              res, null, auth, language);
         }
       });
 

@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var boardOps = require('../engine/boardOps').rules;
 var mandatoryParameters = [ 'boardUri', 'ruleIndex' ];
 
@@ -19,8 +19,8 @@ function deleteRule(parameters, userData, res, auth, language) {
     } else {
       var redirectLink = '/rules.js?boardUri=' + parameters.boardUri;
 
-      formOps.outputResponse(lang.msgRuleDeleted, redirectLink, res, null,
-          auth, language);
+      formOps.outputResponse(lang(language).msgRuleDeleted, redirectLink, res,
+          null, auth, language);
     }
   });
 

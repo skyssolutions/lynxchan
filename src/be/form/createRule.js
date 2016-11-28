@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var boardOps = require('../engine/boardOps').rules;
 var mandatoryParameters = [ 'rule', 'boardUri' ];
 
@@ -19,8 +19,8 @@ function addRule(parameters, userData, res, auth, language) {
     } else {
       var redirectLink = '/rules.js?boardUri=' + parameters.boardUri;
 
-      formOps.outputResponse(lang.msgRuleCreated, redirectLink, res, null,
-          auth, language);
+      formOps.outputResponse(lang(language).msgRuleCreated, redirectLink, res,
+          null, auth, language);
     }
   });
 

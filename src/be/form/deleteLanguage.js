@@ -3,7 +3,7 @@
 var formOps = require('../engine/formOps');
 var miscOps = require('../engine/miscOps');
 var languageOps = require('../engine/langOps');
-var lang = languageOps.languagePack();
+var lang = languageOps.languagePack;
 
 function deleteLanguage(auth, parameters, userData, res, language) {
 
@@ -12,8 +12,8 @@ function deleteLanguage(auth, parameters, userData, res, language) {
         if (error) {
           formOps.outputError(error, 500, res, language);
         } else {
-          formOps.outputResponse(lang.msgLanguageDeleted, '/languages.js', res,
-              null, auth, language);
+          formOps.outputResponse(lang(language).msgLanguageDeleted,
+              '/languages.js', res, null, auth, language);
 
         }
       });

@@ -1,7 +1,7 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var mediaHandler = require('../engine/mediaHandler');
 
 function deleteMedia(auth, parameters, userData, res, language) {
@@ -21,8 +21,8 @@ function deleteMedia(auth, parameters, userData, res, language) {
           formOps.outputError(error, 500, res, language);
         } else {
 
-          formOps.outputResponse(lang.msgMediaDeleted, '/mediaManagement.js',
-              res, null, auth, language);
+          formOps.outputResponse(lang(language).msgMediaDeleted,
+              '/mediaManagement.js', res, null, auth, language);
 
         }
       });
