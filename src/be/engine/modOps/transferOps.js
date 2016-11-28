@@ -18,7 +18,7 @@ exports.loadDependencies = function() {
 
   logOps = require('../logOps');
   miscOps = require('../miscOps');
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
 
 };
 
@@ -116,7 +116,7 @@ exports.revertThread = function(thread, originalError, callback) {
 exports.logTransfer = function(newBoard, userData, newThreadId, originalThread,
     callback) {
 
-  var message = lang.logThreadTransfer.replace('{$login}', userData.login)
+  var message = lang().logThreadTransfer.replace('{$login}', userData.login)
       .replace('{$thread}', originalThread.threadId).replace('{$board}',
           originalThread.boardUri).replace('{$boardDestination}',
           newBoard.boardUri);
@@ -563,12 +563,12 @@ exports.updateThread = function(userData, parameters, originalThread, newBoard,
 
 };
 
-exports.transfer = function(userData, parameters, callback) {
+exports.transfer = function(userData, parameters, language, callback) {
 
   var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
   if (!globalStaff) {
-    callback(lang.errDeniedThreadTransfer);
+    callback(lang(language).errDeniedThreadTransfer);
 
     return;
   }
@@ -590,7 +590,7 @@ exports.transfer = function(userData, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!thread) {
-      callback(lang.errThreadNotFound);
+      callback(lang(language).errThreadNotFound);
     } else {
 
       thread.latestPosts = thread.latestPosts || [];
@@ -609,7 +609,7 @@ exports.transfer = function(userData, parameters, callback) {
         if (error) {
           callback(error);
         } else if (!result.value) {
-          callback(lang.errBoardNotFound);
+          callback(lang(language).errBoardNotFound);
         } else {
           exports.updateThread(userData, parameters, thread, result.value,
               callback);

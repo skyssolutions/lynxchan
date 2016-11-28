@@ -6,8 +6,8 @@ var lang = require('../engine/langOps').languagePack();
 
 function liftHashBan(userData, parameters, res, auth, language) {
 
-  modOps.liftHashBan(userData, parameters, function hashBanLifted(error,
-      boardUri) {
+  modOps.liftHashBan(userData, parameters, language, function hashBanLifted(
+      error, boardUri) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {

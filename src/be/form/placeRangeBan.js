@@ -12,7 +12,7 @@ function placeRangeBan(userData, parameters, captchaId, res, auth, language) {
     return;
   }
 
-  modOps.placeRangeBan(userData, parameters, captchaId,
+  modOps.placeRangeBan(userData, parameters, captchaId, language,
       function rangeBanPlaced(error) {
         if (error) {
           formOps.outputError(error, 500, res, language);

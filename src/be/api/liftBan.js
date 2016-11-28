@@ -3,9 +3,9 @@
 var apiOps = require('../engine/apiOps');
 var modOps = require('../engine/modOps').ipBan.versatile;
 
-function liftBan(auth, userData, parameters, res) {
+function liftBan(auth, userData, parameters, res, language) {
 
-  modOps.liftBan(userData, parameters, function banLifted(error) {
+  modOps.liftBan(userData, parameters, language, function banLifted(error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
@@ -18,6 +18,6 @@ exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-    liftBan(auth, userData, parameters, res);
+    liftBan(auth, userData, parameters, res, req.language);
   });
 };

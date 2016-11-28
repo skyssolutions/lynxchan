@@ -23,14 +23,15 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   miscOps = require('../miscOps');
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
   exports.miscDeletions.loadDependencies();
   exports.postingDeletions.loadDependencies();
 
 };
 
 // Section 1: Board ip deletion {
-exports.gatherContentToDelete = function(boardUri, ips, userData, callback) {
+exports.gatherContentToDelete = function(boardUri, ips, userData, language,
+    callback) {
 
   var queryBlock = {
     boardUri : boardUri,
@@ -100,7 +101,7 @@ exports.gatherContentToDelete = function(boardUri, ips, userData, callback) {
           }
 
           exports.postingDeletions.posting(userData, {}, foundThreads,
-              foundPosts, callback);
+              foundPosts, language, callback);
 
         }
       });
@@ -112,7 +113,7 @@ exports.gatherContentToDelete = function(boardUri, ips, userData, callback) {
 
 };
 
-exports.gatherIpsToDelete = function(objects, userData, callback) {
+exports.gatherIpsToDelete = function(objects, userData, language, callback) {
 
   var board = objects[0].board;
 
@@ -190,7 +191,8 @@ exports.gatherIpsToDelete = function(objects, userData, callback) {
           }
 
           if (ips.length) {
-            exports.gatherContentToDelete(board, ips, userData, callback);
+            exports.gatherContentToDelete(board, ips, userData, language,
+                callback);
           } else {
             callback();
           }
@@ -206,7 +208,8 @@ exports.gatherIpsToDelete = function(objects, userData, callback) {
 
 };
 
-exports.deleteFromIpOnBoard = function(objects, userData, callback, cleared) {
+exports.deleteFromIpOnBoard = function(objects, userData, language, callback,
+    cleared) {
 
   if (!objects.length) {
     callback();
@@ -231,7 +234,7 @@ exports.deleteFromIpOnBoard = function(objects, userData, callback, cleared) {
       if (error) {
         callback(error);
       } else if (!board) {
-        callback(lang.errBoardNotFound);
+        callback(lang(language).errBoardNotFound);
       } else {
 
         board.volunteers = board.volunteers || [];
@@ -242,7 +245,7 @@ exports.deleteFromIpOnBoard = function(objects, userData, callback, cleared) {
         if (owner || volunteer) {
           exports.deleteFromIpOnBoard(objects, userData, callback, true);
         } else {
-          callback(lang.errDeniedBoardIpDeletion);
+          callback(lang(language).errDeniedBoardIpDeletion);
         }
 
       }
@@ -252,18 +255,18 @@ exports.deleteFromIpOnBoard = function(objects, userData, callback, cleared) {
     return;
   }
 
-  exports.gatherIpsToDelete(objects, userData, callback);
+  exports.gatherIpsToDelete(objects, userData, language, callback);
 
 };
 // } Section 1: Board ip deletion
 
-exports.deleteFromIp = function(parameters, userData, callback) {
+exports.deleteFromIp = function(parameters, userData, language, callback) {
 
   var allowed = userData.globalRole <= clearIpMinRole;
 
   if (!allowed) {
 
-    callback(lang.errDeniedIpDeletion);
+    callback(lang(language).errDeniedIpDeletion);
 
     return;
   }
@@ -347,7 +350,7 @@ exports.deleteFromIp = function(parameters, userData, callback) {
           }
 
           exports.postingDeletions.posting(userData, parameters, foundThreads,
-              foundPosts, callback);
+              foundPosts, language, callback);
 
         }
       });

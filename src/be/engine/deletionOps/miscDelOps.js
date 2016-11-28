@@ -41,7 +41,7 @@ exports.loadDependencies = function() {
   logOps = require('../logOps');
   overboardOps = require('../overboardOps');
   referenceHandler = require('../mediaHandler');
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
   gridFs = require('../gridFsHandler');
   boardOps = require('../boardOps').meta;
 };
@@ -287,7 +287,7 @@ exports.deleteBoardFiles = function(board, callback) {
 
 exports.logBoardDeletion = function(board, user, callback) {
 
-  var message = lang.logBoardDeletion.replace('{$board}', board.boardUri)
+  var message = lang().logBoardDeletion.replace('{$board}', board.boardUri)
       .replace('{$login}', user);
 
   logOps.insertLog({
@@ -362,10 +362,10 @@ exports.deleteBoard = function(board, user, callback) {
 
 };
 
-exports.board = function(userData, parameters, callback) {
+exports.board = function(userData, parameters, language, callback) {
 
   if (!parameters.confirmDeletion) {
-    callback(lang.errBoardDelConfirmation);
+    callback(lang(language).errBoardDelConfirmation);
 
     return;
   }
@@ -383,9 +383,9 @@ exports.board = function(userData, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (board.owner !== userData.login && !admin) {
-      callback(lang.errDeniedBoardDeletion);
+      callback(lang(language).errDeniedBoardDeletion);
     } else {
 
       // style exception, too simple

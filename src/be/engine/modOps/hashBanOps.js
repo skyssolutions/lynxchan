@@ -31,7 +31,7 @@ exports.loadDependencies = function() {
 
   captchaOps = require('../captchaOps');
   logOps = require('../logOps');
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
   common = require('.').common;
   miscOps = require('../miscOps');
 
@@ -53,7 +53,7 @@ exports.readHashBans = function(parameters, callback) {
   });
 };
 
-exports.getHashBans = function(userData, parameters, callback) {
+exports.getHashBans = function(userData, parameters, language, callback) {
 
   var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 
@@ -67,15 +67,15 @@ exports.getHashBans = function(userData, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!board) {
-        callback(lang.errBoardNotFound);
+        callback(lang(language).errBoardNotFound);
       } else if (!common.isInBoardStaff(userData, board, 2)) {
-        callback(lang.errDeniedBoardHashBansManagement);
+        callback(lang(language).errDeniedBoardHashBansManagement);
       } else {
         exports.readHashBans(parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
-    callback(lang.errDeniedGlobalHashBansManagement);
+    callback(lang(language).errDeniedGlobalHashBansManagement);
   } else {
     exports.readHashBans(parameters, callback);
   }
@@ -98,7 +98,7 @@ exports.writeHashBan = function(userData, parameters, callback) {
     } else if (error) {
       callback();
     } else {
-      var pieces = lang.logHashBan;
+      var pieces = lang().logHashBan;
 
       var logMessage = pieces.startPiece.replace('{$login}', userData.login);
 
@@ -126,7 +126,8 @@ exports.writeHashBan = function(userData, parameters, callback) {
   });
 };
 
-exports.checkForHashBanPermission = function(userData, parameters, callback) {
+exports.checkForHashBanPermission = function(userData, parameters, language,
+    callback) {
 
   miscOps.sanitizeStrings(parameters, hashBanArguments);
 
@@ -142,22 +143,23 @@ exports.checkForHashBanPermission = function(userData, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!board) {
-        callback(lang.errBoardNotFound);
+        callback(lang(language).errBoardNotFound);
       } else if (!common.isInBoardStaff(userData, board, 2)) {
-        callback(lang.errDeniedBoardHashBansManagement);
+        callback(lang(language).errDeniedBoardHashBansManagement);
       } else {
         exports.writeHashBan(userData, parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
-    callback(lang.errDeniedGlobalHashBansManagement);
+    callback(lang(language).errDeniedGlobalHashBansManagement);
   } else {
     exports.writeHashBan(userData, parameters, callback);
   }
 
 };
 
-exports.placeHashBan = function(userData, parameters, captchaId, callback) {
+exports.placeHashBan = function(userData, parameters, captchaId, language,
+    callback) {
 
   captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
       function solvedCaptcha(error) {
@@ -165,7 +167,8 @@ exports.placeHashBan = function(userData, parameters, captchaId, callback) {
         if (error) {
           callback(error);
         } else {
-          exports.checkForHashBanPermission(userData, parameters, callback);
+          exports.checkForHashBanPermission(userData, parameters, language,
+              callback);
         }
 
       });
@@ -184,7 +187,7 @@ exports.removeHashBan = function(hashBan, userData, callback) {
     } else {
 
       // style exception, too simple
-      var pieces = lang.logLiftHashBan;
+      var pieces = lang().logLiftHashBan;
 
       var logMessage = pieces.startPiece.replace('{$login}', userData.login);
 
@@ -215,7 +218,7 @@ exports.removeHashBan = function(hashBan, userData, callback) {
 };
 
 exports.checkForBoardHashBanLiftPermission = function(hashBan, userData,
-    callback) {
+    language, callback) {
   boards.findOne({
     boardUri : hashBan.boardUri
   }, function gotBoard(error, board) {
@@ -228,13 +231,13 @@ exports.checkForBoardHashBanLiftPermission = function(hashBan, userData,
       if (common.isInBoardStaff(userData, board, 2)) {
         exports.removeHashBan(hashBan, userData, callback);
       } else {
-        callback(lang.errDeniedBoardHashBansManagement);
+        callback(lang(language).errDeniedBoardHashBansManagement);
       }
     }
   });
 };
 
-exports.liftHashBan = function(userData, parameters, cb) {
+exports.liftHashBan = function(userData, parameters, language, cb) {
   try {
     var globalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 
@@ -247,10 +250,11 @@ exports.liftHashBan = function(userData, parameters, cb) {
         cb();
       } else if (hashBan.boardUri) {
 
-        exports.checkForBoardHashBanLiftPermission(hashBan, userData, cb);
+        exports.checkForBoardHashBanLiftPermission(hashBan, userData, language,
+            cb);
 
       } else if (!globalStaff) {
-        cb(lang.errDeniedGlobalHashBansManagement);
+        cb(lang(language).errDeniedGlobalHashBansManagement);
       } else {
         exports.removeHashBan(hashBan, userData, cb);
       }
@@ -302,7 +306,7 @@ exports.checkForHashBans = function(parameters, req, callback) {
     return;
   } else if (!allowTor && req.isTor) {
 
-    callback(lang.errTorFilesBlocked);
+    callback(lang(req.language).errTorFilesBlocked);
     return;
   }
 

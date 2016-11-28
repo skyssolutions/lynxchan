@@ -12,18 +12,18 @@ function saveThreadSettings(userData, parameters, res, auth, language) {
     return;
   }
 
-  modOps.setThreadSettings(userData, parameters, function setThreadSettings(
-      error) {
-    if (error) {
-      formOps.outputError(error, 500, res, language);
-    } else {
-      var redirectLink = '/mod.js?boardUri=' + parameters.boardUri;
-      redirectLink += '&threadId=' + parameters.threadId;
-      formOps.outputResponse(lang.msgThreadSettingsSaved, redirectLink, res,
-          null, auth, language);
-    }
+  modOps.setThreadSettings(userData, parameters, language,
+      function setThreadSettings(error) {
+        if (error) {
+          formOps.outputError(error, 500, res, language);
+        } else {
+          var redirectLink = '/mod.js?boardUri=' + parameters.boardUri;
+          redirectLink += '&threadId=' + parameters.threadId;
+          formOps.outputResponse(lang.msgThreadSettingsSaved, redirectLink,
+              res, null, auth, language);
+        }
 
-  });
+      });
 }
 
 exports.process = function(req, res) {

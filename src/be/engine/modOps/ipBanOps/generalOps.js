@@ -27,7 +27,7 @@ exports.loadDependencies = function() {
   common = require('..').common;
   logger = require('../../../logger');
   miscOps = require('../../miscOps');
-  lang = require('../../langOps').languagePack();
+  lang = require('../../langOps').languagePack;
 
 };
 
@@ -51,7 +51,7 @@ exports.readRangeBans = function(parameters, callback, boardData) {
   });
 };
 
-exports.getRangeBans = function(userData, parameters, callback) {
+exports.getRangeBans = function(userData, parameters, language, callback) {
 
   var isOnGlobalStaff = userData.globalRole <= minClearIpRole;
 
@@ -65,15 +65,15 @@ exports.getRangeBans = function(userData, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!board) {
-        callback(lang.errBoardNotFound);
+        callback(lang(language).errBoardNotFound);
       } else if (!common.isInBoardStaff(userData, board, 2)) {
-        callback(lang.errDeniedBoardRangeBanManagement);
+        callback(lang(language).errDeniedBoardRangeBanManagement);
       } else {
         exports.readRangeBans(parameters, callback, board);
       }
     });
   } else if (!isOnGlobalStaff) {
-    callback(lang.errDeniedGlobalRangeBanManagement);
+    callback(lang(language).errDeniedGlobalRangeBanManagement);
   } else {
     exports.readRangeBans(parameters, callback);
   }
@@ -82,12 +82,12 @@ exports.getRangeBans = function(userData, parameters, callback) {
 // } Section 1: Read range bans
 
 // Section 2: Create range ban {
-exports.createRangeBan = function(userData, parameters, callback) {
+exports.createRangeBan = function(userData, parameters, language, callback) {
 
   parameters.range = miscOps.sanitizeIp(parameters.range);
 
   if (!parameters.range.length) {
-    callback(lang.errInvalidRange);
+    callback(lang(language).errInvalidRange);
 
     return;
   }
@@ -125,7 +125,8 @@ exports.createRangeBan = function(userData, parameters, callback) {
 
 };
 
-exports.checkRangeBanPermission = function(userData, parameters, callback) {
+exports.checkRangeBanPermission = function(userData, parameters, language,
+    callback) {
 
   var isOnGlobalStaff = userData.globalRole <= minClearIpRole;
 
@@ -139,29 +140,31 @@ exports.checkRangeBanPermission = function(userData, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!board) {
-        callback(lang.errBoardNotFound);
+        callback(lang(language).errBoardNotFound);
       } else if (!common.isInBoardStaff(userData, board, 2)) {
-        callback(lang.errDeniedBoardRangeBanManagement);
+        callback(lang(language).errDeniedBoardRangeBanManagement);
       } else {
-        exports.createRangeBan(userData, parameters, callback);
+        exports.createRangeBan(userData, parameters, language, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
-    callback(lang.errDeniedGlobalRangeBanManagement);
+    callback(lang(language).errDeniedGlobalRangeBanManagement);
   } else {
-    exports.createRangeBan(userData, parameters, callback);
+    exports.createRangeBan(userData, parameters, language, callback);
   }
 
 };
 
-exports.placeRangeBan = function(userData, parameters, captchaId, callback) {
+exports.placeRangeBan = function(userData, parameters, captchaId, language,
+    callback) {
 
   captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
       function solvedCaptcha(error) {
         if (error) {
           callback(error);
         } else {
-          exports.checkRangeBanPermission(userData, parameters, callback);
+          exports.checkRangeBanPermission(userData, parameters, language,
+              callback);
         }
       });
 

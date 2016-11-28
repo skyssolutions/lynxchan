@@ -9,24 +9,24 @@ var modOps = require('../engine/modOps').report;
 
 function getClosedReports(userData, parameters, res, auth, language) {
 
-  modOps.getClosedReports(userData, parameters, function gotClosedReports(
-      error, reports) {
-    if (error) {
-      formOps.outputError(error, 500, res, language);
-    } else {
-      var json = parameters.json;
+  modOps.getClosedReports(userData, parameters, language,
+      function gotClosedReports(error, reports) {
+        if (error) {
+          formOps.outputError(error, 500, res, language);
+        } else {
+          var json = parameters.json;
 
-      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-          : 'text/html', auth));
+          res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+              : 'text/html', auth));
 
-      if (json) {
-        res.end(jsonBuilder.closedReports(reports));
-      } else {
-        res.end(dom.closedReports(reports, language));
-      }
+          if (json) {
+            res.end(jsonBuilder.closedReports(reports));
+          } else {
+            res.end(dom.closedReports(reports, language));
+          }
 
-    }
-  });
+        }
+      });
 
 }
 

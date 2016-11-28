@@ -22,8 +22,8 @@ function closeReport(userData, parameters, res, auth, language) {
 
   parameters.reports = reports;
 
-  modOps.closeReports(userData, parameters, function reportClosed(error,
-      global, board) {
+  modOps.closeReports(userData, parameters, language, function reportClosed(
+      error, global, board) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {

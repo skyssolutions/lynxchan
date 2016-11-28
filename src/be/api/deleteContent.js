@@ -35,7 +35,7 @@ function processReceivedPosting(threadsToDelete, postsToDelete, posting,
   }
 }
 
-function processParameters(userData, parameters, res, auth) {
+function processParameters(userData, parameters, res, auth, language) {
 
   if (apiOps.checkBlankParameters(parameters, [ 'postings' ], res)) {
     return;
@@ -50,7 +50,7 @@ function processParameters(userData, parameters, res, auth) {
   }
 
   deleteOps.posting(userData, parameters, threadsToDelete, postsToDelete,
-      function deletedPostings(error, removedThreads, removedPosts) {
+      language, function deletedPostings(error, removedThreads, removedPosts) {
 
         if (error) {
           apiOps.outputError(error, res);
@@ -84,13 +84,13 @@ exports.process = function(req, res) {
         if (error) {
           apiOps.outputError(error, res);
         } else {
-          processParameters(userData, parameters, res, auth);
+          processParameters(userData, parameters, res, auth, req.language);
         }
       });
       // style exception,too simple
 
     } else {
-      processParameters(null, parameters, res);
+      processParameters(null, parameters, res, null, req.language);
     }
   });
 };

@@ -3,9 +3,10 @@
 var apiOps = require('../engine/apiOps');
 var modOps = require('../engine/modOps').hashBan;
 
-function liftHashBan(auth, userData, parameters, res) {
+function liftHashBan(auth, userData, parameters, res, language) {
 
-  modOps.liftHashBan(userData, parameters, function hashBanLifted(error) {
+  modOps.liftHashBan(userData, parameters, language, function hashBanLifted(
+      error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
@@ -18,6 +19,6 @@ exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-    liftHashBan(auth, userData, parameters, res);
+    liftHashBan(auth, userData, parameters, res, req.language);
   });
 };

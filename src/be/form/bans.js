@@ -9,7 +9,7 @@ var modOps = require('../engine/modOps').ipBan.versatile;
 
 function getBans(userData, parameters, res, auth, language) {
 
-  modOps.getBans(userData, parameters, function gotBans(error, bans) {
+  modOps.getBans(userData, parameters, language, function gotBans(error, bans) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {

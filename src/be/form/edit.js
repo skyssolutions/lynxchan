@@ -15,24 +15,24 @@ function getPostingToEdit(userData, parameters, res, auth, language) {
     return;
   }
 
-  modOps.getPostingToEdit(userData, parameters, function gotPostingToEdit(
-      error, message) {
-    if (error) {
-      formOps.outputError(error, 500, res, language);
-    } else {
-      var json = parameters.json;
+  modOps.getPostingToEdit(userData, parameters, language,
+      function gotPostingToEdit(error, message) {
+        if (error) {
+          formOps.outputError(error, 500, res, language);
+        } else {
+          var json = parameters.json;
 
-      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-          : 'text/html', auth));
+          res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+              : 'text/html', auth));
 
-      if (json) {
-        res.end(jsonBuilder.edit(message));
-      } else {
-        res.end(domManipulator.edit(parameters, message, language));
-      }
+          if (json) {
+            res.end(jsonBuilder.edit(message));
+          } else {
+            res.end(domManipulator.edit(parameters, message, language));
+          }
 
-    }
-  });
+        }
+      });
 
 }
 

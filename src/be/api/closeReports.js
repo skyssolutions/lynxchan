@@ -3,9 +3,10 @@
 var apiOps = require('../engine/apiOps');
 var modOps = require('../engine/modOps').report;
 
-function closeReports(auth, userData, parameters, res) {
+function closeReports(auth, userData, parameters, res, language) {
 
-  modOps.closeReports(userData, parameters, function reportClosed(error) {
+  modOps.closeReports(userData, parameters, language, function reportClosed(
+      error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
@@ -19,6 +20,6 @@ exports.process = function(req, res) {
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    closeReports(auth, userData, parameters, res);
+    closeReports(auth, userData, parameters, res, req.language);
   });
 };

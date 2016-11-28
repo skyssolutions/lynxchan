@@ -38,7 +38,7 @@ exports.loadDependencies = function() {
   common = require('..').common;
   torOps = require('../../torOps');
   logger = require('../../../logger');
-  lang = require('../../langOps').languagePack();
+  lang = require('../../langOps').languagePack;
   miscOps = require('../../miscOps');
   spamOps = require('../../spamOps');
 
@@ -71,7 +71,7 @@ exports.readBans = function(parameters, callback) {
   });
 };
 
-exports.getBans = function(userData, parameters, callback) {
+exports.getBans = function(userData, parameters, language, callback) {
 
   var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 
@@ -85,15 +85,15 @@ exports.getBans = function(userData, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!board) {
-        callback(lang.errBoardNotFound);
+        callback(lang(language).errBoardNotFound);
       } else if (!common.isInBoardStaff(userData, board, 2)) {
-        callback(lang.errDeniedBoardBanManagement);
+        callback(lang(language).errDeniedBoardBanManagement);
       } else {
         exports.readBans(parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
-    callback(lang.errDeniedGlobalBanManagement);
+    callback(lang(language).errDeniedGlobalBanManagement);
   } else {
     exports.readBans(parameters, callback);
   }
@@ -160,7 +160,7 @@ exports.checkForFlood = function(req, boardUri, callback) {
     if (error) {
       callback(error);
     } else if (flood && !disableFloodCheck) {
-      callback(lang.errFlood);
+      callback(lang(req.language).errFlood);
     } else {
 
       // style exception, too simple
@@ -179,7 +179,7 @@ exports.checkForFlood = function(req, boardUri, callback) {
             }
 
           } else {
-            callback(lang.errSpammer);
+            callback(lang(req.language).errSpammer);
           }
 
         } else {
@@ -209,7 +209,8 @@ exports.checkForBan = function(req, boardUri, callback) {
       if (req.bypassed) {
         callback();
       } else {
-        var errorToReturn = torAllowed ? null : lang.errBlockedTor;
+        var errorToReturn = torAllowed ? null
+            : lang(req.language).errBlockedTor;
 
         callback(errorToReturn, null, bypassAllowed && !torAllowed);
       }
@@ -226,7 +227,7 @@ exports.checkForBan = function(req, boardUri, callback) {
 // Section 3: Lift ban {
 exports.getLiftedBanLogMessage = function(ban, userData) {
 
-  var pieces = lang.logBanLift;
+  var pieces = lang().logBanLift;
 
   var logMessage = pieces.startPiece.replace('{$login}', userData.login);
 
@@ -284,7 +285,8 @@ exports.removeBan = function(ban, userData, callback) {
 
 };
 
-exports.checkForBoardBanLiftPermission = function(ban, userData, callback) {
+exports.checkForBoardBanLiftPermission = function(ban, userData, language,
+    callback) {
 
   boards.findOne({
     boardUri : ban.boardUri
@@ -298,14 +300,14 @@ exports.checkForBoardBanLiftPermission = function(ban, userData, callback) {
       if (common.isInBoardStaff(userData, board, 2)) {
         exports.removeBan(ban, userData, callback);
       } else {
-        callback(lang.errDeniedBoardBanManagement);
+        callback(lang(language).errDeniedBoardBanManagement);
       }
     }
   });
 
 };
 
-exports.liftBan = function(userData, parameters, callback) {
+exports.liftBan = function(userData, parameters, language, callback) {
 
   var globalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 
@@ -320,11 +322,12 @@ exports.liftBan = function(userData, parameters, callback) {
       } else if (!ban) {
         callback();
       } else if (ban.boardUri) {
-        exports.checkForBoardBanLiftPermission(ban, userData, callback);
+        exports.checkForBoardBanLiftPermission(ban, userData, language,
+            callback);
       } else if (!globalStaff) {
-        callback(lang.errDeniedGlobalBanManagement);
+        callback(lang(language).errDeniedGlobalBanManagement);
       } else if (ban.range && !allowedToManageRangeBans) {
-        callback(lang.errDeniedGlobalRangeBanManagement);
+        callback(lang(language).errDeniedGlobalRangeBanManagement);
       } else {
         exports.removeBan(ban, userData, callback);
       }

@@ -33,7 +33,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
   miscOps = require('../miscOps');
   overboardOps = require('../overboardOps');
   postOps = require('../postingOps').common;
@@ -42,7 +42,7 @@ exports.loadDependencies = function() {
 
 };
 
-exports.getPostingToEdit = function(userData, parameters, callback) {
+exports.getPostingToEdit = function(userData, parameters, language, callback) {
 
   var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
@@ -54,9 +54,9 @@ exports.getPostingToEdit = function(userData, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (!globalStaff && !common.isInBoardStaff(userData, board)) {
-      callback(callback(lang.errDeniedEdit));
+      callback(lang(language).errDeniedEdit);
     } else {
 
       var collectionToUse;
@@ -84,7 +84,7 @@ exports.getPostingToEdit = function(userData, parameters, callback) {
         if (error) {
           callback(error);
         } else if (!posting) {
-          callback(lang.errPostingNotFound);
+          callback(lang(language).errPostingNotFound);
         } else {
           callback(null, posting.message);
         }
@@ -158,7 +158,7 @@ exports.setNewThreadSettings = function(parameters, thread, callback) {
   });
 };
 
-exports.getThreadToChangeSettings = function(parameters, callback) {
+exports.getThreadToChangeSettings = function(parameters, language, callback) {
 
   threads.findOne({
     boardUri : parameters.boardUri,
@@ -167,7 +167,7 @@ exports.getThreadToChangeSettings = function(parameters, callback) {
     if (error) {
       callback(error);
     } else if (!thread) {
-      callback(lang.errThreadNotFound);
+      callback(lang(language).errThreadNotFound);
     } else {
 
       exports.setNewThreadSettings(parameters, thread, callback);
@@ -176,7 +176,7 @@ exports.getThreadToChangeSettings = function(parameters, callback) {
   });
 };
 
-exports.setThreadSettings = function(userData, parameters, callback) {
+exports.setThreadSettings = function(userData, parameters, language, callback) {
 
   var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
@@ -188,11 +188,11 @@ exports.setThreadSettings = function(userData, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (!common.isInBoardStaff(userData, board) && !globalStaff) {
-      callback(lang.errDeniedThreadManagement);
+      callback(lang(language).errDeniedThreadManagement);
     } else {
-      exports.getThreadToChangeSettings(parameters, callback);
+      exports.getThreadToChangeSettings(parameters, language, callback);
     }
   });
 
@@ -239,7 +239,7 @@ exports.queueRebuild = function(page, board, posting, callback) {
   callback();
 };
 
-exports.recordEdit = function(parameters, login, callback) {
+exports.recordEdit = function(parameters, login, language, callback) {
 
   var collectionToUse;
   var query;
@@ -280,7 +280,7 @@ exports.recordEdit = function(parameters, login, callback) {
     if (error) {
       callback(error);
     } else if (!posting.value) {
-      callback(lang.errPostingNotFound);
+      callback(lang(language).errPostingNotFound);
     } else if (posting.value.postId) {
 
       // style exception, too simple
@@ -304,21 +304,21 @@ exports.recordEdit = function(parameters, login, callback) {
   });
 };
 
-exports.getMarkdown = function(parameters, userData, board, callback) {
+exports.getMarkdown = function(parameters, userData, board, language, cb) {
 
   postOps.markdownText(parameters.message, parameters.boardUri, board.settings
       .indexOf('allowCode') > -1, function gotMarkdown(error, markdown) {
     if (error) {
-      callback(error);
+      cb(error);
     } else {
       parameters.markdown = markdown;
-      exports.recordEdit(parameters, userData.login, callback);
+      exports.recordEdit(parameters, userData.login, language, cb);
     }
   });
 
 };
 
-exports.saveEdit = function(userData, parameters, callback) {
+exports.saveEdit = function(userData, parameters, language, callback) {
 
   miscOps.sanitizeStrings(parameters, editArguments);
 
@@ -334,9 +334,9 @@ exports.saveEdit = function(userData, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (!globalStaff && !common.isInBoardStaff(userData, board)) {
-      callback(callback(lang.errDeniedEdit));
+      callback(lang(language).errDeniedEdit);
     } else {
 
       // style exception, too simple
@@ -345,7 +345,7 @@ exports.saveEdit = function(userData, parameters, callback) {
         if (error) {
           callback(error);
         } else {
-          exports.getMarkdown(parameters, userData, board, callback);
+          exports.getMarkdown(parameters, userData, board, language, callback);
         }
       });
       // style exception, too simple

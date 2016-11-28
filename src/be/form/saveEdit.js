@@ -13,7 +13,7 @@ function saveEdit(parameters, userData, res, auth, language) {
     return;
   }
 
-  modOps.saveEdit(userData, parameters, function editSaved(error, filters) {
+  modOps.saveEdit(userData, parameters, language, function editSaved(error) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {

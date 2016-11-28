@@ -12,21 +12,21 @@ function placeHashBan(userData, parameters, captchaId, res, auth, language) {
     return;
   }
 
-  modOps.placeHashBan(userData, parameters, captchaId, function hashBanPlaced(
-      error) {
-    if (error) {
-      formOps.outputError(error, 500, res, language);
-    } else {
-      var redirectLink = '/hashBans.js';
+  modOps.placeHashBan(userData, parameters, captchaId, language,
+      function hashBanPlaced(error) {
+        if (error) {
+          formOps.outputError(error, 500, res, language);
+        } else {
+          var redirectLink = '/hashBans.js';
 
-      if (parameters.boardUri) {
-        redirectLink += '?boardUri=' + parameters.boardUri;
-      }
+          if (parameters.boardUri) {
+            redirectLink += '?boardUri=' + parameters.boardUri;
+          }
 
-      formOps.outputResponse(lang.msgHashBanCreated, redirectLink, res, null,
-          auth, language);
-    }
-  });
+          formOps.outputResponse(lang.msgHashBanCreated, redirectLink, res,
+              null, auth, language);
+        }
+      });
 
 }
 

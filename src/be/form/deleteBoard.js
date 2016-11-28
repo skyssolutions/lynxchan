@@ -10,14 +10,15 @@ function deleteBoard(userData, parameters, res, auth, language) {
     return;
   }
 
-  deletionOps.board(userData, parameters, function deletedBoard(error) {
-    if (error) {
-      formOps.outputError(error, 500, res, language);
-    } else {
-      formOps.outputResponse(lang.msgBoardDeleted, '/', res, null, auth,
-          language);
-    }
-  });
+  deletionOps.board(userData, parameters, language,
+      function deletedBoard(error) {
+        if (error) {
+          formOps.outputError(error, 500, res, language);
+        } else {
+          formOps.outputResponse(lang.msgBoardDeleted, '/', res, null, auth,
+              language);
+        }
+      });
 
 }
 

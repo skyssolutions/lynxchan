@@ -48,7 +48,7 @@ exports.loadSettings = function() {
   minClearIps = settings.clearIpMinRole;
 
   if (!defaultBanMessage) {
-    defaultBanMessage = lang.miscDefaultBanMessage;
+    defaultBanMessage = lang().miscDefaultBanMessage;
   }
 
 };
@@ -60,7 +60,7 @@ exports.loadDependencies = function() {
   common = require('..').common;
   logger = require('../../../logger');
   miscOps = require('../../miscOps');
-  lang = require('../../langOps').languagePack();
+  lang = require('../../langOps').languagePack;
 
 };
 
@@ -116,7 +116,7 @@ exports.appendPostsToBanLog = function(informedPosts, informedThreads, pieces) {
 exports.logBans = function(userData, board, informedPosts, informedThreads,
     parameters, callback) {
 
-  var pieces = lang.logPostingBan;
+  var pieces = lang().logPostingBan;
 
   var logMessage = pieces.startPiece.replace('{$login}', userData.login);
 
@@ -509,7 +509,7 @@ exports.parseExpiration = function(parameters) {
 };
 
 exports.isolateBoards = function(userData, reportedObjects, parameters,
-    callback) {
+    language, callback) {
 
   miscOps.sanitizeStrings(parameters, banArguments);
 
@@ -522,9 +522,9 @@ exports.isolateBoards = function(userData, reportedObjects, parameters,
   var allowedGlobalRangeBan = userData.globalRole <= minClearIps;
 
   if (parameters.global && !allowedToGlobalBan) {
-    callback(lang.errDeniedGlobalBanManagement);
+    callback(lang(language).errDeniedGlobalBanManagement);
   } else if (!allowedGlobalRangeBan && parameters.global && parameters.range) {
-    callback(lang.errDeniedGlobalRangeBanManagement);
+    callback(lang(language).errDeniedGlobalRangeBanManagement);
   } else {
     var foundBoards = [];
 
@@ -543,10 +543,11 @@ exports.isolateBoards = function(userData, reportedObjects, parameters,
 };
 
 exports.ban = function(userData, reportedObjects, parameters, captchaId,
-    callback) {
+    language, callback) {
 
   if (userData.globalRole <= miscOps.getMaxStaffRole()) {
-    exports.isolateBoards(userData, reportedObjects, parameters, callback);
+    exports.isolateBoards(userData, reportedObjects, parameters, language,
+        callback);
 
     return;
   }
@@ -556,8 +557,8 @@ exports.ban = function(userData, reportedObjects, parameters, captchaId,
         if (error) {
           callback(error);
         } else {
-          exports
-              .isolateBoards(userData, reportedObjects, parameters, callback);
+          exports.isolateBoards(userData, reportedObjects, parameters,
+              language, callback);
         }
       });
 
@@ -565,7 +566,7 @@ exports.ban = function(userData, reportedObjects, parameters, captchaId,
 // } Section 1: Ban
 
 // Section 2: Appeal {
-exports.appealBan = function(ip, parameters, callback) {
+exports.appealBan = function(ip, parameters, language, callback) {
 
   try {
 
@@ -586,7 +587,7 @@ exports.appealBan = function(ip, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!result.value) {
-        callback(lang.errBanNotFound);
+        callback(lang(language).errBanNotFound);
       } else {
         callback();
       }
@@ -621,8 +622,8 @@ exports.writeDeniedAppeal = function(userData, ban, callback) {
         time : new Date(),
         boardUri : ban.boardUri,
         global : ban.boardUri ? false : true,
-        description : lang.logAppealDenied.replace('{$login}', userData.login)
-            .replace('{$id}', ban._id)
+        description : lang().logAppealDenied
+            .replace('{$login}', userData.login).replace('{$id}', ban._id)
       }, function logged() {
         callback(null, ban.boardUri);
       });
@@ -633,7 +634,8 @@ exports.writeDeniedAppeal = function(userData, ban, callback) {
 
 };
 
-exports.checkAppealDenyBoardPermission = function(userData, ban, callback) {
+exports.checkAppealDenyBoardPermission = function(userData, ban, language,
+    callback) {
 
   boards.findOne({
     boardUri : ban.boardUri
@@ -641,9 +643,9 @@ exports.checkAppealDenyBoardPermission = function(userData, ban, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (!common.isInBoardStaff(userData, board, 2)) {
-      callback(lang.errDeniedBoardBanManagement);
+      callback(lang(language).errDeniedBoardBanManagement);
     } else {
       exports.writeDeniedAppeal(userData, ban, callback);
     }
@@ -651,7 +653,7 @@ exports.checkAppealDenyBoardPermission = function(userData, ban, callback) {
 
 };
 
-exports.denyAppeal = function(userData, banId, callback) {
+exports.denyAppeal = function(userData, banId, language, callback) {
 
   var globalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 
@@ -669,11 +671,12 @@ exports.denyAppeal = function(userData, banId, callback) {
       if (error) {
         callback(error);
       } else if (!ban) {
-        callback(lang.errBanNotFound);
+        callback(lang(language).errBanNotFound);
       } else if (!ban.boardUri && !globalStaff) {
-        callback(lang.errDeniedGlobalBanManagement);
+        callback(lang(language).errDeniedGlobalBanManagement);
       } else if (ban.boardUri) {
-        exports.checkAppealDenyBoardPermission(userData, ban, callback);
+        exports.checkAppealDenyBoardPermission(userData, ban, language,
+            callback);
       } else {
         exports.writeDeniedAppeal(userData, ban, callback);
       }

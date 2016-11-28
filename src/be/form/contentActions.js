@@ -123,7 +123,8 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
 
   if (parameters.action.toLowerCase() === 'spoil') {
 
-    modOps.spoiler.spoiler(userData, reportedObjects, function(error) {
+    modOps.spoiler.spoiler(userData, reportedObjects, req.language, function(
+        error) {
       if (error) {
         formOps.outputError(error, 500, res, req.language);
       } else {
@@ -156,7 +157,7 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
     parameters.banType = +parameters.banType;
 
     modOps.ipBan.specific.ban(userData, reportedObjects, parameters, captchaId,
-        function(error) {
+        req.language, function(error) {
           if (error) {
             formOps.outputError(error, 500, res, req.language);
           } else {
@@ -167,22 +168,23 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
 
   } else if (parameters.action.toLowerCase() === 'ip-deletion') {
 
-    deleteOps.deleteFromIpOnBoard(reportedObjects, userData, function deleted(
-        error) {
+    deleteOps.deleteFromIpOnBoard(reportedObjects, userData, req.language,
+        function deleted(error) {
 
-      if (error) {
-        formOps.outputError(error, 500, res, req.language);
-      } else {
-        formOps.outputResponse(lang.msgDeletedFromIp, redirectBoard, res, null,
-            auth, req.language);
-      }
+          if (error) {
+            formOps.outputError(error, 500, res, req.language);
+          } else {
+            formOps.outputResponse(lang.msgDeletedFromIp, redirectBoard, res,
+                null, auth, req.language);
+          }
 
-    });
+        });
 
   } else {
 
     deleteOps.postingDeletions.posting(userData, parameters, threads, posts,
-        function deletedPostings(error, removedThreads, removedPosts) {
+        req.language, function deletedPostings(error, removedThreads,
+            removedPosts) {
 
           if (error) {
             formOps.outputError(error, 500, res, req.language);

@@ -9,24 +9,24 @@ var modOps = require('../engine/modOps').hashBan;
 
 function getHashBans(userData, parameters, res, auth, language) {
 
-  modOps.getHashBans(userData, parameters,
-      function gotHashBans(error, hashBans) {
-        if (error) {
-          formOps.outputError(error, 500, res, language);
-        } else {
-          var json = parameters.json;
+  modOps.getHashBans(userData, parameters, language, function gotHashBans(
+      error, hashBans) {
+    if (error) {
+      formOps.outputError(error, 500, res, language);
+    } else {
+      var json = parameters.json;
 
-          res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-              : 'text/html', auth));
+      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+          : 'text/html', auth));
 
-          if (json) {
-            res.end(jsonBuilder.hashBans(hashBans));
-          } else {
-            res.end(dom.hashBans(hashBans, parameters.boardUri, language));
-          }
+      if (json) {
+        res.end(jsonBuilder.hashBans(hashBans));
+      } else {
+        res.end(dom.hashBans(hashBans, parameters.boardUri, language));
+      }
 
-        }
-      });
+    }
+  });
 
 }
 

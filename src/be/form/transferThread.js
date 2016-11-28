@@ -12,21 +12,21 @@ function transferThread(userData, parameters, res, auth, language) {
     return;
   }
 
-  transferOps.transfer(userData, parameters, function transferredThread(error,
-      newThreadId) {
+  transferOps.transfer(userData, parameters, language,
+      function transferredThread(error, newThreadId) {
 
-    if (error) {
-      formOps.outputError(error, 500, res, language);
-    } else {
+        if (error) {
+          formOps.outputError(error, 500, res, language);
+        } else {
 
-      var redirect = '/' + parameters.boardUriDestination + '/res/';
-      redirect += newThreadId + '.html';
+          var redirect = '/' + parameters.boardUriDestination + '/res/';
+          redirect += newThreadId + '.html';
 
-      formOps.outputResponse(lang.msgThreadTransferred, redirect, res, null,
-          auth, language);
-    }
+          formOps.outputResponse(lang.msgThreadTransferred, redirect, res,
+              null, auth, language);
+        }
 
-  });
+      });
 }
 
 exports.process = function(req, res) {

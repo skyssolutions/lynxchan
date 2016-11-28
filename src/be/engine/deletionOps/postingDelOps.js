@@ -44,7 +44,7 @@ exports.loadDependencies = function() {
   referenceHandler = require('../mediaHandler');
   overboardOps = require('../overboardOps');
   gridFs = require('../gridFsHandler');
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
   miscOps = require('../miscOps');
 
 };
@@ -409,7 +409,7 @@ exports.appendPostDeletionLog = function(foundThreads, foundPosts) {
 exports.getLogMessage = function(parameters, foundThreads, foundPosts,
     userData, board) {
 
-  var pieces = lang.logPostingDeletion;
+  var pieces = lang().logPostingDeletion;
 
   var startPiece = parameters.deleteUploads ? pieces.uploadStartPiece
       : pieces.startPiece;
@@ -821,7 +821,7 @@ exports.getThreadsToDelete = function(userData, board, threadsToDelete,
 };
 
 exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
-    postsToDelete, foundBoards, callback, removedThreadsSoFar,
+    postsToDelete, foundBoards, language, callback, removedThreadsSoFar,
     removedPostsSoFar) {
 
   removedThreadsSoFar = removedThreadsSoFar || 0;
@@ -853,13 +853,13 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else {
       var settings = board.settings || [];
 
       if (!userData && settings.indexOf('blockDeletion') > -1) {
         exports.iterateBoardsToDelete(userData, parameters, threadsToDelete,
-            postsToDelete, foundBoards, callback);
+            postsToDelete, foundBoards, language, callback);
 
         return;
       }
@@ -876,8 +876,8 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
               removedPostsSoFar += removedPostsCount;
 
               exports.iterateBoardsToDelete(userData, parameters,
-                  threadsToDelete, postsToDelete, foundBoards, callback,
-                  removedThreadsSoFar, removedPostsSoFar);
+                  threadsToDelete, postsToDelete, foundBoards, language,
+                  callback, removedThreadsSoFar, removedPostsSoFar);
             }
           });
     }
@@ -915,7 +915,7 @@ exports.adjustMediaDeletion = function(parameters, userData) {
 };
 
 exports.posting = function(userData, parameters, threadsToDelete,
-    postsToDelete, callback) {
+    postsToDelete, language, callback) {
 
   var foundBoards = [];
 
@@ -947,7 +947,7 @@ exports.posting = function(userData, parameters, threadsToDelete,
   }
 
   exports.iterateBoardsToDelete(userData, parameters, threadsToDelete,
-      postsToDelete, foundBoards, callback);
+      postsToDelete, foundBoards, language, callback);
 
 };
 // } Section 1: Posting deletion

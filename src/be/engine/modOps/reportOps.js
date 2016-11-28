@@ -44,7 +44,7 @@ exports.loadDependencies = function() {
   ipBan = moduleRoot.ipBan.versatile;
   common = moduleRoot.common;
   captchaOps = require('../captchaOps');
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
 
 };
 
@@ -75,7 +75,7 @@ exports.readClosedReports = function(parameters, callback) {
 
 };
 
-exports.getClosedReports = function(userData, parameters, callback) {
+exports.getClosedReports = function(userData, parameters, language, callback) {
 
   var isOnGlobalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
@@ -88,15 +88,15 @@ exports.getClosedReports = function(userData, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!board) {
-        callback(lang.errBoardNotFound);
+        callback(lang(language).errBoardNotFound);
       } else if (!common.isInBoardStaff(userData, board)) {
-        callback(lang.errDeniedBoardReportManagement);
+        callback(lang(language).errDeniedBoardReportManagement);
       } else {
         exports.readClosedReports(parameters, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
-    callback(lang.errDeniedGlobalReportManagement);
+    callback(lang(language).errDeniedGlobalReportManagement);
   } else {
     exports.readClosedReports(parameters, callback);
   }
@@ -138,7 +138,7 @@ exports.iterateReports = function(req, reportedContent, parameters, cb) {
   if (!reportedContent.length) {
     cb();
   } else if (reportedContent.length > 1 && !multipleReports) {
-    cb(lang.errDeniedMultipleReports);
+    cb(lang(req.language).errDeniedMultipleReports);
   } else {
 
     var report = reportedContent.shift();
@@ -219,7 +219,7 @@ exports.logReportClosure = function(foundReports, userData, closureDate,
 
     var report = foundReports[i];
 
-    var pieces = lang.logReportClosure;
+    var pieces = lang().logReportClosure;
 
     var logMessage = pieces.startPiece.replace('{$login}', userData.login);
 
@@ -255,7 +255,7 @@ exports.logReportClosure = function(foundReports, userData, closureDate,
 };
 
 exports.deleteClosedContent = function(foundReports, userData, closureDate,
-    callback) {
+    language, callback) {
 
   var postsToDelete = {};
   var threadsToDelete = {};
@@ -274,7 +274,7 @@ exports.deleteClosedContent = function(foundReports, userData, closureDate,
 
   }
 
-  delOps.posting(userData, {}, threadsToDelete, postsToDelete,
+  delOps.posting(userData, {}, threadsToDelete, postsToDelete, language,
       function deleted(error) {
 
         if (error) {
@@ -289,7 +289,7 @@ exports.deleteClosedContent = function(foundReports, userData, closureDate,
 };
 
 exports.updateReports = function(deleteReportedContent, foundReports, ids,
-    userData, callback) {
+    userData, language, callback) {
 
   var closureDate = new Date();
 
@@ -310,7 +310,7 @@ exports.updateReports = function(deleteReportedContent, foundReports, ids,
 
           if (deleteReportedContent) {
             exports.deleteClosedContent(foundReports, userData, closureDate,
-                callback);
+                language, callback);
           } else {
             exports.logReportClosure(foundReports, userData, closureDate,
                 callback);
@@ -322,7 +322,7 @@ exports.updateReports = function(deleteReportedContent, foundReports, ids,
 };
 
 exports.closeFoundReports = function(deleteContent, ids, userData,
-    foundReports, callback) {
+    foundReports, language, callback) {
 
   var foundBoardsUris = [];
 
@@ -336,10 +336,10 @@ exports.closeFoundReports = function(deleteContent, ids, userData,
     var alreadyIncluded = foundBoardsUris.indexOf(report.boardUri) > -1;
 
     if (report.closedBy) {
-      callback(lang.errReportAlreadyClosed);
+      callback(lang(language).errReportAlreadyClosed);
       return;
     } else if (report.global && !isOnGlobalStaff) {
-      callback(lang.errDeniedGlobalReportManagement);
+      callback(lang(language).errDeniedGlobalReportManagement);
       return;
     } else if (!report.global && !alreadyIncluded) {
       foundBoardsUris.push(report.boardUri);
@@ -356,20 +356,20 @@ exports.closeFoundReports = function(deleteContent, ids, userData,
         if (error) {
           callback(error);
         } else if (foundBoards.length < foundBoardsUris.length) {
-          callback(lang.errBoardNotFound);
+          callback(lang(language).errBoardNotFound);
         } else {
 
           for (i = 0; i < foundBoards.length; i++) {
 
             if (!common.isInBoardStaff(userData, foundBoards[i])) {
-              callback(lang.errDeniedBoardReportManagement);
+              callback(lang(language).errDeniedBoardReportManagement);
               return;
             }
 
           }
 
           exports.updateReports(deleteContent, foundReports, ids, userData,
-              callback);
+              language, callback);
 
         }
 
@@ -377,7 +377,7 @@ exports.closeFoundReports = function(deleteContent, ids, userData,
 
 };
 
-exports.closeReports = function(userData, parameters, callback) {
+exports.closeReports = function(userData, parameters, language, callback) {
 
   try {
     var ids = [];
@@ -385,7 +385,7 @@ exports.closeReports = function(userData, parameters, callback) {
     var reportList = parameters.reports || [];
 
     if (!reportList.length) {
-      callback(lang.errNoReportsInformed);
+      callback(lang(language).errNoReportsInformed);
       return;
     }
 
@@ -408,10 +408,10 @@ exports.closeReports = function(userData, parameters, callback) {
         if (error) {
           callback(error);
         } else if (foundReports.length < ids.length) {
-          callback(lang.errReportNotFound);
+          callback(lang(language).errReportNotFound);
         } else {
           exports.closeFoundReports(parameters.deleteContent, ids, userData,
-              foundReports, callback);
+              foundReports, language, callback);
         }
 
       });

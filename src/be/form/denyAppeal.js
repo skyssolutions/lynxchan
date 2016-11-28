@@ -6,21 +6,21 @@ var modOps = require('../engine/modOps').ipBan.specific;
 
 function denyAppeal(userData, parameters, res, auth, language) {
 
-  modOps.denyAppeal(userData, parameters.banId, function appealDenied(error,
-      board) {
-    if (error) {
-      formOps.outputError(error, 500, res, language);
-    } else {
-      var redirect = '/bans.js';
+  modOps.denyAppeal(userData, parameters.banId, language,
+      function appealDenied(error, board) {
+        if (error) {
+          formOps.outputError(error, 500, res, language);
+        } else {
+          var redirect = '/bans.js';
 
-      if (board) {
-        redirect += '?boardUri=' + board;
-      }
+          if (board) {
+            redirect += '?boardUri=' + board;
+          }
 
-      formOps.outputResponse(lang.msgAppealDenied, redirect, res, null, auth,
-          language);
-    }
-  });
+          formOps.outputResponse(lang.msgAppealDenied, redirect, res, null,
+              auth, language);
+        }
+      });
 
 }
 

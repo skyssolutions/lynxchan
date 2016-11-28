@@ -12,7 +12,8 @@ function deleteFromIp(userData, parameters, res, auth, language) {
     return;
   }
 
-  delOps.deleteFromIp(parameters, userData, function deletedFromIp(error) {
+  delOps.deleteFromIp(parameters, userData, language, function deletedFromIp(
+      error) {
 
     if (error) {
       formOps.outputError(error, 500, res, language);

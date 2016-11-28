@@ -16,7 +16,7 @@ var gfsHandler;
 exports.loadDependencies = function() {
 
   gfsHandler = require('../gridFsHandler');
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
   common = require('.').common;
 
 };
@@ -339,7 +339,7 @@ exports.getBoardFiles = function(board, element, callback) {
 };
 
 exports.iterateBoards = function(foundBoards, elementRelation, userData,
-    callback) {
+    language, callback) {
 
   if (!foundBoards.length) {
     callback();
@@ -359,9 +359,10 @@ exports.iterateBoards = function(foundBoards, elementRelation, userData,
     if (error) {
       callback(error);
     } else if (!board) {
-      exports.iterateBoards(foundBoards, elementRelation, userData, callback);
+      exports.iterateBoards(foundBoards, elementRelation, userData, language,
+          callback);
     } else if (!common.isInBoardStaff(userData, board)) {
-      callback(lang.errDeniedSpoilered);
+      callback(lang(language).errDeniedSpoilered);
     } else {
 
       // style exception, too simple
@@ -371,7 +372,7 @@ exports.iterateBoards = function(foundBoards, elementRelation, userData,
               callback(error);
             } else {
               exports.iterateBoards(foundBoards, elementRelation, userData,
-                  callback);
+                  language, callback);
             }
           });
       // style exception, too simple
@@ -382,7 +383,7 @@ exports.iterateBoards = function(foundBoards, elementRelation, userData,
 
 };
 
-exports.spoiler = function(userData, reportedElements, callback) {
+exports.spoiler = function(userData, reportedElements, language, callback) {
 
   var elementRelation = {};
   var foundBoards = [];
@@ -410,6 +411,7 @@ exports.spoiler = function(userData, reportedElements, callback) {
 
   }
 
-  exports.iterateBoards(foundBoards, elementRelation, userData, callback);
+  exports.iterateBoards(foundBoards, elementRelation, userData, language,
+      callback);
 
 };
