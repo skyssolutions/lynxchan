@@ -139,7 +139,8 @@ exports.getThreadFilesToRemove = function(boardUri, threadsToRemove, callback) {
 
 };
 
-exports.pruneThreadsForQuery = function(matchBlock, limit, boardUri, callback) {
+exports.pruneThreadsForQuery = function(matchBlock, limit, boardUri, language,
+    callback) {
 
   threads.aggregate([ {
     $match : matchBlock
@@ -169,7 +170,7 @@ exports.pruneThreadsForQuery = function(matchBlock, limit, boardUri, callback) {
       // style exception, too simple
       referenceHandler
           .clearPostingReferences(boardUri, prunedThreads, null, false, false,
-              function removedReferences(error) {
+              language, function removedReferences(error) {
 
                 if (error) {
                   callback(error);
@@ -185,7 +186,7 @@ exports.pruneThreadsForQuery = function(matchBlock, limit, boardUri, callback) {
 
 };
 
-exports.cleanThreads = function(boardUri, early404, limit, callback) {
+exports.cleanThreads = function(boardUri, early404, limit, language, callback) {
 
   if (verbose) {
     console.log('Cleaning threads of ' + boardUri);
@@ -200,12 +201,12 @@ exports.cleanThreads = function(boardUri, early404, limit, callback) {
           $gte : 5
         }
       }
-    }, Math.floor(limit / 3), boardUri, function cleaned404(error) {
+    }, Math.floor(limit / 3), boardUri, language, function cleaned404(error) {
 
       if (error) {
         callback(error);
       } else {
-        exports.cleanThreads(boardUri, false, limit, callback);
+        exports.cleanThreads(boardUri, false, limit, language, callback);
       }
 
     });
@@ -215,7 +216,7 @@ exports.cleanThreads = function(boardUri, early404, limit, callback) {
 
   exports.pruneThreadsForQuery({
     boardUri : boardUri
-  }, limit, boardUri, callback);
+  }, limit, boardUri, language, callback);
 
 };
 // } Section 1: Thread cleanup
@@ -389,7 +390,7 @@ exports.board = function(userData, parameters, language, callback) {
     } else {
 
       // style exception, too simple
-      referenceHandler.clearBoardReferences(board.boardUri,
+      referenceHandler.clearBoardReferences(board.boardUri, language,
           function clearedReferences(error) {
             if (error) {
               callback(error);

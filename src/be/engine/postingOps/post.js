@@ -50,7 +50,7 @@ exports.loadDependencies = function() {
   generator = require('../generator').board;
   r9k = require('../r9k');
   uploadHandler = require('../uploadHandler');
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
   miscOps = require('../miscOps');
   captchaOps = require('../captchaOps');
 
@@ -195,7 +195,8 @@ exports.removeCleanedPosts = function(postsToDelete, boardUri, threadId,
 
 };
 
-exports.cleanThreadPosts = function(boardUri, threadId, postId, callback) {
+exports.cleanThreadPosts = function(boardUri, threadId, postId, language,
+    callback) {
 
   posts.aggregate([ {
     $match : {
@@ -234,7 +235,7 @@ exports.cleanThreadPosts = function(boardUri, threadId, postId, callback) {
 
       // style exception, too simple
       referenceHandler.clearPostingReferences(boardUri, null, postsToDelete,
-          false, false, function removedReferences(error) {
+          false, false, language, function removedReferences(error) {
 
             if (error) {
               callback(error);
@@ -253,7 +254,7 @@ exports.cleanThreadPosts = function(boardUri, threadId, postId, callback) {
 };
 
 exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
-    cleanPosts, bump, callback) {
+    cleanPosts, bump, language, callback) {
 
   // signal rebuild of thread
   process.send({
@@ -308,7 +309,7 @@ exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
 
     if (cleanPosts) {
       exports.cleanThreadPosts(parameters.boardUri, parameters.threadId,
-          postId, callback);
+          postId, language, callback);
     } else {
       callback(null, postId);
     }
@@ -318,11 +319,11 @@ exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
 };
 
 exports.addPostToGlobalLatest = function(post, thread, parameters, cleanPosts,
-    bump, callback) {
+    bump, language, callback) {
 
   if (!globalLatestPosts || !post.message.length) {
     exports.updateBoardForPostCreation(post.ip, parameters, post.postId,
-        thread, cleanPosts, bump, callback);
+        thread, cleanPosts, bump, language, callback);
 
   } else {
 
@@ -332,7 +333,7 @@ exports.addPostToGlobalLatest = function(post, thread, parameters, cleanPosts,
       }
 
       exports.updateBoardForPostCreation(post.ip, parameters, post.postId,
-          thread, cleanPosts, bump, callback);
+          thread, cleanPosts, bump, language, callback);
 
     });
   }
@@ -400,7 +401,7 @@ exports.getSetBlock = function(thread, postId) {
 };
 
 exports.updateThread = function(boardData, parameters, postId, thread,
-    callback, post) {
+    language, callback, post) {
 
   var updateBlock = exports.getSetBlock(thread, postId);
 
@@ -440,7 +441,7 @@ exports.updateThread = function(boardData, parameters, postId, thread,
     } else {
 
       exports.addPostToGlobalLatest(post, thread, parameters, cleanPosts, bump,
-          callback);
+          language, callback);
 
     }
 
@@ -497,8 +498,8 @@ exports.createPost = function(req, parameters, userData, postId, thread, board,
       // style exception, too simple
       uploadHandler.saveUploads(board, parameters.threadId, postId, parameters,
           function savedFiles() {
-            exports.updateThread(board, parameters, postId, thread, cb,
-                postToAdd);
+            exports.updateThread(board, parameters, postId, thread,
+                req.language, cb, postToAdd);
           });
       // style exception, too simple
 
@@ -581,11 +582,11 @@ exports.getThread = function(req, parameters, userData, board, callback) {
     if (error) {
       callback(error);
     } else if (!thread) {
-      callback(lang.errThreadNotFound);
+      callback(lang(req.language).errThreadNotFound);
     } else if (thread.locked) {
-      callback(lang.errThreadLocked);
+      callback(lang(req.language).errThreadLocked);
     } else if (thread.postCount >= autoLockLimit) {
-      callback(lang.errThreadAutoLocked);
+      callback(lang(req.language).errThreadAutoLocked);
     } else {
 
       if (board.settings.indexOf('forceAnonymity') > -1) {
@@ -617,7 +618,7 @@ exports.getThread = function(req, parameters, userData, board, callback) {
 
 exports.checkR9K = function(req, parameters, userData, board, callback) {
 
-  r9k.check(parameters, board, function checked(error) {
+  r9k.check(parameters, board, req.language, function checked(error) {
 
     if (error) {
       callback(error);
@@ -635,7 +636,7 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
   parameters.hash = r9k.getMessageHash(parameters.message);
 
   if (!parameters.message && !parameters.files.length) {
-    callback(lang.errNoFileAndMessage);
+    callback(lang(req.language).errNoFileAndMessage);
     return;
   }
 
@@ -660,23 +661,24 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
     volunteers : 1
   }, function gotBoard(error, board) {
 
-    var boardLimitError = common.checkBoardFileLimits(parameters.files, board);
+    var boardLimitError = common.checkBoardFileLimits(parameters.files, board,
+        req.language);
 
     var textBoard = board ? board.settings.indexOf('textBoard') > -1 : null;
 
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(req.language).errBoardNotFound);
     } else if (textBoard && parameters.files.length) {
-      callback(lang.errTextBoard);
+      callback(lang(req.language).errTextBoard);
     } else if (boardLimitError) {
       callback(boardLimitError);
     } else {
 
       // style exception, too simple
       captchaOps.attemptCaptcha(captchaId, parameters.captcha, board,
-          function solvedCaptcha(error) {
+          req.language, function solvedCaptcha(error) {
 
             if (error) {
               callback(error);

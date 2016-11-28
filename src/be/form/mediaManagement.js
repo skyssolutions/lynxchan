@@ -10,8 +10,8 @@ domManipulator = domManipulator.dynamicPages.managementPages;
 
 function getMedia(auth, userData, parameters, res, language) {
 
-  mediaHandler.getMedia(userData, parameters, function gotMedia(error, media,
-      pages) {
+  mediaHandler.getMedia(userData, parameters, language, function gotMedia(
+      error, media, pages) {
 
     if (error) {
       formOps.outputError(error, 500, res, language);

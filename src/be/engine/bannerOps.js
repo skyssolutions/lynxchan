@@ -23,7 +23,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   gridFsHandler = require('./gridFsHandler');
-  lang = require('./langOps').languagePack();
+  lang = require('./langOps').languagePack;
 
 };
 
@@ -36,7 +36,7 @@ exports.removeBanner = function(banner, callback) {
 
 };
 
-exports.deleteBanner = function(userData, parameters, callback) {
+exports.deleteBanner = function(userData, parameters, language, callback) {
 
   var admin = userData.globalRole <= 1;
 
@@ -48,11 +48,11 @@ exports.deleteBanner = function(userData, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!banner) {
-        callback(lang.errBannerNotFound);
+        callback(lang(language).errBannerNotFound);
       } else {
 
         if (!banner.metadata.boardUri && !admin) {
-          callback(lang.errDeniedGlobalBannerManagement);
+          callback(lang(language).errDeniedGlobalBannerManagement);
         } else if (!banner.metadata.boardUri) {
           exports.removeBanner(banner, callback);
         } else {
@@ -65,9 +65,9 @@ exports.deleteBanner = function(userData, parameters, callback) {
             if (error) {
               callback(error);
             } else if (!board) {
-              callback(lang.errBoardNotFound);
+              callback(lang(language).errBoardNotFound);
             } else if (board.owner !== userData.login && !globallyAllowed) {
-              callback(lang.errDeniedChangeBoardSettings);
+              callback(lang(language).errDeniedChangeBoardSettings);
             } else {
               exports.removeBanner(banner, callback);
             }
@@ -109,16 +109,16 @@ exports.writeNewBanner = function(parameters, callback) {
 
 };
 
-exports.addBanner = function(userData, parameters, callback) {
+exports.addBanner = function(userData, parameters, language, callback) {
 
   if (!parameters.files.length) {
-    callback(lang.errNoFiles);
+    callback(lang(language).errNoFiles);
     return;
   } else if (parameters.files[0].mime.indexOf('image/') === -1) {
-    callback(lang.errNotAnImage);
+    callback(lang(language).errNotAnImage);
     return;
   } else if (parameters.files[0].size > maxBannerSize) {
-    callback(lang.errBannerTooLarge);
+    callback(lang(language).errBannerTooLarge);
   }
 
   var admin = userData.globalRole <= 1;
@@ -127,7 +127,7 @@ exports.addBanner = function(userData, parameters, callback) {
 
   if (!parameters.boardUri && !admin) {
 
-    callback(lang.errDeniedGlobalBannerManagement);
+    callback(lang(language).errDeniedGlobalBannerManagement);
 
   } else if (!parameters.boardUri) {
     exports.writeNewBanner(parameters, callback);
@@ -141,9 +141,9 @@ exports.addBanner = function(userData, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!board) {
-        callback(lang.errBoardNotFound);
+        callback(lang(language).errBoardNotFound);
       } else if (board.owner !== userData.login && !globallyAllowed) {
-        callback(lang.errDeniedChangeBoardSettings);
+        callback(lang(language).errDeniedChangeBoardSettings);
       } else {
         exports.writeNewBanner(parameters, callback);
 
@@ -171,12 +171,12 @@ exports.readBannerData = function(boardUri, callback) {
 
 };
 
-exports.getBannerData = function(userData, boardUri, callback) {
+exports.getBannerData = function(userData, boardUri, language, callback) {
 
   var admin = userData.globalRole <= 1;
 
   if (!admin && !boardUri) {
-    callback(lang.errDeniedGlobalBannerManagement);
+    callback(lang(language).errDeniedGlobalBannerManagement);
   } else if (!boardUri) {
     exports.readBannerData(null, callback);
   } else {
@@ -189,9 +189,9 @@ exports.getBannerData = function(userData, boardUri, callback) {
       if (error) {
         callback(error);
       } else if (!board) {
-        callback(lang.errBoardNotFound);
+        callback(lang(language).errBoardNotFound);
       } else if (board.owner !== userData.login && !globallyAllowed) {
-        callback(lang.errDeniedChangeBoardSettings);
+        callback(lang(language).errDeniedChangeBoardSettings);
       } else {
         exports.readBannerData(boardUri, callback);
       }

@@ -8,7 +8,8 @@ exports.process = function(req, res) {
   apiOps.getAnonJsonData(req, res, function gotData(auth, parameters) {
 
     // style exception, too simple
-    captchaOps.solveCaptcha(parameters, function solvedCaptcha(error) {
+    captchaOps.solveCaptcha(parameters, req.language, function solvedCaptcha(
+        error) {
       if (error) {
         apiOps.outputError(error, res);
       } else {
@@ -16,8 +17,8 @@ exports.process = function(req, res) {
       }
 
     });
+    // style exception, too simple
 
   });
-  // style exception, too simple
 
 };

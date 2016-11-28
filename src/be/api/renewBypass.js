@@ -5,19 +5,19 @@ var bypassOps = require('../engine/bypassOps');
 var settingsHandler = require('../settingsHandler');
 var lang = require('../engine/langOps').languagePack;
 
-function renewBypass(parameters, captchaId, res) {
+function renewBypass(parameters, captchaId, res, language) {
 
-  bypassOps.renewBypass(captchaId, parameters.captcha, function renewedBypass(
-      error, bypassId) {
+  bypassOps.renewBypass(captchaId, parameters.captcha, language,
+      function renewedBypass(error, bypassId) {
 
-    if (error) {
-      apiOps.outputError(error, res);
-    } else {
+        if (error) {
+          apiOps.outputError(error, res);
+        } else {
 
-      apiOps.outputResponse(null, bypassId, 'ok', res);
-    }
+          apiOps.outputResponse(null, bypassId, 'ok', res);
+        }
 
-  });
+      });
 }
 
 exports.process = function(req, res) {
@@ -30,7 +30,7 @@ exports.process = function(req, res) {
 
   apiOps.getAnonJsonData(req, res,
       function gotData(auth, parameters, captchaId) {
-        renewBypass(parameters, captchaId, res);
+        renewBypass(parameters, captchaId, res, req.language);
       });
 
 };

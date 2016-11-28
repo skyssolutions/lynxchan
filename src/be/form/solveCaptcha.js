@@ -9,7 +9,8 @@ exports.process = function(req, res) {
   formOps.getPostData(req, res, function gotData(auth, parameters) {
 
     // style exception, too simple
-    captchaOps.solveCaptcha(parameters, function solvedCaptcha(error) {
+    captchaOps.solveCaptcha(parameters, req.language, function solvedCaptcha(
+        error) {
       if (error) {
         formOps.outputError(error, 500, res, req.language);
       } else {
@@ -21,8 +22,8 @@ exports.process = function(req, res) {
       }
 
     });
+    // style exception, too simple
 
   });
-  // style exception, too simple
 
 };

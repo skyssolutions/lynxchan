@@ -12,7 +12,7 @@ function login(res, parameters, language) {
     return;
   }
 
-  accountOps.login(parameters, function loggedIn(error, hash) {
+  accountOps.login(parameters, language, function loggedIn(error, hash) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {

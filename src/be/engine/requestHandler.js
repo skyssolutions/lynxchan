@@ -22,7 +22,6 @@ var formOps;
 var apiOps;
 var miscOps;
 var gridFs;
-var lang;
 var staticHandler;
 var lastSlaveIndex = 0;
 var slaves;
@@ -51,7 +50,6 @@ exports.loadDependencies = function() {
   apiOps = require('./apiOps');
   miscOps = require('./miscOps');
   gridFs = require('./gridFsHandler');
-  lang = require('./langOps').languagePack();
   staticHandler = require('./staticHandler');
 
 };

@@ -3,9 +3,10 @@
 var apiOps = require('../engine/apiOps');
 var bannerOps = require('../engine/bannerOps');
 
-function createBanner(auth, parameters, userData, res) {
+function createBanner(auth, parameters, userData, res, language) {
 
-  bannerOps.addBanner(userData, parameters, function createdBanner(error) {
+  bannerOps.addBanner(userData, parameters, language, function createdBanner(
+      error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
@@ -19,6 +20,6 @@ exports.process = function(req, res) {
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    createBanner(auth, parameters, userData, res);
+    createBanner(auth, parameters, userData, res, req.language);
   });
 };

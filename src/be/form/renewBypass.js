@@ -9,7 +9,7 @@ var lang = require('../engine/langOps').languagePack();
 
 function renewBypass(auth, parameters, res, language) {
 
-  bypassOps.renewBypass(auth.captchaid, parameters.captcha,
+  bypassOps.renewBypass(auth.captchaid, parameters.captcha, language,
       function renewedBypass(error, bypassId) {
 
         if (error) {

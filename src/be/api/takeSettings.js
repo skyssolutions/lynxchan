@@ -3,13 +3,14 @@
 var apiOps = require('../engine/apiOps');
 var settingsHandler = require('../settingsHandler');
 
-function saveSettings(settings, parameters, res) {
+function saveSettings(settings, parameters, res, language) {
 
   parameters.master = settings.master;
   parameters.slaves = [];
   delete parameters.files;
 
-  settingsHandler.setNewSettings(parameters, function savedSettings(error) {
+  settingsHandler.setNewSettings(parameters, language, function savedSettings(
+      error) {
 
     if (error) {
       apiOps.outputError(error, res);
@@ -35,7 +36,7 @@ exports.process = function(req, res) {
 
   apiOps.getAnonJsonData(req, res, function gotData(auth, parameters) {
 
-    saveSettings(settings, parameters, res);
+    saveSettings(settings, parameters, res, req.language);
 
   });
 

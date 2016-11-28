@@ -12,7 +12,8 @@ function setUserRole(userData, parameters, res, auth, language) {
     return;
   }
 
-  accountOps.setGlobalRole(userData, parameters, function setRole(error) {
+  accountOps.setGlobalRole(userData, parameters, language, function setRole(
+      error) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {

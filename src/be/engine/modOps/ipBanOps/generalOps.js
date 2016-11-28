@@ -158,7 +158,7 @@ exports.checkRangeBanPermission = function(userData, parameters, language,
 exports.placeRangeBan = function(userData, parameters, captchaId, language,
     callback) {
 
-  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
+  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null, language,
       function solvedCaptcha(error) {
         if (error) {
           callback(error);

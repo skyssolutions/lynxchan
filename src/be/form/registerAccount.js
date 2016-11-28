@@ -25,7 +25,7 @@ function createAccount(parameters, res, captchaId, language) {
       } ], null, language);
     }
 
-  }, null, null, captchaId);
+  }, null, null, captchaId, language);
 
 }
 

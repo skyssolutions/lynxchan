@@ -706,7 +706,7 @@ exports.sanitizeParentThreads = function(foundThreads, rawParents) {
 };
 
 exports.getPostsToDelete = function(userData, board, postsToDelete, parameters,
-    cb, foundThreads, queryBlock) {
+    language, cb, foundThreads, queryBlock) {
 
   if (parameters.deleteUploads) {
 
@@ -764,7 +764,7 @@ exports.getPostsToDelete = function(userData, board, postsToDelete, parameters,
       // style exception, too simple
       referenceHandler.clearPostingReferences(board.boardUri, foundThreads,
           foundPosts, parameters.deleteUploads, parameters.deleteMedia,
-          function clearedReferences(error) {
+          language, function clearedReferences(error) {
 
             if (error) {
               cb(error);
@@ -782,7 +782,7 @@ exports.getPostsToDelete = function(userData, board, postsToDelete, parameters,
 };
 
 exports.getThreadsToDelete = function(userData, board, threadsToDelete,
-    postsToDelete, parameters, callback) {
+    postsToDelete, parameters, language, callback) {
 
   var threadQueryBlock = exports.composeQueryBlock(board, threadsToDelete,
       userData, parameters);
@@ -814,7 +814,7 @@ exports.getThreadsToDelete = function(userData, board, threadsToDelete,
       var foundThreads = results.length ? results[0].threads : [];
 
       exports.getPostsToDelete(userData, board, postsToDelete, parameters,
-          callback, foundThreads, threadQueryBlock);
+          language, callback, foundThreads, threadQueryBlock);
     }
   });
 
@@ -865,8 +865,8 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
       }
 
       exports.getThreadsToDelete(userData, board, threadsToDelete,
-          postsToDelete, parameters, function removedBoardPostings(error,
-              removedThreadsCount, removedPostsCount) {
+          postsToDelete, parameters, language, function removedBoardPostings(
+              error, removedThreadsCount, removedPostsCount) {
 
             if (error) {
               callback(error);

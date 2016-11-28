@@ -80,7 +80,8 @@ exports.process = function(req, res) {
     if (!parameters.password) {
 
       // style exception,too simple
-      accountOps.validate(auth, function validated(error, auth, userData) {
+      accountOps.validate(auth, req.language, function validated(error, auth,
+          userData) {
         if (error) {
           apiOps.outputError(error, res);
         } else {

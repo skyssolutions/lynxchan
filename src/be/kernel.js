@@ -588,7 +588,7 @@ var setRoleFunction = function() {
   require('./engine/accountOps').setGlobalRole(null, {
     role : informedRole,
     login : informedLogin
-  }, function setRole(error) {
+  }, null, function setRole(error) {
 
     if (error) {
       console.log(error);

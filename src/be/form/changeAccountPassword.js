@@ -5,19 +5,20 @@ var lang = require('../engine/langOps').languagePack();
 var accountOps = require('../engine/accountOps');
 function changePassword(userData, parameters, res, language) {
 
-  accountOps.changePassword(userData, parameters, function changedPassword(
-      error, newHash) {
+  accountOps.changePassword(userData, parameters, language,
+      function changedPassword(error, newHash) {
 
-    if (error) {
-      formOps.outputError(error, 500, res, language);
-    } else {
-      formOps.outputResponse(lang.msgChangedPassword, '/account.js', res, [ {
-        field : 'hash',
-        value : newHash
-      } ], null, language);
-    }
+        if (error) {
+          formOps.outputError(error, 500, res, language);
+        } else {
+          formOps.outputResponse(lang.msgChangedPassword, '/account.js', res,
+              [ {
+                field : 'hash',
+                value : newHash
+              } ], null, language);
+        }
 
-  });
+      });
 
 }
 

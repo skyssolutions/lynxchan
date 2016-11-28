@@ -6,7 +6,8 @@ var bannerOps = require('../engine/bannerOps');
 
 function createBanner(parameters, userData, res, auth, language) {
 
-  bannerOps.addBanner(userData, parameters, function createdBanner(error) {
+  bannerOps.addBanner(userData, parameters, language, function createdBanner(
+      error) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {

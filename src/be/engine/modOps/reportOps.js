@@ -187,7 +187,7 @@ exports.report = function(req, reportedContent, parameters, captchaId, cb) {
 
   miscOps.sanitizeStrings(parameters, reportArguments);
 
-  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
+  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null, req.language,
       function solvedCaptcha(error) {
         if (error) {
           cb(error);

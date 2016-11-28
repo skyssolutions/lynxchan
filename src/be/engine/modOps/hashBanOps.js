@@ -161,7 +161,7 @@ exports.checkForHashBanPermission = function(userData, parameters, language,
 exports.placeHashBan = function(userData, parameters, captchaId, language,
     callback) {
 
-  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
+  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null, language,
       function solvedCaptcha(error) {
 
         if (error) {

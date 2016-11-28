@@ -746,7 +746,7 @@ exports.setGlobalSettings = function(userData, language, parameters, callback) {
     console.log('New settings: ' + JSON.stringify(newSettings, null, 2));
   }
 
-  settingsHandler.setNewSettings(newSettings, callback);
+  settingsHandler.setNewSettings(newSettings, language, callback);
 
 };
 // end of new settings sanitization

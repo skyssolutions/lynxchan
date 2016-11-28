@@ -6,21 +6,21 @@ var lang = require('../engine/langOps').languagePack();
 
 function deleteBanner(parameters, userData, res, auth, language) {
 
-  bannerOps.deleteBanner(userData, parameters, function deletedBanner(error,
-      board) {
-    if (error) {
-      formOps.outputError(error, 500, res, language);
-    } else {
-      var redirectLink = '/bannerManagement.js';
+  bannerOps.deleteBanner(userData, parameters, language,
+      function deletedBanner(error, board) {
+        if (error) {
+          formOps.outputError(error, 500, res, language);
+        } else {
+          var redirectLink = '/bannerManagement.js';
 
-      if (board) {
-        redirectLink += '?boardUri=' + board;
-      }
+          if (board) {
+            redirectLink += '?boardUri=' + board;
+          }
 
-      formOps.outputResponse(lang.msgBannerDeleted, redirectLink, res, null,
-          auth, language);
-    }
-  });
+          formOps.outputResponse(lang.msgBannerDeleted, redirectLink, res,
+              null, auth, language);
+        }
+      });
 
 }
 

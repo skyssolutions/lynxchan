@@ -14,7 +14,7 @@ function deleteMedia(auth, parameters, userData, res, language) {
     }
   }
 
-  mediaHandler.deleteFiles(selectedIdentifiers, userData,
+  mediaHandler.deleteFiles(selectedIdentifiers, userData, language,
       function deletedFiles(error) {
 
         if (error) {

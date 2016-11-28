@@ -51,7 +51,7 @@ exports.loadDependencies = function() {
   miscOps = require('./miscOps');
   captchaOps = require('./captchaOps');
   domManipulator = require('./domManipulator').dynamicPages.miscPages;
-  lang = require('./langOps').languagePack();
+  lang = require('./langOps').languagePack;
 
 };
 
@@ -65,13 +65,13 @@ exports.logRoleChange = function(operatorData, parameters, callback) {
   var logMessage = '';
 
   if (operatorData) {
-    logMessage += lang.logGlobalRoleChange.userPiece.replace('{$login}',
+    logMessage += lang().logGlobalRoleChange.userPiece.replace('{$login}',
         operatorData.login);
   } else {
-    logMessage += lang.logGlobalRoleChange.adminPiece;
+    logMessage += lang().logGlobalRoleChange.adminPiece;
   }
 
-  logMessage += lang.logGlobalRoleChange.mainPiece.replace('{$login}',
+  logMessage += lang().logGlobalRoleChange.mainPiece.replace('{$login}',
       parameters.login).replace('{$role}',
       miscOps.getGlobalRoleLabel(parameters.role));
 
@@ -85,16 +85,17 @@ exports.logRoleChange = function(operatorData, parameters, callback) {
 
 };
 
-exports.setGlobalRole = function(operatorData, parameters, callback, override) {
+exports.setGlobalRole = function(operatorData, parameters, language, callback,
+    override) {
 
   if (isNaN(parameters.role)) {
-    callback(lang.errInvalidRole);
+    callback(lang(language).errInvalidRole);
     return;
   } else if (!override && operatorData.globalRole >= parameters.role) {
-    callback(lang.errDeniedPermissionLevel);
+    callback(lang(language).errDeniedPermissionLevel);
     return;
   } else if (!override && operatorData.login === parameters.login) {
-    callback(lang.errSelfRoleChange);
+    callback(lang(language).errSelfRoleChange);
   }
 
   users.findOne({
@@ -106,9 +107,9 @@ exports.setGlobalRole = function(operatorData, parameters, callback, override) {
     if (error) {
       callback(error);
     } else if (!user) {
-      callback(lang.errUserNotFound);
+      callback(lang(language).errUserNotFound);
     } else if (!override && user.globalRole <= operatorData.globalRole) {
-      callback(lang.errDeniedChangeUser);
+      callback(lang(language).errDeniedChangeUser);
     } else {
 
       // style exception, too simple
@@ -135,7 +136,7 @@ exports.setGlobalRole = function(operatorData, parameters, callback, override) {
 // } Section 1: Global role change
 
 // Section 2: Account creation {
-exports.createAccount = function(parameters, role, callback) {
+exports.createAccount = function(parameters, role, language, callback) {
 
   var newUser = {
     login : parameters.login
@@ -153,7 +154,7 @@ exports.createAccount = function(parameters, role, callback) {
     if (error && error.code !== 11000) {
       callback(error);
     } else if (error) {
-      callback(lang.errLoginInUse);
+      callback(lang(language).errLoginInUse);
     } else {
 
       // style exception, too simple
@@ -172,36 +173,37 @@ exports.createAccount = function(parameters, role, callback) {
 
 };
 
-exports.registerUser = function(parameters, cb, role, override, captchaId) {
+exports.registerUser = function(parameters, cb, role, override, captchaId,
+    language) {
 
   if (!override && creationDisabled) {
-    cb(lang.errNoNewAccounts);
+    cb(lang(language).errNoNewAccounts);
     return;
   }
 
   miscOps.sanitizeStrings(parameters, newAccountParameters);
 
   if (!parameters.login || /\W/.test(parameters.login)) {
-    cb(lang.errInvalidLogin);
+    cb(lang(language).errInvalidLogin);
     return;
   } else if (!parameters.password) {
-    cb(lang.errNoPassword);
+    cb(lang(language).errNoPassword);
     return;
   } else if (role !== undefined && role !== null && isNaN(role)) {
-    cb(lang.errInvalidRole);
+    cb(lang(language).errInvalidRole);
     return;
   }
 
   if (override) {
-    exports.createAccount(parameters, role, cb);
+    exports.createAccount(parameters, role, language, cb);
   } else {
-    captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
+    captchaOps.attemptCaptcha(captchaId, parameters.captcha, null, language,
         function solvedCaptcha(error) {
 
           if (error) {
             cb(error);
           } else {
-            exports.createAccount(parameters, role, cb);
+            exports.createAccount(parameters, role, language, cb);
           }
 
         });
@@ -246,7 +248,7 @@ exports.createSession = function(login, callback) {
 };
 
 // Section 3: Login {
-exports.login = function(parameters, callback) {
+exports.login = function(parameters, language, callback) {
 
   users.findOne({
     login : parameters.login
@@ -254,7 +256,7 @@ exports.login = function(parameters, callback) {
     if (error) {
       callback(error);
     } else if (!user) {
-      callback(lang.errLoginFailed);
+      callback(lang(language).errLoginFailed);
     } else {
 
       // style exception, too simple
@@ -264,7 +266,7 @@ exports.login = function(parameters, callback) {
         if (error) {
           callback(error);
         } else if (!matches) {
-          callback(lang.errLoginFailed);
+          callback(lang(language).errLoginFailed);
         } else {
           exports.createSession(parameters.login, callback);
         }
@@ -307,10 +309,10 @@ exports.checkExpiration = function(user, now, callback) {
 
 };
 
-exports.validate = function(auth, callback) {
+exports.validate = function(auth, language, callback) {
 
   if (!auth || !auth.hash || !auth.login) {
-    callback(lang.errInvalidAccount);
+    callback(lang(language).errInvalidAccount);
     return;
   }
 
@@ -331,7 +333,7 @@ exports.validate = function(auth, callback) {
     if (error) {
       callback(error);
     } else if (!result.value) {
-      callback(lang.errInvalidAccount);
+      callback(lang(language).errInvalidAccount);
     } else {
 
       var user = result.value;
@@ -377,7 +379,7 @@ exports.emailUserOfRequest = function(domain, login, email, hash, language,
   mailer.sendMail({
     from : sender,
     to : email,
-    subject : lang.subPasswordRequest,
+    subject : lang(language).subPasswordRequest,
     html : content
   }, function emailSent(error) {
     callback(error);
@@ -420,9 +422,9 @@ exports.lookForUserEmailOfRequest = function(domain, login, language, cb) {
     if (error) {
       cb(error);
     } else if (!user) {
-      cb(lang.errAccountNotFound);
+      cb(lang(language).errAccountNotFound);
     } else if (!user.email || !user.email.length) {
-      cb(lang.errNoEmailForAccount);
+      cb(lang(language).errNoEmailForAccount);
     } else {
       exports.generateRequest(domain, login, language, user.email, cb);
     }
@@ -433,7 +435,7 @@ exports.lookForUserEmailOfRequest = function(domain, login, language, cb) {
 exports.requestRecovery = function(domain, language, parameters, captchaId,
     callback) {
 
-  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
+  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null, language,
       function solvedCaptcha(error) {
 
         if (error) {
@@ -454,8 +456,8 @@ exports.requestRecovery = function(domain, language, parameters, captchaId,
               callback(error);
             } else if (request) {
 
-              callback(lang.errPendingRequest.replace('{$expiration}',
-                  request.expiration.toString()));
+              callback(lang(language).errPendingRequest.replace(
+                  '{$expiration}', request.expiration.toString()));
             } else {
               exports.lookForUserEmailOfRequest(domain, parameters.login,
                   language, callback);
@@ -478,7 +480,7 @@ exports.emailUserNewPassword = function(email, newPass, callback, language) {
   mailer.sendMail({
     from : sender,
     to : email,
-    subject : lang.subPasswordReset,
+    subject : lang(language).subPasswordReset,
     html : content
   }, function emailSent(error) {
     callback(error);
@@ -531,7 +533,7 @@ exports.recoverAccount = function(parameters, language, callback) {
     if (error) {
       callback(error);
     } else if (!request.value) {
-      callback(lang.errInvalidRequest);
+      callback(lang(language).errInvalidRequest);
     } else {
       exports.generateNewPassword(parameters.login, callback, language);
     }
@@ -572,11 +574,11 @@ exports.updatePassword = function(userData, parameters, callback) {
 
 };
 
-exports.changePassword = function(userData, parameters, callback) {
+exports.changePassword = function(userData, parameters, language, callback) {
 
   if (parameters.newPassword !== parameters.confirmation) {
 
-    callback(lang.errPasswordMismatch);
+    callback(lang(language).errPasswordMismatch);
     return;
   }
 
@@ -594,7 +596,7 @@ exports.changePassword = function(userData, parameters, callback) {
         if (error) {
           callback(error);
         } else if (!matches) {
-          callback(lang.errIncorrectPassword);
+          callback(lang(language).errIncorrectPassword);
         } else {
           exports.updatePassword(userData, parameters, callback);
         }

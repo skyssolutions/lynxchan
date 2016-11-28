@@ -50,7 +50,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   miscOps = require('./miscOps');
-  lang = require('./langOps').languagePack();
+  lang = require('./langOps').languagePack;
   uploadHandler = require('./uploadHandler');
   formOps = require('./formOps');
   gridFsHandler = require('./gridFsHandler');
@@ -327,10 +327,10 @@ exports.dispensesCaptcha = function(board, thread) {
 
 };
 
-exports.attemptCaptcha = function(id, input, board, callback, thread) {
+exports.attemptCaptcha = function(id, input, board, language, cb, thread) {
 
   if (exports.dispensesCaptcha(board, thread)) {
-    callback();
+    cb();
     return;
   }
 
@@ -357,25 +357,25 @@ exports.attemptCaptcha = function(id, input, board, callback, thread) {
     }, function gotCaptcha(error, captcha) {
 
       if (error) {
-        callback(error);
+        cb(error);
       } else if (exports.isCaptchaSolved(captcha, input)) {
-        callback();
+        cb();
       } else if (!captcha.value) {
-        callback(lang.errExpiredCaptcha);
+        cb(lang(language).errExpiredCaptcha);
       } else {
-        callback(lang.errWrongCaptcha);
+        cb(lang(language).errWrongCaptcha);
       }
 
     });
   } catch (error) {
-    callback(error);
+    cb(error);
   }
 
 };
 // } Section 2: Captcha consumption
 
 // solves a captcha without invalidating it
-exports.solveCaptcha = function(parameters, callback) {
+exports.solveCaptcha = function(parameters, language, callback) {
 
   try {
 
@@ -397,7 +397,7 @@ exports.solveCaptcha = function(parameters, callback) {
       if (error) {
         callback(error);
       } else if (!captcha.value) {
-        callback(lang.errExpiredOrWrongCaptcha);
+        callback(lang(language).errExpiredOrWrongCaptcha);
       } else {
         callback();
       }

@@ -65,7 +65,7 @@ exports.loadSettings = function() {
   exports.defaultAnonymousName = settings.defaultAnonymousName;
 
   if (!exports.defaultAnonymousName) {
-    exports.defaultAnonymousName = lang.miscDefaultAnonymous;
+    exports.defaultAnonymousName = lang().miscDefaultAnonymous;
   }
 
   verbose = settings.verbose;
@@ -78,7 +78,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
   miscOps = require('../miscOps');
   locationOps = require('../locationOps');
 
@@ -132,9 +132,9 @@ exports.getSignedRole = function(userData, wishesToSign, board) {
   if (!userData || !wishesToSign) {
     return null;
   } else if (board.owner === userData.login) {
-    return lang.miscBoardOwner;
+    return lang().miscBoardOwner;
   } else if (board.volunteers.indexOf(userData.login) > -1) {
-    return lang.miscBoardVolunteer;
+    return lang().miscBoardVolunteer;
   } else if (userData.globalRole <= miscOps.getMaxStaffRole()) {
     return miscOps.getGlobalRoleLabel(userData.globalRole);
   } else {
@@ -352,7 +352,7 @@ exports.applyFilters = function(filters, message) {
 
 };
 
-exports.checkBoardFileLimits = function(files, boardData) {
+exports.checkBoardFileLimits = function(files, boardData, language) {
 
   if (!boardData) {
     return null;
@@ -370,11 +370,11 @@ exports.checkBoardFileLimits = function(files, boardData) {
     var file = files[i];
 
     if (checkMimes && allowedMimes.indexOf(file.mime) < 0) {
-      return lang.errInvalidMimeForBoard;
+      return lang(language).errInvalidMimeForBoard;
     }
 
     if (maxSize && maxSize < file.size) {
-      return lang.errFileTooLargeForBoard;
+      return lang(language).errFileTooLargeForBoard;
     }
 
   }

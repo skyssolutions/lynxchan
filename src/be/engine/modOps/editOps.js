@@ -340,7 +340,7 @@ exports.saveEdit = function(userData, parameters, language, callback) {
     } else {
 
       // style exception, too simple
-      r9k.check(parameters, board, function checked(error) {
+      r9k.check(parameters, board, language, function checked(error) {
 
         if (error) {
           callback(error);

@@ -9,24 +9,27 @@ var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
 function getBannerData(auth, parameters, userData, res, language) {
 
-  bOps.getBannerData(userData, parameters.boardUri, function gotBannerData(
-      error, banners) {
-    if (error) {
-      formOps.outputError(error, 500, res, language);
-    } else {
-      var json = parameters.json;
+  bOps
+      .getBannerData(userData, parameters.boardUri, language,
+          function gotBannerData(error, banners) {
+            if (error) {
+              formOps.outputError(error, 500, res, language);
+            } else {
+              var json = parameters.json;
 
-      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-          : 'text/html', auth));
+              res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+                  : 'text/html', auth));
 
-      if (json) {
-        res.end(jsonBuilder.bannerManagement(parameters.boardUri, banners));
-      } else {
-        res.end(dom.bannerManagement(parameters.boardUri, banners, language));
-      }
+              if (json) {
+                res.end(jsonBuilder.bannerManagement(parameters.boardUri,
+                    banners));
+              } else {
+                res.end(dom.bannerManagement(parameters.boardUri, banners,
+                    language));
+              }
 
-    }
-  });
+            }
+          });
 }
 
 exports.process = function(req, res) {

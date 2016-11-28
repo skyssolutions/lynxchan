@@ -613,7 +613,7 @@ exports.createBoard = function(captchaId, parameters, userData, language,
     return;
   }
 
-  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
+  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null, language,
       function solvedCaptcha(error) {
 
         if (error) {

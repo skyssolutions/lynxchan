@@ -42,7 +42,7 @@ exports.loadDependencies = function() {
   delOps = require('../deletionOps').miscDeletions;
   generator = require('../generator').board;
   uploadHandler = require('../uploadHandler');
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
   overboardOps = require('../overboardOps');
   miscOps = require('../miscOps');
   captchaOps = require('../captchaOps');
@@ -120,7 +120,7 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
 };
 
 exports.updateBoardForThreadCreation = function(boardData, threadId,
-    enabledCaptcha, callback, thread) {
+    enabledCaptcha, language, callback, thread) {
 
   var boardUri = boardData.boardUri;
   var boardThreadLimit = boardData.maxThreadCount;
@@ -149,7 +149,7 @@ exports.updateBoardForThreadCreation = function(boardData, threadId,
 
         // style exception, too simple
         delOps.cleanThreads(boardUri,
-            boardData.settings.indexOf('early404') > -1, limitToUse,
+            boardData.settings.indexOf('early404') > -1, limitToUse, language,
             function cleanedThreads(error) {
               if (error) {
                 callback(error);
@@ -231,7 +231,7 @@ exports.createThread = function(req, userData, parameters, board, threadId,
       uploadHandler.saveUploads(board, threadId, null, parameters,
           function savedUploads() {
             exports.updateBoardForThreadCreation(board, threadId,
-                enabledCaptcha, callback, threadToAdd);
+                enabledCaptcha, req.language, callback, threadToAdd);
           });
       // style exception, too simple
 
@@ -449,7 +449,7 @@ exports.checkMarkdownForThread = function(req, userData, parameters, board,
 
 exports.checkR9K = function(req, userData, parameters, board, callback) {
 
-  r9k.check(parameters, board, function checked(error) {
+  r9k.check(parameters, board, req.language, function checked(error) {
 
     if (error) {
       callback(error);
@@ -495,7 +495,8 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
     settings : 1
   }, function gotBoard(error, board) {
 
-    var boardLimitError = common.checkBoardFileLimits(parameters.files, board);
+    var boardLimitError = common.checkBoardFileLimits(parameters.files, board,
+        req.language);
 
     var textBoard = board ? board.settings.indexOf('textBoard') > -1 : null;
     var requireFile = board ? board.settings.indexOf('requireThreadFile') > -1
@@ -504,13 +505,13 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
     if (error) {
       cb(error);
     } else if (!board) {
-      cb(lang.errBoardNotFound);
+      cb(lang(req.language).errBoardNotFound);
     } else if (board.lockedUntil > new Date()) {
-      cb(lang.errBoardLocked);
+      cb(lang(req.language).errBoardLocked);
     } else if (textBoard && !noFiles) {
-      cb(lang.errTextBoard);
+      cb(lang(req.language).errTextBoard);
     } else if (requireFile && !textBoard && noFiles) {
-      cb(lang.msgErrThreadFileRequired);
+      cb(lang(req.language).msgErrThreadFileRequired);
     } else if (boardLimitError) {
       cb(boardLimitError);
     } else {
@@ -526,7 +527,7 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
 
       // style exception, too simple
       captchaOps.attemptCaptcha(captchaId, parameters.captcha, board,
-          function solvedCaptcha(error) {
+          req.language, function solvedCaptcha(error) {
             if (error) {
               cb(error);
             } else {

@@ -552,7 +552,7 @@ exports.ban = function(userData, reportedObjects, parameters, captchaId,
     return;
   }
 
-  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null,
+  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null, language,
       function solvedCaptcha(error) {
         if (error) {
           callback(error);

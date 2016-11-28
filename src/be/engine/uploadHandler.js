@@ -27,7 +27,6 @@ var verbose;
 var thumbSize;
 var latestImages;
 var miscOps;
-var lang;
 var gsHandler;
 var thumbExtension;
 var mediaThumb;
@@ -60,7 +59,6 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   miscOps = require('./miscOps');
-  lang = require('./langOps').languagePack();
   gsHandler = require('./gridFsHandler');
 
 };

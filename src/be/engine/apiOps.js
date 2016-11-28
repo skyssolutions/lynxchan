@@ -54,7 +54,7 @@ exports.loadDependencies = function() {
   modOps = require('./modOps');
   uploadHandler = require('./uploadHandler');
   videoMimes = uploadHandler.videoMimes();
-  lang = require('./langOps').languagePack();
+  lang = require('./langOps').languagePack;
 
 };
 
@@ -330,8 +330,8 @@ exports.getAuthenticatedData = function(req, res, callback, optionalAuth,
   exports.getAnonJsonData(req, res, function gotData(auth, parameters,
       captchaId, bypassId) {
 
-    accountOps.validate(auth, function validatedRequest(error, newAuth,
-        userData) {
+    accountOps.validate(auth, req.language, function validatedRequest(error,
+        newAuth, userData) {
 
       if (error && !optionalAuth) {
         exports.outputError(error, res);
@@ -516,8 +516,8 @@ exports.checkForBan = function(req, boardUri, res, callback, auth) {
         range : ban.range,
         banId : ban._id,
         expiration : ban.expiration,
-        board : ban.boardUri ? '/' + ban.boardUri + '/' : lang.miscAllBoards
-            .toLowerCase()
+        board : ban.boardUri ? '/' + ban.boardUri + '/'
+            : lang(req.language).miscAllBoards.toLowerCase()
       }, 'banned', res);
     } else {
       callback();

@@ -12,7 +12,7 @@ var maxFilesToDisplay;
 
 exports.loadDependencies = function() {
   gridFsHandler = require('./gridFsHandler');
-  lang = require('./langOps').languagePack();
+  lang = require('./langOps').languagePack;
 
   maxGlobalStaffRole = require('./miscOps').getMaxStaffRole();
 };
@@ -99,7 +99,7 @@ exports.getOperations = function(postReferences, threadReferences) {
 };
 
 exports.updateReferencesCount = function(postReferences, threadReferences,
-    deleteMedia, callback) {
+    deleteMedia, language, callback) {
 
   if (deleteMedia) {
 
@@ -114,7 +114,7 @@ exports.updateReferencesCount = function(postReferences, threadReferences,
 
     }
 
-    exports.deleteFiles(identifiers, null, callback, true);
+    exports.deleteFiles(identifiers, null, language, callback, true);
 
   } else {
 
@@ -131,10 +131,11 @@ exports.updateReferencesCount = function(postReferences, threadReferences,
 };
 
 exports.getThreadReferences = function(postReferences, boardUri,
-    threadsToClear, deleteMedia, callback, boardDeletion) {
+    threadsToClear, deleteMedia, language, callback, boardDeletion) {
 
   if ((!threadsToClear || !threadsToClear.length) && !boardDeletion) {
-    exports.updateReferencesCount(postReferences, [], deleteMedia, callback);
+    exports.updateReferencesCount(postReferences, [], deleteMedia, language,
+        callback);
 
     return;
   }
@@ -159,7 +160,7 @@ exports.getThreadReferences = function(postReferences, boardUri,
           callback(error);
         } else {
           exports.updateReferencesCount(postReferences, results, deleteMedia,
-              callback);
+              language, callback);
         }
 
       });
@@ -167,7 +168,7 @@ exports.getThreadReferences = function(postReferences, boardUri,
 };
 
 exports.clearPostingReferences = function(boardUri, threadsToClear,
-    postsToClear, onlyFilesDeletion, mediaDeletion, callback) {
+    postsToClear, onlyFilesDeletion, mediaDeletion, language, callback) {
 
   var query = {
     boardUri : boardUri,
@@ -196,7 +197,7 @@ exports.clearPostingReferences = function(boardUri, threadsToClear,
 
   if (!addedLimiter) {
     exports.getThreadReferences([], boardUri, threadsToClear, mediaDeletion,
-        callback);
+        language, callback);
 
     return;
   }
@@ -209,14 +210,14 @@ exports.clearPostingReferences = function(boardUri, threadsToClear,
         } else {
 
           exports.getThreadReferences(results, boardUri, threadsToClear,
-              mediaDeletion, callback);
+              mediaDeletion, language, callback);
         }
 
       });
 
 };
 
-exports.clearBoardReferences = function(boardUri, callback) {
+exports.clearBoardReferences = function(boardUri, language, callback) {
 
   posts.aggregate(exports.getAggregationQuery({
     boardUri : boardUri,
@@ -228,8 +229,8 @@ exports.clearBoardReferences = function(boardUri, callback) {
     if (error) {
       callback(error);
     } else {
-      exports.getThreadReferences(results, boardUri, null, false, callback,
-          true);
+      exports.getThreadReferences(results, boardUri, null, false, language,
+          callback, true);
     }
 
   });
@@ -328,13 +329,13 @@ exports.prune = function(callback) {
 };
 // } Section 2: File pruning
 
-exports.getMedia = function(userData, parameters, callback) {
+exports.getMedia = function(userData, parameters, language, callback) {
 
   var globalStaff = userData.globalRole <= maxGlobalStaffRole;
 
   if (!globalStaff) {
 
-    callback(lang.errDeniedMediaManagement);
+    callback(lang(language).errDeniedMediaManagement);
 
     return;
   }
@@ -380,13 +381,14 @@ exports.getMedia = function(userData, parameters, callback) {
 
 };
 
-exports.deleteFiles = function(identifiers, userData, callback, override) {
+exports.deleteFiles = function(identifiers, userData, language, callback,
+    override) {
 
   if (!override) {
     var allowed = userData.globalRole <= maxGlobalStaffRole;
     if (!allowed) {
 
-      callback(lang.errDeniedMediaManagement);
+      callback(lang(language).errDeniedMediaManagement);
 
       return;
     }

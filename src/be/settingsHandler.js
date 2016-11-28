@@ -330,11 +330,11 @@ function writeNewSettings(settings, callback) {
 
 }
 
-exports.setNewSettings = function(settings, callback) {
+exports.setNewSettings = function(settings, language, callback) {
 
   if (settings.overboard || settings.sfwOverboard) {
 
-    var lang = require('./engine/langOps').languagePack();
+    var lang = require('./engine/langOps').languagePack(language);
 
     var boardsToTest = [];
 

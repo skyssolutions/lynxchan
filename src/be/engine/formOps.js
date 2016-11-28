@@ -46,7 +46,7 @@ exports.loadDependencies = function() {
   modOps = require('./modOps');
   miscOps = require('./miscOps');
   domManipulator = require('./domManipulator').dynamicPages.miscPages;
-  lang = require('./langOps').languagePack();
+  lang = require('./langOps').languagePack;
   uploadHandler = require('./uploadHandler');
   videoMimes = uploadHandler.videoMimes();
 
@@ -160,7 +160,8 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
     var acceptableSize = file.size && file.size < maxFileSize;
 
     if (validMimes.indexOf(mime) === -1 && !exceptionalMimes && file.size) {
-      exports.outputError(lang.errFormatNotAllowed, 500, res, language);
+      exports.outputError(lang(language).errFormatNotAllowed, 500, res,
+          language);
     } else if (acceptableSize) {
 
       exports.getFileData(file, fields, mime, function gotFileData(error) {
@@ -180,7 +181,7 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
 
       });
     } else if (file.size) {
-      exports.outputError(lang.errFileTooLarge, 500, res, language);
+      exports.outputError(lang(language).errFileTooLarge, 500, res, language);
     } else {
       exports.transferFileInformation(files, fields, parsedCookies, cb, res,
           exceptionalMimes, language);
@@ -306,7 +307,8 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback,
 
     exports.getPostData(req, res, function(auth, parameters) {
 
-      accountOps.validate(auth, function validated(error, newAuth, userData) {
+      accountOps.validate(auth, req.language, function validated(error,
+          newAuth, userData) {
         if (error && !optionalAuth) {
           exports.redirectToLogin(res);
         } else {
@@ -317,15 +319,15 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback,
     }, exceptionalMimes);
   } else {
 
-    accountOps.validate(exports.getCookies(req), function validated(error,
-        newAuth, userData) {
+    accountOps.validate(exports.getCookies(req), req.language,
+        function validated(error, newAuth, userData) {
 
-      if (error && !optionalAuth) {
-        exports.redirectToLogin(res);
-      } else {
-        callback(newAuth, userData);
-      }
-    });
+          if (error && !optionalAuth) {
+            exports.redirectToLogin(res);
+          } else {
+            callback(newAuth, userData);
+          }
+        });
   }
 
 };
@@ -411,8 +413,8 @@ exports.failCheck = function(parameter, reason, res, language) {
   }
 
   if (res) {
-    var message = lang.errBlankParameter.replace('{$parameter}', parameter)
-        .replace('{$reason}', reason);
+    var message = lang(language).errBlankParameter.replace('{$parameter}',
+        parameter).replace('{$reason}', reason);
 
     exports.outputError(message, 400, res, language);
   }
@@ -435,23 +437,24 @@ exports.checkBlankParameters = function(object, parameters, res, language) {
     var parameter = parameters[i];
 
     if (!object.hasOwnProperty(parameter)) {
-      return exports.failCheck(parameter, lang.miscReasonNotPresent, res,
-          language);
+      return exports.failCheck(parameter, lang(language).miscReasonNotPresent,
+          res, language);
 
     }
 
     if (object[parameter] === null) {
-      return exports.failCheck(parameter, lang.miscReasonNnull, res, language);
+      return exports.failCheck(parameter, lang(language).miscReasonNnull, res,
+          language);
     }
 
     if (object[parameter] === undefined) {
-      return exports.failCheck(parameter, lang.miscReasonUndefined, res,
-          language);
+      return exports.failCheck(parameter, lang(language).miscReasonUndefined,
+          res, language);
     }
 
     if (!object[parameter].trim().length) {
-      return exports.failCheck(parameter, lang.miscReasonNoLength, res,
-          language);
+      return exports.failCheck(parameter, lang(language).miscReasonNoLength,
+          res, language);
     }
   }
 
@@ -486,8 +489,8 @@ exports.checkForBan = function(req, boardUri, res, callback, auth) {
 
       res.writeHead(200, miscOps.corsHeader('text/html', auth));
 
-      var board = ban.boardUri ? '/' + ban.boardUri + '/' : lang.miscAllBoards
-          .toLowerCase();
+      var board = ban.boardUri ? '/' + ban.boardUri + '/'
+          : lang(req.language).miscAllBoards.toLowerCase();
 
       res.end(domManipulator.ban(ban, board, req.language));
     } else {

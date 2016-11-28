@@ -228,7 +228,8 @@ exports.process = function(req, res) {
       if (authenticate) {
 
         // style exception,too simple
-        accountOps.validate(auth, function validated(error, newAuth, userData) {
+        accountOps.validate(auth, req.language, function validated(error,
+            newAuth, userData) {
           if (error) {
             formOps.outputError(error, 500, res, req.language);
           } else {

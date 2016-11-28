@@ -9,12 +9,12 @@ var posts = db.posts();
 var lang;
 
 exports.loadDependencies = function() {
-  lang = require('./langOps').languagePack();
+  lang = require('./langOps').languagePack;
 };
 
 // Section 1: Checking for duplicates {
 exports.getQuery = function(boardData, checkMessage, checkFiles, parameters,
-    callback) {
+    language, callback) {
 
   var query = {
     boardUri : boardData.boardUri,
@@ -35,7 +35,7 @@ exports.getQuery = function(boardData, checkMessage, checkFiles, parameters,
       var file = parameters.files[i];
 
       if (md5s.indexOf(file.md5) > -1) {
-        callback(lang.errDuplicateFileBeingPosted);
+        callback(lang(language).errDuplicateFileBeingPosted);
 
         return;
       }
@@ -54,7 +54,27 @@ exports.getQuery = function(boardData, checkMessage, checkFiles, parameters,
 
 };
 
-exports.check = function(parameters, boardData, callback) {
+exports.getPost = function(parameters, query, language, callback) {
+
+  posts.findOne(query, {
+    hash : 1
+  }, function foundPost(error, post) {
+
+    if (post) {
+
+      var hashMathes = post.hash === parameters.hash;
+
+      callback(hashMathes ? lang(language).errMessageAlreadyPosted
+          : lang(language).errFileAlreadyPosted);
+    } else {
+      callback(error);
+    }
+
+  });
+
+};
+
+exports.check = function(parameters, boardData, language, callback) {
 
   var settings = boardData.settings;
 
@@ -76,7 +96,7 @@ exports.check = function(parameters, boardData, callback) {
   }
 
   var query = exports.getQuery(boardData, checkMessage, checkFiles, parameters,
-      callback);
+      language, callback);
 
   if (!query) {
     return;
@@ -89,25 +109,13 @@ exports.check = function(parameters, boardData, callback) {
     if (error) {
       callback(error);
     } else if (thread) {
-      callback(thread.hash === parameters.hash ? lang.errMessageAlreadyPosted
-          : lang.errFileAlreadyPosted);
+      var matches = thread.hash === parameters.hash;
+
+      callback(matches ? lang(language).errMessageAlreadyPosted
+          : lang(language).errFileAlreadyPosted);
+
     } else {
-
-      // style exception, too simple
-      posts.findOne(query, {
-        hash : 1
-      }, function foundPost(error, post) {
-
-        if (post) {
-          callback(post.hash === parameters.hash ? lang.errMessageAlreadyPosted
-              : lang.errFileAlreadyPosted);
-        } else {
-          callback(error);
-        }
-
-      });
-      // style exception, too simple
-
+      exports.getPost(parameters, query, language, callback);
     }
 
   });

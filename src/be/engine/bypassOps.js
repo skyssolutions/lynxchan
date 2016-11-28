@@ -25,37 +25,37 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   captchaOps = require('./captchaOps');
-  lang = require('./langOps').languagePack();
+  lang = require('./langOps').languagePack;
 
 };
 
-exports.renewBypass = function(captchaId, captchaInput, callback) {
+exports.renewBypass = function(captchaId, captchaInput, language, callback) {
 
-  captchaOps.attemptCaptcha(captchaId, captchaInput, null, function solved(
-      error) {
+  captchaOps.attemptCaptcha(captchaId, captchaInput, null, language,
+      function solved(error) {
 
-    if (error) {
-      callback(error);
-    } else {
-
-      var newBypass = {
-        usesLeft : bypassMaxPosts,
-        expiration : new Date(new Date().getTime() + expirationToAdd)
-      };
-
-      // style exception, too simple
-      bypasses.insertOne(newBypass, function inserted(error) {
         if (error) {
           callback(error);
         } else {
-          callback(null, newBypass._id);
+
+          var newBypass = {
+            usesLeft : bypassMaxPosts,
+            expiration : new Date(new Date().getTime() + expirationToAdd)
+          };
+
+          // style exception, too simple
+          bypasses.insertOne(newBypass, function inserted(error) {
+            if (error) {
+              callback(error);
+            } else {
+              callback(null, newBypass._id);
+            }
+          });
+          // style exception, too simple
+
         }
+
       });
-      // style exception, too simple
-
-    }
-
-  });
 
 };
 
@@ -126,7 +126,7 @@ exports.useBypass = function(bypassId, req, callback) {
         callback(null, req);
         return;
       } else if (!floodDisabled && result.value.nextUsage > new Date()) {
-        errorToReturn = lang.errFlood;
+        errorToReturn = lang(req.language).errFlood;
       } else {
         req.bypassed = true;
       }
