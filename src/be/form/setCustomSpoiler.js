@@ -8,7 +8,8 @@ function setCustomSpoiler(userData, parameters, res, auth, language) {
 
   if (parameters.files.length) {
     boardOps.setCustomSpoiler(userData, parameters.boardUri,
-        parameters.files[0], function customSpoilerSet(error, boardUri) {
+        parameters.files[0], language, function customSpoilerSet(error,
+            boardUri) {
           if (error) {
             formOps.outputError(error, 500, res, language);
           } else {
@@ -21,7 +22,7 @@ function setCustomSpoiler(userData, parameters, res, auth, language) {
           }
         });
   } else {
-    boardOps.deleteCustomSpoiler(userData, parameters.boardUri,
+    boardOps.deleteCustomSpoiler(userData, parameters.boardUri, language,
         function deletedSpoiler(error) {
           if (error) {
             formOps.outputError(error, 500, res, language);

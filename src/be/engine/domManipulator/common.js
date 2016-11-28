@@ -46,16 +46,16 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
   templateHandler = require('../templateHandler').getTemplates;
   miscOps = require('../miscOps');
 
 };
 
-exports.formatFileSize = function(size) {
+exports.formatFileSize = function(size, language) {
 
   if (size === Infinity) {
-    return lang.guiUnlimited;
+    return lang(language).guiUnlimited;
   }
 
   var orderIndex = 0;
@@ -121,21 +121,21 @@ exports.padDateField = function(value) {
   return value;
 };
 
-exports.formatDateToDisplay = function(d, noTime) {
+exports.formatDateToDisplay = function(d, noTime, language) {
   var day = exports.padDateField(d.getUTCDate());
 
   var month = exports.padDateField(d.getUTCMonth() + 1);
 
   var year = d.getUTCFullYear();
 
-  var toReturn = lang.guiDateFormat.replace('{$month}', month).replace(
-      '{$day}', day).replace('{$year}', year);
+  var toReturn = lang(language).guiDateFormat.replace('{$month}', month)
+      .replace('{$day}', day).replace('{$year}', year);
 
   if (noTime) {
     return toReturn;
   }
 
-  var weekDay = lang.guiWeekDays[d.getUTCDay()];
+  var weekDay = lang(language).guiWeekDays[d.getUTCDay()];
 
   var hour = exports.padDateField(d.getUTCHours());
 
@@ -163,7 +163,7 @@ exports.setCustomJs = function(board, document) {
   document.getElementsByTagName('body')[0].appendChild(script);
 };
 
-exports.setFlags = function(document, board, flagData) {
+exports.setFlags = function(document, board, flagData, language) {
 
   if (!flagData || !flagData.length) {
     exports.removeElement(document.getElementById('flagsDiv'));
@@ -174,7 +174,7 @@ exports.setFlags = function(document, board, flagData) {
   var combobox = document.getElementById('flagCombobox');
 
   var option = document.createElement('option');
-  option.innerHTML = lang.guiNoFlag;
+  option.innerHTML = lang(language).guiNoFlag;
   option.value = '';
   combobox.appendChild(option);
 
@@ -190,7 +190,7 @@ exports.setFlags = function(document, board, flagData) {
 
 };
 
-exports.setBoardPosting = function(boardData, document, thread) {
+exports.setBoardPosting = function(boardData, document, thread, language) {
 
   var settings = boardData.settings;
 
@@ -207,7 +207,7 @@ exports.setBoardPosting = function(boardData, document, thread) {
   if (settings.indexOf('textBoard') > -1) {
     exports.removeElement(document.getElementById('divUpload'));
   } else {
-    exports.setFileLimits(document, boardData);
+    exports.setFileLimits(document, boardData, language);
   }
 
   var boardIdentifyInput = document.getElementById('boardIdentifier');
@@ -218,16 +218,17 @@ exports.setBoardPosting = function(boardData, document, thread) {
 
 };
 
-exports.setSharedHideableElements = function(posting, cell) {
+exports.setSharedHideableElements = function(posting, cell, language) {
 
   var editedLabel = cell.getElementsByClassName('labelLastEdit')[0];
 
   if (posting.lastEditTime) {
 
-    var formatedDate = exports.formatDateToDisplay(posting.lastEditTime);
+    var formatedDate = exports.formatDateToDisplay(posting.lastEditTime, null,
+        language);
 
-    editedLabel.innerHTML = lang.guiEditInfo.replace('{$date}', formatedDate)
-        .replace('{$login}', posting.lastEditLogin);
+    editedLabel.innerHTML = lang(language).guiEditInfo.replace('{$date}',
+        formatedDate).replace('{$login}', posting.lastEditLogin);
 
   } else {
     exports.removeElement(editedLabel);
@@ -319,9 +320,9 @@ exports.setThreadHiddeableElements = function(thread, cell, modding, boardUri,
 };
 
 exports.assembleOmissionContent = function(thread, displayedImages,
-    displayedPosts) {
+    displayedPosts, language) {
 
-  var pieces = lang.guiOmittedInfo;
+  var pieces = lang(language).guiOmittedInfo;
   var postDifference = thread.postCount - displayedPosts;
   var startPiece = postDifference > 1 ? pieces.startPiecePlural
       : pieces.startPiece;
@@ -341,7 +342,8 @@ exports.assembleOmissionContent = function(thread, displayedImages,
   return content;
 };
 
-exports.setOmittedInformation = function(thread, threadCell, posts, innerPage) {
+exports.setOmittedInformation = function(thread, threadCell, posts, innerPage,
+    language) {
 
   var omissionLabel = threadCell.getElementsByClassName('labelOmission')[0];
 
@@ -364,7 +366,7 @@ exports.setOmittedInformation = function(thread, threadCell, posts, innerPage) {
   }
 
   omissionLabel.innerHTML = exports.assembleOmissionContent(thread,
-      displayedImages, displayedPosts);
+      displayedImages, displayedPosts, language);
 };
 
 exports.getThreadCellBase = function(document, thread) {
@@ -384,9 +386,9 @@ exports.getThreadCellBase = function(document, thread) {
 exports.setThreadContent = function(thread, threadCell, posts, innerPage,
     boardUri, modding, userRole, document, boardData, language) {
 
-  exports.setOmittedInformation(thread, threadCell, posts, innerPage);
+  exports.setOmittedInformation(thread, threadCell, posts, innerPage, language);
 
-  exports.setSharedHideableElements(thread, threadCell);
+  exports.setSharedHideableElements(thread, threadCell, language);
 
   exports.setThreadLinks(threadCell, thread, boardUri, innerPage);
 
@@ -395,7 +397,7 @@ exports.setThreadContent = function(thread, threadCell, posts, innerPage,
   exports.setThreadHiddeableElements(thread, threadCell, modding, boardUri,
       boardData, userRole);
 
-  exports.setThreadSimpleElements(threadCell, thread, innerPage);
+  exports.setThreadSimpleElements(threadCell, thread, innerPage, language);
 
   exports.setUploadCell(document, threadCell
       .getElementsByClassName('panelUploads')[0], thread.files, modding,
@@ -435,7 +437,7 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
 };
 
 // Section 2.1: Post content {
-exports.setPostHideableElements = function(postCell, post) {
+exports.setPostHideableElements = function(postCell, post, language) {
 
   var subjectLabel = postCell.getElementsByClassName('labelSubject')[0];
   if (post.subject) {
@@ -460,7 +462,7 @@ exports.setPostHideableElements = function(postCell, post) {
     banMessageLabel.innerHTML = post.banMessage;
   }
 
-  exports.setSharedHideableElements(post, postCell);
+  exports.setSharedHideableElements(post, postCell, language);
 };
 
 exports.setPostLinks = function(postCell, post, preview) {
@@ -551,11 +553,12 @@ exports.setPostInnerElements = function(document, post, postCell, preview,
   exports.setPostLinkName(postCell, post);
 
   var labelCreated = postCell.getElementsByClassName('labelCreated')[0];
-  labelCreated.innerHTML = exports.formatDateToDisplay(post.creation);
+  labelCreated.innerHTML = exports.formatDateToDisplay(post.creation, null,
+      language);
 
   exports.addMessage(innerPage, postCell, post);
 
-  exports.setPostHideableElements(postCell, post);
+  exports.setPostHideableElements(postCell, post, language);
 
   exports.setPostModElements(post, modding, postCell, boardData, userRole);
 
@@ -678,7 +681,8 @@ exports.setThreadComplexElements = function(boardUri, thread, threadCell) {
       boardUri + '-' + thread.threadId);
 };
 
-exports.setThreadSimpleElements = function(threadCell, thread, innerPage) {
+exports.setThreadSimpleElements = function(threadCell, thread, innerPage,
+    language) {
 
   var linkName = threadCell.getElementsByClassName('linkName')[0];
 
@@ -698,7 +702,8 @@ exports.setThreadSimpleElements = function(threadCell, thread, innerPage) {
   }
 
   var labelCreation = threadCell.getElementsByClassName('labelCreated')[0];
-  labelCreation.innerHTML = exports.formatDateToDisplay(thread.creation);
+  labelCreation.innerHTML = exports.formatDateToDisplay(thread.creation, null,
+      language);
 
   exports.addMessage(innerPage, threadCell, thread);
 
@@ -769,7 +774,7 @@ exports.setUploadCell = function(document, node, files, modding, language) {
 
     exports.setUploadModElements(modding, cell, file);
 
-    var sizeString = exports.formatFileSize(file.size);
+    var sizeString = exports.formatFileSize(file.size, language);
     cell.getElementsByClassName('sizeLabel')[0].innerHTML = sizeString;
 
     var dimensionLabel = cell.getElementsByClassName('dimensionLabel')[0];
@@ -788,7 +793,7 @@ exports.setUploadCell = function(document, node, files, modding, language) {
 // } Section 2: Thread content
 
 // Section 3: Ban div {
-exports.setBanCell = function(ban, cell) {
+exports.setBanCell = function(ban, cell, language) {
 
   if (ban.appeal) {
     var label = cell.getElementsByClassName('appealLabel')[0];
@@ -809,7 +814,8 @@ exports.setBanCell = function(ban, cell) {
   cell.getElementsByClassName('reasonLabel')[0].innerHTML = ban.reason;
 
   var expirationLabel = cell.getElementsByClassName('expirationLabel')[0];
-  expirationLabel.innerHTML = exports.formatDateToDisplay(ban.expiration);
+  expirationLabel.innerHTML = exports.formatDateToDisplay(ban.expiration, null,
+      language);
 
   var appliedByLabel = cell.getElementsByClassName('appliedByLabel')[0];
   appliedByLabel.innerHTML = ban.appliedBy;
@@ -829,7 +835,7 @@ exports.setBanList = function(document, div, bans, language) {
 
     cell.setAttribute('class', 'banCell');
 
-    exports.setBanCell(ban, cell);
+    exports.setBanCell(ban, cell, language);
     div.appendChild(cell);
   }
 
@@ -837,7 +843,7 @@ exports.setBanList = function(document, div, bans, language) {
 // } Section 3: Ban div
 
 // Section 4: Header {
-exports.setFileLimits = function(document, bData) {
+exports.setFileLimits = function(document, bData, language) {
 
   var fileLimitToUse;
 
@@ -853,7 +859,7 @@ exports.setFileLimits = function(document, bData) {
   var sizeToUse;
 
   if (bData.maxFileSizeMB && bData.maxFileSizeMB < maxFileSizeMB) {
-    sizeToUse = exports.formatFileSize(bData.maxFileSizeMB * 1048576);
+    sizeToUse = exports.formatFileSize(bData.maxFileSizeMB * 1048576, language);
   } else {
     sizeToUse = displayMaxSize;
   }
@@ -883,7 +889,8 @@ exports.setBoardCustomization = function(boardData, document, board) {
 
 };
 
-exports.setHeader = function(document, board, boardData, flagData, thread) {
+exports.setHeader = function(document, board, boardData, flagData, thread,
+    language) {
 
   var titleHeader = document.getElementById('labelName');
   titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
@@ -891,11 +898,11 @@ exports.setHeader = function(document, board, boardData, flagData, thread) {
   var linkBanner = '/randomBanner.js?boardUri=' + board;
   document.getElementById('bannerImage').src = linkBanner;
 
-  exports.setBoardPosting(boardData, document, thread);
+  exports.setBoardPosting(boardData, document, thread, language);
 
   exports.setBoardCustomization(boardData, document, board);
 
-  exports.setFlags(document, board, flagData);
+  exports.setFlags(document, board, flagData, language);
 
 };
 // } Section 4: Header

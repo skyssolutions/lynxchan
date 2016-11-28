@@ -30,7 +30,7 @@ exports.loadDependencies = function() {
 
   miscOps = require('../../miscOps');
   templateHandler = require('../../templateHandler').getTemplates;
-  lang = require('../../langOps').languagePack();
+  lang = require('../../langOps').languagePack;
   common = require('..').common;
 
 };
@@ -42,7 +42,7 @@ exports.bans = function(bans, language) {
 
     var document = jsdom(templateHandler(language).bansPage);
 
-    document.title = lang.titBansManagement;
+    document.title = lang(language).titBansManagement;
 
     common.setBanList(document, document.getElementById('bansDiv'), bans,
         language);
@@ -91,7 +91,7 @@ exports.closedReports = function(reports, language) {
   try {
     var document = jsdom(templateHandler(language).closedReportsPage);
 
-    document.title = lang.titClosedReports;
+    document.title = lang(language).titClosedReports;
 
     var reportsDiv = document.getElementById('reportDiv');
 
@@ -157,7 +157,7 @@ exports.rangeBans = function(rangeBans, boardData, language) {
 
     var document = jsdom(templateHandler(language).rangeBansPage);
 
-    document.title = lang.titRangeBans;
+    document.title = lang(language).titRangeBans;
 
     var boardIdentifier = document.getElementById('boardIdentifier');
 
@@ -213,7 +213,7 @@ exports.hashBans = function(hashBans, boardUri, language) {
 
     var document = jsdom(templateHandler(language).hashBansPage);
 
-    document.title = lang.titHashBans;
+    document.title = lang(language).titHashBans;
 
     var boardIdentifier = document.getElementById('boardIdentifier');
 
@@ -271,7 +271,7 @@ exports.boardModeration = function(boardData, ownerData, language) {
 
     var document = jsdom(templateHandler(language).boardModerationPage);
 
-    document.title = lang.titBoardModeration.replace('{$board}',
+    document.title = lang(language).titBoardModeration.replace('{$board}',
         boardData.boardUri);
 
     exports.setSpecialCheckboxesAndIdentifiers(document, boardData);

@@ -21,7 +21,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   gridFsHandler = require('../gridFsHandler');
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
 
 };
 
@@ -54,7 +54,7 @@ exports.updateBoardAfterNewCss = function(board, callback) {
 
 };
 
-exports.setCustomCss = function(userData, boardUri, file, callback) {
+exports.setCustomCss = function(userData, boardUri, file, language, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
@@ -64,11 +64,11 @@ exports.setCustomCss = function(userData, boardUri, file, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.errDeniedCssManagement);
+      callback(lang(language).errDeniedCssManagement);
     } else if (file.mime !== 'text/css') {
-      callback(lang.errOnlyCssAllowed);
+      callback(lang(language).errOnlyCssAllowed);
     } else {
 
       // style exception, too simple
@@ -118,7 +118,7 @@ exports.updateBoardAfterDeleteCss = function(board, callback) {
 
 };
 
-exports.deleteCustomCss = function(userData, boardUri, callback) {
+exports.deleteCustomCss = function(userData, boardUri, language, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
@@ -128,9 +128,9 @@ exports.deleteCustomCss = function(userData, boardUri, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.errDeniedCssManagement);
+      callback(lang(language).errDeniedCssManagement);
     } else {
 
       // style exception, too simple
@@ -150,7 +150,8 @@ exports.deleteCustomCss = function(userData, boardUri, callback) {
 };
 // } Section 2: Custom CSS deletion
 
-exports.setCustomSpoiler = function(userData, boardUri, file, callback) {
+exports.setCustomSpoiler = function(userData, boardUri, file, language,
+    callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
@@ -160,11 +161,11 @@ exports.setCustomSpoiler = function(userData, boardUri, file, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.errDeniedSpoilerManagement);
+      callback(lang(language).errDeniedSpoilerManagement);
     } else if (file.mime.indexOf('image/') === -1) {
-      callback(lang.errNotAnImage);
+      callback(lang(language).errNotAnImage);
     } else {
 
       var newPath = '/' + boardUri + '/custom.spoiler';
@@ -195,7 +196,7 @@ exports.setCustomSpoiler = function(userData, boardUri, file, callback) {
   });
 };
 
-exports.deleteCustomSpoiler = function(userData, boardUri, callback) {
+exports.deleteCustomSpoiler = function(userData, boardUri, language, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
@@ -205,9 +206,9 @@ exports.deleteCustomSpoiler = function(userData, boardUri, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.errDeniedSpoilerManagement);
+      callback(lang(language).errDeniedSpoilerManagement);
     } else {
 
       // style exception, too simple
@@ -261,10 +262,10 @@ exports.updateBoardAfterNewJs = function(board, callback) {
 
 };
 
-exports.setCustomJs = function(userData, boardUri, file, callback) {
+exports.setCustomJs = function(userData, boardUri, file, language, callback) {
 
   if (!customJs) {
-    callback(lang.errNoCustomJs);
+    callback(lang(language).errNoCustomJs);
 
     return;
   }
@@ -277,11 +278,11 @@ exports.setCustomJs = function(userData, boardUri, file, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.errDeniedJsManagement);
+      callback(lang(language).errDeniedJsManagement);
     } else if (file.mime !== 'application/javascript') {
-      callback(lang.errOnlyJsAllowed);
+      callback(lang(language).errOnlyJsAllowed);
     } else {
 
       // style exception, too simple
@@ -332,7 +333,7 @@ exports.updateBoardAfterDeleteJs = function(board, callback) {
 
 };
 
-exports.deleteCustomJs = function(userData, boardUri, callback) {
+exports.deleteCustomJs = function(userData, boardUri, language, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
@@ -342,9 +343,9 @@ exports.deleteCustomJs = function(userData, boardUri, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.errDeniedJsManagement);
+      callback(lang(language).errDeniedJsManagement);
     } else {
 
       // style exception, too simple

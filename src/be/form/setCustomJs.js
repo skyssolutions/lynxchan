@@ -8,7 +8,7 @@ function setCustomJs(userData, parameters, res, auth, language) {
 
   if (parameters.files.length) {
     boardOps.setCustomJs(userData, parameters.boardUri, parameters.files[0],
-        function customJsSet(error, boardUri) {
+        language, function customJsSet(error, boardUri) {
           if (error) {
             formOps.outputError(error, 500, res, language);
           } else {
@@ -21,19 +21,19 @@ function setCustomJs(userData, parameters, res, auth, language) {
           }
         });
   } else {
-    boardOps.deleteCustomJs(userData, parameters.boardUri, function deletedJs(
-        error) {
-      if (error) {
-        formOps.outputError(error, 500, res, language);
-      } else {
+    boardOps.deleteCustomJs(userData, parameters.boardUri, language,
+        function deletedJs(error) {
+          if (error) {
+            formOps.outputError(error, 500, res, language);
+          } else {
 
-        var redirect = '/boardManagement.js?boardUri=';
-        redirect += parameters.boardUri;
+            var redirect = '/boardManagement.js?boardUri=';
+            redirect += parameters.boardUri;
 
-        formOps.outputResponse(lang.msgJsDeleted, redirect, res, null, auth,
-            language);
-      }
-    });
+            formOps.outputResponse(lang.msgJsDeleted, redirect, res, null,
+                auth, language);
+          }
+        });
 
   }
 

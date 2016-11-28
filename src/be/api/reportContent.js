@@ -2,7 +2,7 @@
 
 var apiOps = require('../engine/apiOps');
 var modOps = require('../engine/modOps').report;
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 
 function reportContent(req, parameters, res, captchaId) {
 
@@ -19,7 +19,7 @@ function reportContent(req, parameters, res, captchaId) {
             banId : ban._id,
             expiration : ban.expiration,
             board : ban.boardUri ? '/' + ban.boardUri + '/'
-                : lang.miscAllBoards.toLowerCase()
+                : lang(req.language).miscAllBoards.toLowerCase()
           }, 'banned', res);
         } else {
           apiOps.outputResponse(null, null, 'ok', res);

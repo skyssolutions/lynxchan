@@ -1,7 +1,7 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var url = require('url');
 var settingsHandler = require('../settingsHandler');
 
@@ -11,7 +11,7 @@ exports.process = function(req, res) {
   var loadedAddons = settingsHandler.getGeneralSettings().addons || [];
 
   if (loadedAddons.indexOf(requestedAddon) === -1) {
-    apiOps.outputError(lang.errUnloadedAddon, res);
+    apiOps.outputError(lang(req.language).errUnloadedAddon, res);
 
   } else {
 

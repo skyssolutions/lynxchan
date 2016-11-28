@@ -26,7 +26,20 @@ var siteTitle;
 var engineInfo;
 var disableCatalogPosting;
 
-var availableLogTypes;
+var availableLogTypes = {
+  ban : 'guiTypeBan',
+  banLift : 'guiTypeBanLift',
+  deletion : 'guiTypeDeletion',
+  fileDeletion : 'guiTypeFileDeletion',
+  reportClosure : 'guiTypeReportClosure',
+  globalRoleChange : 'guiTypeGlobalRoleChange',
+  boardDeletion : 'guiTypeBoardDeletion',
+  boardTransfer : 'guiTypeBoardTransfer',
+  hashBan : 'guiTypeHashBan',
+  hashBanLift : 'guiTypeHashBanLift',
+  threadTransfer : 'guiTypeThreadTransfer',
+  appealDeny : 'guiTypeAppealDeny'
+};
 
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
@@ -35,7 +48,7 @@ exports.loadSettings = function() {
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
   accountCreationDisabled = settings.disableAccountCreation;
-  siteTitle = settings.siteTitle || lang.titDefaultChanTitle;
+  siteTitle = settings.siteTitle;
   clearIpMinRole = settings.clearIpMinRole;
 
 };
@@ -46,22 +59,8 @@ exports.loadDependencies = function() {
   engineInfo = require('../addonOps').getEngineInfo();
   common = require('.').common;
   templateHandler = require('../templateHandler').getTemplates;
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
   gridFs = require('../gridFsHandler');
-  availableLogTypes = {
-    ban : lang.guiTypeBan,
-    banLift : lang.guiTypeBanLift,
-    deletion : lang.guiTypeDeletion,
-    fileDeletion : lang.guiTypeFileDeletion,
-    reportClosure : lang.guiTypeReportClosure,
-    globalRoleChange : lang.guiTypeGlobalRoleChange,
-    boardDeletion : lang.guiTypeBoardDeletion,
-    boardTransfer : lang.guiTypeBoardTransfer,
-    hashBan : lang.guiTypeHashBan,
-    hashBanLift : lang.guiTypeHashBanLift,
-    threadTransfer : lang.guiTypeThreadTransfer,
-    appealDeny : lang.guiTypeAppealDeny
-  };
 
 };
 
@@ -70,7 +69,7 @@ exports.notFound = function(language, callback) {
   try {
     var document = jsdom(templateHandler(language).notFoundPage);
 
-    document.title = lang.titNotFound;
+    document.title = lang(language).titNotFound;
 
     var path = '/404.html';
     var meta = {
@@ -95,7 +94,7 @@ exports.login = function(language, callback) {
   try {
     var document = jsdom(templateHandler(language).loginPage);
 
-    document.title = lang.titLogin;
+    document.title = lang(language).titLogin;
 
     if (accountCreationDisabled) {
       common.removeElement(document.getElementById('divCreation'));
@@ -230,7 +229,7 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
     var linkManagement = document.getElementById('linkManagement');
     linkManagement.href = '/boardManagement.js?boardUri=' + boardData.boardUri;
 
-    common.setHeader(document, boardUri, boardData, flagData, true);
+    common.setHeader(document, boardUri, boardData, flagData, true, language);
 
     exports.setThreadHiddenIdentifiers(document, boardUri, threadData);
 
@@ -329,7 +328,7 @@ exports.page = function(board, page, threads, pageCount, boardData, flagData,
     var linkModeration = document.getElementById('linkModeration');
     linkModeration.href = '/boardModeration.js?boardUri=' + board;
 
-    common.setHeader(document, board, boardData, flagData);
+    common.setHeader(document, board, boardData, flagData, null, language);
 
     exports.addPagesLinks(document, pageCount, page);
 
@@ -342,16 +341,16 @@ exports.page = function(board, page, threads, pageCount, boardData, flagData,
 // } Section 2: Board
 
 // Section 3: Catalog {
-exports.setCellThumb = function(thumbLink, boardUri, document, thread) {
+exports.setCellThumb = function(thumbLink, boardUri, doc, thread, language) {
   thumbLink.href = '/' + boardUri + '/res/' + thread.threadId + '.html';
 
   if (thread.files && thread.files.length) {
-    var thumbImage = document.createElement('img');
+    var thumbImage = doc.createElement('img');
 
     thumbImage.src = thread.files[0].thumb;
     thumbLink.appendChild(thumbImage);
   } else {
-    thumbLink.innerHTML = lang.guiOpen;
+    thumbLink.innerHTML = lang(language).guiOpen;
   }
 };
 
@@ -375,7 +374,7 @@ exports.setCell = function(boardUri, document, thread, language) {
   cell.setAttribute('class', 'catalogCell');
 
   exports.setCellThumb(cell.getElementsByClassName('linkThumb')[0], boardUri,
-      document, thread);
+      document, thread, language);
 
   var labelReplies = cell.getElementsByClassName('labelReplies')[0];
   labelReplies.innerHTML = thread.postCount || 0;
@@ -396,12 +395,13 @@ exports.setCell = function(boardUri, document, thread, language) {
 
 };
 
-exports.setCatalogPosting = function(boardData, boardUri, flagData, document) {
+exports.setCatalogPosting = function(boardData, boardUri, flagData, document,
+    language) {
 
   if (!disableCatalogPosting) {
 
-    common.setBoardPosting(boardData, document);
-    common.setFlags(document, boardUri, flagData);
+    common.setBoardPosting(boardData, document, null, language);
+    common.setFlags(document, boardUri, flagData, language);
   } else {
     common.removeElement(document.getElementById('postingForm'));
   }
@@ -438,11 +438,12 @@ exports.catalog = function(language, boardData, threads, flagData, callback) {
       common.setCustomCss(boardUri, document);
     }
 
-    document.title = lang.titCatalog.replace('{$board}', boardUri);
+    document.title = lang(language).titCatalog.replace('{$board}', boardUri);
 
     document.getElementById('labelBoard').innerHTML = '/' + boardUri + '/';
 
-    exports.setCatalogPosting(boardData, boardUri, flagData, document);
+    exports
+        .setCatalogPosting(boardData, boardUri, flagData, document, language);
 
     var threadsDiv = document.getElementById('divThreads');
 
@@ -602,7 +603,7 @@ exports.setGlobalStats = function(document, globalStats) {
 exports.setFrontPageContent = function(document, boards, globalStats,
     latestImages, latestPosts, language) {
 
-  document.title = siteTitle;
+  document.title = siteTitle || lang(language).titDefaultChanTitle;
 
   exports.setTopBoards(document, boards, language);
 
@@ -720,7 +721,7 @@ exports.maintenance = function(language, callback) {
 
     var document = jsdom(templateHandler(language).maintenancePage);
 
-    document.title = lang.titMaintenance;
+    document.title = lang(language).titMaintenance;
 
     var path = '/maintenance.html';
     var meta = {
@@ -770,7 +771,7 @@ exports.overboard = function(foundThreads, previewRelation, callback,
         language);
 
     if (multiBoard) {
-      document.title = lang.titMultiboard;
+      document.title = lang(language).titMultiboard;
       callback(null, serializer(document));
     } else {
       document.title = '/' + (sfw ? sfwOverboard : overboard) + '/';
@@ -794,17 +795,17 @@ exports.overboard = function(foundThreads, previewRelation, callback,
 // } Section 6: Overboard
 
 // Section 7: Log page {
-exports.setLogEntry = function(logCell, log) {
+exports.setLogEntry = function(logCell, log, language) {
 
   if (!log.global) {
     common.removeElement(logCell.getElementsByClassName('indicatorGlobal')[0]);
   }
 
   var labelType = logCell.getElementsByClassName('labelType')[0];
-  labelType.innerHTML = availableLogTypes[log.type];
+  labelType.innerHTML = lang(language)[availableLogTypes[log.type]];
 
   var labelTime = logCell.getElementsByClassName('labelTime')[0];
-  labelTime.innerHTML = common.formatDateToDisplay(log.time);
+  labelTime.innerHTML = common.formatDateToDisplay(log.time, null, language);
 
   var labelBoard = logCell.getElementsByClassName('labelBoard')[0];
   labelBoard.innerHTML = log.boardUri || '';
@@ -826,7 +827,7 @@ exports.addLogEntry = function(logEntry, document, div, language) {
 
     logCell.innerHTML = templateHandler(language).logCell;
 
-    exports.setLogEntry(logCell, logEntry);
+    exports.setLogEntry(logCell, logEntry, language);
 
     if (individualCaches) {
       staffLogs.updateOne({
@@ -852,8 +853,8 @@ exports.log = function(language, date, logs, callback) {
 
     var document = jsdom(templateHandler(language).logsPage);
 
-    document.title = lang.titLogPage.replace('{$date}', common
-        .formatDateToDisplay(date, true));
+    document.title = lang(language).titLogPage.replace('{$date}', common
+        .formatDateToDisplay(date, true, language));
 
     var div = document.getElementById('divLogs');
 
@@ -888,7 +889,7 @@ exports.getRulesDocument = function(language, boardUri, rules) {
 
   var document = jsdom(templateHandler(language).rulesPage);
 
-  document.title = lang.titRules.replace('{$board}', boardUri);
+  document.title = lang(language).titRules.replace('{$board}', boardUri);
   document.getElementById('boardLabel').innerHTML = boardUri;
   var rulesDiv = document.getElementById('divRules');
 

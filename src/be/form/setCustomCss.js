@@ -8,7 +8,7 @@ function setCustomCss(userData, parameters, res, auth, language) {
 
   if (parameters.files.length) {
     boardOps.setCustomCss(userData, parameters.boardUri, parameters.files[0],
-        function customCssSet(error, boardUri) {
+        language, function customCssSet(error, boardUri) {
           if (error) {
             formOps.outputError(error, 500, res, language);
           } else {
@@ -21,7 +21,7 @@ function setCustomCss(userData, parameters, res, auth, language) {
           }
         });
   } else {
-    boardOps.deleteCustomCss(userData, parameters.boardUri,
+    boardOps.deleteCustomCss(userData, parameters.boardUri, language,
         function deletedCss(error) {
           if (error) {
             formOps.outputError(error, 500, res, language);
