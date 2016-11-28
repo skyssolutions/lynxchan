@@ -76,7 +76,7 @@ exports.loadDependencies = function() {
   postingOps = require('../postingOps').common;
   miscOps = require('../miscOps');
   modCommonOps = require('../modOps').common;
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
 
   var dynamicPages = require('../domManipulator').dynamicPages;
   rangeSettings = dynamicPages.managementPages.boardRangeSettingsRelation;
@@ -299,7 +299,7 @@ exports.saveNewSettings = function(board, parameters, callback) {
 
 };
 
-exports.setSettings = function(userData, parameters, callback) {
+exports.setSettings = function(userData, parameters, language, callback) {
 
   parameters.boardUri = parameters.boardUri.toString();
 
@@ -310,9 +310,9 @@ exports.setSettings = function(userData, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (!modCommonOps.isInBoardStaff(userData, board, 2)) {
-      callback(lang.errDeniedChangeBoardSettings);
+      callback(lang(language).errDeniedChangeBoardSettings);
     } else {
       miscOps.sanitizeStrings(parameters, boardParameters);
 
@@ -362,7 +362,7 @@ exports.updateUsersOwnedBoards = function(oldOwner, parameters, callback) {
 
 exports.logTransfer = function(userData, parameters, oldOwner, callback) {
 
-  var message = lang.logTransferBoard.replace('{$actor}', userData.login)
+  var message = lang().logTransferBoard.replace('{$actor}', userData.login)
       .replace('{$board}', parameters.boardUri).replace('{$login}',
           parameters.login);
 
@@ -405,7 +405,7 @@ exports.performTransfer = function(oldOwner, userData, newOwnerData,
 
 };
 
-exports.transfer = function(userData, parameters, callback) {
+exports.transfer = function(userData, parameters, language, callback) {
 
   var admin = userData.globalRole < 2;
 
@@ -420,9 +420,9 @@ exports.transfer = function(userData, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (userData.login !== board.owner && !admin) {
-      callback(lang.errDeniedBoardTransfer);
+      callback(lang(language).errDeniedBoardTransfer);
     } else if (board.owner === parameters.login) {
       callback();
     } else {
@@ -436,7 +436,7 @@ exports.transfer = function(userData, parameters, callback) {
         if (error) {
           callback(error);
         } else if (!user) {
-          callback(lang.errUserNotFound);
+          callback(lang(language).errUserNotFound);
         } else {
           exports.performTransfer(board.owner, userData, user, parameters,
               callback);
@@ -452,14 +452,15 @@ exports.transfer = function(userData, parameters, callback) {
 // } Section 2: Transfer
 
 // Section 3: Volunteer management {
-exports.manageVolunteer = function(currentVolunteers, parameters, callback) {
+exports.manageVolunteer = function(currentVolunteers, parameters, language,
+    callback) {
 
   var isAVolunteer = currentVolunteers.indexOf(parameters.login) > -1;
 
   if (parameters.add === isAVolunteer) {
     callback();
   } else if (!isAVolunteer && currentVolunteers.length >= maxVolunteers) {
-    callback(lang.errMaxBoardVolunteers);
+    callback(lang(language).errMaxBoardVolunteers);
   } else {
 
     var operation;
@@ -499,16 +500,12 @@ exports.manageVolunteer = function(currentVolunteers, parameters, callback) {
       if (error) {
         callback(error);
       } else if (!result.value && !isAVolunteer) {
-        callback(lang.errUserNotFound);
+        callback(lang(language).errUserNotFound);
       } else {
 
-        // style exception, too simple
         boards.updateOne({
           boardUri : parameters.boardUri
-        }, operation, function updatedVolunteers(error) {
-          callback(error);
-        });
-        // style exception, too simple
+        }, operation, callback);
 
       }
     });
@@ -517,7 +514,7 @@ exports.manageVolunteer = function(currentVolunteers, parameters, callback) {
 
 };
 
-exports.setVolunteer = function(userData, parameters, callback) {
+exports.setVolunteer = function(userData, parameters, language, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
@@ -535,13 +532,14 @@ exports.setVolunteer = function(userData, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.errDeniedSetVolunteer);
+      callback(lang(language).errDeniedSetVolunteer);
     } else if (parameters.login === board.owner) {
-      callback(lang.errOwnerVolunteer);
+      callback(lang(language).errOwnerVolunteer);
     } else {
-      exports.manageVolunteer(board.volunteers || [], parameters, callback);
+      exports.manageVolunteer(board.volunteers || [], parameters, language,
+          callback);
     }
   });
 
@@ -549,7 +547,7 @@ exports.setVolunteer = function(userData, parameters, callback) {
 // } Section 3: Volunteer management
 
 // Section 4: Creation {
-exports.insertBoard = function(parameters, userData, callback) {
+exports.insertBoard = function(parameters, userData, language, callback) {
 
   boards.insertOne({
     boardUri : parameters.boardUri,
@@ -567,7 +565,7 @@ exports.insertBoard = function(parameters, userData, callback) {
     if (error && error.code !== 11000) {
       callback(error);
     } else if (error) {
-      callback(lang.errUriInUse);
+      callback(lang(language).errUriInUse);
     } else {
 
       // style exception, too simple
@@ -593,12 +591,13 @@ exports.insertBoard = function(parameters, userData, callback) {
 
 };
 
-exports.createBoard = function(captchaId, parameters, userData, callback) {
+exports.createBoard = function(captchaId, parameters, userData, language,
+    callback) {
 
   var allowed = userData.globalRole <= boardCreationRequirement;
 
   if (!allowed && boardCreationRequirement <= miscOps.getMaxStaffRole()) {
-    callback(lang.errDeniedBoardCreation);
+    callback(lang(language).errDeniedBoardCreation);
     return;
   }
 
@@ -607,10 +606,10 @@ exports.createBoard = function(captchaId, parameters, userData, callback) {
   var reservedUris = [ overboard, sfwOverboard ];
 
   if (/\W/.test(parameters.boardUri)) {
-    callback(lang.errInvalidUri);
+    callback(lang(language).errInvalidUri);
     return;
   } else if (reservedUris.indexOf(parameters.boardUri) > -1) {
-    callback(lang.errUriInUse);
+    callback(lang(language).errUriInUse);
     return;
   }
 
@@ -620,7 +619,7 @@ exports.createBoard = function(captchaId, parameters, userData, callback) {
         if (error) {
           callback(error);
         } else {
-          exports.insertBoard(parameters, userData, callback);
+          exports.insertBoard(parameters, userData, language, callback);
         }
 
       });
@@ -701,7 +700,7 @@ exports.getBoardReports = function(boardData, associatePosts, callback) {
 };
 
 exports.getBoardManagementData = function(userData, board,
-    associateReportContent, callback) {
+    associateReportContent, language, callback) {
 
   boards.findOne({
     boardUri : board
@@ -730,23 +729,24 @@ exports.getBoardManagementData = function(userData, board,
     if (error) {
       callback(error);
     } else if (!boardData) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (modCommonOps.isInBoardStaff(userData, boardData)) {
       exports.getBoardReports(boardData, associateReportContent, callback);
     } else {
-      callback(lang.errDeniedManageBoard);
+      callback(lang(language).errDeniedManageBoard);
     }
   });
 
 };
 // } Section 5: Board management
 
-exports.getBoardModerationData = function(userData, boardUri, callback) {
+exports.getBoardModerationData = function(userData, boardUri, language,
+    callback) {
 
   var admin = userData.globalRole < 2;
 
   if (!admin) {
-    callback(lang.errDeniedBoardMod);
+    callback(lang(language).errDeniedBoardMod);
     return;
   }
 
@@ -756,7 +756,7 @@ exports.getBoardModerationData = function(userData, boardUri, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else {
 
       // style exception, too simple
@@ -770,12 +770,12 @@ exports.getBoardModerationData = function(userData, boardUri, callback) {
   });
 };
 
-exports.setSpecialSettings = function(userData, parameters, callback) {
+exports.setSpecialSettings = function(userData, parameters, language, cb) {
 
   var admin = userData.globalRole < 2;
 
   if (!admin) {
-    callback(lang.errDeniedBoardMod);
+    cb(lang(language).errDeniedBoardMod);
     return;
   }
 
@@ -788,11 +788,11 @@ exports.setSpecialSettings = function(userData, parameters, callback) {
   }, function gotBoard(error, result) {
 
     if (error) {
-      callback(error);
+      cb(error);
     } else if (!result.value) {
-      callback(lang.errBoardNotFound);
+      cb(lang(language).errBoardNotFound);
     } else {
-      callback();
+      cb();
     }
 
   });

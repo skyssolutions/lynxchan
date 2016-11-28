@@ -12,7 +12,8 @@ function transferBoard(userData, parameters, res, auth, language) {
     return;
   }
 
-  boardOps.transfer(userData, parameters, function transferedBoard(error) {
+  boardOps.transfer(userData, parameters, language, function transferedBoard(
+      error) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {

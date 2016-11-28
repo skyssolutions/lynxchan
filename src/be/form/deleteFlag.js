@@ -6,18 +6,18 @@ var lang = require('../engine/langOps').languagePack();
 
 function deleteFlag(parameters, userData, res, auth, language) {
 
-  boardOps.deleteFlag(userData, parameters.flagId, function deletedFlag(error,
-      board) {
-    if (error) {
-      formOps.outputError(error, 500, res, language);
-    } else {
+  boardOps.deleteFlag(userData, parameters.flagId, language,
+      function deletedFlag(error, board) {
+        if (error) {
+          formOps.outputError(error, 500, res, language);
+        } else {
 
-      var url = '/flags.js?boardUri=' + board;
+          var url = '/flags.js?boardUri=' + board;
 
-      formOps.outputResponse(lang.msgFlagDeleted, url, res, null, auth,
-          language);
-    }
-  });
+          formOps.outputResponse(lang.msgFlagDeleted, url, res, null, auth,
+              language);
+        }
+      });
 
 }
 

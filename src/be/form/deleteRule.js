@@ -12,7 +12,8 @@ function deleteRule(parameters, userData, res, auth, language) {
     return;
   }
 
-  boardOps.deleteRule(parameters, userData, function deletedRule(error) {
+  boardOps.deleteRule(parameters, userData, language, function deletedRule(
+      error) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {

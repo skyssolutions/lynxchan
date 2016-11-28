@@ -9,23 +9,23 @@ var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
 function getRulesData(parameters, userData, res, auth, language) {
 
-  boardOps.boardRules(parameters.boardUri, userData, function gotRules(error,
-      rules) {
-    if (error) {
-      formOps.outputError(error, 500, res, language);
-    } else {
-      var json = parameters.json;
+  boardOps.boardRules(parameters.boardUri, userData, language,
+      function gotRules(error, rules) {
+        if (error) {
+          formOps.outputError(error, 500, res, language);
+        } else {
+          var json = parameters.json;
 
-      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-          : 'text/html', auth));
+          res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+              : 'text/html', auth));
 
-      if (json) {
-        res.end(jsonBuilder.ruleManagement(rules));
-      } else {
-        res.end(dom.ruleManagement(parameters.boardUri, rules, language));
-      }
-    }
-  });
+          if (json) {
+            res.end(jsonBuilder.ruleManagement(rules));
+          } else {
+            res.end(dom.ruleManagement(parameters.boardUri, rules, language));
+          }
+        }
+      });
 
 }
 

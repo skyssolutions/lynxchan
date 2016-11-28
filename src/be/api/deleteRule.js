@@ -4,13 +4,14 @@ var apiOps = require('../engine/apiOps');
 var boardOps = require('../engine/boardOps').rules;
 var mandatoryParameters = [ 'boardUri', 'ruleIndex' ];
 
-function deleteRule(auth, parameters, userData, res) {
+function deleteRule(auth, parameters, userData, res, language) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
   }
 
-  boardOps.deleteRule(parameters, userData, function ruleDeleted(error) {
+  boardOps.deleteRule(parameters, userData, language, function ruleDeleted(
+      error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
@@ -23,6 +24,6 @@ exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-    deleteRule(auth, parameters, userData, res);
+    deleteRule(auth, parameters, userData, res, req.language);
   });
 };

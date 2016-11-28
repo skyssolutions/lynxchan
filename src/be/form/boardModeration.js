@@ -9,7 +9,7 @@ var formOps = require('../engine/formOps');
 
 function getBoardModerationData(parameters, userData, res, auth, language) {
 
-  boardOps.getBoardModerationData(userData, parameters.boardUri,
+  boardOps.getBoardModerationData(userData, parameters.boardUri, language,
       function gotBoardModerationData(error, boardData, ownerData) {
         if (error) {
           formOps.outputError(error, 500, res, language);

@@ -12,7 +12,8 @@ function addRule(parameters, userData, res, auth, language) {
     return;
   }
 
-  boardOps.addBoardRule(parameters, userData, function addedRule(error) {
+  boardOps.addBoardRule(parameters, userData, language, function addedRule(
+      error) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {

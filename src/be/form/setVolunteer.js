@@ -14,7 +14,8 @@ function setVolunteer(userData, parameters, res, auth, language) {
 
   parameters.add = parameters.add === 'true';
 
-  boardOps.setVolunteer(userData, parameters, function setVolunteer(error) {
+  boardOps.setVolunteer(userData, parameters, language, function setVolunteer(
+      error) {
 
     if (error) {
       formOps.outputError(error, 500, res, language);

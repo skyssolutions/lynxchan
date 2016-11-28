@@ -21,11 +21,11 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   miscOps = require('../miscOps');
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
 
 };
 
-exports.addBoardRule = function(parameters, userData, callback) {
+exports.addBoardRule = function(parameters, userData, language, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
@@ -37,12 +37,12 @@ exports.addBoardRule = function(parameters, userData, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (userData.login !== board.owner && !globallyAllowed) {
-      callback(!lang.errDeniedRuleManagement);
+      callback(!lang(language).errDeniedRuleManagement);
     } else {
       if (board.rules && board.rules.length >= maxRulesCount) {
-        callback(lang.errRuleLimitReached);
+        callback(lang(language).errRuleLimitReached);
 
         return;
       }
@@ -76,7 +76,7 @@ exports.addBoardRule = function(parameters, userData, callback) {
   });
 };
 
-exports.deleteRule = function(parameters, userData, callback) {
+exports.deleteRule = function(parameters, userData, language, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
@@ -88,13 +88,13 @@ exports.deleteRule = function(parameters, userData, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errNoBoardFound);
+      callback(lang(language).errNoBoardFound);
     } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.errDeniedRuleManagement);
+      callback(lang(language).errDeniedRuleManagement);
     } else {
 
       if (isNaN(parameters.ruleIndex)) {
-        callback(lang.errInvalidIndex);
+        callback(lang(language).errInvalidIndex);
         return;
       }
 
@@ -131,7 +131,7 @@ exports.deleteRule = function(parameters, userData, callback) {
   });
 };
 
-exports.boardRules = function(boardUri, userData, callback) {
+exports.boardRules = function(boardUri, userData, language, callback) {
 
   var globallyAllowed;
 
@@ -149,9 +149,9 @@ exports.boardRules = function(boardUri, userData, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (userData && userData.login !== board.owner && !globallyAllowed) {
-      callback(lang.errDeniedRuleManagement);
+      callback(lang(language).errDeniedRuleManagement);
     } else {
       callback(null, board.rules || []);
     }

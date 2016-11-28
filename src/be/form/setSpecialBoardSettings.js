@@ -27,7 +27,7 @@ function setBoardSpecialSettings(userData, parameters, res, auth, language) {
 
   parameters.specialSettings = desiredSettings;
 
-  boardOps.setSpecialSettings(userData, parameters,
+  boardOps.setSpecialSettings(userData, parameters, language,
       function specialSettingsSaved(error) {
         if (error) {
           formOps.outputError(error, 500, res, language);

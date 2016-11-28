@@ -5,7 +5,7 @@ var boardOps = require('../engine/boardOps').meta;
 var mandatoryParameters = [ 'boardUri', 'boardName', 'boardDescription' ];
 var possibleSettings = boardOps.getValidSettings();
 
-function setSettings(auth, userData, parameters, res) {
+function setSettings(auth, userData, parameters, res, language) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -26,7 +26,8 @@ function setSettings(auth, userData, parameters, res) {
 
   parameters.settings = desiredSettings;
 
-  boardOps.setSettings(userData, parameters, function savedSettings(error) {
+  boardOps.setSettings(userData, parameters, language, function savedSettings(
+      error) {
 
     if (error) {
       apiOps.outputError(error, res);
@@ -40,6 +41,6 @@ exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-    setSettings(auth, userData, parameters, res);
+    setSettings(auth, userData, parameters, res, req.language);
   });
 };

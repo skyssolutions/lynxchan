@@ -12,7 +12,8 @@ function createFlag(parameters, userData, res, auth, language) {
     return;
   }
 
-  boardOps.createFlag(userData, parameters, function createdFlag(error) {
+  boardOps.createFlag(userData, parameters, language, function createdFlag(
+      error) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {

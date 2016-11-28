@@ -19,7 +19,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   miscOps = require('../miscOps');
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
 
 };
 
@@ -73,7 +73,7 @@ exports.setFilter = function(board, callback, parameters) {
 
 };
 
-exports.createFilter = function(userData, parameters, callback) {
+exports.createFilter = function(userData, parameters, language, callback) {
 
   miscOps.sanitizeStrings(parameters, filterParameters);
 
@@ -87,11 +87,11 @@ exports.createFilter = function(userData, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.errDeniedChangeBoardSettings);
+      callback(lang(language).errDeniedChangeBoardSettings);
     } else if (board.filters && board.filters.length >= maxFiltersCount) {
-      callback(lang.errMaxFiltersReached);
+      callback(lang(language).errMaxFiltersReached);
     } else {
       exports.setFilter(board, callback, parameters);
     }
@@ -100,7 +100,7 @@ exports.createFilter = function(userData, parameters, callback) {
 };
 // } Section 1: Filter creation
 
-exports.deleteFilter = function(userData, parameters, callback) {
+exports.deleteFilter = function(userData, parameters, language, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
@@ -112,9 +112,9 @@ exports.deleteFilter = function(userData, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.errDeniedChangeBoardSettings);
+      callback(lang(language).errDeniedChangeBoardSettings);
     } else {
 
       var existingFilters = board.filters || [];
@@ -147,7 +147,7 @@ exports.deleteFilter = function(userData, parameters, callback) {
 
 };
 
-exports.getFilterData = function(userData, boardUri, callback) {
+exports.getFilterData = function(userData, boardUri, language, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
@@ -157,9 +157,9 @@ exports.getFilterData = function(userData, boardUri, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (userData.login !== board.owner && !globallyAllowed) {
-      callback(lang.errDeniedChangeBoardSettings);
+      callback(lang(language).errDeniedChangeBoardSettings);
     } else {
       callback(null, board.filters || []);
     }

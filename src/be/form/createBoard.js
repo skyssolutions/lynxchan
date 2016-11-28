@@ -12,17 +12,17 @@ function createBoard(userData, parameters, res, captchaId, auth, language) {
     return;
   }
 
-  boardOps.createBoard(captchaId, parameters, userData, function boardCreated(
-      error) {
-    if (error) {
-      formOps.outputError(error, 500, res, language);
-    } else {
-      var redirectLink = '/' + parameters.boardUri + '/';
+  boardOps.createBoard(captchaId, parameters, userData, language,
+      function boardCreated(error) {
+        if (error) {
+          formOps.outputError(error, 500, res, language);
+        } else {
+          var redirectLink = '/' + parameters.boardUri + '/';
 
-      formOps.outputResponse(lang.msgBoardCreated, redirectLink, res, null,
-          auth, language);
-    }
-  });
+          formOps.outputResponse(lang.msgBoardCreated, redirectLink, res, null,
+              auth, language);
+        }
+      });
 
 }
 

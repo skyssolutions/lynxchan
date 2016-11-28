@@ -35,7 +35,8 @@ function setBoardSettings(userData, parameters, res, auth, language) {
     parameters.acceptedMimes = parameters.acceptedMimes.split(',');
   }
 
-  boardOps.setSettings(userData, parameters, function settingsSaved(error) {
+  boardOps.setSettings(userData, parameters, language, function settingsSaved(
+      error) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {

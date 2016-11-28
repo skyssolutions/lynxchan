@@ -9,24 +9,25 @@ var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
 function getFilterData(parameters, userData, res, auth, language) {
 
-  boardOps.getFilterData(userData, parameters.boardUri, function gotFilterData(
-      error, filters) {
-    if (error) {
-      formOps.outputError(error, 500, res, language);
-    } else {
-      var json = parameters.json;
+  boardOps.getFilterData(userData, parameters.boardUri, language,
+      function gotFilterData(error, filters) {
+        if (error) {
+          formOps.outputError(error, 500, res, language);
+        } else {
+          var json = parameters.json;
 
-      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-          : 'text/html', auth));
+          res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+              : 'text/html', auth));
 
-      if (json) {
-        res.end(jsonBuilder.filterManagement(filters));
-      } else {
-        res.end(dom.filterManagement(parameters.boardUri, filters, language));
-      }
+          if (json) {
+            res.end(jsonBuilder.filterManagement(filters));
+          } else {
+            res.end(dom
+                .filterManagement(parameters.boardUri, filters, language));
+          }
 
-    }
-  });
+        }
+      });
 
 }
 

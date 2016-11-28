@@ -4,13 +4,14 @@ var apiOps = require('../engine/apiOps');
 var boardOps = require('../engine/boardOps').filters;
 var mandatoryParameters = [ 'boardUri', 'filterIdentifier' ];
 
-function deleteFilter(auth, parameters, userData, res) {
+function deleteFilter(auth, parameters, userData, res, language) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
   }
 
-  boardOps.deleteFilter(userData, parameters, function filterDeleted(error) {
+  boardOps.deleteFilter(userData, parameters, language, function filterDeleted(
+      error) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
@@ -24,6 +25,6 @@ exports.process = function(req, res) {
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    deleteFilter(auth, parameters, userData, res);
+    deleteFilter(auth, parameters, userData, res, req.language);
   });
 };

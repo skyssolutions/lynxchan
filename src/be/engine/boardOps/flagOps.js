@@ -39,7 +39,7 @@ exports.loadDependencies = function() {
   threads = db.threads();
   posts = db.posts();
   flags = db.flags();
-  lang = require('../langOps').languagePack();
+  lang = require('../langOps').languagePack;
 
 };
 
@@ -74,16 +74,16 @@ exports.processFlagFile = function(toInsert, file, callback) {
 
 };
 
-exports.createFlag = function(userData, parameters, callback) {
+exports.createFlag = function(userData, parameters, language, callback) {
 
   if (!parameters.files.length) {
-    callback(lang.errNoFiles);
+    callback(lang(language).errNoFiles);
     return;
   } else if (parameters.files[0].mime.indexOf('image/') === -1) {
-    callback(lang.errNotAnImage);
+    callback(lang(language).errNotAnImage);
     return;
   } else if (parameters.files[0].size > maxFlagSize) {
-    callback(lang.errFlagTooLarge);
+    callback(lang(language).errFlagTooLarge);
   }
 
   miscOps.sanitizeStrings(parameters, newFlagParameters);
@@ -98,9 +98,9 @@ exports.createFlag = function(userData, parameters, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.errDeniedFlagManagement);
+      callback(lang(language).errDeniedFlagManagement);
     } else {
 
       var toInsert = {
@@ -111,7 +111,7 @@ exports.createFlag = function(userData, parameters, callback) {
       // style exception, too simple
       flags.insertOne(toInsert, function insertedFlag(error) {
         if (error && error.code === 11000) {
-          callback(lang.errRepeatedFlag);
+          callback(lang(language).errRepeatedFlag);
         } else if (error) {
           callback(error);
         } else {
@@ -199,7 +199,7 @@ exports.removeFlag = function(flag, callback) {
 
 };
 
-exports.deleteFlag = function(userData, flagId, callback) {
+exports.deleteFlag = function(userData, flagId, language, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
@@ -211,7 +211,7 @@ exports.deleteFlag = function(userData, flagId, callback) {
       if (error) {
         callback(error);
       } else if (!flag) {
-        callback(lang.errFlagNotFound);
+        callback(lang(language).errFlagNotFound);
       } else {
 
         // style exception, too simple
@@ -221,9 +221,9 @@ exports.deleteFlag = function(userData, flagId, callback) {
           if (error) {
             callback(error);
           } else if (!board) {
-            callback(lang.errBoardNotFound);
+            callback(lang(language).errBoardNotFound);
           } else if (board.owner !== userData.login && !globallyAllowed) {
-            callback(lang.errDeniedFlagManagement);
+            callback(lang(language).errDeniedFlagManagement);
           } else {
             exports.removeFlag(flag, callback);
           }
@@ -239,7 +239,7 @@ exports.deleteFlag = function(userData, flagId, callback) {
 };
 // } Section 2: Flag deletion
 
-exports.getFlagsData = function(userData, boardUri, callback) {
+exports.getFlagsData = function(userData, boardUri, language, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
@@ -249,9 +249,9 @@ exports.getFlagsData = function(userData, boardUri, callback) {
     if (error) {
       callback(error);
     } else if (!board) {
-      callback(lang.errBoardNotFound);
+      callback(lang(language).errBoardNotFound);
     } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang.errDeniedFlagManagement);
+      callback(lang(language).errDeniedFlagManagement);
     } else {
 
       flags.find({
