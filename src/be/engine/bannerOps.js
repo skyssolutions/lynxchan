@@ -119,6 +119,7 @@ exports.addBanner = function(userData, parameters, language, callback) {
     return;
   } else if (parameters.files[0].size > maxBannerSize) {
     callback(lang(language).errBannerTooLarge);
+    return;
   }
 
   var admin = userData.globalRole <= 1;

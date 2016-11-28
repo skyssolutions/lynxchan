@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var accountOps = require('../engine/accountOps');
 var modOps = require('../engine/modOps');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
-var lang = require('../engine/langOps').languagePack();
+var lang = require('../engine/langOps').languagePack;
 var miscOps = require('../engine/miscOps');
 var deleteOps = require('../engine/deletionOps');
 

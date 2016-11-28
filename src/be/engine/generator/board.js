@@ -697,7 +697,7 @@ exports.rules = function(boardUri, callback) {
     console.log('Building rules for ' + boardUri);
   }
 
-  boardOps.boardRules(boardUri, null, function gotRules(error, rules) {
+  boardOps.boardRules(boardUri, null, null, function gotRules(error, rules) {
     if (error) {
       callback(error);
     } else {
