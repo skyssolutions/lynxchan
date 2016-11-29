@@ -234,6 +234,7 @@ function clearIps() {
     $unset : {
       ip : 1,
       clearCache : 1,
+      alternativeCaches : 1,
       hashedCache : 1
     }
   }, function clearedThreadIps(error) {
@@ -258,6 +259,7 @@ function clearIps() {
         $unset : {
           ip : 1,
           clearCache : 1,
+          alternativeCaches : 1,
           hashedCache : 1
         }
       }, function clearedThreadIps(error) {

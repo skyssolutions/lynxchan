@@ -818,29 +818,55 @@ exports.setLogEntry = function(logCell, log, language) {
 
 };
 
+exports.getLogEntryCacheObject = function(innerHTML, language) {
+
+  if (!language) {
+    return {
+      cache : innerHTML
+    };
+  }
+
+  var toReturn = {};
+  var key = 'alternativeCaches.' + language.headerValues.join('-');
+  toReturn[key] = innerHTML;
+
+  return toReturn;
+};
+
+exports.getLogEntryCache = function(logEntry, language) {
+
+  if (!language) {
+    return logEntry.cache;
+  }
+
+  return (logEntry.alternativeCaches || {})[language.headerValues.join('-')];
+
+};
+
 exports.addLogEntry = function(logEntry, document, div, language) {
 
   var logCell = document.createElement('div');
   logCell.setAttribute('class', 'logCell');
 
-  if (!logEntry.cache || !individualCaches) {
+  var existingCache = exports.getLogEntryCache(logEntry, language);
+
+  if (!existingCache || !individualCaches) {
 
     logCell.innerHTML = templateHandler(language).logCell;
 
     exports.setLogEntry(logCell, logEntry, language);
 
     if (individualCaches) {
+
       staffLogs.updateOne({
         _id : logEntry._id
       }, {
-        $set : {
-          cache : logCell.innerHTML
-        }
+        $set : exports.getLogEntryCacheObject(logCell.innerHTML, language)
       });
     }
 
   } else {
-    logCell.innerHTML = logEntry.cache;
+    logCell.innerHTML = existingCache;
   }
 
   div.appendChild(logCell);

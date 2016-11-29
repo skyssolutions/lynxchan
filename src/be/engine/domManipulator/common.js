@@ -412,21 +412,24 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
 
   var threadCell = exports.getThreadCellBase(document, thread);
 
-  var cacheField = exports.getCacheField(false, innerPage, modding, userRole);
+  var cacheField = exports.getCacheField(false, innerPage, modding, userRole,
+      language);
 
-  if (!thread[cacheField] || !individualCaches) {
+  var currentCache = exports.getPostingCache(cacheField, thread, language);
+
+  if (!currentCache || !individualCaches) {
     threadCell.innerHTML = templateHandler(language).opCell;
 
     exports.setThreadContent(thread, threadCell, posts, innerPage, boardUri,
         modding, userRole, document, boardData, language);
 
     if (individualCaches) {
-      exports.saveCache(cacheField, threadCell, threadsCollection, boardUri,
-          'threadId', thread.threadId);
+      exports.saveCache(cacheField, language, threadCell, threadsCollection,
+          boardUri, 'threadId', thread.threadId);
     }
 
   } else {
-    threadCell.innerHTML = thread[cacheField];
+    threadCell.innerHTML = currentCache;
   }
 
   document.getElementById('divThreads').appendChild(threadCell);
@@ -537,16 +540,8 @@ exports.setPostLinkName = function(postCell, post) {
 
 };
 
-exports.setPostInnerElements = function(document, post, postCell, preview,
-    modding, boardData, userRole, innerPage, language) {
-
-  var cacheField = exports.getCacheField(preview, innerPage, modding, userRole);
-
-  if (individualCaches && post[cacheField]) {
-
-    postCell.innerHTML = post[cacheField];
-    return;
-  }
+exports.generatePostHTML = function(postCell, post, language, innerPage,
+    modding, document, preview, boardData, userRole, cacheField) {
 
   postCell.innerHTML = templateHandler(language).postCell;
 
@@ -569,37 +564,80 @@ exports.setPostInnerElements = function(document, post, postCell, preview,
 
     var isAThread = post.threadId === post.postId;
 
-    exports.saveCache(cacheField, postCell, isAThread ? threadsCollection
-        : postsCollection, post.boardUri, isAThread ? 'threadId' : 'postId',
-        post.postId);
+    exports.saveCache(cacheField, language, postCell,
+        isAThread ? threadsCollection : postsCollection, post.boardUri,
+        isAThread ? 'threadId' : 'postId', post.postId);
   }
 
 };
 
-exports.getCacheField = function(preview, innerPage, modding, userRole) {
+exports.setPostInnerElements = function(document, post, postCell, preview,
+    modding, boardData, userRole, innerPage, language) {
+
+  var cacheField = exports.getCacheField(preview, innerPage, modding, userRole,
+      language);
+
+  var currentCache = exports.getPostingCache(cacheField, post, language);
+
+  if (individualCaches && currentCache) {
+
+    postCell.innerHTML = currentCache;
+    return;
+  }
+
+  exports.generatePostHTML(postCell, post, language, innerPage, modding,
+      document, preview, boardData, userRole, cacheField);
+};
+
+exports.getCacheField = function(preview, innerPage, modding, userRole,
+    language) {
+
+  var toReturn;
 
   if (preview) {
-    return 'previewCache';
+    toReturn = 'previewCache';
   } else if (!innerPage) {
-    return 'outerCache';
+    toReturn = 'outerCache';
   } else if (!modding) {
-    return 'innerCache';
+    toReturn = 'innerCache';
   } else if (userRole <= clearIpRole) {
-    return 'clearCache';
+    toReturn = 'clearCache';
   } else {
-    return 'hashedCache';
+    toReturn = 'hashedCache';
+  }
+
+  if (language) {
+    toReturn += language.headerValues.join('-');
+  }
+
+  return toReturn;
+
+};
+
+exports.getPostingCache = function(field, posting, language) {
+
+  if (!language) {
+    return posting[field];
+  } else {
+    return (posting.alternativeCaches || {})[field];
   }
 
 };
 
-exports.saveCache = function(cacheField, cell, collection, boardUri,
+exports.saveCache = function(cacheField, language, cell, collection, boardUri,
     postingIdField, postingId) {
 
   var updateBlock = {
     $set : {}
   };
 
-  updateBlock.$set[cacheField] = cell.innerHTML;
+  if (!language) {
+    updateBlock.$set[cacheField] = cell.innerHTML;
+  } else {
+    var key = 'alternativeCaches.' + cacheField;
+
+    updateBlock.$set[key] = cell.innerHTML;
+  }
 
   var queryBlock = {
     boardUri : boardUri

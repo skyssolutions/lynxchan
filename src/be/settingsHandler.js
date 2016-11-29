@@ -197,7 +197,8 @@ function clearStaffIndividualCaches(callback) {
 
   require('./db').logs().updateMany({}, {
     $unset : {
-      cache : 1
+      cache : 1,
+      alternativeCaches : 1
     }
   }, function clearedCaches(error) {
 
@@ -221,6 +222,7 @@ exports.clearIndividualCaches = function(callback) {
       outerCache : 1,
       previewCache : 1,
       clearCache : 1,
+      alternativeCaches : 1,
       hashedCache : 1
     }
   }, function clearedThreads(error) {
@@ -235,6 +237,7 @@ exports.clearIndividualCaches = function(callback) {
         innerCache : 1,
         outerCache : 1,
         previewCache : 1,
+        alternativeCaches : 1,
         clearCache : 1,
         hashedCache : 1
       }

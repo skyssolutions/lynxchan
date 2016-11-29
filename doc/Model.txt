@@ -87,6 +87,7 @@ threads: stores board's threads.
     previewCache: html cache for preview.
     clearCache: html cache for the mod version with clear ips.
     hashedCache: html cache for the mod version with hashed ips.
+    alternativeCaches(Object): object that stores the html caches for alternative languages.
     files(Array): pre-aggregated array of files uploaded with the thread. Each object contains the following fields:
         originalName: original name of the upload.
         path: path for the file.
@@ -126,6 +127,7 @@ posts: stores posts.
     previewCache: html cache for preview.
     clearCache: html cache for the mod version with clear ips.
     hashedCache: html cache for the mod version with hashed ips.
+    alternativeCaches(Object): object that stores the html caches for alternative languages.
     files(Array): pre-aggregated array of files uploaded with the post. Each object contains the following fields:
         originalName: original name of the upload.
         path: path for the file.
@@ -239,6 +241,7 @@ staffLogs: stores log activity from staff.
     description: string describing the event.
     global(Boolean): indicates if the event was global.
     cache: individual HTML cache.
+    alternativeCaches(Object): object with the HTML caches for alternative languages.
 
 ----------------------------------------------------------------------------------------
 

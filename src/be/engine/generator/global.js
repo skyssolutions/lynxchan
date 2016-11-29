@@ -919,6 +919,7 @@ exports.log = function(date, callback, logData) {
     type : 1,
     user : 1,
     cache : 1,
+    alternativeCaches : 1,
     time : 1,
     boardUri : 1,
     description : 1,

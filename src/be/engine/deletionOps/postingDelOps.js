@@ -561,6 +561,7 @@ exports.removeFoundContent = function(userData, board, parameters, cb,
         outerCache : 1,
         previewCache : 1,
         clearCache : 1,
+        alternativeCaches : 1,
         hashedCache : 1
       }
     }, function removedThreadFiles(error) {
@@ -582,6 +583,7 @@ exports.removeFoundContent = function(userData, board, parameters, cb,
             innerCache : 1,
             outerCache : 1,
             previewCache : 1,
+            alternativeCaches : 1,
             clearCache : 1,
             hashedCache : 1
           }
