@@ -107,6 +107,7 @@ exports.markAsTor = function(req, callback) {
 
   if (req.isTor) {
     callback(null, req);
+    return;
   }
 
   var ip = logger.convertIpToArray(logger.getRawIp(req));

@@ -370,7 +370,7 @@ exports.getPageTests = function() {
             'fieldMultiBoardThreadCount', 'fieldConcurrentRebuildMessages',
             'checkboxSFWLatestImages', 'fieldInactivityThreshold',
             'fieldMediaPageSize', 'fieldMessageLength', 'checkboxFfmpegGifs',
-            'fieldSpamIpsSource', 'checkboxSpamBypass',
+            'fieldSpamIpsSource', 'checkboxSpamBypass', 'fieldIpExpiration',
             'checkboxDisableSpamCheck', 'checkboxDisableCatalogPosting',
             'checkboxAllowTorPosting', 'checkboxAllowTorFiles',
             'checkboxUseAlternativeLanguages' ]
