@@ -39,7 +39,7 @@ var correctedMimesRelation = {
   'video/ogg' : 'audio/ogg'
 };
 
-var thumbAudioMimes = [ 'audio/mpeg', 'audio/ogg', 'audio/webm' ];
+var thumbAudioMimes = [ 'audio/mpeg', 'audio/ogg', 'audio/webm', 'audio/flac' ];
 
 var videoMimes = [ 'video/webm', 'video/mp4', 'video/ogg' ];
 

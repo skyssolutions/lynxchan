@@ -10,7 +10,7 @@ See other branches named like `1.1.x` for stable versions. They will receive onl
 
 # Required software
 * [Node.js](http://nodejs.org) 6.9.1, I suggest installing from source code. DO NOT build the master's HEAD.
-* [MongoDB](https://www.mongodb.org/) 3.2.9
+* [MongoDB](https://www.mongodb.org/) 3.4.0
 * [UnZip](http://www.info-zip.org) 6.00, this is probably already include in your distro, though.
 * [cUrl](http://curl.haxx.se) 7.29.0, this is usually included too.
 * [ImageMagick](http://www.imagemagick.org/script/index.php) 6.7.8-9
