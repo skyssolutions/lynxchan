@@ -14,9 +14,10 @@ var posts = db.posts();
 var boards = db.boards();
 var files = db.files();
 var domManipulator;
-var miscOps;
 var generator;
+var miscOps;
 var multiboardThreadCount;
+var altLanguages;
 
 exports.loadSettings = function() {
 
@@ -24,6 +25,7 @@ exports.loadSettings = function() {
 
   threadCount = settings.multiboardThreadCount;
   verbose = settings.verbose;
+  altLanguages = settings.useAlternativeLanguages;
   multiboardThreadCount = settings.multiboardThreadCount;
 };
 
@@ -36,7 +38,7 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: multi-board page request {
-exports.saveCache = function(boardList, content, req, res, json, callback) {
+exports.saveCache = function(boardList, content, json, callback, language) {
 
   var cacheName = boardList.join('_');
 
@@ -44,21 +46,76 @@ exports.saveCache = function(boardList, content, req, res, json, callback) {
     cacheName += '.json';
   }
 
-  gfsHandler.writeData(content, cacheName, json ? 'application/json'
-      : 'text/html', {
+  var meta = {
     type : 'multiboard',
     boards : boardList
-  }, function savedCache(error) {
+  };
+
+  if (language) {
+    meta.languages = language.headerValues;
+    meta.referenceFile = cacheName;
+    cacheName += language.headerValues.join('-');
+  }
+
+  gfsHandler.writeData(content, cacheName, json ? 'application/json'
+      : 'text/html', meta, callback);
+
+};
+
+exports.getNextLanguage = function(boardList, previewRelation, foundThreads,
+    callback, language) {
+
+  generator.nextLanguage(language, function gotLanguage(error, language) {
+
     if (error) {
       callback(error);
+    } else if (!language) {
+      callback();
     } else {
-      gfsHandler.outputFile(cacheName, req, res, callback);
+      exports.generateHTMLPage(boardList, previewRelation, foundThreads,
+          callback, language);
     }
+
   });
 
 };
 
-exports.generatePage = function(boardList, foundPosts, foundThreads, req, res,
+exports.generateHTMLPage = function(boardList, previewRelation, foundThreads,
+    callback, language) {
+
+  domManipulator.overboard(foundThreads, previewRelation, function gotContent(
+      error, content) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception
+      exports.saveCache(boardList, content, false, function savedCache(error) {
+        if (error) {
+          callback(error);
+        } else {
+
+          if (!altLanguages) {
+            callback();
+            return;
+          }
+
+          exports.getNextLanguage(boardList, previewRelation, foundThreads,
+              callback, language);
+
+        }
+
+      }, language);
+      // style exception
+
+    }
+
+  }, true, null, language);
+
+};
+
+exports.generatePage = function(boardList, foundPosts, foundThreads, req,
     callback) {
 
   var previewRelation = {};
@@ -79,24 +136,31 @@ exports.generatePage = function(boardList, foundPosts, foundThreads, req, res,
 
   }
 
-  var path = url.parse(req.url).pathname;
+  var json = url.parse(req.url).pathname.indexOf('/1.json') >= 0;
 
-  var json = path.indexOf('/1.json') >= 0;
+  if (!json) {
 
-  (json ? jsonBuilder : domManipulator).overboard(foundThreads,
-      previewRelation, function gotContent(error, content) {
+    exports
+        .generateHTMLPage(boardList, previewRelation, foundThreads, callback);
 
-        if (error) {
-          callback(error);
-        } else {
-          exports.saveCache(boardList, content, req, res, json, callback);
-        }
+  } else {
 
-      }, true);
+    jsonBuilder.overboard(foundThreads, previewRelation, function gotContent(
+        error, content) {
+
+      if (error) {
+        callback(error);
+      } else {
+        exports.saveCache(boardList, content, true, callback);
+      }
+
+    }, true);
+
+  }
 
 };
 
-exports.getPosts = function(boardList, foundThreads, req, res, callback) {
+exports.getPosts = function(boardList, foundThreads, req, callback) {
 
   var previewRelation = {};
 
@@ -126,8 +190,7 @@ exports.getPosts = function(boardList, foundThreads, req, res, callback) {
   }
 
   if (!orArray.length) {
-
-    exports.generatePage(boardList, [], foundThreads, req, res, callback);
+    exports.generatePage(boardList, [], foundThreads, req, callback);
     return;
   }
 
@@ -135,20 +198,18 @@ exports.getPosts = function(boardList, foundThreads, req, res, callback) {
     $or : orArray
   }, generator.postProjection).sort({
     creation : 1
-  }).toArray(
-      function gotPosts(error, foundPosts) {
-        if (error) {
-          callback(error);
-        } else {
-          exports.generatePage(boardList, foundPosts, foundThreads, req, res,
-              callback);
-        }
+  }).toArray(function gotPosts(error, foundPosts) {
+    if (error) {
+      callback(error);
+    } else {
+      exports.generatePage(boardList, foundPosts, foundThreads, req, callback);
+    }
 
-      });
+  });
 
 };
 
-exports.getThreads = function(boardList, req, res, callback) {
+exports.getThreads = function(boardList, req, callback) {
 
   threads.find({
     boardUri : {
@@ -161,7 +222,7 @@ exports.getThreads = function(boardList, req, res, callback) {
     if (error) {
       callback(error);
     } else {
-      exports.getPosts(boardList, foundThreads, req, res, callback);
+      exports.getPosts(boardList, foundThreads, req, callback);
     }
   });
 
@@ -185,7 +246,19 @@ exports.checkCache = function(boardList, req, res, callback) {
     } else if (result) {
       gfsHandler.outputFile(cacheName, req, res, callback);
     } else {
-      exports.getThreads(boardList, req, res, callback);
+
+      // style exception, too simple
+      exports.getThreads(boardList, req, function generatedCache(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          gfsHandler.outputFile(cacheName, req, res, callback);
+        }
+
+      });
+      // style exception, too simple
+
     }
   });
 
