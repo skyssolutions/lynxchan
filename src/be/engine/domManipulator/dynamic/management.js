@@ -279,12 +279,10 @@ exports.boardManagement = function(userData, boardData, reports, bans,
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -456,12 +454,10 @@ exports.globalManagement = function(userRole, userLogin, staff, reports,
     return serializer(document);
   } catch (error) {
 
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -519,12 +515,10 @@ exports.filterManagement = function(boardUri, filters, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -570,12 +564,10 @@ exports.ruleManagement = function(boardUri, rules, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -627,12 +619,10 @@ exports.flagManagement = function(boardUri, flags, language) {
 
     return serializer(document);
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -703,12 +693,10 @@ exports.globalSettings = function(language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -762,12 +750,10 @@ exports.bannerManagement = function(boardUri, banners, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -858,12 +844,11 @@ exports.mediaManagement = function(media, pages, parameters, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
 
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -911,12 +896,11 @@ exports.languages = function(languages, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
 
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();

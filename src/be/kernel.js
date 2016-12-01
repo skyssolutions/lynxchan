@@ -406,10 +406,10 @@ function regenerateAll() {
   generator.all(function regeneratedAll(error) {
     if (error) {
 
-      console.log(error);
-
       if (debug) {
         throw error;
+      } else {
+        console.log(error);
       }
 
     }
@@ -454,10 +454,10 @@ function iterateOptionalReloads(index) {
 
             } else {
 
-              console.log(error);
-
               if (debug) {
                 throw error;
+              } else {
+                console.log(error);
               }
             }
 
@@ -490,11 +490,12 @@ function iterateDefaultPages(foundFiles, index) {
         (function generated(error) {
           if (error) {
 
-            console.log(error);
-
             if (debug) {
               throw error;
+            } else {
+              console.log(error);
             }
+
           }
 
           iterateDefaultPages(foundFiles, index + 1);
@@ -567,11 +568,12 @@ var createAccountFunction = function() {
 
     if (error) {
 
-      console.log(error);
-
       if (debug) {
         throw error;
+      } else {
+        console.log(error);
       }
+
     } else {
       console.log('Account ' + informedLogin + ' created.');
 
@@ -591,9 +593,10 @@ var setRoleFunction = function() {
   }, null, function setRole(error) {
 
     if (error) {
-      console.log(error);
       if (debug) {
         throw error;
+      } else {
+        console.log(error);
       }
 
     } else {
@@ -716,9 +719,9 @@ function initSpamData() {
 
       if (debug) {
         throw error;
+      } else {
+        console.log(error);
       }
-
-      console.log(error);
 
     }
 

@@ -31,7 +31,7 @@ function processTask(task) {
 
   case 'shutdown': {
     server.close();
-    
+
     kernel.broadCastTopDownMessage({
       shutdown : true
     });
@@ -80,12 +80,11 @@ exports.start = function() {
     }).listen(socketLocation);
 
     server.on('error', function handleError(error) {
-      if (verbose) {
-        console.log(error);
-      }
 
       if (debug) {
         throw error;
+      } else if (verbose) {
+        console.log(error);
       }
 
     });

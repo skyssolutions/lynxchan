@@ -753,9 +753,10 @@ exports.saveUploads = function(boardData, threadId, postId, parameters,
 
             if (debug) {
               throw error;
+            } else {
+              console.log(error);
             }
 
-            console.log(error);
           }
 
           exports.saveUploads(boardData, threadId, postId, parameters,

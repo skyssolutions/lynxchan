@@ -252,12 +252,10 @@ exports.clearCache = function(board) {
 
     if (error) {
 
-      if (verbose) {
-        console.log(error);
-      }
-
       if (debug) {
         throw error;
+      } else if (verbose) {
+        console.log(error);
       }
 
     } else if (results.length) {

@@ -154,11 +154,10 @@ exports.recordFlood = function(req) {
     expiration : new Date(new Date().getTime() + floodTimer)
   }, function addedFloodRecord(error) {
     if (error) {
-      if (verbose) {
-        console.log(error);
-      }
       if (debug) {
         throw error;
+      } else if (verbose) {
+        console.log(error);
       }
     }
   });

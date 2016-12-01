@@ -86,22 +86,21 @@ function startSSL() {
 
     server.on('error', function handle(error) {
 
-      if (verbose) {
+      if (debug) {
+        throw error;
+      } else if (verbose) {
         console.log(error);
       }
 
-      if (debug) {
-        throw error;
-      }
     });
   } catch (error) {
 
-    if (verbose) {
-      console.log(error);
-    }
+    console.log('Failed to listen to HTTPS.');
 
     if (debug) {
       throw error;
+    } else {
+      console.log(error);
     }
 
   }
@@ -121,9 +120,11 @@ function startTorPort() {
 
   server.on('error', function handleError(error) {
 
+    console.log('Failed to listen on the TOR port.');
+
     if (debug) {
       throw error;
-    } else if (verbose) {
+    } else {
       console.log(error);
     }
 

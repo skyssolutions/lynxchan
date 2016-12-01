@@ -59,12 +59,10 @@ exports.error = function(code, message, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -85,12 +83,10 @@ exports.resetEmail = function(password, language) {
     return serializer(document);
   } catch (error) {
 
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -109,12 +105,10 @@ exports.recoveryEmail = function(recoveryLink, language) {
     return serializer(document);
   } catch (error) {
 
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -212,12 +206,10 @@ exports.account = function(userData, language) {
     return serializer(document);
   } catch (error) {
 
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -260,12 +252,10 @@ exports.logs = function(dates, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -417,12 +407,10 @@ exports.boards = function(parameters, boards, pageCount, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -481,12 +469,10 @@ exports.ban = function(ban, board, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -534,12 +520,10 @@ exports.hashBan = function(hashBans, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -584,12 +568,10 @@ exports.edit = function(parameters, message, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -627,12 +609,10 @@ exports.noCookieCaptcha = function(parameters, captchaId, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -656,12 +636,10 @@ exports.blockBypass = function(valid, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -703,12 +681,10 @@ exports.graphs = function(dates, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -735,15 +711,13 @@ exports.message = function(message, link, language) {
 
     return serializer(document);
   } catch (error) {
-    if (verbose) {
+    if (debug) {
+      throw error;
+    } else if (verbose) {
       console.log(error);
     }
 
-    if (debug) {
-      throw error;
-    }
-
-    return error.toString;
+    return error.toString();
   }
 
 };

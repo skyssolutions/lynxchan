@@ -283,13 +283,12 @@ exports.storeImages = function(parsedData, res, finalArray, toRemove, callback,
 
           if (error) {
 
-            if (error) {
+            if (debug) {
+              throw error;
+            } else if (verbose) {
               console.log(error);
             }
 
-            if (debug) {
-              throw error;
-            }
           }
 
           exports.storeImages(parsedData, res, finalArray, toRemove, callback,
@@ -442,12 +441,10 @@ exports.getAnonJsonData = function(req, res, callback, exceptionalMimes) {
 
 exports.outputError = function(error, res) {
 
-  if (verbose) {
-    console.log(error);
-  }
-
   if (debug) {
     throw error;
+  } else if (verbose) {
+    console.log(error);
   }
 
   exports.outputResponse(null, error.toString(), 'error', res);

@@ -50,12 +50,10 @@ exports.bans = function(bans, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -108,12 +106,10 @@ exports.closedReports = function(reports, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -172,12 +168,10 @@ exports.rangeBans = function(rangeBans, boardData, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -228,12 +222,10 @@ exports.hashBans = function(hashBans, boardUri, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();
@@ -286,12 +278,10 @@ exports.boardModeration = function(boardData, ownerData, language) {
     return serializer(document);
 
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     if (debug) {
       throw error;
+    } else if (verbose) {
+      console.log(error);
     }
 
     return error.toString();

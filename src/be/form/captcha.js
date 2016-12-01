@@ -24,12 +24,10 @@ function showCaptcha(req, captchaData, res) {
       function streamedFile(error) {
         if (error) {
 
-          if (settingsHandler.getGeneralSettings().verbose) {
-            console.log(error);
-          }
-
           if (debug) {
             throw error;
+          } else if (settingsHandler.getGeneralSettings().verbose) {
+            console.log(error);
           }
 
           formOps.outputError(error, 500, res, req.language);
@@ -46,12 +44,10 @@ exports.process = function(req, res) {
 
     if (error) {
 
-      if (verbose) {
-        console.log(error);
-      }
-
       if (debug) {
         throw error;
+      } else if (verbose) {
+        console.log(error);
       }
 
       formOps.outputError(error, 500, res, req.language);
@@ -64,12 +60,10 @@ exports.process = function(req, res) {
 
         if (error) {
 
-          if (verbose) {
-            console.log(error);
-          }
-
           if (debug) {
             throw error;
+          } else if (verbose) {
+            console.log(error);
           }
 
           formOps.outputError(error, 500, res, req.language);

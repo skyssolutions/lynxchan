@@ -438,7 +438,6 @@ function deduplicateFilesForPosting(postingData, callback, index) {
 
         if (error) {
           callback(error);
-          throw error;
         } else {
           deduplicateFilesForPosting(postingData, callback, ++index);
         }

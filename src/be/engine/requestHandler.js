@@ -455,9 +455,7 @@ exports.serve = function(req, pathName, res) {
 
         if (debug) {
           throw error;
-        }
-
-        if (verbose) {
+        } else if (verbose) {
           console.log(error);
         }
 

@@ -82,9 +82,10 @@ function refreshTorEntries() {
 
       if (debug) {
         throw error;
+      } else {
+        console.log(error);
       }
 
-      console.log(error);
     }
 
     torRefresh();
@@ -153,11 +154,13 @@ function applyStats(stats) {
   boards.bulkWrite(operations, function updatedStats(error) {
 
     if (error) {
-      console.log(error);
 
       if (debug) {
         throw error;
+      } else {
+        console.log(error);
       }
+
     } else if (settings.topBoardsCount || settings.frontPageStats) {
       require('./generationQueue').queue({
         frontPage : true
@@ -242,9 +245,10 @@ function clearIps() {
     if (error) {
       if (debug) {
         throw error;
+      } else {
+        console.log(error);
       }
 
-      console.log(error);
     } else {
 
       // style exception, too simple
@@ -267,9 +271,10 @@ function clearIps() {
         if (error) {
           if (debug) {
             throw error;
+          } else {
+            console.log(error);
           }
 
-          console.log(error);
         }
 
       });
@@ -402,11 +407,10 @@ function checkExpiredCaptchas() {
   } ], function gotExpiredFiles(error, results) {
     if (error) {
 
-      console.log(error);
-
       if (debug) {
         throw error;
       } else {
+        console.log(error);
         expiredCaptcha();
       }
 
@@ -424,17 +428,17 @@ function checkExpiredCaptchas() {
       gridFsHandler.removeFiles(expiredFiles, function deletedFiles(error) {
         if (error) {
 
-          console.log(error);
-
           if (debug) {
             throw error;
+          } else {
+            console.log(error);
           }
+
         }
 
         expiredCaptcha();
 
       });
-
       // style exception, too simple
 
     } else {
@@ -490,10 +494,12 @@ function setUniqueIpCount(results) {
   boards.bulkWrite(operations, function updatedUniqueIps(error) {
 
     if (error) {
-      console.log(error);
       if (debug) {
         throw error;
+      } else {
+        console.log(error);
       }
+
     }
 
     require('./generationQueue').queue({
@@ -512,9 +518,10 @@ function setUniqueIpCount(results) {
     graphOps.generate(graphDate, function generated(error) {
 
       if (error) {
-        console.log(error);
         if (debug) {
           throw error;
+        } else {
+          console.log(error);
         }
 
       }
@@ -553,11 +560,10 @@ function updateUniqueIpCount() {
 
     if (error) {
 
-      console.log(error);
-
       if (debug) {
         throw error;
       } else {
+        console.log(error);
         uniqueIpCount();
       }
 
@@ -764,9 +770,10 @@ function refreshSpammerIps() {
     if (error) {
       if (debug) {
         throw error;
+      } else {
+        console.log(error);
       }
 
-      console.log(error);
     }
 
     spamIpRefresh();

@@ -166,12 +166,10 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
 
       exports.getFileData(file, fields, mime, function gotFileData(error) {
         if (error) {
-          if (verbose) {
-            console.log(error);
-          }
-
           if (debug) {
             throw error;
+          } else if (verbose) {
+            console.log(error);
           }
 
         }
@@ -387,12 +385,10 @@ exports.outputResponse = function(message, redirect, res, cookies, authBlock,
 
 exports.outputError = function(error, code, res, language) {
 
-  if (verbose) {
-    console.log(error);
-  }
-
   if (debug) {
     throw error;
+  } else if (verbose) {
+    console.log(error);
   }
 
   if (!res) {

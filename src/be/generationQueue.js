@@ -184,10 +184,6 @@ function debugPreGeneration() {
   try {
     kernel.reload();
   } catch (error) {
-    if (verbose) {
-      console.log(error);
-    }
-
     throw error;
   }
 }
@@ -272,10 +268,10 @@ function handleRequestResult(error, message) {
 
   if (error) {
 
-    console.log(error);
-
     if (debug) {
       throw error;
+    } else {
+      console.log(error);
     }
 
   }
@@ -661,13 +657,12 @@ exports.queue = function(message) {
     sendMessageByHttp(message, function sentMessage(error) {
       if (error) {
 
-        if (verbose) {
+        if (debug) {
+          throw error;
+        } else if (verbose) {
           console.log(error);
         }
 
-        if (debug) {
-          throw error;
-        }
       }
     });
 

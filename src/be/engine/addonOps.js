@@ -36,12 +36,10 @@ exports.loadSettings = function() {
 
       console.log('Could not load settings for addon ' + addons[i]);
 
-      if (verbose) {
-        console.log(error);
-      }
-
       if (debug) {
         throw error;
+      } else if (verbose) {
+        console.log(error);
       }
 
     }
@@ -74,9 +72,7 @@ exports.testVersion = function(addonName, addonVersion, engineVersion) {
 
     if (debug) {
       throw msg;
-    }
-
-    if (verbose) {
+    } else if (verbose) {
       console.log(msg);
     }
 
@@ -99,9 +95,7 @@ exports.initAddons = function(addons) {
 
       if (debug) {
         throw error;
-      }
-
-      if (verbose) {
+      } else if (verbose) {
         console.log(error);
       }
 
@@ -131,12 +125,10 @@ exports.testAddons = function(addons) {
 
       console.log('Could not load addon ' + addon);
 
-      if (verbose) {
-        console.log(error);
-      }
-
       if (debug) {
         throw error;
+      } else if (verbose) {
+        console.log(error);
       }
 
     }
