@@ -218,6 +218,7 @@ Json output(Object): object with data used to manage the board. Contains the fol
         textBoard: upload of files is not allowed on the board.
     tags(Array): array of tags for the board.
     boardMessage: message displayed on the board header.
+    maxBumpAgeDays(Number): for how many days after its creation that a non-cyclic thread can be bumped.
     isOwner(Boolean): indicates if the user owns the board.
     openReports(Array): array of open reports. Each object contains the following fields:
         _id: unique id of the report.
@@ -549,6 +550,7 @@ Parameters:
     hourlyThreadLimit: limit of new threads allowed per hour. If exceeded, the board will lock for thread creation temporarily.
     anonymousName: name to be used when the user is anonymous. 32 character.
     forceAnonymity: if any value is passed, the name input is disabled on posting.
+    maxBumpAge(Number): for how many days non-cyclic threads can be bumped after being created.
     allowCode: if any value is passed, use of code tag will be allowed on markdown.
     boardMessage: new message of the board. 256 characters.
     early404: will delete threads after one hour if they do not receive at least 5 replies.

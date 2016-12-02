@@ -32,6 +32,7 @@ boards: stores boards.
         replacementTerm: term that will replace the original term. 32 characters.
         caseInsensitive(Boolean): indicates if the filter is case-insensitive.
     anonymousName: name to be used when the user is poster is anonymous. 32 characters.
+    maxBumpAgeDays(Number): for how many days after its creation that a non-cyclic thread can be bumped.
     postsPerHour(Number): latest PPH stats for this  board.
     usesCustomCss(Boolean): pre-aggregated boolean indicating the board has a custom css file set.
     rules(Array): array with board rules. Each rule is limited to 512 characters.

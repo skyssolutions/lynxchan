@@ -262,6 +262,7 @@ exports.saveNewSettings = function(board, parameters, callback) {
     autoSageLimit : +parameters.autoSageLimit,
     maxThreadCount : +parameters.maxThreadCount,
     maxFileSizeMB : +parameters.maxFileSizeMB,
+    maxBumpAgeDays : +parameters.maxBumpAge,
     maxFiles : +parameters.maxFiles,
     captchaMode : +parameters.captchaMode
   };
@@ -719,6 +720,7 @@ exports.getBoardManagementData = function(userData, board,
     anonymousName : 1,
     acceptedMimes : 1,
     maxFileSizeMB : 1,
+    maxBumpAgeDays : 1,
     maxThreadCount : 1,
     boardDescription : 1,
     usesCustomSpoiler : 1,

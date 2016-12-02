@@ -271,7 +271,7 @@ exports.getPageTests = function() {
             'requireFileCheckbox', 'appealedBansPanel', 'linkSelf',
             'uniqueFilesCheckbox', 'uniquePostsCheckbox', 'locationCheckBox',
             'maxFilesField', 'maxFileSizeField', 'maxThreadFields',
-            'autoSageLimitField', 'validMimesField' ]
+            'autoSageLimitField', 'validMimesField', 'maxBumpAgeField' ]
       },
       {
         template : 'closedReportsPage',

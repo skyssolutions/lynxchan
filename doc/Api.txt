@@ -362,6 +362,7 @@ Parameters:
     boardDescription*: new description of the board. 128 characters.
     tags(Array): array of tags to be used on this board.
     anonymousName: name to be used when the user is anonymous. 32 character.
+    maxBumpAge(Number): for how many days non-cyclic threads can be bumped after being created.
     captchaMode(Number): indicates the captcha mode for the board. 0 means no captcha, 1 means only for new threads and 2 means for all posts on the board.
     hourlyThreadLimit(Number): limit of new threads allowed per hour. If exceeded, the board will lock for thread creation temporarily.
     settings(Array): new settings of the board. May contain the following values:

@@ -275,7 +275,7 @@ exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
     catalog : true
   });
 
-  if (parameters.email !== 'sage') {
+  if (bump) {
 
     for (var i = 0; i < (thread.page || 1); i++) {
 
@@ -401,6 +401,20 @@ exports.getSetBlock = function(thread, postId) {
 
 };
 
+exports.youngEnoughToBump = function(boardData, thread) {
+
+  if (!boardData.maxBumpAgeDays) {
+    return true;
+  }
+
+  var date = new Date();
+
+  date.setUTCDate(date.getUTCDate() - boardData.maxBumpAgeDays);
+
+  return thread.creation > date;
+
+};
+
 exports.updateThread = function(boardData, parameters, postId, thread,
     language, callback, post) {
 
@@ -424,7 +438,7 @@ exports.updateThread = function(boardData, parameters, postId, thread,
       }
 
     } else {
-      bump = !saged;
+      bump = !saged && exports.youngEnoughToBump(boardData, thread);
     }
 
   }
@@ -577,6 +591,7 @@ exports.getThread = function(req, parameters, userData, board, callback) {
     cyclic : 1,
     locked : 1,
     autoSage : 1,
+    creation : 1,
     postCount : 1,
     latestPosts : 1
   }, function gotThread(error, thread) {
@@ -655,6 +670,7 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
     specialSettings : 1,
     acceptedMimes : 1,
     maxFiles : 1,
+    maxBumpAgeDays : 1,
     captchaMode : 1,
     autoSageLimit : 1,
     maxFileSizeMB : 1,

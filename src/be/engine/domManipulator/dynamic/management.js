@@ -41,7 +41,8 @@ exports.boardFieldsRelation = {
   maxFilesField : 'maxFiles',
   maxFileSizeField : 'maxFileSizeMB',
   maxThreadFields : 'maxThreadCount',
-  autoSageLimitField : 'autoSageLimit'
+  autoSageLimitField : 'autoSageLimit',
+  maxBumpAgeField : 'maxBumpAgeDays'
 };
 
 exports.boardControlIdentifiers = [ 'addVolunteerBoardIdentifier',
