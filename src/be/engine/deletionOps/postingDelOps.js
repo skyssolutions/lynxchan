@@ -11,7 +11,6 @@ var globalLatestImages = db.latestImages();
 var boards = db.boards();
 var files = db.files();
 var reports = db.reports();
-var verbose;
 var globalLatestPostsCount;
 var globalLatestImagesCount;
 var latestPosts;
@@ -29,7 +28,6 @@ exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
   sfwOverboard = settings.sfwOverboard;
-  verbose = settings.verbose;
   globalLatestPostsCount = settings.globalLatestPosts;
   globalLatestImagesCount = settings.globalLatestImages;
   latestPosts = settings.latestPostCount;
@@ -920,11 +918,6 @@ exports.posting = function(userData, parameters, threadsToDelete,
     postsToDelete, language, callback) {
 
   var foundBoards = [];
-
-  if (verbose) {
-
-    exports.printAuth(userData, parameters, threadsToDelete, postsToDelete);
-  }
 
   exports.adjustMediaDeletion(parameters, userData);
 

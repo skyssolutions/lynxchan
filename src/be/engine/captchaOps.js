@@ -41,7 +41,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
-  verbose = settings.verbose;
+  verbose = settings.verbose || settings.verboseMisc;
   forceCaptcha = settings.forceCaptcha;
   captchaExpiration = settings.captchaExpiration;
 

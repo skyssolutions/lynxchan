@@ -25,7 +25,7 @@ exports.loadSettings = function() {
 
   CSP = settings.CSP;
   clearIpMinRole = settings.clearIpMinRole;
-  verbose = settings.verbose;
+  verbose = settings.verbose || settings.verboseMisc;
 
 };
 
@@ -519,6 +519,30 @@ exports.getParametersArray = function(language) {
     type : 'boolean',
     setting : 'disableSpamCheck',
     element : 'checkboxDisableSpamCheck'
+  }, {
+    type : 'boolean',
+    setting : 'verboseGenerator',
+    element : 'checkboxVerboseGenerator'
+  }, {
+    type : 'boolean',
+    setting : 'verboseMisc',
+    element : 'checkboxVerboseMisc'
+  }, {
+    type : 'boolean',
+    setting : 'verboseQueue',
+    element : 'checkboxVerboseQueue'
+  }, {
+    type : 'boolean',
+    setting : 'verboseGridfs',
+    element : 'checkboxVerboseGridfs'
+  }, {
+    type : 'boolean',
+    setting : 'verboseStatic',
+    element : 'checkboxVerboseStatic'
+  }, {
+    type : 'boolean',
+    setting : 'verboseApis',
+    element : 'checkboxVerboseApis'
   }, {
     type : 'boolean',
     setting : 'mediaThumb',

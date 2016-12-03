@@ -29,7 +29,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
-  verbose = settings.verbose;
+  verbose = settings.verbose || settings.verboseApis;
   uploadDir = settings.tempDirectory;
   maxRequestSize = settings.maxRequestSizeB;
   maxFileSize = settings.maxFileSizeB;

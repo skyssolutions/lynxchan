@@ -9,7 +9,7 @@ var settingsHandler = require('./settingsHandler');
 var settings = settingsHandler.getGeneralSettings();
 var socketLocation = settings.tempDirectory;
 socketLocation += '/unix.socket';
-var verbose = settings.verbose;
+var verbose = settings.verbose || settings.verboseMisc;
 var kernel = require('./kernel');
 var debug = kernel.debug();
 var server;

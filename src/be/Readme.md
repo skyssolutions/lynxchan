@@ -13,7 +13,7 @@ The version of each one is specified on the package.json file.
 A package.json file is included, so you can install all of them by just running `npm install` on this directory.
 
 # Individual HTML cache
-The engine will generate HTML caches for postings and log entries. These caches are for the whole cell containing the posting. Keep that in mind when developing, since it will be used unless the engine is running on debug or debug mode. You can flush them too, the command for doing so is in the list of arguments below.
+The engine will generate HTML caches for postings and log entries. These caches are for the whole cell containing the posting. Keep that in mind when developing, since it will be used unless the engine is running on front-end debug or debug mode. You can flush them too, the command for doing so is in the list of arguments below.
 
 # Application usage
 `boot.js` is the main file, run it using Node.js to start the system. Keep in mind that if you ran `aux/setup.sh`, you can just run the `lynxchan` command or start the `lynxchan` service.
@@ -90,7 +90,7 @@ To use SSL, enable the setting `ssl` and place the key file named `ssl.key` and 
 # Back-end settings
 Settings files that goes into the settings directory:
 `general.json`: contains general settings for the application. Holds the following settings:
-* `verbose`(Boolean): if true, will output text for debugging on several points, like IO on the json api.
+* `verbose`(Boolean): if true, will activate all verbose modes.
 * `disable304`(Boolean): if true, will never use http status 304.
 * `address`: ip to bind the server on. Defaults to `0.0.0.0`.
 * `port`(Number): port to listen for http. Defaults to 80.
@@ -165,6 +165,12 @@ Settings files that goes into the settings directory:
 * `ipExpirationDays`(Number): amount of days to wait before removing the ip from postings counting from it's date of creation. Null or any value below 1 means that ips should never be removed. The schedule that clears the ips is run hourly.
 * `allowTorPosting`(Boolean): allows TOR users to post. If bypass block is not disabled, they will still be able to post if they use it.
 * `allowTorFiles`(Boolean): when posting, allows TOR users to post files.
+* `verboseApis`(Boolean): causes both the json api and the form api to print what is being both input and output.
+* `verboseStatic`(Boolean): causes the static file handler to print information of what is serving.
+* `verboseGridfs`(Boolean): causes the gridFsHandler to print information about it's operations.
+* `verboseQueue`(Boolean): causes the message queue to print information about it's operations.
+* `verboseMisc`(Boolean): causes any message being output outside of the other modes to be printed.
+* `verboseGenerator`(Boolean): causes the cache generator to print information about it's operations.
 * `useAlternativeLanguages`(Boolean): enables checking for user's language so one of the alternative languages can be used for his request.
 
 `db.json`: contains database connection information.

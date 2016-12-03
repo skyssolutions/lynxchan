@@ -6,7 +6,6 @@ var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
 var logger = require('../../../logger');
 var debug = require('../../../kernel').debug();
-var verbose;
 var overboard;
 var sfwOverboard;
 var templateHandler;
@@ -27,7 +26,6 @@ exports.loadSettings = function() {
   var settings = require('../../../settingsHandler').getGeneralSettings();
 
   messageLength = settings.messageLength;
-  verbose = settings.verbose;
   overboard = settings.overboard;
   sfwOverboard = settings.sfwOverboard;
   boardCreationRequirement = settings.boardCreationRequirement;
@@ -59,11 +57,6 @@ exports.error = function(code, message, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
 
@@ -83,12 +76,6 @@ exports.resetEmail = function(password, language) {
     return serializer(document);
   } catch (error) {
 
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
-
     return error.toString();
   }
 };
@@ -104,12 +91,6 @@ exports.recoveryEmail = function(recoveryLink, language) {
 
     return serializer(document);
   } catch (error) {
-
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }
@@ -206,12 +187,6 @@ exports.account = function(userData, language) {
     return serializer(document);
   } catch (error) {
 
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
-
     return error.toString();
   }
 };
@@ -252,11 +227,6 @@ exports.logs = function(dates, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }
@@ -407,11 +377,6 @@ exports.boards = function(parameters, boards, pageCount, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }
@@ -469,11 +434,6 @@ exports.ban = function(ban, board, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
 
@@ -520,11 +480,6 @@ exports.hashBan = function(hashBans, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }
@@ -568,11 +523,6 @@ exports.edit = function(parameters, message, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }
@@ -609,11 +559,6 @@ exports.noCookieCaptcha = function(parameters, captchaId, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }
@@ -636,11 +581,6 @@ exports.blockBypass = function(valid, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }
@@ -681,11 +621,6 @@ exports.graphs = function(dates, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }
@@ -711,11 +646,6 @@ exports.message = function(message, link, language) {
 
     return serializer(document);
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }

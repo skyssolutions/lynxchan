@@ -24,7 +24,7 @@ exports.loadSettings = function() {
   var settings = require('../settingsHandler').getGeneralSettings();
 
   threadCount = settings.multiboardThreadCount;
-  verbose = settings.verbose;
+  verbose = settings.verbose || settings.verboseMisc;
   altLanguages = settings.useAlternativeLanguages;
   multiboardThreadCount = settings.multiboardThreadCount;
 };

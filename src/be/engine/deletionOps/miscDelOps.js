@@ -15,7 +15,6 @@ var hashBans = db.hashBans();
 var reports = db.reports();
 var posts = db.posts();
 var boards = db.boards();
-var verbose;
 var overboard;
 var lang;
 var sfwOverboard;
@@ -32,7 +31,6 @@ exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
   sfwOverboard = settings.sfwOverboard;
-  verbose = settings.verbose;
   overboard = settings.overboard;
 };
 
@@ -187,10 +185,6 @@ exports.pruneThreadsForQuery = function(matchBlock, limit, boardUri, language,
 };
 
 exports.cleanThreads = function(boardUri, early404, limit, language, callback) {
-
-  if (verbose) {
-    console.log('Cleaning threads of ' + boardUri);
-  }
 
   if (early404) {
 

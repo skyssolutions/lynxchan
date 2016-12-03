@@ -16,7 +16,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
-  verbose = settings.verbose;
+  verbose = settings.verbose || settings.verboseMisc;
 };
 
 exports.getAlternativeLanguagePack = function(language) {

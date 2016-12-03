@@ -32,7 +32,7 @@ function broadCastToSlaves(newSettings, callback, index, attempts) {
     return;
   }
 
-  if (generalSettings.verbose) {
+  if (generalSettings.verbose || generalSettings.verboseMisc) {
     console.log('Attempt ' + attempts + ' to ' + newSettings.slaves[index]);
   }
 

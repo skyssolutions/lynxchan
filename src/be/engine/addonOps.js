@@ -15,7 +15,7 @@ exports.getEngineInfo = function() {
 exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
-  verbose = settings.verbose;
+  verbose = settings.verbose || settings.verboseMisc;
   addons = settings.addons;
 
   if (!addons) {

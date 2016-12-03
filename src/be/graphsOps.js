@@ -7,7 +7,8 @@ var db = require('./db');
 var logger = require('./logger');
 var conn = db.conn();
 var stats = db.stats();
-var verbose = require('./settingsHandler').getGeneralSettings().verbose;
+var settings = require('./settingsHandler').getGeneralSettings();
+var verbose = settings.verbose || settings.verboseMisc;
 
 // Duplicated code, since we can't make a core module depend on an engine module
 function writeData(data, dest, mime, meta, callback) {

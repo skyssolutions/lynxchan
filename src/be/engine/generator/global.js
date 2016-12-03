@@ -43,7 +43,7 @@ var overBoardThreadCount;
 exports.loadSettings = function() {
   var settings = settingsHandler.getGeneralSettings();
 
-  verbose = settings.verbose;
+  verbose = settings.verbose || settings.verboseGenerator;
   altLanguages = settings.useAlternativeLanguages;
   topBoardsCount = settings.topBoardsCount;
   globalLatestPosts = settings.globalLatestPosts;

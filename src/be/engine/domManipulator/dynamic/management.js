@@ -6,7 +6,6 @@ var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
 var debug = require('../../../kernel').debug();
 var settings;
-var verbose;
 var minClearIpRole;
 var globalBoardModeration;
 var customJs;
@@ -78,7 +77,6 @@ exports.boardManagementLinks = [ {
 exports.loadSettings = function() {
 
   settings = require('../../../settingsHandler').getGeneralSettings();
-  verbose = settings.verbose;
   globalBoardModeration = settings.allowGlobalBoardModeration;
   customJs = settings.allowBoardCustomJs;
   displayMaxBannerSize = common.formatFileSize(settings.maxBannerSizeB);
@@ -280,11 +278,6 @@ exports.boardManagement = function(userData, boardData, reports, bans,
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }
@@ -455,12 +448,6 @@ exports.globalManagement = function(userRole, userLogin, staff, reports,
     return serializer(document);
   } catch (error) {
 
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
-
     return error.toString();
   }
 };
@@ -516,11 +503,6 @@ exports.filterManagement = function(boardUri, filters, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }
@@ -565,11 +547,6 @@ exports.ruleManagement = function(boardUri, rules, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }
@@ -620,11 +597,6 @@ exports.flagManagement = function(boardUri, flags, language) {
 
     return serializer(document);
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }
@@ -694,11 +666,6 @@ exports.globalSettings = function(language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }
@@ -751,11 +718,6 @@ exports.bannerManagement = function(boardUri, banners, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
 
@@ -846,12 +808,6 @@ exports.mediaManagement = function(media, pages, parameters, language) {
 
   } catch (error) {
 
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
-
     return error.toString();
 
   }
@@ -897,12 +853,6 @@ exports.languages = function(languages, language) {
     return serializer(document);
 
   } catch (error) {
-
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
 

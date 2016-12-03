@@ -43,7 +43,7 @@ exports.loadSettings = function() {
   var settings = settingsHandler.getGeneralSettings();
   pageSize = settings.pageSize;
   altLanguages = settings.useAlternativeLanguages;
-  verbose = settings.verbose;
+  verbose = settings.verbose || settings.verboseGenerator;
   disableCatalogPosting = settings.disableCatalogPosting;
 
 };
@@ -124,9 +124,6 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
 
     return;
   } else if (!boardData) {
-    if (verbose) {
-      console.log('Obtaining board data.');
-    }
 
     boards.findOne({
       boardUri : boardUri
@@ -142,9 +139,6 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
 
     return;
   } else if (!threadData) {
-    if (verbose) {
-      console.log('Obtaining thread data.');
-    }
 
     threads.findOne({
       boardUri : boardUri,
@@ -239,10 +233,6 @@ exports.getThreads = function(boardUri, boardData, callback) {
 exports.allThreads = function(boardUri, callback, boardData) {
 
   if (!boardData) {
-
-    if (verbose) {
-      console.log('Obtaining board data.');
-    }
 
     boards.findOne({
       boardUri : boardUri
@@ -415,10 +405,6 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
 
     return;
   } else if (!boardData) {
-
-    if (verbose) {
-      console.log('Obtaining board data.');
-    }
 
     boards.findOne({
       boardUri : boardUri
@@ -613,10 +599,6 @@ exports.board = function(boardUri, reloadThreads, reloadRules, cb, boardData) {
 
   // we allow for the basic board data to be informed, but fetch if not sent.
   if (!boardData) {
-
-    if (verbose) {
-      console.log('Obtaining board data.');
-    }
 
     boards.findOne({
       boardUri : boardUri

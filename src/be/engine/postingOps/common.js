@@ -68,7 +68,7 @@ exports.loadSettings = function() {
     exports.defaultAnonymousName = lang().miscDefaultAnonymous;
   }
 
-  verbose = settings.verbose;
+  verbose = settings.verbose || settings.verboseMisc;
   maxGlobalLatestPosts = settings.globalLatestPosts;
   floodTimer = settings.floodTimerSec * 1000;
   globalMaxSizeMB = settings.maxFileSizeMB;

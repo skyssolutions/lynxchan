@@ -6,7 +6,6 @@
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;
 var debug = require('../../../kernel').debug();
-var verbose;
 var templateHandler;
 var lang;
 var miscOps;
@@ -17,13 +16,6 @@ var boardModerationIdentifiers = [ 'boardTransferIdentifier',
 
 var specialSettingsRelation = {
   sfw : 'checkboxSfw'
-};
-
-exports.loadSettings = function() {
-
-  var settings = require('../../../settingsHandler').getGeneralSettings();
-  verbose = settings.verbose;
-
 };
 
 exports.loadDependencies = function() {
@@ -50,11 +42,6 @@ exports.bans = function(bans, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
 
@@ -106,11 +93,6 @@ exports.closedReports = function(reports, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }
@@ -168,11 +150,6 @@ exports.rangeBans = function(rangeBans, boardData, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }
@@ -222,11 +199,6 @@ exports.hashBans = function(hashBans, boardUri, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }
@@ -278,11 +250,6 @@ exports.boardModeration = function(boardData, ownerData, language) {
     return serializer(document);
 
   } catch (error) {
-    if (debug) {
-      throw error;
-    } else if (verbose) {
-      console.log(error);
-    }
 
     return error.toString();
   }

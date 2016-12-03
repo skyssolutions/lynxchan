@@ -22,7 +22,7 @@ exports.loadSettings = function() {
   var settings = require('../settingsHandler').getGeneralSettings();
 
   disable304 = settings.disable304;
-  verbose = settings.verbose;
+  verbose = settings.verbose || settings.verboseGridfs;
   alternativeLanguages = settings.useAlternativeLanguages;
 };
 

@@ -1945,6 +1945,30 @@ checkboxAllowTorFiles:
     use: might be turned on.
     description: checkbox that indicates if TOR users are allowed to post files.
 
+checkboxVerboseMisc:
+    use: might be turned on.
+    description: checkbox that indicates if verbose miscellaneous is on.
+
+checkboxVerboseGenerator:
+    use: might be turned on.
+    description: checkbox that indicates if verbose cache generator is on.
+
+checkboxVerboseQueue:
+    use: might be turned on.
+    description: checkbox that indicates if verbose message queue mode is on.
+
+checkboxVerboseGridfs:
+    use: might be turned on.
+    description: checkbox that indicates verbose GridFS mode is on.
+
+checkboxVerboseStatic:
+    use: might be turned on.
+    description: checkbox that indicates if verbose static file serving mode is on.
+
+checkboxVerboseApis:
+    use: might be turned on.
+    description: checkbox that indicates if the verbose apis mode is on.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::51

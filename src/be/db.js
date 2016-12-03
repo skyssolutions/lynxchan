@@ -12,6 +12,7 @@ var migrations;
 var newerMigrations;
 var settings = require('./settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
+var miscVerbose = settings.verboseMisc;
 var noDaemon = kernel.noDaemon();
 var debug = kernel.debug();
 
@@ -54,7 +55,7 @@ var loading;
 // start of version check
 function registerLatestVersion(callback) {
 
-  if (verbose) {
+  if (miscVerbose || verbose) {
     console.log('Checking if latest version is ' + dbVersion);
   }
 
@@ -68,7 +69,7 @@ function registerLatestVersion(callback) {
       callback();
     } else {
 
-      if (verbose) {
+      if (miscVerbose || verbose) {
         console.log('Registering current version as ' + dbVersion);
       }
 
@@ -140,7 +141,7 @@ function iterateUpgrades(currentVersion, callback) {
   migrations = migrations || require('./dbMigrations');
   newerMigrations = newerMigrations || require('./newerMigrations');
 
-  if (verbose) {
+  if (miscVerbose || verbose) {
     console.log('Iterating db version ' + currentVersion);
   }
 

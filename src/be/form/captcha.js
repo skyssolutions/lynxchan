@@ -24,9 +24,11 @@ function showCaptcha(req, captchaData, res) {
       function streamedFile(error) {
         if (error) {
 
+          var settings = settingsHandler.getGeneralSettings();
+
           if (debug) {
             throw error;
-          } else if (settingsHandler.getGeneralSettings().verbose) {
+          } else if (settings.verboseMisc || settings.verbose) {
             console.log(error);
           }
 
@@ -38,7 +40,9 @@ function showCaptcha(req, captchaData, res) {
 
 exports.process = function(req, res) {
 
-  var verbose = settingsHandler.getGeneralSettings().verbose;
+  var settings = settingsHandler.getGeneralSettings();
+
+  var verbose = settings.verbose || settings.verboseMisc;
 
   captchaOps.checkForCaptcha(req, function checked(error, captchaData) {
 

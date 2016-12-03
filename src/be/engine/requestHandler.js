@@ -36,7 +36,7 @@ exports.loadSettings = function() {
   var settings = require('../settingsHandler').getGeneralSettings();
 
   multiBoardAllowed = settings.multiboardThreadCount;
-  verbose = settings.verbose;
+  verbose = settings.verbose || settings.verboseMisc;
   slaves = settings.slaves;
   useLanguages = settings.useAlternativeLanguages;
   master = settings.master;

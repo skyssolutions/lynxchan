@@ -25,7 +25,7 @@ exports.loadSettings = function() {
   var settings = settingsHandler.getGeneralSettings();
 
   defaultFePath = settings.fePath;
-  verbose = settings.verbose;
+  verbose = settings.verbose || settings.verboseStatic;
   disable304 = settings.disable304;
 };
 

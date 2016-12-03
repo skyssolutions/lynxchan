@@ -25,7 +25,6 @@ var sfwOverboard;
 
 var autoLockLimit;
 var bumpLimit;
-var verbose;
 var latestPostsCount;
 var globalLatestPosts;
 
@@ -35,7 +34,6 @@ exports.loadSettings = function() {
 
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
-  verbose = settings.verbose;
   bumpLimit = settings.autoSageLimit;
   latestPostsCount = settings.latestPostCount;
   globalLatestPosts = settings.globalLatestPosts;

@@ -53,7 +53,7 @@ exports.getTemplates = function(language) {
 exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
-  verbose = settings.verbose;
+  verbose = settings.verbose || settings.verboseMisc;
 
 };
 
@@ -371,7 +371,7 @@ exports.getPageTests = function() {
             'fieldThumbSize', 'fieldMaxFilters', 'fieldMaxVolunteers',
             'fieldMaxBannerSize', 'fieldMaxFlagSize', 'fieldFloodInterval',
             'checkboxVerbose', 'checkboxDisable304', 'comboMinClearIpRole',
-            'checkboxMediaThumb', 'checkboxMaintenance',
+            'checkboxMediaThumb', 'checkboxMaintenance', 'checkboxVerboseMisc',
             'checkboxMultipleReports', 'fieldMaster', 'checkboxAutoPruneFiles',
             'checkboxDisableAccountCreation', 'comboBoardCreationRequirement',
             'fieldMaxTags', 'fieldGlobalLatestImages', 'fieldTorPort',
@@ -387,7 +387,9 @@ exports.getPageTests = function() {
             'fieldSpamIpsSource', 'checkboxSpamBypass', 'fieldIpExpiration',
             'checkboxDisableSpamCheck', 'checkboxDisableCatalogPosting',
             'checkboxAllowTorPosting', 'checkboxAllowTorFiles',
-            'checkboxUseAlternativeLanguages' ]
+            'checkboxUseAlternativeLanguages', 'checkboxVerboseGenerator',
+            'checkboxVerboseQueue', 'checkboxVerboseGridfs',
+            'checkboxVerboseStatic', 'checkboxVerboseApis' ]
       }, {
         template : 'hashBanPage',
         fields : [ 'hashBansPanel' ]

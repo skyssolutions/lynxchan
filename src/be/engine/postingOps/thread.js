@@ -8,7 +8,6 @@ var threads = db.threads();
 var boards = db.boards();
 var generator = require('../generator').board;
 var debug = require('../../kernel').debug();
-var verbose;
 var logger = require('../../logger');
 var common;
 var delOps;
@@ -30,7 +29,6 @@ exports.loadSettings = function() {
 
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
-  verbose = settings.verbose;
   threadLimit = settings.maxThreadCount;
   globalLatestPosts = settings.globalLatestPosts;
 

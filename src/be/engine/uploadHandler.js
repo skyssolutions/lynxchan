@@ -23,7 +23,6 @@ var videoThumbCommand = 'ffmpeg -i {$path} -y -vframes 1 -vf scale=';
 var ffmpegGifCommand = 'ffmpeg -i {$path} -y -vf scale=';
 var mp3ThumbCommand = 'ffmpeg -i {$path} -y -an -vcodec copy {$destination}';
 mp3ThumbCommand += ' && mogrify -resize {$dimension} {$destination}';
-var verbose;
 var thumbSize;
 var latestImages;
 var miscOps;
@@ -49,7 +48,6 @@ exports.loadSettings = function() {
 
   ffmpegGif = settings.ffmpegGifs;
   onlySfwImages = settings.onlySfwLatestImages;
-  verbose = settings.verbose;
   thumbSize = settings.thumbSize;
   latestImages = settings.globalLatestImages;
   mediaThumb = settings.mediaThumb;

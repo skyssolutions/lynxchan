@@ -63,7 +63,7 @@ var http = require('http');
 var db = require('./db');
 var rebuildMessages = db.messages();
 var settings = require('./settingsHandler').getGeneralSettings();
-var verbose = settings.verbose;
+var verbose = settings.verbose || settings.verboseQueue;
 var currentSlave = 0;
 var concurrentMessages = 0;
 var MAX_TRIES = 4;
@@ -89,7 +89,7 @@ exports.loadUnfinishedMessages = function() {
 exports.reload = function() {
   generator = require('./engine/generator');
   settings = require('./settingsHandler').getGeneralSettings();
-  verbose = settings.verbose;
+  verbose = settings.verbose || settings.verboseQueue;
   maxConcurrentMessages = settings.concurrentRebuildMessages;
 };
 

@@ -4,7 +4,7 @@ var fs = require('fs');
 var kernel = require('./kernel');
 var settingsHandler = require('./settingsHandler');
 var settings = settingsHandler.getGeneralSettings();
-var verbose = settings.verbose;
+var verbose = settings.verbose || settings.verboseMisc;
 var ipExpiration = settings.ipExpirationDays;
 var tempDirectory = settings.tempDirectory;
 var captchaExpiration = settings.captchaExpiration;
@@ -29,7 +29,7 @@ exports.reload = function() {
   settings = settingsHandler.getGeneralSettings();
 
   ipExpiration = settings.ipExpirationDays;
-  verbose = settings.verbose;
+  verbose = settings.verbose || settings.verboseMisc;
   tempDirectory = settings.tempDirectory;
   captchaExpiration = settings.captchaExpiration;
   gridFsHandler = require('./engine/gridFsHandler');

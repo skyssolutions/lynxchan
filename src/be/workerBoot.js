@@ -7,7 +7,7 @@
 var kernel = require('./kernel');
 var settingsHandler = require('./settingsHandler');
 var settings = settingsHandler.getGeneralSettings();
-var verbose = settings.verbose;
+var verbose = settings.verbose || settings.verboseMisc;
 var cluster = require('cluster');
 var fs = require('fs');
 var requestHandler;
@@ -21,7 +21,7 @@ var debug = kernel.debug();
 exports.reload = function() {
 
   settings = settingsHandler.getGeneralSettings();
-  verbose = settings.verbose;
+  verbose = settings.verbose || settings.verboseMisc;
   requestHandler = require('./engine/requestHandler');
 };
 
