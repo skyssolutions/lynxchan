@@ -17,18 +17,32 @@ require('jsdom').defaultDocumentFeatures = {
   MutationEvents : false
 };
 
+exports.getAlternativeTemplates = function(language) {
+
+  var toReturn = alternativeTemplates[language._id];
+
+  if (!toReturn) {
+
+    try {
+      exports.loadTemplates(language);
+      toReturn = alternativeTemplates[language._id];
+    } catch (error) {
+      if (debug) {
+        throw error;
+      }
+    }
+
+  }
+
+  return toReturn;
+
+};
+
 exports.getTemplates = function(language) {
 
   if (language) {
-    var toReturn = alternativeTemplates[language._id];
 
-    if (!toReturn) {
-      exports.loadTemplates(language);
-
-      toReturn = alternativeTemplates[language._id];
-    }
-
-    return toReturn || defaultTemplates;
+    return exports.getAlternativeTemplates(language) || defaultTemplates;
 
   } else {
     return defaultTemplates;
@@ -565,10 +579,11 @@ exports.loadTemplates = function(language) {
 
     fePath = language.frontEnd;
     templateObject = {};
-    alternativeTemplates[language._id] = templateObject;
 
     var finalPath = fePath + '/templateSettings.json';
     templateSettings = JSON.parse(fs.readFileSync(finalPath));
+
+    alternativeTemplates[language._id] = templateObject;
 
   }
 

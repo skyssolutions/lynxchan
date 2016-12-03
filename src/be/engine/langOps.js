@@ -19,16 +19,34 @@ exports.loadSettings = function() {
   verbose = settings.verbose;
 };
 
-exports.languagePack = function(language) {
+exports.getAlternativeLanguagePack = function(language) {
 
-  if (language) {
-    var toReturn = alternativeLanguages[language._id];
+  var toReturn = alternativeLanguages[language._id];
 
-    if (!toReturn) {
+  if (!toReturn) {
+
+    try {
+
       exports.init(language);
 
       toReturn = alternativeLanguages[language._id];
+    } catch (error) {
+      if (debug) {
+        throw error;
+      }
     }
+  }
+
+  return toReturn;
+
+};
+
+exports.languagePack = function(language) {
+
+  if (language) {
+
+    var toReturn = exports.getAlternativeLanguagePack(language);
+
   }
 
   if (!toReturn) {
