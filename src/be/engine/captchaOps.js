@@ -172,7 +172,7 @@ exports.transferToGfs = function(result, id, callback) {
   var expiration = new Date();
   expiration.setUTCMinutes(expiration.getUTCMinutes() + captchaExpiration);
 
-  gridFsHandler.writeData(new Buffer(result, 'binary'), id + '.jpg',
+  gridFsHandler.writeData(Buffer.from(result, 'binary'), id + '.jpg',
       'image/jpeg', {
         type : 'captcha',
         expiration : expiration

@@ -67,9 +67,11 @@ exports.threadProjection = {
 
 exports.board = require('./board');
 exports.global = require('./global');
+exports.previews = require('./previews');
 
 exports.loadSettings = function() {
 
+  exports.previews.loadSettings();
   exports.board.loadSettings();
   exports.global.loadSettings();
 
@@ -101,6 +103,7 @@ exports.nextLanguage = function(language, callback) {
 
 exports.loadDependencies = function() {
 
+  exports.previews.loadDependencies();
   exports.board.loadDependencies();
   exports.global.loadDependencies();
 
@@ -142,7 +145,7 @@ exports.boardReloads = function(callback) {
     fullReloadCallback(error, callback);
   });
 
-  exports.board.previews(function reloaded(error) {
+  exports.previews.previews(function reloaded(error) {
     fullReloadCallback(error, callback);
   });
 

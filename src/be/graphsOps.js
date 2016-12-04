@@ -218,7 +218,7 @@ function plot(date, results, callback) {
       callback(error);
     } else {
       var path = '/.global/graphs/' + logger.formatedDate(date) + '.png';
-      writeData(new Buffer(result, 'binary'), path, 'image/png', {
+      writeData(Buffer.from(result, 'binary'), path, 'image/png', {
         type : 'graph',
         date : date
       }, callback);

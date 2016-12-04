@@ -107,7 +107,7 @@ exports.writeData = function(data, dest, mime, meta, callback, compressed) {
 
   if (typeof (data) === 'string') {
 
-    data = new Buffer(data, 'utf-8');
+    data = Buffer.from(data, 'utf-8');
   }
 
   if (!compressed) {

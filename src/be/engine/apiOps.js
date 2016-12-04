@@ -244,7 +244,7 @@ exports.processFile = function(file, res, finalArray, toRemove,
 
   var content = matches[2];
 
-  fs.writeFile(location, new Buffer(content, 'base64'), function wroteFile(
+  fs.writeFile(location, Buffer.from(content, 'base64'), function wroteFile(
       error) {
 
     if (!error) {

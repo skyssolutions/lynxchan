@@ -313,8 +313,8 @@ function prepareSettingsForChangeCheck(settings, callback) {
 
 function writeNewSettings(settings, callback) {
 
-  fs.writeFile(__dirname + '/settings/general.json', new Buffer(JSON.stringify(
-      settings, null, 2), 'utf-8'), function wroteFile(error) {
+  fs.writeFile(__dirname + '/settings/general.json', Buffer.from(JSON
+      .stringify(settings, null, 2), 'utf-8'), function wroteFile(error) {
     if (error) {
       callback(error);
     } else if (settings.master) {
@@ -539,15 +539,16 @@ exports.changeMaintenanceMode = function(newMode) {
 
   currentSettings.maintenance = newMode;
 
-  fs.writeFile(__dirname + '/settings/general.json', new Buffer(JSON.stringify(
-      currentSettings, null, 2), 'utf-8'), function wroteFile(error) {
-    if (error) {
-      console.log(error);
-    } else {
-      kernel.broadCastTopDownMessage({
-        reloadSettings : true
+  fs.writeFile(__dirname + '/settings/general.json', Buffer.from(JSON
+      .stringify(currentSettings, null, 2), 'utf-8'),
+      function wroteFile(error) {
+        if (error) {
+          console.log(error);
+        } else {
+          kernel.broadCastTopDownMessage({
+            reloadSettings : true
+          });
+        }
       });
-    }
-  });
 
 };

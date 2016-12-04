@@ -191,7 +191,7 @@ function debugPreGeneration() {
 function processMessageForBoards(message, callback) {
 
   if (message.preview) {
-    generator.board.preview(message.board, message.thread, message.post,
+    generator.previews.preview(message.board, message.thread, message.post,
         callback);
   } else if (message.buildAll) {
     generator.board.board(message.board, true, true, callback);

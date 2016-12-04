@@ -125,7 +125,7 @@ var optionalReloads = [ {
   command : informedArguments.reloadOverboard.informed
 }, {
   generatorFunction : 'previews',
-  generatorModule : 'board',
+  generatorModule : 'previews',
   command : informedArguments.reloadPreviews.informed
 }, {
   generatorFunction : 'logs',
