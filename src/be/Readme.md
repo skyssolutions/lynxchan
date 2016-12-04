@@ -172,6 +172,7 @@ Settings files that goes into the settings directory:
 * `verboseMisc`(Boolean): causes any message being output outside of the other modes to be printed.
 * `verboseGenerator`(Boolean): causes the cache generator to print information about it's operations.
 * `useAlternativeLanguages`(Boolean): enables checking for user's language so one of the alternative languages can be used for his request.
+* `incSpamIpsSource`(Boolean): complete url to be used to fetch latest additions to the spam ip database. Same rules for `spamIpsSource` apply, except that ips are separated by new lines instead of commas. Downloaded every hour. Defaults to `https://www.stopforumspam.com/downloads/listed_ip_1.zip`.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

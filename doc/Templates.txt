@@ -1933,6 +1933,10 @@ fieldMessageLength:
     use: have it`s value manipulated.
     description: field that displays the limit for posted messages.
 
+fieldIncrementalSpamIpsSource:
+    use: have it`s value manipulated.
+    description: field that displays the source for incremental spammer ips.
+
 checkboxFfmpegGifs:
     use: might be turned on.
     description: checkbox that indicates if ffmpeg will be used to thumbnail animated gifs.

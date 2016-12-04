@@ -389,7 +389,8 @@ exports.getPageTests = function() {
             'checkboxAllowTorPosting', 'checkboxAllowTorFiles',
             'checkboxUseAlternativeLanguages', 'checkboxVerboseGenerator',
             'checkboxVerboseQueue', 'checkboxVerboseGridfs',
-            'checkboxVerboseStatic', 'checkboxVerboseApis' ]
+            'checkboxVerboseStatic', 'checkboxVerboseApis',
+            'fieldIncrementalSpamIpsSource' ]
       }, {
         template : 'hashBanPage',
         fields : [ 'hashBansPanel' ]

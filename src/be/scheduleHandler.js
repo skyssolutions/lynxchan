@@ -34,6 +34,8 @@ exports.reload = function() {
   captchaExpiration = settings.captchaExpiration;
   gridFsHandler = require('./engine/gridFsHandler');
   torHandler = require('./engine/torOps');
+  spamOps = require('./engine/spamOps');
+  referenceHandler = require('./engine/mediaHandler');
 };
 
 exports.stop = function() {
@@ -55,6 +57,7 @@ exports.start = function() {
   }
 
   spamIpRefresh();
+  incrementalIp();
 
   if (!settings.master) {
     expiredCaptcha(true);
@@ -797,3 +800,39 @@ function spamIpRefresh() {
 
 }
 // } Section 8: Spammer ip refresh
+
+// Section 9: Spammer ip increment:
+function incrementSpammerIps() {
+
+  spamOps.incrementSpammers(function incrementedSpammers(error) {
+    if (error) {
+      if (debug) {
+        throw error;
+      } else {
+        console.log(error);
+      }
+
+    }
+
+    incrementalIp();
+
+  });
+
+}
+
+function incrementalIp() {
+
+  var nextRefresh = new Date();
+
+  nextRefresh.setUTCSeconds(0);
+  nextRefresh.setUTCMinutes(0);
+
+  var hoursToUse = nextRefresh.getUTCHours() === 23 ? 2 : 1;
+  nextRefresh.setUTCHours(nextRefresh.getUTCHours() + hoursToUse);
+
+  schedules.incrementalIpRefresh = setTimeout(function() {
+    incrementSpammerIps();
+  }, nextRefresh.getTime() - new Date().getTime());
+
+}
+// } Section 9: Spammer ip increment

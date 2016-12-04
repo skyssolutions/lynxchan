@@ -61,7 +61,7 @@ exports.searchIpInfo = function(fd, ip, first, last, callback) {
 
   var lineToRead = first.index + Math.round((last.index - first.index) / 2);
 
-  fs.read(fd, new Buffer(ipLineSize), 0, ipLineSize, lineToRead * ipLineSize,
+  fs.read(fd, Buffer.alloc(ipLineSize), 0, ipLineSize, lineToRead * ipLineSize,
       function read(error, readBytes, buffer) {
 
         if (error) {
@@ -86,7 +86,7 @@ exports.searchIpInfo = function(fd, ip, first, last, callback) {
 
 exports.getFirstAndLastIp = function(fd, ip, fileSize, callback) {
 
-  fs.read(fd, new Buffer(ipLineSize), 0, ipLineSize, 0, function read(error,
+  fs.read(fd, Buffer.alloc(ipLineSize), 0, ipLineSize, 0, function read(error,
       readBytes, buffer) {
 
     if (error) {
@@ -99,9 +99,11 @@ exports.getFirstAndLastIp = function(fd, ip, fileSize, callback) {
 
       var lastIndex = (fileSize / ipLineSize) - 1;
 
+      var position = lastIndex * ipLineSize;
+
       // style exception, too simple
-      fs.read(fd, new Buffer(ipLineSize), 0, ipLineSize,
-          lastIndex * ipLineSize, function read(error, readBytes, buffer) {
+      fs.read(fd, Buffer.alloc(ipLineSize), 0, ipLineSize, position,
+          function read(error, readBytes, buffer) {
 
             if (error) {
               fs.close(fd);
@@ -182,7 +184,7 @@ exports.searchLocationInfo = function(fd, geoId, first, last, callback) {
 
   var linePoint = lineToRead * locationLineSize;
 
-  fs.read(fd, new Buffer(locationLineSize), 0, locationLineSize, linePoint,
+  fs.read(fd, Buffer.alloc(locationLineSize), 0, locationLineSize, linePoint,
       function read(error, readBytes, buffer) {
 
         if (error) {
@@ -210,7 +212,7 @@ exports.searchLocationInfo = function(fd, geoId, first, last, callback) {
 
 exports.getFirstAndLastLocation = function(fd, geoId, fileSize, callback) {
 
-  fs.read(fd, new Buffer(locationLineSize), 0, locationLineSize, 0,
+  fs.read(fd, Buffer.alloc(locationLineSize), 0, locationLineSize, 0,
       function read(error, readBytes, buffer) {
 
         if (error) {
@@ -224,7 +226,7 @@ exports.getFirstAndLastLocation = function(fd, geoId, fileSize, callback) {
 
           // style exception, too simple
           fs
-              .read(fd, new Buffer(locationLineSize), 0, locationLineSize,
+              .read(fd, Buffer.alloc(locationLineSize), 0, locationLineSize,
                   lastIndex * locationLineSize, function read(error, readBytes,
                       buffer) {
 

@@ -513,7 +513,8 @@ exports.getDefaultSettings = function() {
     rssDomain : '',
     slaves : [],
     messageLength : 4096,
-    spamIpsSource : 'https://www.stopforumspam.com/downloads/bannedips.zip'
+    spamIpsSource : 'https://www.stopforumspam.com/downloads/bannedips.zip',
+    incSpamIpsSource : 'https://www.stopforumspam.com/downloads/listed_ip_1.zip'
   };
 
 };

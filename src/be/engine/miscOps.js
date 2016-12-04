@@ -343,6 +343,10 @@ exports.getParametersArray = function(language) {
     element : 'fieldCSP'
   }, {
     type : 'string',
+    setting : 'incSpamIpsSource',
+    element : 'fieldIncrementalSpamIpsSource'
+  }, {
+    type : 'string',
     setting : 'languagePackPath',
     element : 'fieldLanguagePack'
   }, {
