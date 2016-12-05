@@ -203,9 +203,12 @@ exports.checkForBan = function(req, boardUri, callback) {
   }
 
   torOps.markAsTor(req, function markedAsTor(error) {
+
     if (error) {
-      callback(error);
-    } else if (req.isTor) {
+      console.log(error);
+    }
+
+    if (req.isTor) {
       if (req.bypassed) {
         callback();
       } else {

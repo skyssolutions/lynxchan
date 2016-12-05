@@ -86,4 +86,3 @@ exports.getLocationInfo = function(ip, callback) {
   }, true);
 
 };
-// } Section 2: Location lookup

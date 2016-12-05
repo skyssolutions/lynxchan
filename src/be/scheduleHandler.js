@@ -58,11 +58,11 @@ exports.start = function() {
 
   spamIpRefresh();
   incrementalIp();
+  torRefresh();
 
   if (!settings.master) {
     expiredCaptcha(true);
     boardsStats();
-    torRefresh();
     uniqueIpCount();
 
     if (settings.autoPruneFiles) {

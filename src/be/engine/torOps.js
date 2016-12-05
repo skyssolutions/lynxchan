@@ -2,27 +2,28 @@
 
 // Handles anything related to TOR
 
-var torIps = require('../db').torIps();
+var fs = require('fs');
 var logger = require('../logger');
 var torDebug = require('../kernel').torDebug();
-var verbose;
 var ipSource;
+var spamOps;
+var locationOps;
 var https = require('https');
 var http = require('http');
+var compiledTORIps = __dirname + '/../TORIps';
 
 exports.loadSettings = function() {
-
   var settings = require('../settingsHandler').getGeneralSettings();
-
-  verbose = settings.verbose || settings.verboseMisc;
   ipSource = settings.torSource;
+};
 
+exports.loadDependencies = function() {
+  spamOps = require('./spamOps');
+  locationOps = require('./locationOps');
 };
 
 // Section 1: Update {
-exports.processData = function(data, callback) {
-
-  var match = data.match(/\d+\.\d+\.\d+\.\d+/g);
+exports.processData = function(match, callback) {
 
   if (!match) {
     console.log('No ips found in the provided list of TOR exit nodes.');
@@ -30,46 +31,32 @@ exports.processData = function(data, callback) {
     return;
   }
 
-  if (verbose) {
-    console.log('Found ' + match.length + ' ips of TOR exit nodes.');
-  }
+  var foundIps = spamOps.getSortedIps(match);
 
-  var operations = [];
+  var fileStream = fs.createWriteStream(compiledTORIps);
 
-  var convertedIps = [];
+  var stopped = false;
 
-  for (var i = 0; i < match.length; i++) {
-    var ip = logger.convertIpToArray(match[i]);
-
-    convertedIps.push(ip);
-
-    operations.push({
-      updateOne : {
-        filter : {
-          ip : ip
-        },
-        update : {
-          $setOnInsert : {
-            ip : ip
-          }
-        },
-        upsert : true
-      }
-    });
-
-  }
-
-  operations.push({
-    deleteMany : {
-      filter : {
-        ip : {
-          $nin : convertedIps
-        }
-      }
-    }
+  fileStream.once('error', function(error) {
+    stopped = true;
+    callback(error);
   });
 
-  torIps.bulkWrite(operations, callback);
+  for (var i = 0; i < foundIps.length; i++) {
+
+    if (stopped) {
+      return;
+    }
+
+    spamOps.writeIpToStream(foundIps[i], fileStream);
+
+  }
+
+  if (stopped) {
+    return;
+  }
+
+  fileStream.end(callback);
 
 };
 
@@ -87,15 +74,14 @@ exports.updateIps = function(callback) {
     });
 
     res.on('end', function() {
-      exports.processData(data, callback);
+      exports.processData(data.match(/\d+\.\d+\.\d+\.\d+/g), callback);
     });
     // style exception, too simple
 
   });
 
-  req.on('error', function(error) {
-    console.log(error);
-    callback();
+  req.once('error', function(error) {
+    callback(error);
   });
 
   req.end();
@@ -110,40 +96,35 @@ exports.markAsTor = function(req, callback) {
     return;
   }
 
-  var ip = logger.convertIpToArray(logger.getRawIp(req));
+  logger.binarySearch({
+    ip : locationOps.ipToInt(logger.convertIpToArray(logger.getRawIp(req)))
+  }, compiledTORIps, 4, function compare(a, b) {
+    return a.ip - b.ip;
+  }, spamOps.parseIpBuffer, function gotIp(error, ip) {
 
-  torIps.findOne({
-    ip : ip
-  }, function gotIp(error, torIp) {
     if (error) {
       callback(error);
     } else {
-
-      if (torIp || torDebug) {
-        req.isTor = true;
-        if (verbose) {
-          console.log('Marked ip ' + ip + ' as TOR.');
-        }
-      }
-
-      callback(null, req);
+      req.isTor = ip ? true : false;
+      callback();
     }
+
   });
 
 };
 
 exports.init = function(callback) {
 
-  torIps.findOne({}, function gotIp(error, torIp) {
-    if (error) {
-      callback(error);
-    } else if (!torIp) {
-      console.log('TOR ips will be downloaded, this might take a while');
-
+  try {
+    fs.statSync(compiledTORIps);
+    callback();
+  } catch (error) {
+    if (error.code === 'ENOENT') {
       exports.updateIps(callback);
     } else {
-      callback();
+      callback(error);
     }
-  });
+
+  }
 
 };

@@ -33,11 +33,9 @@ exports.writeIpToStream = function(ip, fileStream) {
 
 };
 
-exports.getSortedIps = function(data) {
+exports.getSortedIps = function(ips) {
 
   var foundIps = [];
-
-  var ips = data.split(',');
 
   for (var i = 0; i < ips.length; i++) {
     var ip = ips[i];
@@ -93,13 +91,21 @@ exports.updateSpammers = function(callback) {
     if (error) {
       callback(error);
     } else {
-      exports.processData(exports.getSortedIps(data), callback);
+      exports.processData(exports.getSortedIps(data.split(',')), callback);
     }
 
   });
 
 };
 // } Section 1: Updating spammer list
+
+exports.parseIpBuffer = function(buffer) {
+
+  return {
+    ip : buffer.readUInt32BE(0)
+  };
+
+};
 
 exports.checkIp = function(ip, callback, override) {
 
@@ -112,13 +118,7 @@ exports.checkIp = function(ip, callback, override) {
     ip : locationOps.ipToInt(ip)
   }, exports.spamDataPath, ipLineSize, function compare(a, b) {
     return a.ip - b.ip;
-  }, function parse(buffer) {
-
-    return {
-      ip : buffer.readUInt32BE(0)
-    };
-
-  }, function searched(error, ip) {
+  }, exports.parseIpBuffer, function searched(error, ip) {
 
     if (error) {
       callback(error);

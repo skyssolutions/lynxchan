@@ -20,7 +20,7 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 20;
+var maxIndexesSet = 19;
 
 var cachedMessages;
 var cachedLanguages;
@@ -45,7 +45,6 @@ var cachedLatestPosts;
 var cachedRecoveryRequests;
 var cachedStats;
 var cachedHashBans;
-var cachedTorIps;
 var cachedFlags;
 var cachedOverboard;
 var cachedIpAggregation;
@@ -349,23 +348,6 @@ function initFlags(callback) {
     }
   });
 
-}
-
-function initTorIps(callback) {
-
-  cachedTorIps.ensureIndex({
-    ip : 1
-  }, function setIndex(error, index) {
-    if (error) {
-      if (loading) {
-        loading = false;
-
-        callback(error);
-      }
-    } else {
-      indexSet(callback);
-    }
-  });
 }
 
 function initTripcodes(callback) {
@@ -722,10 +704,6 @@ exports.hashBans = function() {
   return cachedHashBans;
 };
 
-exports.torIps = function() {
-  return cachedTorIps;
-};
-
 exports.flags = function() {
   return cachedFlags;
 };
@@ -760,8 +738,6 @@ function initGlobalIndexes(callback) {
   initTripcodes(callback);
 
   initHashBans(callback);
-
-  initTorIps(callback);
 
   initFlood(callback);
 
@@ -817,7 +793,6 @@ function initGlobalIndexedCollections(callback) {
   cachedTripcodes = cachedDb.collection('secureTripcodes');
   cachedFlood = cachedDb.collection('floodRecord');
   cachedCaptchas = cachedDb.collection('captchas');
-  cachedTorIps = cachedDb.collection('torIps');
   cachedMessages = cachedDb.collection('rebuildMessages');
   cachedRecoveryRequests = cachedDb.collection('recoveryRequests');
   cachedUsers = cachedDb.collection('users');
