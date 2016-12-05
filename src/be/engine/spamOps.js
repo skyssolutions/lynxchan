@@ -49,11 +49,9 @@ exports.getSortedIps = function(data) {
     foundIps.push(locationOps.ipToInt(logger.convertIpToArray(ip)));
   }
 
-  foundIps = foundIps.sort(function(a, b) {
+  return foundIps.sort(function(a, b) {
     return a - b;
   });
-
-  return foundIps;
 
 };
 
@@ -233,15 +231,21 @@ exports.checkIp = function(ip, callback, override) {
 // } Section 2: Checking ip
 
 // Section 3: Incrementing spammer list {
-exports.iterateNewIps = function(newIps, currentArray, callback, index) {
+exports.iterateNewIps = function(newIps, currentArray, callback, index,
+    inserted) {
 
   index = index || 0;
 
   if (index >= newIps.length) {
 
-    exports.processData(currentArray.sort(function(a, b) {
-      return a - b;
-    }), callback);
+    if (inserted) {
+      exports.processData(currentArray.sort(function(a, b) {
+        return a - b;
+      }), callback);
+
+    } else {
+      callback();
+    }
 
     return;
   }
@@ -249,7 +253,7 @@ exports.iterateNewIps = function(newIps, currentArray, callback, index) {
   var ipString = newIps[index];
 
   if (!ipString.length) {
-    exports.iterateNewIps(newIps, currentArray, callback, ++index);
+    exports.iterateNewIps(newIps, currentArray, callback, ++index, inserted);
     return;
   }
 
@@ -262,10 +266,11 @@ exports.iterateNewIps = function(newIps, currentArray, callback, index) {
     } else {
 
       if (!spammer) {
+        inserted = true;
         currentArray.push(locationOps.ipToInt(ip));
       }
 
-      exports.iterateNewIps(newIps, currentArray, callback, ++index);
+      exports.iterateNewIps(newIps, currentArray, callback, ++index, inserted);
 
     }
 
