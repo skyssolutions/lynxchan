@@ -1,5 +1,6 @@
 'use strict';
 
+var fs = require('fs');
 var BigInteger = require('jsbn').BigInteger;
 
 exports.MIMETYPES = {
@@ -248,3 +249,137 @@ exports.getRawIp = function(req) {
   }
 
 };
+
+// Section 1: Binary search: {
+exports.searchOnDescriptor = function(toMatch, fd, entrySize, comparison,
+    parsing, aproximate, first, last, firstIndex, lastIndex, callback) {
+
+  var lineToRead = firstIndex + Math.round((lastIndex - firstIndex) / 2);
+
+  fs.read(fd, Buffer.alloc(entrySize), 0, entrySize, lineToRead * entrySize,
+      function read(error, readBytes, buffer) {
+
+        if (error) {
+          fs.close(fd);
+          callback(error);
+        } else {
+
+          var current = parsing(buffer);
+
+          var comparisonResult = comparison(toMatch, current);
+
+          if (!comparisonResult) {
+            fs.close(fd);
+            callback(null, current);
+          } else if (lastIndex - firstIndex < 3) {
+            fs.close(fd);
+            callback(null, aproximate ? current : null);
+          } else if (comparisonResult > 0) {
+            exports.searchOnDescriptor(toMatch, fd, entrySize, comparison,
+                parsing, aproximate, current, last, lineToRead, lastIndex,
+                callback);
+          } else if (comparisonResult < 0) {
+            exports.searchOnDescriptor(toMatch, fd, entrySize, comparison,
+                parsing, aproximate, first, current, firstIndex, lineToRead,
+                callback);
+          }
+
+        }
+
+      });
+
+};
+
+exports.handleEnds = function(lastIndex, buffer, comparison, toMatch, first,
+    fd, callback, entrySize, parsing, aproximate) {
+
+  var last = parsing(buffer);
+
+  var firstComparison = comparison(toMatch, first);
+  var lastComparison = comparison(toMatch, last);
+
+  if (firstComparison < 0 || lastComparison > 0) {
+    fs.close(fd);
+    callback();
+  } else if (!firstComparison) {
+    fs.close(fd);
+    callback(null, first);
+  } else if (!lastComparison) {
+    fs.close(fd);
+    callback(null, last);
+  } else {
+    exports.searchOnDescriptor(toMatch, fd, entrySize, comparison, parsing,
+        aproximate, first, last, 0, lastIndex, callback);
+  }
+
+};
+
+exports.getFirstAndLastObjects = function(toMatch, fd, entrySize, comparison,
+    parsing, size, aproximate, callback) {
+
+  fs.read(fd, Buffer.alloc(entrySize), 0, entrySize, 0, function read(error,
+      readBytes, buffer) {
+
+    if (error) {
+      fs.close(fd);
+      callback(error);
+    } else {
+
+      var first = parsing(buffer);
+
+      var lastIndex = (size / entrySize) - 1;
+
+      // style exception, too simple
+      fs.read(fd, Buffer.alloc(entrySize), 0, entrySize, lastIndex * entrySize,
+          function read(error, readBytes, buffer) {
+
+            if (error) {
+              fs.close(fd);
+              callback(error);
+            } else if (!readBytes) {
+              fs.close(fd);
+
+              callback();
+            } else {
+
+              exports.handleEnds(lastIndex, buffer, comparison, toMatch, first,
+                  fd, callback, entrySize, parsing, aproximate);
+
+            }
+
+          });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.binarySearch = function(toMatch, fileLocation, entrySize, comparison,
+    parsing, callback, aproximate) {
+
+  fs.stat(fileLocation, function gotStats(error, stats) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      fs.open(fileLocation, 'r', function openedFile(error, fd) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.getFirstAndLastObjects(toMatch, fd, entrySize, comparison,
+              parsing, stats.size, aproximate, callback);
+        }
+
+      });
+      // style exception, too simple
+
+    }
+  });
+
+};
+// } Section 1: Binary search

@@ -101,103 +101,6 @@ exports.updateSpammers = function(callback) {
 };
 // } Section 1: Updating spammer list
 
-// Section 2: Checking ip {
-exports.bufferToIpElement = function(index, buffer) {
-
-  return {
-    index : index,
-    ip : buffer.readUInt32BE(0)
-  };
-
-};
-
-exports.searchIpInfo = function(fd, ip, first, last, callback) {
-
-  var lineToRead = first.index + Math.round((last.index - first.index) / 2);
-
-  var linePoint = lineToRead * ipLineSize;
-
-  fs.read(fd, Buffer.alloc(ipLineSize), 0, ipLineSize, linePoint,
-      function read(error, readBytes, buffer) {
-
-        if (error) {
-          fs.close(fd);
-          callback(error);
-        } else {
-
-          var current = exports.bufferToIpElement(lineToRead, buffer);
-
-          if (current.ip === ip) {
-            fs.close(fd);
-            callback(null, true);
-          } else if (last.index - first.index < 3) {
-            fs.close(fd);
-            callback();
-          } else if (current.ip > ip) {
-            exports.searchIpInfo(fd, ip, first, current, callback);
-          } else if (current.ip < ip) {
-            exports.searchIpInfo(fd, ip, current, last, callback);
-          }
-
-        }
-
-      });
-};
-
-exports.getFirstAndLastIp = function(fd, ip, fileSize, callback) {
-
-  fs.read(fd, Buffer.alloc(ipLineSize), 0, ipLineSize, 0, function read(error,
-      readBytes, buffer) {
-
-    if (error) {
-      fs.close(fd);
-      callback(error);
-    } else {
-
-      var first = exports.bufferToIpElement(0, buffer);
-
-      var lastIndex = (fileSize / ipLineSize) - 1;
-
-      var position = lastIndex * ipLineSize;
-
-      // style exception, too simple
-      fs.read(fd, Buffer.alloc(ipLineSize), 0, ipLineSize, position,
-          function read(error, readBytes, buffer) {
-
-            if (error) {
-              fs.close(fd);
-              callback(error);
-            } else if (!readBytes) {
-              fs.close(fd);
-              callback();
-            } else {
-
-              var last = exports.bufferToIpElement(lastIndex, buffer);
-
-              if (ip < first.ip || ip > last.ip) {
-                fs.close(fd);
-                callback();
-              } else if (first.ip === ip) {
-                fs.close(fd);
-                callback(null, true);
-              } else if (last.ip === ip) {
-                fs.close(fd);
-                callback(null, true);
-              } else {
-                exports.searchIpInfo(fd, ip, first, last, callback);
-              }
-
-            }
-
-          });
-      // style exception, too simple
-
-    }
-
-  });
-
-};
-
 exports.checkIp = function(ip, callback, override) {
 
   if (disabled && !override) {
@@ -205,32 +108,29 @@ exports.checkIp = function(ip, callback, override) {
     return;
   }
 
-  fs.stat(exports.spamDataPath, function gotStats(error, stats) {
+  logger.binarySearch({
+    ip : locationOps.ipToInt(ip)
+  }, exports.spamDataPath, ipLineSize, function compare(a, b) {
+    return a.ip - b.ip;
+  }, function parse(buffer) {
+
+    return {
+      ip : buffer.readUInt32BE(0)
+    };
+
+  }, function searched(error, ip) {
 
     if (error) {
       callback(error);
     } else {
-
-      // style exception, too simple
-      fs.open(exports.spamDataPath, 'r', function openedFile(error, fd) {
-
-        if (error) {
-          callback(error);
-        } else {
-          exports.getFirstAndLastIp(fd, locationOps.ipToInt(ip), stats.size,
-              callback);
-        }
-
-      });
-      // style exception, too simple
-
+      callback(null, ip ? true : false);
     }
+
   });
 
 };
-// } Section 2: Checking ip
 
-// Section 3: Incrementing spammer list {
+// Section 2: Incrementing spammer list {
 exports.iterateNewIps = function(newIps, currentArray, callback, index,
     inserted) {
 
@@ -311,7 +211,7 @@ exports.incrementSpammers = function(callback) {
   });
 
 };
-// } Section 3: Incrementing spammer list
+// } Section 2: Incrementing spammer list
 
 exports.init = function(callback) {
 
