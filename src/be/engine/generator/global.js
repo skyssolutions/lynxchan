@@ -844,6 +844,11 @@ exports.createLogPage = function(date, foundLogs, callback, language) {
       callback(error);
     } else {
 
+      if (!altLanguages) {
+        jsonBuilder.log(date, foundLogs, callback);
+        return;
+      }
+
       // style exception, too simple
       rootModule.nextLanguage(language, function gotNextLanguage(error,
           language) {

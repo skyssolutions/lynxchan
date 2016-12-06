@@ -260,11 +260,6 @@ hashBans: stores bans on files.
 
 ----------------------------------------------------------------------------------------
 
-torIps: stores known TOR ips.
-    ip(Array): ip of the exit node.
-
-----------------------------------------------------------------------------------------
-
 flags: stores board flags.
     boardUri*/***: board where this flag belongs to.
     name***: name of the flag to be displayed. 16 characters.
