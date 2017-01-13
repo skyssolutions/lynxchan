@@ -204,6 +204,12 @@ exports.setBoardPosting = function(boardData, document, thread, language) {
     exports.removeElement(document.getElementById('divName'));
   }
 
+  var locationFlagMode = boardData.locationFlagMode || 0;
+
+  if (locationFlagMode !== 1) {
+    exports.removeElement(document.getElementById('noFlagDiv'));
+  }
+
   if (settings.indexOf('textBoard') > -1) {
     exports.removeElement(document.getElementById('divUpload'));
   } else {

@@ -401,7 +401,7 @@ exports.getNewThreadId = function(req, userData, parameters, board,
 
       // style exception, too simple
       common.getFlagUrl(parameters.flag, logger.ip(req), board,
-          function gotFlagUrl(flagUrl, flagName, flagCode) {
+          parameters.noFlag, function gotFlagUrl(flagUrl, flagName, flagCode) {
 
             parameters.flagCode = flagCode;
             parameters.flagName = flagName;
@@ -479,6 +479,7 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
     autoCaptchaStartTime : 1,
     hourlyThreadLimit : 1,
     maxFiles : 1,
+    locationFlagMode : 1,
     maxFileSizeMB : 1,
     usesCustomSpoiler : 1,
     specialSettings : 1,

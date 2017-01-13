@@ -27,7 +27,6 @@ exports.boardSettingsRelation = {
   requireThreadFile : 'requireFileCheckbox',
   uniquePosts : 'uniquePostsCheckbox',
   uniqueFiles : 'uniqueFilesCheckbox',
-  locationFlags : 'locationCheckBox',
   textBoard : 'textBoardCheckbox'
 };
 
@@ -97,6 +96,11 @@ exports.loadDependencies = function() {
     element : 'captchaModeComboBox',
     setting : 'captchaMode',
     labels : 'guiCaptchaModes'
+  }, {
+    limit : 2,
+    element : 'locationComboBox',
+    setting : 'locationFlagMode',
+    labels : 'guiBypassModes'
   } ];
 
 };

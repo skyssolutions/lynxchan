@@ -805,9 +805,11 @@ exports.readFlagData = function(locationData, callback) {
 
 };
 
-exports.getLocationFlagUrl = function(ip, boardData, callback) {
+exports.getLocationFlagUrl = function(ip, boardData, noFlag, callback) {
 
-  if (!ip || boardData.settings.indexOf('locationFlags') < 0) {
+  var locationFlagMode = boardData.locationFlagMode || 0;
+
+  if (!ip || !locationFlagMode || (locationFlagMode === 1 && noFlag)) {
     callback();
     return;
   }
@@ -831,10 +833,10 @@ exports.getLocationFlagUrl = function(ip, boardData, callback) {
 
 };
 
-exports.getFlagUrl = function(flagId, ip, boardData, callback) {
+exports.getFlagUrl = function(flagId, ip, boardData, noFlag, callback) {
 
   if (!flagId || !flagId.length) {
-    exports.getLocationFlagUrl(ip, boardData, callback);
+    exports.getLocationFlagUrl(ip, boardData, noFlag, callback);
     return;
   }
 
@@ -844,13 +846,13 @@ exports.getFlagUrl = function(flagId, ip, boardData, callback) {
       _id : new ObjectID(flagId)
     }, function gotFlagData(error, flag) {
       if (!flag) {
-        exports.getLocationFlagUrl(ip, boardData, callback);
+        exports.getLocationFlagUrl(ip, boardData, noFlag, callback);
       } else {
         callback('/' + boardData.boardUri + '/flags/' + flagId, flag.name);
       }
     });
   } catch (error) {
-    exports.getLocationFlagUrl(ip, boardData, callback);
+    exports.getLocationFlagUrl(ip, boardData, noFlag, callback);
   }
 
 };

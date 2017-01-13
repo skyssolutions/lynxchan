@@ -85,7 +85,7 @@ exports.loadDependencies = function() {
 exports.getValidSettings = function() {
   return [ 'disableIds', 'forceAnonymity', 'allowCode', 'early404', 'unindex',
       'blockDeletion', 'requireThreadFile', 'uniqueFiles', 'uniquePosts',
-      'locationFlags', 'textBoard' ];
+      'textBoard' ];
 };
 
 exports.getValidSpecialSettings = function() {
@@ -100,6 +100,11 @@ exports.captchaTextOrAnonimityChanged = function(board, params) {
 
   var captchaChanged = board.captchaMode !== +params.captchaMode;
 
+  var hadLocationOption = board.locationFlagMode === 1;
+  var hasLocationOption = +params.locationFlagMode === 1;
+
+  var changedLocationOption = hadLocationOption !== hasLocationOption;
+
   var hadAnon = oldSettings.indexOf('forceAnonymity') === -1;
   var hasAnon = newSettings.indexOf('forceAnonymity') === -1;
 
@@ -110,7 +115,9 @@ exports.captchaTextOrAnonimityChanged = function(board, params) {
 
   var textChanged = wasText !== isText;
 
-  return textChanged || anonChanged || (captchaChanged && !forcedCaptcha);
+  var toReturn = changedLocationOption || textChanged || anonChanged;
+
+  return toReturn || (captchaChanged && !forcedCaptcha);
 
 };
 
@@ -264,7 +271,8 @@ exports.saveNewSettings = function(board, parameters, callback) {
     maxFileSizeMB : +parameters.maxFileSizeMB,
     maxBumpAgeDays : +parameters.maxBumpAge,
     maxFiles : +parameters.maxFiles,
-    captchaMode : +parameters.captchaMode
+    captchaMode : +parameters.captchaMode,
+    locationFlagMode : +parameters.locationFlagMode
   };
 
   var updateBlock = {
@@ -722,11 +730,11 @@ exports.getBoardManagementData = function(userData, board,
     maxFileSizeMB : 1,
     maxBumpAgeDays : 1,
     maxThreadCount : 1,
+    locationFlagMode : 1,
     boardDescription : 1,
     usesCustomSpoiler : 1,
     hourlyThreadLimit : 1,
     autoCaptchaThreshold : 1
-
   }, function(error, boardData) {
     if (error) {
       callback(error);
@@ -800,6 +808,7 @@ exports.setSpecialSettings = function(userData, parameters, language, cb) {
   });
 
 };
+
 exports.aggregateThreadCount = function(boardUri, callback) {
 
   threads.count({

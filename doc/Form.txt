@@ -18,6 +18,7 @@ Name: newThread
 Description: creates a new thread. Accepts files.
 
 Parameters:
+    noFlag: if the board has locationFlagMode as 1 and anything is sent for this, the user won't show his location flag.
     name: name of the poster. 32 characters.
     email: e-mail of the poster. 64 characters.
     message*: message to be posted. 4096 characters.
@@ -214,9 +215,9 @@ Json output(Object): object with data used to manage the board. Contains the fol
         requireThreadFile: requires at least one file when creating a thread.
         uniqueFiles: enforces unique file posting.
         uniquePosts: enforces unique message posting.
-        locationFlags: users got location flags on their posts.
         textBoard: upload of files is not allowed on the board.
     tags(Array): array of tags for the board.
+    locationFlagMode(Number): current location flag mode for the board.
     boardMessage: message displayed on the board header.
     maxBumpAgeDays(Number): for how many days after its creation that a non-cyclic thread can be bumped.
     isOwner(Boolean): indicates if the user owns the board.
@@ -560,7 +561,7 @@ Parameters:
     requireThreadFile: requires at least one file for creating threads.
     uniqueFiles: enforces unique files on posting.
     uniquePosts: enforces unique messages on posting.
-    locationFlags: users will have location flags on their posts.
+    locationFlagMode(Number): mode for location flags. 0 means disabled, 1 means the user can opt-out, 2 means they are mandatory.
     captchaMode(Number): indicates the captcha mode for the board. 0 means no captcha, 1 means only for new threads and 2 means for all posts on the board.
     textBoard: upload of files is not allowed on the board.
 

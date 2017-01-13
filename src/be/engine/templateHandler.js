@@ -201,7 +201,8 @@ exports.getPageTests = function() {
         template : 'catalogPage',
         fields : [ 'divThreads', 'labelBoard', 'flagsDiv', 'divUpload',
             'labelMessageLength', 'labelMaxFiles', 'labelMaxFileSize',
-            'captchaDiv', 'boardIdentifier', 'flagCombobox', 'postingForm' ]
+            'captchaDiv', 'boardIdentifier', 'flagCombobox', 'postingForm',
+            'noFlagDiv' ]
       },
       {
         template : 'resetEmail',
@@ -232,7 +233,8 @@ exports.getPageTests = function() {
             'boardIdentifier', 'linkManagement', 'bannerImage', 'captchaDiv',
             'divName', 'linkModeration', 'labelMaxFileSize', 'linkPrevious',
             'linkNext', 'flagsDiv', 'flagCombobox', 'panelMessage',
-            'divMessage', 'labelMaxFiles', 'labelMessageLength', 'divUpload' ]
+            'divMessage', 'labelMaxFiles', 'labelMessageLength', 'divUpload',
+            'noFlagDiv' ]
       },
       {
         template : 'threadPage',
@@ -244,7 +246,7 @@ exports.getPageTests = function() {
             'checkboxCyclic', 'flagsDiv', 'flagCombobox', 'panelMessage',
             'divMessage', 'formTransfer', 'transferBoardIdentifier',
             'transferThreadIdentifier', 'ipDeletionForm', 'labelMaxFiles',
-            'labelMessageLength' ]
+            'labelMessageLength', 'noFlagDiv' ]
       },
       {
         template : 'messagePage',
@@ -283,7 +285,7 @@ exports.getPageTests = function() {
             'customSpoilerIndicator', 'tagsField', 'customJsForm',
             'customJsIdentifier', 'blockDeletionCheckbox',
             'requireFileCheckbox', 'appealedBansPanel', 'linkSelf',
-            'uniqueFilesCheckbox', 'uniquePostsCheckbox', 'locationCheckBox',
+            'uniqueFilesCheckbox', 'uniquePostsCheckbox', 'locationComboBox',
             'maxFilesField', 'maxFileSizeField', 'maxThreadFields',
             'autoSageLimitField', 'validMimesField', 'maxBumpAgeField' ]
       },

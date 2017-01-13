@@ -34,7 +34,8 @@ var boardProjection = {
   usesCustomJs : 1,
   usesCustomCss : 1,
   settings : 1,
-  boardDescription : 1
+  boardDescription : 1,
+  locationFlagMode : 1
 };
 
 exports.loadSettings = function() {

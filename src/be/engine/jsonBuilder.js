@@ -493,6 +493,7 @@ exports.boardManagement = function(userData, boardData, reports, bans) {
     acceptedMimes : boardData.acceptedMimes || settings.acceptedMimes,
     maxFiles : boardData.maxFiles || settings.maxFiles,
     captchaMode : boardData.captchaMode || 0,
+    locationFlagMode : boardData.locationFlagMode || 0,
     maxBumpAgeDays : boardData.maxBumpAgeDays
   });
 

@@ -63,6 +63,10 @@ TEM_ID::02
 boardPage: board pages, listing threads.
 
 Elements:
+noFlagDiv:
+    use: might be removed.
+    description: div with the option to not show the user location flag.
+
 panelMessage:
     use: might be removed.
     description: panel that holds the element containing the board message.
@@ -150,6 +154,10 @@ TEM_ID::03
 threadPage: thread page, with all replies.
 
 Elements:
+noFlagDiv:
+    use: might be removed.
+    description: div with the option to not show the user location flag.
+
 ipDeletionForm:
     use: might be removed.
     description: form used to delete all posts from the whole site coming from a single ip.
@@ -653,9 +661,9 @@ TEM_ID::12
 bManagement: board management page.
 
 Elements:
-locationCheckBox:
-    use: might be turned on.
-    description: checkbox that indicates if this board uses location flags.
+locationComboBox:
+    use: have children appended to it.
+    description: combo box that indicates the status of location flags.
 
 linkSelf:
     use: have it's href manipulated.
@@ -1085,6 +1093,10 @@ TEM_ID::24
 catalogPage: template for board's catalogs.
 
 Elements:
+noFlagDiv:
+    use: might be removed.
+    description: div with the option to not show the user location flag.
+
 postingForm:
     use: might be removed.
     description: element removed when the site disables thread creation from catalogs.

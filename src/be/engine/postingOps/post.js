@@ -524,7 +524,7 @@ exports.createPost = function(req, parameters, userData, postId, thread, board,
 exports.getPostFlag = function(req, parameters, userData, postId, thread,
     board, wishesToSign, cb) {
 
-  common.getFlagUrl(parameters.flag, logger.ip(req), board,
+  common.getFlagUrl(parameters.flag, logger.ip(req), board, parameters.noFlag,
       function gotFlagUrl(flagUrl, flagName, flagCode) {
 
         parameters.flagName = flagName;
@@ -668,6 +668,7 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
     specialSettings : 1,
     acceptedMimes : 1,
     maxFiles : 1,
+    locationFlagMode : 1,
     maxBumpAgeDays : 1,
     captchaMode : 1,
     autoSageLimit : 1,

@@ -25,7 +25,6 @@ boards: stores boards.
         allowCode: allows the usage of [code] on postings.
         early404: makes threads with less than 5 replies to be deleted after they leave the top 1/3 threads.
         blockDeletion: makes it impossible for users to delete their own posts.
-        locationFlags: board uses location flags for users.
         textBoard: upload of files is not allowed.
     filters(Array): array of filters of the board. Each object contains the following fields:
         originalTerm: original term to be replaced. 32 characters.
@@ -47,6 +46,7 @@ boards: stores boards.
     usesCustomSpoiler(Boolean): pre-aggregated boolean indicating the board has a custom spoiler.
     tags(Array): array of strings used as tags to identify the board subjects. Each tag can be up to 32 characters. Any upper-case character will be converted to lower-case.
     captchaMode(Number): indicates the captcha mode for the board. 0 means no captcha, 1 means only for new threads and 2 means for all posts on the board.
+    locationFlagMode (Number): indicates the mode for location flags for the board. 0 means no location flags, 1 means that users can opt-out from showing their location and 2 means that users are forced to show their location.
     specialSettings(Array): array of settings that only the global staff are allowed to change. May hold the following values:
         sfw: indicates the board is sfw.
     inactive(Boolean): indicates the board owner is inactive.
