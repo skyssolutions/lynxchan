@@ -8,11 +8,11 @@
   },
   "version": "1.8.0",
   "dependencies": {
-    "mongodb": "2.2.16",
+    "mongodb": "2.2.21",
     "jsdom": "9.9.1",
     "nodemailer": "2.7.0",
     "multiparty": "4.1.2",
-    "bcrypt": "1.0.1",
+    "bcrypt": "1.0.2",
     "jsbn": "0.1.0",
     "http-proxy": "1.16.2"
   },

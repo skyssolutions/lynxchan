@@ -38,6 +38,7 @@ Name: replyThread
 Description: post a reply to a thread. Accepts files.
 
 Parameters:
+    noFlag: if the board has locationFlagMode as 1 and anything is sent for this, the user won't show his location flag.
     name: name of the poster. 32 characters.
     email: e-mail of the poster. 64 characters.
     message: message to be posted. 4096 characters. Mandatory if no files are sent.

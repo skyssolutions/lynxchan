@@ -9,8 +9,8 @@
 See other branches named like `1.1.x` for stable versions. They will receive only critical bug fixes and will be maintained for at least one year after release. Remember to use a compatible version of your front-end with these stable versions. Newer versions might not have required elements on the templates for these versions.
 
 # Required software
-* [Node.js](http://nodejs.org) 6.9.2, I suggest installing from source code. DO NOT build the master's HEAD.
-* [MongoDB](https://www.mongodb.org/) 3.4.0
+* [Node.js](http://nodejs.org) 6.9.4, I suggest installing from source code. DO NOT build the master's HEAD.
+* [MongoDB](https://www.mongodb.org/) 3.4.1
 * [UnZip](http://www.info-zip.org) 6.00, this is probably already include in your distro, though.
 * [cUrl](http://curl.haxx.se) 7.29.0, this is usually included too.
 * [ImageMagick](http://www.imagemagick.org/script/index.php) 6.7.8-9
