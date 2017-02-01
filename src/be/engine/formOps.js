@@ -297,7 +297,17 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback,
     optionalAuth, exceptionalMimes) {
 
   if (!exports.checkReferer(req)) {
-    exports.redirectToLogin(res);
+
+    if (!optionalAuth) {
+      exports.redirectToLogin(res);
+    } else if (getParameters) {
+      exports.getPostData(req, res, function(auth, parameters) {
+        callback(null, null, parameters);
+      }, exceptionalMimes);
+    } else {
+      callback();
+    }
+
     return;
   }
 
