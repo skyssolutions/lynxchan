@@ -1098,5 +1098,15 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::71
+
+Name: accounts
+
+Description: displays all accounts registered on the database. Requires authentication. Reserved for users with global role lesser than 2.
+
+JSON output(Array): array with the registered logins.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

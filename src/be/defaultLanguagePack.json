@@ -304,5 +304,7 @@
   "errDeniedLanguageManagement": "You are not allowed to manage alternative languages.",
   "titLanguages": "Alternative languages",
   "msgLanguageAdded": "New language added.",
-  "msgLanguageDeleted": "Language deleted."
+  "msgLanguageDeleted": "Language deleted.",
+  "titAccounts": "Accounts",
+  "errDeniedAccountManagement": "You are not allowed to manage user accounts."
 }

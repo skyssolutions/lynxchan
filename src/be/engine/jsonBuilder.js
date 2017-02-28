@@ -655,3 +655,7 @@ exports.mediaManagement = function(media, pages) {
 exports.languages = function(languages) {
   return JSON.stringify(languages);
 };
+
+exports.accounts = function(accounts) {
+  return JSON.stringify(accounts);
+};

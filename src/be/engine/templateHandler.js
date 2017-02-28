@@ -186,6 +186,9 @@ exports.getCellTests = function() {
         template : 'languageCell',
         fields : [ 'languageIdentifier', 'frontEndLabel', 'languagePackLabel',
             'headerValuesLabel' ]
+      }, {
+        template : 'accountCell',
+        fields : [ 'accountLink' ]
       } ];
 
 };
@@ -267,7 +270,7 @@ exports.getPageTests = function() {
         fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
             'reportDiv', 'bansLink', 'rangeBansLink', 'hashBansLink',
             'globalSettingsLink', 'globalBannersLink', 'appealedBansPanel',
-            'languagesLink' ]
+            'languagesLink', 'accountsLink' ]
       },
       {
         template : 'bManagement',
@@ -414,6 +417,9 @@ exports.getPageTests = function() {
       }, {
         template : 'languagesManagementPage',
         fields : [ 'languagesDiv' ]
+      }, {
+        template : 'accountsPage',
+        fields : [ 'divAccounts' ]
       } ];
 
 };

@@ -111,6 +111,7 @@ errDeniedBoardIpDeletion: error thrown when the user is not allowed to delete po
 errSpammer: error thrown when the user ip was found on the known spammer ip list.
 errNoReportsInformed: error thrown when the user fails to inform any report.
 errDeniedLanguageManagement: error thrown when the user is not allowed to manage alternative languages.
+errDeniedAccountManagement: error thrown when the user is not allowed to manage user accounts.
 guiTypeBan: label used for logs of bans.
 guiTypeBanLift: label used for logs of ban lifts.
 guiTypeDeletion: label used for logs of deletions.
@@ -280,3 +281,4 @@ titLogPage: title for log pages. Replaces: {$date}.
 titMultiboard: title of the multi-board.
 titGraphs: title for the graphs page.
 titLanguages: title for the language management page.
+titAccounts: title for the accounts page.

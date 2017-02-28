@@ -585,6 +585,10 @@ TEM_ID::10
 gManagement: global management page.
 
 Elements:
+accountsLink:
+    use: might be removed.
+    description: link to manage user accounts.
+
 appealedBansPanel:
     use: have children appended to it or might be removed.
     description: panel containing the appealed bans that weren't denied.
@@ -2201,6 +2205,30 @@ Elements:
 boardLink:
     use: have it's href and innerHTML manipulated.
     description: link to the board.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::66
+
+accountsPage: page that displays all existing accounts.
+
+Elements:
+divAccounts:
+    use: have children appended to it.
+    description: div with the existing accounts.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::67
+
+accountCell*: cell used to display existing accounts.
+
+Root element: div.
+
+Elements:
+accountLink:
+    use: have it's href and innerHTML manipulated.
+    description: link that leads to the selected account management page.
 
 ------------------------------------------------------------------------------------------
 

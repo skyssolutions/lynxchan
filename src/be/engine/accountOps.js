@@ -684,3 +684,35 @@ exports.setUserPassword = function(login, password, callback) {
   });
 
 };
+
+exports.getAccounts = function(userData, language, callback) {
+
+  var isAdmin = userData.globalRole < 2;
+
+  if (!isAdmin) {
+    callback(lang(language).errDeniedAccountManagement);
+    return;
+  }
+
+  users.aggregate([ {
+    $sort : {
+      login : 1
+    }
+  }, {
+    $group : {
+      _id : 0,
+      accounts : {
+        $push : '$login'
+      }
+    }
+  } ], function gotAccounts(error, data) {
+
+    if (error) {
+      callback(error);
+    } else {
+      callback(null, data.length ? data[0].accounts : []);
+    }
+
+  });
+
+};

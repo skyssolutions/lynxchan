@@ -391,6 +391,7 @@ exports.setGlobalManagementLinks = function(userRole, document) {
 
   if (!admin) {
     common.removeElement(document.getElementById('globalBannersLink'));
+    common.removeElement(document.getElementById('accountsLink'));
   }
 };
 
@@ -857,10 +858,40 @@ exports.languages = function(languages, language) {
     return serializer(document);
 
   } catch (error) {
-
     return error.toString();
-
   }
 
 };
 // } Section 9: Language management
+
+exports.accounts = function(accounts, language) {
+
+  try {
+
+    var document = jsdom(templateHandler(language).accountsPage);
+
+    document.title = lang(language).titAccounts;
+
+    var accountsDiv = document.getElementById('divAccounts');
+
+    for (var i = 0; i < accounts.length; i++) {
+
+      var account = accounts[i];
+
+      var newCell = document.createElement('div');
+      newCell.innerHTML = templateHandler(language).accountCell;
+
+      var accountLink = newCell.getElementsByClassName('accountLink')[0];
+      accountLink.href = '/accountManagement.js?account=' + account;
+      accountLink.innerHTML = account;
+
+      accountsDiv.appendChild(newCell);
+    }
+
+    return serializer(document);
+
+  } catch (error) {
+    return error.toString();
+  }
+
+};
