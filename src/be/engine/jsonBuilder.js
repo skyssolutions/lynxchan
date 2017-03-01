@@ -659,3 +659,7 @@ exports.languages = function(languages) {
 exports.accounts = function(accounts) {
   return JSON.stringify(accounts);
 };
+
+exports.accountManagement = function(accountData) {
+  return JSON.stringify(accountData);
+};

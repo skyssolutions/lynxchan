@@ -716,3 +716,41 @@ exports.getAccounts = function(userData, language, callback) {
   });
 
 };
+
+exports.getAccountData = function(account, userData, language, callback) {
+
+  var isAdmin = userData.globalRole < 2;
+
+  if (!isAdmin) {
+    callback(lang(language).errDeniedAccountManagement);
+    return;
+  }
+
+  users.findOne({
+    login : account
+  }, {
+    _id : 0,
+    email : 1,
+    lastSeen : 1,
+    ownedBoards : 1,
+    volunteeredBoards : 1,
+    globalRole : 1
+  }, function gotAccount(error, accountData) {
+
+    if (error) {
+      callback(error);
+    } else if (!accountData) {
+      callback(lang(language).errAccountNotFound);
+    } else {
+      callback(null, {
+        email : accountData.email || '',
+        ownedBoards : accountData.ownedBoards || [],
+        volunteeredBoards : accountData.volunteeredBoards || [],
+        lastSeen : accountData.lastSeen,
+        globalRole : isNaN(accountData.globalRole) ? 4 : accountData.globalRole
+      });
+    }
+
+  });
+
+};

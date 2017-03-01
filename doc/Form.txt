@@ -1094,7 +1094,7 @@ Name: deleteLanguage
 Description: deletes an alternative language. Requires authentication. Reserved for users with global role lesser than 2.
 
 Parameters:
-  languageId: id of the language to be deleted.
+    languageId: id of the language to be deleted.
 
 ------------------------------------------------------------------------------------------
 
@@ -1105,6 +1105,24 @@ Name: accounts
 Description: displays all accounts registered on the database. Requires authentication. Reserved for users with global role lesser than 2.
 
 JSON output(Array): array with the registered logins.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::72
+
+Name: accountManagement
+
+Description: displays data for an account. Requires authentication. Reserved for users with global role lesser than 2. Uses get parameters.
+
+Parameters:
+    account: account to retrieve data for.
+
+JSON output(Object): object containing the following data for the account:
+    globalRole(Number): account's global role.
+    ownedBoards(Array): array containing the boards this user owned.
+    volunteeredBoards(Array): array containing the boards this user is a volunteer at.
+    lastSeen(Date): date when this account was last active.
+    email: account e-mail.
 
 ------------------------------------------------------------------------------------------
 

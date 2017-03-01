@@ -895,3 +895,59 @@ exports.accounts = function(accounts, language) {
   }
 
 };
+
+// Section 10: Account management {
+exports.setOwnedAndVolunteeredBoards = function(accountData, document) {
+
+  var ownedBoardsDiv = document.getElementById('ownedBoardsDiv');
+
+  for (var i = 0; i < accountData.ownedBoards.length; i++) {
+
+    var ownedCell = document.createElement('div');
+    ownedCell.innerHTML = accountData.ownedBoards[i];
+
+    ownedBoardsDiv.appendChild(ownedCell);
+  }
+
+  var volunteeredBoardsDiv = document.getElementById('volunteeredBoardsDiv');
+
+  for (i = 0; i < accountData.volunteeredBoards.length; i++) {
+
+    var volunteeredCell = document.createElement('div');
+    volunteeredCell.innerHTML = accountData.volunteeredBoards[i];
+
+    volunteeredBoardsDiv.appendChild(volunteeredCell);
+  }
+
+};
+
+exports.accountManagement = function(accountData, account, language) {
+
+  try {
+
+    var document = jsdom(templateHandler(language).accountManagementPage);
+
+    document.title = lang(language).titAccountManagement.replace('{$account}',
+        account);
+
+    document.getElementById('emailLabel').innerHTML = accountData.email;
+
+    var lastSeenLabel = document.getElementById('lastSeenLabel');
+
+    if (accountData.lastSeen) {
+      lastSeenLabel.innerHTML = accountData.lastSeen.toUTCString();
+    }
+
+    exports.setOwnedAndVolunteeredBoards(accountData, document);
+
+    document.getElementById('globalRoleLabel').innerHTML = miscOps
+        .getGlobalRoleLabel(accountData.globalRole, language);
+
+    return serializer(document);
+
+  } catch (error) {
+    return error.toString();
+  }
+
+};
+// } Section 10: Account management

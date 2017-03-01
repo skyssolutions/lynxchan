@@ -2232,5 +2232,32 @@ accountLink:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::68
+
+accountManagementPage: page used to display data for an account.
+
+Elements:
+emailLabel:
+    use: have it's innerHTML manipulated.
+    description: label showing the account's e-mail.
+
+lastSeenLabel:
+    use: have it's innerHTML manipulated.
+    description: label showing the last time the account was active.
+
+ownedBoardsDiv:
+    use: have children appended to it.
+    description: panel with the boards this user owned.
+
+volunteeredBoardsDiv:
+    use: have children appended to it.
+    description: panel with the boards this user a volunteer at.
+
+globalRoleLabel:
+    use: have it's innerHTML manipulated.
+    description: label showing the account's global role.
+
+------------------------------------------------------------------------------------------
+
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.
 

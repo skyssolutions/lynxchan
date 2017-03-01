@@ -396,30 +396,43 @@ exports.getPageTests = function() {
             'checkboxVerboseQueue', 'checkboxVerboseGridfs',
             'checkboxVerboseStatic', 'checkboxVerboseApis',
             'fieldIncrementalSpamIpsSource' ]
-      }, {
+      },
+      {
         template : 'hashBanPage',
         fields : [ 'hashBansPanel' ]
-      }, {
+      },
+      {
         template : 'overboard',
         fields : [ 'divThreads' ]
-      }, {
+      },
+      {
         template : 'bypassPage',
         fields : [ 'indicatorValidBypass' ]
-      }, {
+      },
+      {
         template : 'logIndexPage',
         fields : [ 'divDates' ]
-      }, {
+      },
+      {
         template : 'graphsIndexPage',
         fields : [ 'divDates' ]
-      }, {
+      },
+      {
         template : 'mediaManagementPage',
         fields : [ 'filesDiv', 'pagesDiv' ]
-      }, {
+      },
+      {
         template : 'languagesManagementPage',
         fields : [ 'languagesDiv' ]
-      }, {
+      },
+      {
         template : 'accountsPage',
         fields : [ 'divAccounts' ]
+      },
+      {
+        template : 'accountManagementPage',
+        fields : [ 'emailLabel', 'lastSeenLabel', 'ownedBoardsDiv',
+            'volunteeredBoardsDiv', 'globalRoleLabel' ]
       } ];
 
 };

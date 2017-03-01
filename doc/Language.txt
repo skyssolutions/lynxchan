@@ -26,7 +26,7 @@ errLoginInUse: error thrown when the provided login for a new account is already
 errLoginFailed: error thrown when the user fails to login.
 errInvalidAccount: error thrown when the user tries to perform an operation but the credentials fail to validate.
 errAccountNotFound: error thrown when the account of the password reset request can't be found.
-errNoEmailForAccount: error thrown when the account doesn't have an e-mail and the user tries to request a password reset for it.
+errNoEmailForAccount: error thrown when the specified account doesn't exist.
 errPendingRequest: error thrown when the user tries to request a password reset with another one still pending. Replaces: {$expiration}.
 errInvalidRequest: error thrown when the user tries to reset his password with an invalid password reset request.
 errPasswordMismatch: error thrown when the user tries to change his password but the new password doesn't match with its confirmation.
@@ -282,3 +282,4 @@ titMultiboard: title of the multi-board.
 titGraphs: title for the graphs page.
 titLanguages: title for the language management page.
 titAccounts: title for the accounts page.
+titAccountManagement: title for the account management page. Replaces: {$account}.
