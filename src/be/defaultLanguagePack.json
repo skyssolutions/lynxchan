@@ -307,5 +307,6 @@
   "msgLanguageDeleted": "Language deleted.",
   "titAccounts": "Accounts",
   "errDeniedAccountManagement": "You are not allowed to manage user accounts.",
-  "titAccountManagement": "Account management - {$account}"
+  "titAccountManagement": "Account management - {$account}",
+  "msgAccountAdded": "Account added."
 }

@@ -3,9 +3,9 @@
 var apiOps = require('../engine/apiOps');
 var langOps = require('../engine/langOps');
 
-function deleteLanguage(auth, parameters, userData, res) {
+function deleteLanguage(auth, parameters, userData, language, res) {
 
-  langOps.deleteLanguage(userData.globalRole, parameters.languageId,
+  langOps.deleteLanguage(userData.globalRole, parameters.languageId, language,
       function deletedLanguage(error) {
         if (error) {
           apiOps.outputError(error, res);
@@ -20,6 +20,6 @@ exports.process = function(req, res) {
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    deleteLanguage(auth, parameters, userData, res);
+    deleteLanguage(auth, parameters, userData, req.language, res);
   });
 };

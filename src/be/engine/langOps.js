@@ -44,9 +44,7 @@ exports.getAlternativeLanguagePack = function(language) {
 exports.languagePack = function(language) {
 
   if (language) {
-
     var toReturn = exports.getAlternativeLanguagePack(language);
-
   }
 
   if (!toReturn) {
@@ -173,12 +171,12 @@ exports.init = function(language) {
 
 };
 
-exports.getLanguagesData = function(userRole, callback) {
+exports.getLanguagesData = function(userRole, language, callback) {
 
   var admin = userRole <= 1;
 
   if (!admin) {
-    callback(languagePack.errDeniedLanguageManagement);
+    callback(exports.languagePack(language).errDeniedLanguageManagement);
     return;
   }
 
@@ -186,12 +184,12 @@ exports.getLanguagesData = function(userRole, callback) {
 
 };
 
-exports.addLanguage = function(userRole, parameters, callback) {
+exports.addLanguage = function(userRole, parameters, language, callback) {
 
   var admin = userRole <= 1;
 
   if (!admin) {
-    callback(languagePack.errDeniedLanguageManagement);
+    callback(exports.languagePack(language).errDeniedLanguageManagement);
     return;
   }
 
@@ -203,12 +201,12 @@ exports.addLanguage = function(userRole, parameters, callback) {
 
 };
 
-exports.deleteLanguage = function(userRole, languageId, callback) {
+exports.deleteLanguage = function(userRole, languageId, language, callback) {
 
   var admin = userRole <= 1;
 
   if (!admin) {
-    callback(languagePack.errDeniedLanguageManagement);
+    callback(exports.languagePack(language).errDeniedLanguageManagement);
     return;
   }
 

@@ -9,24 +9,24 @@ var languageOps = require('../engine/langOps');
 
 function getLanguages(auth, parameters, userData, res, language) {
 
-  languageOps.getLanguagesData(userData.globalRole, function gotlanguages(
-      error, languages) {
-    if (error) {
-      formOps.outputError(error, 500, res, language);
-    } else {
-      var json = parameters.json;
+  languageOps.getLanguagesData(userData.globalRole, language,
+      function gotlanguages(error, languages) {
+        if (error) {
+          formOps.outputError(error, 500, res, language);
+        } else {
+          var json = parameters.json;
 
-      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
-          : 'text/html', auth));
+          res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+              : 'text/html', auth));
 
-      if (json) {
-        res.end(jsonBuilder.languages(languages));
-      } else {
-        res.end(dom.languages(languages, language));
-      }
+          if (json) {
+            res.end(jsonBuilder.languages(languages));
+          } else {
+            res.end(dom.languages(languages, language));
+          }
 
-    }
-  });
+        }
+      });
 }
 
 exports.process = function(req, res) {

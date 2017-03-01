@@ -754,3 +754,19 @@ exports.getAccountData = function(account, userData, language, callback) {
   });
 
 };
+
+exports.addAccount = function(userRole, parameters, language, callback) {
+
+  var isAdmin = userRole < 2;
+
+  if (!isAdmin) {
+    callback(lang(language).errDeniedAccountManagement);
+    return;
+  } else if (/\W/.test(parameters.login)) {
+    callback(lang(language).errInvalidLogin);
+    return;
+  }
+
+  exports.createAccount(parameters, null, language, callback);
+
+};

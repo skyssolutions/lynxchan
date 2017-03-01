@@ -1,7 +1,6 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var miscOps = require('../engine/miscOps');
 var bypassOps = require('../engine/bypassOps');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var settingsHandler = require('../settingsHandler');

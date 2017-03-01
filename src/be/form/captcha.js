@@ -2,7 +2,6 @@
 
 var settingsHandler = require('../settingsHandler');
 var debug = require('../kernel').debug();
-var miscOps = require('../engine/miscOps');
 var fs = require('fs');
 var captchaOps = require('../engine/captchaOps');
 var formOps = require('../engine/formOps');

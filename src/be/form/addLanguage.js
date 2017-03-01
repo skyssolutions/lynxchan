@@ -1,7 +1,6 @@
 'use strict';
 
 var formOps = require('../engine/formOps');
-var miscOps = require('../engine/miscOps');
 var languageOps = require('../engine/langOps');
 var lang = languageOps.languagePack;
 var mandatoryParameters = [ 'frontEnd', 'languagePack', 'headerValues' ];
@@ -18,7 +17,7 @@ function addLanguage(auth, parameters, userData, res, language) {
         return value.trim();
       });
 
-  languageOps.addLanguage(userData.globalRole, parameters,
+  languageOps.addLanguage(userData.globalRole, parameters, language,
       function addedLanguage(error) {
         if (error) {
           formOps.outputError(error, 500, res, language);

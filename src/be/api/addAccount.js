@@ -1,17 +1,17 @@
 'use strict';
 
 var apiOps = require('../engine/apiOps');
-var langOps = require('../engine/langOps');
-var mandatoryParameters = [ 'frontEnd', 'languagePack', 'headerValues' ];
+var accountOps = require('../engine/accountOps');
+var mandatoryParameters = [ 'login', 'password' ];
 
-function addLanguage(auth, parameters, userData, language, res) {
+function addAccount(auth, parameters, userData, language, res) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
   }
 
-  langOps.addLanguage(userData.globalRole, parameters, language,
-      function addedLanguage(error) {
+  accountOps.addAccount(userData.globalRole, parameters, language,
+      function addedAccount(error) {
         if (error) {
           apiOps.outputError(error, res);
         } else {
@@ -25,6 +25,6 @@ exports.process = function(req, res) {
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    addLanguage(auth, parameters, userData, req.language, res);
+    addAccount(auth, parameters, userData, req.language, res);
   });
 };
