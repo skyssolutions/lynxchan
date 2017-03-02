@@ -2257,6 +2257,14 @@ globalRoleLabel:
     use: have it's innerHTML manipulated.
     description: label showing the account's global role.
 
+deletionForm:
+    use: might be removed.
+    description: div containing the account deletion form.
+
+userIdentifier:
+    use: have it's value modified.
+    description: input used on the account deletion form.
+
 ------------------------------------------------------------------------------------------
 
 *: cell. Its top level element will have the same class of its name and its elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.

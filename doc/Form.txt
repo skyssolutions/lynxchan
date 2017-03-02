@@ -1138,5 +1138,17 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::74
+
+Name: deleteAccount
+
+Description: deletes an account after transfering any owned board to the user deleting the account. Requires authentication. Reserved for users with global role lesser than 2.
+
+Parameters:
+    account: login of the account to be deleted.
+    confirmation(Boolean): if not informed as a boolean true, the operation will not be executed.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

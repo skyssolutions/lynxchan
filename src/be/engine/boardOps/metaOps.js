@@ -344,12 +344,11 @@ exports.updateUsersOwnedBoards = function(oldOwner, parameters, callback) {
       ownedBoards : parameters.boardUri
     }
   }, function removedFromPreviousOwner(error) {
+
     if (error) {
       callback(error);
-
     } else {
 
-      // style exception, too simple
       users.updateOne({
         login : parameters.login
       }, {
@@ -359,10 +358,7 @@ exports.updateUsersOwnedBoards = function(oldOwner, parameters, callback) {
         $pull : {
           volunteeredBoards : parameters.boardUri
         }
-      }, function addedToNewOwner(error) {
-        callback(error);
-      });
-      // style exception, too simple
+      }, callback);
 
     }
   });

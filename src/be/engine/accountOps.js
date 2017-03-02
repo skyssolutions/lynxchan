@@ -13,6 +13,7 @@ var sender;
 var creationDisabled;
 var logOps;
 var miscOps;
+var boardOps;
 var captchaOps;
 var domManipulator;
 var lang;
@@ -47,6 +48,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  boardOps = require('./boardOps').meta;
   logOps = require('./logOps');
   miscOps = require('./miscOps');
   captchaOps = require('./captchaOps');
@@ -770,3 +772,83 @@ exports.addAccount = function(userRole, parameters, language, callback) {
   exports.createAccount(parameters, null, language, callback);
 
 };
+
+// Section 8: Account deletion {
+exports.finishAccountDeletion = function(account, callback) {
+
+  boards.updateMany({
+    volunteers : account.login
+  }, {
+    $pull : {
+      volunteers : account.login
+    }
+  }, function removedVolunteer(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      users.deleteOne({
+        login : account.login
+      }, callback);
+    }
+
+  });
+
+};
+
+exports.transferBoards = function(userData, account, language, cb, index) {
+
+  index = index || 0;
+
+  var boardList = account.ownedBoards || [];
+
+  if (index >= boardList.length) {
+    exports.finishAccountDeletion(account, cb);
+    return;
+  }
+
+  boardOps.transfer(userData, {
+    boardUri : boardList[index],
+    login : userData.login
+  }, language, function transferredBoard(error) {
+
+    if (error) {
+      cb(error);
+    } else {
+      exports.transferBoards(userData, account, language, cb, ++index);
+    }
+
+  });
+
+};
+
+exports.deleteAccount = function(userData, parameters, language, callback) {
+
+  var isAdmin = userData.globalRole < 2;
+
+  if (!isAdmin) {
+    callback(lang(language).errDeniedAccountManagement);
+    return;
+  } else if (!parameters.confirmation) {
+    callback(lang(language).errNoAccountDeletionConfirmation);
+    return;
+  }
+
+  users.findOne({
+    login : parameters.account
+  }, function gotAccount(error, account) {
+
+    if (error) {
+      callback(error);
+    } else if (!account) {
+      callback(lang(language).errAccountNotFound);
+    } else if (account.globalRole <= userData.globalRole) {
+      callback(lang(language).errNotAllowedToDeleteAccount);
+    } else {
+      exports.transferBoards(userData, account, language, callback);
+    }
+
+  });
+
+};
+// } Section 8: Account deletion

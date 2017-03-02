@@ -112,6 +112,8 @@ errSpammer: error thrown when the user ip was found on the known spammer ip list
 errNoReportsInformed: error thrown when the user fails to inform any report.
 errDeniedLanguageManagement: error thrown when the user is not allowed to manage alternative languages.
 errDeniedAccountManagement: error thrown when the user is not allowed to manage user accounts.
+errNoAccountDeletionConfirmation: error thrown when the user didn't confirmed he wanted to delete an account.
+errNotAllowedToDeleteAccount: error thrown when the user tries to delete an account he is not allowed to.
 guiTypeBan: label used for logs of bans.
 guiTypeBanLift: label used for logs of ban lifts.
 guiTypeDeletion: label used for logs of deletions.
@@ -247,6 +249,7 @@ msgBoardSpecialSettingsSaved: message displayed after setting the special settin
 msgLanguageAdded: message displayed after adding a new alternative language.
 msgLanguageDeleted: message displayed after deleting an alternative language.
 msgAccountAdded: message displayed after adding a new account.
+msgAccountDeleted: message displayed after deleting an account.
 subPasswordReset: subject of the e-mail informing the new password of the user's account.
 subPasswordRequest: subject of the e-mail of a password reset request.
 subLockedAccount: subject of the e-mail used when the user got his account locked.

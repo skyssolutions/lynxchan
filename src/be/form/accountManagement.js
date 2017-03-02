@@ -33,7 +33,7 @@ function getAccount(auth, userData, res, req) {
             res.end(jsonBuilder.accountManagement(accountData));
           } else {
             res.end(domManipulator.accountManagement(accountData, account,
-                language));
+                userData.globalRole, language));
           }
 
         }

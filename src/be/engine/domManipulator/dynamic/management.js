@@ -921,7 +921,7 @@ exports.setOwnedAndVolunteeredBoards = function(accountData, document) {
 
 };
 
-exports.accountManagement = function(accountData, account, language) {
+exports.accountManagement = function(accountData, account, userRole, language) {
 
   try {
 
@@ -931,6 +931,12 @@ exports.accountManagement = function(accountData, account, language) {
         account);
 
     document.getElementById('emailLabel').innerHTML = accountData.email;
+
+    if (accountData.globalRole <= userRole) {
+      common.removeElement(document.getElementById('deletionForm'));
+    } else {
+      document.getElementById('userIdentifier').setAttribute('value', account);
+    }
 
     var lastSeenLabel = document.getElementById('lastSeenLabel');
 
