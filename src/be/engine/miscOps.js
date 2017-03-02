@@ -491,6 +491,10 @@ exports.getParametersArray = function(language) {
     setting : 'mediaPageSize',
     element : 'fieldMediaPageSize'
   }, {
+    type : 'number',
+    setting : 'flagNameLength',
+    element : 'fieldFlagNameLength'
+  }, {
     // boolean
     type : 'boolean',
     setting : 'disable304',

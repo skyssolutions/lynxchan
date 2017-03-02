@@ -514,6 +514,7 @@ exports.getDefaultSettings = function() {
     slaves : [],
     messageLength : 4096,
     spamIpsSource : 'https://www.stopforumspam.com/downloads/bannedips.zip',
+    flagNameLength : 32,
     incSpamIpsSource : 'https://www.stopforumspam.com/downloads/listed_ip_1.zip'
   };
 

@@ -18,7 +18,6 @@ var globalBoardModeration;
 
 var newFlagParameters = [ {
   field : 'flagName',
-  length : 16,
   removeHTML : true
 } ];
 
@@ -27,6 +26,7 @@ exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
   maxFlagSize = settings.maxFlagSizeB;
   globalBoardModeration = settings.allowGlobalBoardModeration;
+  newFlagParameters[0].length = settings.flagNameLength;
 
 };
 

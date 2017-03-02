@@ -362,7 +362,8 @@ exports.getPageTests = function() {
       },
       {
         template : 'flagsPage',
-        fields : [ 'flagsDiv', 'boardIdentifier', 'maxSizeLabel' ]
+        fields : [ 'flagsDiv', 'boardIdentifier', 'maxSizeLabel',
+            'maxNameLengthLabel' ]
       },
       {
         template : 'globalSettingsPage',
@@ -395,7 +396,7 @@ exports.getPageTests = function() {
             'checkboxUseAlternativeLanguages', 'checkboxVerboseGenerator',
             'checkboxVerboseQueue', 'checkboxVerboseGridfs',
             'checkboxVerboseStatic', 'checkboxVerboseApis',
-            'fieldIncrementalSpamIpsSource' ]
+            'fieldIncrementalSpamIpsSource', 'fieldFlagNameLength' ]
       },
       {
         template : 'hashBanPage',

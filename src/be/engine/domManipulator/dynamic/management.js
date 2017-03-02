@@ -16,6 +16,7 @@ var miscOps;
 
 var displayMaxBannerSize;
 var displayMaxFlagSize;
+var displayMaxFlagNameLength;
 
 exports.boardSettingsRelation = {
   disableIds : 'disableIdsCheckbox',
@@ -81,6 +82,7 @@ exports.loadSettings = function() {
   displayMaxBannerSize = common.formatFileSize(settings.maxBannerSizeB);
   displayMaxFlagSize = common.formatFileSize(settings.maxFlagSizeB);
   minClearIpRole = settings.clearIpMinRole;
+  displayMaxFlagNameLength = settings.flagNameLength;
 
 };
 
@@ -595,6 +597,9 @@ exports.flagManagement = function(boardUri, flags, language) {
     document.title = lang(language).titFlagManagement;
 
     document.getElementById('maxSizeLabel').innerHTML = displayMaxFlagSize;
+
+    var lengthLabel = document.getElementById('maxNameLengthLabel');
+    lengthLabel.innerHTML = displayMaxFlagNameLength;
 
     document.getElementById('boardIdentifier').setAttribute('value', boardUri);
 
