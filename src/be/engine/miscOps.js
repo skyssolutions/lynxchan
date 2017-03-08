@@ -597,10 +597,6 @@ exports.getParametersArray = function(language) {
     element : 'checkboxDisableCatalogPosting'
   }, {
     type : 'boolean',
-    setting : 'allowTorPosting',
-    element : 'checkboxAllowTorPosting'
-  }, {
-    type : 'boolean',
     setting : 'allowTorFiles',
     element : 'checkboxAllowTorFiles'
   }, {
@@ -614,6 +610,12 @@ exports.getParametersArray = function(language) {
     options : lang(language).guiBypassModes,
     setting : 'bypassMode',
     element : 'comboBypassMode'
+  }, {
+    type : 'range',
+    limit : 2,
+    setting : 'torPostingLevel',
+    element : 'comboTorPostingLevel',
+    options : lang(language).guiTorPostingLevels
   }, {
     type : 'range',
     setting : 'clearIpMinRole',

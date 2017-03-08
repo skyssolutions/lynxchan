@@ -1965,9 +1965,9 @@ checkboxFfmpegGifs:
     use: might be turned on.
     description: checkbox that indicates if ffmpeg will be used to thumbnail animated gifs.
 
-checkboxAllowTorPosting:
-    use: might be turned on.
-    description: checkbox that indicates TOR users are allowed to post.
+comboTorPostingLevel:
+    use: have children appended to it.
+    description: combo box with the level of posting permission for TOR users.
 
 checkboxAllowTorFiles:
     use: might be turned on.

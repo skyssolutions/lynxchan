@@ -163,7 +163,7 @@ Settings files that goes into the settings directory:
 * `disableSpamCheck`(Boolean): indicates if the spam check should be skipped. Meant to be used on emergencies where its not possible at all to obtain the spam ip list.
 * `disableCatalogPosting`(Boolean): removes the thread creation form from the board`s catalogs.
 * `ipExpirationDays`(Number): amount of days to wait before removing the ip from postings counting from it's date of creation. Null or any value below 1 means that ips should never be removed. The schedule that clears the ips is run hourly.
-* `allowTorPosting`(Boolean): allows TOR users to post. If bypass block is not disabled, they will still be able to post if they use it.
+* `torPostingLevel`(Number): indicates the permission level for TOR posting. 0 means no posting at all, 1 means posting with a block bypass and 2 means regular posting.
 * `allowTorFiles`(Boolean): when posting, allows TOR users to post files.
 * `verboseApis`(Boolean): causes both the json api and the form api to print what is being both input and output.
 * `verboseStatic`(Boolean): causes the static file handler to print information of what is serving.

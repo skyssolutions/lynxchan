@@ -392,7 +392,7 @@ exports.getPageTests = function() {
             'fieldMediaPageSize', 'fieldMessageLength', 'checkboxFfmpegGifs',
             'fieldSpamIpsSource', 'checkboxSpamBypass', 'fieldIpExpiration',
             'checkboxDisableSpamCheck', 'checkboxDisableCatalogPosting',
-            'checkboxAllowTorPosting', 'checkboxAllowTorFiles',
+            'comboTorPostingLevel', 'checkboxAllowTorFiles',
             'checkboxUseAlternativeLanguages', 'checkboxVerboseGenerator',
             'checkboxVerboseQueue', 'checkboxVerboseGridfs',
             'checkboxVerboseStatic', 'checkboxVerboseApis',

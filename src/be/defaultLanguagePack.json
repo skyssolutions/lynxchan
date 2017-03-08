@@ -311,5 +311,10 @@
   "msgAccountAdded": "Account added.",
   "errNoAccountDeletionConfirmation": "You must confirm that you wish to delete this account.",
   "errNotAllowedToDeleteAccount": "You may only delete accounts with global roles greater than yours.",
-  "msgAccountDeleted": "Account deleted."
+  "msgAccountDeleted": "Account deleted.",
+  "guiTorPostingLevels": [
+    "No posting allowed",
+    "Allowed to post with block bypass",
+    "Allowed to post normally"
+  ]
 }
