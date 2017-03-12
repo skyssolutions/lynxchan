@@ -21,6 +21,7 @@ var mbHandler;
 var boardOps;
 var rssBuilder;
 var jsonBuilder;
+var maxThreads;
 var disableCatalogPosting;
 
 var boardProjection = {
@@ -45,6 +46,7 @@ exports.loadSettings = function() {
   altLanguages = settings.useAlternativeLanguages;
   verbose = settings.verbose || settings.verboseGenerator;
   disableCatalogPosting = settings.disableCatalogPosting;
+  maxThreads = settings.maxThreadCount;
 
 };
 
@@ -421,8 +423,7 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
     return;
   }
 
-  var pageCount = Math.floor(boardData.threadCount / pageSize);
-  pageCount += (boardData.threadCount % pageSize ? 1 : 0);
+  var pageCount = Math.ceil(boardData.threadCount / pageSize);
 
   pageCount = pageCount || 1;
 
@@ -553,7 +554,7 @@ exports.catalog = function(boardUri, callback, boardData, flagData) {
   }, threadProjection).sort({
     pinned : -1,
     lastBump : -1
-  }).toArray(function gotThreads(error, foundThreads) {
+  }).limit(maxThreads).toArray(function gotThreads(error, foundThreads) {
     if (error) {
       callback(error);
     } else {
@@ -631,8 +632,11 @@ exports.board = function(boardUri, reloadThreads, reloadRules, cb, boardData) {
     console.log('\nGenerating board ' + boardUri);
   }
 
-  var pageCount = Math.floor(boardData.threadCount / pageSize);
-  pageCount += (boardData.threadCount % pageSize ? 1 : 0);
+  if (boardData.threadCount > maxThreads) {
+    boardData.threadCount = maxThreads;
+  }
+
+  var pageCount = Math.ceil(boardData.threadCount / pageSize);
 
   pageCount = pageCount || 1;
 

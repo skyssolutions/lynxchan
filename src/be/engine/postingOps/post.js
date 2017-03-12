@@ -22,7 +22,7 @@ var miscOps;
 var captchaOps;
 var overboard;
 var sfwOverboard;
-
+var pageLimit;
 var autoLockLimit;
 var bumpLimit;
 var latestPostsCount;
@@ -38,6 +38,8 @@ exports.loadSettings = function() {
   latestPostsCount = settings.latestPostCount;
   globalLatestPosts = settings.globalLatestPosts;
   autoLockLimit = bumpLimit * 2;
+  pageLimit = Math.ceil(settings.maxThreadCount / settings.pageSize);
+
 };
 
 exports.loadDependencies = function() {
@@ -275,7 +277,7 @@ exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
 
   if (bump) {
 
-    for (var i = 0; i < (thread.page || 1); i++) {
+    for (var i = 0; i < (thread.page || 1) && i < pageLimit; i++) {
 
       // signal rebuild of board pages
       process.send({

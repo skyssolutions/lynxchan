@@ -354,8 +354,7 @@ exports.getMedia = function(userData, parameters, language, callback) {
       callback(error);
     } else {
 
-      var pageCount = Math.floor(count / maxFilesToDisplay);
-      pageCount += (count % maxFilesToDisplay ? 1 : 0);
+      var pageCount = Math.ceil(count / maxFilesToDisplay);
 
       pageCount = pageCount || 1;
 
