@@ -20,6 +20,7 @@ var ipBan;
 var common;
 var captchaOps;
 var lang;
+var allowBlockedToReport;
 
 var reportArguments = [ {
   field : 'reason',
@@ -31,6 +32,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
   multipleReports = settings.multipleReports;
+  allowBlockedToReport = settings.allowBlockedToReport;
 
 };
 
@@ -133,54 +135,61 @@ exports.createReport = function(req, report, reportedContent, parameters,
 
 };
 
+exports.findReportedContent = function(report, req, reportedContent,
+    parameters, cb) {
+
+  var queryBlock = {
+    boardUri : report.board,
+    threadId : +report.thread
+  };
+
+  var checkCb = function(error, posting) {
+    if (error) {
+      cb(error);
+    } else if (!posting) {
+      exports.iterateReports(req, reportedContent, parameters, cb);
+    } else {
+      exports.createReport(req, report, reportedContent, parameters, cb);
+    }
+
+  };
+
+  if (report.post) {
+
+    queryBlock.postId = +report.post;
+
+    posts.findOne(queryBlock, checkCb);
+
+  } else {
+    threads.findOne(queryBlock, checkCb);
+  }
+
+};
+
 exports.iterateReports = function(req, reportedContent, parameters, cb) {
 
   if (!reportedContent.length) {
     cb();
-  } else if (reportedContent.length > 1 && !multipleReports) {
-    cb(lang(req.language).errDeniedMultipleReports);
+    return;
+  }
+
+  var report = reportedContent.shift();
+
+  if (allowBlockedToReport) {
+    exports.findReportedContent(report, req, reportedContent, parameters, cb);
   } else {
-
-    var report = reportedContent.shift();
-
     var uriToCheck = parameters.global ? null : report.board;
 
     ipBan.checkForBan(req, uriToCheck, function checkedForBan(error, ban) {
       if (error || ban) {
         cb(error, ban);
       } else {
-
-        // style exception, too simple
-        var queryBlock = {
-          boardUri : report.board,
-          threadId : +report.thread
-        };
-
-        var checkCb = function(error, posting) {
-          if (error) {
-            cb(error);
-          } else if (!posting) {
-            exports.iterateReports(req, reportedContent, parameters, cb);
-          } else {
-            exports.createReport(req, report, reportedContent, parameters, cb);
-          }
-
-        };
-
-        if (report.post) {
-
-          queryBlock.postId = +report.post;
-
-          posts.findOne(queryBlock, checkCb);
-
-        } else {
-          threads.findOne(queryBlock, checkCb);
-        }
-        // style exception, too simple
-
+        exports.findReportedContent(report, req, reportedContent, parameters,
+            cb);
       }
     });
   }
+
 };
 
 exports.report = function(req, reportedContent, parameters, captchaId, cb) {
@@ -199,7 +208,12 @@ exports.report = function(req, reportedContent, parameters, captchaId, cb) {
           } else {
             reportedContent = reportedContent.slice(0, 1000);
 
-            exports.iterateReports(req, reportedContent, parameters, cb);
+            if (reportedContent.length > 1 && !multipleReports) {
+              cb(lang(req.language).errDeniedMultipleReports);
+            } else {
+              exports.iterateReports(req, reportedContent, parameters, cb);
+            }
+
           }
 
         }

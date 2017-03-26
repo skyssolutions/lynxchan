@@ -1673,6 +1673,10 @@ checkboxUseAlternativeLanguages:
     use: might be turned on.
     description: indicates if the engine should use registered alternative languages.
 
+checkboxBlockedReport:
+    use: might be turned on.
+    description: indicates if blocked users are allowed to fill reports.
+
 fieldIpExpiration:
     use: have it's value manipulated.
     description: field that displays how many days to wait before removing a posting's ip.

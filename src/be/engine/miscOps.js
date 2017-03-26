@@ -505,6 +505,10 @@ exports.getParametersArray = function(language) {
     element : 'checkboxVerbose'
   }, {
     type : 'boolean',
+    setting : 'allowBlockedToReport',
+    element : 'checkboxBlockedReport'
+  }, {
+    type : 'boolean',
     setting : 'onlySfwLatestImages',
     element : 'checkboxSFWLatestImages'
   }, {

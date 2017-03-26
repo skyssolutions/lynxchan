@@ -396,7 +396,8 @@ exports.getPageTests = function() {
             'checkboxUseAlternativeLanguages', 'checkboxVerboseGenerator',
             'checkboxVerboseQueue', 'checkboxVerboseGridfs',
             'checkboxVerboseStatic', 'checkboxVerboseApis',
-            'fieldIncrementalSpamIpsSource', 'fieldFlagNameLength' ]
+            'fieldIncrementalSpamIpsSource', 'fieldFlagNameLength',
+            'checkboxBlockedReport' ]
       },
       {
         template : 'hashBanPage',
