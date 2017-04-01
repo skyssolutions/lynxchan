@@ -3,6 +3,7 @@
 // handles request for static files
 
 var zlib = require('zlib');
+var path = require('path');
 var fs = require('fs');
 var url = require('url');
 var kernel = require('../kernel');
@@ -75,6 +76,11 @@ exports.compress = function(pathName, file, mime, callback) {
 
 exports.getFile = function(finalPath, mime, callback) {
 
+  if (!finalPath) {
+    callback('No path to get static file from');
+    return;
+  }
+
   var file = filesCache[finalPath];
 
   if (file) {
@@ -146,7 +152,15 @@ exports.getFilePath = function(req, pathName) {
 
   var feToUse = req.language ? req.language.frontEnd : defaultFePath;
 
-  return feToUse + '/static' + pathName;
+  var requiredRoot = path.normalize(feToUse + '/static');
+
+  var finalPath = path.normalize(requiredRoot + pathName);
+
+  if (finalPath.indexOf(requiredRoot) < 0) {
+    return null;
+  }
+
+  return finalPath;
 
 };
 
