@@ -1,3 +1,177 @@
+1.8.0:
+
+**Api.txt**
+
+newThread:
+
+New parameters:
+noFlag
+
+---------------------------------------
+
+replyThread:
+
+New parameters:
+noFlag
+
+---------------------------------------
+
+setBoardSettings:
+
+New parameters:
+locationFlagMode
+maxBumpAge
+
+Removed parameters:
+settings.locationFlags
+
+---------------------------------------
+
+New pages:
+addAccount
+deleteAccount
+addLanguage
+deleteLanguage
+
+---------------------------------------
+
+**Form.txt**
+
+newThread:
+
+New parameters:
+noFlag
+
+---------------------------------------
+
+replyThread:
+
+New parameters:
+noFlag
+
+---------------------------------------
+
+boardManagement:
+
+Added fields on json output:
+locationFlagMode
+maxBumpAgeDays
+
+Removed fields on json output:
+settings.locationFlags
+
+---------------------------------------
+
+setBoardSettings:
+
+New parameters:
+maxBumpAge
+locationFlagMode
+
+Removed parameters:
+locationFlags
+
+---------------------------------------
+
+New pages:
+languages
+addLanguage
+deleteLanguage
+accounts
+accountManagement
+addAccount
+deleteAccount
+
+**Language.txt**
+
+New fields:
+errDeniedLanguageManagement
+errDeniedAccountManagement
+errNoAccountDeletionConfirmation
+errNotAllowedToDeleteAccount
+guiTorPostingLevels
+msgLanguageAdded
+msgLanguageDeleted
+msgAccountAdded
+msgAccountDeleted
+titLanguages
+titAccountManagement
+titAccounts
+
+---------------------------------------
+
+**Templates.txt**
+
+boardPage:
+
+New elements:
+noFlagDiv
+
+---------------------------------------
+
+gManagement:
+
+New elements:
+accountsLink
+languagesLink
+
+---------------------------------------
+
+bManagement:
+
+New elements:
+locationComboBox
+maxBumpAgeField
+
+Removed elements:
+locationCheckBox
+
+---------------------------------------
+
+catalogPage:
+
+New elements:
+noFlagDiv
+
+---------------------------------------
+
+flagsPage:
+
+New elements:
+maxNameLengthLabel
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldFlagNameLength
+checkboxUseAlternativeLanguages
+checkboxBlockedReport
+fieldIncrementalSpamIpsSource
+comboTorPostingLevel
+checkboxVerboseMisc
+checkboxVerboseGenerator
+checkboxVerboseQueue
+checkboxVerboseGridfs
+checkboxVerboseStatic
+checkboxVerboseApis
+
+Removed elements:
+checkboxAllowTorPosting
+
+---------------------------------------
+
+New templates:
+languagesManagementPage
+languageCell
+topBoardCell
+accountsPage
+accountCell
+accountManagementPage
+
+---------------------------------------
+
 1.7.0:
 
 **Api.txt**
