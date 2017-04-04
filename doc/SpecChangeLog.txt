@@ -82,6 +82,8 @@ accountManagement
 addAccount
 deleteAccount
 
+---------------------------------------
+
 **Language.txt**
 
 New fields:

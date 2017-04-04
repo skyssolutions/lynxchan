@@ -26,6 +26,7 @@ exports.MIMETYPES = {
   eps : 'application/postscript',
   etx : 'text/x-setext',
   exe : 'application/octet-stream',
+  flac : 'audio/flac',
   gif : 'image/gif',
   gtar : 'application/x-gtar',
   h : 'text/plain',
@@ -93,6 +94,7 @@ exports.MIMETYPES = {
   snd : 'audio/basic',
   so : 'application/octet-stream',
   src : 'application/x-wais-source',
+  svg : 'image/svg+xml',
   swf : 'application/x-shockwave-flash',
   t : 'application/x-troff',
   tar : 'application/x-tar',
@@ -120,8 +122,7 @@ exports.MIMETYPES = {
   xpm : 'image/x-xpixmap',
   xsl : 'application/xml',
   xwd : 'image/x-xwindowdump',
-  zip : 'application/zip',
-  svg : 'image/svg+xml'
+  zip : 'application/zip'
 };
 
 exports.reverseMimes = {};
