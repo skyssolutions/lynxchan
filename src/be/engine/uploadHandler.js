@@ -681,38 +681,12 @@ exports.willRequireThumb = function(file) {
 
 };
 
-exports.getFallBackExtension = function(originalTitle) {
-
-  if (!originalTitle) {
-    return;
-  }
-
-  var pieces = originalTitle.split('.');
-
-  if (!pieces.length) {
-    return;
-  }
-
-  var lastPiece = pieces[pieces.length - 1].trim().toLowerCase();
-
-  if (!lastPiece || !lastPiece.length) {
-    return;
-  } else {
-    return lastPiece;
-  }
-
-};
-
 exports.processFile = function(boardData, threadId, postId, file, parameters,
     callback) {
 
   var identifier = file.md5 + '-' + file.mime.replace('/', '');
 
   var extension = logger.reverseMimes[file.mime];
-
-  if (!extension) {
-    extension = exports.getFallBackExtension(file.title);
-  }
 
   file.path = '/.media/' + identifier;
 

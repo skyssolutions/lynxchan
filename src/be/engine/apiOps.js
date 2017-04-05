@@ -233,7 +233,7 @@ exports.processFile = function(file, res, finalArray, toRemove,
   file.content = file.content.toString();
   file.name = file.name.toString();
 
-  var matches = file.content.match(/^data:([0-9A-Za-z-+\/]+);base64,(.+)$/);
+  var matches = file.content.match(/^data:([0-9A-Za-z-+\/\.]+);base64,(.+)$/);
 
   if (!matches) {
     exports.outputResponse(null, null, 'fileParseError', res);
