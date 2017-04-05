@@ -494,6 +494,23 @@ exports.generateImageThumb = function(identifier, file, callback) {
 
 };
 
+exports.decideOnDefaultThumb = function(file, identifier, callback) {
+
+  if (thumbAudioMimes.indexOf(file.mime) > -1) {
+    file.thumbPath = genericAudioThumb;
+  } else if (file.mime.indexOf('image/') < 0) {
+    file.thumbPath = genericThumb;
+  } else {
+    file.thumbPath = file.path;
+  }
+
+  gsHandler.writeFile(file.pathInDisk, file.path, file.mime, {
+    identifier : identifier,
+    type : 'media'
+  }, callback);
+
+};
+
 exports.generateThumb = function(identifier, file, callback) {
 
   var tooSmall = file.height <= thumbSize && file.width <= thumbSize;
@@ -503,11 +520,14 @@ exports.generateThumb = function(identifier, file, callback) {
   var apngCondition = gifCondition && file.size > apngThreshold;
   apngCondition = apngCondition && file.mime === 'image/png';
 
+  var imageCondition = apngCondition || file.mime.indexOf('image/') > -1;
+  imageCondition = imageCondition && !tooSmall && file.mime !== 'image/svg+xml';
+
   if (file.mime === 'image/gif' && gifCondition) {
 
     exports.generateGifThumb(identifier, file, callback);
 
-  } else if (apngCondition || file.mime.indexOf('image/') > -1 && !tooSmall) {
+  } else if (imageCondition) {
 
     exports.generateImageThumb(identifier, file, callback);
 
@@ -521,18 +541,8 @@ exports.generateThumb = function(identifier, file, callback) {
 
   } else {
 
-    if (thumbAudioMimes.indexOf(file.mime) > -1) {
-      file.thumbPath = genericAudioThumb;
-    } else if (file.mime.indexOf('image/') < 0) {
-      file.thumbPath = genericThumb;
-    } else {
-      file.thumbPath = file.path;
-    }
+    exports.decideOnDefaultThumb(file, identifier, callback);
 
-    gsHandler.writeFile(file.pathInDisk, file.path, file.mime, {
-      identifier : identifier,
-      type : 'media'
-    }, callback);
   }
 
 };
@@ -653,12 +663,17 @@ exports.willRequireThumb = function(file) {
 
   var gifCondition = thumbExtension || tooSmall;
 
+  var svg = file.mime === 'image/svg+xml';
+
   var apngCondition = gifCondition && file.size > apngThreshold;
   apngCondition = apngCondition && file.mime === 'image/png';
 
+  var imageCondition = apngCondition || file.mime.indexOf('image/') > -1;
+  imageCondition = imageCondition && !tooSmall && !svg;
+
   if (file.mime === 'image/gif' && gifCondition) {
     return true;
-  } else if (apngCondition || file.mime.indexOf('image/') > -1 && !tooSmall) {
+  } else if (imageCondition) {
     return true;
   } else if (videoMimes.indexOf(file.mime) > -1 && mediaThumb) {
     return true;
