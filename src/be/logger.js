@@ -29,6 +29,7 @@ exports.MIMETYPES = {
   flac : 'audio/flac',
   gif : 'image/gif',
   gtar : 'application/x-gtar',
+  gz : 'application/gzip',
   h : 'text/plain',
   hdf : 'application/x-hdf',
   htm : 'text/html',
