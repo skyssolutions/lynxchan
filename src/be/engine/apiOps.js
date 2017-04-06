@@ -410,12 +410,12 @@ exports.getAnonJsonData = function(req, res, callback, exceptionalMimes) {
     if (totalLength > maxRequestSize) {
       ended = true;
 
+      exports.outputResponse(null, null, 'tooLarge', res);
+
       // style exception, too simple
       stream.end(function closedStream() {
         uploadHandler.removeFromDisk(path);
       });
-
-      req.connection.destroy();
       // style exception, too simple
 
     }

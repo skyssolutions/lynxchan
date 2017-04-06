@@ -226,7 +226,8 @@ exports.getPostData = function(req, res, callback, exceptionalMimes) {
 
   var parser = new multiParty.Form({
     uploadDir : uploadDir,
-    autoFiles : true
+    autoFiles : true,
+    maxFilesSize : maxRequestSize
   });
 
   var filesToDelete = [];
@@ -245,23 +246,11 @@ exports.getPostData = function(req, res, callback, exceptionalMimes) {
   res.on('finish', endingCb);
 
   parser.on('error', function(error) {
-    if (verbose) {
-      console.log(error);
-    }
-
-    req.connection.destroy();
+    exports.outputError(error, 500, res, req.language);
   });
 
   parser.on('file', function(name, file) {
-
     filesToDelete.push(file.path);
-
-  });
-
-  parser.on('progress', function(bytesReceived) {
-    if (bytesReceived > maxRequestSize) {
-      req.connection.destroy();
-    }
   });
 
   parser.parse(req, function parsed(error, fields, files) {
