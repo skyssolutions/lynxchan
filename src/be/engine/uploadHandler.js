@@ -307,6 +307,14 @@ exports.updatePostingFiles = function(boardData, threadId, postId, file,
   }
 
   collectionToQuery.updateOne(queryBlock, {
+    $unset : {
+      innerCache : 1,
+      outerCache : 1,
+      previewCache : 1,
+      alternativeCaches : 1,
+      clearCache : 1,
+      hashedCache : 1
+    },
     $push : {
       files : {
         originalName : file.title.replace(/[<>]/g, function replace(match) {
