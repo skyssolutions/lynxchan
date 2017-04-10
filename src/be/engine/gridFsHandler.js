@@ -13,8 +13,6 @@ var alternativeLanguages;
 var miscOps;
 var zlib = require('zlib');
 
-var streamableMimes = [ 'video/webm', 'audio/mpeg', 'video/mp4', 'video/ogg',
-    'audio/ogg', 'audio/webm' ];
 var permanentTypes = [ 'media', 'graph' ];
 
 exports.loadSettings = function() {
@@ -287,22 +285,29 @@ exports.readRangeHeader = function(range, totalLength) {
   var array = range.split(/bytes=([0-9]*)-([0-9]*)/);
   var start = parseInt(array[1]);
   var end = parseInt(array[2]);
-  var result = {
-    start : isNaN(start) ? 0 : start,
-    end : isNaN(end) ? (totalLength - 1) : end
+
+  if (isNaN(start)) {
+    start = totalLength - end;
+    end = totalLength - 1;
+  } else if (isNaN(end)) {
+    end = totalLength - 1;
+  }
+
+  // limit last-byte-pos to current length
+  if (end > totalLength - 1) {
+    end = totalLength - 1;
+  }
+
+  // invalid or unsatisifiable
+  if (isNaN(start) || isNaN(end) || start > end || start < 0) {
+    return null;
+  }
+
+  return {
+    start : start,
+    end : end
   };
 
-  if (!isNaN(start) && isNaN(end)) {
-    result.start = start;
-    result.end = totalLength - 1;
-  }
-
-  if (isNaN(start) && !isNaN(end)) {
-    result.start = totalLength - end;
-    result.end = totalLength - 1;
-  }
-
-  return result;
 };
 
 exports.getHeader = function(stats, req, cookies) {
@@ -408,12 +413,8 @@ exports.prepareStream = function(stats, req, callback, cookies, res, retries) {
 
   var header = exports.getHeader(stats, req, cookies);
 
-  var range;
-
-  if (streamableMimes.indexOf(stats.contentType) > -1) {
-    range = exports.readRangeHeader(req.headers.range, stats.length);
-    header.push([ 'Accept-Ranges', 'bytes' ]);
-  }
+  var range = exports.readRangeHeader(req.headers.range, stats.length);
+  header.push([ 'Accept-Ranges', 'bytes' ]);
 
   var options = {
     revision : 0
