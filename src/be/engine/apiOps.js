@@ -273,6 +273,18 @@ exports.processFile = function(file, res, finalArray, toRemove,
 exports.storeImages = function(parsedData, res, finalArray, toRemove, callback,
     exceptionalMimes) {
 
+  var endingCb = function() {
+
+    for (var j = 0; j < toRemove.length; j++) {
+      uploadHandler.removeFromDisk(toRemove[j]);
+    }
+
+  };
+
+  res.on('close', endingCb);
+
+  res.on('finish', endingCb);
+
   var hasFilesField = parsedData.parameters && parsedData.parameters.files;
 
   var tooManyFiles = finalArray.length === maxFiles;
@@ -299,18 +311,6 @@ exports.storeImages = function(parsedData, res, finalArray, toRemove, callback,
   } else {
     var parameters = parsedData.parameters || {};
     parameters.files = finalArray;
-
-    var endingCb = function() {
-
-      for (var j = 0; j < toRemove.length; j++) {
-        uploadHandler.removeFromDisk(toRemove[j]);
-      }
-
-    };
-
-    res.on('close', endingCb);
-
-    res.on('finish', endingCb);
 
     if (verbose) {
       console.log('Api input: ' + JSON.stringify(parameters, null, 2));
