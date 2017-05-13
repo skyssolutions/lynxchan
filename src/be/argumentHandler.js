@@ -172,7 +172,7 @@ var informedArguments = {
 
 var args = process.argv;
 
-for ( var key in informedArguments) {
+for (var key in informedArguments) {
 
   if (!informedArguments.hasOwnProperty(key)) {
     continue;
