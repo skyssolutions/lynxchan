@@ -257,8 +257,6 @@ exports.setLockReset = function(updateBlock, board, setBlock) {
   };
 
   board.lockCountStart = null;
-  board.threadLockCount = 0;
-
   setBlock.threadLockCount = 1;
 
 };
@@ -276,17 +274,17 @@ exports.setUpdateForHourlyLimit = function(updateBlock, board) {
   } else {
     updateBlock.$inc.threadLockCount = 1;
 
+    if (board.threadLockCount >= board.hourlyThreadLimit - 1) {
+      var lockExpiration = new Date(new Date().getTime() + (1000 * 60 * 60));
+      usedSet = true;
+      setBlock.lockedUntil = lockExpiration;
+    }
+
   }
 
   if (!board.lockCountStart) {
     usedSet = true;
     setBlock.lockCountStart = new Date();
-  }
-
-  if (board.threadLockCount >= board.hourlyThreadLimit - 1) {
-    var lockExpiration = new Date(new Date().getTime() + (1000 * 60 * 60));
-    usedSet = true;
-    setBlock.lockedUntil = lockExpiration;
   }
 
   if (usedSet) {
