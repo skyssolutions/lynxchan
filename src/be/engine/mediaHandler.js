@@ -348,6 +348,10 @@ exports.getMedia = function(userData, parameters, language, callback) {
     };
   }
 
+  if (parameters.filter) {
+    queryBlock.identifier = new RegExp(parameters.filter.toLowerCase());
+  }
+
   references.count(queryBlock, function counted(error, count) {
 
     if (error) {

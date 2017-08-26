@@ -461,7 +461,6 @@ exports.globalManagement = function(userRole, userLogin, staff, reports,
 // } Section 2: Global Management
 
 // Section 3: Filter management {
-
 exports.setFilterCell = function(document, boardUri, filter, language) {
 
   var cell = document.createElement('form');
@@ -745,6 +744,10 @@ exports.setMediaManagementPages = function(pages, document, parameters) {
 
   if (parameters.orphaned) {
     boilerPlate += '&orphaned=1';
+  }
+
+  if (parameters.filter) {
+    boilerPlate += '&filter=' + parameters.filter;
   }
 
   for (var i = 1; i <= pages; i++) {

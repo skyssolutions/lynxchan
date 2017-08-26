@@ -211,7 +211,7 @@ Json output(Object): object with data used to manage the board. Contains the fol
         forceAnonymity: disables the name input.
         unindex: removes board from index.
         allowCode: allows the usage of [code] on postings.
-        early404: makes threads with less than 5 replies to be deleted after an hour.
+        early404: before pruning threads, will first prune any thread with less than 5 replies that are over the first third.
         blockDeletion: makes it impossible for users to delete their own posts.
         requireThreadFile: requires at least one file when creating a thread.
         uniqueFiles: enforces unique file posting.
@@ -555,7 +555,7 @@ Parameters:
     maxBumpAge(Number): for how many days non-cyclic threads can be bumped after being created.
     allowCode: if any value is passed, use of code tag will be allowed on markdown.
     boardMessage: new message of the board. 256 characters.
-    early404: will delete threads after one hour if they do not receive at least 5 replies.
+    early404: before pruning threads, will first prune any thread with less than 5 replies that are over the first third.
     tags(Array): array of tags to be used on this board.
     unindex: if any value is passed, the board will not be displayed on the top boards or the boards list.
     blockDeletion: disables user deletion of content.
@@ -1042,6 +1042,7 @@ Description: displays the uploaded files and allows to manage them. Requires aut
 Parameters:
     orphaned: if informed, only orphaned files will be displayed.
     page: page the user wishes to see.
+    filter: if informed, only files with the given string on the identifier will be shown. Case insensitive.
 
 JSON output(Object): object with the media information. Contains the following fields:
     pages(Number): amount of pages available.
