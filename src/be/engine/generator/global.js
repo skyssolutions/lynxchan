@@ -319,6 +319,65 @@ exports.defaultBanner = function(callback, language) {
 
 };
 
+exports.maintenanceImage = function(callback, language) {
+
+  if (verbose && !language) {
+    console.log('Saving maintenance image');
+  }
+
+  var filePath = (language ? language.frontEnd : fePath) + '/templates/';
+
+  if (language) {
+    var settingsPath = language.frontEnd + '/templateSettings.json';
+
+    var settingsToUse = JSON.parse(fs.readFileSync(settingsPath));
+  } else {
+    settingsToUse = templateSettings;
+  }
+
+  filePath += settingsToUse.maintenanceImage;
+
+  var path = kernel.maintenanceImage();
+  var meta = {};
+
+  if (language) {
+    meta.referenceFile = path;
+    meta.languages = language.headerValues;
+    path += language.headerValues.join('-');
+  }
+
+  gfsHandler.writeFile(filePath, path, logger.getMime(filePath), meta,
+      function savedMaintanceImage(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          if (!altLanguages) {
+            callback();
+            return;
+          }
+
+          // style exception, too simple
+          rootModule.nextLanguage(language, function gotNextLanguage(error,
+              language) {
+
+            if (error) {
+              callback(error);
+            } else if (!language) {
+              callback();
+            } else {
+              exports.maintenanceImage(callback, language);
+            }
+          });
+          // style exception, too simple
+
+        }
+
+      });
+
+};
+
 exports.thumb = function(callback, language) {
 
   if (verbose && !language) {

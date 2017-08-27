@@ -15,7 +15,7 @@ var staticPages = domManipulator.staticPages;
 // You can omit parts of the version or omit it altogether.
 // And addon with 1.5 as a version will be compatible with any 1.5.x version,
 // like 1.5.1, 1.5.13
-exports.engineVersion = '1.8';
+exports.engineVersion = '1.9';
 
 var jsdom = require('jsdom').jsdom;
 var serializer = require('jsdom').serializeDocument;

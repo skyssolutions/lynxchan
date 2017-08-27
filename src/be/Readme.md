@@ -31,6 +31,7 @@ It accepts the following arguments:
 * `--reload-audio`, `-ra`: will rebuild generic audio thumb on boot.
 * `--reload-spoiler`, `-rs`: will rebuild spoiler image on boot.
 * `--reload-maintenance`, `-rm`: will rebuild maintenance page on boot.
+* `--reload-maintenance-image`, `-rmi`: will rebuild maintenance image page on boot.
 * `--reload-overboard`, `-ro`: reloads the overboard.
 * `--reload-logs`, `-rlog`: reloads logs.
 * `--reload-boards`, `-rboard`: reloads boards. If a board uri is informed it will start from the informed board. If an interval is informed it will skip said interval after finishing each board. The board and interval will only be used if the comand to not fork is issued.

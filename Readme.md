@@ -9,13 +9,13 @@
 See other branches named like `1.1.x` for stable versions. They will receive only critical bug fixes and will be maintained for at least one year after release. Remember to use a compatible version of your front-end with these stable versions. Newer versions might not have required elements on the templates for these versions.
 
 # Required software
-* [Node.js](http://nodejs.org) 6.10.1, I suggest installing from source code. DO NOT build the master's HEAD.
+* [Node.js](http://nodejs.org) 6.11.2, I suggest installing from source code. DO NOT build the master's HEAD.
 * [MongoDB](https://www.mongodb.org/) 3.2.12. You might also use 3.4.2, however, this version has a [bug](https://jira.mongodb.org/browse/SERVER-28525) on it`s init script that prevents LynxChan to start when the system boots if mongo is running on the same server.
 * [UnZip](http://www.info-zip.org) 6.00, this is probably already include in your distro, though.
 * [cUrl](http://curl.haxx.se) 7.29.0, this is usually included too.
 * [ImageMagick](http://www.imagemagick.org/script/index.php) 6.7.8-9
 * [A front-end](https://gitgud.io/LynxChan/LynxChanFront-Placeholder) that must either be placed on the `src/fe` directory or have it's absolute path set on the general.json file. Read the readme.md on src/be for more information about how to configure the path for the front-end.
-* [ffmpeg](https://www.ffmpeg.org/) (Optional) 3.2.4 if mediaThumb setting is enabled. Requires zlib-devel on centOS to work properly when compiled from source.
+* [ffmpeg](https://www.ffmpeg.org/) (Optional) 3.3.3 if mediaThumb setting is enabled. Requires zlib-devel on centOS to work properly when compiled from source.
 
 The dependencies versions are not exactly mandatory and only reflect the version that I am sure that will work with the current version of the engine at the moment.
 

@@ -31,6 +31,8 @@ proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.setHeader('x-forwarded-for', logger.getRawIp(req));
 });
 
+var formImages = [ '/captcha.js', '/randomBanner.js' ];
+
 exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
@@ -115,6 +117,29 @@ exports.processApiRequest = function(req, pathName, res) {
 
 };
 
+exports.showMaintenance = function(req, pathName, res) {
+
+  if (formImages.indexOf(pathName) >= 0) {
+
+    res.writeHead(302, {
+      'Location' : kernel.maintenanceImage()
+
+    });
+
+    res.end();
+
+  } else {
+
+    gridFs.outputFile('/maintenance.html', req, res, function streamedFile(
+        error) {
+      if (error) {
+        exports.outputError(error, res);
+      }
+    });
+  }
+
+};
+
 exports.processFormRequest = function(req, pathName, res) {
 
   if (verbose) {
@@ -123,12 +148,7 @@ exports.processFormRequest = function(req, pathName, res) {
 
   try {
     if (maintenance && !req.fromSlave) {
-      gridFs.outputFile('/maintenance.html', req, res, function streamedFile(
-          error) {
-        if (error) {
-          exports.outputError(error, res);
-        }
-      });
+      exports.showMaintenance(req, pathName, res);
     } else {
       var modulePath;
 

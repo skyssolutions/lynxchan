@@ -133,6 +133,11 @@ var informedArguments = {
     long : '--reload-maintenance',
     type : 'boolean'
   },
+  reloadMaintenanceImage : {
+    short : '-rmi',
+    long : '--reload-maintenance-image',
+    type : 'boolean'
+  },
   login : {
     short : '-l',
     long : '--login',
@@ -172,7 +177,7 @@ var informedArguments = {
 
 var args = process.argv;
 
-for (var key in informedArguments) {
+for ( var key in informedArguments) {
 
   if (!informedArguments.hasOwnProperty(key)) {
     continue;

@@ -4,6 +4,7 @@ defaultBanner: used as a board default banner.
 spoiler: used as spoiler image.
 thumb: used as generic thumb.
 audioThumb: used as generic thumb for audio files.
+maintenanceImage: displayed when a dynamic image is requested while the engine is in maintenance mode.
 
 ------------------------------------------------------------------------------------------
 

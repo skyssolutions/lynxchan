@@ -110,7 +110,7 @@ exports.loadDependencies = function() {
 };
 
 var toGenerate;
-var MAX_TO_GENERATE = 12;
+var MAX_TO_GENERATE = 13;
 var reloading;
 
 var fullReloadCallback = function(error, callback) {
@@ -178,6 +178,10 @@ exports.globalReloads = function(callback) {
   });
 
   exports.global.maintenance(function reloaded(error) {
+    fullReloadCallback(error, callback);
+  });
+
+  exports.global.maintenanceImage(function reloaded(error) {
     fullReloadCallback(error, callback);
   });
 

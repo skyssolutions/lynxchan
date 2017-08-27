@@ -16,12 +16,14 @@ var MINIMUM_WORKER_UPTIME = 5000;
 var forkTime = {};
 
 var defaultFilesArray;
-var defaultImages = [ 'thumb', 'audioThumb', 'defaultBanner', 'spoiler' ];
+var defaultImages = [ 'thumb', 'audioThumb', 'defaultBanner', 'spoiler',
+    'maintenanceImage' ];
 
 var defaultFilesRelation;
 
 var genericThumb;
 var defaultBanner;
+var maintenanceImage;
 var genericAudioThumb;
 var spoilerImage;
 var genQueue;
@@ -166,6 +168,10 @@ exports.defaultBanner = function() {
   return defaultBanner;
 };
 
+exports.maintenanceImage = function() {
+  return maintenanceImage;
+};
+
 exports.debug = function() {
   return debug;
 };
@@ -194,31 +200,35 @@ function checkImagesSet() {
   }
 }
 
+function getExtension(fileName) {
+  var parts = fileName.split('.');
+
+  return parts[parts.length - 1].toLowerCase();
+}
+
 function setDefaultImages() {
 
   var templateSettings = settingsHandler.getTemplateSettings();
 
-  var thumbExt = templateSettings.thumb.split('.');
-  thumbExt = thumbExt[thumbExt.length - 1].toLowerCase();
-  genericThumb = '/genericThumb.' + thumbExt;
+  genericThumb = '/genericThumb.' + getExtension(templateSettings.thumb);
 
-  var audioThumbExt = templateSettings.audioThumb.split('.');
-  audioThumbExt = audioThumbExt[audioThumbExt.length - 1].toLowerCase();
-  genericAudioThumb = '/audioGenericThumb.' + audioThumbExt;
+  var audioTumbExt = getExtension(templateSettings.audioThumb);
+  genericAudioThumb = '/audioGenericThumb.' + audioTumbExt;
 
-  var bannerExt = templateSettings.defaultBanner.split('.');
-  bannerExt = bannerExt[bannerExt.length - 1].toLowerCase();
-  defaultBanner = '/defaultBanner.' + bannerExt;
+  var bannerThumb = getExtension(templateSettings.defaultBanner);
+  defaultBanner = '/defaultBanner.' + bannerThumb;
 
-  var spoilerExt = templateSettings.spoiler.split('.');
-  spoilerExt = spoilerExt[spoilerExt.length - 1].toLowerCase();
-  spoilerImage = '/spoiler.' + spoilerExt;
+  var maintenanceExt = getExtension(templateSettings.maintenanceImage);
+  maintenanceImage = '/maintenanceImage.' + maintenanceExt;
+
+  spoilerImage = '/spoiler.' + getExtension(templateSettings.spoiler);
 
 }
 
 function composeDefaultFiles() {
   defaultFilesArray = [ '/', '/404.html', genericThumb, '/login.html',
-      defaultBanner, spoilerImage, '/maintenance.html', genericAudioThumb ];
+      defaultBanner, spoilerImage, '/maintenance.html', genericAudioThumb,
+      maintenanceImage ];
 
   defaultFilesRelation = {
     '/' : {
@@ -259,6 +269,12 @@ function composeDefaultFiles() {
     generatorFunction : 'defaultBanner',
     generatorModule : 'global',
     command : informedArguments.reloadBanner.informed
+  };
+
+  defaultFilesRelation[maintenanceImage] = {
+    generatorFunction : 'maintenanceImage',
+    generatorModule : 'global',
+    command : informedArguments.reloadMaintenanceImage.informed
   };
 
   defaultFilesRelation[genericAudioThumb] = {
