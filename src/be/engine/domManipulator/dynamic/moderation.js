@@ -3,8 +3,7 @@
 // handles moderation pages. The difference between moderation and management is
 // that moderation is focused on restricting users
 
-var jsdom = require('jsdom').jsdom;
-var serializer = require('jsdom').serializeDocument;
+var JSDOM = require('jsdom').JSDOM;
 var debug = require('../../../kernel').debug();
 var templateHandler;
 var lang;
@@ -32,14 +31,15 @@ exports.bans = function(bans, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).bansPage);
+    var dom = new JSDOM(templateHandler(language).bansPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titBansManagement;
 
     common.setBanList(document, document.getElementById('bansDiv'), bans,
         language);
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -74,7 +74,8 @@ exports.setClosedReportCell = function(cell, report, language) {
 exports.closedReports = function(reports, language) {
 
   try {
-    var document = jsdom(templateHandler(language).closedReportsPage);
+    var dom = new JSDOM(templateHandler(language).closedReportsPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titClosedReports;
 
@@ -90,7 +91,7 @@ exports.closedReports = function(reports, language) {
 
     }
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -133,7 +134,8 @@ exports.rangeBans = function(rangeBans, boardData, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).rangeBansPage);
+    var dom = new JSDOM(templateHandler(language).rangeBansPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titRangeBans;
 
@@ -147,7 +149,7 @@ exports.rangeBans = function(rangeBans, boardData, language) {
 
     exports.setRangeBanCells(document, rangeBans, boardData, language);
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -182,7 +184,8 @@ exports.hashBans = function(hashBans, boardUri, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).hashBansPage);
+    var dom = new JSDOM(templateHandler(language).hashBansPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titHashBans;
 
@@ -196,7 +199,7 @@ exports.hashBans = function(hashBans, boardUri, language) {
 
     exports.setHashBanCells(document, hashBans, language);
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -233,7 +236,8 @@ exports.boardModeration = function(boardData, ownerData, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).boardModerationPage);
+    var dom = new JSDOM(templateHandler(language).boardModerationPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titBoardModeration.replace('{$board}',
         boardData.boardUri);
@@ -247,7 +251,7 @@ exports.boardModeration = function(boardData, ownerData, language) {
     var title = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
     document.getElementById('labelTitle').innerHTML = title;
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 

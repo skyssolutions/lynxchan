@@ -17,9 +17,6 @@ var staticPages = domManipulator.staticPages;
 // like 1.5.1, 1.5.13
 exports.engineVersion = '1.9';
 
-var jsdom = require('jsdom').jsdom;
-var serializer = require('jsdom').serializeDocument;
-
 exports.init = function() {
 
   // Initializing addon. At this point its safe to reference different addons

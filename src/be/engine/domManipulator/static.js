@@ -6,8 +6,7 @@
 var kernel = require('../../kernel');
 var individualCaches = !kernel.debug();
 individualCaches = individualCaches && !kernel.feDebug();
-var jsdom = require('jsdom').jsdom;
-var serializer = require('jsdom').serializeDocument;
+var JSDOM = require('jsdom').JSDOM;
 var logger = require('../../logger');
 var db = require('../../db');
 var postsCollection = db.posts();
@@ -67,7 +66,8 @@ exports.loadDependencies = function() {
 exports.notFound = function(language, callback) {
 
   try {
-    var document = jsdom(templateHandler(language).notFoundPage);
+    var dom = new JSDOM(templateHandler(language).notFoundPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titNotFound;
 
@@ -82,7 +82,7 @@ exports.notFound = function(language, callback) {
       path += language.headerValues.join('-');
     }
 
-    gridFs.writeData(serializer(document), path, 'text/html', meta, callback);
+    gridFs.writeData(dom.serialize(), path, 'text/html', meta, callback);
   } catch (error) {
     callback(error);
   }
@@ -92,7 +92,8 @@ exports.notFound = function(language, callback) {
 exports.login = function(language, callback) {
 
   try {
-    var document = jsdom(templateHandler(language).loginPage);
+    var dom = new JSDOM(templateHandler(language).loginPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titLogin;
 
@@ -109,7 +110,7 @@ exports.login = function(language, callback) {
       path += language.headerValues.join('-');
     }
 
-    gridFs.writeData(serializer(document), path, 'text/html', meta, callback);
+    gridFs.writeData(dom.serialize(), path, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);
@@ -150,8 +151,6 @@ exports.setModdingInformation = function(document, boardUri, threadData,
   document.getElementById('controlThreadIdentifier').setAttribute('value',
       threadData.threadId);
 
-  callback(null, serializer(document));
-
 };
 
 exports.setThreadTitle = function(document, boardUri, threadData) {
@@ -166,32 +165,8 @@ exports.setThreadTitle = function(document, boardUri, threadData) {
   document.title = title;
 };
 
-exports.saveRegularThreadPage = function(document, boardUri, threadData,
-    callback, language) {
-
-  common.removeElement(document.getElementById('divMod'));
-  common.removeElement(document.getElementById('divControls'));
-
-  var path = '/' + boardUri + '/res/' + threadData.threadId + '.html';
-
-  var meta = {
-    boardUri : boardUri,
-    type : 'thread',
-    threadId : threadData.threadId
-  };
-
-  if (language) {
-    meta.languages = language.headerValues;
-    meta.referenceFile = path;
-    path += language.headerValues.join('-');
-  }
-
-  gridFs.writeData(serializer(document), path, 'text/html', meta, callback);
-
-};
-
 exports.setModElements = function(modding, document, boardUri, boardData,
-    threadData, posts, userRole, callback, language) {
+    threadData, posts, userRole, language) {
 
   var globalStaff = userRole <= miscOps.getMaxStaffRole();
   if (!globalStaff || !modding) {
@@ -204,40 +179,79 @@ exports.setModElements = function(modding, document, boardUri, boardData,
     common.removeElement(document.getElementById('ipDeletionForm'));
   }
 
-  if (modding) {
-    exports.setModdingInformation(document, boardUri, threadData, callback);
-  } else {
-    exports.saveRegularThreadPage(document, boardUri, threadData, callback,
-        language);
+};
+
+exports.setThreadCommonInfo = function(document, boardUri, threadData,
+    boardData, language, flagData, posts, modding, userRole) {
+
+  exports.setThreadTitle(document, boardUri, threadData);
+
+  var linkModeration = '/mod.js?boardUri=' + boardData.boardUri;
+  linkModeration += '&threadId=' + threadData.threadId;
+
+  var moderationElement = document.getElementById('linkMod');
+  moderationElement.href = linkModeration;
+
+  var linkManagement = document.getElementById('linkManagement');
+  linkManagement.href = '/boardManagement.js?boardUri=' + boardData.boardUri;
+
+  common.setHeader(document, boardUri, boardData, flagData, true, language);
+
+  exports.setThreadHiddenIdentifiers(document, boardUri, threadData);
+
+  common.addThread(document, threadData, posts, true, modding, boardData,
+      userRole, language);
+
+  exports.setModElements(modding, document, boardUri, boardData, threadData,
+      posts, userRole, language);
+
+};
+
+exports.getThreadPathAndMeta = function(boardUri, language, meta, threadData) {
+
+  var path = '/' + boardUri + '/res/' + threadData.threadId + '.html';
+
+  if (language) {
+    meta.languages = language.headerValues;
+    meta.referenceFile = path;
+    path += language.headerValues.join('-');
   }
+
+  return path;
+
 };
 
 exports.thread = function(boardUri, boardData, flagData, threadData, posts,
     callback, modding, userRole, language) {
 
   try {
-    var document = jsdom(templateHandler(language).threadPage);
+    var dom = new JSDOM(templateHandler(language).threadPage);
+    var document = dom.window.document;
 
-    exports.setThreadTitle(document, boardUri, threadData);
+    exports.setThreadCommonInfo(document, boardUri, threadData, boardData,
+        language, flagData, posts, modding, userRole);
 
-    var linkModeration = '/mod.js?boardUri=' + boardData.boardUri;
-    linkModeration += '&threadId=' + threadData.threadId;
+    if (modding) {
+      exports.setModdingInformation(document, boardUri, threadData, callback);
 
-    var moderationElement = document.getElementById('linkMod');
-    moderationElement.href = linkModeration;
+      callback(null, dom.serialize());
 
-    var linkManagement = document.getElementById('linkManagement');
-    linkManagement.href = '/boardManagement.js?boardUri=' + boardData.boardUri;
+    } else {
 
-    common.setHeader(document, boardUri, boardData, flagData, true, language);
+      common.removeElement(document.getElementById('divMod'));
+      common.removeElement(document.getElementById('divControls'));
 
-    exports.setThreadHiddenIdentifiers(document, boardUri, threadData);
+      var meta = {
+        boardUri : boardUri,
+        type : 'thread',
+        threadId : threadData.threadId
+      };
 
-    common.addThread(document, threadData, posts, true, modding, boardData,
-        userRole, language);
+      var path = exports.getThreadPathAndMeta(boardUri, language, meta,
+          threadData);
 
-    exports.setModElements(modding, document, boardUri, boardData, threadData,
-        posts, userRole, callback, language);
+      gridFs.writeData(dom.serialize(), path, 'text/html', meta, callback);
+    }
 
   } catch (error) {
     callback(error);
@@ -247,8 +261,8 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
 // } Section 1: Thread
 
 // Section 2: Board {
-exports.generateThreadListing = function(document, boardUri, page, threads,
-    latestPosts, language, callback) {
+exports.generateThreadListing = function(document, threads, latestPosts,
+    language) {
 
   var tempLatest = {};
 
@@ -267,19 +281,6 @@ exports.generateThreadListing = function(document, boardUri, page, threads,
 
   }
 
-  var path = '/' + boardUri + '/' + (page === 1 ? '' : page + '.html');
-  var meta = {
-    boardUri : boardUri,
-    type : 'board'
-  };
-
-  if (language) {
-    meta.languages = language.headerValues;
-    meta.referenceFile = path;
-    path += language.headerValues.join('-');
-  }
-
-  gridFs.writeData(serializer(document), path, 'text/html', meta, callback);
 };
 
 exports.addPagesLinks = function(document, pageCount, currentPage) {
@@ -313,12 +314,27 @@ exports.addPagesLinks = function(document, pageCount, currentPage) {
   }
 };
 
+exports.getPagePathAndMeta = function(board, page, meta, language) {
+
+  var path = '/' + board + '/' + (page === 1 ? '' : page + '.html');
+
+  if (language) {
+    meta.languages = language.headerValues;
+    meta.referenceFile = path;
+    path += language.headerValues.join('-');
+  }
+
+  return path;
+
+};
+
 exports.page = function(board, page, threads, pageCount, boardData, flagData,
     latestPosts, language, cb) {
 
   try {
 
-    var document = jsdom(templateHandler(language).boardPage);
+    var dom = new JSDOM(templateHandler(language).boardPage);
+    var document = dom.window.document;
 
     document.title = '/' + board + '/' + ' - ' + boardData.boardName;
 
@@ -332,8 +348,17 @@ exports.page = function(board, page, threads, pageCount, boardData, flagData,
 
     exports.addPagesLinks(document, pageCount, page);
 
-    exports.generateThreadListing(document, board, page, threads, latestPosts,
-        language, cb);
+    exports.generateThreadListing(document, threads, latestPosts, language);
+
+    var meta = {
+      boardUri : board,
+      type : 'board'
+    };
+
+    var path = exports.getPagePathAndMeta(board, page, meta, language);
+
+    gridFs.writeData(dom.serialize(), path, 'text/html', meta, cb);
+
   } catch (error) {
     cb(error);
   }
@@ -408,21 +433,27 @@ exports.setCatalogPosting = function(boardData, boardUri, flagData, document,
 
 };
 
-exports.storeCatalogPage = function(document, boardUri, language, callback) {
+exports.setCatalogElements = function(boardData, document, language, threads,
+    flagData) {
 
-  var meta = {
-    boardUri : boardUri,
-    type : 'catalog'
-  };
-  var path = '/' + boardUri + '/catalog.html';
+  var boardUri = boardData.boardUri;
 
-  if (language) {
-    meta.languges = language.headerValues;
-    meta.referenceFile = path;
-    path += language.headerValues.join('-');
+  if (boardData.usesCustomCss) {
+    common.setCustomCss(boardUri, document);
   }
 
-  gridFs.writeData(serializer(document), path, 'text/html', meta, callback);
+  document.title = lang(language).titCatalog.replace('{$board}', boardUri);
+
+  document.getElementById('labelBoard').innerHTML = '/' + boardUri + '/';
+
+  exports.setCatalogPosting(boardData, boardUri, flagData, document, language);
+
+  var threadsDiv = document.getElementById('divThreads');
+
+  for (var i = 0; i < threads.length; i++) {
+    threadsDiv.appendChild(exports.setCell(boardUri, document, threads[i],
+        language));
+  }
 
 };
 
@@ -430,29 +461,25 @@ exports.catalog = function(language, boardData, threads, flagData, callback) {
 
   try {
 
-    var document = jsdom(templateHandler(language).catalogPage);
-
-    var boardUri = boardData.boardUri;
-
-    if (boardData.usesCustomCss) {
-      common.setCustomCss(boardUri, document);
-    }
-
-    document.title = lang(language).titCatalog.replace('{$board}', boardUri);
-
-    document.getElementById('labelBoard').innerHTML = '/' + boardUri + '/';
+    var dom = new JSDOM(templateHandler(language).catalogPage);
+    var document = dom.window.document;
 
     exports
-        .setCatalogPosting(boardData, boardUri, flagData, document, language);
+        .setCatalogElements(boardData, document, language, threads, flagData);
 
-    var threadsDiv = document.getElementById('divThreads');
+    var meta = {
+      boardUri : boardData.boardUri,
+      type : 'catalog'
+    };
+    var path = '/' + boardData.boardUri + '/catalog.html';
 
-    for (var i = 0; i < threads.length; i++) {
-      threadsDiv.appendChild(exports.setCell(boardUri, document, threads[i],
-          language));
+    if (language) {
+      meta.languges = language.headerValues;
+      meta.referenceFile = path;
+      path += language.headerValues.join('-');
     }
 
-    exports.storeCatalogPage(document, boardUri, language, callback);
+    gridFs.writeData(dom.serialize(), path, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);
@@ -624,7 +651,8 @@ exports.frontPage = function(boards, latestPosts, latestImages, globalStats,
 
   try {
 
-    var document = jsdom(templateHandler(language).index);
+    var dom = new JSDOM(templateHandler(language).index);
+    var document = dom.window.document;
 
     exports.setFrontPageContent(document, boards, globalStats, latestImages,
         latestPosts, language);
@@ -638,8 +666,7 @@ exports.frontPage = function(boards, latestPosts, latestImages, globalStats,
       filePath += language.headerValues.join('-');
     }
 
-    gridFs.writeData(serializer(document), filePath, 'text/html', meta,
-        callback);
+    gridFs.writeData(dom.serialize(), filePath, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);
@@ -666,7 +693,8 @@ exports.setMetadata = function(metadata, postingData, path) {
 
 exports.getPreviewDocument = function(language, postingData) {
 
-  var document = jsdom(templateHandler(language).previewPage);
+  var dom = new JSDOM(templateHandler(language).previewPage);
+  var document = dom.window.document;
 
   var innerCell = document.createElement('div');
   innerCell.setAttribute('class', 'postCell');
@@ -676,7 +704,11 @@ exports.getPreviewDocument = function(language, postingData) {
 
   document.getElementById('panelContent').appendChild(innerCell);
 
-  return document;
+  if (postingData.postId === postingData.threadId) {
+    delete postingData.postId;
+  }
+
+  return dom.serialize();
 
 };
 
@@ -701,14 +733,8 @@ exports.preview = function(language, postingData, callback) {
       path += language.headerValues.join('-');
     }
 
-    var document = exports.getPreviewDocument(language, postingData);
-
-    if (postingData.postId === postingData.threadId) {
-      delete postingData.postId;
-    }
-
-    gridFs.writeData(serializer(document), path, 'text/html', metadata,
-        callback);
+    gridFs.writeData(exports.getPreviewDocument(language, postingData), path,
+        'text/html', metadata, callback);
 
   } catch (error) {
     callback(error);
@@ -719,7 +745,8 @@ exports.preview = function(language, postingData, callback) {
 exports.maintenance = function(language, callback) {
   try {
 
-    var document = jsdom(templateHandler(language).maintenancePage);
+    var dom = new JSDOM(templateHandler(language).maintenancePage);
+    var document = dom.window.document;
 
     document.title = lang(language).titMaintenance;
 
@@ -734,7 +761,7 @@ exports.maintenance = function(language, callback) {
       path += language.headerValues.join('-');
     }
 
-    gridFs.writeData(serializer(document), path, 'text/html', meta, callback);
+    gridFs.writeData(dom.serialize(), path, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);
@@ -760,32 +787,43 @@ exports.addOverBoardThreads = function(foundThreads, previewRelation, doc,
 
 };
 
+exports.getOverboardPathAndMeta = function(language, doc, meta, sfw) {
+
+  doc.title = '/' + (sfw ? sfwOverboard : overboard) + '/';
+
+  var path = doc.title;
+
+  if (language) {
+    meta.referenceFile = path;
+    meta.languages = language.headerValues;
+    path += language.headerValues.join('-');
+  }
+
+  return path;
+
+};
+
 exports.overboard = function(foundThreads, previewRelation, callback,
     multiBoard, sfw, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).overboard);
+    var dom = new JSDOM(templateHandler(language).overboard);
+    var document = dom.window.document;
 
     exports.addOverBoardThreads(foundThreads, previewRelation, document,
         language);
 
     if (multiBoard) {
       document.title = lang(language).titMultiboard;
-      callback(null, serializer(document));
+      callback(null, dom.serialize());
     } else {
-      document.title = '/' + (sfw ? sfwOverboard : overboard) + '/';
 
-      var path = document.title;
       var meta = {};
+      var path = exports.getOverboardPathAndMeta(language, document, meta, sfw);
 
-      if (language) {
-        meta.referenceFile = path;
-        meta.languages = language.headerValues;
-        path += language.headerValues.join('-');
-      }
+      gridFs.writeData(dom.serialize(), path, 'text/html', meta, callback);
 
-      gridFs.writeData(serializer(document), path, 'text/html', meta, callback);
     }
 
   } catch (error) {
@@ -843,7 +881,7 @@ exports.getLogEntryCache = function(logEntry, language) {
 
 };
 
-exports.addLogEntry = function(logEntry, document, div, language) {
+exports.addLogEntry = function(logEntry, document, language) {
 
   var logCell = document.createElement('div');
   logCell.setAttribute('class', 'logCell');
@@ -869,7 +907,7 @@ exports.addLogEntry = function(logEntry, document, div, language) {
     logCell.innerHTML = existingCache;
   }
 
-  div.appendChild(logCell);
+  document.getElementById('divLogs').appendChild(logCell);
 
 };
 
@@ -877,15 +915,14 @@ exports.log = function(language, date, logs, callback) {
 
   try {
 
-    var document = jsdom(templateHandler(language).logsPage);
+    var dom = new JSDOM(templateHandler(language).logsPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titLogPage.replace('{$date}', common
         .formatDateToDisplay(date, true, language));
 
-    var div = document.getElementById('divLogs');
-
     for (var i = 0; i < logs.length; i++) {
-      exports.addLogEntry(logs[i], document, div, language);
+      exports.addLogEntry(logs[i], document, language);
     }
 
     var path = '/.global/logs/';
@@ -901,7 +938,7 @@ exports.log = function(language, date, logs, callback) {
       path += language.headerValues.join('-');
     }
 
-    gridFs.writeData(serializer(document), path, 'text/html', meta, callback);
+    gridFs.writeData(dom.serialize(), path, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);
@@ -913,7 +950,8 @@ exports.log = function(language, date, logs, callback) {
 // Section 8: Rules {
 exports.getRulesDocument = function(language, boardUri, rules) {
 
-  var document = jsdom(templateHandler(language).rulesPage);
+  var dom = new JSDOM(templateHandler(language).rulesPage);
+  var document = dom.window.document;
 
   document.title = lang(language).titRules.replace('{$board}', boardUri);
   document.getElementById('boardLabel').innerHTML = boardUri;
@@ -930,7 +968,7 @@ exports.getRulesDocument = function(language, boardUri, rules) {
     rulesDiv.appendChild(cell);
   }
 
-  return document;
+  return dom.serialize();
 
 };
 
@@ -949,8 +987,8 @@ exports.rules = function(language, boardUri, rules, callback) {
       path += language.headerValues.join('-');
     }
 
-    gridFs.writeData(serializer(exports.getRulesDocument(language, boardUri,
-        rules)), path, 'text/html', meta, callback);
+    gridFs.writeData(exports.getRulesDocument(language, boardUri, rules), path,
+        'text/html', meta, callback);
 
   } catch (error) {
     callback(error);

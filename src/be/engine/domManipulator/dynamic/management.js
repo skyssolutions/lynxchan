@@ -2,8 +2,7 @@
 
 // handles management pages in general
 
-var jsdom = require('jsdom').jsdom;
-var serializer = require('jsdom').serializeDocument;
+var JSDOM = require('jsdom').JSDOM;
 var debug = require('../../../kernel').debug();
 var settings;
 var minClearIpRole;
@@ -266,7 +265,8 @@ exports.boardManagement = function(userData, boardData, reports, bans,
 
   try {
 
-    var document = jsdom(templateHandler(userLanguage).bManagement);
+    var dom = new JSDOM(templateHandler(userLanguage).bManagement);
+    var document = dom.window.document;
 
     document.title = lang(userLanguage).titBoardManagement.replace('{$board}',
         boardData.boardUri);
@@ -281,7 +281,7 @@ exports.boardManagement = function(userData, boardData, reports, bans,
     exports.setContent(document, boardData, userData, bans, reports,
         userLanguage);
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -387,6 +387,7 @@ exports.setGlobalManagementLinks = function(userRole, document) {
   if (userRole !== 0) {
     common.removeElement(document.getElementById('globalSettingsLink'));
     common.removeElement(document.getElementById('languagesLink'));
+    common.removeElement(document.getElementById('socketLink'));
   }
 
   var admin = userRole < 2;
@@ -440,7 +441,8 @@ exports.globalManagement = function(userRole, userLogin, staff, reports,
     appealedBans, language) {
 
   try {
-    var document = jsdom(templateHandler(language).gManagement);
+    var dom = new JSDOM(templateHandler(language).gManagement);
+    var document = dom.window.document;
 
     document.title = lang(language).titGlobalManagement;
 
@@ -452,7 +454,7 @@ exports.globalManagement = function(userRole, userLogin, staff, reports,
 
     exports.setUserLabel(document, userLogin, userRole, language);
 
-    return serializer(document);
+    return dom.serialize();
   } catch (error) {
 
     return error.toString();
@@ -493,7 +495,8 @@ exports.filterManagement = function(boardUri, filters, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).filterManagement);
+    var dom = new JSDOM(templateHandler(language).filterManagement);
+    var document = dom.window.document;
 
     document.title = lang(language).titFilters.replace('{$board}', boardUri);
 
@@ -506,7 +509,7 @@ exports.filterManagement = function(boardUri, filters, language) {
           filters[i], language));
     }
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -540,7 +543,8 @@ exports.ruleManagement = function(boardUri, rules, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).ruleManagementPage);
+    var dom = new JSDOM(templateHandler(language).ruleManagementPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titRuleManagement;
 
@@ -550,7 +554,7 @@ exports.ruleManagement = function(boardUri, rules, language) {
 
     exports.setRuleManagementCells(document, boardUri, rules, language);
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -591,7 +595,8 @@ exports.addFlagCells = function(document, flags, boardUri, language) {
 exports.flagManagement = function(boardUri, flags, language) {
   try {
 
-    var document = jsdom(templateHandler(language).flagsPage);
+    var dom = new JSDOM(templateHandler(language).flagsPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titFlagManagement;
 
@@ -604,7 +609,7 @@ exports.flagManagement = function(boardUri, flags, language) {
 
     exports.addFlagCells(document, flags, boardUri, language);
 
-    return serializer(document);
+    return dom.serialize();
   } catch (error) {
 
     return error.toString();
@@ -638,7 +643,8 @@ exports.globalSettings = function(language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).globalSettingsPage);
+    var dom = new JSDOM(templateHandler(language).globalSettingsPage);
+    var document = dom.window.document;
 
     var siteSettingsRelation = miscOps.getParametersArray(language);
 
@@ -672,7 +678,7 @@ exports.globalSettings = function(language) {
 
     document.title = lang(language).titGlobalSettings;
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -708,7 +714,8 @@ exports.bannerManagement = function(boardUri, banners, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).bannerManagementPage);
+    var dom = new JSDOM(templateHandler(language).bannerManagementPage);
+    var document = dom.window.document;
 
     if (boardUri) {
       document.title = lang(language).titBanners.replace('{$board}', boardUri);
@@ -724,7 +731,7 @@ exports.bannerManagement = function(boardUri, banners, language) {
 
     exports.addBannerCells(document, banners, language);
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -809,7 +816,8 @@ exports.mediaManagement = function(media, pages, parameters, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).mediaManagementPage);
+    var dom = new JSDOM(templateHandler(language).mediaManagementPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titMediaManagement;
 
@@ -817,7 +825,7 @@ exports.mediaManagement = function(media, pages, parameters, language) {
 
     exports.setMediaManagementCells(document, media, language);
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -855,7 +863,8 @@ exports.languages = function(languages, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).languagesManagementPage);
+    var dom = new JSDOM(templateHandler(language).languagesManagementPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titLanguages;
 
@@ -863,7 +872,7 @@ exports.languages = function(languages, language) {
       exports.addLanguageCell(document, languages[i], language);
     }
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
     return error.toString();
@@ -876,7 +885,8 @@ exports.accounts = function(accounts, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).accountsPage);
+    var dom = new JSDOM(templateHandler(language).accountsPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titAccounts;
 
@@ -896,7 +906,7 @@ exports.accounts = function(accounts, language) {
       accountsDiv.appendChild(newCell);
     }
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
     return error.toString();
@@ -933,7 +943,8 @@ exports.accountManagement = function(accountData, account, userRole, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).accountManagementPage);
+    var dom = new JSDOM(templateHandler(language).accountManagementPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titAccountManagement.replace('{$account}',
         account);
@@ -957,7 +968,7 @@ exports.accountManagement = function(accountData, account, userRole, language) {
     document.getElementById('globalRoleLabel').innerHTML = miscOps
         .getGlobalRoleLabel(accountData.globalRole, language);
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
     return error.toString();

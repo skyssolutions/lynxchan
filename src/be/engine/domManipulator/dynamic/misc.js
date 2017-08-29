@@ -2,8 +2,7 @@
 
 // handles miscellaneous pages
 
-var jsdom = require('jsdom').jsdom;
-var serializer = require('jsdom').serializeDocument;
+var JSDOM = require('jsdom').JSDOM;
 var logger = require('../../../logger');
 var debug = require('../../../kernel').debug();
 var overboard;
@@ -46,7 +45,8 @@ exports.error = function(code, message, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).errorPage);
+    var dom = new JSDOM(templateHandler(language).errorPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titError;
 
@@ -54,7 +54,7 @@ exports.error = function(code, message, language) {
 
     document.getElementById('errorLabel').innerHTML = message;
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -68,12 +68,13 @@ exports.resetEmail = function(password, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).resetEmail);
+    var dom = new JSDOM(templateHandler(language).resetEmail);
+    var document = dom.window.document;
 
     var link = document.getElementById('labelNewPass');
     link.innerHTML = password;
 
-    return serializer(document);
+    return dom.serialize();
   } catch (error) {
 
     return error.toString();
@@ -84,12 +85,13 @@ exports.recoveryEmail = function(recoveryLink, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).recoveryEmail);
+    var dom = new JSDOM(templateHandler(language).recoveryEmail);
+    var document = dom.window.document;
 
     var link = document.getElementById('linkRecovery');
     link.href = recoveryLink;
 
-    return serializer(document);
+    return dom.serialize();
   } catch (error) {
 
     return error.toString();
@@ -167,7 +169,8 @@ exports.setTitleLoginAndStaff = function(document, userData, language) {
 exports.account = function(userData, language) {
 
   try {
-    var document = jsdom(templateHandler(language).accountPage);
+    var dom = new JSDOM(templateHandler(language).accountPage);
+    var document = dom.window.document;
 
     exports.setTitleLoginAndStaff(document, userData, language);
 
@@ -184,7 +187,7 @@ exports.account = function(userData, language) {
     exports.fillBoardsDiv(document, document.getElementById('volunteeredDiv'),
         userData.volunteeredBoards);
 
-    return serializer(document);
+    return dom.serialize();
   } catch (error) {
 
     return error.toString();
@@ -209,7 +212,8 @@ exports.logs = function(dates, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).logIndexPage);
+    var dom = new JSDOM(templateHandler(language).logIndexPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titLogs;
 
@@ -224,7 +228,7 @@ exports.logs = function(dates, language) {
       divDates.appendChild(dateCell);
     }
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -364,7 +368,8 @@ exports.setOverboardLinks = function(document) {
 
 exports.boards = function(parameters, boards, pageCount, language) {
   try {
-    var document = jsdom(templateHandler(language).boardsPage);
+    var dom = new JSDOM(templateHandler(language).boardsPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titBoards;
 
@@ -374,7 +379,7 @@ exports.boards = function(parameters, boards, pageCount, language) {
 
     exports.setPages(parameters, document, pageCount);
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -425,13 +430,14 @@ exports.ban = function(ban, board, language) {
       templateToUse = templateHandler(language).banPage;
     }
 
-    var document = jsdom(templateToUse);
+    var dom = new JSDOM(templateToUse);
+    var document = dom.window.document;
 
     document.title = lang(language).titBan;
 
     exports.setBanPage(document, ban, board, language);
 
-    return serializer(document);
+    dom.serialize();
 
   } catch (error) {
 
@@ -471,13 +477,14 @@ exports.hashBan = function(hashBans, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).hashBanPage);
+    var dom = new JSDOM(templateHandler(language).hashBanPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titHashBan;
 
     exports.setHashBanCells(document, hashBans, language);
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -507,7 +514,8 @@ exports.setEditIdentifiers = function(parameters, document) {
 exports.edit = function(parameters, message, language) {
   try {
 
-    var document = jsdom(templateHandler(language).editPage);
+    var dom = new JSDOM(templateHandler(language).editPage);
+    var document = dom.window.document;
 
     document.getElementById('labelMessageLength').innerHTML = messageLength;
 
@@ -520,7 +528,7 @@ exports.edit = function(parameters, message, language) {
 
     exports.setEditIdentifiers(parameters, document);
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -543,7 +551,8 @@ exports.noCookieCaptcha = function(parameters, captchaId, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).noCookieCaptchaPage);
+    var dom = new JSDOM(templateHandler(language).noCookieCaptchaPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titNoCookieCaptcha;
 
@@ -556,7 +565,7 @@ exports.noCookieCaptcha = function(parameters, captchaId, language) {
 
     exports.setCaptchaIdAndImage(document, captchaId);
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -570,7 +579,8 @@ exports.blockBypass = function(valid, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).bypassPage);
+    var dom = new JSDOM(templateHandler(language).bypassPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titBlockbypass;
 
@@ -578,7 +588,7 @@ exports.blockBypass = function(valid, language) {
       common.removeElement(document.getElementById('indicatorValidBypass'));
     }
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -603,7 +613,8 @@ exports.graphs = function(dates, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).graphsIndexPage);
+    var dom = new JSDOM(templateHandler(language).graphsIndexPage);
+    var document = dom.window.document;
 
     document.title = lang(language).titGraphs;
 
@@ -618,7 +629,7 @@ exports.graphs = function(dates, language) {
       divDates.appendChild(dateCell);
     }
 
-    return serializer(document);
+    return dom.serialize();
 
   } catch (error) {
 
@@ -632,7 +643,8 @@ exports.message = function(message, link, language) {
 
   try {
 
-    var document = jsdom(templateHandler(language).messagePage);
+    var dom = new JSDOM(templateHandler(language).messagePage);
+    var document = dom.window.document;
 
     document.title = message;
 
@@ -644,7 +656,7 @@ exports.message = function(message, link, language) {
 
     redirectLink.href = link;
 
-    return serializer(document);
+    return dom.serialize();
   } catch (error) {
 
     return error.toString();

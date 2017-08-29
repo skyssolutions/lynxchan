@@ -6,7 +6,7 @@ var debug = require('../kernel').debug();
 var settingsHandler = require('../settingsHandler');
 var verbose;
 var fs = require('fs');
-var jsdom = require('jsdom').jsdom;
+var JSDOM = require('jsdom').JSDOM;
 var defaultTemplates = {};
 var alternativeTemplates = {};
 
@@ -473,7 +473,7 @@ exports.processPage = function(errors, page, fePath, templateSettings,
 
   templateObject[page.template] = template;
 
-  var document = jsdom(template);
+  var document = new JSDOM(template).window.document;
 
   var error = exports.testPageFields(document, page, errors);
 
@@ -539,7 +539,7 @@ exports.testCell = function(document, cell, fePath, templateSettings,
 
 exports.loadCells = function(errors, fePath, templateSettings, templateObject) {
 
-  var document = jsdom('<html></html>');
+  var document = new JSDOM('<html></html>').window.document;
 
   var cells = exports.getCellTests();
 
