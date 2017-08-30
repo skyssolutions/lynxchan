@@ -253,6 +253,14 @@ exports.getRawIp = function(req) {
 };
 
 // Section 1: Binary search: {
+exports.descriptorClosingHandler = function(error) {
+
+  if (error) {
+    console.log(error);
+  }
+
+};
+
 exports.searchOnDescriptor = function(toMatch, fd, entrySize, comparison,
     parsing, aproximate, first, last, firstIndex, lastIndex, callback) {
 
@@ -262,7 +270,7 @@ exports.searchOnDescriptor = function(toMatch, fd, entrySize, comparison,
       function read(error, readBytes, buffer) {
 
         if (error) {
-          fs.close(fd);
+          fs.close(fd, exports.descriptorClosingHandler);
           callback(error);
         } else {
 
@@ -271,10 +279,10 @@ exports.searchOnDescriptor = function(toMatch, fd, entrySize, comparison,
           var comparisonResult = comparison(toMatch, current);
 
           if (!comparisonResult) {
-            fs.close(fd);
+            fs.close(fd, exports.descriptorClosingHandler);
             callback(null, current);
           } else if (lastIndex - firstIndex < 3) {
-            fs.close(fd);
+            fs.close(fd, exports.descriptorClosingHandler);
             callback(null, aproximate ? current : null);
           } else if (comparisonResult > 0) {
             exports.searchOnDescriptor(toMatch, fd, entrySize, comparison,
@@ -301,13 +309,13 @@ exports.handleEnds = function(lastIndex, buffer, comparison, toMatch, first,
   var lastComparison = comparison(toMatch, last);
 
   if (firstComparison < 0 || lastComparison > 0) {
-    fs.close(fd);
+    fs.close(fd, exports.descriptorClosingHandler);
     callback();
   } else if (!firstComparison) {
-    fs.close(fd);
+    fs.close(fd, exports.descriptorClosingHandler);
     callback(null, first);
   } else if (!lastComparison) {
-    fs.close(fd);
+    fs.close(fd, exports.descriptorClosingHandler);
     callback(null, last);
   } else {
     exports.searchOnDescriptor(toMatch, fd, entrySize, comparison, parsing,
@@ -323,7 +331,7 @@ exports.getFirstAndLastObjects = function(toMatch, fd, entrySize, comparison,
       readBytes, buffer) {
 
     if (error) {
-      fs.close(fd);
+      fs.close(fd, exports.descriptorClosingHandler);
       callback(error);
     } else {
 
@@ -336,10 +344,10 @@ exports.getFirstAndLastObjects = function(toMatch, fd, entrySize, comparison,
           function read(error, readBytes, buffer) {
 
             if (error) {
-              fs.close(fd);
+              fs.close(fd, exports.descriptorClosingHandler);
               callback(error);
             } else if (!readBytes) {
-              fs.close(fd);
+              fs.close(fd, exports.descriptorClosingHandler);
 
               callback();
             } else {
