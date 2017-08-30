@@ -663,3 +663,7 @@ exports.accounts = function(accounts) {
 exports.accountManagement = function(accountData) {
   return JSON.stringify(accountData);
 };
+
+exports.socketData = function(socketData) {
+  return JSON.stringify(socketData);
+};

@@ -66,11 +66,32 @@ exports.handleSocket = function(socket) {
 
 exports.start = function() {
 
+  if (server) {
+    server.close(function closed() {
+      server = null;
+      exports.start();
+    });
+    return;
+  }
+
   fs.unlink(socketLocation, function removedFile(error) {
 
-    if (error && error.code !== 'ENOENT' && verbose) {
-      console.log(error);
+    if (error && error.code !== 'ENOENT') {
+
+      if (verbose) {
+        console.log(error);
+      }
+
+      kernel.broadCastTopDownMessage({
+        socketStatus : true,
+        status : error.message
+      });
+
+      return;
+
     }
+
+    exports.status = null;
 
     // style exception, too simple
     server = net.createServer(function(socket) {
@@ -86,6 +107,11 @@ exports.start = function() {
       } else if (verbose) {
         console.log(error);
       }
+
+      kernel.broadCastTopDownMessage({
+        socketStatus : true,
+        status : error.message
+      });
 
     });
     // style exception, too simple

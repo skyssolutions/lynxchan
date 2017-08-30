@@ -976,3 +976,22 @@ exports.accountManagement = function(accountData, account, userRole, language) {
 
 };
 // } Section 10: Account management
+
+exports.socketData = function(statusData, language) {
+
+  try {
+
+    var dom = new JSDOM(templateHandler(language).socketManagementPage);
+    var document = dom.window.document;
+
+    document.title = lang(language).titSocketManagement;
+
+    document.getElementById('statusLabel').innerHTML = statusData.status;
+
+    return dom.serialize();
+
+  } catch (error) {
+    return error.toString();
+  }
+
+};

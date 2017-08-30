@@ -300,6 +300,10 @@ exports.processTopDownMessage = function(message) {
     reloadFe();
   }
 
+  if (message.socketStatus) {
+    require('./taskListener').status = message.status;
+  }
+
   if (message.shutdown) {
 
     if (cluster.isMaster) {
@@ -348,6 +352,13 @@ function processBottomTopMessage(message) {
       }
     }
 
+  } else if (message.restartSocket) {
+    exports.broadCastTopDownMessage({
+      socketStatus : true
+    });
+
+    require('./taskListener').start();
+
   } else {
     genQueue.queue(message);
   }
@@ -376,6 +387,18 @@ var workerExitCallback = function(worker, code, signal) {
   delete forkTime[worker.id];
 };
 
+function getWorkerLimit() {
+
+  var coreCount = require('os').cpus().length;
+
+  if (debug && coreCount > 2) {
+    return 2;
+  } else {
+    return coreCount;
+  }
+
+}
+
 // after everything is all right, call this function to start the workers
 function bootWorkers() {
 
@@ -390,21 +413,21 @@ function bootWorkers() {
     genQueue.loadUnfinishedMessages();
   }
 
-  var workerLimit;
-
-  var coreCount = require('os').cpus().length;
-
-  if (debug && coreCount > 2) {
-    workerLimit = 2;
-  } else {
-    workerLimit = coreCount;
-  }
+  var workerLimit = getWorkerLimit();
 
   for (var i = 0; i < workerLimit; i++) {
     cluster.fork();
   }
 
+  var bootedWorkers = 0;
+
   cluster.on('fork', function(worker) {
+
+    bootedWorkers++;
+
+    if (workerLimit === bootedWorkers) {
+      require('./taskListener').start();
+    }
 
     forkTime[worker.id] = new Date().getTime();
 
@@ -694,7 +717,6 @@ function initTorControl() {
       throw error;
     } else {
       if (!noDaemon) {
-        require('./taskListener').start();
         require('./scheduleHandler').start();
       } else {
 

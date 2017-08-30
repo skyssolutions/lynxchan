@@ -114,6 +114,7 @@ errDeniedLanguageManagement: error thrown when the user is not allowed to manage
 errDeniedAccountManagement: error thrown when the user is not allowed to manage user accounts.
 errNoAccountDeletionConfirmation: error thrown when the user didn't confirmed he wanted to delete an account.
 errNotAllowedToDeleteAccount: error thrown when the user tries to delete an account he is not allowed to.
+errNotAllowedToManageSocket: error thrown when the user tries to manage the unix socket and is not allowed to.
 guiTypeBan: label used for logs of bans.
 guiTypeBanLift: label used for logs of ban lifts.
 guiTypeDeletion: label used for logs of deletions.
@@ -191,6 +192,7 @@ miscReasonNnull: reason for blank parameter when it is null.
 miscReasonUndefined: reason for blank parameter when it is undefined.
 miscReasonNoLength: reason for blank parameter when it has no length.
 miscDefaultBanMessage: default ban message.
+miscSocketOk: text used to indicate the unix socket is working.
 miscDefaultAnonymous: default name to be used for anonymous posts.
 miscBoardOwner: label for board owner.
 miscBoardVolunteer: label for board volunteer.
@@ -251,6 +253,7 @@ msgLanguageAdded: message displayed after adding a new alternative language.
 msgLanguageDeleted: message displayed after deleting an alternative language.
 msgAccountAdded: message displayed after adding a new account.
 msgAccountDeleted: message displayed after deleting an account.
+msgSocketRestarted: message displayed after restarting the unix socket.
 subPasswordReset: subject of the e-mail informing the new password of the user's account.
 subPasswordRequest: subject of the e-mail of a password reset request.
 subLockedAccount: subject of the e-mail used when the user got his account locked.
@@ -288,3 +291,4 @@ titGraphs: title for the graphs page.
 titLanguages: title for the language management page.
 titAccounts: title for the accounts page.
 titAccountManagement: title for the account management page. Replaces: {$account}.
+titSocketManagement: title for the socket management page.

@@ -1151,5 +1151,26 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::75
+
+Name: socketControl
+
+Description: shows the status of the unix socket. Requires authentication. Restricted to users with global role 0.
+
+JSON output(Object): object containing the following data for the socket status:
+    status: status of the socket.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::76
+
+Name: restartSocket
+
+Description: restarts the unix socket. Requires authentication. Restricted to users with global role 0.
+
+------------------------------------------------------------------------------------------
+
+
+
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

@@ -270,7 +270,7 @@ exports.getPageTests = function() {
         fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
             'reportDiv', 'bansLink', 'rangeBansLink', 'hashBansLink',
             'globalSettingsLink', 'globalBannersLink', 'appealedBansPanel',
-            'languagesLink', 'accountsLink' ]
+            'languagesLink', 'accountsLink', 'socketLink' ]
       },
       {
         template : 'bManagement',
@@ -430,6 +430,10 @@ exports.getPageTests = function() {
       {
         template : 'accountsPage',
         fields : [ 'divAccounts' ]
+      },
+      {
+        template : 'socketManagementPage',
+        fields : [ 'statusLabel' ]
       },
       {
         template : 'accountManagementPage',
