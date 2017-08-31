@@ -358,7 +358,7 @@ exports.getPageTests = function() {
       {
         template : 'editPage',
         fields : [ 'fieldMessage', 'boardIdentifier', 'threadIdentifier',
-            'postIdentifier', 'labelMessageLength' ]
+            'postIdentifier', 'labelMessageLength', 'fieldSubject' ]
       },
       {
         template : 'flagsPage',

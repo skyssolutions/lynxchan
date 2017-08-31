@@ -841,9 +841,10 @@ Description: saves a new message for a posting. Requires authentication. Restric
 
 Parameters:
     boardUri: URI of the board to have a posting edited.
-    message*: new message of the posting. 4096 characters.
+    message*: new message of the posting.
     threadId: id of the thread to be edited.
     postId: id of the post to be edited.
+    subject: new subject of the posting. 128 characters.
 
 ------------------------------------------------------------------------------------------
 

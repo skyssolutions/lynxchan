@@ -20,6 +20,10 @@ var overboard;
 var editArguments = [ {
   field : 'message',
   removeHTML : false
+}, {
+  field : 'subject',
+  length : 128,
+  removeHTML : true
 } ];
 
 exports.loadSettings = function() {
@@ -80,13 +84,16 @@ exports.getPostingToEdit = function(userData, parameters, language, callback) {
       query.boardUri = parameters.boardUri;
 
       // style exception, too simple
-      collectionToUse.findOne(query, function gotPosting(error, posting) {
+      collectionToUse.findOne(query, {
+        subject : 1,
+        message : 1
+      }, function gotPosting(error, posting) {
         if (error) {
           callback(error);
         } else if (!posting) {
           callback(lang(language).errPostingNotFound);
         } else {
-          callback(null, posting.message);
+          callback(null, posting);
         }
       });
       // style exception, too simple
@@ -268,7 +275,8 @@ exports.recordEdit = function(parameters, login, language, callback) {
       lastEditLogin : login,
       hash : parameters.hash,
       markdown : parameters.markdown,
-      message : parameters.message
+      message : parameters.message,
+      subject : parameters.subject || ''
     },
     $unset : {
       innerCache : 1,

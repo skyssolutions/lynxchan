@@ -16,7 +16,7 @@ function getPostingToEdit(userData, parameters, res, auth, language) {
   }
 
   modOps.getPostingToEdit(userData, parameters, language,
-      function gotPostingToEdit(error, message) {
+      function gotPostingToEdit(error, posting) {
         if (error) {
           formOps.outputError(error, 500, res, language);
         } else {
@@ -26,9 +26,9 @@ function getPostingToEdit(userData, parameters, res, auth, language) {
               : 'text/html', auth));
 
           if (json) {
-            res.end(jsonBuilder.edit(message));
+            res.end(jsonBuilder.edit(posting));
           } else {
-            res.end(domManipulator.edit(parameters, message, language));
+            res.end(domManipulator.edit(parameters, posting, language));
           }
 
         }

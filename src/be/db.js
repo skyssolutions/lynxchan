@@ -20,7 +20,7 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 19;
+var maxIndexesSet = 20;
 
 var cachedMessages;
 var cachedLanguages;
@@ -452,6 +452,20 @@ function initPosts(callback) {
   cachedPosts.ensureIndex({
     boardUri : 1,
     threadId : 1
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+
+  cachedPosts.ensureIndex({
+    creation : 1
   }, function setIndex(error, index) {
     if (error) {
       if (loading) {

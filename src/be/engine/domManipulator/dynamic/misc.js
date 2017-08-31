@@ -511,7 +511,7 @@ exports.setEditIdentifiers = function(parameters, document) {
 
 };
 
-exports.edit = function(parameters, message, language) {
+exports.edit = function(parameters, posting, language) {
   try {
 
     var dom = new JSDOM(templateHandler(language).editPage);
@@ -521,7 +521,10 @@ exports.edit = function(parameters, message, language) {
 
     document.title = lang(language).titEdit;
 
-    document.getElementById('fieldMessage').defaultValue = message;
+    document.getElementById('fieldMessage').defaultValue = posting.message;
+
+    document.getElementById('fieldSubject').setAttribute('value',
+        posting.subject);
 
     document.getElementById('boardIdentifier').setAttribute('value',
         parameters.boardUri);

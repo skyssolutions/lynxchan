@@ -568,10 +568,11 @@ exports.ruleManagement = function(rules) {
   return JSON.stringify(rules);
 };
 
-exports.edit = function(message) {
+exports.edit = function(posting) {
 
   return JSON.stringify({
-    message : message
+    message : posting.message,
+    subject : posting.subject
   });
 
 };

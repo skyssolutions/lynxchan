@@ -1599,6 +1599,10 @@ TEM_ID::47
 editPage: page used to edit posts.
 
 Elements:
+fieldSubject:
+    use: have it's value manipulated.
+    description: field with the subject of the post.
+
 fieldMessage:
     use: have it's value manipulated.
     description: text area with the content of the post.
