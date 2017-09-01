@@ -670,7 +670,8 @@ Description: sets the special settings for the board. Requires authentication, a
 Parameters:
     boardUri: board to have its special settings changed.
     specialSettings(Array): array with the desired special settings. May hold the following values:
-        sfw
+        sfw: indicates the board is sfw.
+        locked: indicates the board is locked.
 
 ------------------------------------------------------------------------------------------
 

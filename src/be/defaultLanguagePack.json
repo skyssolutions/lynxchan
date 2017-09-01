@@ -320,5 +320,6 @@
   "titSocketManagement": "Unix socket management",
   "errNotAllowedToManageSocket": "You are not allowed to manage the Unix socket.",
   "msgSocketRestarted": "Unix socket restarted.",
-  "miscSocketOk": "Ok"
+  "miscSocketOk": "Ok",
+  "errLockedBoard": "This board is locked for posting."
 }

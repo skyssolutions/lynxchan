@@ -54,6 +54,8 @@ var transferParameters = [ {
   length : 16
 } ];
 
+exports.validSpecialSettings = [ 'sfw', 'locked' ];
+
 exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
@@ -86,10 +88,6 @@ exports.getValidSettings = function() {
   return [ 'disableIds', 'forceAnonymity', 'allowCode', 'early404', 'unindex',
       'blockDeletion', 'requireThreadFile', 'uniqueFiles', 'uniquePosts',
       'textBoard' ];
-};
-
-exports.getValidSpecialSettings = function() {
-  return [ 'sfw' ];
 };
 
 // Section 1: New settings {

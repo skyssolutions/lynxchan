@@ -14,7 +14,8 @@ var boardModerationIdentifiers = [ 'boardTransferIdentifier',
     'boardDeletionIdentifier', 'specialSettingsIdentifier' ];
 
 var specialSettingsRelation = {
-  sfw : 'checkboxSfw'
+  sfw : 'checkboxSfw',
+  locked : 'checkboxLocked'
 };
 
 exports.loadDependencies = function() {

@@ -49,6 +49,7 @@ boards: stores boards.
     locationFlagMode (Number): indicates the mode for location flags for the board. 0 means no location flags, 1 means that users can opt-out from showing their location and 2 means that users are forced to show their location.
     specialSettings(Array): array of settings that only the global staff are allowed to change. May hold the following values:
         sfw: indicates the board is sfw.
+        locked: indicates the board is locked.
     inactive(Boolean): indicates the board owner is inactive.
 
 ----------------------------------------------------------------------------------------

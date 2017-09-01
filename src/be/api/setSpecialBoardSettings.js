@@ -3,7 +3,6 @@
 var apiOps = require('../engine/apiOps');
 var boardOps = require('../engine/boardOps').meta;
 var mandatoryParameters = [ 'boardUri' ];
-var possibleSettings = boardOps.getValidSpecialSettings();
 
 function setBoardSpecialSettings(auth, userData, parameters, res, language) {
 
@@ -15,11 +14,11 @@ function setBoardSpecialSettings(auth, userData, parameters, res, language) {
 
   var desiredSettings = [];
 
-  for (var i = 0; i < possibleSettings.length; i++) {
+  for (var i = 0; i < boardOps.validSpecialSettings.length; i++) {
 
     var setting = parameters.specialSettings[i];
 
-    if (possibleSettings.indexOf(setting) > -1) {
+    if (boardOps.validSpecialSettings.indexOf(setting) > -1) {
       desiredSettings.push(setting);
     }
 

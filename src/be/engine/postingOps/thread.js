@@ -458,6 +458,28 @@ exports.checkR9K = function(req, userData, parameters, board, callback) {
 
 };
 
+exports.cleanParameters = function(board, parameters, captchaId, req, cb,
+    userData) {
+
+  if (board.settings.indexOf('forceAnonymity') > -1) {
+    parameters.name = null;
+  }
+
+  miscOps.sanitizeStrings(parameters, common.postingParameters);
+
+  parameters.message = common.applyFilters(board.filters, parameters.message);
+
+  captchaOps.attemptCaptcha(captchaId, parameters.captcha, board, req.language,
+      function solvedCaptcha(error) {
+        if (error) {
+          cb(error);
+        } else {
+          exports.checkR9K(req, userData, parameters, board, cb);
+        }
+      });
+
+};
+
 exports.newThread = function(req, userData, parameters, captchaId, cb) {
 
   var noFiles = !parameters.files.length;
@@ -509,30 +531,12 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
       cb(lang(req.language).errTextBoard);
     } else if (requireFile && !textBoard && noFiles) {
       cb(lang(req.language).msgErrThreadFileRequired);
+    } else if (board.specialSettings.indexOf('locked') > -1) {
+      cb(lang(req.language).errLockedBoard);
     } else if (boardLimitError) {
       cb(boardLimitError);
     } else {
-
-      if (board.settings.indexOf('forceAnonymity') > -1) {
-        parameters.name = null;
-      }
-
-      miscOps.sanitizeStrings(parameters, common.postingParameters);
-
-      parameters.message = common.applyFilters(board.filters,
-          parameters.message);
-
-      // style exception, too simple
-      captchaOps.attemptCaptcha(captchaId, parameters.captcha, board,
-          req.language, function solvedCaptcha(error) {
-            if (error) {
-              cb(error);
-            } else {
-              exports.checkR9K(req, userData, parameters, board, cb);
-            }
-          });
-      // style exception, too simple
-
+      exports.cleanParameters(board, parameters, captchaId, req, cb, userData);
     }
   });
 

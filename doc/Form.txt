@@ -637,6 +637,7 @@ Json output(Object): object with the moderation data of the board. Contains the 
     lastSeen(Date): date of when the board owner was last seen.
     specialSettings(Array): array with the board's special settings. May hold the following values:
         sfw: indicates the board is sfw.
+        locked: indicates the board is locked.
 
 ------------------------------------------------------------------------------------------
 
@@ -677,6 +678,7 @@ Json output(Object): object with data regarding the available boards. Contains t
         uniqueIps(Number): how many unique ips posted on the board in the last 24 hours.
         specialSettings(Array): array of the board's special settings. May hold the following values:
             sfw: indicates the board is sfw.
+            locked: indicates the board is locked.
 
 ------------------------------------------------------------------------------------------
 
