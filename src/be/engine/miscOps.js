@@ -12,6 +12,7 @@ var reports = db.reports();
 var reportOps;
 var formOps;
 var CSP;
+var globalBoardModeration;
 var lang;
 var clearIpMinRole;
 
@@ -23,6 +24,7 @@ exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
 
+  globalBoardModeration = settings.allowGlobalBoardModeration;
   CSP = settings.CSP;
   clearIpMinRole = settings.clearIpMinRole;
   verbose = settings.verbose || settings.verboseMisc;
@@ -157,17 +159,23 @@ exports.getAppealedBans = function(userRole, users, reports, callback) {
 
   if (userRole < 3) {
 
-    bans.find({
-      boardUri : {
-        $exists : false
-      },
+    var query = {
       appeal : {
         $exists : true
       },
       denied : {
         $exists : false
       }
-    }, {
+    };
+
+    if (!globalBoardModeration) {
+
+      query.boardUri = {
+        $exists : false
+      };
+    }
+
+    bans.find(query, {
       reason : 1,
       appeal : 1,
       denied : 1,
@@ -228,13 +236,18 @@ exports.getManagementData = function(userRole, language, userLogin,
             callback(error);
           } else {
 
-            // style exception, too simple
-            reports.find({
-              global : true,
+            var query = {
               closedBy : {
                 $exists : false
               }
-            }, {
+            };
+
+            if (!globalBoardModeration) {
+              query.global = true;
+            }
+
+            // style exception, too simple
+            reports.find(query, {
               boardUri : 1,
               reason : 1,
               threadId : 1,

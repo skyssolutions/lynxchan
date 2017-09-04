@@ -524,7 +524,7 @@ exports.edit = function(parameters, posting, language) {
     document.getElementById('fieldMessage').defaultValue = posting.message;
 
     document.getElementById('fieldSubject').setAttribute('value',
-        posting.subject);
+        posting.subject || '');
 
     document.getElementById('boardIdentifier').setAttribute('value',
         parameters.boardUri);

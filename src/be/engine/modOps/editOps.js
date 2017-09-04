@@ -276,7 +276,7 @@ exports.recordEdit = function(parameters, login, language, callback) {
       hash : parameters.hash,
       markdown : parameters.markdown,
       message : parameters.message,
-      subject : parameters.subject || ''
+      subject : parameters.subject
     },
     $unset : {
       innerCache : 1,

@@ -832,6 +832,7 @@ Parameters:
 
 Json output(Object): object with the data pertinent to the post being edited. Contains the following fields:
     message: original message of the posting.
+    subject: original subject of the posting.
 
 ------------------------------------------------------------------------------------------
 

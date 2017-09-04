@@ -19,6 +19,7 @@ var moduleRoot;
 var ipBan;
 var common;
 var captchaOps;
+var globalBoardModeration;
 var lang;
 var allowBlockedToReport;
 
@@ -33,6 +34,7 @@ exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
   multipleReports = settings.multipleReports;
   allowBlockedToReport = settings.allowBlockedToReport;
+  globalBoardModeration = settings.allowGlobalBoardModeration;
 
 };
 
@@ -56,12 +58,14 @@ exports.readClosedReports = function(parameters, callback) {
   var queryBlock = {
     closedBy : {
       $exists : true
-    },
-    global : parameters.boardUri ? false : true
+    }
   };
 
   if (parameters.boardUri) {
     queryBlock.boardUri = parameters.boardUri;
+    queryBlock.global = false;
+  } else if (!globalBoardModeration) {
+    queryBlock.global = true;
   }
 
   reports.find(queryBlock, {
@@ -436,27 +440,28 @@ exports.closeReports = function(userData, parameters, language, callback) {
 // Section 4: Reported content association {
 exports.associateFoundThreads = function(reports, foundThreads) {
 
-  for (var i = 0; i < reports.length; i++) {
+  var association = {};
+
+  for (var i = 0; i < foundThreads.length; i++) {
+    var thread = foundThreads[i];
+    thread.postId = thread.threadId;
+    association[thread.boardUri] = association[thread.boardUri] || {};
+
+    association[thread.boardUri][thread.threadId] = thread;
+
+  }
+
+  for (i = 0; i < reports.length; i++) {
 
     var report = reports[i];
 
-    for (var j = 0; j < foundThreads.length; j++) {
-
-      var thread = foundThreads[j];
-
-      var matches = thread.boardUri === report.boardUri;
-      matches = matches && thread.threadId === report.threadId;
-
-      if (matches && !report.postId) {
-
-        thread.postId = thread.threadId;
-        report.associatedPost = thread;
-        foundThreads.splice(foundThreads.indexOf(thread), 1);
-
-        break;
-      }
-
+    if (report.postId) {
+      continue;
     }
+
+    var boardObject = association[report.boardUri] || {};
+
+    report.associatedPost = boardObject[report.threadId];
 
   }
 
@@ -464,23 +469,27 @@ exports.associateFoundThreads = function(reports, foundThreads) {
 
 exports.associateFoundPosts = function(reports, foundPosts) {
 
-  for (var i = 0; i < reports.length; i++) {
+  var association = {};
+
+  for (var i = 0; i < foundPosts.length; i++) {
+    var post = foundPosts[i];
+    association[post.boardUri] = association[post.boardUri] || {};
+
+    association[post.boardUri][post.postId] = post;
+
+  }
+
+  for (i = 0; i < reports.length; i++) {
 
     var report = reports[i];
 
-    for (var j = 0; j < foundPosts.length; j++) {
-      var post = foundPosts[j];
-
-      var matches = report.boardUri === post.boardUri;
-      matches = matches && report.postId === post.postId;
-
-      if (matches) {
-        report.associatedPost = post;
-        foundPosts.splice(foundPosts.indexOf(post), 1);
-        break;
-      }
-
+    if (!report.postId) {
+      continue;
     }
+
+    var boardObject = association[report.boardUri] || {};
+
+    report.associatedPost = boardObject[report.postId];
 
   }
 

@@ -21,6 +21,7 @@ var torOps;
 var spamOps;
 var common;
 var spamBypass;
+var globalBoardModeration;
 
 exports.loadSettings = function() {
   var settings = require('../../../settingsHandler').getGeneralSettings();
@@ -33,6 +34,7 @@ exports.loadSettings = function() {
   bypassMandatory = settings.bypassMode > 1;
   disableFloodCheck = settings.disableFloodCheck;
   spamBypass = settings.allowSpamBypass;
+  globalBoardModeration = settings.allowGlobalBoardModeration;
 
 };
 
@@ -56,11 +58,16 @@ exports.readBans = function(parameters, callback) {
     },
     expiration : {
       $gt : new Date()
-    },
-    boardUri : parameters.boardUri ? parameters.boardUri : {
-      $exists : false
     }
   };
+
+  if (parameters.boardUri) {
+    queryBlock.boardUri = parameters.boardUri;
+  } else if (!globalBoardModeration) {
+    queryBlock.boardUri = {
+      $exists : false
+    };
+  }
 
   bans.find(queryBlock, {
     reason : 1,
