@@ -214,7 +214,7 @@ exports.sanitizeBoardTags = function(tags) {
   var toRet = [];
 
   var replaceFunction = function replace(match) {
-    return miscOps.replaceTable[match];
+    return miscOps.htmlReplaceTable[match];
   };
 
   for (var i = 0; i < tags.length && toRet.length < maxBoardTags; i++) {
