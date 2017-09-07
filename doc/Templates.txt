@@ -1842,10 +1842,6 @@ checkboxFrontPageStats:
     use: might be turned on.
     description: indicates if total posts on existing boards and total unique ip count should be displayed on the front-page.
 
-checkboxSsl:
-    use: might be turned on.
-    description: indicates the server has ssl enabled.
-
 checkboxDisableCatalogPosting:
   use: might be turned on.
   description: indicates if thread creation from the catalog is disabled.
@@ -1889,6 +1885,10 @@ comboBoardCreationRequirement:
 comboMinClearIpRole:
     use: have children appended to it.
     description: indicates the minimum global role required so user are able to see clear ips from users.
+
+comboSsl:
+    use: have children appended to it.
+    description: indicates the ssl mode being used.
 
 fieldThumbExtension:
     use: have it's value manipulated.

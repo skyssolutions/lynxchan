@@ -7,9 +7,11 @@
 var kernel = require('./kernel');
 var settingsHandler = require('./settingsHandler');
 var settings = settingsHandler.getGeneralSettings();
+var forcedSsl = settings.ssl > 1;
 var verbose = settings.verbose || settings.verboseMisc;
 var cluster = require('cluster');
 var fs = require('fs');
+var url = require('url');
 var requestHandler;
 var servers = [];
 var stoppedServers = 0;
@@ -142,10 +144,25 @@ function startListening() {
     startTorPort();
   }
 
-  var server = require('http').createServer(function(req, res) {
-    main(req, res);
+  var server = require('http').createServer(
+      function(req, res) {
 
-  }).listen(settings.port, settings.address);
+        if (forcedSsl) {
+
+          var parsedData = url.parse('http://' + req.headers.host);
+
+          var header = [ [ 'Location',
+              'https://' + parsedData.hostname + req.url ] ];
+
+          res.writeHead(302, header);
+
+          res.end();
+
+          return;
+        }
+
+        main(req, res);
+      }).listen(settings.port, settings.address);
 
   servers.push(server);
 

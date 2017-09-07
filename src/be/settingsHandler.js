@@ -510,6 +510,7 @@ exports.getDefaultSettings = function() {
     bypassMaxPosts : 30,
     bypassDurationHours : 24,
     bypassMode : 0,
+    ssl : 0,
     rssDomain : '',
     slaves : [],
     messageLength : 4096,

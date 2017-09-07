@@ -381,7 +381,7 @@ exports.getPageTests = function() {
             'checkboxMultipleReports', 'fieldMaster', 'checkboxAutoPruneFiles',
             'checkboxDisableAccountCreation', 'comboBoardCreationRequirement',
             'fieldMaxTags', 'fieldGlobalLatestImages', 'fieldTorPort',
-            'checkboxDisableFloodCheck', 'checkboxSsl', 'fieldSfwOverboard',
+            'checkboxDisableFloodCheck', 'comboSsl', 'fieldSfwOverboard',
             'fieldThumbExtension', 'fieldSslPass', 'checkboxFrontPageStats',
             'checkboxGlobalBoardModeration', 'checkboxGlobalBanners',
             'checkboxAllowCustomJs', 'fieldGlobalLatestPosts', 'fieldSlaves',

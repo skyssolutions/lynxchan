@@ -594,10 +594,6 @@ exports.getParametersArray = function(language) {
     element : 'checkboxMultipleReports'
   }, {
     type : 'boolean',
-    setting : 'ssl',
-    element : 'checkboxSsl'
-  }, {
-    type : 'boolean',
     setting : 'forceCaptcha',
     element : 'checkboxGlobalCaptcha'
   }, {
@@ -627,6 +623,12 @@ exports.getParametersArray = function(language) {
     options : lang(language).guiBypassModes,
     setting : 'bypassMode',
     element : 'comboBypassMode'
+  }, {
+    type : 'range',
+    limit : 2,
+    options : lang(language).guiBypassModes,
+    setting : 'ssl',
+    element : 'comboSsl'
   }, {
     type : 'range',
     limit : 2,
