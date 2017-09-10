@@ -32,6 +32,12 @@ var banArguments = [ {
   removeHTML : true
 } ];
 
+var massBanArguments = [ {
+  field : 'reason',
+  length : 256,
+  removeHTML : true
+} ];
+
 var regexRelation = {
   FullYear : new RegExp(/(\d+)y/),
   Month : new RegExp(/(\d+)M/),
@@ -689,3 +695,52 @@ exports.denyAppeal = function(userData, banId, language, callback) {
 
 };
 // } Section 3: Deny appeal
+
+// Section 4: Mass ban {
+exports.getMassBans = function(parameters, userLogin) {
+
+  var toRet = [];
+
+  exports.parseExpiration(parameters);
+
+  for (var i = 0; i < parameters.ips.length; i++) {
+
+    var ip = logger.convertIpToArray(parameters.ips[i].toString().trim());
+
+    if (!ip) {
+      continue;
+    }
+
+    toRet.push({
+      appliedBy : userLogin,
+      reason : parameters.reason,
+      expiration : parameters.expiration,
+      ip : ip
+    });
+
+  }
+
+  return toRet;
+
+};
+
+exports.massBan = function(userData, parameters, language, callback) {
+
+  if (userData.globalRole > 1) {
+    callback(lang(language).errNotAllowedToMassBan);
+    return;
+  }
+
+  miscOps.sanitizeStrings(parameters, massBanArguments);
+
+  var banList = exports.getMassBans(parameters, userData.login);
+
+  if (!banList.length) {
+    callback();
+    return;
+  }
+
+  bans.insertMany(banList, callback);
+
+};
+// } Section 4: Mass ban

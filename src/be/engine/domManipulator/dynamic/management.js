@@ -406,6 +406,7 @@ exports.processHideableElements = function(document, userRole, staff, lang) {
         staff, lang);
   } else {
     common.removeElement(document.getElementById('addStaffForm'));
+    common.removeElement(document.getElementById('massBanPanel'));
     common.removeElement(document.getElementById('divStaff'));
   }
 

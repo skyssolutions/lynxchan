@@ -116,6 +116,7 @@ errDeniedAccountManagement: error thrown when the user is not allowed to manage 
 errNoAccountDeletionConfirmation: error thrown when the user didn't confirmed he wanted to delete an account.
 errNotAllowedToDeleteAccount: error thrown when the user tries to delete an account he is not allowed to.
 errNotAllowedToManageSocket: error thrown when the user tries to manage the unix socket and is not allowed to.
+errNotAllowedToMassBan: error thrown when the user tries to mass ban ips and is not allowed to.
 guiTypeBan: label used for logs of bans.
 guiTypeBanLift: label used for logs of ban lifts.
 guiTypeDeletion: label used for logs of deletions.
@@ -255,6 +256,7 @@ msgLanguageDeleted: message displayed after deleting an alternative language.
 msgAccountAdded: message displayed after adding a new account.
 msgAccountDeleted: message displayed after deleting an account.
 msgSocketRestarted: message displayed after restarting the unix socket.
+msgMassBanned: message displayed after mass banning ips.
 subPasswordReset: subject of the e-mail informing the new password of the user's account.
 subPasswordRequest: subject of the e-mail of a password reset request.
 subLockedAccount: subject of the e-mail used when the user got his account locked.

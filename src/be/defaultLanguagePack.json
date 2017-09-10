@@ -321,5 +321,7 @@
   "errNotAllowedToManageSocket": "You are not allowed to manage the Unix socket.",
   "msgSocketRestarted": "Unix socket restarted.",
   "miscSocketOk": "Ok",
-  "errLockedBoard": "This board is locked for posting."
+  "errLockedBoard": "This board is locked for posting.",
+  "msgMassBanned": "Mass ban applied.",
+  "errNotAllowedToMassBan": "You are not allowed to mass ban."
 }

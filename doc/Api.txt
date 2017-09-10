@@ -756,6 +756,19 @@ Description: restarts the unix socket. Requires authentication. Restricted to us
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::53
+
+Name: massBan
+
+Description: applies a ban to several ips. Requires authentication. Reserved for users with global role lesser than 2.
+
+Parameters:
+    ips(Array)*: ips in cleartext to be banned.
+    reason: reason for the ban.
+    duration: duration of the ban. Defaults to 5 years. See the back-end readme for details.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters
 **: exclusive funcionality to the json api.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

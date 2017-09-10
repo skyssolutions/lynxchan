@@ -270,7 +270,7 @@ exports.getPageTests = function() {
         fields : [ 'divStaff', 'userLabel', 'addStaffForm', 'newStaffCombo',
             'reportDiv', 'bansLink', 'rangeBansLink', 'hashBansLink',
             'globalSettingsLink', 'globalBannersLink', 'appealedBansPanel',
-            'languagesLink', 'accountsLink', 'socketLink' ]
+            'languagesLink', 'accountsLink', 'socketLink', 'massBanPanel' ]
       },
       {
         template : 'bManagement',

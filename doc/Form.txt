@@ -1150,7 +1150,7 @@ Name: deleteAccount
 Description: deletes an account after transfering any owned board to the user deleting the account. Requires authentication. Reserved for users with global role lesser than 2.
 
 Parameters:
-    account: login of the account to be deleted.
+    account*: login of the account to be deleted.
     confirmation(Boolean): if not informed as a boolean true, the operation will not be executed.
 
 ------------------------------------------------------------------------------------------
@@ -1174,7 +1174,18 @@ Description: restarts the unix socket. Requires authentication. Restricted to us
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::77
 
+Name: massBan
+
+Description: applies a ban to several ips. Requires authentication. Reserved for users with global role lesser than 2.
+
+Parameters:
+    ips(Array)*: ips in cleartext to be banned.
+    reason: reason for the ban.
+    duration: duration of the ban. Defaults to 5 years. See the back-end readme for details.
+
+------------------------------------------------------------------------------------------
 
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.
