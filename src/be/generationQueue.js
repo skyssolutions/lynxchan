@@ -59,6 +59,7 @@ var kernel = require('./kernel');
 var debug = kernel.debug();
 var feDebug = kernel.feDebug();
 var generator = require('./engine/generator');
+var degenerator = require('./engine/degenerator');
 var http = require('http');
 var db = require('./db');
 var rebuildMessages = db.messages();
@@ -68,6 +69,7 @@ var currentSlave = 0;
 var concurrentMessages = 0;
 var MAX_TRIES = 4;
 var maxConcurrentMessages = settings.concurrentRebuildMessages;
+var preemptive = settings.preemptiveCaching;
 
 exports.loadUnfinishedMessages = function() {
 
@@ -88,8 +90,10 @@ exports.loadUnfinishedMessages = function() {
 
 exports.reload = function() {
   generator = require('./engine/generator');
+  degenerator = require('./engine/degenerator');
   settings = require('./settingsHandler').getGeneralSettings();
   verbose = settings.verbose || settings.verboseQueue;
+  preemptive = settings.preemptiveCaching;
   maxConcurrentMessages = settings.concurrentRebuildMessages;
 };
 
@@ -373,6 +377,53 @@ function getNextQueueItem() {
   return queueArray.splice(lowestIndex, 1)[0];
 }
 
+function deleteCacheForBoards(message, callback) {
+
+  if (message.preview) {
+    degenerator.previews.preview(message.board, message.thread, message.post,
+        callback);
+  } else if (message.buildAll) {
+    degenerator.board.board(message.board, true, true, callback);
+  } else if (message.catalog) {
+    degenerator.board.catalog(message.board, callback);
+  } else if (message.rules) {
+    degenerator.board.rules(message.board, callback);
+  } else if (!message.page && !message.thread) {
+    degenerator.board.board(message.board, false, false, callback);
+  } else if (message.page) {
+    degenerator.board.page(message.board, message.page, callback);
+  } else {
+    degenerator.board.thread(message.board, message.thread, callback);
+  }
+
+}
+
+exports.deleteCache = function(message, callback) {
+
+  if (message.globalRebuild) {
+    degenerator.all(callback);
+  } else if (message.log) {
+
+    if (message.date) {
+      degenerator.global.log(new Date(message.date), callback);
+    } else {
+      degenerator.global.logs(callback);
+    }
+
+  } else if (message.overboard) {
+    degenerator.global.overboard(callback);
+  } else if (message.allBoards) {
+    degenerator.board.boards(callback);
+  } else if (message.frontPage) {
+    degenerator.global.frontPage(callback);
+  } else if (message.login) {
+    degenerator.global.login(callback);
+  } else {
+    deleteCacheForBoards(message, callback);
+  }
+
+};
+
 function processQueue() {
 
   if (!queueArray.length || kernel.shuttingDown) {
@@ -395,7 +446,9 @@ function processQueue() {
     handleRequestResult(error, message);
   };
 
-  if (settings.slaves.length) {
+  if (!preemptive) {
+    exports.deleteCache(message, generationCallBack);
+  } else if (settings.slaves.length) {
     sendMessageByHttp(message, generationCallBack);
   } else {
     exports.processMessage(message, generationCallBack);

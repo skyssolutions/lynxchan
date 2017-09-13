@@ -455,7 +455,7 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
 };
 // } Section 1.1.2: Board page
 
-// Section 1.1..3: Catalog {
+// Section 1.1.3: Catalog {
 exports.buildCatalogJsonAndRss = function(boardData, threads, callback) {
 
   jsonBuilder.catalog(boardData.boardUri, threads,

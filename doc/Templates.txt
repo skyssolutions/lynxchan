@@ -1847,8 +1847,8 @@ checkboxFrontPageStats:
     description: indicates if total posts on existing boards and total unique ip count should be displayed on the front-page.
 
 checkboxDisableCatalogPosting:
-  use: might be turned on.
-  description: indicates if thread creation from the catalog is disabled.
+    use: might be turned on.
+    description: indicates if thread creation from the catalog is disabled.
 
 checkboxMediaThumb:
     use: might be turned on.
@@ -2017,6 +2017,10 @@ checkboxVerboseStatic:
 checkboxVerboseApis:
     use: might be turned on.
     description: checkbox that indicates if the verbose apis mode is on.
+
+checkboxPreemptiveCaching:
+    use: might be turned on.
+    description: checkbox that indicates if the preemptive caching is on.
 
 ------------------------------------------------------------------------------------------
 

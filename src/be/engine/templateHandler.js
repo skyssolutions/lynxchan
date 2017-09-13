@@ -397,7 +397,7 @@ exports.getPageTests = function() {
             'checkboxVerboseQueue', 'checkboxVerboseGridfs',
             'checkboxVerboseStatic', 'checkboxVerboseApis',
             'fieldIncrementalSpamIpsSource', 'fieldFlagNameLength',
-            'checkboxBlockedReport' ]
+            'checkboxBlockedReport', 'checkboxPreemptiveCaching' ]
       },
       {
         template : 'hashBanPage',

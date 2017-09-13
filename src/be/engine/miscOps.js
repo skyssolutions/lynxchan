@@ -617,6 +617,10 @@ exports.getParametersArray = function(language) {
     setting : 'useAlternativeLanguages',
     element : 'checkboxUseAlternativeLanguages'
   }, {
+    type : 'boolean',
+    setting : 'preemptiveCaching',
+    element : 'checkboxPreemptiveCaching'
+  }, {
     // range
     type : 'range',
     limit : 2,
