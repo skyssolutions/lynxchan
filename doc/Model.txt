@@ -338,6 +338,12 @@ languages: stores alternative languages.
 
 ----------------------------------------------------------------------------------------
 
+cacheLocks: controls on the fly cache rebuilding.
+  fileName: file being rebuilt.
+  expiration(Date): when this lock will expire.
+
+----------------------------------------------------------------------------------------
+
 *: duplicated data, foreign key.
 **: unique key
 ***:part of a unique key combination.

@@ -20,9 +20,10 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 20;
+var maxIndexesSet = 22;
 
 var cachedMessages;
+var cachedCacheLocks;
 var cachedLanguages;
 var cachedUploadReferences;
 var cachedLatestImages;
@@ -610,6 +611,40 @@ function initStats(callback) {
   });
 }
 
+function initCacheLocks(callback) {
+
+  cachedCacheLocks.ensureIndex({
+    fileName : 1
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+
+  });
+
+  cachedCacheLocks.ensureIndex({
+    expiration : 1
+  }, {
+    expireAfterSeconds : 0
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+
+  });
+
+}
+
 function initFiles(callback) {
 
   cachedFiles.ensureIndex({
@@ -632,6 +667,10 @@ function initFiles(callback) {
 // start of getters
 exports.messages = function() {
   return cachedMessages;
+};
+
+exports.cacheLocks = function() {
+  return cachedCacheLocks;
 };
 
 exports.languages = function() {
@@ -757,6 +796,8 @@ function initGlobalIndexes(callback) {
 
   initUploadReferences(callback);
 
+  initCacheLocks(callback);
+
   initFiles(callback);
 
 }
@@ -812,6 +853,7 @@ function initGlobalIndexedCollections(callback) {
   cachedUsers = cachedDb.collection('users');
   cachedUploadReferences = cachedDb.collection('uploadReferences');
   cachedFiles = cachedDb.collection('fs.files');
+  cachedCacheLocks = cachedDb.collection('cachedLocks');
 
   initBoardIndexedCollections(callback);
 

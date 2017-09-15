@@ -5,6 +5,10 @@
 var fs = require('fs');
 var db = require('../db');
 var files = db.files();
+var boards = db.boards();
+var cacheLocks = db.cacheLocks();
+var generator;
+var preemptiveCache;
 var chunks = db.chunks();
 var bucket = new (require('mongodb')).GridFSBucket(db.conn());
 var disable304;
@@ -19,6 +23,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  preemptiveCache = settings.preemptiveCaching;
   disable304 = settings.disable304;
   verbose = settings.verbose || settings.verboseGridfs;
   alternativeLanguages = settings.useAlternativeLanguages;
@@ -26,6 +31,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
   miscOps = require('./miscOps');
+  generator = require('./generator');
 };
 
 exports.removeDuplicates = function(uploadStream, callback) {
@@ -185,36 +191,17 @@ exports.writeFile = function(path, dest, mime, meta, callback) {
 
 };
 
-exports.removeFiles = function(name, callback) {
+exports.removeCacheLocks = function(ids, names, callback) {
 
-  if (typeof (name) === 'string') {
-    name = [ name ];
-  }
-
-  files.aggregate([ {
-    $match : {
-      filename : {
-        $in : name
-      }
+  cacheLocks.removeMany({
+    fileName : {
+      $in : names
     }
-  }, {
-    $group : {
-      _id : 0,
-      ids : {
-        $push : '$_id'
-      }
-    }
-  } ], function gotFiles(error, results) {
+  }, function removedLocks(error) {
 
     if (error) {
-      if (callback) {
-        callback();
-      }
-    } else if (!results.length) {
-      callback();
+      callback(error);
     } else {
-
-      var ids = results[0].ids;
 
       // style exception, too simple
       chunks.removeMany({
@@ -237,6 +224,47 @@ exports.removeFiles = function(name, callback) {
 
       });
       // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.removeFiles = function(name, callback) {
+
+  if (typeof (name) === 'string') {
+    name = [ name ];
+  }
+
+  files.aggregate([ {
+    $match : {
+      filename : {
+        $in : name
+      }
+    }
+  }, {
+    $group : {
+      _id : 0,
+      ids : {
+        $push : '$_id'
+      },
+      names : {
+        $push : '$filename'
+      }
+    }
+  } ], function gotFiles(error, results) {
+
+    if (error) {
+      if (callback) {
+        callback();
+      }
+    } else if (!results.length) {
+      callback();
+    } else {
+
+      exports.removeCacheLocks(results[0].ids, results[0].names, callback);
+
     }
 
   });
@@ -529,9 +557,130 @@ exports.pickFile = function(fileRequested, req, res, cookies, possibleFiles,
 
 };
 
+// Cache rebuild
+exports.checkThreadPageCache = function(boardData, fileParts, callback) {
+
+  callback(null, true);
+
+};
+
+exports.checkBoardPageCache = function(boardData, fileParts, callback) {
+
+  if (fileParts.length > 3) {
+    exports.checkThreadPageCache(boardData, fileParts, callback);
+    return;
+  }
+
+  var matches = fileParts[2].match(/^(\d+)\.(html|json)$/);
+
+  if (matches) {
+    generator.board.page(fileParts[1], +matches[1], callback, boardData);
+  } else {
+    exports.checkThreadPageCache(boardData, fileParts, callback);
+  }
+
+};
+
+exports.checkBoardCacheContent = function(fileParts, callback) {
+
+  boards.findOne({
+    boardUri : fileParts[1]
+  }, generator.board.boardProjection, function gotBoard(error, board) {
+
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(null, true);
+    } else {
+
+      if (!fileParts[2]) {
+        generator.board.page(fileParts[1], 1, callback, board);
+        return;
+
+      } else {
+        exports.checkBoardPageCache(board, fileParts, callback);
+      }
+
+    }
+
+  });
+
+};
+
+exports.checkGlobalCacheContent = function(fileParts, callback) {
+
+  // TODO
+  callback(null, true);
+
+};
+
+exports.checkCacheContent = function(file, callback) {
+
+  var fileParts = (file || '').split('/');
+
+  if (!fileParts[1] || /\W/.test(fileParts[1])) {
+    exports.checkGlobalCacheContent(fileParts, callback);
+  } else {
+    exports.checkBoardCacheContent(fileParts, callback);
+  }
+
+};
+
+exports.checkCache = function(file, req, res, cookies, attempts, retry,
+    callback) {
+
+  var expiration = new Date();
+  expiration.setUTCSeconds(expiration.getUTCSeconds() + 5);
+
+  cacheLocks.findOneAndUpdate({
+    fileName : file
+  }, {
+    $set : {
+      fileName : file,
+      expiration : expiration
+    }
+  }, {
+    upsert : true
+  }, function gotLock(error, result) {
+
+    if (error) {
+      callback(error);
+    } else if (!result.value || result.value.expiration < new Date()) {
+
+      // style exception, too simple
+      exports.checkCacheContent(file, function checkedCache(error, notFound) {
+
+        if (error) {
+          callback(error);
+        } else if (notFound) {
+          exports.outputFile('/404.html', req, res, callback, cookies, false,
+              true);
+        } else {
+          exports.outputFile(file, req, res, callback, cookies, retry, false,
+              attempts + 1);
+        }
+
+      });
+      // style exception, too simple
+
+    } else {
+
+      setTimeout(function() {
+        exports.outputFile(file, req, res, callback, cookies);
+      }, 500);
+
+    }
+
+  });
+};
+// Cache rebuild
+
 // retry means it has already failed to get a page and now is trying to get the
 // 404 page. It prevents infinite recursion
-exports.outputFile = function(file, req, res, callback, cookies, retry) {
+exports.outputFile = function(file, req, res, callback, cookies, retry,
+    triedCache, attempts) {
+
+  attempts = attempts || 0;
 
   if (verbose) {
     console.log('Outputting \'' + file + '\' from gridfs');
@@ -561,24 +710,29 @@ exports.outputFile = function(file, req, res, callback, cookies, retry) {
     }, {
       filename : file
     } ]
-  }).toArray(function gotFiles(error, possibleFiles) {
+  }).toArray(
+      function gotFiles(error, possibleFiles) {
 
-    if (error) {
-      callback(error);
-    } else if (!possibleFiles.length) {
+        if (error) {
+          callback(error);
+        } else if (!possibleFiles.length) {
 
-      if (retry) {
-        callback({
-          code : 'ENOENT'
-        });
-      } else {
-        exports.outputFile('/404.html', req, res, callback, cookies, true);
-      }
+          if (!triedCache && !preemptiveCache && attempts < 10) {
+            exports.checkCache(file, req, res, cookies, attempts, retry,
+                callback);
+          } else if (retry) {
+            callback({
+              code : 'ENOENT'
+            });
+          } else {
+            exports.outputFile('/404.html', req, res, callback, cookies, true,
+                triedCache);
+          }
 
-    } else {
-      exports.pickFile(file, req, res, cookies, possibleFiles, callback);
-    }
-  });
+        } else {
+          exports.pickFile(file, req, res, cookies, possibleFiles, callback);
+        }
+      });
 
 };
 // end of outputting file

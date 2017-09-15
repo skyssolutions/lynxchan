@@ -443,8 +443,11 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
     lastBump : -1
   }).skip(toSkip).limit(pageSize).toArray(
       function gotThreads(error, threadsArray) {
-        if (error) {
-          callback(error);
+
+        var skipPage = threadsArray && page !== 1 && !threadsArray.length;
+
+        if (error || skipPage) {
+          callback(error, skipPage);
         } else {
 
           exports.updateThreadsPage(boardUri, page, threadsArray, pageCount,

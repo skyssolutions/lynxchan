@@ -521,6 +521,9 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
     var requireFile = board ? board.settings.indexOf('requireThreadFile') > -1
         : null;
 
+    var locked = board && board.specialSettings;
+    locked = locked && board.specialSettings.indexOf('locked') > -1;
+
     if (error) {
       cb(error);
     } else if (!board) {
@@ -531,7 +534,7 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
       cb(lang(req.language).errTextBoard);
     } else if (requireFile && !textBoard && noFiles) {
       cb(lang(req.language).msgErrThreadFileRequired);
-    } else if (board.specialSettings.indexOf('locked') > -1) {
+    } else if (locked) {
       cb(lang(req.language).errLockedBoard);
     } else if (boardLimitError) {
       cb(boardLimitError);
