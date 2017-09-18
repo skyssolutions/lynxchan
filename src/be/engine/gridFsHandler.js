@@ -15,10 +15,14 @@ var chunks = db.chunks();
 var bucket = new (require('mongodb')).GridFSBucket(db.conn());
 var disable304;
 var verbose;
+var overboard;
+var overboardSFW;
 var alternativeLanguages;
 var miscOps;
 var zlib = require('zlib');
 
+var overboardPages;
+var overboardAlternativePages = [ '1.json', 'index.rss', '' ];
 var catalogPages = [ 'catalog.html', 'catalog.json', 'index.rss' ];
 var rulesPages = [ 'rules.html', 'rules.json' ];
 
@@ -27,6 +31,16 @@ var permanentTypes = [ 'media', 'graph' ];
 exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
+
+  overboardPages = [];
+
+  if (settings.overboard) {
+    overboardPages.push(settings.overboard);
+  }
+
+  if (settings.sfwOverboard) {
+    overboardPages.push(settings.sfwOverboard);
+  }
 
   preemptiveCache = settings.preemptiveCaching;
   disable304 = settings.disable304;
@@ -654,6 +668,16 @@ exports.generateCache = function(lockData, callback) {
     break;
   }
 
+  case 'index': {
+    generator.global.frontPage(callback);
+    break;
+  }
+
+  case 'overboard': {
+    generator.global.overboard(callback);
+    break;
+  }
+
   default: {
     console.log('Warning: unknown lock type ' + lockData.type);
     callback(null, true);
@@ -685,7 +709,33 @@ exports.getThreadOrPreviewLockData = function(fileParts) {
 };
 
 exports.getGlobalLockData = function(fileParts) {
-  // TODO
+
+  // TODO logs
+
+  if (fileParts.length !== 2) {
+    return;
+  }
+
+  if (!fileParts[1] || fileParts[1] === 'index.json') {
+    return {
+      type : 'index'
+    };
+  }
+
+};
+
+exports.getOverboardLockData = function(fileParts) {
+
+  if (fileParts.length > 3) {
+    return;
+  }
+
+  if (overboardAlternativePages.indexOf(fileParts[2]) > -1) {
+    return {
+      type : 'overboard'
+    };
+  }
+
 };
 
 exports.getLockData = function(file) {
@@ -694,6 +744,8 @@ exports.getLockData = function(file) {
 
   if (!fileParts[1] || /\W/.test(fileParts[1])) {
     return exports.getGlobalLockData(fileParts);
+  } else if (overboardPages.indexOf(fileParts[1]) > -1) {
+    return exports.getOverboardLockData(fileParts);
   } else {
 
     if (fileParts.length === 4) {
@@ -784,7 +836,8 @@ exports.waitForUnlock = function(file, req, res, callback, cookies, lockData,
       callback(error);
     } else if (foundLock) {
       setTimeout(function() {
-        exports.waitForUnlock(file, req, res, callback, cookies, ++attempts);
+        exports.waitForUnlock(file, req, res, callback, cookies, lockData,
+            ++attempts);
       }, 500);
     } else {
       exports.outputFile(file, req, res, callback, cookies);

@@ -21,223 +21,17 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
   gridFsHandler = require('../gridFsHandler');
-  exports.notFound = require('../generator').global.notFound;
-};
 
-exports.maintenance = function(callback) {
+  var generator = require('../generator').global;
 
-  files.aggregate([ {
-    $match : {
-      $or : [ {
-        filename : '/maintenance.html'
-      }, {
-        'metadata.referenceFile' : '/maintenance.html'
-      } ]
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
-
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
-    }
-
-  });
-
-};
-
-exports.login = function(callback) {
-
-  files.aggregate([ {
-    $match : {
-      $or : [ {
-        filename : '/login.html'
-      }, {
-        'metadata.referenceFile' : '/login.html'
-      } ]
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
-
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
-    }
-
-  });
-
-};
-
-exports.audioThumb = function(callback) {
-
-  files.aggregate([ {
-    $match : {
-      $or : [ {
-        filename : kernel.genericAudioThumb()
-      }, {
-        'metadata.referenceFile' : kernel.genericAudioThumb()
-      } ]
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
-
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
-    }
-
-  });
-
-};
-
-exports.spoiler = function(callback) {
-
-  files.aggregate([ {
-    $match : {
-      $or : [ {
-        filename : kernel.spoilerImage()
-      }, {
-        'metadata.referenceFile' : kernel.spoilerImage()
-      } ]
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
-
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
-    }
-
-  });
-
-};
-
-exports.defaultBanner = function(callback) {
-
-  files.aggregate([ {
-    $match : {
-      $or : [ {
-        filename : kernel.defaultBanner()
-      }, {
-        'metadata.referenceFile' : kernel.defaultBanner()
-      } ]
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
-
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
-    }
-
-  });
-
-};
-
-exports.maintenanceImage = function(callback) {
-
-  files.aggregate([ {
-    $match : {
-      $or : [ {
-        filename : kernel.maintenanceImage()
-      }, {
-        'metadata.referenceFile' : kernel.maintenanceImage()
-      } ]
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
-
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
-    }
-
-  });
-
-};
-
-exports.thumb = function(callback) {
-
-  files.aggregate([ {
-    $match : {
-      $or : [ {
-        filename : kernel.genericThumb()
-      }, {
-        'metadata.referenceFile' : kernel.genericThumb()
-      } ]
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
-
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
-    }
-
-  });
+  exports.maintenance = generator.maintenance;
+  exports.login = generator.login;
+  exports.audioThumb = generator.audioThumb;
+  exports.spoiler = generator.spoiler;
+  exports.defaultBanner = generator.defaultBanner;
+  exports.maintenanceImage = generator.maintenanceImage;
+  exports.thumb = generator.thumb;
+  exports.notFound = generator.notFound;
 
 };
 
@@ -284,10 +78,14 @@ exports.overboard = function(callback) {
 
   if (overboardSFW) {
     paths.push('/' + overboardSFW + '/');
+    paths.push('/' + overboardSFW + '/index.rss');
+    paths.push('/' + overboardSFW + '/1.json');
   }
 
   if (overboard) {
     paths.push('/' + overboard + '/');
+    paths.push('/' + overboard + '/index.rss');
+    paths.push('/' + overboard + '/1.json');
   }
 
   if (!paths.length) {

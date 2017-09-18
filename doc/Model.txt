@@ -348,6 +348,8 @@ cacheLocks: controls on the fly cache rebuilding.
         rules
         preview
         thread
+        index
+        overboard
 
 ----------------------------------------------------------------------------------------
 
