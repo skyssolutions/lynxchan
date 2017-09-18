@@ -684,13 +684,16 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
 
     var textBoard = board ? board.settings.indexOf('textBoard') > -1 : null;
 
+    var locked = board && board.specialSettings;
+    locked = locked && board.specialSettings.indexOf('locked') > -1;
+
     if (error) {
       callback(error);
     } else if (!board) {
       callback(lang(req.language).errBoardNotFound);
     } else if (textBoard && parameters.files.length) {
       callback(lang(req.language).errTextBoard);
-    } else if (board.specialSettings.indexOf('locked') > -1) {
+    } else if (locked) {
       callback(lang(req.language).errLockedBoard);
     } else if (boardLimitError) {
       callback(boardLimitError);

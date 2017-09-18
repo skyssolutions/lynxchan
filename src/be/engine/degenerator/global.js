@@ -21,6 +21,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
   gridFsHandler = require('../gridFsHandler');
+  exports.notFound = require('../generator').global.notFound;
 };
 
 exports.maintenance = function(callback) {
@@ -217,37 +218,6 @@ exports.thumb = function(callback) {
         filename : kernel.genericThumb()
       }, {
         'metadata.referenceFile' : kernel.genericThumb()
-      } ]
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
-
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
-    }
-
-  });
-
-};
-
-exports.notFound = function(callback) {
-
-  files.aggregate([ {
-    $match : {
-      $or : [ {
-        filename : '/404.html'
-      }, {
-        'metadata.referenceFile' : '/404.html'
       } ]
     }
   }, {

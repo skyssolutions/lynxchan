@@ -6,6 +6,8 @@ var fs = require('fs');
 var db = require('../db');
 var files = db.files();
 var boards = db.boards();
+var threads = db.threads();
+var posts = db.posts();
 var cacheLocks = db.cacheLocks();
 var generator;
 var preemptiveCache;
@@ -16,6 +18,9 @@ var verbose;
 var alternativeLanguages;
 var miscOps;
 var zlib = require('zlib');
+
+var catalogPages = [ 'catalog.html', 'catalog.json', 'index.rss' ];
+var rulesPages = [ 'rules.html', 'rules.json' ];
 
 var permanentTypes = [ 'media', 'graph' ];
 
@@ -191,46 +196,6 @@ exports.writeFile = function(path, dest, mime, meta, callback) {
 
 };
 
-exports.removeCacheLocks = function(ids, names, callback) {
-
-  cacheLocks.removeMany({
-    fileName : {
-      $in : names
-    }
-  }, function removedLocks(error) {
-
-    if (error) {
-      callback(error);
-    } else {
-
-      // style exception, too simple
-      chunks.removeMany({
-        'files_id' : {
-          $in : ids
-        }
-      }, function removedChunks(error) {
-
-        if (error) {
-          callback(error);
-        } else {
-
-          files.removeMany({
-            _id : {
-              $in : ids
-            }
-          }, callback);
-
-        }
-
-      });
-      // style exception, too simple
-
-    }
-
-  });
-
-};
-
 exports.removeFiles = function(name, callback) {
 
   if (typeof (name) === 'string') {
@@ -248,9 +213,6 @@ exports.removeFiles = function(name, callback) {
       _id : 0,
       ids : {
         $push : '$_id'
-      },
-      names : {
-        $push : '$filename'
       }
     }
   } ], function gotFiles(error, results) {
@@ -263,7 +225,27 @@ exports.removeFiles = function(name, callback) {
       callback();
     } else {
 
-      exports.removeCacheLocks(results[0].ids, results[0].names, callback);
+      // style exception, too simple
+      chunks.removeMany({
+        'files_id' : {
+          $in : results[0].ids
+        }
+      }, function removedChunks(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          files.removeMany({
+            _id : {
+              $in : results[0].ids
+            }
+          }, callback);
+
+        }
+
+      });
+      // style exception, too simple
 
     }
 
@@ -520,7 +502,7 @@ exports.takeLanguageFile = function(file, req, currentPick) {
 exports.handlePickedFile = function(finalPick, req, cookies, res, callback) {
 
   if (!finalPick) {
-    exports.outputFile('/404.html', req, res, callback, cookies, true);
+    exports.outputFile('/404.html', req, res, callback, cookies);
   } else if (exports.shouldOutput304(req, finalPick)) {
     exports.output304(finalPick, res);
   } else {
@@ -558,117 +540,288 @@ exports.pickFile = function(fileRequested, req, res, cookies, possibleFiles,
 };
 
 // Cache rebuild
-exports.checkThreadPageCache = function(boardData, fileParts, callback) {
+exports.generateThreadCache = function(lockData, boardData, callback) {
 
-  callback(null, true);
+  threads.findOne({
+    threadId : lockData.postingId,
+    boardUri : lockData.boardUri
+  }, function gotThread(error, thread) {
 
-};
-
-exports.checkBoardPageCache = function(boardData, fileParts, callback) {
-
-  if (fileParts.length > 3) {
-    exports.checkThreadPageCache(boardData, fileParts, callback);
-    return;
-  }
-
-  var matches = fileParts[2].match(/^(\d+)\.(html|json)$/);
-
-  if (matches) {
-    generator.board.page(fileParts[1], +matches[1], callback, boardData);
-  } else {
-    exports.checkThreadPageCache(boardData, fileParts, callback);
-  }
-
-};
-
-exports.checkBoardCacheContent = function(fileParts, callback) {
-
-  boards.findOne({
-    boardUri : fileParts[1]
-  }, generator.board.boardProjection, function gotBoard(error, board) {
-
-    if (error) {
-      callback(error);
-    } else if (!board) {
-      callback(null, true);
+    if (error || !thread) {
+      callback(error, !thread);
     } else {
-
-      if (!fileParts[2]) {
-        generator.board.page(fileParts[1], 1, callback, board);
-        return;
-
-      } else {
-        exports.checkBoardPageCache(board, fileParts, callback);
-      }
-
+      generator.board.thread(lockData.boardUri, lockData.postingId, callback,
+          boardData, thread);
     }
 
   });
 
 };
 
-exports.checkGlobalCacheContent = function(fileParts, callback) {
+exports.generatePreviewCache = function(lockData, callback) {
 
-  // TODO
-  callback(null, true);
-
-};
-
-exports.checkCacheContent = function(file, callback) {
-
-  var fileParts = (file || '').split('/');
-
-  if (!fileParts[1] || /\W/.test(fileParts[1])) {
-    exports.checkGlobalCacheContent(fileParts, callback);
-  } else {
-    exports.checkBoardCacheContent(fileParts, callback);
-  }
-
-};
-
-exports.checkCache = function(file, req, res, cookies, attempts, retry,
-    callback) {
-
-  var expiration = new Date();
-  expiration.setUTCSeconds(expiration.getUTCSeconds() + 5);
-
-  cacheLocks.findOneAndUpdate({
-    fileName : file
-  }, {
-    $set : {
-      fileName : file,
-      expiration : expiration
-    }
-  }, {
-    upsert : true
-  }, function gotLock(error, result) {
+  posts.findOne({
+    boardUri : lockData.boardUri,
+    postId : lockData.postingId
+  }, function gotPost(error, post) {
 
     if (error) {
       callback(error);
-    } else if (!result.value || result.value.expiration < new Date()) {
+    } else if (!post) {
 
       // style exception, too simple
-      exports.checkCacheContent(file, function checkedCache(error, notFound) {
+      threads.findOne({
+        threadId : lockData.postingId,
+        boardUri : lockData.boardUri
+      }, function gotThread(error, thread) {
 
-        if (error) {
-          callback(error);
-        } else if (notFound) {
-          exports.outputFile('/404.html', req, res, callback, cookies, false,
-              true);
+        if (error || !thread) {
+          callback(error, !thread);
         } else {
-          exports.outputFile(file, req, res, callback, cookies, retry, false,
-              attempts + 1);
+          generator.previews.preview(lockData.boardUri, lockData.postingId,
+              null, callback, thread);
         }
 
       });
       // style exception, too simple
 
     } else {
+      generator.previews.preview(lockData.boardUri, null, lockData.postingId,
+          callback, post);
+    }
 
-      setTimeout(function() {
+  });
+
+};
+
+exports.generateBoardCache = function(lockData, callback) {
+
+  boards.findOne({
+    boardUri : lockData.boardUri
+  }, generator.board.boardProjection,
+      function gotBoard(error, board) {
+
+        if (error || !board) {
+          callback(error, true);
+        } else {
+
+          switch (lockData.type) {
+
+          case 'board': {
+            generator.board.page(lockData.boardUri, lockData.page, callback,
+                board);
+            break;
+          }
+
+          case 'rules': {
+            generator.board.rules(lockData.boardUri, callback);
+            break;
+          }
+
+          case 'catalog': {
+            generator.board.catalog(lockData.boardUri, callback, board);
+            break;
+          }
+
+          case 'thread': {
+            exports.generateThreadCache(lockData, board, callback);
+            break;
+          }
+
+          case 'preview': {
+            exports.generatePreviewCache(lockData, callback);
+            break;
+          }
+
+          }
+
+        }
+
+      });
+
+};
+
+exports.generateCache = function(lockData, callback) {
+
+  switch (lockData.type) {
+
+  case 'rules':
+  case 'catalog':
+  case 'preview':
+  case 'thread':
+  case 'board': {
+    exports.generateBoardCache(lockData, callback);
+    break;
+  }
+
+  default: {
+    console.log('Warning: unknown lock type ' + lockData.type);
+    callback(null, true);
+  }
+    break;
+
+  }
+
+};
+
+exports.getThreadOrPreviewLockData = function(fileParts) {
+
+  if (fileParts[2] !== 'res' && fileParts[2] !== 'preview') {
+    return;
+  }
+
+  var matches = fileParts[3].match(/^(\d+).(html|json)$/);
+
+  if (matches) {
+
+    return {
+      boardUri : fileParts[1],
+      type : fileParts[2] === 'res' ? 'thread' : 'preview',
+      postingId : +matches[1]
+    };
+
+  }
+
+};
+
+exports.getGlobalLockData = function(fileParts) {
+  // TODO
+};
+
+exports.getLockData = function(file) {
+
+  var fileParts = (file || '').split('/');
+
+  if (!fileParts[1] || /\W/.test(fileParts[1])) {
+    return exports.getGlobalLockData(fileParts);
+  } else {
+
+    if (fileParts.length === 4) {
+      return exports.getThreadOrPreviewLockData(fileParts);
+    } else if (fileParts.length === 3) {
+
+      if (!fileParts[2]) {
+        return {
+          boardUri : fileParts[1],
+          page : 1,
+          type : 'board'
+        };
+      }
+
+      var matches = fileParts[2].match(/^(\d+)\.(html|json)$/);
+
+      if (matches) {
+
+        return {
+          boardUri : fileParts[1],
+          page : matches[1],
+          type : 'board'
+        };
+
+      } else if (catalogPages.indexOf(fileParts[2]) > -1) {
+
+        return {
+          boardUri : fileParts[1],
+          type : 'catalog'
+        };
+
+      } else if (rulesPages.indexOf(fileParts[2]) > -1) {
+
+        return {
+          boardUri : fileParts[1],
+          type : 'rules'
+        };
+
+      }
+
+    }
+
+  }
+
+};
+
+exports.finishedCacheGeneration = function(lockData, error, notFound, file,
+    req, res, cookies, callback) {
+
+  cacheLocks.deleteOne(lockData, function deletedLock(deletionError) {
+
+    if (error) {
+      callback(error);
+    } else if (deletionError) {
+      callback(deletionError);
+    } else {
+      exports.outputFile(notFound ? '/404.html' : file, req, res, callback,
+          cookies);
+    }
+
+  });
+
+};
+
+exports.waitForUnlock = function(file, req, res, callback, cookies, lockData,
+    attempts) {
+
+  attempts = attempts || 0;
+
+  if (attempts > 9) {
+
+    cacheLocks.deleteOne(lockData, function deleted(error) {
+
+      if (error) {
+        callback(error);
+      } else {
         exports.outputFile(file, req, res, callback, cookies);
-      }, 500);
+      }
 
+    });
+
+    return;
+  }
+
+  cacheLocks.findOne(lockData, function found(error, foundLock) {
+
+    if (error) {
+      callback(error);
+    } else if (foundLock) {
+      setTimeout(function() {
+        exports.waitForUnlock(file, req, res, callback, cookies, ++attempts);
+      }, 500);
+    } else {
+      exports.outputFile(file, req, res, callback, cookies);
+    }
+
+  });
+
+};
+
+exports.checkCache = function(file, req, res, cookies, callback) {
+
+  var lockData = exports.getLockData(file);
+
+  if (!lockData) {
+    exports.outputFile('/404.html', req, res, callback, cookies);
+    return;
+  }
+
+  cacheLocks.findOneAndUpdate(lockData, lockData, {
+    upsert : true
+  }, function gotLock(error, result) {
+
+    if (error) {
+      callback(error);
+    } else if (!result.value) {
+
+      // style exception, too simple
+      exports.generateCache(lockData, function generatedCache(error, notFound) {
+
+        exports.finishedCacheGeneration(lockData, error, notFound, file, req,
+            res, cookies, callback);
+
+      });
+      // style exception, too simple
+
+    } else {
+      exports.waitForUnlock(file, req, res, callback, cookies, lockData);
     }
 
   });
@@ -677,10 +830,7 @@ exports.checkCache = function(file, req, res, cookies, attempts, retry,
 
 // retry means it has already failed to get a page and now is trying to get the
 // 404 page. It prevents infinite recursion
-exports.outputFile = function(file, req, res, callback, cookies, retry,
-    triedCache, attempts) {
-
-  attempts = attempts || 0;
+exports.outputFile = function(file, req, res, callback, cookies) {
 
   if (verbose) {
     console.log('Outputting \'' + file + '\' from gridfs');
@@ -710,29 +860,26 @@ exports.outputFile = function(file, req, res, callback, cookies, retry,
     }, {
       filename : file
     } ]
-  }).toArray(
-      function gotFiles(error, possibleFiles) {
+  }).toArray(function gotFiles(error, possibleFiles) {
 
-        if (error) {
-          callback(error);
-        } else if (!possibleFiles.length) {
+    if (error) {
+      callback(error);
+    } else if (!possibleFiles.length) {
 
-          if (!triedCache && !preemptiveCache && attempts < 10) {
-            exports.checkCache(file, req, res, cookies, attempts, retry,
-                callback);
-          } else if (retry) {
-            callback({
-              code : 'ENOENT'
-            });
-          } else {
-            exports.outputFile('/404.html', req, res, callback, cookies, true,
-                triedCache);
-          }
+      if (file === '/404.html') {
+        callback({
+          code : 'ENOENT'
+        });
+      } else if (!preemptiveCache) {
+        exports.checkCache(file, req, res, cookies, callback);
+      } else {
+        exports.outputFile('/404.html', req, res, callback, cookies);
+      }
 
-        } else {
-          exports.pickFile(file, req, res, cookies, possibleFiles, callback);
-        }
-      });
+    } else {
+      exports.pickFile(file, req, res, cookies, possibleFiles, callback);
+    }
+  });
 
 };
 // end of outputting file

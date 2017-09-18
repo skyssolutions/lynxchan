@@ -20,7 +20,7 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 22;
+var maxIndexesSet = 21;
 
 var cachedMessages;
 var cachedCacheLocks;
@@ -614,23 +614,7 @@ function initStats(callback) {
 function initCacheLocks(callback) {
 
   cachedCacheLocks.ensureIndex({
-    fileName : 1
-  }, function setIndex(error, index) {
-    if (error) {
-      if (loading) {
-        loading = false;
-        callback(error);
-      }
-    } else {
-      indexSet(callback);
-    }
-
-  });
-
-  cachedCacheLocks.ensureIndex({
-    expiration : 1
-  }, {
-    expireAfterSeconds : 0
+    type : 1
   }, function setIndex(error, index) {
     if (error) {
       if (loading) {

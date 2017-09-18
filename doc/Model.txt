@@ -339,8 +339,15 @@ languages: stores alternative languages.
 ----------------------------------------------------------------------------------------
 
 cacheLocks: controls on the fly cache rebuilding.
-  fileName: file being rebuilt.
-  expiration(Date): when this lock will expire.
+    boardUri: board uri for the lock.
+    postingId(Number): posting id for the lock.
+    page(Number): page for the lock. 
+    type: type of the lock. Possible values:
+        catalog
+        board
+        rules
+        preview
+        thread
 
 ----------------------------------------------------------------------------------------
 
