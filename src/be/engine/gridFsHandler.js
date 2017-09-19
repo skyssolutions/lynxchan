@@ -8,6 +8,7 @@ var files = db.files();
 var boards = db.boards();
 var threads = db.threads();
 var posts = db.posts();
+var aggregatedLogs = db.aggregatedLogs();
 var cacheLocks = db.cacheLocks();
 var generator;
 var preemptiveCache;
@@ -678,6 +679,23 @@ exports.generateCache = function(lockData, callback) {
     break;
   }
 
+  case 'log': {
+
+    aggregatedLogs.findOne({
+      date : lockData.date
+    }, function gotLogData(error, data) {
+
+      if (error || !data) {
+        callback(error, !data);
+      } else {
+        generator.global.log(lockData.date, callback, data);
+      }
+
+    });
+
+    break;
+  }
+
   default: {
     console.log('Warning: unknown lock type ' + lockData.type);
     callback(null, true);
@@ -708,15 +726,42 @@ exports.getThreadOrPreviewLockData = function(fileParts) {
 
 };
 
-exports.getGlobalLockData = function(fileParts) {
+exports.getLogLockData = function(fileParts) {
 
-  // TODO logs
-
-  if (fileParts.length !== 2) {
+  if (fileParts.length > 4) {
     return;
   }
 
-  if (!fileParts[1] || fileParts[1] === 'index.json') {
+  var matches = fileParts[3].match(/^(\d{4})-(\d{2})-(\d{2})\.(html|json)$/);
+
+  if (!matches) {
+    return;
+  }
+
+  var date = new Date();
+
+  date.setUTCHours(0);
+  date.setUTCMinutes(0);
+  date.setUTCSeconds(0);
+  date.setUTCMilliseconds(0);
+  date.setUTCFullYear(matches[1]);
+  date.setUTCMonth(matches[2] - 1);
+  date.setUTCDate(matches[3]);
+
+  return {
+    date : date,
+    type : 'log'
+  };
+
+};
+
+exports.getGlobalLockData = function(fileParts) {
+
+  if (fileParts[1] === '.global' && fileParts[2] === 'logs') {
+    return exports.getLogLockData(fileParts);
+  } else if (fileParts.length !== 2) {
+    return;
+  } else if (!fileParts[1] || fileParts[1] === 'index.json') {
     return {
       type : 'index'
     };

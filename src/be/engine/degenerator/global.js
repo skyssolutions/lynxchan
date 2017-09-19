@@ -126,7 +126,7 @@ exports.overboard = function(callback) {
 
 };
 
-exports.log = function(date, callback, logData) {
+exports.log = function(date, callback) {
 
   var prefix = '/.global/logs/' + logger.formatedDate(date);
 
