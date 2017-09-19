@@ -354,39 +354,6 @@ exports.getLatestPosts = function(boardUri, page, threadsArray, pageCount,
 
 };
 
-// pre-aggregates the page the thread is sitting in.
-exports.updateThreadsPage = function(boardUri, page, threadsArray, pageCount,
-    boardData, flagData, callback) {
-
-  var ids = [];
-
-  for (var i = 0; i < threadsArray.length; i++) {
-    ids.push(threadsArray[i].threadId);
-  }
-
-  threads.updateMany({
-    boardUri : boardUri,
-    threadId : {
-      $in : ids
-    }
-  }, {
-    $set : {
-      page : page
-    }
-  }, function(error, result) {
-    if (error) {
-      callback(error);
-    } else {
-
-      exports.getLatestPosts(boardUri, page, threadsArray, pageCount,
-          boardData, flagData, callback);
-
-    }
-
-  });
-
-};
-
 exports.page = function(boardUri, page, callback, boardData, flagData) {
 
   if (!flagData) {
@@ -449,8 +416,7 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
         if (error || skipPage) {
           callback(error, skipPage);
         } else {
-
-          exports.updateThreadsPage(boardUri, page, threadsArray, pageCount,
+          exports.getLatestPosts(boardUri, page, threadsArray, pageCount,
               boardData, flagData, callback);
         }
       });

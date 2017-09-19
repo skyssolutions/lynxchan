@@ -117,6 +117,21 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
 
 };
 
+exports.updatePages = function(boardUri, threadId, enabledCaptcha, callback,
+    thread) {
+
+  common.setThreadsPage(boardUri, function updatedPages(error) {
+
+    if (error) {
+      console.log(error);
+    }
+
+    exports.finishThreadCreation(boardUri, threadId, enabledCaptcha, callback,
+        thread);
+  });
+
+};
+
 exports.updateBoardForThreadCreation = function(boardData, threadId,
     enabledCaptcha, language, callback, thread) {
 
@@ -152,15 +167,15 @@ exports.updateBoardForThreadCreation = function(boardData, threadId,
               if (error) {
                 callback(error);
               } else {
-                exports.finishThreadCreation(boardUri, threadId,
-                    enabledCaptcha, callback, thread);
+                exports.updatePages(boardUri, threadId, enabledCaptcha,
+                    callback, thread);
               }
             });
         // style exception, too simple
 
       } else {
-        exports.finishThreadCreation(boardUri, threadId, enabledCaptcha,
-            callback, thread);
+        exports.updatePages(boardUri, threadId, enabledCaptcha, callback,
+            thread);
       }
 
     }

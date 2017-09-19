@@ -15,6 +15,7 @@ var globalLatestPostsCount;
 var globalLatestImagesCount;
 var latestPosts;
 var gridFs;
+var common;
 var lang;
 var overboard;
 var sfwOverboard;
@@ -37,6 +38,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  common = require('../postingOps').common;
   boardOps = require('../boardOps').meta;
   logOps = require('../logOps');
   referenceHandler = require('../mediaHandler');
@@ -541,6 +543,22 @@ exports.removeGlobalLatestPosts = function(userData, board, parameters, cb,
 
 };
 
+exports.updateThreadPages = function(userData, board, parameters, cb,
+    foundThreads, foundPosts, parentThreads) {
+
+  common.setThreadsPage(board.boardUri, function update(error) {
+
+    if (error) {
+      console.log();
+    }
+
+    exports.removeGlobalLatestPosts(userData, board, parameters, cb,
+        foundThreads, foundPosts, parentThreads);
+
+  });
+
+};
+
 exports.removeFoundContent = function(userData, board, parameters, cb,
     foundThreads, foundPosts, parentThreads) {
 
@@ -628,8 +646,10 @@ exports.removeFoundContent = function(userData, board, parameters, cb,
           if (error) {
             cb(error);
           } else {
-            exports.removeGlobalLatestPosts(userData, board, parameters, cb,
+
+            exports.updateThreadPages(userData, board, parameters, cb,
                 foundThreads, foundPosts, parentThreads);
+
           }
 
         });

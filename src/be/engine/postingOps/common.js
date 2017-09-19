@@ -9,6 +9,7 @@ var crypto = require('crypto');
 var logger = require('../../logger');
 var db = require('../../db');
 var posts = db.posts();
+var threads = db.threads();
 var uniqueIps = db.uniqueIps();
 var stats = db.stats();
 var flags = db.flags();
@@ -22,6 +23,7 @@ var miscOps;
 var verbose;
 var maxGlobalLatestPosts;
 var floodTimer;
+var pageSize;
 var globalMaxSizeMB;
 var globalMaxFiles;
 
@@ -70,6 +72,7 @@ exports.loadSettings = function() {
 
   verbose = settings.verbose || settings.verboseMisc;
   maxGlobalLatestPosts = settings.globalLatestPosts;
+  pageSize = settings.pageSize;
   floodTimer = settings.floodTimerSec * 1000;
   globalMaxSizeMB = settings.maxFileSizeMB;
   globalMaxFiles = settings.maxFiles;
@@ -857,3 +860,61 @@ exports.getFlagUrl = function(flagId, ip, boardData, noFlag, callback) {
 
 };
 // } Section 4: Flag selection
+
+exports.setThreadsPage = function(boardUri, callback, page) {
+
+  page = page || 1;
+
+  threads.aggregate([ {
+    $match : {
+      boardUri : boardUri
+    }
+  }, {
+    $sort : {
+      pinned : -1,
+      lastBump : -1
+    }
+  }, {
+    $skip : (page - 1) * pageSize
+  }, {
+    $limit : pageSize
+  }, {
+    $group : {
+      _id : 0,
+      threads : {
+        $push : '$_id'
+      }
+    }
+  } ], function gotThreads(error, results) {
+
+    if (error) {
+      callback(error);
+    } else if (!results.length) {
+      callback();
+    } else {
+
+      // style exception, too simple
+      threads.updateMany({
+        _id : {
+          $in : results[0].threads
+        }
+      }, {
+        $set : {
+          page : page
+        }
+      }, function updatePage(error) {
+
+        if (error) {
+          callback();
+        } else {
+          exports.setThreadsPage(boardUri, callback, ++page);
+        }
+
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};

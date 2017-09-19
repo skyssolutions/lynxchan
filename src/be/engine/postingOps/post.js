@@ -10,7 +10,7 @@ var reports = db.reports();
 var threads = db.threads();
 var logger = require('../../logger');
 var debug = require('../../kernel').debug();
-var common = require('.').common;
+var common;
 var gsHandler;
 var overboardOps;
 var generator;
@@ -44,6 +44,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  common = require('.').common;
   overboardOps = require('../overboardOps');
   referenceHandler = require('../mediaHandler');
   gsHandler = require('../gridFsHandler');
@@ -455,8 +456,22 @@ exports.updateThread = function(boardData, parameters, postId, thread,
       callback(error);
     } else {
 
-      exports.addPostToGlobalLatest(post, thread, parameters, cleanPosts, bump,
-          language, callback);
+      if (bump) {
+
+        common.setThreadsPage(parameters.boardUri, function setPages(error) {
+          if (error) {
+            console.log(error);
+          }
+
+          exports.addPostToGlobalLatest(post, thread, parameters, cleanPosts,
+              bump, language, callback);
+
+        });
+
+      } else {
+        exports.addPostToGlobalLatest(post, thread, parameters, cleanPosts,
+            bump, language, callback);
+      }
 
     }
 
