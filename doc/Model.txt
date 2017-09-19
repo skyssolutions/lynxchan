@@ -341,6 +341,7 @@ languages: stores alternative languages.
 cacheLocks: controls on the fly cache rebuilding.
     boardUri: board uri for the lock.
     postingId(Number): posting id for the lock.
+    date(Date): date for the lock.
     page(Number): page for the lock. 
     type: type of the lock. Possible values:
         catalog
@@ -350,6 +351,7 @@ cacheLocks: controls on the fly cache rebuilding.
         thread
         index
         overboard
+        log
 
 ----------------------------------------------------------------------------------------
 

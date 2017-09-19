@@ -65,6 +65,12 @@ exports.start = function() {
     boardsStats();
     uniqueIpCount();
 
+    db.cacheLocks().deleteMany({}, function(error) {
+      if (error) {
+        console.log(error);
+      }
+    });
+
     if (settings.autoPruneFiles) {
       autoFilePruning();
     }

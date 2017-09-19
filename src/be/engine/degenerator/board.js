@@ -1,8 +1,9 @@
 'use strict';
 
 var db = require('../../db');
-var gridFsHandler;
 var files = db.files();
+var cacheLocks = db.cacheLocks();
+var gridFsHandler;
 
 exports.loadDependencies = function() {
   gridFsHandler = require('../gridFsHandler');
@@ -30,7 +31,24 @@ exports.thread = function(boardUri, threadId, callback) {
     } else if (!results.length) {
       callback();
     } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
+
+      gridFsHandler.removeFiles(results[0].files, function deletedFiles(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          // style exception, too simple
+          cacheLocks.deleteOne({
+            type : 'thread',
+            boardUri : boardUri,
+            postingId : threadId
+          }, callback);
+          // style exception, too simple
+
+        }
+
+      });
     }
 
   });
@@ -68,7 +86,24 @@ exports.page = function(boardUri, page, callback) {
     } else if (!results.length) {
       callback();
     } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
+
+      gridFsHandler.removeFiles(results[0].files, function deletedFiles(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          // style exception, too simple
+          cacheLocks.deleteOne({
+            type : 'board',
+            boardUri : boardUri,
+            page : page
+          }, callback);
+          // style exception, too simple
+
+        }
+
+      });
     }
 
   });
@@ -96,7 +131,23 @@ exports.catalog = function(boardUri, callback) {
     } else if (!results.length) {
       callback();
     } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
+
+      gridFsHandler.removeFiles(results[0].files, function deletedFiles(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          // style exception, too simple
+          cacheLocks.deleteOne({
+            type : 'catalog',
+            boardUri : boardUri
+          }, callback);
+          // style exception, too simple
+
+        }
+
+      });
     }
 
   });
@@ -138,7 +189,35 @@ exports.board = function(boardUri, reloadThreads, reloadRules, callback) {
     } else if (!results.length) {
       callback();
     } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
+
+      gridFsHandler.removeFiles(results[0].files, function deletedFiles(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          var deletionTypes = [ 'board', 'catalog' ];
+
+          if (reloadRules) {
+            deletionTypes.push('rules');
+          }
+
+          if (reloadThreads) {
+            deletionTypes.push('thread');
+          }
+
+          // style exception, too simple
+          cacheLocks.deleteMany({
+            type : {
+              $in : deletionTypes
+            },
+            boardUri : boardUri
+          }, callback);
+          // style exception, too simple
+
+        }
+
+      });
     }
 
   });
@@ -166,7 +245,24 @@ exports.rules = function(boardUri, callback) {
     } else if (!results.length) {
       callback();
     } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
+
+      gridFsHandler.removeFiles(results[0].files, function deletedFiles(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          // style exception, too simple
+          cacheLocks.deleteOne({
+            type : 'rules',
+            boardUri : boardUri
+          }, callback);
+          // style exception, too simple
+
+        }
+
+      });
+
     }
 
   });
@@ -200,7 +296,24 @@ exports.boards = function(callback) {
     } else if (!results.length) {
       callback();
     } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
+
+      gridFsHandler.removeFiles(results[0].files, function filesRemoved(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          // style exception, too simple
+          cacheLocks.deleteMany({
+            type : {
+              $in : [ 'board', 'catalog', 'thread', 'rules' ]
+            }
+          }, callback);
+          // style exception, too simple
+
+        }
+
+      });
     }
 
   });
