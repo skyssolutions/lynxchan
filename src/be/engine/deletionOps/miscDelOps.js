@@ -224,7 +224,7 @@ exports.deleteBoardContent = function(board, callback, index) {
     collectionsToClean[index].deleteMany({
       boardUri : board
     }, function removedData(error) {
-      exports.deleteBoardContent(board, callback, index + 1);
+      exports.deleteBoardContent(board, callback, ++index);
 
     });
 

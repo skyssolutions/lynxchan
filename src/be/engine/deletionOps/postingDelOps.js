@@ -100,7 +100,7 @@ exports.reaggregateLatestPosts = function(countData, board, parentThreads,
         if (error) {
           callback(error);
         } else {
-          exports.reaggregateThread(board, parentThreads, callback, index + 1);
+          exports.reaggregateThread(board, parentThreads, callback, ++index);
         }
 
       });

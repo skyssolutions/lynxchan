@@ -783,7 +783,7 @@ exports.saveUploads = function(boardData, threadId, postId, parameters,
           }
 
           exports.saveUploads(boardData, threadId, postId, parameters,
-              callback, index + 1);
+              callback, ++index);
 
         });
 

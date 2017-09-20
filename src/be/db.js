@@ -172,7 +172,7 @@ function iterateUpgrades(currentVersion, callback) {
         if (error) {
           callback(error);
         } else {
-          iterateUpgrades(currentVersion + 1, callback);
+          iterateUpgrades(++currentVersion, callback);
         }
       });
       // style exception, too simple

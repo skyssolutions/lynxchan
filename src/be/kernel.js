@@ -510,6 +510,18 @@ function iterateOptionalReloads(index) {
 
 }
 
+function shouldGenerateMissingFile(fileToCheck, foundFiles) {
+
+  var skip = fileToCheck === '/';
+
+  if (skip && !settingsHandler.getGeneralSettings().preemptiveCaching) {
+    return;
+  }
+
+  return foundFiles.indexOf(fileToCheck) === -1;
+
+}
+
 function iterateDefaultPages(foundFiles, index) {
 
   index = index || 0;
@@ -524,7 +536,7 @@ function iterateDefaultPages(foundFiles, index) {
 
   var fileData = defaultFilesRelation[fileToCheck];
 
-  if (foundFiles.indexOf(fileToCheck) === -1 || fileData.command) {
+  if (shouldGenerateMissingFile(fileToCheck, foundFiles) || fileData.command) {
     generator[fileData.generatorModule][fileData.generatorFunction]
         (function generated(error) {
           if (error) {
@@ -537,11 +549,11 @@ function iterateDefaultPages(foundFiles, index) {
 
           }
 
-          iterateDefaultPages(foundFiles, index + 1);
+          iterateDefaultPages(foundFiles, ++index);
 
         });
   } else {
-    iterateDefaultPages(foundFiles, index + 1);
+    iterateDefaultPages(foundFiles, ++index);
   }
 
 }
@@ -549,7 +561,11 @@ function iterateDefaultPages(foundFiles, index) {
 // we need to check if the default pages can be found
 function checkForDefaultPages() {
 
-  generator = require('./engine/generator');
+  if (settingsHandler.getGeneralSettings().preemptiveCaching) {
+    generator = require('./engine/generator');
+  } else {
+    generator = require('./engine/degenerator');
+  }
 
   if (informedArguments.reload.informed) {
     regenerateAll();
