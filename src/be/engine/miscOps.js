@@ -178,6 +178,7 @@ exports.getAppealedBans = function(userRole, users, reports, callback) {
     bans.find(query, {
       reason : 1,
       appeal : 1,
+      boardUri : 1,
       denied : 1,
       expiration : 1,
       appliedBy : 1

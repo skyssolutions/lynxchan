@@ -13,6 +13,7 @@ var postsCollection = db.posts();
 var templateHandler;
 var miscOps;
 var maxAllowedFiles;
+var globalBoardModeration;
 var clearIpRole;
 var minClearIpRole;
 var maxFileSizeMB;
@@ -33,6 +34,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  globalBoardModeration = settings.allowGlobalBoardModeration;
   clearIpRole = settings.clearIpMinRole;
   messageLength = settings.messageLength;
   maxAllowedFiles = settings.maxFiles;
@@ -837,7 +839,21 @@ exports.setUploadCell = function(document, node, files, modding, language) {
 // } Section 2: Thread content
 
 // Section 3: Ban div {
-exports.setBanCell = function(ban, cell, language) {
+exports.setBanCellHiddenElements = function(ban, cell, language) {
+
+  if (!ban.denied && ban.appeal) {
+    cell.getElementsByClassName('denyIdentifier')[0].setAttribute('value',
+        ban._id);
+  } else {
+    exports.removeElement(cell.getElementsByClassName('denyForm')[0]);
+  }
+
+  cell.getElementsByClassName('liftIdentifier')[0].setAttribute('value',
+      ban._id);
+
+};
+
+exports.setBanCell = function(ban, cell, globalPage, language) {
 
   if (ban.appeal) {
     var label = cell.getElementsByClassName('appealLabel')[0];
@@ -846,12 +862,7 @@ exports.setBanCell = function(ban, cell, language) {
     exports.removeElement(cell.getElementsByClassName('appealPanel')[0]);
   }
 
-  if (!ban.denied && ban.appeal) {
-    cell.getElementsByClassName('denyIdentifier')[0].setAttribute('value',
-        ban._id);
-  } else {
-    exports.removeElement(cell.getElementsByClassName('denyForm')[0]);
-  }
+  exports.setBanCellHiddenElements(ban, cell, language);
 
   cell.getElementsByClassName('idLabel')[0].innerHTML = ban._id;
 
@@ -864,12 +875,15 @@ exports.setBanCell = function(ban, cell, language) {
   var appliedByLabel = cell.getElementsByClassName('appliedByLabel')[0];
   appliedByLabel.innerHTML = ban.appliedBy;
 
-  cell.getElementsByClassName('liftIdentifier')[0].setAttribute('value',
-      ban._id);
+  if (!globalPage || !globalBoardModeration || !ban.boardUri) {
+    exports.removeElement(cell.getElementsByClassName('boardPanel')[0]);
+  } else {
+    cell.getElementsByClassName('boardLabel')[0].innerHTML = ban.boardUri;
+  }
 
 };
 
-exports.setBanList = function(document, div, bans, language) {
+exports.setBanList = function(document, div, bans, globalPage, language) {
 
   for (var i = 0; i < bans.length; i++) {
 
@@ -879,7 +893,7 @@ exports.setBanList = function(document, div, bans, language) {
 
     cell.setAttribute('class', 'banCell');
 
-    exports.setBanCell(ban, cell, language);
+    exports.setBanCell(ban, cell, globalPage, language);
     div.appendChild(cell);
   }
 

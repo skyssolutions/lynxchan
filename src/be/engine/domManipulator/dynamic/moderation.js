@@ -28,7 +28,7 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Bans {
-exports.bans = function(bans, language) {
+exports.bans = function(bans, globalPage, language) {
 
   try {
 
@@ -38,7 +38,7 @@ exports.bans = function(bans, language) {
     document.title = lang(language).titBansManagement;
 
     common.setBanList(document, document.getElementById('bansDiv'), bans,
-        language);
+        globalPage, language);
 
     return dom.serialize();
 

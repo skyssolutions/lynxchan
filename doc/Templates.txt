@@ -980,6 +980,14 @@ liftIdentifier:
     use: have it's value manipulated.
     description: hidden identifier to lift the ban.
 
+boardLabel:
+    use: have it's innerHTML manipulated.
+    description: if necessary, tells which board this ban is from.
+
+boardPanel:
+    use: might be removed.
+    description: panel that should contain the boardLabel.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::19

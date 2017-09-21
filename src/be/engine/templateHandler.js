@@ -118,7 +118,7 @@ exports.getCellTests = function() {
         template : 'banCell',
         fields : [ 'reasonLabel', 'expirationLabel', 'appliedByLabel',
             'idLabel', 'appealLabel', 'appealPanel', 'liftIdentifier',
-            'denyIdentifier', 'denyForm' ]
+            'denyIdentifier', 'denyForm', 'boardLabel', 'boardPanel' ]
       },
       {
         template : 'logCell',

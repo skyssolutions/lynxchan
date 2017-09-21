@@ -254,7 +254,7 @@ exports.setContent = function(document, boardData, userData, bans, reports,
   }
 
   common.setBanList(document, document.getElementById('appealedBansPanel'),
-      bans, language);
+      bans, false, language);
 
   common.setReportList(document, reports, language);
 
@@ -420,7 +420,7 @@ exports.setGlobalManagementList = function(document, reports, appealedBans,
   var banDiv = document.getElementById('appealedBansPanel');
 
   if (appealedBans) {
-    common.setBanList(document, banDiv, appealedBans, language);
+    common.setBanList(document, banDiv, appealedBans, true, language);
   } else {
     common.removeElement(banDiv);
   }

@@ -22,7 +22,7 @@ function getBans(userData, parameters, res, auth, language) {
       if (json) {
         res.end(jsonBuilder.bans(bans));
       } else {
-        res.end(dom.bans(bans, language));
+        res.end(dom.bans(bans, !parameters.boardUri, language));
       }
 
     }

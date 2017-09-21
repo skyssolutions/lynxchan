@@ -52,6 +52,7 @@ exports.loadDependencies = function() {
 
 // Section 1: Bans {
 exports.readBans = function(parameters, callback) {
+
   var queryBlock = {
     ip : {
       $exists : true
@@ -73,6 +74,7 @@ exports.readBans = function(parameters, callback) {
     reason : 1,
     appeal : 1,
     denied : 1,
+    boardUri : 1,
     expiration : 1,
     appliedBy : 1
   }).sort({
