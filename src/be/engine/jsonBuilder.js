@@ -668,3 +668,11 @@ exports.accountManagement = function(accountData) {
 exports.socketData = function(socketData) {
   return JSON.stringify(socketData);
 };
+
+exports.blockBypass = function(valid) {
+
+  return JSON.stringify({
+    valid : valid ? true : false
+  });
+
+};

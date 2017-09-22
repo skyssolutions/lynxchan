@@ -156,6 +156,7 @@ Json output(Object): object with data used in global management. Contains the fo
         globalRole: global role of the user.
     appealedBans(Array): array of bans that were appealed and not denied. Each object contains the following fields: 
         _id: unique id of the ban.
+        boardUri: board for which the ban applies. Only informed for board bans and while using global board moderation.
         reason: reason of the ban.
         expiration: when the ban expires.
         appliedBy: login of the user that applied the ban.
@@ -415,6 +416,7 @@ Parameters:
 Json output(Array): array with the bans. Each object contains the following values:
     _id: unique id of the ban.
     reason: reason of the ban.
+    boardUri: board for which the ban applies. Only informed for board bans, when viewing global bans and while using global board moderation.
     expiration: when the ban expires.
     appliedBy: login of the user that applied the ban.
     appeal: appeal of the bans.
@@ -962,6 +964,9 @@ PAG_ID::59
 Name: blockBypass
 
 Description: displays the page that allows the user to renew a block bypass and indicates if he has a valid block bypass token.
+
+Json output(Object): object with information about the current block byass status. Contains the following fields:
+    valid(Boolean): indicates if the user has a valid block bypass.
 
 ------------------------------------------------------------------------------------------
 
