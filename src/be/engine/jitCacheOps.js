@@ -1,5 +1,8 @@
 'use strict';
 
+var kernel = require('../kernel');
+var feDebug = kernel.feDebug();
+var debug = kernel.debug();
 var db = require('../db');
 var boards = db.boards();
 var threads = db.threads();
@@ -8,6 +11,7 @@ var aggregatedLogs = db.aggregatedLogs();
 var cacheLocks = db.cacheLocks();
 var generator;
 var gridFsHandler;
+var templateHandler;
 var overboardPages;
 var overboardAlternativePages = [ '1.json', 'index.rss', '' ];
 var catalogPages = [ 'catalog.html', 'catalog.json', 'index.rss' ];
@@ -30,6 +34,7 @@ exports.loadSettings = function() {
 };
 
 exports.loadDependencies = function() {
+  templateHandler = require('./templateHandler');
   generator = require('./generator');
   gridFsHandler = require('./gridFsHandler');
 };
@@ -136,6 +141,11 @@ exports.generateBoardCache = function(lockData, callback) {
 };
 
 exports.generateCache = function(lockData, callback) {
+
+  if (feDebug && !debug) {
+    templateHandler.dropAlternativeTemplates();
+    templateHandler.loadTemplates();
+  }
 
   switch (lockData.type) {
 
