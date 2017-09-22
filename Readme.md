@@ -10,7 +10,7 @@ See other branches named like `1.1.x` for stable versions. They will receive onl
 
 # Required software
 * [Node.js](http://nodejs.org) 8.5.0, I suggest installing from source code. DO NOT build the master's HEAD.
-* [MongoDB](https://www.mongodb.org/) 3.2.12. You might also use 3.4.2, however, this version has a [bug](https://jira.mongodb.org/browse/SERVER-28525) on it`s init script that prevents LynxChan to start when the system boots if mongo is running on the same server.
+* [MongoDB](https://www.mongodb.org/) 3.4.9.
 * [UnZip](http://www.info-zip.org) 6.00, this is probably already include in your distro, though.
 * [cUrl](http://curl.haxx.se) 7.29.0, this is usually included too.
 * [ImageMagick](http://www.imagemagick.org/script/index.php) 6.7.8-9

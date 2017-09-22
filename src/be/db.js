@@ -858,6 +858,37 @@ function initCollections(callback) {
 
 }
 
+function connect(connectString, callback, attempts) {
+
+  attempts = attempts || 0;
+
+  mongo.MongoClient.connect(connectString, function connectedDb(error, db) {
+
+    if (error) {
+
+      if (attempts > 9) {
+        callback(error);
+      } else {
+
+        console.log(error);
+        console.log('Retrying in 10 seconds');
+
+        setTimeout(function() {
+          connect(connectString, callback, ++attempts);
+        }, 10000);
+      }
+
+    } else {
+
+      cachedDb = db;
+
+      initCollections(callback);
+    }
+
+  });
+
+}
+
 exports.init = function(callback) {
 
   if (loading) {
@@ -869,8 +900,6 @@ exports.init = function(callback) {
   indexesSet = 0;
 
   var dbSettings = require('./settingsHandler').getDbSettings();
-
-  var client = mongo.MongoClient;
 
   var connectString = 'mongodb://';
 
@@ -885,17 +914,6 @@ exports.init = function(callback) {
     connectString += '?ssl=true';
   }
 
-  client.connect(connectString, function connectedDb(error, db) {
-
-    if (error) {
-      callback(error);
-    } else {
-
-      cachedDb = db;
-
-      initCollections(callback);
-    }
-
-  });
+  connect(connectString, callback);
 
 };
