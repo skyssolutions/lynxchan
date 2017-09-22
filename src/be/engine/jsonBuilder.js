@@ -12,6 +12,7 @@ var sfwOverboard;
 var version;
 var boardCreationRequirement;
 var displayMaxSize;
+var bypassMode;
 var maxAllowedFiles;
 var maxFileSizeMB;
 var domManipulator;
@@ -22,6 +23,7 @@ exports.loadSettings = function() {
 
   settings = require('../settingsHandler').getGeneralSettings();
 
+  bypassMode = settings.bypassMode;
   globalCaptcha = settings.forceCaptcha;
   messageLength = settings.messageLength;
   maxAllowedFiles = settings.maxFiles;
@@ -672,7 +674,8 @@ exports.socketData = function(socketData) {
 exports.blockBypass = function(valid) {
 
   return JSON.stringify({
-    valid : valid ? true : false
+    valid : valid ? true : false,
+    mode : bypassMode
   });
 
 };

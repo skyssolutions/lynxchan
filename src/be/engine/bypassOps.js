@@ -31,6 +31,11 @@ exports.loadDependencies = function() {
 
 exports.renewBypass = function(captchaId, captchaInput, language, callback) {
 
+  if (!bypassMode) {
+    callback(lang(language).errDisabledBypass);
+    return;
+  }
+
   captchaOps.attemptCaptcha(captchaId, captchaInput, null, language,
       function solved(error) {
 
@@ -61,7 +66,7 @@ exports.renewBypass = function(captchaId, captchaInput, language, callback) {
 
 exports.checkBypass = function(bypassId, callback) {
 
-  if (!bypassId || !bypassId.length) {
+  if (!bypassId || !bypassId.length || !bypassMode) {
     callback();
     return;
   }

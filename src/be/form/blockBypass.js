@@ -11,13 +11,6 @@ var lang = require('../engine/langOps').languagePack;
 
 exports.process = function(req, res) {
 
-  if (!settingsHandler.getGeneralSettings().bypassMode) {
-    formOps.outputError(lang(req.language).errDisabledBypass, 500, res,
-        req.language);
-
-    return;
-  }
-
   var json = url.parse(req.url, true).query.json;
 
   bypassOps.checkBypass(formOps.getCookies(req).bypass, function checkedBypass(

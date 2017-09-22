@@ -409,7 +409,7 @@ exports.getPageTests = function() {
       },
       {
         template : 'bypassPage',
-        fields : [ 'indicatorValidBypass' ]
+        fields : [ 'indicatorValidBypass', 'renewForm' ]
       },
       {
         template : 'logIndexPage',

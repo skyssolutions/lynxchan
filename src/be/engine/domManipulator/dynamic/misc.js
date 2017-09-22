@@ -11,6 +11,7 @@ var templateHandler;
 var lang;
 var common;
 var miscOps;
+var blockBypass;
 var boardCreationRequirement;
 var messageLength;
 
@@ -24,6 +25,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../../settingsHandler').getGeneralSettings();
 
+  blockBypass = settings.bypassMode;
   messageLength = settings.messageLength;
   overboard = settings.overboard;
   sfwOverboard = settings.sfwOverboard;
@@ -589,6 +591,10 @@ exports.blockBypass = function(valid, language) {
 
     if (!valid) {
       common.removeElement(document.getElementById('indicatorValidBypass'));
+    }
+
+    if (!blockBypass) {
+      common.removeElement(document.getElementById('renewForm'));
     }
 
     return dom.serialize();
