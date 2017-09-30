@@ -491,7 +491,7 @@ Parameters:
     threadId: id of the thread to be edited.
     postId: id of the post to be edited.
     subject: new subject of the posting. 128 characters.
-    
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::31

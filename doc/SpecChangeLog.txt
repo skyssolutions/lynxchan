@@ -1,3 +1,142 @@
+1.9.0:
+
+**Api.txt**
+
+saveEdit:
+
+New parameters:
+subject
+
+---------------------------------------
+
+setSpecialBoardSettings:
+
+New parameters:
+specialSettings.locked
+
+---------------------------------------
+
+New pages:
+restartSocket
+massBan
+
+---------------------------------------
+
+**Form.txt**:
+
+globalManagement:
+
+Added fields on json output:
+appealedBans.boardUri
+
+---------------------------------------
+
+bans:
+
+Added fields on json output:
+boardUri
+
+---------------------------------------
+
+boardModeration:
+
+Added fields on json output:
+specialSettings.locked
+
+---------------------------------------
+
+boards:
+
+Added fields on json output:
+boards.specialSettings.locked
+
+---------------------------------------
+
+edit:
+
+Added fields on json output:
+subject
+
+---------------------------------------
+
+saveEdit:
+
+New parameters:
+subject
+
+---------------------------------------
+
+blockBypass:
+
+Added json output.
+
+---------------------------------------
+
+New pages:
+
+socketControl
+restartSocket
+massBan
+
+---------------------------------------
+
+**Language.txt**
+
+New fields:
+errLockedBoard
+errNotAllowedToManageSocket
+errNotAllowedToMassBan
+miscSocketOk
+msgSocketRestarted
+msgMassBanned
+titSocketManagement
+
+---------------------------------------
+
+gManagement:
+
+New elements:
+socketLink
+massBanPanel
+
+---------------------------------------
+
+banCell:
+
+New elements:
+boardLabel
+boardPanel
+
+---------------------------------------
+
+boardModerationPage:
+
+New elements:
+checkboxLocked
+---------------------------------------
+
+editPage:
+
+New elements:
+fieldSubject
+---------------------------------------
+
+globalSettingsPage:
+
+Removed elements:
+checkboxSsl
+
+New elements:
+comboSsl
+checkboxPreemptiveCaching
+
+---------------------------------------
+
+New templates:
+socketManagementPage
+
+---------------------------------------
+
 1.8.0:
 
 **Api.txt**
