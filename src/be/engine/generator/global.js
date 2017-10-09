@@ -846,7 +846,7 @@ exports.getOverboardThreads = function(ids, callback, sfw) {
         if (error) {
           callback(error);
         } else if (!foundThreads.length) {
-          callback();
+          exports.buildHTMLOverboard([], {}, sfw, callback);
         } else {
           exports.getOverboardPosts(foundThreads, callback, sfw);
         }
@@ -883,10 +883,9 @@ exports.overboard = function(callback, sfw) {
 
     if (error) {
       callback(error);
-    } else if (!results.length) {
-      callback();
     } else {
-      exports.getOverboardThreads(results[0].ids, callback, sfw);
+      exports.getOverboardThreads(results.length ? results[0].ids : [],
+          callback, sfw);
     }
 
   });
