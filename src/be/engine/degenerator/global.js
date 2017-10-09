@@ -72,20 +72,23 @@ exports.frontPage = function(callback) {
 
 };
 
-exports.overboard = function(callback) {
+exports.overboard = function(callback, altUri, altUriSFW) {
 
   var paths = [];
 
-  if (overboardSFW) {
-    paths.push('/' + overboardSFW + '/');
-    paths.push('/' + overboardSFW + '/index.rss');
-    paths.push('/' + overboardSFW + '/1.json');
+  var uriToUse = altUri || overboard;
+  var uriToUseSFW = altUriSFW || overboardSFW;
+
+  if (uriToUseSFW) {
+    paths.push('/' + uriToUseSFW + '/');
+    paths.push('/' + uriToUseSFW + '/index.rss');
+    paths.push('/' + uriToUseSFW + '/1.json');
   }
 
-  if (overboard) {
-    paths.push('/' + overboard + '/');
-    paths.push('/' + overboard + '/index.rss');
-    paths.push('/' + overboard + '/1.json');
+  if (uriToUse) {
+    paths.push('/' + uriToUse + '/');
+    paths.push('/' + uriToUse + '/index.rss');
+    paths.push('/' + uriToUse + '/1.json');
   }
 
   if (!paths.length) {

@@ -141,10 +141,35 @@ function checkOverboardChanged(settings) {
 
   var overboardChanged = settings.overboard !== generalSettings.overboard;
 
+  if (!overboardChanged) {
+    overboardChanged = settings.sfwOverboard !== generalSettings.sfwOverboard;
+  }
+
   var overboardReduced = settings.overBoardThreadCount;
   overboardReduced = overboardReduced < generalSettings.overBoardThreadCount;
 
-  return overboardChanged || overboardReduced;
+  if (!overboardChanged && !overboardReduced) {
+    return;
+  }
+
+  require('./engine/degenerator').global.overboard(function degenerated(error) {
+
+    if (error) {
+      console.log(error);
+    }
+
+  }, generalSettings.overboard, generalSettings.sfwOverboard);
+
+  var reaggregate = settings.overboard && !generalSettings.overboard;
+
+  if (!reaggregate) {
+    reaggregate = settings.sfwOverboard && !generalSettings.sfwOverboard;
+  }
+
+  require('./engine/overboardOps').reaggregate({
+    overboard : true,
+    reaggregate : reaggregate
+  });
 
 }
 
@@ -159,20 +184,7 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
     });
   }
 
-  if (checkOverboardChanged(settings)) {
-
-    var reaggregate = settings.overboard && !generalSettings.overboard;
-
-    if (!reaggregate) {
-      reaggregate = settings.sfwOverboard && !generalSettings.sfwOverboard;
-    }
-
-    require('./engine/overboardOps').reaggregate({
-      overboard : true,
-      reaggregate : reaggregate
-    });
-
-  }
+  checkOverboardChanged(settings);
 
   if (rebuildFp(settings)) {
     reloadsToMake.push({
