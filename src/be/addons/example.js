@@ -3,9 +3,7 @@
 'use strict';
 
 var settingsHandler = require('../settingsHandler');
-var lang = require('../engine/langOps').languagePack();
 var domManipulator = require('../engine/domManipulator');
-var gridFs = require('../engine/gridFsHandler');
 var verbose;
 
 var staticPages = domManipulator.staticPages;
