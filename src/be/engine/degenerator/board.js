@@ -166,23 +166,30 @@ exports.board = function(boardUri, reloadThreads, reloadRules, callback) {
     exceptions.push('thread');
   }
 
-  files.aggregate([ {
-    $match : {
-      'metadata.boardUri' : boardUri,
-      'metadata.type' : {
-        $not : {
-          $in : exceptions
+  files.aggregate([
+      {
+        $match : {
+          filename : {
+            $not : {
+              $in : [ '/' + boardUri + '/custom.js',
+                  '/' + boardUri + '/custom.css' ]
+            }
+          },
+          'metadata.boardUri' : boardUri,
+          'metadata.type' : {
+            $not : {
+              $in : exceptions
+            }
+          }
         }
-      }
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
+      }, {
+        $group : {
+          _id : 0,
+          files : {
+            $push : '$filename'
+          }
+        }
+      } ], function(error, results) {
 
     if (error) {
       callback(error);
@@ -273,6 +280,9 @@ exports.boards = function(callback) {
 
   files.aggregate([ {
     $match : {
+      filename : {
+        $not : /\/custom\.(css|js)$/
+      },
       'metadata.boardUri' : {
         $exists : true
       },
