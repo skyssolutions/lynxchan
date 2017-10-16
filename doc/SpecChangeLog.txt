@@ -93,6 +93,8 @@ titSocketManagement
 
 ---------------------------------------
 
+**Templates.txt**
+
 gManagement:
 
 New elements:
@@ -113,12 +115,21 @@ boardModerationPage:
 
 New elements:
 checkboxLocked
+
+---------------------------------------
+
+bypassPage:
+
+New elements:
+renewForm
+
 ---------------------------------------
 
 editPage:
 
 New elements:
 fieldSubject
+
 ---------------------------------------
 
 globalSettingsPage:

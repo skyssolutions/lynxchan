@@ -2097,6 +2097,10 @@ indicatorValidBypass:
     use: might be removed.
     description: element that indicates if the user has a valid block bypass.
 
+renewForm:
+    use: might be removed.
+    description: form used to renew the bypass.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::56
