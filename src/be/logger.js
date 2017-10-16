@@ -212,7 +212,7 @@ exports.convertIpToArray = function(ip) {
     return null;
   }
 
-  var ipv4Match = ip.match(/(\d+).(\d+).(\d+).(\d+)/);
+  var ipv4Match = ip.match(/(\d+)\.(\d+)\.(\d+)\.(\d+)/);
 
   if (ipv4Match) {
 
