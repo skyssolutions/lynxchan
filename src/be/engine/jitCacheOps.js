@@ -300,7 +300,7 @@ exports.getLockData = function(file) {
 
         return {
           boardUri : fileParts[1],
-          page : matches[1],
+          page : +matches[1],
           type : 'board'
         };
 
