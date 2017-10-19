@@ -246,7 +246,10 @@ exports.setSharedHideableElements = function(posting, cell, language) {
 
   if (posting.flag) {
     imgFlag.src = posting.flag;
-    imgFlag.title = posting.flagName;
+    imgFlag.title = posting.flagName.replace(/&(l|g)t;/g, function replace(
+        match) {
+      return miscOps.reverseHTMLReplaceTable[match];
+    });
 
     if (posting.flagCode) {
       imgFlag.className += ' flag' + posting.flagCode;
