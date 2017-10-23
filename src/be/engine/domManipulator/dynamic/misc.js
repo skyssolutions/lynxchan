@@ -439,7 +439,7 @@ exports.ban = function(ban, board, language) {
 
     exports.setBanPage(document, ban, board, language);
 
-    dom.serialize();
+    return dom.serialize();
 
   } catch (error) {
 

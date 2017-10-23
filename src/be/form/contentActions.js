@@ -7,6 +7,7 @@ var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var lang = require('../engine/langOps').languagePack;
 var miscOps = require('../engine/miscOps');
 var deleteOps = require('../engine/deletionOps');
+var mandatoryAuth = [ 'spoil', 'ban', 'ip-deletion' ];
 
 function processPostForDeletion(board, thread, splitKey, threadsToDelete,
     postsToDelete, onlyFiles) {
@@ -88,7 +89,7 @@ function getProcessedObjects(parameters, threads, posts, reportedObjects) {
         redirectBoard = splitKey[0];
       }
 
-      if (parameters.action.toLowerCase() === 'delete') {
+      if (parameters.action === 'delete') {
         processSplitKeyForDeletion(splitKey, threads, posts,
             parameters.deleteUploads);
       } else {
@@ -104,7 +105,7 @@ function getProcessedObjects(parameters, threads, posts, reportedObjects) {
 
   }
 
-  return redirectBoard;
+  return redirectBoard ? '/' + redirectBoard + '/' : '/';
 
 }
 
@@ -116,11 +117,8 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
   var redirectBoard = getProcessedObjects(parameters, threads, posts,
       reportedObjects);
 
-  redirectBoard = redirectBoard ? '/' + redirectBoard + '/' : '/';
-
-  parameters.global = parameters.hasOwnProperty('global');
-
-  if (parameters.action.toLowerCase() === 'spoil') {
+  switch (parameters.action) {
+  case 'spoil': {
 
     modOps.spoiler.spoiler(userData, reportedObjects, req.language, function(
         error) {
@@ -132,7 +130,10 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
       }
     });
 
-  } else if (parameters.action.toLowerCase() === 'report') {
+    break;
+  }
+
+  case 'report': {
 
     modOps.report.report(req, reportedObjects, parameters, captchaId,
         function createdReports(error, ban) {
@@ -151,7 +152,11 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
           }
 
         });
-  } else if (parameters.action.toLowerCase() === 'ban') {
+
+    break;
+  }
+
+  case 'ban': {
 
     parameters.banType = +parameters.banType;
 
@@ -165,7 +170,10 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
           }
         });
 
-  } else if (parameters.action.toLowerCase() === 'ip-deletion') {
+    break;
+  }
+
+  case 'ip-deletion': {
 
     deleteOps.deleteFromIpOnBoard(reportedObjects, userData, req.language,
         function deleted(error) {
@@ -179,7 +187,10 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
 
         });
 
-  } else {
+    break;
+  }
+
+  default: {
 
     deleteOps.postingDeletions
         .posting(userData, parameters, threads, posts, req.language,
@@ -196,6 +207,9 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
               }
 
             });
+
+  }
+
   }
 
 }
@@ -213,7 +227,14 @@ exports.process = function(req, res) {
       }
     }
 
-    parameters.action = parameters.action || '';
+    parameters.action = (parameters.action || '').toLowerCase();
+
+    parameters.global = parameters.hasOwnProperty('global');
+
+    if (mandatoryAuth.indexOf(parameters.action) > -1 && !userData) {
+      formOps.redirectToLogin(res);
+      return;
+    }
 
     var cookies = formOps.getCookies(req);
 
