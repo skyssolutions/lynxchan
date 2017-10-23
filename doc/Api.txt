@@ -193,7 +193,7 @@ PAG_ID::10
 
 Name: deleteContent
 
-Description: deletes posts or threads. If the password is not provided, authentication is required.
+Description: deletes posts or threads.
 
 Parameters:
     deleteMedia(Boolean): causes the actual media files to be deleted. Ignored if user didn't authenticate or isn't on the global staff.

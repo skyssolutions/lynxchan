@@ -77,21 +77,18 @@ exports.process = function(req, res) {
 
     parameters.postings = parameters.postings || [];
 
-    if (!parameters.password) {
+    // style exception,too simple
+    accountOps.validate(auth, req.language, function validated(error, auth,
+        userData) {
 
-      // style exception,too simple
-      accountOps.validate(auth, req.language, function validated(error, auth,
-          userData) {
-        if (error) {
-          apiOps.outputError(error, res);
-        } else {
-          processParameters(userData, parameters, res, auth, req.language);
-        }
-      });
-      // style exception,too simple
+      if (error && !parameters.password) {
+        apiOps.outputError(error, res);
+      } else {
+        processParameters(userData, parameters, res, auth, req.language);
+      }
 
-    } else {
-      processParameters(null, parameters, res, null, req.language);
-    }
+    });
+    // style exception,too simple
+
   });
 };

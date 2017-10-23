@@ -549,7 +549,7 @@ exports.updateThreadPages = function(userData, board, parameters, cb,
   common.setThreadsPage(board.boardUri, function update(error) {
 
     if (error) {
-      console.log();
+      console.log(error);
     }
 
     exports.removeGlobalLatestPosts(userData, board, parameters, cb,
@@ -685,6 +685,7 @@ exports.isAllowedByStaffPower = function(userData, board) {
 
 exports.composeQueryBlock = function(board, threadsToDelete, userData,
     parameters, callback) {
+
   var threadQueryBlock = {
     boardUri : board.boardUri,
     threadId : {

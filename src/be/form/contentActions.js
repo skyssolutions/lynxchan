@@ -202,50 +202,24 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
 
 exports.process = function(req, res) {
 
-  try {
+  formOps.getAuthenticatedPost(req, res, true, function gotData(newAuth,
+      userData, parameters) {
 
-    formOps.getPostData(req, res, function gotData(auth, parameters) {
+    if (parameters.password) {
+      parameters.password = parameters.password.trim();
 
-      if (parameters.password) {
-        parameters.password = parameters.password.trim();
-
-        if (!parameters.password.length) {
-          delete parameters.password;
-        }
+      if (!parameters.password.length) {
+        delete parameters.password;
       }
+    }
 
-      parameters.action = parameters.action || '';
+    parameters.action = parameters.action || '';
 
-      var action = parameters.action.toLowerCase();
+    var cookies = formOps.getCookies(req);
 
-      var deleting = action === 'delete';
-      var banning = action === 'ban';
-      var ipDeleting = action === 'ip-deletion';
-      var spoiling = action === 'spoil';
-      var authenticate = banning || (!parameters.password && deleting);
-      authenticate = authenticate || spoiling || ipDeleting;
+    processParameters(req, userData, parameters, res, cookies.captchaid,
+        newAuth);
 
-      if (authenticate) {
-
-        // style exception,too simple
-        accountOps.validate(auth, req.language, function validated(error,
-            newAuth, userData) {
-          if (error) {
-            formOps.outputError(error, 500, res, req.language);
-          } else {
-            processParameters(req, userData, parameters, res, auth.captchaid,
-                newAuth);
-          }
-        });
-        // style exception,too simple
-
-      } else {
-        processParameters(req, null, parameters, res, auth.captchaid);
-      }
-
-    });
-  } catch (error) {
-    formOps.outputError(error, 500, res, req.language);
-  }
+  }, true);
 
 };
