@@ -172,7 +172,8 @@ exports.board = function(boardUri, reloadThreads, reloadRules, callback) {
           filename : {
             $not : {
               $in : [ '/' + boardUri + '/custom.js',
-                  '/' + boardUri + '/custom.css' ]
+                  '/' + boardUri + '/custom.css',
+                  '/' + boardUri + '/custom.spoiler' ]
             }
           },
           'metadata.boardUri' : boardUri,
@@ -281,7 +282,7 @@ exports.boards = function(callback) {
   files.aggregate([ {
     $match : {
       filename : {
-        $not : /\/custom\.(css|js)$/
+        $not : /\/custom\.(css|js|spoiler)$/
       },
       'metadata.boardUri' : {
         $exists : true

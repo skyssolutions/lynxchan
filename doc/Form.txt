@@ -90,7 +90,7 @@ Name: login
 
 Description: performs login of the user.
 
-Parameters: 
+Parameters:
     login: login of the account.
     password: password of the account.
 
