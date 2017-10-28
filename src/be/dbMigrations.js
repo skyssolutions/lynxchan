@@ -12,7 +12,6 @@ var ObjectID = mongo.ObjectID;
 var cachedPosts = db.posts();
 var cachedThreads = db.threads();
 var cachedBoards = db.boards();
-var cachedTorIps = db.torIps();
 var cachedBans = db.bans();
 var cachedUsers = db.users();
 
@@ -196,71 +195,6 @@ function convertIp(ip) {
 
 }
 
-function migrateTorIps(callback) {
-
-  cachedTorIps.find().toArray(function gotTorIps(error, ips) {
-    if (error) {
-      callback(error);
-    } else {
-
-      var operations = [];
-
-      for (var i = 0; i < ips.length; i++) {
-        var ip = ips[i];
-
-        operations.push({
-          updateOne : {
-            filter : {
-              _id : new ObjectID(ip._id)
-            },
-            update : {
-              $set : {
-                ip : convertIp(ip.ip)
-              }
-            }
-          }
-        });
-
-      }
-
-      if (operations.length) {
-        cachedTorIps.bulkWrite(operations, callback);
-
-      } else {
-        callback();
-      }
-
-    }
-  });
-
-}
-
-function fixTorIpsIndex(callback) {
-
-  cachedTorIps.dropIndex('ip_1', function indexesDropped(error) {
-    if (error) {
-      callback(error);
-    } else {
-
-      // style exception, too simple
-      cachedTorIps.ensureIndex({
-        ip : 1
-      }, function setIndex(error, index) {
-        if (error) {
-          callback(error);
-
-        } else {
-          migrateTorIps(callback);
-        }
-      });
-      // style exception, too simple
-
-    }
-
-  });
-
-}
-
 function migrateBanIps(callback) {
 
   cachedBans.find({}, {
@@ -302,18 +236,9 @@ function migrateBanIps(callback) {
       }
 
       if (operations.length) {
-        // style exception, too simple
-        cachedBans.bulkWrite(operations, function migratedIps(error) {
-          if (error) {
-            callback(error);
-          } else {
-            fixTorIpsIndex(callback);
-          }
-        });
-        // style exception, too simple
-
+        cachedBans.bulkWrite(operations, callback);
       } else {
-        fixTorIpsIndex(callback);
+        callback();
       }
 
     }
