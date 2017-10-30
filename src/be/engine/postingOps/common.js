@@ -905,7 +905,7 @@ exports.setThreadsPage = function(boardUri, callback, page) {
       }, function updatePage(error) {
 
         if (error) {
-          callback();
+          callback(error);
         } else {
           exports.setThreadsPage(boardUri, callback, ++page);
         }

@@ -147,10 +147,18 @@ exports.setNewThreadSettings = function(parameters, thread, callback) {
       });
 
       if (changePin) {
+
         // signal rebuild of board pages
-        process.send({
-          board : thread.boardUri
+        postOps.setThreadsPage(thread.boardUri, function(errr) {
+          if (error) {
+            console.log(error);
+          } else {
+            process.send({
+              board : thread.boardUri
+            });
+          }
         });
+
       } else {
         // signal rebuild of page
         process.send({
