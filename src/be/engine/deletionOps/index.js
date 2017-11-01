@@ -140,7 +140,7 @@ exports.gatherIpsToDelete = function(objects, userData, language, callback) {
     $match : {
       boardUri : board,
       ip : {
-        $exists : true
+        $ne : null
       },
       threadId : {
         $in : selectedThreads
@@ -166,7 +166,7 @@ exports.gatherIpsToDelete = function(objects, userData, language, callback) {
         $match : {
           boardUri : board,
           ip : {
-            $exists : true,
+            $ne : null,
             $nin : ips
           },
           postId : {
