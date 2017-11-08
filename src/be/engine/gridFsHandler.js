@@ -346,7 +346,7 @@ exports.isRangeValid = function(range, options, stats, header, res) {
       'bytes ' + range.start + '-' + range.end + '/' + stats.length ]);
 
   options.start = range.start;
-  options.end = range.end;
+  options.end = range.end + 1;
 
   return true;
 
