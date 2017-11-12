@@ -6,15 +6,16 @@
     "type": "git",
     "url": "https://gitgud.io/LynxChan/LynxChan.git"
   },
-  "version": "1.9.0",
+  "version": "2.0.0",
   "dependencies": {
     "mongodb": "2.2.x",
     "jsdom": "11.3.x",
-    "nodemailer": "4.3.x",
+    "nodemailer": "4.4.x",
     "multiparty": "4.1.x",
     "bcrypt": "1.0.x",
     "jsbn": "1.1.x",
-    "http-proxy": "1.16.x"
+    "http-proxy": "1.16.x",
+    "nodemailer-direct-transport": "3.3.x"
   },
   "author": "Stephen Lynx",
   "license": "MIT"

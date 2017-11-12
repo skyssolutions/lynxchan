@@ -8,7 +8,8 @@ var boards = db.boards();
 var requests = db.recoveryRequests();
 var bcrypt = require('bcrypt');
 var crypto = require('crypto');
-var mailer = require('nodemailer').createTransport({});
+var mailer = require('nodemailer').createTransport(
+    require('nodemailer-direct-transport')());
 var sender;
 var creationDisabled;
 var logOps;
