@@ -4,11 +4,15 @@
 
 var rssDomain;
 var gridFsHandler;
+var overboard;
+var sfwOverboard;
 
 exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  overboard = settings.overboard;
+  sfwOverboard = settings.sfwOverboard;
   rssDomain = settings.rssDomain;
 
 };
@@ -78,9 +82,13 @@ exports.board = function(boardData, threads, callback) {
 
   var ownName = '/' + boardData.boardUri + '/index.rss';
 
+  var uri = boardData.boardUri;
+
+  var type = uri === overboard || uri === sfwOverboard ? 'overboard' : 'board';
+
   gridFsHandler.writeData(rssContent, ownName, 'application/rss+xml', {
     boardUri : boardData.boardUri,
-    type : 'board'
+    type : type
   }, callback);
 
 };

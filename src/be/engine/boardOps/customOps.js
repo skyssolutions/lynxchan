@@ -74,6 +74,7 @@ exports.setCustomCss = function(userData, boardUri, file, language, callback) {
       // style exception, too simple
       gridFsHandler.writeFile(file.pathInDisk, '/' + boardUri + '/custom.css',
           file.mime, {
+            type : 'custom',
             boardUri : boardUri
           }, function savedFile(error) {
             if (error) {
@@ -172,6 +173,7 @@ exports.setCustomSpoiler = function(userData, boardUri, file, language,
 
       // style exception, too simple
       gridFsHandler.writeFile(file.pathInDisk, newPath, file.mime, {
+        type : 'custom',
         boardUri : boardUri
       }, function savedFile(error) {
 
@@ -288,6 +290,7 @@ exports.setCustomJs = function(userData, boardUri, file, language, callback) {
       // style exception, too simple
       gridFsHandler.writeFile(file.pathInDisk, '/' + boardUri + '/custom.js',
           file.mime, {
+            type : 'custom',
             boardUri : boardUri
           }, function savedFile(error) {
             if (error) {

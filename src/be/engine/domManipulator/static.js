@@ -658,7 +658,9 @@ exports.frontPage = function(boards, latestPosts, latestImages, globalStats,
         latestPosts, language);
 
     var filePath = '/';
-    var meta = {};
+    var meta = {
+      type : 'frontPage'
+    };
 
     if (language) {
       meta.referenceFile = filePath;
@@ -819,7 +821,10 @@ exports.overboard = function(foundThreads, previewRelation, callback,
       callback(null, dom.serialize());
     } else {
 
-      var meta = {};
+      var meta = {
+        type : 'overboard'
+      };
+
       var path = exports.getOverboardPathAndMeta(language, document, meta, sfw);
 
       gridFs.writeData(dom.serialize(), path, 'text/html', meta, callback);

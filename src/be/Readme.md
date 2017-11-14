@@ -216,3 +216,6 @@ Meta-data of files on gridfs will have the following values:
   * `log`
   * `multiboard`
   * `graph`
+  * `frontPage`
+  * `overboard`
+  * `custom`

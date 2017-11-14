@@ -37,19 +37,9 @@ exports.loadDependencies = function() {
 
 exports.frontPage = function(callback) {
 
-  var filesNames = [ '/', '/index.json' ];
-
   files.aggregate([ {
     $match : {
-      $or : [ {
-        filename : {
-          $in : filesNames
-        }
-      }, {
-        'metadata.referenceFile' : {
-          $in : filesNames
-        }
-      } ]
+      'metadata.type' : 'frontPage'
     }
   }, {
     $group : {
@@ -74,39 +64,9 @@ exports.frontPage = function(callback) {
 
 exports.overboard = function(callback, altUri, altUriSFW) {
 
-  var paths = [];
-
-  var uriToUse = altUri || overboard;
-  var uriToUseSFW = altUriSFW || overboardSFW;
-
-  if (uriToUseSFW) {
-    paths.push('/' + uriToUseSFW + '/');
-    paths.push('/' + uriToUseSFW + '/index.rss');
-    paths.push('/' + uriToUseSFW + '/1.json');
-  }
-
-  if (uriToUse) {
-    paths.push('/' + uriToUse + '/');
-    paths.push('/' + uriToUse + '/index.rss');
-    paths.push('/' + uriToUse + '/1.json');
-  }
-
-  if (!paths.length) {
-    callback();
-    return;
-  }
-
   files.aggregate([ {
     $match : {
-      $or : [ {
-        filename : {
-          $in : paths
-        }
-      }, {
-        'metadata.referenceFile' : {
-          $in : paths
-        }
-      } ]
+      'metadata.type' : 'overboard'
     }
   }, {
     $group : {

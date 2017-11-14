@@ -298,7 +298,9 @@ exports.frontPage = function(boards, globalLatestPosts, globalLatestImages,
   exports.setGlobalStats(globalStats, object);
 
   gridFsHandler.writeData(JSON.stringify(object), '/index.json',
-      'application/json', {}, callback);
+      'application/json', {
+        type : 'frontPage'
+      }, callback);
 
 };
 // } Section 2: Front-page
@@ -626,7 +628,9 @@ exports.overboard = function(foundThreads, previewRelation, callback,
 
     gridFsHandler.writeData(JSON.stringify({
       threads : threadsToAdd
-    }), url, 'application/json', {}, callback);
+    }), url, 'application/json', {
+      type : 'overboard'
+    }, callback);
   }
 
 };

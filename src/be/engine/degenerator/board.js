@@ -156,7 +156,7 @@ exports.catalog = function(boardUri, callback) {
 
 exports.board = function(boardUri, reloadThreads, reloadRules, callback) {
 
-  var exceptions = [ 'flag', 'banner', 'preview' ];
+  var exceptions = [ 'flag', 'banner', 'preview', 'custom' ];
 
   if (!reloadRules) {
     exceptions.push('rules');
@@ -166,31 +166,23 @@ exports.board = function(boardUri, reloadThreads, reloadRules, callback) {
     exceptions.push('thread');
   }
 
-  files.aggregate([
-      {
-        $match : {
-          filename : {
-            $not : {
-              $in : [ '/' + boardUri + '/custom.js',
-                  '/' + boardUri + '/custom.css',
-                  '/' + boardUri + '/custom.spoiler' ]
-            }
-          },
-          'metadata.boardUri' : boardUri,
-          'metadata.type' : {
-            $not : {
-              $in : exceptions
-            }
-          }
+  files.aggregate([ {
+    $match : {
+      'metadata.boardUri' : boardUri,
+      'metadata.type' : {
+        $not : {
+          $in : exceptions
         }
-      }, {
-        $group : {
-          _id : 0,
-          files : {
-            $push : '$filename'
-          }
-        }
-      } ], function(error, results) {
+      }
+    }
+  }, {
+    $group : {
+      _id : 0,
+      files : {
+        $push : '$filename'
+      }
+    }
+  } ], function(error, results) {
 
     if (error) {
       callback(error);
@@ -281,15 +273,12 @@ exports.boards = function(callback) {
 
   files.aggregate([ {
     $match : {
-      filename : {
-        $not : /\/custom\.(css|js|spoiler)$/
-      },
       'metadata.boardUri' : {
         $exists : true
       },
       'metadata.type' : {
         $not : {
-          $in : [ 'flag', 'banner', 'preview' ]
+          $in : [ 'flag', 'banner', 'preview', 'custom' ]
         }
       }
     }

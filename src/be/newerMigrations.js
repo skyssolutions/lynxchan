@@ -4,6 +4,8 @@
 // 1.6 onward will be
 
 var db = require('./db');
+var files = db.files();
+var settings = require('./settingsHandler').getGeneralSettings();
 var reports = db.reports();
 var threads = db.threads();
 var posts = db.posts();
@@ -67,5 +69,101 @@ exports.removeGhostReports = function(callback, lastId) {
     }
 
   });
+
+};
+
+// Added on 2.0
+function fillOverboardExtraTypesOperations(operations) {
+
+  if (!settings.overboard && !settings.sfwOverboard) {
+    return;
+  }
+
+  var overboardPaths = [];
+
+  if (settings.overboard) {
+    overboardPaths.push('/' + settings.sfwOverboard + '/');
+    overboardPaths.push('/' + settings.sfwOverboard + '/index.rss');
+    overboardPaths.push('/' + settings.sfwOverboard + '/1.json');
+  }
+
+  if (settings.sfwOverboard) {
+    overboardPaths.push('/' + settings.overboard + '/');
+    overboardPaths.push('/' + settings.overboard + '/index.rss');
+    overboardPaths.push('/' + settings.overboard + '/1.json');
+  }
+
+  operations.push({
+    updateMany : {
+      filter : {
+        $or : [ {
+          filename : {
+            $in : overboardPaths
+          }
+        }, {
+          'metadata.referenceFile' : {
+            $in : overboardPaths
+          }
+        } ]
+      },
+      update : {
+        $set : {
+          'metadata.type' : 'overboard'
+        }
+      }
+    }
+
+  });
+
+}
+
+exports.addExtraTypes = function(callback) {
+
+  var operations = [];
+
+  fillOverboardExtraTypesOperations(operations);
+
+  var frontPagePaths = [ '/', '/index.json' ];
+
+  operations.push({
+    updateMany : {
+      filter : {
+        $or : [ {
+          filename : {
+            $in : frontPagePaths
+          }
+        }, {
+          'metadata.referenceFile' : {
+            $in : frontPagePaths
+          }
+        } ]
+      },
+      update : {
+        $set : {
+          'metadata.type' : 'frontPage'
+        }
+      }
+
+    }
+  });
+
+  operations.push({
+    updateMany : {
+      filter : {
+        filename : /\/custom\.(css|js|spoiler)$/,
+        'metadata.boardUri' : {
+          $exists : true
+        }
+      },
+      update : {
+        $set : {
+          'metadata.type' : 'custom'
+        }
+      }
+    }
+
+  });
+
+  files.bulkWrite(operations, callback);
 
 };

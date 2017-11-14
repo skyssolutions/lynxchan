@@ -1,6 +1,6 @@
 'use strict';
 
-var dbVersion = 11;
+var dbVersion = 12;
 
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
@@ -20,7 +20,7 @@ var indexesSet;
 
 var cachedDb;
 
-var maxIndexesSet = 21;
+var maxIndexesSet = 22;
 
 var cachedMessages;
 var cachedCacheLocks;
@@ -128,6 +128,10 @@ function upgrade(version, callback) {
 
   case 10:
     newerMigrations.removeGhostReports(callback);
+    break;
+
+  case 11:
+    newerMigrations.addExtraTypes(callback);
     break;
 
   default:
@@ -633,6 +637,20 @@ function initFiles(callback) {
 
   cachedFiles.ensureIndex({
     'metadata.referenceFile' : 1
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+
+  });
+
+  cachedFiles.ensureIndex({
+    'metadata.type' : 1
   }, function setIndex(error, index) {
     if (error) {
       if (loading) {
