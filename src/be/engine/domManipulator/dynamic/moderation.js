@@ -233,6 +233,25 @@ exports.setSpecialCheckboxesAndIdentifiers = function(document, boardData) {
 
 };
 
+exports.fillVolunteers = function(document, volunteers) {
+
+  if (!volunteers) {
+    return;
+  }
+
+  var div = document.getElementById('divVolunteers');
+
+  for (var i = 0; i < volunteers.length; i++) {
+
+    var cell = document.createElement('div');
+    cell.innerHTML = volunteers[i];
+
+    div.appendChild(cell);
+
+  }
+
+};
+
 exports.boardModeration = function(boardData, ownerData, language) {
 
   try {
@@ -242,6 +261,8 @@ exports.boardModeration = function(boardData, ownerData, language) {
 
     document.title = lang(language).titBoardModeration.replace('{$board}',
         boardData.boardUri);
+
+    exports.fillVolunteers(document, boardData.volunteers);
 
     exports.setSpecialCheckboxesAndIdentifiers(document, boardData);
 

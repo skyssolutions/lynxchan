@@ -1360,6 +1360,10 @@ checkboxLocked:
     use: might be turned on.
     description: checkbox that indicates if the board is locked.
 
+divVolunteers:
+    use: have children appended to it.
+    description: div that holds the names of the board's volunteers.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::33

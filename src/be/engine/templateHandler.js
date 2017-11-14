@@ -316,7 +316,7 @@ exports.getPageTests = function() {
         template : 'boardModerationPage',
         fields : [ 'boardTransferIdentifier', 'boardDeletionIdentifier',
             'labelTitle', 'labelOwner', 'labelLastSeen', 'checkboxSfw',
-            'specialSettingsIdentifier', 'checkboxLocked' ]
+            'specialSettingsIdentifier', 'checkboxLocked', 'divVolunteers' ]
       },
       {
         template : 'boardsPage',
