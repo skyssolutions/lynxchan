@@ -188,7 +188,7 @@ PAG_ID::12
 
 Name: boardManagement
 
-Description: displays page for board management. Requires validation. Allowed only for the board owner and volunteers. This board uses get parameters.
+Description: displays page for board management. Requires validation. Allowed only for the board owner and volunteers. It uses get parameters.
 
 Parameters:
     boardUri: uri of the board the user wishes to manage.
@@ -1190,6 +1190,25 @@ Parameters:
     ips(Array)*: ips in cleartext to be banned.
     reason: reason for the ban.
     duration: duration of the ban. Defaults to 5 years. See the back-end readme for details.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::78
+
+Name: mediaDetails
+
+Description: displays detailed information on a media file. It uses get parameters.
+
+Parameters:
+    identifier: media identifier.
+
+JSON output(Object): object containing the details of the media:
+    size(Number): number in bytes of the file.
+    uploadDate(Date): date when the file was first uploaded.
+    references(Array): array with all the postings that reference this file. Each element is an object containing the folllowing fields:
+        boardUri: board of the posting.
+        threadId(Number): threadId of the posting.
+        postId(Number): postId of the posting, if any.
 
 ------------------------------------------------------------------------------------------
 

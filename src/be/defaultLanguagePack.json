@@ -323,5 +323,7 @@
   "miscSocketOk": "Ok",
   "errLockedBoard": "This board is locked for posting.",
   "msgMassBanned": "Mass ban applied.",
-  "errNotAllowedToMassBan": "You are not allowed to mass ban."
+  "errNotAllowedToMassBan": "You are not allowed to mass ban.",
+  "errMediaNotFound": "Media entry could not be found.",
+  "titMediaDetails": "Media details"
 }

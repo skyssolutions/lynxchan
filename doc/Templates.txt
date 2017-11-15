@@ -2206,6 +2206,10 @@ referencesLabel:
     use: have it's innerHTML manipulated.
     description: label that shows how many references this file has.
 
+detailsLink:
+    use: have it's href manipulated.
+    description: link that leads to the page with detail of the file.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::63
@@ -2323,7 +2327,30 @@ socketManagementPage: page used to manage the unix socket.
 Elements:
 statusLabel:
     use: have it's innerHTML manipulated.
-    description: label the socket status.
+    description: label with the socket status.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::70
+
+mediaDetailsPage: page used to display details of a media file.
+
+Elements:
+labelSize:
+    use: have it's innerHTML manipulated.
+    description: label with the media size.
+
+labelUploadDate:
+    use: have it's innerHTML manipulated.
+    description: label with the date when the media was first uploaded.
+
+labelIdentifier:
+    use: have it's innerHTML manipulated.
+    description: label with identifier of the media.
+
+panelReferences:
+    use: have chidren appended to it.
+    description: panel that lists the posts where the media is used.
 
 ------------------------------------------------------------------------------------------
 

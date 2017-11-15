@@ -180,7 +180,7 @@ exports.getCellTests = function() {
       {
         template : 'mediaCell',
         fields : [ 'identifierCheckbox', 'thumbImg', 'fileLink',
-            'referencesLabel' ]
+            'referencesLabel', 'detailsLink' ]
       },
       {
         template : 'languageCell',
@@ -439,6 +439,11 @@ exports.getPageTests = function() {
         template : 'accountManagementPage',
         fields : [ 'emailLabel', 'lastSeenLabel', 'ownedBoardsDiv',
             'volunteeredBoardsDiv', 'globalRoleLabel' ]
+      },
+      {
+        template : 'mediaDetailsPage',
+        fields : [ 'labelSize', 'labelUploadDate', 'panelReferences',
+            'labelIdentifier' ]
       } ];
 
 };

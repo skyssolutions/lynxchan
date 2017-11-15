@@ -95,6 +95,7 @@ errNoFileAndMessage: error thrown when an operation requires either a message or
 errDeniedThreadTransfer: error thrown when the user is not allowed to move a thread between boards.
 errDeniedSpoilered: error thrown when the user is not allowed to spoil existing files.
 errDeniedMediaManagement: error thrown when the user is not allowed to manage media files.
+errMediaNotFound: error thrown when the specified media is not found.
 errBoardDelConfirmation: error thrown when the user fails to send the confirmation to delete a board.
 errInvalidIp: error thrown when an invalid ip is informed.
 errDisabledBypass: error thrown when block bypass is not enabled.
@@ -295,3 +296,4 @@ titLanguages: title for the language management page.
 titAccounts: title for the accounts page.
 titAccountManagement: title for the account management page. Replaces: {$account}.
 titSocketManagement: title for the socket management page.
+titMediaDetails: title for the media details page.

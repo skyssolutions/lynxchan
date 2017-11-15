@@ -452,3 +452,103 @@ exports.deleteFiles = function(identifiers, userData, language, callback,
   });
 
 };
+
+// Section 3: Media details {
+exports.postingSorting = function(a, b) {
+
+  if (a.boardUri < b.boardUri) {
+    return -1;
+  } else if (a.boardUri > b.boardUri) {
+    return 1;
+  } else {
+
+    if (a.threadId !== b.threadId) {
+      return a.threadId - b.threadId;
+    } else {
+      return a.postId - b.postId;
+    }
+
+  }
+
+};
+
+exports.getPostsForMediaDetails = function(media, path, foundThreads, cb) {
+
+  posts.find({
+    'files.path' : path
+  }, {
+    boardUri : 1,
+    threadId : 1,
+    postId : 1,
+    _id : 0
+  }).toArray(
+      function gotPosts(error, foundPosts) {
+
+        if (error) {
+          cb(error);
+        } else {
+
+          cb(null, {
+            references : foundThreads.concat(foundPosts).sort(
+                exports.postingSorting),
+            size : media.size,
+            uploadDate : media._id.getTimestamp()
+          });
+
+        }
+
+      });
+
+};
+
+exports.getMediaDetails = function(userData, parameters, language, callback) {
+
+  var globalStaff = userData.globalRole <= maxGlobalStaffRole;
+
+  if (!globalStaff) {
+
+    callback(lang(language).errDeniedMediaManagement);
+
+    return;
+  }
+
+  references.findOne({
+    identifier : parameters.identifier
+  }, function found(error, media) {
+
+    if (error) {
+      callback(error);
+    } else if (!media) {
+      callback(lang(language).errMediaNotFound);
+    } else {
+
+      var path = '/.media/' + parameters.identifier;
+
+      if (media.extension) {
+        path += '.' + media.extension;
+      }
+
+      // style exception, too simple
+      threads.find({
+        'files.path' : path
+      }, {
+        boardUri : 1,
+        threadId : 1,
+        _id : 0
+      }).toArray(function gotThreads(error, foundThreads) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.getPostsForMediaDetails(media, path, foundThreads, callback);
+        }
+
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+// } Section 3: Media details

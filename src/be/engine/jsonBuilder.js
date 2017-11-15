@@ -683,3 +683,7 @@ exports.blockBypass = function(valid) {
   });
 
 };
+
+exports.mediaDetails = function(details) {
+  return JSON.stringify(details);
+};

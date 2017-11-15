@@ -770,7 +770,10 @@ exports.setMediaManagementPages = function(pages, document, parameters) {
 
 };
 
-exports.getFileLink = function(file) {
+exports.setMediaLinks = function(cell, file) {
+
+  var details = cell.getElementsByClassName('detailsLink')[0];
+  details.href = '/mediaDetails.js?identifier=' + file.identifier;
 
   var filePath = '/.media/' + file.identifier;
 
@@ -778,7 +781,9 @@ exports.getFileLink = function(file) {
     filePath += '.' + file.extension;
   }
 
-  return filePath;
+  var link = cell.getElementsByClassName('fileLink')[0];
+  link.href = filePath;
+  link.innerHTML = file.identifier;
 
 };
 
@@ -794,9 +799,7 @@ exports.setMediaManagementCells = function(document, media, language) {
     cell.innerHTML = templateHandler(language).mediaCell;
     cell.setAttribute('class', 'mediaCell');
 
-    var link = cell.getElementsByClassName('fileLink')[0];
-    link.href = exports.getFileLink(file);
-    link.innerHTML = file.identifier;
+    exports.setMediaLinks(cell, file);
 
     cell.getElementsByClassName('identifierCheckbox')[0].setAttribute('name',
         file.identifier);
@@ -996,3 +999,61 @@ exports.socketData = function(statusData, language) {
   }
 
 };
+
+// Section 11: Media details {
+exports.fillReferencesDiv = function(document, details) {
+
+  var referencesDiv = document.getElementById('panelReferences');
+
+  for (var i = 0; i < details.references.length; i++) {
+
+    var link = document.createElement('a');
+
+    var reference = details.references[i];
+
+    var url = '/' + reference.boardUri + '/res/' + reference.threadId;
+    url += '.html';
+
+    if (reference.postId) {
+      url += '#' + reference.postId;
+    }
+
+    var idToUse = reference.postId || reference.threadId;
+
+    link.innerHTML = reference.boardUri + '/' + idToUse;
+
+    link.href = url;
+
+    referencesDiv.appendChild(link);
+
+  }
+
+};
+
+exports.mediaDetails = function(identifier, details, language) {
+
+  try {
+
+    var dom = new JSDOM(templateHandler(language).mediaDetailsPage);
+    var document = dom.window.document;
+
+    document.title = lang(language).titMediaDetails;
+
+    document.getElementById('labelSize').innerHTML = common.formatFileSize(
+        details.size, language);
+
+    document.getElementById('labelIdentifier').innerHTML = identifier;
+
+    document.getElementById('labelUploadDate').innerHTML = common
+        .formatDateToDisplay(details.uploadDate, false, language);
+
+    exports.fillReferencesDiv(document, details);
+
+    return dom.serialize();
+
+  } catch (error) {
+    return error.toString();
+  }
+
+};
+// } Section 11: Media details
