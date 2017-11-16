@@ -73,11 +73,6 @@ var informedArguments = {
     long : '--reload-boards',
     type : 'boolean'
   },
-  reloadPreviews : {
-    short : '-rp',
-    long : '--reload-previews',
-    type : 'boolean'
-  },
   reloadLogin : {
     short : '-rl',
     long : '--reload-login',

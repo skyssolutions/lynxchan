@@ -76,13 +76,6 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
     });
   } else {
 
-    // signal rebuild of preview
-    process.send({
-      board : boardUri,
-      preview : true,
-      thread : threadId
-    });
-
     // signal rebuild of board pages
     process.send({
       board : boardUri

@@ -2,7 +2,6 @@
 
 exports.board = require('./board');
 exports.global = require('./global');
-exports.previews = require('./previews');
 
 exports.loadSettings = function() {
   exports.global.loadSettings();
@@ -10,14 +9,13 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
-  exports.previews.loadDependencies();
   exports.board.loadDependencies();
   exports.global.loadDependencies();
 
 };
 
 var toDegenerate;
-var MAX_TO_DEGENERATE = 13;
+var MAX_TO_DEGENERATE = 12;
 var reloading;
 
 var fullReloadCallback = function(error, callback) {
@@ -43,18 +41,6 @@ var fullReloadCallback = function(error, callback) {
   if (!toDegenerate) {
     callback();
   }
-
-};
-
-exports.boardReloads = function(callback) {
-
-  exports.board.boards(function reloaded(error) {
-    fullReloadCallback(error, callback);
-  });
-
-  exports.previews.previews(function reloaded(error) {
-    fullReloadCallback(error, callback);
-  });
 
 };
 
@@ -115,7 +101,9 @@ exports.all = function(callback) {
   reloading = true;
   toDegenerate = MAX_TO_DEGENERATE;
 
-  exports.boardReloads(callback);
+  exports.board.boards(function reloaded(error) {
+    fullReloadCallback(error, callback);
+  });
 
   exports.globalReloads(callback);
 

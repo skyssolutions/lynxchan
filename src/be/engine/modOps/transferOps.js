@@ -139,31 +139,20 @@ exports.getNewMeta = function(file, newThreadId, newBoard, newPostId) {
   newMeta.lastModified = new Date();
   newMeta.threadId = newThreadId;
   newMeta.boardUri = newBoard.boardUri;
-  newMeta.postId = newPostId;
+
+  if (newPostId) {
+    newMeta.postId = newPostId;
+  }
 
   return newMeta;
 
-};
-
-// Section 3.1: New path generation {
-exports.getPreviewNewPath = function(newBoard, newPostingId, name) {
-
-  var newPath = '/' + newBoard.boardUri + '/preview/' + newPostingId + '.';
-
-  if (name.indexOf('html') > -1) {
-    newPath += 'html';
-  } else {
-    newPath += 'json';
-  }
-
-  return newPath;
 };
 
 exports.getThreadNewPath = function(newBoard, newThreadId, name) {
 
   var newPath = '/' + newBoard.boardUri + '/res/' + newThreadId + '.';
 
-  if (name.indexOf('html') > -1) {
+  if (name.indexOf('html') > 1) {
     newPath += 'html';
   } else {
     newPath += 'json';
@@ -171,22 +160,6 @@ exports.getThreadNewPath = function(newBoard, newThreadId, name) {
 
   return newPath;
 };
-
-exports.getNewPath = function(newBoard, name, thread, newThreadId, newPostId,
-    file) {
-
-  switch (file.metadata.type) {
-
-  case 'thread':
-    return exports.getThreadNewPath(newBoard, newThreadId, name);
-
-  case 'preview':
-    return exports.getPreviewNewPath(newBoard, newPostId || newThreadId, name);
-
-  }
-
-};
-// } Section 3.1: New path generation
 
 exports.getFileUpdateOps = function(newPostIdRelation, originalThread,
     newBoard, newThreadId, foundFiles) {
@@ -200,10 +173,11 @@ exports.getFileUpdateOps = function(newPostIdRelation, originalThread,
 
     var newMeta = exports.getNewMeta(file, newThreadId, newBoard, newPostId);
 
-    var newPath = exports.getNewPath(newBoard, file.filename.split('/')[3],
-        originalThread, newThreadId, newPostId, file);
+    var newPath = exports.getThreadNewPath(newBoard, newThreadId, file.filename
+        .split('/')[3]);
 
     if (file.filename.indexOf('gz') === file.filename.length - 2) {
+      newMeta.referenceFile = newPath;
       newPath += '.gz';
     }
 
@@ -239,7 +213,6 @@ exports.updateFiles = function(newBoard, newThreadId, originalThread, userData,
       // update both boards and new thread page
       process.send({
         board : newBoard.boardUri
-
       });
 
       process.send({
@@ -250,7 +223,6 @@ exports.updateFiles = function(newBoard, newThreadId, originalThread, userData,
       process.send({
         board : newBoard.boardUri,
         thread : newThreadId
-
       });
 
       exports.logTransfer(newBoard, userData, newThreadId, originalThread,
@@ -382,9 +354,9 @@ exports.updatePosts = function(newBoard, userData, foundPosts, newThreadId,
             } else {
               callback();
             }
-            // style exception, too simple
 
           });
+      // style exception, too simple
 
     }
   });

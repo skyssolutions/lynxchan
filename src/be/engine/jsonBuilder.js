@@ -305,30 +305,6 @@ exports.frontPage = function(boards, globalLatestPosts, globalLatestImages,
 };
 // } Section 2: Front-page
 
-exports.preview = function(postingData, callback) {
-
-  var path = '/' + postingData.boardUri + '/preview/';
-
-  var metadata = {
-    boardUri : postingData.boardUri,
-    threadId : postingData.threadId,
-    type : 'preview'
-  };
-
-  if (postingData.postId) {
-    metadata.postId = postingData.postId;
-    path += postingData.postId;
-  } else {
-    path += postingData.threadId;
-  }
-
-  path += '.json';
-
-  gridFsHandler.writeData(JSON.stringify(exports.getPostObject(postingData,
-      true)), path, 'application/json', metadata, callback);
-
-};
-
 exports.setFileLimits = function(toWrite, bData) {
 
   if (bData.maxFiles) {

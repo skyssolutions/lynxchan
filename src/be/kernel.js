@@ -126,10 +126,6 @@ var optionalReloads = [ {
   generatorModule : 'global',
   command : informedArguments.reloadOverboard.informed
 }, {
-  generatorFunction : 'previews',
-  generatorModule : 'previews',
-  command : informedArguments.reloadPreviews.informed
-}, {
   generatorFunction : 'logs',
   generatorModule : 'global',
   command : informedArguments.reloadLogs.informed

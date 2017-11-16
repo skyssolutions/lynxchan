@@ -85,18 +85,18 @@ exports.getCellTests = function() {
             'lockIndicator', 'pinIndicator', 'labelId', 'labelRole',
             'divBanMessage', 'spanId', 'panelIp', 'labelBroadRange',
             'panelRange', 'cyclicIndicator', 'linkQuote', 'divPosts',
-            'labelOmission', 'linkPreview', 'linkEdit', 'labelLastEdit',
+            'labelOmission', 'labelNarrowRange', 'linkEdit', 'labelLastEdit',
             'imgFlag', 'labelIp', 'contentOmissionIndicator', 'linkFullText',
-            'bumpLockIndicator', 'labelNarrowRange' ]
+            'bumpLockIndicator' ]
       },
       {
         template : 'postCell',
         fields : [ 'linkName', 'panelUploads', 'labelSubject', 'labelCreated',
             'divMessage', 'linkSelf', 'deletionCheckBox', 'labelId',
             'panelRange', 'labelRole', 'divBanMessage', 'spanId', 'panelIp',
-            'labelBroadRange', 'linkQuote', 'linkPreview', 'linkEdit',
+            'labelBroadRange', 'linkQuote', 'labelNarrowRange', 'linkEdit',
             'labelLastEdit', 'imgFlag', 'labelIp', 'contentOmissionIndicator',
-            'linkFullText', 'labelNarrowRange' ]
+            'linkFullText' ]
       },
       {
         template : 'staffCell',
@@ -303,10 +303,6 @@ exports.getPageTests = function() {
       {
         template : 'logsPage',
         fields : [ 'divLogs' ]
-      },
-      {
-        template : 'previewPage',
-        fields : [ 'panelContent' ]
       },
       {
         template : 'filterManagement',

@@ -150,26 +150,6 @@ exports.queueReloads = function(parents, foundThreads, foundPosts, board) {
 
   }
 
-  for (i = 0; i < foundThreads.length; i++) {
-
-    process.send({
-      board : board.boardUri,
-      preview : true,
-      thread : foundThreads[i].threadId
-    });
-
-  }
-
-  for (i = 0; i < foundPosts.length; i++) {
-
-    process.send({
-      board : board.boardUri,
-      preview : true,
-      post : foundPosts[i].postId
-    });
-
-  }
-
   for (i = 0; i < reloadedThreads.length; i++) {
 
     process.send({

@@ -223,19 +223,6 @@ exports.queueRebuild = function(page, board, posting, callback) {
     thread : posting.threadId
   });
 
-  var previewMessage = {
-    board : board,
-    preview : true
-  };
-
-  if (posting.postId) {
-    previewMessage.post = posting.postId;
-  } else {
-    previewMessage.thread = posting.threadId;
-  }
-
-  process.send(previewMessage);
-
   process.send({
     board : board,
     thread : posting.threadId

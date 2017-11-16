@@ -263,13 +263,6 @@ exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
     thread : parameters.threadId
   });
 
-  // signal rebuild of preview
-  process.send({
-    board : parameters.boardUri,
-    post : postId,
-    preview : true
-  });
-
   // signal rebuild of board catalog
   process.send({
     board : parameters.boardUri,

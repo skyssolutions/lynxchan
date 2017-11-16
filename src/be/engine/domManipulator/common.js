@@ -490,7 +490,6 @@ exports.setPostLinks = function(postCell, post, preview) {
   link.href = linkStart + post.postId;
   linkQuote.href = linkStart + 'q' + post.postId;
 
-  var linkPreview = '/' + post.boardUri + '/preview/' + post.postId + '.html';
   var deletionCheckbox = postCell.getElementsByClassName('deletionCheckBox')[0];
 
   if (!preview) {
@@ -498,9 +497,7 @@ exports.setPostLinks = function(postCell, post, preview) {
     var checkboxName = post.boardUri + '-' + post.threadId + '-' + post.postId;
     deletionCheckbox.setAttribute('name', checkboxName);
 
-    postCell.getElementsByClassName('linkPreview')[0].href = linkPreview;
   } else {
-    exports.removeElement(postCell.getElementsByClassName('linkPreview')[0]);
     exports.removeElement(deletionCheckbox);
   }
 };
@@ -699,10 +696,6 @@ exports.setThreadLinks = function(threadCell, thread, boardUri, innerPage) {
   } else {
     linkReply.href = '/' + boardUri + '/res/' + thread.threadId + '.html';
   }
-
-  var linkPreview = '/' + boardUri + '/preview/' + thread.threadId + '.html';
-
-  threadCell.getElementsByClassName('linkPreview')[0].href = linkPreview;
 
   var linkSelf = threadCell.getElementsByClassName('linkSelf')[0];
 

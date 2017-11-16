@@ -677,73 +677,6 @@ exports.frontPage = function(boards, latestPosts, latestImages, globalStats,
 };
 // } Section 4: Front page
 
-// Section 5: Preview {
-exports.setMetadata = function(metadata, postingData, path) {
-
-  if (postingData.postId) {
-    metadata.postId = postingData.postId;
-
-    path += postingData.postId;
-  } else {
-    postingData.postId = postingData.threadId;
-    path += postingData.threadId;
-  }
-
-  return path;
-
-};
-
-exports.getPreviewDocument = function(language, postingData) {
-
-  var dom = new JSDOM(templateHandler(language).previewPage);
-  var document = dom.window.document;
-
-  var innerCell = document.createElement('div');
-  innerCell.setAttribute('class', 'postCell');
-
-  common.setPostInnerElements(document, postingData, innerCell, true, null,
-      null, null, null, language);
-
-  document.getElementById('panelContent').appendChild(innerCell);
-
-  if (postingData.postId === postingData.threadId) {
-    delete postingData.postId;
-  }
-
-  return dom.serialize();
-
-};
-
-exports.preview = function(language, postingData, callback) {
-  try {
-
-    var path = '/' + postingData.boardUri + '/preview/';
-
-    var metadata = {
-      boardUri : postingData.boardUri,
-      threadId : postingData.threadId,
-      type : 'preview'
-    };
-
-    path = exports.setMetadata(metadata, postingData, path);
-
-    path += '.html';
-
-    if (language) {
-      metadata.languages = language.headerValues;
-      metadata.referenceFile = path;
-      path += language.headerValues.join('-');
-    }
-
-    gridFs.writeData(exports.getPreviewDocument(language, postingData), path,
-        'text/html', metadata, callback);
-
-  } catch (error) {
-    callback(error);
-  }
-};
-// } Section 5: Preview
-
 exports.maintenance = function(language, callback) {
   try {
 
@@ -770,7 +703,7 @@ exports.maintenance = function(language, callback) {
   }
 };
 
-// Section 6: Overboard {
+// Section 5: Overboard {
 exports.addOverBoardThreads = function(foundThreads, previewRelation, doc,
     language) {
 
@@ -835,9 +768,9 @@ exports.overboard = function(foundThreads, previewRelation, callback,
     callback(error);
   }
 };
-// } Section 6: Overboard
+// } Section 5: Overboard
 
-// Section 7: Log page {
+// Section 6: Log page {
 exports.setLogEntry = function(logCell, log, language) {
 
   if (!log.global) {
@@ -950,9 +883,9 @@ exports.log = function(language, date, logs, callback) {
   }
 
 };
-// Section 7: Log page {
+// Section 6: Log page {
 
-// Section 8: Rules {
+// Section 7: Rules {
 exports.getRulesDocument = function(language, boardUri, rules) {
 
   var dom = new JSDOM(templateHandler(language).rulesPage);
@@ -999,4 +932,4 @@ exports.rules = function(language, boardUri, rules, callback) {
     callback(error);
   }
 };
-// } Section 8: Rules
+// } Section 7: Rules

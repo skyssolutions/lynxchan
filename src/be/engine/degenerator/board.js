@@ -156,7 +156,7 @@ exports.catalog = function(boardUri, callback) {
 
 exports.board = function(boardUri, reloadThreads, reloadRules, callback) {
 
-  var exceptions = [ 'flag', 'banner', 'preview', 'custom' ];
+  var exceptions = [ 'flag', 'banner', 'custom' ];
 
   if (!reloadRules) {
     exceptions.push('rules');
@@ -278,7 +278,7 @@ exports.boards = function(callback) {
       },
       'metadata.type' : {
         $not : {
-          $in : [ 'flag', 'banner', 'preview', 'custom' ]
+          $in : [ 'flag', 'banner', 'custom' ]
         }
       }
     }

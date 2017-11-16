@@ -22,7 +22,6 @@ It accepts the following arguments:
 * `--tor-debug`, `-td`: tor debug. Will cause any request to be marked as a if it were coming from a TOR exit node.
 * `--fe-debug`, `-fd`: front-end debug. Will not cache static files, disable individual HTML caches and reload the front-end templates.
 * `--reload`, `-r`: will rebuild all pages on boot.
-* `--reload-previews`, `-rp`: will rebuild previews on boot.
 * `--reload-login`, `-rl`: will rebuild login page on boot.
 * `--reload-banner`, `-rb`: will rebuild default banner on boot.
 * `--reload-front`, `-rf`: will rebuild front-page on boot.
@@ -210,7 +209,6 @@ Meta-data of files on gridfs will have the following values:
   * `captcha` 
   * `banner`
   * `catalog`
-  * `preview`
   * `rules`
   * `flag`
   * `log`

@@ -16,7 +16,6 @@
 // catalog(Boolean): indicates to rebuild only the board catalog.
 // rules(Boolean): indicates to rebuild only the board rules page.
 // buildAll(Boolean): indicates to rebuild every page of the board, including
-// preview(Boolean): indicates we are building a preview page.
 // thread pages.
 // page(Number): page to be rebuilt.
 // thread(Number): thread to be rebuilt.
@@ -33,17 +32,16 @@ var logDates = [];
 // its structure is the following:
 // each key will be a board URI with an object.
 // each object will have the following fields: buildingPages, buildingAll,
-// pages, threads, previews, buildingCatalog, buildingRules.
+// pages, threads, buildingCatalog, buildingRules.
 // buildingPages indicates we are already rebuilding the board pages.
 // buildingAll may hold a boolean so we know we are already rebuilding the whole
-// board, except previews, ignore anything else incoming for the board.
+// board, ignore anything else incoming for the board.
 // buildingCatalog indicates we are already building the catalog without the
 // board pages.
 // buildingRules indicates we are already building the board rules page.
 // pages is an array with the numbers of pages to be rebuilt, indexed from 1.
 // [2,5] means we will rebuild pages 2 and 5
 // threads is an array with the ids of threads to be rebuilt.
-// previews is an array if with the numbers of postings we are going to rebuild.
 var queueTree = {};
 
 // so we can just tell it is rebuilding everything and ignore any incoming
@@ -99,13 +97,7 @@ exports.reload = function() {
 
 function clearBoardTree(message) {
 
-  if (message.preview) {
-    var postingId = message.thread || message.post;
-
-    queueTree[message.board].previews.splice(queueTree[message.board].previews
-        .indexOf(postingId), 1);
-
-  } else if (message.buildAll) {
+  if (message.buildAll) {
 
     queueTree[message.board].buildingAll = false;
     queueTree[message.board].buildingPages = false;
@@ -194,10 +186,7 @@ function debugPreGeneration() {
 
 function processMessageForBoards(message, callback) {
 
-  if (message.preview) {
-    generator.previews.preview(message.board, message.thread, message.post,
-        callback);
-  } else if (message.buildAll) {
+  if (message.buildAll) {
     generator.board.board(message.board, true, true, callback);
   } else if (message.catalog) {
     generator.board.catalog(message.board, callback);
@@ -379,10 +368,7 @@ function getNextQueueItem() {
 
 function deleteCacheForBoards(message, callback) {
 
-  if (message.preview) {
-    degenerator.previews.preview(message.board, message.thread, message.post,
-        callback);
-  } else if (message.buildAll) {
+  if (message.buildAll) {
     degenerator.board.board(message.board, true, true, callback);
   } else if (message.catalog) {
     degenerator.board.catalog(message.board, callback);
@@ -566,26 +552,6 @@ function checkBoardSpecialPages(message, boardInformation) {
   checkForPageAndThreadRebuild(message, boardInformation);
 }
 
-function rebuildingPreview(message, boardInformation) {
-
-  var previewsToRebuild = boardInformation.previews;
-
-  var postingId = message.thread || message.post;
-
-  if (!message.preview) {
-    return false;
-  } else if (previewsToRebuild.indexOf(postingId) < 0) {
-
-    previewsToRebuild.push(postingId);
-
-    putInQueue(message, boardInformation, 5, true);
-
-  }
-
-  return true;
-
-}
-
 function checkForBoardRebuild(message) {
 
   var boardInformation = queueTree[message.board] || {
@@ -594,13 +560,8 @@ function checkForBoardRebuild(message) {
     buildingCatalog : false,
     rules : false,
     pages : [],
-    threads : [],
-    previews : []
+    threads : []
   };
-
-  if (rebuildingPreview(message, boardInformation)) {
-    return;
-  }
 
   if (boardInformation.buildingAll) {
     return;

@@ -57,42 +57,6 @@ exports.generateThreadCache = function(lockData, boardData, callback) {
 
 };
 
-exports.generatePreviewCache = function(lockData, callback) {
-
-  posts.findOne({
-    boardUri : lockData.boardUri,
-    postId : lockData.postingId
-  }, function gotPost(error, post) {
-
-    if (error) {
-      callback(error);
-    } else if (!post) {
-
-      // style exception, too simple
-      threads.findOne({
-        threadId : lockData.postingId,
-        boardUri : lockData.boardUri
-      }, function gotThread(error, thread) {
-
-        if (error || !thread) {
-          callback(error, !thread);
-        } else {
-          generator.previews.preview(lockData.boardUri, lockData.postingId,
-              null, callback, thread);
-        }
-
-      });
-      // style exception, too simple
-
-    } else {
-      generator.previews.preview(lockData.boardUri, null, lockData.postingId,
-          callback, post);
-    }
-
-  });
-
-};
-
 exports.generateBoardCache = function(lockData, callback) {
 
   boards.findOne({
@@ -127,11 +91,6 @@ exports.generateBoardCache = function(lockData, callback) {
             break;
           }
 
-          case 'preview': {
-            exports.generatePreviewCache(lockData, callback);
-            break;
-          }
-
           }
 
         }
@@ -151,7 +110,6 @@ exports.generateCache = function(lockData, callback) {
 
   case 'rules':
   case 'catalog':
-  case 'preview':
   case 'thread':
   case 'board': {
     exports.generateBoardCache(lockData, callback);
@@ -197,7 +155,7 @@ exports.generateCache = function(lockData, callback) {
 
 exports.getThreadOrPreviewLockData = function(fileParts) {
 
-  if (fileParts[2] !== 'res' && fileParts[2] !== 'preview') {
+  if (fileParts[2] !== 'res') {
     return;
   }
 
@@ -207,7 +165,7 @@ exports.getThreadOrPreviewLockData = function(fileParts) {
 
     return {
       boardUri : fileParts[1],
-      type : fileParts[2] === 'res' ? 'thread' : 'preview',
+      type : 'thread',
       postingId : +matches[1]
     };
 
