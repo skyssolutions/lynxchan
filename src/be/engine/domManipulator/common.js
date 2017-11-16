@@ -80,24 +80,20 @@ exports.setFormCellBoilerPlate = function(cell, action, cssClass) {
   cell.setAttribute('class', cssClass);
 };
 
-exports.removeElement = function(element) {
-  element.parentNode.removeChild(element);
-};
-
 exports.setRoleSignature = function(postingCell, posting) {
   var labelRole = postingCell.getElementsByClassName('labelRole')[0];
 
   if (posting.signedRole) {
     labelRole.innerHTML = posting.signedRole;
   } else {
-    exports.removeElement(labelRole);
+    labelRole.remove();
   }
 };
 
 exports.setPostingIp = function(cell, postingData, boardData, userRole) {
 
   if (userRole <= minClearIpRole) {
-    exports.removeElement(cell.getElementsByClassName('panelRange')[0]);
+    cell.getElementsByClassName('panelRange')[0].remove();
   } else {
     var labelBroadRange = cell.getElementsByClassName('labelBroadRange')[0];
     labelBroadRange.innerHTML = miscOps.hashIpForDisplay(miscOps
@@ -168,7 +164,7 @@ exports.setCustomJs = function(board, document) {
 exports.setFlags = function(document, board, flagData, language) {
 
   if (!flagData || !flagData.length) {
-    exports.removeElement(document.getElementById('flagsDiv'));
+    document.getElementById('flagsDiv').remove();
 
     return;
   }
@@ -199,21 +195,21 @@ exports.setBoardPosting = function(boardData, document, thread, language) {
   var captchaMode = boardData.captchaMode || 0;
 
   if ((captchaMode < 1 || (captchaMode < 2 && thread)) && !forceCaptcha) {
-    exports.removeElement(document.getElementById('captchaDiv'));
+    document.getElementById('captchaDiv').remove();
   }
 
   if (settings.indexOf('forceAnonymity') > -1) {
-    exports.removeElement(document.getElementById('divName'));
+    document.getElementById('divName').remove();
   }
 
   var locationFlagMode = boardData.locationFlagMode || 0;
 
   if (locationFlagMode !== 1) {
-    exports.removeElement(document.getElementById('noFlagDiv'));
+    document.getElementById('noFlagDiv').remove();
   }
 
   if (settings.indexOf('textBoard') > -1) {
-    exports.removeElement(document.getElementById('divUpload'));
+    document.getElementById('divUpload').remove();
   } else {
     exports.setFileLimits(document, boardData, language);
   }
@@ -239,7 +235,7 @@ exports.setSharedHideableElements = function(posting, cell, language) {
         formatedDate).replace('{$login}', posting.lastEditLogin);
 
   } else {
-    exports.removeElement(editedLabel);
+    editedLabel.remove();
   }
 
   var imgFlag = cell.getElementsByClassName('imgFlag')[0];
@@ -255,7 +251,7 @@ exports.setSharedHideableElements = function(posting, cell, language) {
       imgFlag.className += ' flag' + posting.flagCode;
     }
   } else {
-    exports.removeElement(imgFlag);
+    imgFlag.remove();
   }
 
 };
@@ -278,8 +274,7 @@ exports.addMessage = function(innerPage, cell, post) {
     link.href = href;
 
   } else {
-    exports.removeElement(cell
-        .getElementsByClassName('contentOmissionIndicator')[0]);
+    cell.getElementsByClassName('contentOmissionIndicator')[0].remove();
   }
 
   cell.getElementsByClassName('divMessage')[0].innerHTML = markdown;
@@ -296,13 +291,13 @@ exports.setThreadModdingElements = function(modding, boardUri, thread, cell,
 
     cell.getElementsByClassName('linkEdit')[0].href = editLink;
   } else {
-    exports.removeElement(cell.getElementsByClassName('linkEdit')[0]);
+    cell.getElementsByClassName('linkEdit')[0].remove();
   }
 
   if (modding && thread.ip) {
     exports.setPostingIp(cell, thread, bData, userRole);
   } else {
-    exports.removeElement(cell.getElementsByClassName('panelIp')[0]);
+    cell.getElementsByClassName('panelIp')[0].remove();
   }
 
 };
@@ -312,8 +307,7 @@ exports.setThreadHiddeableElements = function(thread, cell, modding, boardUri,
 
   for ( var key in exports.indicatorsRelation) {
     if (!thread[key]) {
-      exports.removeElement(cell
-          .getElementsByClassName(exports.indicatorsRelation[key])[0]);
+      cell.getElementsByClassName(exports.indicatorsRelation[key])[0].remove();
     }
   }
 
@@ -322,7 +316,7 @@ exports.setThreadHiddeableElements = function(thread, cell, modding, boardUri,
     labelId.setAttribute('style', 'background-color: #' + thread.id);
     labelId.innerHTML = thread.id;
   } else {
-    exports.removeElement(cell.getElementsByClassName('spanId')[0]);
+    cell.getElementsByClassName('spanId')[0].remove();
   }
 
   exports.setThreadModdingElements(modding, boardUri, thread, cell, bData,
@@ -359,7 +353,7 @@ exports.setOmittedInformation = function(thread, threadCell, posts, innerPage,
   var omissionLabel = threadCell.getElementsByClassName('labelOmission')[0];
 
   if (innerPage || (thread.postCount || 0) <= (posts ? posts.length : 0)) {
-    exports.removeElement(omissionLabel);
+    omissionLabel.remove();
 
     return;
   }
@@ -457,7 +451,7 @@ exports.setPostHideableElements = function(postCell, post, language) {
   if (post.subject) {
     subjectLabel.innerHTML = post.subject;
   } else {
-    exports.removeElement(subjectLabel);
+    subjectLabel.remove();
   }
 
   if (post.id) {
@@ -465,13 +459,13 @@ exports.setPostHideableElements = function(postCell, post, language) {
     labelId.setAttribute('style', 'background-color: #' + post.id);
     labelId.innerHTML = post.id;
   } else {
-    exports.removeElement(postCell.getElementsByClassName('spanId')[0]);
+    postCell.getElementsByClassName('spanId')[0].remove();
   }
 
   var banMessageLabel = postCell.getElementsByClassName('divBanMessage')[0];
 
   if (!post.banMessage) {
-    exports.removeElement(banMessageLabel);
+    banMessageLabel.remove();
   } else {
     banMessageLabel.innerHTML = post.banMessage;
   }
@@ -498,7 +492,7 @@ exports.setPostLinks = function(postCell, post, preview) {
     deletionCheckbox.setAttribute('name', checkboxName);
 
   } else {
-    exports.removeElement(deletionCheckbox);
+    deletionCheckbox.remove();
   }
 };
 
@@ -521,7 +515,7 @@ exports.setPostModElements = function(post, modding, postCell, boardData,
   if (modding && post.ip) {
     exports.setPostingIp(postCell, post, boardData, userRole);
   } else {
-    exports.removeElement(postCell.getElementsByClassName('panelIp')[0]);
+    postCell.getElementsByClassName('panelIp')[0].remove();
   }
 
   if (modding) {
@@ -530,7 +524,7 @@ exports.setPostModElements = function(post, modding, postCell, boardData,
 
     postCell.getElementsByClassName('linkEdit')[0].href = editLink;
   } else {
-    exports.removeElement(postCell.getElementsByClassName('linkEdit')[0]);
+    postCell.getElementsByClassName('linkEdit')[0].remove();
   }
 };
 
@@ -692,7 +686,7 @@ exports.setThreadLinks = function(threadCell, thread, boardUri, innerPage) {
 
   var linkReply = threadCell.getElementsByClassName('linkReply')[0];
   if (innerPage) {
-    exports.removeElement(linkReply);
+    linkReply.remove();
   } else {
     linkReply.href = '/' + boardUri + '/res/' + thread.threadId + '.html';
   }
@@ -714,7 +708,7 @@ exports.setThreadComplexElements = function(boardUri, thread, threadCell) {
   var banMessageLabel = threadCell.getElementsByClassName('divBanMessage')[0];
 
   if (!thread.banMessage) {
-    exports.removeElement(banMessageLabel);
+    banMessageLabel.remove();
   } else {
     banMessageLabel.innerHTML = thread.banMessage;
   }
@@ -740,7 +734,7 @@ exports.setThreadSimpleElements = function(threadCell, thread, innerPage,
   if (thread.subject) {
     subjectLabel.innerHTML = thread.subject;
   } else {
-    exports.removeElement(subjectLabel);
+    subjectLabel.remove();
   }
 
   var labelCreation = threadCell.getElementsByClassName('labelCreated')[0];
@@ -786,7 +780,7 @@ exports.setUploadLinks = function(document, cell, file) {
 exports.setUploadModElements = function(modding, cell, file) {
 
   if (!modding) {
-    exports.removeElement(cell.getElementsByClassName('divHash')[0]);
+    cell.getElementsByClassName('divHash')[0].remove();
   } else {
     cell.getElementsByClassName('labelHash')[0].innerHTML = file.md5;
   }
@@ -824,7 +818,7 @@ exports.setUploadCell = function(document, node, files, modding, language) {
     if (file.width) {
       dimensionLabel.innerHTML = file.width + 'x' + file.height;
     } else {
-      exports.removeElement(dimensionLabel);
+      dimensionLabel.remove();
     }
 
     node.appendChild(cell);
@@ -841,7 +835,7 @@ exports.setBanCellHiddenElements = function(ban, cell, language) {
     cell.getElementsByClassName('denyIdentifier')[0].setAttribute('value',
         ban._id);
   } else {
-    exports.removeElement(cell.getElementsByClassName('denyForm')[0]);
+    cell.getElementsByClassName('denyForm')[0].remove();
   }
 
   cell.getElementsByClassName('liftIdentifier')[0].setAttribute('value',
@@ -855,7 +849,7 @@ exports.setBanCell = function(ban, cell, globalPage, language) {
     var label = cell.getElementsByClassName('appealLabel')[0];
     label.innerHTML = ban.appeal;
   } else {
-    exports.removeElement(cell.getElementsByClassName('appealPanel')[0]);
+    cell.getElementsByClassName('appealPanel')[0].remove();
   }
 
   exports.setBanCellHiddenElements(ban, cell, language);
@@ -872,7 +866,7 @@ exports.setBanCell = function(ban, cell, globalPage, language) {
   appliedByLabel.innerHTML = ban.appliedBy;
 
   if (!globalPage || !globalBoardModeration || !ban.boardUri) {
-    exports.removeElement(cell.getElementsByClassName('boardPanel')[0]);
+    cell.getElementsByClassName('boardPanel')[0].remove();
   } else {
     cell.getElementsByClassName('boardLabel')[0].innerHTML = ban.boardUri;
   }
@@ -938,7 +932,7 @@ exports.setBoardCustomization = function(boardData, document, board) {
   if (boardData.boardMarkdown && boardData.boardMarkdown.length) {
     document.getElementById('divMessage').innerHTML = boardData.boardMarkdown;
   } else {
-    exports.removeElement(document.getElementById('panelMessage'));
+    document.getElementById('panelMessage').remove();
   }
 
 };

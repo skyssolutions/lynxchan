@@ -128,7 +128,7 @@ exports.setBoardCreationForm = function(userData, document) {
   var allowed = userData.globalRole <= boardCreationRequirement;
 
   if (boardCreationRequirement <= miscOps.getMaxStaffRole() && !allowed) {
-    common.removeElement(document.getElementById('boardCreationDiv'));
+    document.getElementById('boardCreationDiv').remove();
   }
 };
 
@@ -163,7 +163,7 @@ exports.setTitleLoginAndStaff = function(document, userData, language) {
   exports.setBoardCreationForm(userData, document);
 
   if (!globalStaff) {
-    common.removeElement(document.getElementById('globalManagementLink'));
+    document.getElementById('globalManagementLink').remove();
   }
 
 };
@@ -271,19 +271,19 @@ exports.setBoardCell = function(board, boardCell) {
   var specialSettings = board.specialSettings || [];
 
   if (specialSettings.indexOf('sfw') < 0) {
-    common.removeElement(boardCell.getElementsByClassName('indicatorSfw')[0]);
+    boardCell.getElementsByClassName('indicatorSfw')[0].remove();
   }
 
   if (!board.inactive) {
     var inactiveIndicator = boardCell
         .getElementsByClassName('indicatorInactive')[0];
-    common.removeElement(inactiveIndicator);
+    inactiveIndicator.remove();
   }
 
   if (board.tags) {
     labelTags.innerHTML = board.tags.join(', ');
   } else {
-    common.removeElement(labelTags);
+    labelTags.remove();
   }
 };
 
@@ -355,7 +355,7 @@ exports.setOverboardLinks = function(document) {
   if (overboard) {
     linkOverboard.href = '/' + overboard + '/';
   } else {
-    common.removeElement(linkOverboard);
+    linkOverboard.remove();
   }
 
   var linkSfwOverboard = document.getElementById('linkSfwOver');
@@ -363,7 +363,7 @@ exports.setOverboardLinks = function(document) {
   if (sfwOverboard) {
     linkSfwOverboard.href = '/' + sfwOverboard + '/';
   } else {
-    common.removeElement(linkSfwOverboard);
+    linkSfwOverboard.remove();
   }
 
 };
@@ -408,7 +408,7 @@ exports.setBanPage = function(document, ban, board, language) {
     document.getElementById('expirationLabel').innerHTML = ban.expiration;
 
     if (ban.appeal) {
-      common.removeElement(document.getElementById('formAppeal'));
+      document.getElementById('formAppeal').remove();
     } else {
 
       var identifier = document.getElementById('idIdentifier');
@@ -503,12 +503,12 @@ exports.setEditIdentifiers = function(parameters, document) {
     document.getElementById('threadIdentifier').setAttribute('value',
         parameters.threadId);
 
-    common.removeElement(document.getElementById('postIdentifier'));
+    document.getElementById('postIdentifier').remove();
 
   } else {
     document.getElementById('postIdentifier').setAttribute('value',
         parameters.postId);
-    common.removeElement(document.getElementById('threadIdentifier'));
+    document.getElementById('threadIdentifier').remove();
   }
 
 };
@@ -562,7 +562,7 @@ exports.noCookieCaptcha = function(parameters, captchaId, language) {
     document.title = lang(language).titNoCookieCaptcha;
 
     if (!parameters.solvedCaptcha) {
-      common.removeElement(document.getElementById('divSolvedCaptcha'));
+      document.getElementById('divSolvedCaptcha').remove();
     } else {
       var labelSolved = document.getElementById('labelCaptchaId');
       labelSolved.innerHTML = parameters.solvedCaptcha;
@@ -590,11 +590,11 @@ exports.blockBypass = function(valid, language) {
     document.title = lang(language).titBlockbypass;
 
     if (!valid) {
-      common.removeElement(document.getElementById('indicatorValidBypass'));
+      document.getElementById('indicatorValidBypass').remove();
     }
 
     if (!blockBypass) {
-      common.removeElement(document.getElementById('renewForm'));
+      document.getElementById('renewForm').remove();
     }
 
     return dom.serialize();

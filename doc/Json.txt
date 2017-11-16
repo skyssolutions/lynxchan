@@ -98,34 +98,6 @@ Root(Object):
 
 JSO_ID::03
 
-Path:/<board>/preview/<posting>.json
-
-Root(Object):
-    signedRole: role of the user that posted the thread.
-    banMessage: message to be displayed indicating this message was a cause to a ban.
-    id: thread-wise id of the poster.
-    email: email of the poster.
-    flag: url of the used flag.
-    flagName: name of the used flag.
-    flagCode: location code of the flag.
-    markdown: message with html markdown applied.
-    subject: subject of the thread.
-    name: name of the poster.
-    message: text of the post.
-    creation(Date): time when the post was created.
-    files(Array): pre-aggregated array of files uploaded with the post. Each object contains the following fields:
-        originalName: original name of the upload.
-        path: path for the file.
-        thumb: path for the file's thumbnail.
-        size(Number) size in bytes of the file.
-        width(Number): width of the file, if any.
-        mime: mime of the file.
-        height(Number): size of the file, if any.
-
-------------------------------------------------------------------------------------------
-
-JSO_ID::04
-
 Path:/<board>/<page>.json
 
 Root(Object):
@@ -198,7 +170,7 @@ Root(Object):
 
 ------------------------------------------------------------------------------------------
 
-JSO_ID::05
+JSO_ID::04
 
 Path:/<board>/catalog.json
 
@@ -218,7 +190,7 @@ Root(Array): array of objects representing threads. Each element contains the fo
 
 ------------------------------------------------------------------------------------------
 
-JSO_ID::06
+JSO_ID::05
 
 Path:/<board>/rules.json
 
@@ -226,7 +198,7 @@ Root(Array): array of strings, each one being a rule of the board.
 
 ------------------------------------------------------------------------------------------
 
-JSO_ID::07
+JSO_ID::06
 
 Path:/.global/logs/<yyyy-MM-dd>.json
 
@@ -239,5 +211,3 @@ Root(Array): array with the logs of the day. Each object contains the following 
     global(Boolean): indicates if the event was global. 
 
 ------------------------------------------------------------------------------------------
-
-

@@ -98,7 +98,7 @@ exports.login = function(language, callback) {
     document.title = lang(language).titLogin;
 
     if (accountCreationDisabled) {
-      common.removeElement(document.getElementById('divCreation'));
+      document.getElementById('divCreation').remove();
     }
 
     var path = '/login.html';
@@ -170,13 +170,13 @@ exports.setModElements = function(modding, document, boardUri, boardData,
 
   var globalStaff = userRole <= miscOps.getMaxStaffRole();
   if (!globalStaff || !modding) {
-    common.removeElement(document.getElementById('formTransfer'));
+    document.getElementById('formTransfer').remove();
   }
 
   var allowedToDeleteFromIp = userRole <= clearIpMinRole;
 
   if (!modding || !allowedToDeleteFromIp) {
-    common.removeElement(document.getElementById('ipDeletionForm'));
+    document.getElementById('ipDeletionForm').remove();
   }
 
 };
@@ -238,8 +238,8 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
 
     } else {
 
-      common.removeElement(document.getElementById('divMod'));
-      common.removeElement(document.getElementById('divControls'));
+      document.getElementById('divMod').remove();
+      document.getElementById('divControls').remove();
 
       var meta = {
         boardUri : boardUri,
@@ -287,14 +287,14 @@ exports.addPagesLinks = function(document, pageCount, currentPage) {
 
   var previous = document.getElementById('linkPrevious');
   if (currentPage === 1) {
-    common.removeElement(previous);
+    previous.remove();
   } else {
     previous.href = currentPage > 2 ? currentPage - 1 + '.html' : 'index.html';
   }
 
   var next = document.getElementById('linkNext');
   if (pageCount === currentPage) {
-    common.removeElement(next);
+    next.remove();
   } else {
     next.href = (currentPage + 1) + '.html';
   }
@@ -383,9 +383,7 @@ exports.setCatalogCellIndicators = function(thread, cell) {
 
   for ( var key in common.indicatorsRelation) {
     if (!thread[key]) {
-
-      common.removeElement(cell
-          .getElementsByClassName(common.indicatorsRelation[key])[0]);
+      cell.getElementsByClassName(common.indicatorsRelation[key])[0].remove();
     }
   }
 
@@ -428,7 +426,7 @@ exports.setCatalogPosting = function(boardData, boardUri, flagData, document,
     common.setBoardPosting(boardData, document, null, language);
     common.setFlags(document, boardUri, flagData, language);
   } else {
-    common.removeElement(document.getElementById('postingForm'));
+    document.getElementById('postingForm').remove();
   }
 
 };
@@ -523,7 +521,7 @@ exports.setTopBoards = function(document, boards, language) {
   var boardsDiv = document.getElementById('divBoards');
 
   if (!boards) {
-    common.removeElement(boardsDiv);
+    boardsDiv.remove();
     return;
   }
 
@@ -590,7 +588,7 @@ exports.checkForLatestContent = function(document, latestImages, latestPosts,
   var latestPostsDiv = document.getElementById('divLatestPosts');
 
   if (!latestPosts) {
-    common.removeElement(latestPostsDiv);
+    latestPostsDiv.remove();
   } else {
     exports.setLatestPosts(latestPosts, latestPostsDiv, document, language);
   }
@@ -598,7 +596,7 @@ exports.checkForLatestContent = function(document, latestImages, latestPosts,
   var latestImagesDiv = document.getElementById('divLatestImages');
 
   if (!latestImages) {
-    common.removeElement(latestImagesDiv);
+    latestImagesDiv.remove();
   } else {
     exports.setLatestImages(latestImages, latestImagesDiv, document, language);
   }
@@ -637,7 +635,7 @@ exports.setFrontPageContent = function(document, boards, globalStats,
   if (globalStats) {
     exports.setGlobalStats(document, globalStats);
   } else {
-    common.removeElement(document.getElementById('divStats'));
+    document.getElementById('divStats').remove();
   }
 
   exports.checkForLatestContent(document, latestImages, latestPosts, language);
@@ -774,7 +772,7 @@ exports.overboard = function(foundThreads, previewRelation, callback,
 exports.setLogEntry = function(logCell, log, language) {
 
   if (!log.global) {
-    common.removeElement(logCell.getElementsByClassName('indicatorGlobal')[0]);
+    logCell.getElementsByClassName('indicatorGlobal')[0].remove();
   }
 
   var labelType = logCell.getElementsByClassName('labelType')[0];

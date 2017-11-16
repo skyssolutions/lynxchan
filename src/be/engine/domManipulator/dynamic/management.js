@@ -208,11 +208,11 @@ exports.setBoardOwnerControls = function(document, boardData, language) {
     document.getElementById('customJsIdentifier').setAttribute('value',
         boardData.boardUri);
   } else {
-    common.removeElement(document.getElementById('customJsForm'));
+    document.getElementById('customJsForm').remove();
   }
 
   if (!boardData.usesCustomSpoiler) {
-    common.removeElement(document.getElementById('customSpoilerIndicator'));
+    document.getElementById('customSpoilerIndicator').remove();
   }
 
   exports.setVolunteersDiv(document, boardData, language);
@@ -250,7 +250,7 @@ exports.setContent = function(document, boardData, userData, bans, reports,
   if (userData.login === boardData.owner || globallyAllowed) {
     exports.setBoardOwnerControls(document, boardData, language);
   } else {
-    common.removeElement(document.getElementById('ownerControlDiv'));
+    document.getElementById('ownerControlDiv').remove();
   }
 
   common.setBanList(document, document.getElementById('appealedBansPanel'),
@@ -374,27 +374,27 @@ exports.setGlobalManagementLinks = function(userRole, document) {
   var displayBans = userRole < miscOps.getMaxStaffRole();
 
   if (!displayBans) {
-    common.removeElement(document.getElementById('hashBansLink'));
-    common.removeElement(document.getElementById('bansLink'));
+    document.getElementById('hashBansLink').remove();
+    document.getElementById('bansLink').remove();
   }
 
   var displayRangeBans = userRole <= minClearIpRole;
 
   if (!displayRangeBans) {
-    common.removeElement(document.getElementById('rangeBansLink'));
+    document.getElementById('rangeBansLink').remove();
   }
 
   if (userRole !== 0) {
-    common.removeElement(document.getElementById('globalSettingsLink'));
-    common.removeElement(document.getElementById('languagesLink'));
-    common.removeElement(document.getElementById('socketLink'));
+    document.getElementById('globalSettingsLink').remove();
+    document.getElementById('languagesLink').remove();
+    document.getElementById('socketLink').remove();
   }
 
   var admin = userRole < 2;
 
   if (!admin) {
-    common.removeElement(document.getElementById('globalBannersLink'));
-    common.removeElement(document.getElementById('accountsLink'));
+    document.getElementById('globalBannersLink').remove();
+    document.getElementById('accountsLink').remove();
   }
 };
 
@@ -405,9 +405,9 @@ exports.processHideableElements = function(document, userRole, staff, lang) {
     exports.fillStaffDiv(document, exports.getPossibleRoles(userRole, lang),
         staff, lang);
   } else {
-    common.removeElement(document.getElementById('addStaffForm'));
-    common.removeElement(document.getElementById('massBanPanel'));
-    common.removeElement(document.getElementById('divStaff'));
+    document.getElementById('addStaffForm').remove();
+    document.getElementById('massBanPanel').remove();
+    document.getElementById('divStaff').remove();
   }
 
 };
@@ -422,7 +422,7 @@ exports.setGlobalManagementList = function(document, reports, appealedBans,
   if (appealedBans) {
     common.setBanList(document, banDiv, appealedBans, true, language);
   } else {
-    common.removeElement(banDiv);
+    banDiv.remove();
   }
 
 };
@@ -485,8 +485,7 @@ exports.setFilterCell = function(document, boardUri, filter, language) {
   boardIdentifier.setAttribute('value', boardUri);
 
   if (!filter.caseInsensitive) {
-    common
-        .removeElement(cell.getElementsByClassName('labelCaseInsensitive')[0]);
+    cell.getElementsByClassName('labelCaseInsensitive')[0].remove();
   }
 
   return cell;
@@ -725,7 +724,7 @@ exports.bannerManagement = function(boardUri, banners, language) {
 
     } else {
       document.title = lang(language).titGlobalBanners;
-      common.removeElement(document.getElementById('boardIdentifier'));
+      document.getElementById('boardIdentifier').remove();
     }
 
     document.getElementById('maxSizeLabel').innerHTML = displayMaxBannerSize;
@@ -956,7 +955,7 @@ exports.accountManagement = function(accountData, account, userRole, language) {
     document.getElementById('emailLabel').innerHTML = accountData.email;
 
     if (accountData.globalRole <= userRole) {
-      common.removeElement(document.getElementById('deletionForm'));
+      document.getElementById('deletionForm').remove();
     } else {
       document.getElementById('userIdentifier').setAttribute('value', account);
     }

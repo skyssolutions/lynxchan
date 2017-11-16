@@ -145,7 +145,7 @@ exports.rangeBans = function(rangeBans, boardData, language) {
     if (boardData) {
       boardIdentifier.setAttribute('value', boardData.boardUri);
     } else {
-      common.removeElement(boardIdentifier);
+      boardIdentifier.remove();
     }
 
     exports.setRangeBanCells(document, rangeBans, boardData, language);
@@ -195,7 +195,7 @@ exports.hashBans = function(hashBans, boardUri, language) {
     if (boardUri) {
       boardIdentifier.setAttribute('value', boardUri);
     } else {
-      common.removeElement(boardIdentifier);
+      boardIdentifier.remove();
     }
 
     exports.setHashBanCells(document, hashBans, language);
