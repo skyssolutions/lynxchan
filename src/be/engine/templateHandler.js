@@ -9,6 +9,8 @@ var fs = require('fs');
 var JSDOM = require('jsdom').JSDOM;
 var defaultTemplates = {};
 var alternativeTemplates = {};
+var preBuiltDefault = {};
+var preBuiltAlternative = {};
 
 require('jsdom').defaultDocumentFeatures = {
   FetchExternalResources : false,
@@ -38,14 +40,16 @@ exports.getAlternativeTemplates = function(language) {
 
 };
 
-exports.getTemplates = function(language) {
+exports.getTemplates = function(language, preBuilt) {
+
+  var defaultToUse = preBuilt ? preBuiltDefault : defaultTemplates;
 
   if (language) {
 
-    return exports.getAlternativeTemplates(language) || defaultTemplates;
+    return exports.getAlternativeTemplates(language, preBuilt) || defaultToUse;
 
   } else {
-    return defaultTemplates;
+    return defaultToUse;
   }
 
 };
@@ -62,11 +66,19 @@ exports.getCellTests = function() {
   return [
       {
         template : 'latestImageCell',
-        fields : [ 'linkPost' ]
+        fields : [ 'linkPost' ],
+        prebuiltFields : [ {
+          name : 'linkPost',
+          uses : [ 'children', 'href' ]
+        } ]
       },
       {
         template : 'topBoardCell',
-        fields : [ 'boardLink' ]
+        fields : [ 'boardLink' ],
+        prebuiltFields : [ {
+          name : 'boardLink',
+          uses : [ 'inner', 'href' ]
+        } ]
       },
       {
         template : 'catalogCell',
@@ -167,7 +179,14 @@ exports.getCellTests = function() {
       },
       {
         template : 'latestPostCell',
-        fields : [ 'labelPreview', 'linkPost' ]
+        fields : [ 'labelPreview', 'linkPost' ],
+        prebuiltFields : [ {
+          name : 'labelPreview',
+          uses : [ 'inner' ]
+        }, {
+          name : 'linkPost',
+          uses : [ 'inner', 'href' ]
+        } ]
       },
       {
         template : 'logIndexCell',
@@ -228,7 +247,42 @@ exports.getPageTests = function() {
         fields : [ 'divBoards', 'divLatestPosts', 'divLatestImages',
             'linkEngine', 'divStats', 'labelTotalPosts', 'labelTotalIps',
             'labelTotalBoards', 'labelTotalPPH', 'labelTotalFiles',
-            'labelTotalSize' ]
+            'labelTotalSize' ],
+        prebuiltFields : [ {
+          name : 'divBoards',
+          uses : [ 'removal', 'children' ]
+        }, {
+          name : 'divLatestImages',
+          uses : [ 'removal', 'children' ]
+        }, {
+          name : 'divLatestPosts',
+          uses : [ 'removal', 'children' ]
+        }, {
+          name : 'linkEngine',
+          uses : [ 'href', 'inner' ]
+        }, {
+          name : 'divStats',
+          uses : [ 'removal' ]
+        }, {
+          name : 'labelTotalPosts',
+          uses : [ 'inner' ]
+        }, {
+          name : 'labelTotalIps',
+          uses : [ 'inner' ]
+        }, {
+          name : 'labelTotalBoards',
+          uses : [ 'inner' ]
+        }, {
+          name : 'labelTotalPPH',
+          uses : [ 'inner' ]
+        }, {
+          name : 'labelTotalFiles',
+          uses : [ 'inner' ]
+        }, {
+          name : 'labelTotalSize',
+          uses : [ 'inner' ]
+        } ]
+
       },
       {
         template : 'boardPage',
@@ -444,7 +498,9 @@ exports.getPageTests = function() {
 
 };
 
-exports.testPageFields = function(document, page, errors) {
+exports.testPageFields = function(dom, page, prebuiltObject, errors) {
+
+  var document = dom.window.document;
 
   var error = '';
 
@@ -458,11 +514,19 @@ exports.testPageFields = function(document, page, errors) {
 
   }
 
+  if (page.prebuiltFields) {
+
+    document.title = '__title__';
+
+    exports.loadPrebuiltFields(dom, document, prebuiltObject, page);
+
+  }
+
   return error;
 };
 
 exports.processPage = function(errors, page, fePath, templateSettings,
-    templateObject) {
+    templateObject, prebuiltObject) {
 
   var fullPath = fePath + '/templates/';
   fullPath += templateSettings[page.template];
@@ -478,9 +542,9 @@ exports.processPage = function(errors, page, fePath, templateSettings,
 
   templateObject[page.template] = template;
 
-  var document = new JSDOM(template).window.document;
+  var dom = new JSDOM(template);
 
-  var error = exports.testPageFields(document, page, errors);
+  var error = exports.testPageFields(dom, page, prebuiltObject, errors);
 
   if (error.length) {
 
@@ -489,7 +553,8 @@ exports.processPage = function(errors, page, fePath, templateSettings,
 
 };
 
-exports.loadPages = function(errors, fePath, templateSettings, templateObject) {
+exports.loadPages = function(errors, fePath, templateSettings, templateObject,
+    prebuiltObject) {
 
   var pages = exports.getPageTests();
 
@@ -503,14 +568,92 @@ exports.loadPages = function(errors, fePath, templateSettings, templateObject) {
       continue;
     }
 
-    exports.processPage(errors, page, fePath, templateSettings, templateObject);
+    exports.processPage(errors, page, fePath, templateSettings, templateObject,
+        prebuiltObject);
 
   }
 };
 
-exports.testCell = function(document, cell, fePath, templateSettings,
-    templateObject) {
+exports.loadPrebuiltFields = function(dom, base, object, template, cell) {
+
+  var removed = [];
+
+  var document = dom.window.document;
+
+  for (var j = 0; j < template.prebuiltFields.length; j++) {
+
+    var field = template.prebuiltFields[j];
+
+    var element = cell ? base.getElementsByClassName(field.name)[0] : document
+        .getElementById(field.name);
+
+    for (var i = 0; i < field.uses.length; i++) {
+
+      var use = field.uses[i];
+
+      switch (field.uses[i]) {
+
+      case 'removal': {
+        removed.push(field.name);
+        break;
+      }
+
+      case 'children': {
+        var text = '__' + field.name + '_children__';
+
+        element.appendChild(document.createTextNode(text));
+        break;
+      }
+
+      case 'href': {
+        element.href = '__' + field.name + '_href__';
+        break;
+      }
+
+      case 'inner': {
+        element.innerHTML = '__' + field.name + '_inner__';
+        break;
+      }
+
+      default: {
+        console.log('Unknown use for ' + field.name + ': ' + use);
+      }
+      }
+
+    }
+
+  }
+
+  var removable = {};
+
+  for (i = 0; i < removed.length; i++) {
+
+    element = document.getElementById(removed[i]);
+
+    text = '__' + removed[i] + '_location__';
+
+    element.parentNode.insertBefore(document.createTextNode(text), element);
+
+    removable[removed[i]] = element.outerHTML;
+
+    element.remove();
+
+  }
+
+  var toInsert = {
+    template : cell ? base.innerHTML : dom.serialize(),
+    removable : removable
+  };
+
+  object[template.template] = toInsert;
+
+};
+
+exports.testCell = function(dom, cell, fePath, templateSettings,
+    templateObject, prebuiltObject) {
   var error = '';
+
+  var document = dom.window.document;
 
   var cellElement = document.createElement('div');
 
@@ -539,12 +682,17 @@ exports.testCell = function(document, cell, fePath, templateSettings,
 
   }
 
+  if (cell.prebuiltFields) {
+    exports.loadPrebuiltFields(dom, cellElement, prebuiltObject, cell, true);
+  }
+
   return error;
 };
 
-exports.loadCells = function(errors, fePath, templateSettings, templateObject) {
+exports.loadCells = function(errors, fePath, templateSettings, templateObject,
+    prebuiltObject) {
 
-  var document = new JSDOM('<html></html>').window.document;
+  var dom = new JSDOM('<html></html>');
 
   var cells = exports.getCellTests();
 
@@ -558,8 +706,8 @@ exports.loadCells = function(errors, fePath, templateSettings, templateObject) {
       continue;
     }
 
-    var error = exports.testCell(document, cell, fePath, templateSettings,
-        templateObject);
+    var error = exports.testCell(dom, cell, fePath, templateSettings,
+        templateObject, prebuiltObject);
 
     if (error.length) {
       errors.push('\nCell ' + cell.template + error);
@@ -602,6 +750,7 @@ exports.loadTemplates = function(language) {
     var fePath = settingsHandler.getGeneralSettings().fePath;
     var templateSettings = settingsHandler.getTemplateSettings();
     var templateObject = defaultTemplates;
+    var prebuiltTemplateObject = preBuiltDefault;
   } else {
 
     if (verbose) {
@@ -610,16 +759,20 @@ exports.loadTemplates = function(language) {
 
     fePath = language.frontEnd;
     templateObject = {};
+    prebuiltTemplateObject = {};
 
     var finalPath = fePath + '/templateSettings.json';
     templateSettings = JSON.parse(fs.readFileSync(finalPath));
 
     alternativeTemplates[language._id] = templateObject;
+    preBuiltAlternative[language._id] = prebuiltTemplateObject;
 
   }
 
-  exports.loadCells(errors, fePath, templateSettings, templateObject);
-  exports.loadPages(errors, fePath, templateSettings, templateObject);
+  exports.loadCells(errors, fePath, templateSettings, templateObject,
+      prebuiltTemplateObject);
+  exports.loadPages(errors, fePath, templateSettings, templateObject,
+      prebuiltTemplateObject);
 
   exports.handleLoadingErrors(errors);
 
@@ -627,4 +780,5 @@ exports.loadTemplates = function(language) {
 
 exports.dropAlternativeTemplates = function() {
   alternativeTemplates = {};
+  preBuiltAlternative = {};
 };

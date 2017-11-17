@@ -487,160 +487,157 @@ exports.catalog = function(language, boardData, threads, flagData, callback) {
 // } Section 3: Catalog
 
 // Section 4: Front page {
-exports.setLatestImages = function(latestImages, latestImagesDiv, document,
-    language) {
+exports.setLatestImages = function(latestImages, document, language) {
+
+  var cellTemplate = templateHandler(language, true).latestImageCell;
+
+  var children = '';
 
   for (var i = 0; i < latestImages.length; i++) {
 
     var image = latestImages[i];
 
-    var cell = document.createElement('div');
-    cell.innerHTML = templateHandler(language).latestImageCell;
-    cell.setAttribute('class', 'latestImageCell');
-
-    var link = cell.getElementsByClassName('linkPost')[0];
+    var cell = '<div class=\"latestImageCell\">' + cellTemplate.template;
+    cell += '</div>';
 
     var postLink = '/' + image.boardUri + '/res/' + image.threadId + '.html';
     postLink += '#' + (image.postId || image.threadId);
 
-    link.href = postLink;
+    cell = cell.replace('__linkPost_href__', postLink);
 
-    var imgElement = document.createElement('img');
-    imgElement.src = image.thumb;
+    var img = '<img src=\"' + image.thumb + '\">';
 
-    link.appendChild(imgElement);
+    cell = cell.replace('__linkPost_children__', img);
 
-    latestImagesDiv.appendChild(cell);
+    children += cell;
 
   }
+
+  document.t = document.t.replace('__divLatestImages_children__', children);
 
 };
 
 exports.setTopBoards = function(document, boards, language) {
 
-  var boardsDiv = document.getElementById('divBoards');
-
   if (!boards) {
-    boardsDiv.remove();
+    document.t = document.t.replace('__divBoards_location__', '');
     return;
   }
+
+  document.t = document.t.replace('__divBoards_location__',
+      document.toRemove.divBoards);
+
+  var cellTemplate = templateHandler(language, true).topBoardCell;
+  var children = '';
 
   for (var i = 0; i < boards.length; i++) {
 
     var board = boards[i];
 
-    var cell = document.createElement('div');
-    cell.innerHTML = templateHandler(language).topBoardCell;
+    var cell = '<div class=\'topBoardCell\'>' + cellTemplate.template;
+    cell += '</div>';
 
-    var link = cell.getElementsByClassName('boardLink')[0];
+    var content = '/' + board.boardUri + '/ - ' + board.boardName;
+    cell = cell.replace('__boardLink_inner__', content);
 
-    link.href = '/' + board.boardUri + '/';
-    link.innerHTML = '/' + board.boardUri + '/ - ' + board.boardName;
+    cell = cell.replace('__boardLink_href__', '/' + board.boardUri + '/');
 
-    boardsDiv.appendChild(cell);
-
+    children += cell;
   }
+
+  document.t = document.t.replace('__divBoards_children__', children);
 
 };
 
-exports.setLatestPosts = function(latestPosts, latestPostsDiv, document,
-    language) {
+exports.setLatestPosts = function(latestPosts, document, language) {
+
+  var cellTemplate = templateHandler(language, true).latestPostCell;
+
+  var children = '';
 
   for (var i = 0; i < latestPosts.length; i++) {
     var post = latestPosts[i];
 
-    var cell = document.createElement('div');
-    cell.innerHTML = templateHandler(language).latestPostCell;
-    cell.setAttribute('class', 'latestPostCell');
+    var cell = '<div class=\"latestPostCell\">' + cellTemplate.template;
+    cell += '</div>';
 
-    var previewLabel = cell.getElementsByClassName('labelPreview')[0];
-    previewLabel.innerHTML = post.previewText;
-
-    var link = cell.getElementsByClassName('linkPost')[0];
+    cell = cell.replace('__labelPreview_inner__', post.previewText);
 
     var postLink = '/' + post.boardUri + '/res/' + post.threadId + '.html';
     postLink += '#' + (post.postId || post.threadId);
-
-    link.href = postLink;
+    cell = cell.replace('__linkPost_href__', postLink);
 
     var linkText = '>>/' + post.boardUri + '/' + (post.postId || post.threadId);
+    cell = cell.replace('__linkPost_inner__', linkText);
 
-    link.innerHTML = linkText;
-
-    latestPostsDiv.appendChild(cell);
+    children += cell;
 
   }
 
-};
-
-exports.setEngineInfo = function(document) {
-
-  var link = document.getElementById('linkEngine');
-
-  link.innerHTML = 'LynxChan ' + engineInfo.version;
-  link.href = 'http://gitgud.io/LynxChan/LynxChan';
+  document.t = document.t.replace('__divLatestPosts_children__', children);
 
 };
 
-exports.checkForLatestContent = function(document, latestImages, latestPosts,
-    language) {
+exports.setEngineInfo = function(d) {
 
-  var latestPostsDiv = document.getElementById('divLatestPosts');
+  d.t = d.t
+      .replace('__linkEngine_href__', 'http://gitgud.io/LynxChan/LynxChan');
+  d.t = d.t.replace('__linkEngine_inner__', 'LynxChan ' + engineInfo.version);
+
+};
+
+exports.checkForLatestContent = function(d, latestImages, latestPosts, lang) {
 
   if (!latestPosts) {
-    latestPostsDiv.remove();
+    d.t = d.t.replace('__divLatestPosts_location__', '');
   } else {
-    exports.setLatestPosts(latestPosts, latestPostsDiv, document, language);
+    d.t = d.t.replace('__divLatestPosts_location__', d.toRemove.divLatestPosts);
+    exports.setLatestPosts(latestPosts, d, lang);
   }
-
-  var latestImagesDiv = document.getElementById('divLatestImages');
 
   if (!latestImages) {
-    latestImagesDiv.remove();
+    d.t = d.t.replace('__divLatestImages_location__', '');
   } else {
-    exports.setLatestImages(latestImages, latestImagesDiv, document, language);
+    d.t = d.t.replace('__divLatestImages_location__',
+        d.toRemove.divLatestImages);
+    exports.setLatestImages(latestImages, d, lang);
   }
 
 };
 
-exports.setGlobalStats = function(document, globalStats) {
+exports.setGlobalStats = function(d, globalStats) {
 
-  var postsLabel = document.getElementById('labelTotalPosts');
-  postsLabel.innerHTML = globalStats.totalPosts || 0;
-
-  var ipsLabel = document.getElementById('labelTotalIps');
-  ipsLabel.innerHTML = globalStats.totalIps || 0;
-
-  var pphLabel = document.getElementById('labelTotalPPH');
-  pphLabel.innerHTML = globalStats.totalPPH || 0;
-
-  var totalBoardsLabel = document.getElementById('labelTotalBoards');
-  totalBoardsLabel.innerHTML = globalStats.totalBoards || 0;
-
-  var totalFilesLabel = document.getElementById('labelTotalFiles');
-  totalFilesLabel.innerHTML = globalStats.totalFiles || 0;
-
-  var totalSizeLabel = document.getElementById('labelTotalSize');
-  totalSizeLabel.innerHTML = globalStats.totalSize || 0;
+  d.t = d.t.replace('__labelTotalPosts_inner__', globalStats.totalPosts || 0);
+  d.t = d.t.replace('__labelTotalIps_inner__', globalStats.totalIps || 0);
+  d.t = d.t.replace('__labelTotalPPH_inner__', globalStats.totalPPH || 0);
+  d.t = d.t.replace('__labelTotalBoards_inner__', globalStats.totalBoards || 0);
+  d.t = d.t.replace('__labelTotalFiles_inner__', globalStats.totalFiles);
+  d.t = d.t.replace('__labelTotalSize_inner__', globalStats.totalSize || 0);
 
 };
 
-exports.setFrontPageContent = function(document, boards, globalStats,
-    latestImages, latestPosts, language) {
+exports.setFrontPageContent = function(d, boards, globalStats, latestImages,
+    latestPosts, language) {
 
-  document.title = siteTitle || lang(language).titDefaultChanTitle;
+  var titleToUse = siteTitle || lang(language).titDefaultChanTitle;
 
-  exports.setTopBoards(document, boards, language);
+  d.t = d.t.replace('__title__', titleToUse);
+
+  exports.setTopBoards(d, boards, language);
 
   if (globalStats) {
-    exports.setGlobalStats(document, globalStats);
+
+    d.t = d.t.replace('__divStats_location__', d.toRemove.divStats);
+
+    exports.setGlobalStats(d, globalStats);
+
   } else {
-    document.getElementById('divStats').remove();
+    d.t = d.t.replace('__divStats_location__', '');
   }
 
-  exports.checkForLatestContent(document, latestImages, latestPosts, language);
+  exports.checkForLatestContent(d, latestImages, latestPosts, language);
 
-  exports.setEngineInfo(document);
+  exports.setEngineInfo(d);
 
 };
 
@@ -649,8 +646,12 @@ exports.frontPage = function(boards, latestPosts, latestImages, globalStats,
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).index);
-    var document = dom.window.document;
+    var templateData = templateHandler(language, true).index;
+
+    var document = {
+      t : templateData.template,
+      toRemove : templateData.removable
+    };
 
     exports.setFrontPageContent(document, boards, globalStats, latestImages,
         latestPosts, language);
@@ -666,7 +667,7 @@ exports.frontPage = function(boards, latestPosts, latestImages, globalStats,
       filePath += language.headerValues.join('-');
     }
 
-    gridFs.writeData(dom.serialize(), filePath, 'text/html', meta, callback);
+    gridFs.writeData(document.t, filePath, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);
