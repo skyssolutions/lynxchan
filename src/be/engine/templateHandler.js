@@ -159,7 +159,32 @@ exports.getCellTests = function() {
       {
         template : 'uploadCell',
         fields : [ 'sizeLabel', 'imgLink', 'nameLink', 'divHash', 'labelHash',
-            'originalNameLink', 'dimensionLabel' ]
+            'originalNameLink', 'dimensionLabel' ],
+        prebuiltFields : [
+            {
+              name : 'sizeLabel',
+              uses : [ 'inner' ]
+            },
+            {
+              name : 'imgLink',
+              uses : [ 'children', 'href', 'data-filewidth', 'data-fileheight',
+                  'data-filemime' ]
+            }, {
+              name : 'nameLink',
+              uses : [ 'href' ]
+            }, {
+              name : 'divHash',
+              uses : [ 'removal' ]
+            }, {
+              name : 'labelHash',
+              uses : [ 'inner' ]
+            }, {
+              name : 'originalNameLink',
+              uses : [ 'inner', 'href', 'download' ]
+            }, {
+              name : 'dimensionLabel',
+              uses : [ 'removal', 'inner' ]
+            } ]
       },
       {
         template : 'ruleManagementCell',
@@ -582,8 +607,6 @@ exports.processFieldUses = function(field, removed, element, document) {
 
   for (var i = 0; i < field.uses.length; i++) {
 
-    var use = field.uses[i];
-
     switch (field.uses[i]) {
 
     case 'removal': {
@@ -608,26 +631,44 @@ exports.processFieldUses = function(field, removed, element, document) {
       break;
     }
 
-    default: {
-      console.log('Unknown use for ' + field.name + ': ' + use);
+    case 'download': {
+      element.setAttribute('download', '__' + field.name + '_download__');
+      break;
     }
+
+    case 'data-filemime': {
+      element.setAttribute('data-filemime', '__' + field.name + '_mime__');
+      break;
+    }
+
+    case 'data-fileheight': {
+      element.setAttribute('data-fileheight', '__' + field.name + '_height__');
+      break;
+    }
+
+    case 'data-filewidth': {
+      element.setAttribute('data-filewidth', '__' + field.name + '_width__');
+      break;
+    }
+
     }
 
   }
 
 };
 
-exports.handleRemovableFields = function(removed, document) {
+exports.handleRemovableFields = function(removed, cell, document, base) {
 
   var removable = {};
 
   for (var i = 0; i < removed.length; i++) {
 
-    var element = document.getElementById(removed[i]);
+    var element = cell ? base.getElementsByClassName(removed[i])[0] : document
+        .getElementById(removed[i]);
 
-    var text = '__' + removed[i] + '_location__';
+    var textNode = document.createTextNode('__' + removed[i] + '_location__');
 
-    element.parentNode.insertBefore(document.createTextNode(text), element);
+    element.parentNode.insertBefore(textNode, element);
 
     removable[removed[i]] = element.outerHTML;
 
@@ -649,17 +690,15 @@ exports.loadPrebuiltFields = function(dom, base, object, template, cell) {
 
     var field = template.prebuiltFields[j];
 
-    var element;
+    var element = null;
 
     if (cell) {
 
       var elements = base.getElementsByClassName(field.name);
 
-      if (!elements) {
-        return;
+      if (elements) {
+        element = elements[0];
       }
-
-      element = elements[0];
 
     } else {
       element = document.getElementById(field.name);
@@ -669,7 +708,7 @@ exports.loadPrebuiltFields = function(dom, base, object, template, cell) {
 
   }
 
-  var removable = exports.handleRemovableFields(removed, document);
+  var removable = exports.handleRemovableFields(removed, cell, document, base);
 
   var toInsert = {
     template : cell ? base.innerHTML : dom.serialize(),
@@ -726,6 +765,8 @@ exports.testCell = function(dom, cell, fePath, templateSettings,
   if (cell.prebuiltFields) {
     exports.loadPrebuiltFields(dom, cellElement, prebuiltObject, cell, true);
   }
+
+  cellElement.remove();
 
   return error;
 };

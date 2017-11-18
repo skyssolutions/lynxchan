@@ -1006,7 +1006,7 @@ originalNameLink:
     description: link used to download the file with it's original name.
 
 imgLink:
-    use: have it's href manipulated and a child appended to it.
+    use: have it's href, data-filewidth, data-fileheight and data-filemime manipulated and a child appended to it.
     description: holds the thumbnail of the image and links to the file. Will have the attribute "data-filemime" with the file mime. If the file has dimensions, will have the attributes "data-filewidth" and "data-fileheight" with the dimensions of the file.
 
 nameLink:
@@ -1014,7 +1014,7 @@ nameLink:
     description: alternative link to the image using the name of the file instead of a thumbnail.
 
 divHash:
-    use: have it's innerHTML manipulated or might be removed.
+    use: might be removed.
     description: div that contains the label of the file md5 to be removed in case the page is not being displayed for moderation purposes.
 
 labelHash:

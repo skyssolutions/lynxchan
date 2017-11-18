@@ -746,53 +746,61 @@ exports.setThreadSimpleElements = function(threadCell, thread, innerPage,
 };
 
 // Section 2.2: Uploads {
-exports.setUploadAttributes = function(file, thumbLink) {
+exports.setUploadLinks = function(cell, file) {
+
+  cell = cell.replace('__imgLink_href__', file.path);
+  cell = cell.replace('__imgLink_mime__', file.mime);
 
   if (file.width) {
-    thumbLink.setAttribute('data-filewidth', file.width);
-    thumbLink.setAttribute('data-fileheight', file.height);
-  }
-
-  thumbLink.setAttribute('data-filemime', file.mime);
-};
-
-exports.setUploadLinks = function(document, cell, file) {
-
-  var thumbLink = cell.getElementsByClassName('imgLink')[0];
-  thumbLink.href = file.path;
-
-  exports.setUploadAttributes(file, thumbLink);
-
-  var img = document.createElement('img');
-  img.src = file.thumb;
-
-  thumbLink.appendChild(img);
-
-  var nameLink = cell.getElementsByClassName('nameLink')[0];
-  nameLink.href = file.path;
-
-  var originalLink = cell.getElementsByClassName('originalNameLink')[0];
-  originalLink.innerHTML = file.originalName;
-  originalLink.href = file.path;
-  originalLink.setAttribute('download', file.originalName);
-};
-
-exports.setUploadModElements = function(modding, cell, file) {
-
-  if (!modding) {
-    cell.getElementsByClassName('divHash')[0].remove();
+    cell = cell.replace('__imgLink_width__', file.width);
+    cell = cell.replace('__imgLink_height__', file.height);
   } else {
-    cell.getElementsByClassName('labelHash')[0].innerHTML = file.md5;
+    cell = cell.replace('__imgLink_width__', '');
+    cell = cell.replace('__imgLink_height__', '');
   }
-};
 
-exports.getUploadCellBase = function(document, language) {
+  cell = cell.replace('__nameLink_href__', file.path);
 
-  var cell = document.createElement('figure');
-  cell.innerHTML = templateHandler(language).uploadCell;
-  cell.setAttribute('class', 'uploadCell');
+  var img = '<img src=\'' + file.thumb + '\'>';
+
+  cell = cell.replace('__imgLink_children__', img);
+
+  cell = cell.replace('__originalNameLink_inner__', file.originalName);
+  cell = cell.replace('__originalNameLink_href__', file.path);
+  cell = cell.replace('__originalNameLink_download__', file.originalName);
 
   return cell;
+
+};
+
+exports.setUploadModElements = function(t, modding, cell, file) {
+
+  if (!modding) {
+    cell = cell.replace('__divHash_location__', '');
+  } else {
+    cell = cell.replace('__divHash_location__', t.removable.divHash);
+    cell = cell.replace('__labelHash_inner__', file.md5);
+  }
+
+  return cell;
+
+};
+
+exports.setUploadDimensionLabel = function(cell, file, t) {
+
+  if (file.width) {
+    cell = cell.replace('__dimensionLabel_location__',
+        t.removable.dimensionLabel);
+
+    var dimensionString = file.width + 'x' + file.height;
+    cell = cell.replace('__dimensionLabel_inner__', dimensionString);
+
+  } else {
+    cell = cell.replace('__dimensionLabel_location__', '');
+  }
+
+  return cell;
+
 };
 
 exports.setUploadCell = function(document, node, files, modding, language) {
@@ -801,28 +809,31 @@ exports.setUploadCell = function(document, node, files, modding, language) {
     return;
   }
 
+  var children = '';
+
+  var t = templateHandler(language, true).uploadCell;
+
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
 
-    var cell = exports.getUploadCellBase(document, language);
+    var cell = '<figure class=\'uploadCell\'>' + t.template + '</figure>';
 
-    exports.setUploadLinks(document, cell, file);
+    cell = exports.setUploadModElements(t, modding, exports.setUploadLinks(
+        cell, file), file);
 
-    exports.setUploadModElements(modding, cell, file);
+    cell = cell.replace('__sizeLabel_inner__', exports.formatFileSize(
+        file.size, language));
 
-    var sizeString = exports.formatFileSize(file.size, language);
-    cell.getElementsByClassName('sizeLabel')[0].innerHTML = sizeString;
+    cell = exports.setUploadDimensionLabel(cell, file, t);
 
-    var dimensionLabel = cell.getElementsByClassName('dimensionLabel')[0];
+    children += cell;
 
-    if (file.width) {
-      dimensionLabel.innerHTML = file.width + 'x' + file.height;
-    } else {
-      dimensionLabel.remove();
-    }
-
-    node.appendChild(cell);
   }
+
+  node.innerHTML += children;
+
+  return;
+
 };
 // } Section 2.2: Uploads
 
