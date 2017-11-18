@@ -1,5 +1,7 @@
 'use strict';
 
+var settingsHandler = require('../../settingsHandler');
+var verbose;
 var db = require('../../db');
 var files = db.files();
 var cacheLocks = db.cacheLocks();
@@ -9,7 +11,16 @@ exports.loadDependencies = function() {
   gridFsHandler = require('../gridFsHandler');
 };
 
+exports.loadSettings = function() {
+  var settings = settingsHandler.getGeneralSettings();
+  verbose = settings.verbose || settings.verboseGenerator;
+};
+
 exports.thread = function(boardUri, threadId, callback) {
+
+  if (verbose) {
+    console.log('Degenerating thread ' + threadId + ' of board ' + boardUri);
+  }
 
   files.aggregate([ {
     $match : {
@@ -56,6 +67,10 @@ exports.thread = function(boardUri, threadId, callback) {
 };
 
 exports.page = function(boardUri, page, callback) {
+
+  if (verbose) {
+    console.log('Degenerating page ' + page + ' of board ' + boardUri);
+  }
 
   var filesNames = [ '/' + boardUri + '/' + page + '.json',
       '/' + boardUri + '/' + (page > 1 ? (page + '.html') : '') ];
@@ -112,6 +127,10 @@ exports.page = function(boardUri, page, callback) {
 
 exports.catalog = function(boardUri, callback) {
 
+  if (verbose) {
+    console.log('Degenerating catalog of ' + boardUri);
+  }
+
   files.aggregate([ {
     $match : {
       'metadata.boardUri' : boardUri,
@@ -155,6 +174,10 @@ exports.catalog = function(boardUri, callback) {
 };
 
 exports.board = function(boardUri, reloadThreads, reloadRules, callback) {
+
+  if (verbose) {
+    console.log('Degenerating ' + boardUri);
+  }
 
   var exceptions = [ 'flag', 'banner', 'custom' ];
 
@@ -226,6 +249,10 @@ exports.board = function(boardUri, reloadThreads, reloadRules, callback) {
 
 exports.rules = function(boardUri, callback) {
 
+  if (verbose) {
+    console.log('Degenerating rules on ' + boardUri);
+  }
+
   files.aggregate([ {
     $match : {
       'metadata.boardUri' : boardUri,
@@ -270,6 +297,10 @@ exports.rules = function(boardUri, callback) {
 };
 
 exports.boards = function(callback) {
+
+  if (verbose) {
+    console.log('Degenerating boards');
+  }
 
   files.aggregate([ {
     $match : {

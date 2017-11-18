@@ -8,6 +8,7 @@ var logger = require('../../logger');
 var files = db.files();
 var overboard;
 var overboardSFW;
+var verbose;
 var gridFsHandler;
 
 exports.loadSettings = function() {
@@ -16,6 +17,7 @@ exports.loadSettings = function() {
 
   overboardSFW = settings.sfwOverboard;
   overboard = settings.overboard;
+  verbose = settings.verbose || settings.verboseGenerator;
 
 };
 
@@ -36,6 +38,10 @@ exports.loadDependencies = function() {
 };
 
 exports.frontPage = function(callback) {
+
+  if (verbose) {
+    console.log('Degenerating front-page');
+  }
 
   files.aggregate([ {
     $match : {
@@ -64,6 +70,10 @@ exports.frontPage = function(callback) {
 
 exports.overboard = function(callback, altUri, altUriSFW) {
 
+  if (verbose) {
+    console.log('Degenerating overboard');
+  }
+
   files.aggregate([ {
     $match : {
       'metadata.type' : 'overboard'
@@ -91,7 +101,13 @@ exports.overboard = function(callback, altUri, altUriSFW) {
 
 exports.log = function(date, callback) {
 
-  var prefix = '/.global/logs/' + logger.formatedDate(date);
+  var dateString = logger.formatedDate(date);
+
+  if (verbose) {
+    console.log('Degenerating log from ' + dateString);
+  }
+
+  var prefix = '/.global/logs/' + dateString;
 
   var filesNames = [ prefix + '.html', prefix + '.json' ];
 
@@ -129,6 +145,10 @@ exports.log = function(date, callback) {
 };
 
 exports.logs = function(callback) {
+
+  if (verbose) {
+    console.log('Degenerating logs');
+  }
 
   files.aggregate([ {
     $match : {

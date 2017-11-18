@@ -574,6 +574,71 @@ exports.loadPages = function(errors, fePath, templateSettings, templateObject,
   }
 };
 
+exports.processFieldUses = function(field, removed, element, document) {
+
+  if (!element) {
+    return;
+  }
+
+  for (var i = 0; i < field.uses.length; i++) {
+
+    var use = field.uses[i];
+
+    switch (field.uses[i]) {
+
+    case 'removal': {
+      removed.push(field.name);
+      break;
+    }
+
+    case 'children': {
+      var text = '__' + field.name + '_children__';
+
+      element.appendChild(document.createTextNode(text));
+      break;
+    }
+
+    case 'href': {
+      element.href = '__' + field.name + '_href__';
+      break;
+    }
+
+    case 'inner': {
+      element.innerHTML = '__' + field.name + '_inner__';
+      break;
+    }
+
+    default: {
+      console.log('Unknown use for ' + field.name + ': ' + use);
+    }
+    }
+
+  }
+
+};
+
+exports.handleRemovableFields = function(removed, document) {
+
+  var removable = {};
+
+  for (var i = 0; i < removed.length; i++) {
+
+    var element = document.getElementById(removed[i]);
+
+    var text = '__' + removed[i] + '_location__';
+
+    element.parentNode.insertBefore(document.createTextNode(text), element);
+
+    removable[removed[i]] = element.outerHTML;
+
+    element.remove();
+
+  }
+
+  return removable;
+
+};
+
 exports.loadPrebuiltFields = function(dom, base, object, template, cell) {
 
   var removed = [];
@@ -584,61 +649,27 @@ exports.loadPrebuiltFields = function(dom, base, object, template, cell) {
 
     var field = template.prebuiltFields[j];
 
-    var element = cell ? base.getElementsByClassName(field.name)[0] : document
-        .getElementById(field.name);
+    var element;
 
-    for (var i = 0; i < field.uses.length; i++) {
+    if (cell) {
 
-      var use = field.uses[i];
+      var elements = base.getElementsByClassName(field.name);
 
-      switch (field.uses[i]) {
-
-      case 'removal': {
-        removed.push(field.name);
-        break;
+      if (!elements) {
+        return;
       }
 
-      case 'children': {
-        var text = '__' + field.name + '_children__';
+      element = elements[0];
 
-        element.appendChild(document.createTextNode(text));
-        break;
-      }
-
-      case 'href': {
-        element.href = '__' + field.name + '_href__';
-        break;
-      }
-
-      case 'inner': {
-        element.innerHTML = '__' + field.name + '_inner__';
-        break;
-      }
-
-      default: {
-        console.log('Unknown use for ' + field.name + ': ' + use);
-      }
-      }
-
+    } else {
+      element = document.getElementById(field.name);
     }
 
-  }
-
-  var removable = {};
-
-  for (i = 0; i < removed.length; i++) {
-
-    element = document.getElementById(removed[i]);
-
-    text = '__' + removed[i] + '_location__';
-
-    element.parentNode.insertBefore(document.createTextNode(text), element);
-
-    removable[removed[i]] = element.outerHTML;
-
-    element.remove();
+    exports.processFieldUses(field, removed, element, document);
 
   }
+
+  var removable = exports.handleRemovableFields(removed, document);
 
   var toInsert = {
     template : cell ? base.innerHTML : dom.serialize(),
@@ -646,6 +677,26 @@ exports.loadPrebuiltFields = function(dom, base, object, template, cell) {
   };
 
   object[template.template] = toInsert;
+
+};
+
+exports.getCellsErrors = function(cell, cellElement) {
+
+  var error = '';
+
+  for (var j = 0; j < cell.fields.length; j++) {
+
+    var field = cell.fields[j];
+
+    if (!cellElement.getElementsByClassName(field).length) {
+      error += '\nError, missing element with class ' + field;
+    } else if (cellElement.getElementsByClassName(field).length > 1) {
+      error += '\nWarning, more than one element with class ' + field;
+    }
+
+  }
+
+  return error;
 
 };
 
@@ -670,17 +721,7 @@ exports.testCell = function(dom, cell, fePath, templateSettings,
 
   cellElement.innerHTML = template;
 
-  for (var j = 0; j < cell.fields.length; j++) {
-
-    var field = cell.fields[j];
-
-    if (!cellElement.getElementsByClassName(field).length) {
-      error += '\nError, missing element with class ' + field;
-    } else if (cellElement.getElementsByClassName(field).length > 1) {
-      error += '\nWarning, more than one element with class ' + field;
-    }
-
-  }
+  error += exports.getCellsErrors(cell, cellElement);
 
   if (cell.prebuiltFields) {
     exports.loadPrebuiltFields(dom, cellElement, prebuiltObject, cell, true);
@@ -742,9 +783,21 @@ exports.handleLoadingErrors = function(errors) {
 
 };
 
-exports.loadTemplates = function(language) {
+exports.runTemplateLoading = function(fePath, templateSettings, templateObject,
+    prebuiltTemplateObject) {
 
   var errors = [];
+
+  exports.loadCells(errors, fePath, templateSettings, templateObject,
+      prebuiltTemplateObject);
+  exports.loadPages(errors, fePath, templateSettings, templateObject,
+      prebuiltTemplateObject);
+
+  exports.handleLoadingErrors(errors);
+
+};
+
+exports.loadTemplates = function(language) {
 
   if (!language) {
     var fePath = settingsHandler.getGeneralSettings().fePath;
@@ -769,12 +822,8 @@ exports.loadTemplates = function(language) {
 
   }
 
-  exports.loadCells(errors, fePath, templateSettings, templateObject,
+  exports.runTemplateLoading(fePath, templateSettings, templateObject,
       prebuiltTemplateObject);
-  exports.loadPages(errors, fePath, templateSettings, templateObject,
-      prebuiltTemplateObject);
-
-  exports.handleLoadingErrors(errors);
 
 };
 

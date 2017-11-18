@@ -5,6 +5,7 @@ exports.global = require('./global');
 
 exports.loadSettings = function() {
   exports.global.loadSettings();
+  exports.board.loadSettings();
 };
 
 exports.loadDependencies = function() {

@@ -153,7 +153,7 @@ exports.generateCache = function(lockData, callback) {
 
 };
 
-exports.getThreadOrPreviewLockData = function(fileParts) {
+exports.getThreadLockData = function(fileParts) {
 
   if (fileParts[2] !== 'res') {
     return;
@@ -241,7 +241,7 @@ exports.getLockData = function(file) {
   } else {
 
     if (fileParts.length === 4) {
-      return exports.getThreadOrPreviewLockData(fileParts);
+      return exports.getThreadLockData(fileParts);
     } else if (fileParts.length === 3) {
 
       if (!fileParts[2]) {
