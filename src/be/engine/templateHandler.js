@@ -160,31 +160,30 @@ exports.getCellTests = function() {
         template : 'uploadCell',
         fields : [ 'sizeLabel', 'imgLink', 'nameLink', 'divHash', 'labelHash',
             'originalNameLink', 'dimensionLabel' ],
-        prebuiltFields : [
-            {
-              name : 'sizeLabel',
-              uses : [ 'inner' ]
-            },
-            {
-              name : 'imgLink',
-              uses : [ 'children', 'href', 'data-filewidth', 'data-fileheight',
-                  'data-filemime' ]
-            }, {
-              name : 'nameLink',
-              uses : [ 'href' ]
-            }, {
-              name : 'divHash',
-              uses : [ 'removal' ]
-            }, {
-              name : 'labelHash',
-              uses : [ 'inner' ]
-            }, {
-              name : 'originalNameLink',
-              uses : [ 'inner', 'href', 'download' ]
-            }, {
-              name : 'dimensionLabel',
-              uses : [ 'removal', 'inner' ]
-            } ]
+        prebuiltFields : [ {
+          name : 'sizeLabel',
+          uses : [ 'inner' ]
+        }, {
+          name : 'imgLink',
+          uses : [ 'children', 'href' ],
+          attributes : [ 'data-filewidth', 'data-fileheight', 'data-filemime' ]
+        }, {
+          name : 'nameLink',
+          uses : [ 'href' ]
+        }, {
+          name : 'divHash',
+          uses : [ 'removal' ]
+        }, {
+          name : 'labelHash',
+          uses : [ 'inner' ]
+        }, {
+          name : 'originalNameLink',
+          uses : [ 'inner', 'href' ],
+          attributes : [ 'download' ]
+        }, {
+          name : 'dimensionLabel',
+          uses : [ 'removal', 'inner' ]
+        } ]
       },
       {
         template : 'ruleManagementCell',
@@ -630,6 +629,24 @@ exports.processFieldUses = function(field, removed, element, document) {
       element.innerHTML = '__' + field.name + '_inner__';
       break;
     }
+
+    }
+
+  }
+
+  exports.processFieldAttributes(element, field);
+
+};
+
+exports.processFieldAttributes = function(element, field) {
+
+  if (!field.attributes) {
+    return;
+  }
+
+  for (var i = 0; i < field.attributes.length; i++) {
+
+    switch (field.attributes[i]) {
 
     case 'download': {
       element.setAttribute('download', '__' + field.name + '_download__');
