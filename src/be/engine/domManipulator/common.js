@@ -331,8 +331,8 @@ exports.setPostingModdingElements = function(modding, posting, cell, bData,
 
 };
 
-exports.setPostingComplexElements = function(posting, postingCell, language,
-    removable) {
+exports.setPostingComplexElements = function(posting, postingCell, removable,
+    preview) {
 
   if (posting.signedRole) {
     postingCell = postingCell.replace('__labelRole_location__',
@@ -347,7 +347,15 @@ exports.setPostingComplexElements = function(posting, postingCell, language,
     checkboxName += '-' + posting.postId;
   }
 
-  postingCell = postingCell.replace('__deletionCheckBox_name__', checkboxName);
+  if (preview) {
+    postingCell = postingCell.replace('__deletionCheckBox_location__', '');
+  } else {
+    postingCell = postingCell.replace('__deletionCheckBox_location__',
+        removable.deletionCheckBox);
+
+    postingCell = postingCell
+        .replace('__deletionCheckBox_name__', checkboxName);
+  }
 
   return postingCell;
 
@@ -401,9 +409,9 @@ exports.setSharedHideableElements = function(posting, removable, postingCell,
 
 };
 
-exports.addMessage = function(innerPage, cell, post, removable) {
+exports.addMessage = function(innerPage, cell, posting, removable) {
 
-  var markdown = post.markdown;
+  var markdown = posting.markdown;
 
   if (!innerPage && (markdown.match(/<br>/g) || []).length > maxPreviewBreaks) {
 
@@ -412,10 +420,10 @@ exports.addMessage = function(innerPage, cell, post, removable) {
 
     markdown = markdown.split('<br>', maxPreviewBreaks + 1).join('<br>');
 
-    var href = '/' + post.boardUri + '/res/' + post.threadId + '.html';
+    var href = '/' + posting.boardUri + '/res/' + posting.threadId + '.html';
 
-    if (post.postId) {
-      href += '#' + (post.postId || post.threadId);
+    if (posting.postId) {
+      href += '#' + (posting.postId || posting.threadId);
     }
 
     cell = cell.replace('__linkFullText_href__', href);
@@ -427,11 +435,33 @@ exports.addMessage = function(innerPage, cell, post, removable) {
   return cell.replace('__divMessage_inner__', markdown);
 
 };
+
+exports.setAllSharedPostingElements = function(postingCell, posting, removable,
+    language, modding, innerPage, userRole, boardData, preview) {
+
+  postingCell = exports.setPostingModdingElements(modding, posting,
+      postingCell, boardData, userRole, removable);
+
+  postingCell = exports.setSharedHideableElements(posting, removable,
+      postingCell, language);
+
+  postingCell = exports.setPostingLinks(postingCell, posting, innerPage,
+      removable);
+
+  postingCell = exports.setPostingComplexElements(posting, postingCell,
+      removable, preview);
+
+  postingCell = exports.setSharedSimpleElements(postingCell, posting,
+      innerPage, removable, language);
+
+  return postingCell.replace('__panelUploads_children__', exports
+      .setUploadCell(posting.files, modding, language));
+
+};
 // Section 2: Shared posting elements {
 
 // Section 3: Thread content {
-exports.setThreadHiddeableElements = function(thread, cell, modding, boardUri,
-    bData, userRole, removable) {
+exports.setThreadHiddeableElements = function(thread, cell, removable) {
 
   for ( var key in exports.indicatorsRelation) {
     var location = '__' + exports.indicatorsRelation[key] + '_location__';
@@ -443,9 +473,6 @@ exports.setThreadHiddeableElements = function(thread, cell, modding, boardUri,
 
     }
   }
-
-  cell = exports.setPostingModdingElements(modding, thread, cell, bData,
-      userRole, removable);
 
   return cell;
 
@@ -505,7 +532,7 @@ exports.setOmittedInformation = function(thread, posts, innerPage, language) {
 
 };
 
-exports.getThreadCellBase = function(thread, language) {
+exports.getThreadCellBase = function(thread) {
 
   var classToUse = 'opCell';
 
@@ -520,40 +547,24 @@ exports.getThreadCellBase = function(thread, language) {
 
 };
 
-exports.getThreadContent = function(thread, posts, innerPage, boardUri,
-    modding, userRole, boardData, language) {
+exports.getThreadContent = function(thread, posts, innerPage, modding,
+    userRole, boardData, language) {
 
   var threadCell = exports.setOmittedInformation(thread, posts, innerPage,
       language);
 
   var removable = templateHandler(language, true).opCell.removable;
 
-  threadCell = exports.setSharedHideableElements(thread, removable, threadCell,
-      language);
-
   threadCell = exports
-      .setPostingLinks(threadCell, thread, innerPage, removable);
+      .setThreadHiddeableElements(thread, threadCell, removable);
 
-  threadCell = exports.setPostingComplexElements(thread, threadCell, innerPage,
-      removable);
-
-  threadCell = exports.setThreadHiddeableElements(thread, threadCell, modding,
-      boardUri, boardData, userRole, removable);
-
-  threadCell = exports.setSharedSimpleElements(threadCell, thread, innerPage,
-      removable, language);
-
-  threadCell = threadCell.replace('__panelUploads_children__', exports
-      .setUploadCell(thread.files, modding, language));
-
-  return threadCell;
+  return exports.setAllSharedPostingElements(threadCell, thread, removable,
+      language, modding, innerPage, userRole, boardData);
 
 };
 
 exports.addThread = function(document, thread, posts, innerPage, modding,
     boardData, userRole, language) {
-
-  var boardUri = thread.boardUri;
 
   var threadCell = exports.getThreadCellBase(thread, language);
 
@@ -565,13 +576,13 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
   if (!currentCache || !individualCaches) {
 
     var threadContent = exports.getThreadContent(thread, posts, innerPage,
-        boardUri, modding, userRole, boardData, language);
+        modding, userRole, boardData, language);
 
     threadCell += threadContent;
 
     if (individualCaches) {
       exports.saveCache(cacheField, language, threadContent, threadsCollection,
-          boardUri, 'threadId', thread.threadId);
+          thread.boardUri, 'threadId', thread.threadId);
     }
 
   } else {
@@ -591,23 +602,9 @@ exports.generatePostHTML = function(post, language, innerPage, modding,
 
   var template = templateHandler(language, true).postCell;
 
-  var postCell = exports.setSharedSimpleElements(template.template, post,
-      innerPage, template.removable, language);
-
-  postCell = exports.setSharedHideableElements(post, template.removable,
-      postCell, language);
-
-  postCell = exports.setPostingLinks(postCell, post, innerPage,
-      template.removable);
-
-  postCell = exports.setPostingModdingElements(modding, post, postCell,
-      boardData, userRole, template.removable);
-
-  postCell = exports.setPostingComplexElements(post, postCell, innerPage,
-      template.removable);
-
-  postCell = postCell.replace('__panelUploads_children__', exports
-      .setUploadCell(post.files, modding, language));
+  var postCell = exports.setAllSharedPostingElements(template.template, post,
+      template.removable, language, modding, innerPage, userRole, boardData,
+      preview);
 
   if (individualCaches) {
 
@@ -623,8 +620,8 @@ exports.generatePostHTML = function(post, language, innerPage, modding,
 
 };
 
-exports.getPostInnerElements = function(post, preview, modding, boardData,
-    userRole, innerPage, language) {
+exports.getPostInnerElements = function(post, preview, language, modding,
+    boardData, userRole, innerPage) {
 
   var cacheField = exports.getCacheField(preview, innerPage, modding, userRole,
       language);
@@ -725,8 +722,8 @@ exports.getPosts = function(posts, modding, boardData, userRole, innerPage,
 
     var postCell = exports.getPostCellBase(post);
 
-    postCell += exports.getPostInnerElements(post, false, modding, boardData,
-        userRole, innerPage, language);
+    postCell += exports.getPostInnerElements(post, false, language, modding,
+        boardData, userRole, innerPage);
 
     children += postCell + '</div>';
 
@@ -990,14 +987,9 @@ exports.setReportCell = function(document, report, language) {
   var reportLink = cell.getElementsByClassName('link')[0];
   reportLink.setAttribute('href', exports.getReportLink(report));
 
-  var posting = report.associatedPost;
-
-  if (posting) {
-
-    // TODO
-    // exports.setPostInnerElements(document, posting, cell
-    // .getElementsByClassName('postingDiv')[0], true, null, null, null, null,
-    // language);
+  if (report.associatedPost) {
+    cell.getElementsByClassName('postingDiv')[0].innerHTML = exports
+        .getPostInnerElements(report.associatedPost, true, language);
   }
 
   return cell;

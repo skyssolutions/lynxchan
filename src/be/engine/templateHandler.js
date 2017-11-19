@@ -172,7 +172,8 @@ exports.getCellTests = function() {
           uses : [ 'href', 'inner' ]
         }, {
           name : 'deletionCheckBox',
-          attributes : [ 'name' ]
+          attributes : [ 'name' ],
+          uses : [ 'removal' ]
         }, {
           name : 'lockIndicator',
           uses : [ 'removal' ]
@@ -269,7 +270,8 @@ exports.getCellTests = function() {
           uses : [ 'href', 'inner' ]
         }, {
           name : 'deletionCheckBox',
-          attributes : [ 'name' ]
+          attributes : [ 'name' ],
+          uses : [ 'removal' ]
         }, {
           name : 'spanId',
           uses : [ 'removal' ]
