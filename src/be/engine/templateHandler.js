@@ -12,6 +12,9 @@ var alternativeTemplates = {};
 var preBuiltDefault = {};
 var preBuiltAlternative = {};
 
+var simpleAttributes = [ 'download', 'style', 'name' ];
+var simpleProperties = [ 'href', 'title', 'value', 'src' ];
+
 require('jsdom').defaultDocumentFeatures = {
   FetchExternalResources : false,
   ProcessExternalResources : false,
@@ -19,15 +22,17 @@ require('jsdom').defaultDocumentFeatures = {
   MutationEvents : false
 };
 
-exports.getAlternativeTemplates = function(language) {
+exports.getAlternativeTemplates = function(language, prebuilt) {
 
-  var toReturn = alternativeTemplates[language._id];
+  var toReturn = prebuilt ? preBuiltAlternative[language._id]
+      : alternativeTemplates[language._id];
 
   if (!toReturn) {
 
     try {
       exports.loadTemplates(language);
-      toReturn = alternativeTemplates[language._id];
+      toReturn = prebuilt ? preBuiltAlternative[language._id]
+          : alternativeTemplates[language._id];
     } catch (error) {
       if (debug) {
         throw error;
@@ -99,7 +104,101 @@ exports.getCellTests = function() {
             'panelRange', 'cyclicIndicator', 'linkQuote', 'divPosts',
             'labelOmission', 'labelNarrowRange', 'linkEdit', 'labelLastEdit',
             'imgFlag', 'labelIp', 'contentOmissionIndicator', 'linkFullText',
-            'bumpLockIndicator' ]
+            'bumpLockIndicator' ],
+        prebuiltFields : [ {
+          name : 'contentOmissionIndicator',
+          uses : [ 'removal' ]
+        }, {
+          name : 'linkName',
+          uses : [ 'inner', 'href' ],
+          attributes : [ 'class' ]
+        }, {
+          name : 'linkFullText',
+          uses : [ 'href' ]
+        }, {
+          name : 'labelIp',
+          uses : [ 'inner' ]
+        }, {
+          name : 'panelRange',
+          uses : [ 'removal' ]
+        }, {
+          name : 'linkEdit',
+          uses : [ 'href', 'removal' ]
+        }, {
+          name : 'imgFlag',
+          uses : [ 'title', 'src', 'removal' ],
+          attributes : [ 'class' ]
+        }, {
+          name : 'labelLastEdit',
+          uses : [ 'inner', 'removal' ]
+        }, {
+          name : 'labelOmission',
+          uses : [ 'inner', 'removal' ]
+        }, {
+          name : 'panelUploads',
+          uses : [ 'children' ]
+        }, {
+          name : 'panelIp',
+          uses : [ 'removal' ]
+        }, {
+          name : 'labelBroadRange',
+          uses : [ 'inner' ]
+        }, {
+          name : 'labelNarrowRange',
+          uses : [ 'inner' ]
+        }, {
+          name : 'labelSubject',
+          uses : [ 'inner', 'removal' ]
+        }, {
+          name : 'labelCreated',
+          uses : [ 'inner' ]
+        }, {
+          name : 'divMessage',
+          uses : [ 'inner' ]
+        }, {
+          name : 'divPosts',
+          uses : [ 'children' ]
+        }, {
+          name : 'linkReply',
+          uses : [ 'href', 'removal' ]
+        }, {
+          name : 'linkSelf',
+          uses : [ 'href' ]
+        }, {
+          name : 'linkQuote',
+          uses : [ 'href', 'inner' ]
+        }, {
+          name : 'linkQuote',
+          uses : [ 'href', 'inner' ]
+        }, {
+          name : 'deletionCheckBox',
+          attributes : [ 'name' ]
+        }, {
+          name : 'lockIndicator',
+          uses : [ 'removal' ]
+        }, {
+          name : 'bumpLockIndicator',
+          uses : [ 'removal' ]
+        }, {
+          name : 'cyclicIndicator',
+          uses : [ 'removal' ]
+        }, {
+          name : 'pinIndicator',
+          uses : [ 'removal' ]
+        }, {
+          name : 'spanId',
+          uses : [ 'removal' ]
+        }, {
+          name : 'labelId',
+          uses : [ 'inner' ],
+          attributes : [ 'style' ]
+        }, {
+          name : 'labelRole',
+          uses : [ 'inner', 'removal' ]
+        }, {
+          name : 'divBanMessage',
+          uses : [ 'inner', 'removal' ]
+        } ]
       },
       {
         template : 'postCell',
@@ -108,7 +207,77 @@ exports.getCellTests = function() {
             'panelRange', 'labelRole', 'divBanMessage', 'spanId', 'panelIp',
             'labelBroadRange', 'linkQuote', 'labelNarrowRange', 'linkEdit',
             'labelLastEdit', 'imgFlag', 'labelIp', 'contentOmissionIndicator',
-            'linkFullText' ]
+            'linkFullText' ],
+        prebuiltFields : [ {
+          name : 'contentOmissionIndicator',
+          uses : [ 'removal' ]
+        }, {
+          name : 'linkFullText',
+          uses : [ 'href' ]
+        }, {
+          name : 'labelIp',
+          uses : [ 'inner' ]
+        }, {
+          name : 'divBanMessage',
+          uses : [ 'removal', 'inner' ]
+        }, {
+          name : 'imgFlag',
+          uses : [ 'src', 'removal', 'title' ],
+          attributes : [ 'class' ]
+        }, {
+          name : 'labelLastEdit',
+          uses : [ 'inner', 'removal' ]
+        }, {
+          name : 'linkEdit',
+          uses : [ 'href', 'removal' ]
+        }, {
+          name : 'panelRange',
+          uses : [ 'removal' ]
+        }, {
+          name : 'panelIp',
+          uses : [ 'removal' ]
+        }, {
+          name : 'labelBroadRange',
+          uses : [ 'inner' ]
+        }, {
+          name : 'labelNarrowRange',
+          uses : [ 'inner' ]
+        }, {
+          name : 'panelUploads',
+          uses : [ 'children' ]
+        }, {
+          name : 'labelRole',
+          uses : [ 'inner', 'removal' ]
+        }, {
+          name : 'linkName',
+          uses : [ 'inner', 'href' ],
+          attributes : [ 'class' ]
+        }, {
+          name : 'labelSubject',
+          uses : [ 'inner', 'removal' ]
+        }, {
+          name : 'labelCreated',
+          uses : [ 'inner' ]
+        }, {
+          name : 'divMessage',
+          uses : [ 'inner' ]
+        }, {
+          name : 'linkSelf',
+          uses : [ 'href' ]
+        }, {
+          name : 'linkQuote',
+          uses : [ 'href', 'inner' ]
+        }, {
+          name : 'deletionCheckBox',
+          attributes : [ 'name' ]
+        }, {
+          name : 'spanId',
+          uses : [ 'removal' ]
+        }, {
+          name : 'labelId',
+          uses : [ 'inner' ],
+          attributes : [ 'style' ]
+        } ]
       },
       {
         template : 'staffCell',
@@ -600,11 +769,16 @@ exports.loadPages = function(errors, fePath, templateSettings, templateObject,
 
 exports.processFieldUses = function(field, removed, element, document) {
 
-  if (!element) {
-    return;
-  }
+  for (var i = 0; field.uses && i < field.uses.length; i++) {
 
-  for (var i = 0; i < field.uses.length; i++) {
+    if (simpleProperties.indexOf(field.uses[i]) > -1) {
+
+      var value = '__' + field.name + '_' + field.uses[i] + '__';
+
+      element[field.uses[i]] = value;
+
+      continue;
+    }
 
     switch (field.uses[i]) {
 
@@ -620,11 +794,6 @@ exports.processFieldUses = function(field, removed, element, document) {
       break;
     }
 
-    case 'href': {
-      element.href = '__' + field.name + '_href__';
-      break;
-    }
-
     case 'inner': {
       element.innerHTML = '__' + field.name + '_inner__';
       break;
@@ -634,24 +803,22 @@ exports.processFieldUses = function(field, removed, element, document) {
 
   }
 
-  exports.processFieldAttributes(element, field);
-
 };
 
 exports.processFieldAttributes = function(element, field) {
 
-  if (!field.attributes) {
-    return;
-  }
+  for (var i = 0; field.attributes && i < field.attributes.length; i++) {
 
-  for (var i = 0; i < field.attributes.length; i++) {
+    if (simpleAttributes.indexOf(field.attributes[i]) > -1) {
+
+      var value = '__' + field.name + '_' + field.attributes[i] + '__';
+
+      element.setAttribute(field.attributes[i], value);
+
+      continue;
+    }
 
     switch (field.attributes[i]) {
-
-    case 'download': {
-      element.setAttribute('download', '__' + field.name + '_download__');
-      break;
-    }
 
     case 'data-filemime': {
       element.setAttribute('data-filemime', '__' + field.name + '_mime__');
@@ -665,6 +832,11 @@ exports.processFieldAttributes = function(element, field) {
 
     case 'data-filewidth': {
       element.setAttribute('data-filewidth', '__' + field.name + '_width__');
+      break;
+    }
+
+    case 'class': {
+      element.className += ' __' + field.name + '_class__';
       break;
     }
 
@@ -697,11 +869,8 @@ exports.handleRemovableFields = function(removed, cell, document, base) {
 
 };
 
-exports.loadPrebuiltFields = function(dom, base, object, template, cell) {
-
-  var removed = [];
-
-  var document = dom.window.document;
+exports.iteratePrebuiltFields = function(template, base, document, removed,
+    cell) {
 
   for (var j = 0; j < template.prebuiltFields.length; j++) {
 
@@ -721,9 +890,23 @@ exports.loadPrebuiltFields = function(dom, base, object, template, cell) {
       element = document.getElementById(field.name);
     }
 
-    exports.processFieldUses(field, removed, element, document);
+    if (element) {
+      exports.processFieldUses(field, removed, element, document);
+
+      exports.processFieldAttributes(element, field);
+    }
 
   }
+
+};
+
+exports.loadPrebuiltFields = function(dom, base, object, template, cell) {
+
+  var removed = [];
+
+  var document = dom.window.document;
+
+  exports.iteratePrebuiltFields(template, base, document, removed, cell);
 
   var removable = exports.handleRemovableFields(removed, cell, document, base);
 

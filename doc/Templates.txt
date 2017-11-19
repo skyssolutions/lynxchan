@@ -309,7 +309,7 @@ linkFullText:
     description: link to the post if the message is too long and had its original text trimmed.
 
 labelIp:
-    use: have it's innerHTML manipulated or might be removed.
+    use: have it's innerHTML manipulated.
     description: label used to display the hashed ip of the poster to the staff.
 
 panelRange:
@@ -329,20 +329,16 @@ labelLastEdit:
     description: label used to indicate the last time the thread was edited.
 
 labelOmission:
-    use: have it's innerHTML manipulated.
+    use: have it's innerHTML manipulated or might be removed.
     description: label indicating how many files and posts are being omitted when the thread is listed on a board page.
-
-linkPreview:
-    use: have it's href manipulated.
-    description: link to the thread's preview.
 
 panelUploads:
     use: have children appended to it.
     description: contains the uploads for the post.
 
 linkName:
-    use: have it's innerHTML manipulated and might have its href manipulated.
-    description: contains the poster's name and links to the poster e-mail. Will have the class "noEmailName" added if it doesn't have an e-mail to be added to href.
+    use: have it's innerHTML manipulated and might have its href manipulated. Will have the class "noEmailName" added if it doesn't have an e-mail to be added to href.
+    description: contains the poster's name and links to the poster e-mail.
 
 panelIp:
     use: might be removed.
@@ -373,7 +369,7 @@ divPosts:
     description: contains the thread's posts.
 
 linkReply:
-    use: have it's href manipulated.
+    use: have it's href manipulated or might be removed.
     description: contains the link to reply the thread.
 
 linkSelf:
@@ -385,7 +381,7 @@ linkQuote:
     description: contains the link for the thread itself to be used for quoting.
 
 deletionCheckBox:
-    use: have it's value manipulated.
+    use: have it's name manipulated.
     description: check-box used for deletion or reporting.
 
 lockIndicator:
@@ -439,7 +435,7 @@ linkFullText:
     description: link to the post if the message is too long and had its original text trimmed.
 
 labelIp:
-    use: have it's innerHTML manipulated or might be removed.
+    use: have it's innerHTML manipulated.
     description: label used to display the hashed ip of the poster to the staff.
 
 divBanMessage:
@@ -483,8 +479,8 @@ labelRole:
     description: holds the role of the user in the board. If the user doesn't have a role in the board, it will display its global role, if the user is not a regular user.
 
 linkName:
-    use: have it's innerHTML manipulated and might have its href manipulated.
-    description: contains the poster's name and links to the poster e-mail. Will have the class "noEmailName" added if it doesn't have an e-mail to be added to href.
+    use: have it's innerHTML manipulated and might have its href manipulated. Will have the class "noEmailName" added if it doesn't have an e-mail to be added to href.
+    description: contains the poster's name and links to the poster e-mail.
 
 labelSubject:
     use: have it's innerHTML manipulated or might be removed.
@@ -507,7 +503,7 @@ linkQuote:
     description: contains the link for the post used for quoting.
 
 deletionCheckBox:
-    use: have it's value manipulated.
+    use: have it's name manipulated.
     description: check-box used for deletion or reporting.
 
 spanId: 

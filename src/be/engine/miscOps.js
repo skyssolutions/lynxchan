@@ -36,12 +36,6 @@ exports.htmlReplaceTable = {
   '>' : '&gt;'
 };
 
-exports.reverseHTMLReplaceTable = {};
-
-for ( var key in exports.htmlReplaceTable) {
-  exports.reverseHTMLReplaceTable[exports.htmlReplaceTable[key]] = key;
-}
-
 exports.loadDependencies = function() {
 
   formOps = require('./formOps');

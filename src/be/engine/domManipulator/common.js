@@ -80,33 +80,39 @@ exports.setFormCellBoilerPlate = function(cell, action, cssClass) {
   cell.setAttribute('class', cssClass);
 };
 
-exports.setRoleSignature = function(postingCell, posting) {
-  var labelRole = postingCell.getElementsByClassName('labelRole')[0];
+exports.setRoleSignature = function(postingCell, posting, removable) {
 
   if (posting.signedRole) {
-    labelRole.innerHTML = posting.signedRole;
+    postingCell = postingCell.replace('__labelRole_location__',
+        removable.labelRole).replace('__labelRole_inner__', posting.signedRole);
+
   } else {
-    labelRole.remove();
+    postingCell = postingCell.replace('__labelRole_location__', '');
   }
+
+  return postingCell;
+
 };
 
-exports.setPostingIp = function(cell, postingData, boardData, userRole) {
+exports.setPostingIp = function(cell, postingData, boardData, userRole,
+    removable) {
 
   if (userRole <= minClearIpRole) {
-    cell.getElementsByClassName('panelRange')[0].remove();
+    cell = cell.replace('__panelRange_location__', '');
   } else {
-    var labelBroadRange = cell.getElementsByClassName('labelBroadRange')[0];
-    labelBroadRange.innerHTML = miscOps.hashIpForDisplay(miscOps
-        .getRange(postingData.ip), boardData.ipSalt);
+    cell = cell.replace('__panelRange_location__', removable.panelRange);
 
-    var labelNarrowRange = cell.getElementsByClassName('labelNarrowRange')[0];
-    labelNarrowRange.innerHTML = miscOps.hashIpForDisplay(miscOps.getRange(
-        postingData.ip, true), boardData.ipSalt);
+    cell = cell.replace('__labelBroadRange_inner__', miscOps.hashIpForDisplay(
+        miscOps.getRange(postingData.ip), boardData.ipSalt));
+
+    cell = cell.replace('__labelNarrowRange_inner__', miscOps.hashIpForDisplay(
+        miscOps.getRange(postingData.ip, true), boardData.ipSalt));
   }
 
-  var labelIp = cell.getElementsByClassName('labelIp')[0];
-  labelIp.innerHTML = miscOps.hashIpForDisplay(postingData.ip,
-      boardData.ipSalt, userRole);
+  cell = cell.replace('__labelIp_inner__', miscOps.hashIpForDisplay(
+      postingData.ip, boardData.ipSalt, userRole));
+
+  return cell;
 
 };
 
@@ -222,48 +228,61 @@ exports.setBoardPosting = function(boardData, document, thread, language) {
 
 };
 
-exports.setSharedHideableElements = function(posting, cell, language) {
-
-  var editedLabel = cell.getElementsByClassName('labelLastEdit')[0];
+exports.setSharedHideableElements = function(posting, removable,
+    postingCellcell, language) {
 
   if (posting.lastEditTime) {
 
     var formatedDate = exports.formatDateToDisplay(posting.lastEditTime, null,
         language);
 
-    editedLabel.innerHTML = lang(language).guiEditInfo.replace('{$date}',
-        formatedDate).replace('{$login}', posting.lastEditLogin);
+    postingCellcell = postingCellcell.replace('__labelLastEdit_location__',
+        removable.labelLastEdit).replace(
+        '__labelLastEdit_inner__',
+        lang(language).guiEditInfo.replace('{$date}', formatedDate).replace(
+            '{$login}', posting.lastEditLogin));
 
   } else {
-    editedLabel.remove();
+    postingCellcell = postingCellcell.replace('__labelLastEdit_location__', '');
   }
-
-  var imgFlag = cell.getElementsByClassName('imgFlag')[0];
 
   if (posting.flag) {
-    imgFlag.src = posting.flag;
-    imgFlag.title = posting.flagName.replace(/&(l|g)t;/g, function replace(
-        match) {
-      return miscOps.reverseHTMLReplaceTable[match];
-    });
+
+    postingCellcell = postingCellcell.replace('__imgFlag_location__',
+        removable.imgFlag);
+
+    postingCellcell = postingCellcell.replace('__imgFlag_src__', posting.flag);
+    postingCellcell = postingCellcell.replace('__imgFlag_title__',
+        posting.flagName);
 
     if (posting.flagCode) {
-      imgFlag.className += ' flag' + posting.flagCode;
+
+      var flagClass = ' flag' + posting.flagCode;
+
+      postingCellcell = postingCellcell
+          .replace(' __imgFlag_class__', flagClass);
+    } else {
+      postingCellcell = postingCellcell.replace(' __imgFlag_class__', '');
     }
+
   } else {
-    imgFlag.remove();
+    postingCellcell = postingCellcell.replace('__imgFlag_location__', '');
   }
+
+  return postingCellcell;
 
 };
 
-exports.addMessage = function(innerPage, cell, post) {
+exports.addMessage = function(innerPage, cell, post, removable) {
 
   var markdown = post.markdown;
 
   if (!innerPage && (markdown.match(/<br>/g) || []).length > maxPreviewBreaks) {
-    markdown = markdown.split('<br>', maxPreviewBreaks + 1).join('<br>');
 
-    var link = cell.getElementsByClassName('linkFullText')[0];
+    cell = cell.replace('__contentOmissionIndicator_location__',
+        removable.contentOmissionIndicator);
+
+    markdown = markdown.split('<br>', maxPreviewBreaks + 1).join('<br>');
 
     var href = '/' + post.boardUri + '/res/' + post.threadId + '.html';
 
@@ -271,56 +290,67 @@ exports.addMessage = function(innerPage, cell, post) {
       href += '#' + (post.postId || post.threadId);
     }
 
-    link.href = href;
+    cell = cell.replace('__linkFullText_href__', href);
 
   } else {
-    cell.getElementsByClassName('contentOmissionIndicator')[0].remove();
+    cell = cell.replace('__contentOmissionIndicator_location__', '');
   }
 
-  cell.getElementsByClassName('divMessage')[0].innerHTML = markdown;
+  return cell.replace('__divMessage_inner__', markdown);
 
 };
 
 // Section 2: Thread content {
 exports.setThreadModdingElements = function(modding, boardUri, thread, cell,
-    bData, userRole) {
+    bData, userRole, removable) {
 
   if (modding) {
     var editLink = '/edit.js?boardUri=' + boardUri;
     editLink += '&threadId=' + thread.threadId;
 
-    cell.getElementsByClassName('linkEdit')[0].href = editLink;
+    cell = cell.replace('__linkEdit_location__', removable.linkEdit).replace(
+        '__linkEdit_href__', editLink);
   } else {
-    cell.getElementsByClassName('linkEdit')[0].remove();
+    cell = cell.replace('__linkEdit_location__', '');
   }
 
   if (modding && thread.ip) {
-    exports.setPostingIp(cell, thread, bData, userRole);
+    cell = cell.replace('__panelIp_location__', removable.panelIp);
+    cell = exports.setPostingIp(cell, thread, bData, userRole, removable);
   } else {
-    cell.getElementsByClassName('panelIp')[0].remove();
+    cell = cell.replace('__panelIp_location__', '');
   }
+
+  return cell;
 
 };
 
 exports.setThreadHiddeableElements = function(thread, cell, modding, boardUri,
-    bData, userRole) {
+    bData, userRole, removable) {
 
   for ( var key in exports.indicatorsRelation) {
+    var location = '__' + exports.indicatorsRelation[key] + '_location__';
+
     if (!thread[key]) {
-      cell.getElementsByClassName(exports.indicatorsRelation[key])[0].remove();
+      cell = cell.replace(location, '');
+    } else {
+      cell = cell.replace(location, removable[exports.indicatorsRelation[key]]);
+
     }
   }
 
   if (thread.id) {
-    var labelId = cell.getElementsByClassName('labelId')[0];
-    labelId.setAttribute('style', 'background-color: #' + thread.id);
-    labelId.innerHTML = thread.id;
+    cell = cell.replace('__spanId_location__', removable.spanId).replace(
+        '__labelId_inner__', thread.id).replace('__labelId_style__',
+        'background-color: #' + thread.id);
   } else {
-    cell.getElementsByClassName('spanId')[0].remove();
+    cell = cell.replace('__spanId_location__', '');
   }
 
-  exports.setThreadModdingElements(modding, boardUri, thread, cell, bData,
-      userRole);
+  cell = exports.setThreadModdingElements(modding, boardUri, thread, cell,
+      bData, userRole, removable);
+
+  return cell;
 
 };
 
@@ -347,16 +377,18 @@ exports.assembleOmissionContent = function(thread, displayedImages,
   return content;
 };
 
-exports.setOmittedInformation = function(thread, threadCell, posts, innerPage,
-    language) {
+exports.setOmittedInformation = function(thread, posts, innerPage, language) {
 
-  var omissionLabel = threadCell.getElementsByClassName('labelOmission')[0];
+  var template = templateHandler(language, true).opCell;
+
+  var threadCell = template.template;
 
   if (innerPage || (thread.postCount || 0) <= (posts ? posts.length : 0)) {
-    omissionLabel.remove();
-
-    return;
+    return threadCell.replace('__labelOmission_location__', '');
   }
+
+  threadCell = threadCell.replace('__labelOmission_location__',
+      template.removable.labelOmission);
 
   var displayedPosts = posts.length;
   var displayedImages = 0;
@@ -370,43 +402,54 @@ exports.setOmittedInformation = function(thread, threadCell, posts, innerPage,
     }
   }
 
-  omissionLabel.innerHTML = exports.assembleOmissionContent(thread,
-      displayedImages, displayedPosts, language);
+  return threadCell.replace('__labelOmission_inner__', exports
+      .assembleOmissionContent(thread, displayedImages, displayedPosts,
+          language));
+
 };
 
-exports.getThreadCellBase = function(document, thread) {
+exports.getThreadCellBase = function(thread, language) {
 
-  var threadCell = document.createElement('div');
+  var classToUse = 'opCell';
 
-  threadCell.setAttribute('data-boarduri', thread.boardUri);
-  threadCell.setAttribute('class', 'opCell');
-  threadCell.id = thread.threadId;
   if (thread.files && thread.files.length > 1) {
-    threadCell.className += ' multipleUploads';
+    classToUse += ' multipleUploads';
   }
 
+  var threadCell = '<div class=\'' + classToUse + '\' data-boarduri=\'';
+  threadCell += thread.boardUri + '\' id=\'' + thread.threadId + '\'>';
+
   return threadCell;
+
 };
 
-exports.setThreadContent = function(thread, threadCell, posts, innerPage,
-    boardUri, modding, userRole, document, boardData, language) {
+exports.getThreadContent = function(thread, posts, innerPage, boardUri,
+    modding, userRole, boardData, language) {
 
-  exports.setOmittedInformation(thread, threadCell, posts, innerPage, language);
-
-  exports.setSharedHideableElements(thread, threadCell, language);
-
-  exports.setThreadLinks(threadCell, thread, boardUri, innerPage);
-
-  exports.setThreadComplexElements(boardUri, thread, threadCell, innerPage);
-
-  exports.setThreadHiddeableElements(thread, threadCell, modding, boardUri,
-      boardData, userRole);
-
-  exports.setThreadSimpleElements(threadCell, thread, innerPage, language);
-
-  exports.setUploadCell(document, threadCell
-      .getElementsByClassName('panelUploads')[0], thread.files, modding,
+  var threadCell = exports.setOmittedInformation(thread, posts, innerPage,
       language);
+
+  var removable = templateHandler(language, true).opCell.removable;
+
+  threadCell = exports.setSharedHideableElements(thread, removable, threadCell,
+      language);
+
+  threadCell = exports.setThreadLinks(threadCell, thread, boardUri, innerPage,
+      language);
+
+  threadCell = exports.setThreadComplexElements(boardUri, thread, threadCell,
+      innerPage, language);
+
+  threadCell = exports.setThreadHiddeableElements(thread, threadCell, modding,
+      boardUri, boardData, userRole, removable);
+
+  threadCell = exports.setThreadSimpleElements(threadCell, thread, innerPage,
+      language, removable);
+
+  threadCell = threadCell.replace('__panelUploads_children__', exports
+      .setUploadCell(thread.files, modding, language));
+
+  return threadCell;
 
 };
 
@@ -415,7 +458,7 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
 
   var boardUri = thread.boardUri;
 
-  var threadCell = exports.getThreadCellBase(document, thread);
+  var threadCell = exports.getThreadCellBase(thread, language);
 
   var cacheField = exports.getCacheField(false, innerPage, modding, userRole,
       language);
@@ -423,25 +466,29 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
   var currentCache = exports.getPostingCache(cacheField, thread, language);
 
   if (!currentCache || !individualCaches) {
-    threadCell.innerHTML = templateHandler(language).opCell;
 
-    exports.setThreadContent(thread, threadCell, posts, innerPage, boardUri,
-        modding, userRole, document, boardData, language);
+    var threadContent = exports.getThreadContent(thread, posts, innerPage,
+        boardUri, modding, userRole, boardData, language);
+
+    threadCell += threadContent;
 
     if (individualCaches) {
-      exports.saveCache(cacheField, language, threadCell, threadsCollection,
+      exports.saveCache(cacheField, language, threadContent, threadsCollection,
           boardUri, 'threadId', thread.threadId);
     }
 
   } else {
-    threadCell.innerHTML = currentCache;
+    threadCell += currentCache;
   }
 
-  document.getElementById('divThreads').appendChild(threadCell);
+  document.getElementById('divThreads').innerHTML += threadCell + '</div>';
 
-  exports.addPosts(document, posts || [], modding, threadCell
-      .getElementsByClassName('divPosts')[0], boardData, userRole, innerPage,
-      language);
+  // TODO
+  /*
+   * exports.addPosts(document, posts || [], modding, threadCell
+   * .getElementsByClassName('divPosts')[0], boardData, userRole, innerPage,
+   * language);
+   */
 };
 
 // Section 2.1: Post content {
@@ -470,7 +517,8 @@ exports.setPostHideableElements = function(postCell, post, language) {
     banMessageLabel.innerHTML = post.banMessage;
   }
 
-  exports.setSharedHideableElements(post, postCell, language);
+  // TODO
+  // exports.setSharedHideableElements(post, postCell, language);
 };
 
 exports.setPostLinks = function(postCell, post, preview) {
@@ -499,21 +547,22 @@ exports.setPostLinks = function(postCell, post, preview) {
 exports.setPostComplexElements = function(postCell, post, document, preview,
     modding, language) {
 
-  exports.setRoleSignature(postCell, post);
+  // TODO
+  // exports.setRoleSignature(postCell, post);
 
   exports.setPostLinks(postCell, post, preview);
 
-  exports
-      .setUploadCell(document,
-          postCell.getElementsByClassName('panelUploads')[0], post.files,
-          modding, language);
+  postCell.getElementsByClassName('panelUploads')[0].innerHTML += exports
+      .setUploadCell(post.files, modding, language);
+
 };
 
 exports.setPostModElements = function(post, modding, postCell, boardData,
     userRole) {
 
   if (modding && post.ip) {
-    exports.setPostingIp(postCell, post, boardData, userRole);
+    // TODO
+    // exports.setPostingIp(postCell, post, boardData, userRole);
   } else {
     postCell.getElementsByClassName('panelIp')[0].remove();
   }
@@ -553,7 +602,8 @@ exports.generatePostHTML = function(postCell, post, language, innerPage,
   labelCreated.innerHTML = exports.formatDateToDisplay(post.creation, null,
       language);
 
-  exports.addMessage(innerPage, postCell, post);
+  // TODO
+  // exports.addMessage(innerPage, postCell, post);
 
   exports.setPostHideableElements(postCell, post, language);
 
@@ -566,9 +616,10 @@ exports.generatePostHTML = function(postCell, post, language, innerPage,
 
     var isAThread = post.threadId === post.postId;
 
-    exports.saveCache(cacheField, language, postCell,
+    exports.saveCache(cacheField, language, postCell.innerHTML,
         isAThread ? threadsCollection : postsCollection, post.boardUri,
         isAThread ? 'threadId' : 'postId', post.postId);
+
   }
 
 };
@@ -626,19 +677,19 @@ exports.getPostingCache = function(field, posting, language) {
 
 };
 
-exports.saveCache = function(cacheField, language, cell, collection, boardUri,
-    postingIdField, postingId) {
+exports.saveCache = function(cacheField, language, innerHTML, collection,
+    boardUri, postingIdField, postingId) {
 
   var updateBlock = {
     $set : {}
   };
 
   if (!language) {
-    updateBlock.$set[cacheField] = cell.innerHTML;
+    updateBlock.$set[cacheField] = innerHTML;
   } else {
     var key = 'alternativeCaches.' + cacheField;
 
-    updateBlock.$set[key] = cell.innerHTML;
+    updateBlock.$set[key] = innerHTML;
   }
 
   var queryBlock = {
@@ -682,66 +733,90 @@ exports.addPosts = function(document, posts, modding, divPosts, boardData,
 };
 
 // } Section 2.1: Post content
-exports.setThreadLinks = function(threadCell, thread, boardUri, innerPage) {
+exports.setThreadLinks = function(threadCell, thread, boardUri, innerPage,
+    language) {
 
-  var linkReply = threadCell.getElementsByClassName('linkReply')[0];
+  var removable = templateHandler(language, true).opCell.removable;
+
   if (innerPage) {
-    linkReply.remove();
+    threadCell = threadCell.replace('__linkReply_location__', '');
   } else {
-    linkReply.href = '/' + boardUri + '/res/' + thread.threadId + '.html';
+    threadCell = threadCell.replace('__linkReply_location__',
+        removable.linkReply);
+
+    var replyHref = '/' + boardUri + '/res/' + thread.threadId + '.html';
+
+    threadCell = threadCell.replace('__linkReply_href__', replyHref);
+
   }
-
-  var linkSelf = threadCell.getElementsByClassName('linkSelf')[0];
-
-  var linkQuote = threadCell.getElementsByClassName('linkQuote')[0];
-  linkQuote.innerHTML = thread.threadId;
 
   var linkStart = '/' + boardUri + '/res/' + thread.threadId + '.html#';
-  linkSelf.href = linkStart + thread.threadId;
-  linkQuote.href = linkStart + 'q' + thread.threadId;
+
+  var linkSelf = linkStart + thread.threadId;
+  threadCell = threadCell.replace('__linkSelf_href__', linkSelf);
+
+  var linkQuote = linkStart + 'q' + thread.threadId;
+  threadCell = threadCell.replace('__linkQuote_href__', linkQuote).replace(
+      '__linkQuote_inner__', thread.threadId);
+
+  return threadCell;
+
 };
 
-exports.setThreadComplexElements = function(boardUri, thread, threadCell) {
+exports.setThreadComplexElements = function(boardUri, thread, threadCell,
+    language) {
 
-  exports.setRoleSignature(threadCell, thread);
+  var removable = templateHandler(language, true).opCell.removable;
 
-  var banMessageLabel = threadCell.getElementsByClassName('divBanMessage')[0];
+  threadCell = exports.setRoleSignature(threadCell, thread, removable);
 
   if (!thread.banMessage) {
-    banMessageLabel.remove();
+    threadCell = threadCell.replace('__divBanMessage_location__', '');
   } else {
-    banMessageLabel.innerHTML = thread.banMessage;
+    threadCell = threadCell.replace('__divBanMessage_location__',
+        removable.divBanMessage).replace('__divBanMessage_inner__',
+        thread.banMessage);
   }
 
-  threadCell.getElementsByClassName('deletionCheckBox')[0].setAttribute('name',
-      boardUri + '-' + thread.threadId);
+  var checkboxName = boardUri + '-' + thread.threadId;
+  threadCell = threadCell.replace('__deletionCheckBox_name__', checkboxName);
+
+  return threadCell;
+
 };
 
 exports.setThreadSimpleElements = function(threadCell, thread, innerPage,
-    language) {
+    language, removable) {
 
-  var linkName = threadCell.getElementsByClassName('linkName')[0];
-
-  linkName.innerHTML = thread.name;
+  threadCell = threadCell.replace('__linkName_inner__', thread.name);
 
   if (thread.email) {
-    linkName.href = 'mailto:' + thread.email;
+    var email = 'mailto:' + thread.email;
+
+    threadCell = threadCell.replace('__linkName_href__', email);
+    threadCell = threadCell.replace('__linkName_class__', '');
+
   } else {
-    linkName.className += ' noEmailName';
+
+    threadCell = threadCell.replace('__linkName_class__', ' noEmailName');
+    threadCell = threadCell.replace('href=\"__linkName_href__\"', '');
+
   }
 
-  var subjectLabel = threadCell.getElementsByClassName('labelSubject')[0];
   if (thread.subject) {
-    subjectLabel.innerHTML = thread.subject;
+    threadCell = threadCell.replace('__labelSubject_location__',
+        removable.labelSubject).replace('__labelSubject_inner__',
+        thread.subject);
   } else {
-    subjectLabel.remove();
+    threadCell = threadCell.replace('__labelSubject_location__', '');
   }
 
-  var labelCreation = threadCell.getElementsByClassName('labelCreated')[0];
-  labelCreation.innerHTML = exports.formatDateToDisplay(thread.creation, null,
-      language);
+  threadCell = threadCell.replace('__labelCreated_inner__', exports
+      .formatDateToDisplay(thread.creation, null, language));
 
-  exports.addMessage(innerPage, threadCell, thread);
+  threadCell = exports.addMessage(innerPage, threadCell, thread, removable);
+
+  return threadCell;
 
 };
 
@@ -755,8 +830,8 @@ exports.setUploadLinks = function(cell, file) {
     cell = cell.replace('__imgLink_width__', file.width);
     cell = cell.replace('__imgLink_height__', file.height);
   } else {
-    cell = cell.replace('__imgLink_width__', '');
-    cell = cell.replace('__imgLink_height__', '');
+    cell = cell.replace('data-filewidth=\"__imgLink_width__\"', '');
+    cell = cell.replace('data-fileheight=\"__imgLink_height__\"', '');
   }
 
   cell = cell.replace('__nameLink_href__', file.path);
@@ -803,10 +878,10 @@ exports.setUploadDimensionLabel = function(cell, file, t) {
 
 };
 
-exports.setUploadCell = function(document, node, files, modding, language) {
+exports.setUploadCell = function(files, modding, language) {
 
   if (!files) {
-    return;
+    return '';
   }
 
   var children = '';
@@ -830,9 +905,7 @@ exports.setUploadCell = function(document, node, files, modding, language) {
 
   }
 
-  node.innerHTML += children;
-
-  return;
+  return children;
 
 };
 // } Section 2.2: Uploads
