@@ -89,7 +89,38 @@ exports.getCellTests = function() {
         template : 'catalogCell',
         fields : [ 'linkThumb', 'labelReplies', 'labelImages', 'labelPage',
             'labelSubject', 'divMessage', 'lockIndicator', 'pinIndicator',
-            'cyclicIndicator', 'bumpLockIndicator' ]
+            'cyclicIndicator', 'bumpLockIndicator' ],
+        prebuiltFields : [ {
+          name : 'linkThumb',
+          uses : [ 'inner', 'href' ]
+        }, {
+          name : 'labelReplies',
+          uses : [ 'inner' ]
+        }, {
+          name : 'labelImages',
+          uses : [ 'inner' ]
+        }, {
+          name : 'labelPage',
+          uses : [ 'inner' ]
+        }, {
+          name : 'bumpLockIndicator',
+          uses : [ 'removal' ]
+        }, {
+          name : 'cyclicIndicator',
+          uses : [ 'removal' ]
+        }, {
+          name : 'labelSubject',
+          uses : [ 'removal', 'inner' ]
+        }, {
+          name : 'divMessage',
+          uses : [ 'inner' ]
+        }, {
+          name : 'lockIndicator',
+          uses : [ 'removal' ]
+        }, {
+          name : 'pinIndicator',
+          uses : [ 'removal' ]
+        } ]
       },
       {
         template : 'bannerCell',

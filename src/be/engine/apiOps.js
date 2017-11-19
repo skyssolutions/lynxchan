@@ -360,6 +360,12 @@ exports.handleWrittenData = function(res, path, exceptionalMimes, cb) {
       try {
         parsedData = JSON.parse(data);
 
+        if (typeof parsedData !== 'object') {
+          parsedData = {};
+        } else if (typeof parsedData.parameters !== 'object') {
+          parsedData.parameters = {};
+        }
+
       } catch (error) {
         exports.outputResponse(null, error.toString(), 'parseError', res);
       }

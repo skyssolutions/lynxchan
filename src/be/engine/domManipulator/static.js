@@ -366,55 +366,66 @@ exports.page = function(board, page, threads, pageCount, boardData, flagData,
 // } Section 2: Board
 
 // Section 3: Catalog {
-exports.setCellThumb = function(thumbLink, boardUri, doc, thread, language) {
-  thumbLink.href = '/' + boardUri + '/res/' + thread.threadId + '.html';
+exports.setCatalogCellThumb = function(thread, language) {
+
+  var href = '/' + thread.boardUri + '/res/';
+  href += thread.threadId + '.html';
+
+  var cell = templateHandler(language, true).catalogCell.template.replace(
+      '__linkThumb_href__', href);
 
   if (thread.files && thread.files.length) {
-    var thumbImage = doc.createElement('img');
-
-    thumbImage.src = thread.files[0].thumb;
-    thumbLink.appendChild(thumbImage);
+    var img = '<img src=\"' + thread.files[0].thumb + '\">';
+    cell = cell.replace('__linkThumb_inner__', img);
   } else {
-    thumbLink.innerHTML = lang(language).guiOpen;
+    cell = cell.replace('__linkThumb_inner__', lang(language).guiOpen);
   }
+
+  return cell;
+
 };
 
-exports.setCatalogCellIndicators = function(thread, cell) {
+exports.setCatalogCellIndicators = function(thread, cell, removable) {
 
   for ( var key in common.indicatorsRelation) {
+
+    var idString = '__' + common.indicatorsRelation[key] + '_location__';
+
     if (!thread[key]) {
-      cell.getElementsByClassName(common.indicatorsRelation[key])[0].remove();
+      cell = cell.replace(idString, '');
+    } else {
+      cell = cell.replace(idString, removable[common.indicatorsRelation[key]]);
     }
   }
 
+  return cell;
+
 };
 
-exports.setCell = function(boardUri, document, thread, language) {
+exports.getCatalogCell = function(boardUri, document, thread, language) {
 
-  var cell = document.createElement('div');
+  var cell = exports.setCatalogCellThumb(thread, language);
 
-  cell.innerHTML = templateHandler(language).catalogCell;
-  cell.setAttribute('class', 'catalogCell');
+  cell = cell.replace('__labelReplies_inner__', thread.postCount || 0);
+  cell = cell.replace('__labelImages_inner__', thread.fileCount || 0);
+  cell = cell.replace('__labelPage_inner__', thread.page);
 
-  exports.setCellThumb(cell.getElementsByClassName('linkThumb')[0], boardUri,
-      document, thread, language);
-
-  var labelReplies = cell.getElementsByClassName('labelReplies')[0];
-  labelReplies.innerHTML = thread.postCount || 0;
-
-  var labelImages = cell.getElementsByClassName('labelImages')[0];
-  labelImages.innerHTML = thread.fileCount || 0;
-  cell.getElementsByClassName('labelPage')[0].innerHTML = thread.page;
+  var removable = templateHandler(language, true).catalogCell.removable;
 
   if (thread.subject) {
-    cell.getElementsByClassName('labelSubject')[0].innerHTML = thread.subject;
+
+    cell = cell.replace('__labelSubject_location__', removable.labelSubject);
+    cell = cell.replace('__labelSubject_inner__', thread.subject);
+
+  } else {
+    cell = cell.replace('__labelSubject_location__', '');
   }
 
-  exports.setCatalogCellIndicators(thread, cell);
+  cell = exports.setCatalogCellIndicators(thread, cell, removable);
 
-  cell.getElementsByClassName('divMessage')[0].innerHTML = thread.markdown;
+  cell = cell.replace('__divMessage_inner__', thread.markdown);
 
-  return cell;
+  return '<div class=\"catalogCell\">' + cell + '</div>';
 
 };
 
@@ -448,10 +459,14 @@ exports.setCatalogElements = function(boardData, document, language, threads,
 
   var threadsDiv = document.getElementById('divThreads');
 
+  var children = '';
+
   for (var i = 0; i < threads.length; i++) {
-    threadsDiv.appendChild(exports.setCell(boardUri, document, threads[i],
-        language));
+    children += exports
+        .getCatalogCell(boardUri, document, threads[i], language);
   }
+
+  threadsDiv.innerHTML += children;
 
 };
 

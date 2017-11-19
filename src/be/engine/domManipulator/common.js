@@ -268,24 +268,9 @@ exports.setPostingFlag = function(posting, postingCell, removable) {
 
 };
 
-exports.setPostingLinks = function(postingCell, posting, innerPage, removable) {
+exports.setPostingLinks = function(postingCell, posting, removable) {
 
   var boardUri = posting.boardUri;
-
-  if (!posting.postId) {
-
-    if (innerPage) {
-      postingCell = postingCell.replace('__linkReply_location__', '');
-    } else {
-      postingCell = postingCell.replace('__linkReply_location__',
-          removable.linkReply);
-
-      var replyHref = '/' + boardUri + '/res/' + posting.threadId + '.html';
-
-      postingCell = postingCell.replace('__linkReply_href__', replyHref);
-
-    }
-  }
 
   var linkStart = '/' + boardUri + '/res/' + posting.threadId + '.html#';
 
@@ -445,8 +430,7 @@ exports.setAllSharedPostingElements = function(postingCell, posting, removable,
   postingCell = exports.setSharedHideableElements(posting, removable,
       postingCell, language);
 
-  postingCell = exports.setPostingLinks(postingCell, posting, innerPage,
-      removable);
+  postingCell = exports.setPostingLinks(postingCell, posting, removable);
 
   postingCell = exports.setPostingComplexElements(posting, postingCell,
       removable, preview);
@@ -461,7 +445,8 @@ exports.setAllSharedPostingElements = function(postingCell, posting, removable,
 // Section 2: Shared posting elements {
 
 // Section 3: Thread content {
-exports.setThreadHiddeableElements = function(thread, cell, removable) {
+exports.setThreadHiddeableElements = function(thread, cell, removable,
+    innerPage) {
 
   for ( var key in exports.indicatorsRelation) {
     var location = '__' + exports.indicatorsRelation[key] + '_location__';
@@ -472,6 +457,19 @@ exports.setThreadHiddeableElements = function(thread, cell, removable) {
       cell = cell.replace(location, removable[exports.indicatorsRelation[key]]);
 
     }
+  }
+
+  if (innerPage) {
+    cell = cell.replace('__linkReply_location__', '');
+  } else {
+
+    cell = cell.replace('__linkReply_location__', removable.linkReply);
+
+    var boardUri = thread.boardUri;
+    var replyHref = '/' + boardUri + '/res/' + thread.threadId + '.html';
+
+    cell = cell.replace('__linkReply_href__', replyHref);
+
   }
 
   return cell;
@@ -555,8 +553,8 @@ exports.getThreadContent = function(thread, posts, innerPage, modding,
 
   var removable = templateHandler(language, true).opCell.removable;
 
-  threadCell = exports
-      .setThreadHiddeableElements(thread, threadCell, removable);
+  threadCell = exports.setThreadHiddeableElements(thread, threadCell,
+      removable, innerPage);
 
   return exports.setAllSharedPostingElements(threadCell, thread, removable,
       language, modding, innerPage, userRole, boardData);

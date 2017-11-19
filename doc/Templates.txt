@@ -1164,7 +1164,7 @@ Root element: div
 
 Elements:
 linkThumb:
-    use: have it's href manipulated.
+    use: have it's href and innerHTML manipulated.
     description: holds a link to the thread.
 
 labelReplies:
