@@ -31,7 +31,7 @@ function outputModData(bData, flagData, thread, posts, res, json, userRole,
 
   } else {
 
-    domManipulator.thread(bData.boardUri, bData, flagData, thread, posts,
+    domManipulator.thread(bData, flagData, thread, posts,
         function gotThreadContent(error, content) {
           if (error) {
             formOps.outputError(error, 500, res, language);

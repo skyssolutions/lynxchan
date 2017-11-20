@@ -155,16 +155,7 @@ exports.formatDateToDisplay = function(d, noTime, language) {
 // } Section 1: Date formatting functions
 
 // Section 2: Board content{
-// TODO remove
-exports.setCustomCss = function(board, document) {
-  var link = document.createElement('link');
-  link.setAttribute('rel', 'stylesheet');
-  link.setAttribute('type', 'text/css');
-  link.setAttribute('href', '/' + board + '/custom.css');
-  document.getElementsByTagName('head')[0].appendChild(link);
-};
-
-exports.newSetCustomCss = function(boardUri, document) {
+exports.setCustomCss = function(boardUri, document) {
 
   var link = '<link rel="stylesheet" type="text/css" href="/';
   link += boardUri + '/custom.css">';
@@ -172,50 +163,13 @@ exports.newSetCustomCss = function(boardUri, document) {
   return document.replace('__head_children__', link);
 };
 
-exports.newSetCustomJs = function(board, document) {
+exports.setCustomJs = function(board, document) {
 
   var script = '<script src="/' + board + '/custom.js"></script>';
   return document.replace('__body_children__', script);
 };
 
-// TODO remove
-exports.setCustomJs = function(board, document) {
-
-  var script = document.createElement('script');
-  script.setAttribute('src', '/' + board + '/custom.js');
-
-  document.getElementsByTagName('body')[0].appendChild(script);
-};
-
-// TODO remove
-exports.setFlags = function(document, board, flagData, language) {
-
-  if (!flagData || !flagData.length) {
-    document.getElementById('flagsDiv').remove();
-
-    return;
-  }
-
-  var combobox = document.getElementById('flagCombobox');
-
-  var option = document.createElement('option');
-  option.innerHTML = lang(language).guiNoFlag;
-  option.value = '';
-  combobox.appendChild(option);
-
-  for (var i = 0; i < flagData.length; i++) {
-    var flag = flagData[i];
-
-    option = document.createElement('option');
-    option.innerHTML = flag.name;
-    option.value = flag._id;
-
-    combobox.appendChild(option);
-  }
-
-};
-
-exports.newSetFlags = function(document, flagData, language, removable) {
+exports.setFlags = function(document, flagData, language, removable) {
 
   if (!flagData || !flagData.length) {
     return document.replace('__flagsDiv_location__', '');
@@ -259,7 +213,7 @@ exports.setBoardPostingNameAndCaptcha = function(bData, document, thread,
 
 };
 
-exports.newSetBoardPosting = function(boardData, flagData, document, thread,
+exports.setBoardPosting = function(boardData, flagData, document, thread,
     language, removable) {
 
   document = exports.setBoardPostingNameAndCaptcha(boardData, document, thread,
@@ -277,44 +231,18 @@ exports.newSetBoardPosting = function(boardData, flagData, document, thread,
     document = document.replace('__divUpload_location__', '');
   } else {
     document = document.replace('__divUpload_location__', removable.divUpload);
-    document = exports.newSetFileLimits(document, boardData, language);
+    document = exports.setFileLimits(document, boardData, language);
   }
 
   document = document.replace('__boardIdentifier_value__', exports
       .clean(boardData.boardUri));
   document = document.replace('__labelMessageLength_inner__', messageLength);
 
-  return exports.newSetFlags(document, flagData, language, removable);
+  return exports.setFlags(document, flagData, language, removable);
 
 };
 
-// TODO remove
 exports.setFileLimits = function(document, bData, language) {
-
-  var fileLimitToUse;
-
-  if (bData.maxFiles) {
-    fileLimitToUse = bData.maxFiles < maxAllowedFiles ? bData.maxFiles
-        : maxAllowedFiles;
-  } else {
-    fileLimitToUse = maxAllowedFiles;
-  }
-
-  document.getElementById('labelMaxFiles').innerHTML = fileLimitToUse;
-
-  var sizeToUse;
-
-  if (bData.maxFileSizeMB && bData.maxFileSizeMB < maxFileSizeMB) {
-    sizeToUse = exports.formatFileSize(bData.maxFileSizeMB * 1048576, language);
-  } else {
-    sizeToUse = displayMaxSize;
-  }
-
-  document.getElementById('labelMaxFileSize').innerHTML = sizeToUse;
-
-};
-
-exports.newSetFileLimits = function(document, bData, language) {
 
   var fileLimitToUse;
 
@@ -339,64 +267,7 @@ exports.newSetFileLimits = function(document, bData, language) {
 
 };
 
-// TODO remove
-exports.setBoardPosting = function(boardData, document, thread, language) {
-
-  var settings = boardData.settings;
-
-  var captchaMode = boardData.captchaMode || 0;
-
-  if ((captchaMode < 1 || (captchaMode < 2 && thread)) && !forceCaptcha) {
-    document.getElementById('captchaDiv').remove();
-  }
-
-  if (settings.indexOf('forceAnonymity') > -1) {
-    document.getElementById('divName').remove();
-  }
-
-  var locationFlagMode = boardData.locationFlagMode || 0;
-
-  if (locationFlagMode !== 1) {
-    document.getElementById('noFlagDiv').remove();
-  }
-
-  if (settings.indexOf('textBoard') > -1) {
-    document.getElementById('divUpload').remove();
-  } else {
-    exports.setFileLimits(document, boardData, language);
-  }
-
-  var boardIdentifyInput = document.getElementById('boardIdentifier');
-
-  boardIdentifyInput.setAttribute('value', boardData.boardUri);
-
-  document.getElementById('labelMessageLength').innerHTML = messageLength;
-
-};
-
-// TODO remove
-exports.setBoardCustomization = function(boardData, document, board) {
-
-  var descriptionHeader = document.getElementById('labelDescription');
-  descriptionHeader.innerHTML = boardData.boardDescription;
-
-  if (boardData.usesCustomCss) {
-    exports.setCustomCss(board, document);
-  }
-
-  if (boardData.usesCustomJs && allowedJs) {
-    exports.setCustomJs(board, document);
-  }
-
-  if (boardData.boardMarkdown && boardData.boardMarkdown.length) {
-    document.getElementById('divMessage').innerHTML = boardData.boardMarkdown;
-  } else {
-    document.getElementById('panelMessage').remove();
-  }
-
-};
-
-exports.newSetBoardCustomization = function(document, boardData, removable) {
+exports.setBoardCustomization = function(document, boardData, removable) {
 
   document = document.replace('__labelDescription_inner__', exports
       .clean(boardData.boardDescription));
@@ -404,12 +275,12 @@ exports.newSetBoardCustomization = function(document, boardData, removable) {
   var boardUri = exports.clean(boardData.boardUri);
 
   if (boardData.usesCustomCss) {
-    document = exports.newSetCustomCss(boardUri, document);
+    document = exports.setCustomCss(boardUri, document);
   } else {
     document = document.replace('__head_children__', '');
   }
   if (boardData.usesCustomJs && allowedJs) {
-    document = exports.newSetCustomJs(boardUri, document);
+    document = exports.setCustomJs(boardUri, document);
   } else {
     document = document.replace('__body_children__', '');
   }
@@ -428,7 +299,7 @@ exports.newSetBoardCustomization = function(document, boardData, removable) {
   return document;
 };
 
-exports.newSetHeader = function(template, language, bData, flagData, thread) {
+exports.setHeader = function(template, language, bData, flagData, thread) {
 
   var boardUri = exports.clean(bData.boardUri);
 
@@ -439,29 +310,10 @@ exports.newSetHeader = function(template, language, bData, flagData, thread) {
   var linkBanner = '/randomBanner.js?boardUri=' + boardUri;
   document = document.replace('__bannerImage_src__', linkBanner);
 
-  document = exports.newSetBoardPosting(bData, flagData, document, thread,
+  document = exports.setBoardPosting(bData, flagData, document, thread,
       language, template.removable);
 
-  return exports.newSetBoardCustomization(document, bData, template.removable);
-
-};
-
-// TODO remove
-exports.setHeader = function(document, board, boardData, flagData, thread,
-    language) {
-
-  var titleHeader = document.getElementById('labelName');
-  titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
-
-  var linkBanner = '/randomBanner.js?boardUri=' + board;
-  document.getElementById('bannerImage').src = linkBanner;
-
-  exports.setBoardPosting(boardData, document, thread, language);
-
-  // DONE
-  exports.setBoardCustomization(boardData, document, board);
-
-  exports.setFlags(document, board, flagData, language);
+  return exports.setBoardCustomization(document, bData, template.removable);
 
 };
 // } Section 2: Board content
@@ -875,8 +727,10 @@ exports.getThread = function(thread, posts, innerPage, modding, boardData,
     threadCell += currentCache;
   }
 
-  return threadCell.replace('__divPosts_children__', exports.getPosts(posts,
-      modding, boardData, userRole, innerPage, language));
+  threadCell = threadCell.replace('__divPosts_children__', exports.getPosts(
+      posts, modding, boardData, userRole, innerPage, language));
+
+  return threadCell + '</div>';
 
 };
 

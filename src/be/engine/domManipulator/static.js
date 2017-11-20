@@ -119,91 +119,99 @@ exports.login = function(language, callback) {
 };
 
 // Section 1: Thread {
-exports.setThreadHiddenIdentifiers = function(document, boardUri, threadData) {
-  var threadIdentifyInput = document.getElementById('threadIdentifier');
-  threadIdentifyInput.setAttribute('value', threadData.threadId);
-
-  var threadTransferInput = document.getElementById('transferThreadIdentifier');
-  threadTransferInput.setAttribute('value', threadData.threadId);
-
-  var boardTransferInput = document.getElementById('transferBoardIdentifier');
-  boardTransferInput.setAttribute('value', boardUri);
-
-};
-
-exports.setModdingInformation = function(document, boardUri, threadData,
-    callback) {
+exports.setModdingInformation = function(document, threadData) {
 
   if (threadData.locked) {
-    document.getElementById('checkboxLock').setAttribute('checked', true);
+    document = document.replace('__checkboxLock_checked__', 'true');
+  } else {
+    document = document.replace('checked="__checkboxLock_checked__"', '');
   }
 
   if (threadData.pinned) {
-    document.getElementById('checkboxPin').setAttribute('checked', true);
+    document = document.replace('__checkboxPin__', 'true');
+  } else {
+    document = document.replace('checked="__checkboxPin_checked__"', '');
   }
 
   if (threadData.cyclic) {
-    document.getElementById('checkboxCyclic').setAttribute('checked', true);
+    document = document.replace('__checkboxCyclic_checked__', 'true');
+  } else {
+    document = document.replace('checked="__checkboxCyclic_checked__"', '');
   }
 
-  document.getElementById('controlBoardIdentifier').setAttribute('value',
-      boardUri);
-  document.getElementById('controlThreadIdentifier').setAttribute('value',
+  document = document.replace('__controlBoardIdentifier_value__', common
+      .clean(threadData.boardUri));
+  document = document.replace('__controlThreadIdentifier_value__',
       threadData.threadId);
 
+  document = document.replace('__transferThreadIdentifier_value__',
+      threadData.threadId);
+
+  return document.replace('__transferBoardIdentifier_value__', common
+      .clean(threadData.boardUri));
+
 };
 
-exports.setThreadTitle = function(document, boardUri, threadData) {
-  var title = '/' + boardUri + '/ - ';
+exports.setThreadTitle = function(document, threadData) {
+
+  var title = '/' + common.clean(threadData.boardUri) + '/ - ';
 
   if (threadData.subject) {
-    title += threadData.subject;
+    title += common.clean(threadData.subject);
   } else {
-    title += threadData.message.substring(0, 256);
+    title += common.clean(threadData.message.substring(0, 256));
   }
 
-  document.title = title;
+  return document.replace('__tile__', title);
+
 };
 
-exports.setModElements = function(modding, document, boardUri, boardData,
-    threadData, posts, userRole, language) {
+exports.setModElements = function(modding, document, userRole, removable) {
 
   var globalStaff = userRole <= miscOps.getMaxStaffRole();
   if (!globalStaff || !modding) {
-    document.getElementById('formTransfer').remove();
+    document = document.replace('__formTransfer_location__', '');
+  } else {
+    document = document.replace('__formTransfer_location__',
+        removable.formTransfer);
   }
 
   var allowedToDeleteFromIp = userRole <= clearIpMinRole;
 
   if (!modding || !allowedToDeleteFromIp) {
-    document.getElementById('ipDeletionForm').remove();
+    document = document.replace('__ipDeletionForm_location__', '');
+  } else {
+    document = document.replace('__ipDeletionForm_location__',
+        removable.ipDeletionForm);
   }
+
+  return document;
 
 };
 
-exports.setThreadCommonInfo = function(document, boardUri, threadData,
-    boardData, language, flagData, posts, modding, userRole) {
+exports.setThreadCommonInfo = function(template, threadData, boardData,
+    language, flagData, posts, modding, userRole) {
 
-  exports.setThreadTitle(document, boardUri, threadData);
+  var document = common.setHeader(template, language, boardData, flagData,
+      threadData);
 
-  var linkModeration = '/mod.js?boardUri=' + boardData.boardUri;
+  document = exports.setThreadTitle(document, threadData);
+
+  var linkModeration = '/mod.js?boardUri=' + common.clean(boardData.boardUri);
   linkModeration += '&threadId=' + threadData.threadId;
+  document = document.replace('__linkMod_href__', linkModeration);
 
-  var moderationElement = document.getElementById('linkMod');
-  moderationElement.href = linkModeration;
+  document = document.replace('__linkManagement_href__',
+      '/boardManagement.js?boardUri=' + common.clean(boardData.boardUri));
 
-  var linkManagement = document.getElementById('linkManagement');
-  linkManagement.href = '/boardManagement.js?boardUri=' + boardData.boardUri;
+  document = document.replace('__divThreads_children__', common.getThread(
+      threadData, posts, true, modding, boardData, userRole, language));
 
-  common.setHeader(document, boardUri, boardData, flagData, true, language);
+  document = document
+      .replace('__threadIdentifier_value__', threadData.threadId);
 
-  exports.setThreadHiddenIdentifiers(document, boardUri, threadData);
-
-  common.addThread(document, threadData, posts, true, modding, boardData,
-      userRole, language);
-
-  exports.setModElements(modding, document, boardUri, boardData, threadData,
-      posts, userRole, language);
+  return exports
+      .setModElements(modding, document, userRole, template.removable);
 
 };
 
@@ -221,25 +229,33 @@ exports.getThreadPathAndMeta = function(boardUri, language, meta, threadData) {
 
 };
 
-exports.thread = function(boardUri, boardData, flagData, threadData, posts,
-    callback, modding, userRole, language) {
+exports.thread = function(boardData, flagData, threadData, posts, callback,
+    modding, userRole, language) {
 
   try {
-    var dom = new JSDOM(templateHandler(language).threadPage);
-    var document = dom.window.document;
 
-    exports.setThreadCommonInfo(document, boardUri, threadData, boardData,
+    var boardUri = boardData.boardUri;
+
+    var template = templateHandler(language, true).threadPage;
+
+    var document = exports.setThreadCommonInfo(template, threadData, boardData,
         language, flagData, posts, modding, userRole);
 
     if (modding) {
-      exports.setModdingInformation(document, boardUri, threadData, callback);
 
-      callback(null, dom.serialize());
+      document = document.replace('__divControls_location__',
+          template.removable.divControls);
+      document = document.replace('__divMod_location__',
+          template.removable.divMod);
+
+      document = exports.setModdingInformation(document, threadData);
+
+      callback(null, document);
 
     } else {
 
-      document.getElementById('divMod').remove();
-      document.getElementById('divControls').remove();
+      document = document.replace('__divControls_location__', '');
+      document = document.replace('__divMod_location__', '');
 
       var meta = {
         boardUri : boardUri,
@@ -250,7 +266,7 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
       var path = exports.getThreadPathAndMeta(boardUri, language, meta,
           threadData);
 
-      gridFs.writeData(dom.serialize(), path, 'text/html', meta, callback);
+      gridFs.writeData(document, path, 'text/html', meta, callback);
     }
 
   } catch (error) {
@@ -340,7 +356,7 @@ exports.page = function(page, threads, pageCount, boardData, flagData,
 
     var template = templateHandler(language, true).boardPage;
 
-    var document = common.newSetHeader(template, language, boardData, flagData,
+    var document = common.setHeader(template, language, boardData, flagData,
         null);
 
     var boardUri = common.clean(boardData.boardUri);
@@ -446,7 +462,7 @@ exports.setCatalogPosting = function(boardData, flagData, document, language,
     document = document.replace('__postingForm_location__',
         removable.postingForm);
 
-    document = common.newSetBoardPosting(boardData, flagData, document, null,
+    document = common.setBoardPosting(boardData, flagData, document, null,
         language, removable);
 
   } else {
@@ -481,7 +497,7 @@ exports.setCatalogElements = function(boardData, language, threads, flagData) {
   }
 
   if (boardData.usesCustomCss) {
-    document = common.newSetCustomCss(boardUri, document);
+    document = common.setCustomCss(boardUri, document);
   } else {
     document = document.replace('__head_children__', '');
   }
@@ -764,18 +780,23 @@ exports.maintenance = function(language, callback) {
 exports.addOverBoardThreads = function(foundThreads, previewRelation, doc,
     language) {
 
+  var children = '';
+
   for (var i = 0; i < foundThreads.length; i++) {
     var thread = foundThreads[i];
 
     var previews = [];
 
     if (previewRelation[thread.boardUri]) {
-
       previews = previewRelation[thread.boardUri][thread.threadId];
     }
 
-    common.addThread(doc, thread, previews, null, null, null, null, language);
+    children += common.getThread(thread, previews, null, null, null, null,
+        language);
+
   }
+
+  doc.getElementById('divThreads').innerHTML += children;
 
 };
 

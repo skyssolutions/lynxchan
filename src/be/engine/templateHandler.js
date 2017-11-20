@@ -12,7 +12,7 @@ var alternativeTemplates = {};
 var preBuiltDefault = {};
 var preBuiltAlternative = {};
 
-var simpleAttributes = [ 'download', 'style', 'value', 'name' ];
+var simpleAttributes = [ 'download', 'style', 'value', 'name', 'checked' ];
 var simpleProperties = [ 'href', 'title', 'src' ];
 
 require('jsdom').defaultDocumentFeatures = {
@@ -587,7 +587,7 @@ exports.getPageTests = function() {
           uses : [ 'children' ]
         }, {
           name : 'boardIdentifier',
-          attributes : [ 'children' ]
+          attributes : [ 'value' ]
         }, {
           name : 'linkManagement',
           uses : [ 'href' ]
@@ -633,7 +633,103 @@ exports.getPageTests = function() {
             'checkboxCyclic', 'flagsDiv', 'flagCombobox', 'panelMessage',
             'divMessage', 'formTransfer', 'transferBoardIdentifier',
             'transferThreadIdentifier', 'ipDeletionForm', 'labelMaxFiles',
-            'labelMessageLength', 'noFlagDiv' ]
+            'labelMessageLength', 'noFlagDiv' ],
+        headChildren : true,
+        bodyChildren : true,
+        prebuiltFields : [ {
+          name : 'noFlagDiv',
+          uses : [ 'removal' ]
+        }, {
+          name : 'ipDeletionForm',
+          uses : [ 'removal' ]
+        }, {
+          name : 'panelMessage',
+          uses : [ 'removal' ]
+        }, {
+          name : 'divMessage',
+          uses : [ 'inner' ]
+        }, {
+          name : 'labelName',
+          uses : [ 'inner' ]
+        }, {
+          name : 'flagsDiv',
+          uses : [ 'removal' ]
+        }, {
+          name : 'flagCombobox',
+          uses : [ 'children' ]
+        }, {
+          name : 'labelDescription',
+          uses : [ 'inner' ]
+        }, {
+          name : 'divThreads',
+          uses : [ 'children' ]
+        }, {
+          name : 'boardIdentifier',
+          attributes : [ 'value' ]
+        }, {
+          name : 'threadIdentifier',
+          attributes : [ 'value' ]
+        }, {
+          name : 'linkManagement',
+          uses : [ 'href' ]
+        }, {
+          name : 'linkMod',
+          uses : [ 'href' ]
+        }, {
+          name : 'divMod',
+          uses : [ 'removal' ]
+        }, {
+          name : 'divControls',
+          uses : [ 'removal' ]
+        }, {
+          name : 'controlBoardIdentifier',
+          attributes : [ 'value' ]
+        }, {
+          name : 'controlThreadIdentifier',
+          attributes : [ 'value' ]
+        }, {
+          name : 'checkboxLock',
+          attributes : [ 'checked' ]
+        }, {
+          name : 'checkboxPin',
+          attributes : [ 'checked' ]
+        }, {
+          name : 'checkboxCyclic',
+          attributes : [ 'checked' ]
+        }, {
+          name : 'checkboxCyclic',
+          attributes : [ 'checked' ]
+        }, {
+          name : 'bannerImage',
+          uses : [ 'src' ]
+        }, {
+          name : 'captchaDiv',
+          uses : [ 'removal' ]
+        }, {
+          name : 'divName',
+          uses : [ 'removal' ]
+        }, {
+          name : 'labelMaxFileSize',
+          uses : [ 'inner' ]
+        }, {
+          name : 'formTransfer',
+          uses : [ 'removal' ]
+        }, {
+          name : 'transferBoardIdentifier',
+          attributes : [ 'value' ]
+        }, {
+          name : 'transferThreadIdentifier',
+          attributes : [ 'value' ]
+        }, {
+          name : 'labelMaxFiles',
+          uses : [ 'inner' ]
+        }, {
+          name : 'labelMessageLength',
+          uses : [ 'inner' ]
+        }, {
+          name : 'divUpload',
+          uses : [ 'removal' ]
+        } ]
       },
       {
         template : 'messagePage',

@@ -68,10 +68,10 @@ exports.loadDependencies = function() {
 // Section 1.1: Board {
 
 // Section 1.1.1: Thread {
-exports.generateThreadHTML = function(boardUri, boardData, flagData,
-    threadData, foundPosts, callback, language) {
+exports.generateThreadHTML = function(boardData, flagData, threadData,
+    foundPosts, callback, language) {
 
-  domManipulator.thread(boardUri, boardData, flagData, threadData, foundPosts,
+  domManipulator.thread(boardData, flagData, threadData, foundPosts,
       function generatedHTML(error) {
 
         if (error) {
@@ -91,8 +91,8 @@ exports.generateThreadHTML = function(boardUri, boardData, flagData,
             } else if (!language) {
               callback();
             } else {
-              exports.generateThreadHTML(boardUri, boardData, flagData,
-                  threadData, foundPosts, callback, language);
+              exports.generateThreadHTML(boardData, flagData, threadData,
+                  foundPosts, callback, language);
             }
 
           });
@@ -184,8 +184,8 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
 
                   mbHandler.clearCache(boardUri);
 
-                  exports.generateThreadHTML(boardUri, boardData, flagData,
-                      threadData, foundPosts, callback);
+                  exports.generateThreadHTML(boardData, flagData, threadData,
+                      foundPosts, callback);
 
                 }
 
