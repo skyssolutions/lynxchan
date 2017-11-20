@@ -377,7 +377,7 @@ exports.setCatalogCellThumb = function(thread, language) {
       '__linkThumb_href__', href);
 
   if (thread.files && thread.files.length) {
-    var img = '<img src=\"' + common.clean(thread.files[0].thumb) + '\">';
+    var img = '<img src="' + common.clean(thread.files[0].thumb) + '">';
     cell = cell.replace('__linkThumb_inner__', img);
   } else {
     cell = cell.replace('__linkThumb_inner__', lang(language).guiOpen);
@@ -427,39 +427,46 @@ exports.getCatalogCell = function(boardUri, document, thread, language) {
 
   cell = cell.replace('__divMessage_inner__', thread.markdown);
 
-  return '<div class=\"catalogCell\">' + cell + '</div>';
+  return '<div class="catalogCell">' + cell + '</div>';
 
 };
 
-exports.setCatalogPosting = function(boardData, boardUri, flagData, document,
-    language) {
+exports.setCatalogPosting = function(boardData, flagData, document, language,
+    removable) {
 
   if (!disableCatalogPosting) {
+    document = document.replace('__postingForm_location__',
+        removable.postingForm);
 
-    common.setBoardPosting(boardData, document, null, language);
-    common.setFlags(document, boardUri, flagData, language);
+    document = common.newSetBoardPosting(boardData, document, null, language,
+        removable);
+    document = common.newSetFlags(document, flagData, language, removable);
+
   } else {
-    document.getElementById('postingForm').remove();
+    document = document.replace('__postingForm_location__', '');
   }
+
+  return document;
 
 };
 
-exports.setCatalogElements = function(boardData, document, language, threads,
-    flagData) {
+exports.setCatalogElements = function(boardData, language, threads, flagData) {
+
+  var template = templateHandler(language, true).catalogPage;
+
+  var document = template.template;
+
+  boardData.boardUri = common.clean(boardData.boardUri);
 
   var boardUri = boardData.boardUri;
 
-  if (boardData.usesCustomCss) {
-    common.setCustomCss(boardUri, document);
-  }
+  document = document.replace('__title__', lang(language).titCatalog.replace(
+      '{$board}', boardUri));
 
-  document.title = lang(language).titCatalog.replace('{$board}', boardUri);
+  document = document.replace('__labelBoard_inner__', '/' + boardUri + '/');
 
-  document.getElementById('labelBoard').innerHTML = '/' + boardUri + '/';
-
-  exports.setCatalogPosting(boardData, boardUri, flagData, document, language);
-
-  var threadsDiv = document.getElementById('divThreads');
+  document = exports.setCatalogPosting(boardData, flagData, document, language,
+      template.removable);
 
   var children = '';
 
@@ -468,7 +475,13 @@ exports.setCatalogElements = function(boardData, document, language, threads,
         .getCatalogCell(boardUri, document, threads[i], language);
   }
 
-  threadsDiv.innerHTML += children;
+  if (boardData.usesCustomCss) {
+    document = common.newsSetCustomCss(boardUri, document);
+  } else {
+    document = document.replace('__head_children__', '');
+  }
+
+  return document.replace('__divThreads_children__', children);
 
 };
 
@@ -476,17 +489,15 @@ exports.catalog = function(language, boardData, threads, flagData, callback) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).catalogPage);
-    var document = dom.window.document;
-
-    exports
-        .setCatalogElements(boardData, document, language, threads, flagData);
-
     var meta = {
       boardUri : boardData.boardUri,
       type : 'catalog'
     };
-    var path = '/' + boardData.boardUri + '/catalog.html';
+
+    var document = exports.setCatalogElements(boardData, language, threads,
+        flagData);
+
+    var path = '/' + meta.boardUri + '/catalog.html';
 
     if (language) {
       meta.languges = language.headerValues;
@@ -494,7 +505,7 @@ exports.catalog = function(language, boardData, threads, flagData, callback) {
       path += language.headerValues.join('-');
     }
 
-    gridFs.writeData(dom.serialize(), path, 'text/html', meta, callback);
+    gridFs.writeData(document, path, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);
@@ -516,7 +527,7 @@ exports.getLatestImages = function(latestImages, language) {
 
     common.clean(image);
 
-    var cell = '<div class=\"latestImageCell\">' + cellTemplate;
+    var cell = '<div class="latestImageCell">' + cellTemplate;
     cell += '</div>';
 
     var postLink = '/' + image.boardUri + '/res/' + image.threadId + '.html';
@@ -524,7 +535,7 @@ exports.getLatestImages = function(latestImages, language) {
 
     cell = cell.replace('__linkPost_href__', postLink);
 
-    var img = '<img src=\"' + image.thumb + '\">';
+    var img = '<img src="' + image.thumb + '">';
 
     cell = cell.replace('__linkPost_children__', img);
 
@@ -547,7 +558,7 @@ exports.getTopBoards = function(boards, language) {
 
     common.clean(board);
 
-    var cell = '<div class=\"topBoardCell\">' + cellTemplate;
+    var cell = '<div class="topBoardCell">' + cellTemplate;
     cell += '</div>';
 
     var content = '/' + board.boardUri + '/ - ' + board.boardName;
@@ -573,7 +584,7 @@ exports.getLatestPosts = function(latestPosts, language) {
 
     common.clean(post);
 
-    var cell = '<div class=\"latestPostCell\">' + cellTemplate;
+    var cell = '<div class="latestPostCell">' + cellTemplate;
     cell += '</div>';
 
     cell = cell.replace('__labelPreview_inner__', post.previewText);

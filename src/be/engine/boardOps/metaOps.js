@@ -175,7 +175,7 @@ exports.getMessageMarkdown = function(message) {
   ret = ret.replace(/\[.+?\]\(.+?\)/g, function prettyLinks(match) {
     var matchesArray = match.match(/\[(.+)\]\((.+)\)/);
 
-    return '<a href=\"' + matchesArray[2] + '\">' + matchesArray[1] + '</a>';
+    return '<a href="' + matchesArray[2] + '">' + matchesArray[1] + '</a>';
   });
 
   ret = postingOps.replaceStyleMarkdown(ret);

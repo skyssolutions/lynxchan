@@ -154,12 +154,21 @@ exports.formatDateToDisplay = function(d, noTime, language) {
 };
 // } Section 1: Date formatting functions
 
+// TODO remove
 exports.setCustomCss = function(board, document) {
   var link = document.createElement('link');
   link.setAttribute('rel', 'stylesheet');
   link.setAttribute('type', 'text/css');
   link.setAttribute('href', '/' + board + '/custom.css');
   document.getElementsByTagName('head')[0].appendChild(link);
+};
+
+exports.newsSetCustomCss = function(boardUri, document) {
+
+  var link = '<link rel="stylesheet" type="text/css" href="/';
+  link += boardUri + '/custom.css">';
+
+  return document.replace('__head_children__', link);
 };
 
 exports.setCustomJs = function(board, document) {
@@ -170,6 +179,7 @@ exports.setCustomJs = function(board, document) {
   document.getElementsByTagName('body')[0].appendChild(script);
 };
 
+// TODO remove
 exports.setFlags = function(document, board, flagData, language) {
 
   if (!flagData || !flagData.length) {
@@ -197,6 +207,79 @@ exports.setFlags = function(document, board, flagData, language) {
 
 };
 
+exports.newSetFlags = function(document, flagData, language, removable) {
+
+  if (!flagData || !flagData.length) {
+    return document.replace('__flagsDiv_location__', '');
+  }
+
+  document = document.replace('__flagsDiv_location__', removable.flagsDiv);
+
+  var children = '<option>' + lang(language).guiNoFlag + '</option>';
+
+  for (var i = 0; i < flagData.length; i++) {
+    var flag = flagData[i];
+
+    children += '<option value="' + flag._id + '">' + exports.clean(flag.name);
+    children += '</option>';
+
+  }
+
+  return document.replace('__flagCombobox_children__', children);
+
+};
+
+exports.setBoardPostingNameAndCaptcha = function(bData, document, thread,
+    removable) {
+
+  var captchaMode = bData.captchaMode || 0;
+
+  if ((captchaMode < 1 || (captchaMode < 2 && thread)) && !forceCaptcha) {
+    document = document.replace('__captchaDiv_location__', '');
+  } else {
+    document = document
+        .replace('__captchaDiv_location__', removable.captchaDiv);
+  }
+
+  if (bData.settings.indexOf('forceAnonymity') > -1) {
+    document = document.replace('__divName_location__', '');
+  } else {
+    document = document.replace('__divName_location__', removable.divName);
+  }
+
+  return document;
+
+};
+
+exports.newSetBoardPosting = function(boardData, document, thread, language,
+    removable) {
+
+  document = exports.setBoardPostingNameAndCaptcha(boardData, document, thread,
+      removable);
+
+  var locationFlagMode = boardData.locationFlagMode || 0;
+
+  if (locationFlagMode !== 1) {
+    document = document.replace('__noFlagDiv_location__', '');
+  } else {
+    document = document.replace('__noFlagDiv_location__', removable.noFlagDiv);
+  }
+
+  if (boardData.settings.indexOf('textBoard') > -1) {
+    document = document.replace('__divUpload_location__', '');
+  } else {
+    document = document.replace('__divUpload_location__', removable.divUpload);
+    document = exports.newSetFileLimits(document, boardData, language);
+  }
+
+  document = document.replace('__boardIdentifier_value__', boardData.boardUri);
+  document = document.replace('__labelMessageLength_inner__', messageLength);
+
+  return document;
+
+};
+
+// TODO remove
 exports.setBoardPosting = function(boardData, document, thread, language) {
 
   var settings = boardData.settings;
@@ -246,7 +329,7 @@ exports.setSharedSimpleElements = function(postingCell, posting, innerPage,
 
   } else {
     postingCell = postingCell.replace('__linkName_class__', ' noEmailName');
-    postingCell = postingCell.replace('href=\"__linkName_href__\"', '');
+    postingCell = postingCell.replace('href="__linkName_href__"', '');
   }
 
   postingCell = postingCell.replace('__labelCreated_inner__', exports
@@ -555,8 +638,8 @@ exports.getThreadCellBase = function(thread) {
     classToUse += ' multipleUploads';
   }
 
-  var threadCell = '<div class=\"' + classToUse + '\" data-boarduri=\"';
-  threadCell += thread.boardUri + '\" id=\"' + thread.threadId + '\">';
+  var threadCell = '<div class="' + classToUse + '" data-boarduri="';
+  threadCell += thread.boardUri + '" id="' + thread.threadId + '">';
 
   return threadCell;
 
@@ -720,9 +803,9 @@ exports.getPostCellBase = function(post) {
     classToUse += ' multipleUploads';
   }
 
-  var postCell = '<div class=\"' + classToUse;
-  postCell += '\" data-boarduri=\"' + post.boardUri + '\" id=\"';
-  postCell += post.postId + '\">';
+  var postCell = '<div class="' + classToUse;
+  postCell += '" data-boarduri="' + post.boardUri + '" id="';
+  postCell += post.postId + '">';
 
   return postCell;
 
@@ -762,13 +845,13 @@ exports.setUploadLinks = function(cell, file) {
     cell = cell.replace('__imgLink_width__', file.width);
     cell = cell.replace('__imgLink_height__', file.height);
   } else {
-    cell = cell.replace('data-filewidth=\"__imgLink_width__\"', '');
-    cell = cell.replace('data-fileheight=\"__imgLink_height__\"', '');
+    cell = cell.replace('data-filewidth="__imgLink_width__"', '');
+    cell = cell.replace('data-fileheight="__imgLink_height__"', '');
   }
 
   cell = cell.replace('__nameLink_href__', file.path);
 
-  var img = '<img src=\"' + file.thumb + '\">';
+  var img = '<img src="' + file.thumb + '">';
 
   cell = cell.replace('__imgLink_children__', img);
 
@@ -825,7 +908,7 @@ exports.setUploadCell = function(files, modding, language) {
 
     exports.clean(file);
 
-    var cell = '<figure class=\"uploadCell\">' + template.template;
+    var cell = '<figure class="uploadCell">' + template.template;
     cell += '</figure>';
 
     cell = exports.setUploadModElements(template, modding, exports
@@ -910,6 +993,7 @@ exports.setBanList = function(document, div, bans, globalPage, language) {
 // } Section 4: Ban div
 
 // Section 5: Header {
+// TODO remove
 exports.setFileLimits = function(document, bData, language) {
 
   var fileLimitToUse;
@@ -932,6 +1016,31 @@ exports.setFileLimits = function(document, bData, language) {
   }
 
   document.getElementById('labelMaxFileSize').innerHTML = sizeToUse;
+
+};
+
+exports.newSetFileLimits = function(document, bData, language) {
+
+  var fileLimitToUse;
+
+  if (bData.maxFiles) {
+    fileLimitToUse = bData.maxFiles < maxAllowedFiles ? bData.maxFiles
+        : maxAllowedFiles;
+  } else {
+    fileLimitToUse = maxAllowedFiles;
+  }
+
+  document = document.replace('__labelMaxFiles_inner__', fileLimitToUse);
+
+  var sizeToUse;
+
+  if (bData.maxFileSizeMB && bData.maxFileSizeMB < maxFileSizeMB) {
+    sizeToUse = exports.formatFileSize(bData.maxFileSizeMB * 1048576, language);
+  } else {
+    sizeToUse = displayMaxSize;
+  }
+
+  return document.replace('__labelMaxFileSize_inner__', sizeToUse);
 
 };
 

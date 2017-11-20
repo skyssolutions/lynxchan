@@ -12,8 +12,8 @@ var alternativeTemplates = {};
 var preBuiltDefault = {};
 var preBuiltAlternative = {};
 
-var simpleAttributes = [ 'download', 'style', 'name' ];
-var simpleProperties = [ 'href', 'title', 'value', 'src' ];
+var simpleAttributes = [ 'download', 'style', 'value', 'name' ];
+var simpleProperties = [ 'href', 'title', 'src' ];
 
 require('jsdom').defaultDocumentFeatures = {
   FetchExternalResources : false,
@@ -450,7 +450,45 @@ exports.getPageTests = function() {
         fields : [ 'divThreads', 'labelBoard', 'flagsDiv', 'divUpload',
             'labelMessageLength', 'labelMaxFiles', 'labelMaxFileSize',
             'captchaDiv', 'boardIdentifier', 'flagCombobox', 'postingForm',
-            'noFlagDiv' ]
+            'noFlagDiv' ],
+        headChildren : true,
+        prebuiltFields : [ {
+          name : 'noFlagDiv',
+          uses : [ 'removal' ]
+        }, {
+          name : 'divThreads',
+          uses : [ 'children' ]
+        }, {
+          name : 'labelBoard',
+          uses : [ 'inner' ]
+        }, {
+          name : 'flagsDiv',
+          uses : [ 'removal' ]
+        }, {
+          name : 'flagCombobox',
+          uses : [ 'children' ]
+        }, {
+          name : 'boardIdentifier',
+          attributes : [ 'value' ]
+        }, {
+          name : 'captchaDiv',
+          uses : [ 'removal' ]
+        }, {
+          name : 'labelMaxFileSize',
+          uses : [ 'inner' ]
+        }, {
+          name : 'labelMaxFiles',
+          uses : [ 'inner' ]
+        }, {
+          name : 'labelMessageLength',
+          uses : [ 'inner' ]
+        }, {
+          name : 'divUpload',
+          uses : [ 'removal' ]
+        }, {
+          name : 'postingForm',
+          uses : [ 'removal' ]
+        } ]
       },
       {
         template : 'resetEmail',
@@ -743,6 +781,11 @@ exports.testPageFields = function(dom, page, prebuiltObject, errors) {
   if (page.prebuiltFields) {
 
     document.title = '__title__';
+
+    if (page.headChildren) {
+      document.getElementsByTagName('head')[0].appendChild(document
+          .createTextNode('__head_children__'));
+    }
 
     exports.loadPrebuiltFields(dom, document, prebuiltObject, page);
 
