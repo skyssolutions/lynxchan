@@ -73,6 +73,23 @@ exports.formatFileSize = function(size, language) {
 
 };
 
+exports.clean = function(toClean) {
+
+  if (typeof toClean === 'string') {
+    return toClean.replace(/__/g, '&#95;&#95;');
+  }
+
+  for ( var key in toClean) {
+
+    var value = toClean[key];
+
+    if (typeof value === 'string') {
+      toClean[key] = exports.clean(toClean[key]);
+    }
+
+  }
+};
+
 exports.setFormCellBoilerPlate = function(cell, action, cssClass) {
   cell.method = 'post';
   cell.enctype = 'multipart/form-data';
@@ -572,6 +589,7 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
   var currentCache = exports.getPostingCache(cacheField, thread, language);
 
   if (!currentCache || !individualCaches) {
+    exports.clean(thread);
 
     var threadContent = exports.getThreadContent(thread, posts, innerPage,
         modding, userRole, boardData, language);
@@ -718,6 +736,8 @@ exports.getPosts = function(posts, modding, boardData, userRole, innerPage,
   for (var i = 0; i < posts.length; i++) {
     var post = posts[i];
 
+    exports.clean(post);
+
     var postCell = exports.getPostCellBase(post);
 
     postCell += exports.getPostInnerElements(post, false, language, modding,
@@ -760,12 +780,12 @@ exports.setUploadLinks = function(cell, file) {
 
 };
 
-exports.setUploadModElements = function(t, modding, cell, file) {
+exports.setUploadModElements = function(template, modding, cell, file) {
 
   if (!modding) {
     cell = cell.replace('__divHash_location__', '');
   } else {
-    cell = cell.replace('__divHash_location__', t.removable.divHash);
+    cell = cell.replace('__divHash_location__', template.removable.divHash);
     cell = cell.replace('__labelHash_inner__', file.md5);
   }
 
@@ -798,20 +818,23 @@ exports.setUploadCell = function(files, modding, language) {
 
   var children = '';
 
-  var t = templateHandler(language, true).uploadCell;
+  var template = templateHandler(language, true).uploadCell;
 
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
 
-    var cell = '<figure class=\"uploadCell\">' + t.template + '</figure>';
+    exports.clean(file);
 
-    cell = exports.setUploadModElements(t, modding, exports.setUploadLinks(
-        cell, file), file);
+    var cell = '<figure class=\"uploadCell\">' + template.template;
+    cell += '</figure>';
+
+    cell = exports.setUploadModElements(template, modding, exports
+        .setUploadLinks(cell, file), file);
 
     cell = cell.replace('__sizeLabel_inner__', exports.formatFileSize(
         file.size, language));
 
-    cell = exports.setUploadDimensionLabel(cell, file, t);
+    cell = exports.setUploadDimensionLabel(cell, file, template);
 
     children += cell;
 
@@ -986,6 +1009,9 @@ exports.setReportCell = function(document, report, language) {
   reportLink.setAttribute('href', exports.getReportLink(report));
 
   if (report.associatedPost) {
+
+    exports.clean(report.associatedPost);
+
     cell.getElementsByClassName('postingDiv')[0].innerHTML = exports
         .getPostInnerElements(report.associatedPost, true, language);
   }

@@ -368,6 +368,8 @@ exports.page = function(board, page, threads, pageCount, boardData, flagData,
 // Section 3: Catalog {
 exports.setCatalogCellThumb = function(thread, language) {
 
+  common.clean(thread);
+
   var href = '/' + thread.boardUri + '/res/';
   href += thread.threadId + '.html';
 
@@ -375,7 +377,7 @@ exports.setCatalogCellThumb = function(thread, language) {
       '__linkThumb_href__', href);
 
   if (thread.files && thread.files.length) {
-    var img = '<img src=\"' + thread.files[0].thumb + '\">';
+    var img = '<img src=\"' + common.clean(thread.files[0].thumb) + '\">';
     cell = cell.replace('__linkThumb_inner__', img);
   } else {
     cell = cell.replace('__linkThumb_inner__', lang(language).guiOpen);
@@ -512,6 +514,8 @@ exports.getLatestImages = function(latestImages, language) {
 
     var image = latestImages[i];
 
+    common.clean(image);
+
     var cell = '<div class=\"latestImageCell\">' + cellTemplate;
     cell += '</div>';
 
@@ -541,6 +545,8 @@ exports.getTopBoards = function(boards, language) {
 
     var board = boards[i];
 
+    common.clean(board);
+
     var cell = '<div class=\"topBoardCell\">' + cellTemplate;
     cell += '</div>';
 
@@ -564,6 +570,8 @@ exports.getLatestPosts = function(latestPosts, language) {
 
   for (var i = 0; i < latestPosts.length; i++) {
     var post = latestPosts[i];
+
+    common.clean(post);
 
     var cell = '<div class=\"latestPostCell\">' + cellTemplate;
     cell += '</div>';
