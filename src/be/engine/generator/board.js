@@ -260,8 +260,8 @@ exports.allThreads = function(boardUri, callback, boardData) {
 exports.saveBoardHTML = function(boardUri, page, threadsArray, pageCount,
     boardData, flagData, latestPosts, callback, language) {
 
-  domManipulator.page(boardUri, page, threadsArray, pageCount, boardData,
-      flagData, latestPosts, language, function savedHTML(error) {
+  domManipulator.page(page, threadsArray, pageCount, boardData, flagData,
+      latestPosts, language, function savedHTML(error) {
         if (error) {
           callback(error);
         } else {

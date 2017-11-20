@@ -154,6 +154,7 @@ exports.formatDateToDisplay = function(d, noTime, language) {
 };
 // } Section 1: Date formatting functions
 
+// Section 2: Board content{
 // TODO remove
 exports.setCustomCss = function(board, document) {
   var link = document.createElement('link');
@@ -163,7 +164,7 @@ exports.setCustomCss = function(board, document) {
   document.getElementsByTagName('head')[0].appendChild(link);
 };
 
-exports.newsSetCustomCss = function(boardUri, document) {
+exports.newSetCustomCss = function(boardUri, document) {
 
   var link = '<link rel="stylesheet" type="text/css" href="/';
   link += boardUri + '/custom.css">';
@@ -171,6 +172,13 @@ exports.newsSetCustomCss = function(boardUri, document) {
   return document.replace('__head_children__', link);
 };
 
+exports.newSetCustomJs = function(board, document) {
+
+  var script = '<script src="/' + board + '/custom.js"></script>';
+  return document.replace('__body_children__', script);
+};
+
+// TODO remove
 exports.setCustomJs = function(board, document) {
 
   var script = document.createElement('script');
@@ -251,8 +259,8 @@ exports.setBoardPostingNameAndCaptcha = function(bData, document, thread,
 
 };
 
-exports.newSetBoardPosting = function(boardData, document, thread, language,
-    removable) {
+exports.newSetBoardPosting = function(boardData, flagData, document, thread,
+    language, removable) {
 
   document = exports.setBoardPostingNameAndCaptcha(boardData, document, thread,
       removable);
@@ -272,10 +280,62 @@ exports.newSetBoardPosting = function(boardData, document, thread, language,
     document = exports.newSetFileLimits(document, boardData, language);
   }
 
-  document = document.replace('__boardIdentifier_value__', boardData.boardUri);
+  document = document.replace('__boardIdentifier_value__', exports
+      .clean(boardData.boardUri));
   document = document.replace('__labelMessageLength_inner__', messageLength);
 
-  return document;
+  return exports.newSetFlags(document, flagData, language, removable);
+
+};
+
+// TODO remove
+exports.setFileLimits = function(document, bData, language) {
+
+  var fileLimitToUse;
+
+  if (bData.maxFiles) {
+    fileLimitToUse = bData.maxFiles < maxAllowedFiles ? bData.maxFiles
+        : maxAllowedFiles;
+  } else {
+    fileLimitToUse = maxAllowedFiles;
+  }
+
+  document.getElementById('labelMaxFiles').innerHTML = fileLimitToUse;
+
+  var sizeToUse;
+
+  if (bData.maxFileSizeMB && bData.maxFileSizeMB < maxFileSizeMB) {
+    sizeToUse = exports.formatFileSize(bData.maxFileSizeMB * 1048576, language);
+  } else {
+    sizeToUse = displayMaxSize;
+  }
+
+  document.getElementById('labelMaxFileSize').innerHTML = sizeToUse;
+
+};
+
+exports.newSetFileLimits = function(document, bData, language) {
+
+  var fileLimitToUse;
+
+  if (bData.maxFiles) {
+    fileLimitToUse = bData.maxFiles < maxAllowedFiles ? bData.maxFiles
+        : maxAllowedFiles;
+  } else {
+    fileLimitToUse = maxAllowedFiles;
+  }
+
+  document = document.replace('__labelMaxFiles_inner__', fileLimitToUse);
+
+  var sizeToUse;
+
+  if (bData.maxFileSizeMB && bData.maxFileSizeMB < maxFileSizeMB) {
+    sizeToUse = exports.formatFileSize(bData.maxFileSizeMB * 1048576, language);
+  } else {
+    sizeToUse = displayMaxSize;
+  }
+
+  return document.replace('__labelMaxFileSize_inner__', sizeToUse);
 
 };
 
@@ -314,7 +374,99 @@ exports.setBoardPosting = function(boardData, document, thread, language) {
 
 };
 
-// Section 2: Shared posting elements {
+// TODO remove
+exports.setBoardCustomization = function(boardData, document, board) {
+
+  var descriptionHeader = document.getElementById('labelDescription');
+  descriptionHeader.innerHTML = boardData.boardDescription;
+
+  if (boardData.usesCustomCss) {
+    exports.setCustomCss(board, document);
+  }
+
+  if (boardData.usesCustomJs && allowedJs) {
+    exports.setCustomJs(board, document);
+  }
+
+  if (boardData.boardMarkdown && boardData.boardMarkdown.length) {
+    document.getElementById('divMessage').innerHTML = boardData.boardMarkdown;
+  } else {
+    document.getElementById('panelMessage').remove();
+  }
+
+};
+
+exports.newSetBoardCustomization = function(document, boardData, removable) {
+
+  document = document.replace('__labelDescription_inner__', exports
+      .clean(boardData.boardDescription));
+
+  var boardUri = exports.clean(boardData.boardUri);
+
+  if (boardData.usesCustomCss) {
+    document = exports.newSetCustomCss(boardUri, document);
+  } else {
+    document = document.replace('__head_children__', '');
+  }
+  if (boardData.usesCustomJs && allowedJs) {
+    document = exports.newSetCustomJs(boardUri, document);
+  } else {
+    document = document.replace('__body_children__', '');
+  }
+
+  if (boardData.boardMarkdown && boardData.boardMarkdown.length) {
+    document = document.replace('__panelMessage_location__',
+        removable.panelMessage);
+
+    document = document.replace('__divMessage_inner__', exports
+        .clean(boardData.boardMarkdown));
+
+  } else {
+    document = document.replace('__panelMessage_location__', '');
+  }
+
+  return document;
+};
+
+exports.newSetHeader = function(template, language, bData, flagData, thread) {
+
+  var boardUri = exports.clean(bData.boardUri);
+
+  var title = '/' + boardUri + '/ - ' + bData.boardName;
+  var document = template.template.replace('__title__', title);
+  document = document.replace('__labelName_inner__', title);
+
+  var linkBanner = '/randomBanner.js?boardUri=' + boardUri;
+  document = document.replace('__bannerImage_src__', linkBanner);
+
+  document = exports.newSetBoardPosting(bData, flagData, document, thread,
+      language, template.removable);
+
+  return exports.newSetBoardCustomization(document, bData, template.removable);
+
+};
+
+// TODO remove
+exports.setHeader = function(document, board, boardData, flagData, thread,
+    language) {
+
+  var titleHeader = document.getElementById('labelName');
+  titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
+
+  var linkBanner = '/randomBanner.js?boardUri=' + board;
+  document.getElementById('bannerImage').src = linkBanner;
+
+  exports.setBoardPosting(boardData, document, thread, language);
+
+  // DONE
+  exports.setBoardCustomization(boardData, document, board);
+
+  exports.setFlags(document, board, flagData, language);
+
+};
+// } Section 2: Board content
+
+// Section 2.1: Shared posting elements {
 exports.setSharedSimpleElements = function(postingCell, posting, innerPage,
     removable, language) {
 
@@ -542,7 +694,7 @@ exports.setAllSharedPostingElements = function(postingCell, posting, removable,
       .setUploadCell(posting.files, modding, language));
 
 };
-// Section 2: Shared posting elements {
+// } Section 2.1: Shared posting elements
 
 // Section 3: Thread content {
 exports.setThreadHiddeableElements = function(thread, cell, removable,
@@ -661,6 +813,7 @@ exports.getThreadContent = function(thread, posts, innerPage, modding,
 
 };
 
+// TODO remove
 exports.addThread = function(document, thread, posts, innerPage, modding,
     boardData, userRole, language) {
 
@@ -692,6 +845,38 @@ exports.addThread = function(document, thread, posts, innerPage, modding,
       posts || [], modding, boardData, userRole, innerPage, language));
 
   document.getElementById('divThreads').innerHTML += threadCell + '</div>';
+
+};
+
+exports.getThread = function(thread, posts, innerPage, modding, boardData,
+    userRole, language) {
+
+  var threadCell = exports.getThreadCellBase(thread, language);
+
+  var cacheField = exports.getCacheField(false, innerPage, modding, userRole,
+      language);
+
+  var currentCache = exports.getPostingCache(cacheField, thread, language);
+
+  if (!currentCache || !individualCaches) {
+    exports.clean(thread);
+
+    var threadContent = exports.getThreadContent(thread, posts, innerPage,
+        modding, userRole, boardData, language);
+
+    threadCell += threadContent;
+
+    if (individualCaches) {
+      exports.saveCache(cacheField, language, threadContent, threadsCollection,
+          thread.boardUri, 'threadId', thread.threadId);
+    }
+
+  } else {
+    threadCell += currentCache;
+  }
+
+  return threadCell.replace('__divPosts_children__', exports.getPosts(posts,
+      modding, boardData, userRole, innerPage, language));
 
 };
 
@@ -816,7 +1001,7 @@ exports.getPosts = function(posts, modding, boardData, userRole, innerPage,
 
   var children = '';
 
-  for (var i = 0; i < posts.length; i++) {
+  for (var i = 0; posts && i < posts.length; i++) {
     var post = posts[i];
 
     exports.clean(post);
@@ -992,98 +1177,7 @@ exports.setBanList = function(document, div, bans, globalPage, language) {
 };
 // } Section 4: Ban div
 
-// Section 5: Header {
-// TODO remove
-exports.setFileLimits = function(document, bData, language) {
-
-  var fileLimitToUse;
-
-  if (bData.maxFiles) {
-    fileLimitToUse = bData.maxFiles < maxAllowedFiles ? bData.maxFiles
-        : maxAllowedFiles;
-  } else {
-    fileLimitToUse = maxAllowedFiles;
-  }
-
-  document.getElementById('labelMaxFiles').innerHTML = fileLimitToUse;
-
-  var sizeToUse;
-
-  if (bData.maxFileSizeMB && bData.maxFileSizeMB < maxFileSizeMB) {
-    sizeToUse = exports.formatFileSize(bData.maxFileSizeMB * 1048576, language);
-  } else {
-    sizeToUse = displayMaxSize;
-  }
-
-  document.getElementById('labelMaxFileSize').innerHTML = sizeToUse;
-
-};
-
-exports.newSetFileLimits = function(document, bData, language) {
-
-  var fileLimitToUse;
-
-  if (bData.maxFiles) {
-    fileLimitToUse = bData.maxFiles < maxAllowedFiles ? bData.maxFiles
-        : maxAllowedFiles;
-  } else {
-    fileLimitToUse = maxAllowedFiles;
-  }
-
-  document = document.replace('__labelMaxFiles_inner__', fileLimitToUse);
-
-  var sizeToUse;
-
-  if (bData.maxFileSizeMB && bData.maxFileSizeMB < maxFileSizeMB) {
-    sizeToUse = exports.formatFileSize(bData.maxFileSizeMB * 1048576, language);
-  } else {
-    sizeToUse = displayMaxSize;
-  }
-
-  return document.replace('__labelMaxFileSize_inner__', sizeToUse);
-
-};
-
-exports.setBoardCustomization = function(boardData, document, board) {
-
-  var descriptionHeader = document.getElementById('labelDescription');
-  descriptionHeader.innerHTML = boardData.boardDescription;
-
-  if (boardData.usesCustomCss) {
-    exports.setCustomCss(board, document);
-  }
-
-  if (boardData.usesCustomJs && allowedJs) {
-    exports.setCustomJs(board, document);
-  }
-
-  if (boardData.boardMarkdown && boardData.boardMarkdown.length) {
-    document.getElementById('divMessage').innerHTML = boardData.boardMarkdown;
-  } else {
-    document.getElementById('panelMessage').remove();
-  }
-
-};
-
-exports.setHeader = function(document, board, boardData, flagData, thread,
-    language) {
-
-  var titleHeader = document.getElementById('labelName');
-  titleHeader.innerHTML = '/' + board + '/ - ' + boardData.boardName;
-
-  var linkBanner = '/randomBanner.js?boardUri=' + board;
-  document.getElementById('bannerImage').src = linkBanner;
-
-  exports.setBoardPosting(boardData, document, thread, language);
-
-  exports.setBoardCustomization(boardData, document, board);
-
-  exports.setFlags(document, board, flagData, language);
-
-};
-// } Section 5: Header
-
-// Setion 6: Open reports {
+// Setion 5: Open reports {
 exports.getReportLink = function(report) {
 
   var link = '/mod.js?boardUri=' + report.boardUri + '&threadId=';
@@ -1139,4 +1233,4 @@ exports.setReportList = function(document, reports, language) {
   }
 
 };
-// } Section 6: Open reports
+// } Section 5: Open reports

@@ -555,7 +555,73 @@ exports.getPageTests = function() {
             'divName', 'linkModeration', 'labelMaxFileSize', 'linkPrevious',
             'linkNext', 'flagsDiv', 'flagCombobox', 'panelMessage',
             'divMessage', 'labelMaxFiles', 'labelMessageLength', 'divUpload',
-            'noFlagDiv' ]
+            'noFlagDiv' ],
+        headChildren : true,
+        bodyChildren : true,
+        prebuiltFields : [ {
+          name : 'labelName',
+          uses : [ 'inner' ]
+        }, {
+          name : 'labelDescription',
+          uses : [ 'inner' ]
+        }, {
+          name : 'noFlagDiv',
+          uses : [ 'removal' ]
+        }, {
+          name : 'panelMessage',
+          uses : [ 'removal' ]
+        }, {
+          name : 'divMessage',
+          uses : [ 'inner' ]
+        }, {
+          name : 'flagsDiv',
+          uses : [ 'removal' ]
+        }, {
+          name : 'flagCombobox',
+          uses : [ 'children' ]
+        }, {
+          name : 'divThreads',
+          uses : [ 'children' ]
+        }, {
+          name : 'divPages',
+          uses : [ 'children' ]
+        }, {
+          name : 'boardIdentifier',
+          attributes : [ 'children' ]
+        }, {
+          name : 'linkManagement',
+          uses : [ 'href' ]
+        }, {
+          name : 'linkModeration',
+          uses : [ 'href' ]
+        }, {
+          name : 'bannerImage',
+          uses : [ 'src' ]
+        }, {
+          name : 'captchaDiv',
+          uses : [ 'removal' ]
+        }, {
+          name : 'divName',
+          uses : [ 'removal' ]
+        }, {
+          name : 'labelMaxFileSize',
+          uses : [ 'inner' ]
+        }, {
+          name : 'linkPrevious',
+          uses : [ 'href', 'removal' ]
+        }, {
+          name : 'linkNext',
+          uses : [ 'href', 'removal' ]
+        }, {
+          name : 'labelMaxFiles',
+          uses : [ 'inner' ]
+        }, {
+          name : 'labelMessageLength',
+          uses : [ 'inner' ]
+        }, {
+          name : 'divUpload',
+          uses : [ 'removal' ]
+        } ]
       },
       {
         template : 'threadPage',
@@ -785,6 +851,11 @@ exports.testPageFields = function(dom, page, prebuiltObject, errors) {
     if (page.headChildren) {
       document.getElementsByTagName('head')[0].appendChild(document
           .createTextNode('__head_children__'));
+    }
+
+    if (page.bodyChildren) {
+      document.getElementsByTagName('body')[0].appendChild(document
+          .createTextNode('__body_children__'));
     }
 
     exports.loadPrebuiltFields(dom, document, prebuiltObject, page);

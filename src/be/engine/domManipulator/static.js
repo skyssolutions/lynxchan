@@ -261,8 +261,9 @@ exports.thread = function(boardUri, boardData, flagData, threadData, posts,
 // } Section 1: Thread
 
 // Section 2: Board {
-exports.generateThreadListing = function(document, threads, latestPosts,
-    language) {
+exports.getThreadListing = function(latestPosts, threads, language) {
+
+  var children = '';
 
   var tempLatest = {};
 
@@ -276,42 +277,46 @@ exports.generateThreadListing = function(document, threads, latestPosts,
   for (i = 0; i < threads.length; i++) {
     var thread = threads[i];
 
-    common.addThread(document, thread, latestPosts[thread.threadId], null,
+    children += common.getThread(thread, latestPosts[thread.threadId], null,
         null, null, null, language);
 
   }
 
+  return children;
+
 };
 
-exports.addPagesLinks = function(document, pageCount, currentPage) {
+exports.addPagesLinks = function(document, pageCount, currentPage, removable) {
 
-  var previous = document.getElementById('linkPrevious');
   if (currentPage === 1) {
-    previous.remove();
+    document = document.replace('__linkPrevious_location__', '');
   } else {
-    previous.href = currentPage > 2 ? currentPage - 1 + '.html' : 'index.html';
+    document = document.replace('__linkPrevious_location__',
+        removable.linkPrevious);
+    document = document.replace('__linkPrevious_href__',
+        currentPage > 2 ? currentPage - 1 + '.html' : 'index.html');
   }
 
-  var next = document.getElementById('linkNext');
   if (pageCount === currentPage) {
-    next.remove();
+    document = document.replace('__linkNext_location__', '');
   } else {
-    next.href = (currentPage + 1) + '.html';
+    document = document.replace('__linkNext_location__', removable.linkNext);
+
+    var nextPageHref = (currentPage + 1) + '.html';
+    document = document.replace('__linkNext_href__', nextPageHref);
   }
 
-  var pagesDiv = document.getElementById('divPages');
+  var children = '';
 
   for (var i = 0; i < pageCount; i++) {
 
     var pageName = i ? (i + 1) + '.html' : 'index.html';
 
-    var link = document.createElement('a');
-    link.href = pageName;
-    link.innerHTML = i + 1;
-
-    pagesDiv.appendChild(link);
-
+    children += '<a href="' + pageName + '">' + (i + 1) + '</a>';
   }
+
+  return document.replace('__divPages_children__', children);
+
 };
 
 exports.getPagePathAndMeta = function(board, page, meta, language) {
@@ -328,36 +333,39 @@ exports.getPagePathAndMeta = function(board, page, meta, language) {
 
 };
 
-exports.page = function(board, page, threads, pageCount, boardData, flagData,
+exports.page = function(page, threads, pageCount, boardData, flagData,
     latestPosts, language, cb) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).boardPage);
-    var document = dom.window.document;
+    var template = templateHandler(language, true).boardPage;
 
-    document.title = '/' + board + '/' + ' - ' + boardData.boardName;
+    var document = common.newSetHeader(template, language, boardData, flagData,
+        null);
 
-    var linkManagement = document.getElementById('linkManagement');
-    linkManagement.href = '/boardManagement.js?boardUri=' + board;
+    var boardUri = common.clean(boardData.boardUri);
 
-    var linkModeration = document.getElementById('linkModeration');
-    linkModeration.href = '/boardModeration.js?boardUri=' + board;
+    document = document.replace('__linkManagement_href__',
+        '/boardManagement.js?boardUri=' + boardUri);
 
-    common.setHeader(document, board, boardData, flagData, null, language);
+    document = document.replace('__linkModeration_href__',
+        '/boardModeration.js?boardUri=' + boardUri);
 
-    exports.addPagesLinks(document, pageCount, page);
+    document = exports.addPagesLinks(document, pageCount, page,
+        template.removable);
 
-    exports.generateThreadListing(document, threads, latestPosts, language);
+    document = document.replace('__divThreads_children__', exports
+        .getThreadListing(latestPosts, threads, language));
 
     var meta = {
-      boardUri : board,
+      boardUri : boardUri,
       type : 'board'
     };
 
-    var path = exports.getPagePathAndMeta(board, page, meta, language);
+    var path = exports.getPagePathAndMeta(boardData.boardUri, page, meta,
+        language);
 
-    gridFs.writeData(dom.serialize(), path, 'text/html', meta, cb);
+    gridFs.writeData(document, path, 'text/html', meta, cb);
 
   } catch (error) {
     cb(error);
@@ -438,9 +446,8 @@ exports.setCatalogPosting = function(boardData, flagData, document, language,
     document = document.replace('__postingForm_location__',
         removable.postingForm);
 
-    document = common.newSetBoardPosting(boardData, document, null, language,
-        removable);
-    document = common.newSetFlags(document, flagData, language, removable);
+    document = common.newSetBoardPosting(boardData, flagData, document, null,
+        language, removable);
 
   } else {
     document = document.replace('__postingForm_location__', '');
@@ -456,9 +463,7 @@ exports.setCatalogElements = function(boardData, language, threads, flagData) {
 
   var document = template.template;
 
-  boardData.boardUri = common.clean(boardData.boardUri);
-
-  var boardUri = boardData.boardUri;
+  var boardUri = common.clean(boardData.boardUri);
 
   document = document.replace('__title__', lang(language).titCatalog.replace(
       '{$board}', boardUri));
@@ -476,7 +481,7 @@ exports.setCatalogElements = function(boardData, language, threads, flagData) {
   }
 
   if (boardData.usesCustomCss) {
-    document = common.newsSetCustomCss(boardUri, document);
+    document = common.newSetCustomCss(boardUri, document);
   } else {
     document = document.replace('__head_children__', '');
   }
@@ -489,15 +494,15 @@ exports.catalog = function(language, boardData, threads, flagData, callback) {
 
   try {
 
+    var document = exports.setCatalogElements(boardData, language, threads,
+        flagData);
+
+    var path = '/' + boardData.boardUri + '/catalog.html';
+
     var meta = {
       boardUri : boardData.boardUri,
       type : 'catalog'
     };
-
-    var document = exports.setCatalogElements(boardData, language, threads,
-        flagData);
-
-    var path = '/' + meta.boardUri + '/catalog.html';
 
     if (language) {
       meta.languges = language.headerValues;
