@@ -174,27 +174,33 @@ exports.setBoardFields = function(document, boardData) {
 };
 
 exports.setVolunteersDiv = function(document, boardData, language) {
+
   var volunteersDiv = document.getElementById('volunteersDiv');
 
   var volunteers = boardData.volunteers || [];
 
+  var children = '';
+
+  var boardUri = common.clean(boardData.boardUri);
+
+  var template = templateHandler(language, true).volunteerCell.template;
+
   for (var i = 0; i < volunteers.length; i++) {
 
-    var cell = document.createElement('form');
-    cell.innerHTML = templateHandler(language).volunteerCell;
+    var volunteer = common.clean(volunteers[i]);
 
-    common.setFormCellBoilerPlate(cell, '/setVolunteer.js', 'volunteerCell');
+    var cell = common.getFormCellBoilerPlate(template, '/setVolunteer.js',
+        'volunteerCell');
 
-    cell.getElementsByClassName('userIdentifier')[0].setAttribute('value',
-        volunteers[i]);
+    cell = cell.replace('__userIdentifier_value__', volunteer);
+    cell = cell.replace('__userLabel_inner__', volunteer);
+    cell = cell.replace('__boardIdentifier_value__', boardUri);
 
-    cell.getElementsByClassName('userLabel')[0].innerHTML = volunteers[i];
-
-    cell.getElementsByClassName('boardIdentifier')[0].setAttribute('value',
-        boardData.boardUri);
-
-    volunteersDiv.appendChild(cell);
+    children += cell;
   }
+
+  volunteersDiv.innerHTML += children;
+
 };
 
 exports.setBoardOwnerControls = function(document, boardData, language) {

@@ -361,7 +361,7 @@ exports.page = function(page, threads, pageCount, boardData, flagData,
 
     var boardUri = common.clean(boardData.boardUri);
 
-    var title = '/' + boardUri + '/ - ' + boardData.boardName;
+    var title = '/' + boardUri + '/ - ' + common.clean(boardData.boardName);
     document = document.replace('__title__', title);
 
     document = document.replace('__linkManagement_href__',
@@ -652,7 +652,7 @@ exports.checkForLatestContent = function(document, latestImages, latestPosts,
         removable.divLatestPosts);
 
     document = document.replace('__divLatestPosts_children__', exports
-        .getLatestPosts(latestPosts, document, language));
+        .getLatestPosts(latestPosts, language));
 
   }
 
@@ -662,7 +662,7 @@ exports.checkForLatestContent = function(document, latestImages, latestPosts,
     document = document.replace('__divLatestImages_location__',
         removable.divLatestImages);
     document = document.replace('__divLatestImages_children__', exports
-        .getLatestImages(latestImages, lang));
+        .getLatestImages(latestImages, language));
 
   }
 

@@ -54,9 +54,7 @@ exports.getTemplates = function(language, preBuilt) {
   var defaultToUse = preBuilt ? preBuiltDefault : defaultTemplates;
 
   if (language) {
-
     return exports.getAlternativeTemplates(language, preBuilt) || defaultToUse;
-
   } else {
     return defaultToUse;
   }

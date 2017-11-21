@@ -326,7 +326,7 @@ exports.setHeader = function(template, language, bData, flagData, thread) {
 
   var boardUri = exports.clean(bData.boardUri);
 
-  var title = '/' + boardUri + '/ - ' + bData.boardName;
+  var title = '/' + boardUri + '/ - ' + exports.clean(bData.boardName);
   var document = template.template.replace('__labelName_inner__', title);
 
   var linkBanner = '/randomBanner.js?boardUri=' + boardUri;
@@ -687,44 +687,10 @@ exports.getThreadContent = function(thread, posts, innerPage, modding,
 
 };
 
-// TODO remove
-exports.addThread = function(document, thread, posts, innerPage, modding,
-    boardData, userRole, language) {
-
-  var threadCell = exports.getThreadCellBase(thread, language);
-
-  var cacheField = exports.getCacheField(false, innerPage, modding, userRole,
-      language);
-
-  var currentCache = exports.getPostingCache(cacheField, thread, language);
-
-  if (!currentCache || !individualCaches) {
-    exports.clean(thread);
-
-    var threadContent = exports.getThreadContent(thread, posts, innerPage,
-        modding, userRole, boardData, language);
-
-    threadCell += threadContent;
-
-    if (individualCaches) {
-      exports.saveCache(cacheField, language, threadContent, threadsCollection,
-          thread.boardUri, 'threadId', thread.threadId);
-    }
-
-  } else {
-    threadCell += currentCache;
-  }
-
-  threadCell = threadCell.replace('__divPosts_children__', exports.getPosts(
-      posts || [], modding, boardData, userRole, innerPage, language));
-
-  document.getElementById('divThreads').innerHTML += threadCell + '</div>';
-
-};
-
 exports.getThread = function(thread, posts, innerPage, modding, boardData,
     userRole, language) {
 
+  exports.clean(thread);
   var threadCell = exports.getThreadCellBase(thread, language);
 
   var cacheField = exports.getCacheField(false, innerPage, modding, userRole,
@@ -733,7 +699,6 @@ exports.getThread = function(thread, posts, innerPage, modding, boardData,
   var currentCache = exports.getPostingCache(cacheField, thread, language);
 
   if (!currentCache || !individualCaches) {
-    exports.clean(thread);
 
     var threadContent = exports.getThreadContent(thread, posts, innerPage,
         modding, userRole, boardData, language);

@@ -489,10 +489,25 @@
   },
   {
     "template": "volunteerCell",
-    "fields": [
-      "boardIdentifier",
-      "userIdentifier",
-      "userLabel"
+    "prebuiltFields": [
+      {
+        "name": "boardIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "userIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "userLabel",
+        "uses": [
+          "inner"
+        ]
+      }
     ]
   },
   {
