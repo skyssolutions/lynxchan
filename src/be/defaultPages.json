@@ -695,10 +695,7 @@
     ]
   },
   {
-    "template": "notFoundPage",
-    "fields": [
-      
-    ]
+    "template": "notFoundPage"
   },
   {
     "template": "ruleManagementPage",
@@ -715,10 +712,7 @@
     ]
   },
   {
-    "template": "maintenancePage",
-    "fields": [
-      
-    ]
+    "template": "maintenancePage"
   },
   {
     "template": "editPage",
@@ -837,8 +831,13 @@
   },
   {
     "template": "overboard",
-    "fields": [
-      "divThreads"
+    "prebuiltFields": [
+      {
+        "name": "divThreads",
+        "uses": [
+          "children"
+        ]
+      }
     ]
   },
   {

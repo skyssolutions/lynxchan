@@ -111,7 +111,7 @@ exports.testPageFields = function(dom, page, prebuiltObject, errors) {
 
   if (page.prebuiltFields) {
     return exports.testPagePrebuiltFields(dom, page, prebuiltObject);
-  } else {
+  } else if (page.fields) {
 
     var error = '';
 
@@ -153,7 +153,7 @@ exports.processPage = function(errors, page, fePath, templateSettings,
 
   var error = exports.testPageFields(dom, page, prebuiltObject, errors);
 
-  if (error.length) {
+  if (error) {
     errors.push('\nPage ' + page.template + error);
   }
 
@@ -303,7 +303,7 @@ exports.iteratePrebuiltFields = function(template, base, document, removed,
       exports.processFieldAttributes(element, field);
 
     } else {
-      errors += '\nError, missing element ' + field;
+      errors += '\nError, missing element ' + field.name;
     }
 
   }

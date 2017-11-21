@@ -780,8 +780,7 @@ exports.maintenance = function(language, callback) {
 };
 
 // Section 5: Overboard {
-exports.addOverBoardThreads = function(foundThreads, previewRelation, doc,
-    language) {
+exports.getOverboardThreads = function(foundThreads, foundPreviews, language) {
 
   var children = '';
 
@@ -790,8 +789,8 @@ exports.addOverBoardThreads = function(foundThreads, previewRelation, doc,
 
     var previews = [];
 
-    if (previewRelation[thread.boardUri]) {
-      previews = previewRelation[thread.boardUri][thread.threadId];
+    if (foundPreviews[thread.boardUri]) {
+      previews = foundPreviews[thread.boardUri][thread.threadId];
     }
 
     children += common.getThread(thread, previews, null, null, null, null,
@@ -799,23 +798,8 @@ exports.addOverBoardThreads = function(foundThreads, previewRelation, doc,
 
   }
 
-  doc.getElementById('divThreads').innerHTML += children;
-
-};
-
-exports.getOverboardPathAndMeta = function(language, doc, meta, sfw) {
-
-  doc.title = '/' + (sfw ? sfwOverboard : overboard) + '/';
-
-  var path = doc.title;
-
-  if (language) {
-    meta.referenceFile = path;
-    meta.languages = language.headerValues;
-    path += language.headerValues.join('-');
-  }
-
-  return path;
+  var template = templateHandler(language, true).overboard.template;
+  return template.replace('__divThreads_children__', children);
 
 };
 
@@ -824,24 +808,31 @@ exports.overboard = function(foundThreads, previewRelation, callback,
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).overboard);
-    var document = dom.window.document;
-
-    exports.addOverBoardThreads(foundThreads, previewRelation, document,
+    var document = exports.getOverboardThreads(foundThreads, previewRelation,
         language);
 
     if (multiBoard) {
-      document.title = lang(language).titMultiboard;
-      callback(null, dom.serialize());
+      document = document.replace('__title__', lang(language).titMultiboard);
+      callback(null, document);
     } else {
 
       var meta = {
         type : 'overboard'
       };
 
-      var path = exports.getOverboardPathAndMeta(language, document, meta, sfw);
+      var title = '/' + (sfw ? sfwOverboard : overboard) + '/';
 
-      gridFs.writeData(dom.serialize(), path, 'text/html', meta, callback);
+      var path = title;
+
+      if (language) {
+        meta.referenceFile = path;
+        meta.languages = language.headerValues;
+        path += language.headerValues.join('-');
+      }
+
+      document = document.replace('__title__', title);
+
+      gridFs.writeData(document, path, 'text/html', meta, callback);
 
     }
 
