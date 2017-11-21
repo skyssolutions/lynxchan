@@ -292,22 +292,25 @@ exports.boardManagement = function(userData, boardData, reports, bans,
 // } Section 1: Board control
 
 // Section 2: Global Management {
-exports.setRoleComboBox = function(document, node, possibleRoles, user) {
+exports.getRoleComboBox = function(possibleRoles, user) {
+
+  var children = '';
+
   for (var k = 0; k < possibleRoles.length; k++) {
 
     var role = possibleRoles[k];
 
-    var option = document.createElement('option');
-    option.value = role.value;
-    option.innerHTML = role.label;
+    var option = '<option value="' + role.value;
 
     if (role.value === user.globalRole) {
-      option.setAttribute('selected', 'selected');
+      option += '" selected="selected';
     }
 
-    node.add(option);
+    children += option + '">' + role.label + '</option>';
 
   }
+
+  return children;
 
 };
 
@@ -315,26 +318,28 @@ exports.fillStaffDiv = function(document, possibleRoles, staff, language) {
 
   var divStaff = document.getElementById('divStaff');
 
+  var children = '';
+
+  var template = templateHandler(language, true).staffCell.template;
+
   for (var i = 0; i < staff.length; i++) {
 
     var user = staff[i];
 
-    var cell = document.createElement('form');
-    cell.innerHTML = templateHandler(language).staffCell;
+    common.clean(user);
 
-    common.setFormCellBoilerPlate(cell, '/setGlobalRole.js', 'staffCell');
+    var cell = common.getFormCellBoilerPlate(template, '/setGlobalRole.js',
+        'staffCell');
 
-    cell.getElementsByClassName('userIdentifier')[0].setAttribute('value',
-        user.login);
-
-    cell.getElementsByClassName('userLabel')[0].innerHTML = user.login + ': ';
-
-    exports.setRoleComboBox(document,
-        cell.getElementsByClassName('roleCombo')[0], possibleRoles, user);
-
-    divStaff.appendChild(cell);
+    cell = cell.replace('__userLabel_inner__', user.login);
+    cell = cell.replace('__userIdentifier_value__', user.login);
+    children += cell.replace('__roleCombo_children__', exports.getRoleComboBox(
+        possibleRoles, user));
 
   }
+
+  divStaff.innerHTML += children;
+
 };
 
 exports.getPossibleRoles = function(role, language) {

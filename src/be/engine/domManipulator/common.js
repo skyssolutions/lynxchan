@@ -97,6 +97,14 @@ exports.setFormCellBoilerPlate = function(cell, action, cssClass) {
   cell.setAttribute('class', cssClass);
 };
 
+exports.getFormCellBoilerPlate = function(cell, action, cssClass) {
+
+  var toRet = '<form class="' + cssClass + '" action="' + action;
+  toRet += '" method="post" enctype="multipart/form-data">' + cell;
+  return toRet + '</form>';
+
+};
+
 exports.setPostingIp = function(cell, postingData, boardData, userRole,
     removable) {
 
@@ -116,6 +124,21 @@ exports.setPostingIp = function(cell, postingData, boardData, userRole,
       postingData.ip, boardData.ipSalt, userRole));
 
   return cell;
+
+};
+
+exports.getReportLink = function(report) {
+
+  var link = '/mod.js?boardUri=' + report.boardUri + '&threadId=';
+  link += report.threadId + '#';
+
+  if (report.postId) {
+    link += report.postId;
+  } else {
+    link += report.threadId;
+  }
+
+  return link;
 
 };
 
@@ -1031,10 +1054,15 @@ exports.setBanList = function(document, div, bans, globalPage, language) {
 // } Section 4: Ban div
 
 // Setion 5: Open reports {
-exports.getReportLink = function(report) {
+exports.getReportCell = function(report, language) {
 
-  var link = '/mod.js?boardUri=' + report.boardUri + '&threadId=';
-  link += report.threadId + '#';
+  var cell = '<div class="reportCell">';
+  cell += templateHandler(language, true).reportCell.template + '</div>';
+
+  cell = cell.replace('__reasonLabel_inner__', report.reason || '');
+  cell = cell.replace('__closureCheckbox_name__', 'report-' + report._id);
+
+  var link = exports.getReportLink(report);
 
   if (report.postId) {
     link += report.postId;
@@ -1042,37 +1070,18 @@ exports.getReportLink = function(report) {
     link += report.threadId;
   }
 
-  return link;
-
-};
-
-exports.setReportCell = function(document, report, language) {
-
-  var cell = document.createElement('div');
-  cell.setAttribute('class', 'reportCell');
-
-  cell.innerHTML = templateHandler(language).reportCell;
-
-  if (report.reason) {
-    var reason = cell.getElementsByClassName('reasonLabel')[0];
-    reason.innerHTML = report.reason;
-  }
-
-  var checkbox = cell.getElementsByClassName('closureCheckbox')[0];
-  checkbox.setAttribute('name', 'report-' + report._id);
-
-  var reportLink = cell.getElementsByClassName('link')[0];
-  reportLink.setAttribute('href', exports.getReportLink(report));
+  cell = cell.replace('__link_href__', link);
 
   if (report.associatedPost) {
 
     exports.clean(report.associatedPost);
 
-    cell.getElementsByClassName('postingDiv')[0].innerHTML = exports
-        .getPostInnerElements(report.associatedPost, true, language);
-  }
+    return cell.replace('__postingDiv_inner__', exports.getPostInnerElements(
+        report.associatedPost, true, language));
 
-  return cell;
+  } else {
+    return cell.replace('__postingDiv_inner__', '');
+  }
 
 };
 
@@ -1080,10 +1089,13 @@ exports.setReportList = function(document, reports, language) {
 
   var reportDiv = document.getElementById('reportDiv');
 
+  var children = '';
+
   for (var i = 0; i < reports.length; i++) {
-    reportDiv
-        .appendChild(exports.setReportCell(document, reports[i], language));
+    children += exports.getReportCell(reports[i], language);
   }
+
+  reportDiv.innerHTML += children;
 
 };
 // } Section 5: Open reports

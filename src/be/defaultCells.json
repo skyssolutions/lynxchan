@@ -466,10 +466,25 @@
   },
   {
     "template": "staffCell",
-    "fields": [
-      "userIdentifier",
-      "userLabel",
-      "roleCombo"
+    "prebuiltFields": [
+      {
+        "name": "userIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "userLabel",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "roleCombo",
+        "uses": [
+          "children"
+        ]
+      }
     ]
   },
   {
@@ -482,11 +497,31 @@
   },
   {
     "template": "reportCell",
-    "fields": [
-      "reasonLabel",
-      "link",
-      "closureCheckbox",
-      "postingDiv"
+    "prebuiltFields": [
+      {
+        "name": "reasonLabel",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "link",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "postingDiv",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "closureCheckbox",
+        "attributes": [
+          "name"
+        ]
+      }
     ]
   },
   {

@@ -656,7 +656,7 @@ userLabel:
     description: contains general identification of the user of the cell.
 
 roleCombo:
-    use: will have option elements appended to it.
+    use: have children appended to it.
     description: combo-box with the possible roles for the user.
 
 ------------------------------------------------------------------------------------------
