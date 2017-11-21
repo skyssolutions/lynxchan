@@ -1,0 +1,708 @@
+[
+  {
+    "template": "latestImageCell",
+    "prebuiltFields": [
+      {
+        "name": "linkPost",
+        "uses": [
+          "children",
+          "href"
+        ]
+      }
+    ]
+  },
+  {
+    "template": "topBoardCell",
+    "prebuiltFields": [
+      {
+        "name": "boardLink",
+        "uses": [
+          "inner",
+          "href"
+        ]
+      }
+    ]
+  },
+  {
+    "template": "catalogCell",
+    "prebuiltFields": [
+      {
+        "name": "linkThumb",
+        "uses": [
+          "inner",
+          "href"
+        ]
+      },
+      {
+        "name": "labelReplies",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "labelImages",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "labelPage",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "bumpLockIndicator",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "cyclicIndicator",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "labelSubject",
+        "uses": [
+          "removal",
+          "inner"
+        ]
+      },
+      {
+        "name": "divMessage",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "lockIndicator",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "pinIndicator",
+        "uses": [
+          "removal"
+        ]
+      }
+    ]
+  },
+  {
+    "template": "bannerCell",
+    "fields": [
+      "bannerImage",
+      "bannerIdentifier"
+    ]
+  },
+  {
+    "template": "opCell",
+    "prebuiltFields": [
+      {
+        "name": "contentOmissionIndicator",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "linkName",
+        "uses": [
+          "inner",
+          "href"
+        ],
+        "attributes": [
+          "class"
+        ]
+      },
+      {
+        "name": "linkFullText",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "labelIp",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "panelRange",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "linkEdit",
+        "uses": [
+          "href",
+          "removal"
+        ]
+      },
+      {
+        "name": "imgFlag",
+        "uses": [
+          "title",
+          "src",
+          "removal"
+        ],
+        "attributes": [
+          "class"
+        ]
+      },
+      {
+        "name": "labelLastEdit",
+        "uses": [
+          "inner",
+          "removal"
+        ]
+      },
+      {
+        "name": "labelOmission",
+        "uses": [
+          "inner",
+          "removal"
+        ]
+      },
+      {
+        "name": "panelUploads",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "panelIp",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "labelBroadRange",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "labelNarrowRange",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "labelSubject",
+        "uses": [
+          "inner",
+          "removal"
+        ]
+      },
+      {
+        "name": "labelCreated",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "divMessage",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "divPosts",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "linkReply",
+        "uses": [
+          "href",
+          "removal"
+        ]
+      },
+      {
+        "name": "linkSelf",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "linkQuote",
+        "uses": [
+          "href",
+          "inner"
+        ]
+      },
+      {
+        "name": "linkQuote",
+        "uses": [
+          "href",
+          "inner"
+        ]
+      },
+      {
+        "name": "deletionCheckBox",
+        "attributes": [
+          "name"
+        ],
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "lockIndicator",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "bumpLockIndicator",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "cyclicIndicator",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "pinIndicator",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "spanId",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "labelId",
+        "uses": [
+          "inner"
+        ],
+        "attributes": [
+          "style"
+        ]
+      },
+      {
+        "name": "labelRole",
+        "uses": [
+          "inner",
+          "removal"
+        ]
+      },
+      {
+        "name": "divBanMessage",
+        "uses": [
+          "inner",
+          "removal"
+        ]
+      }
+    ]
+  },
+  {
+    "template": "postCell",
+    "prebuiltFields": [
+      {
+        "name": "contentOmissionIndicator",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "linkFullText",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "labelIp",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "divBanMessage",
+        "uses": [
+          "removal",
+          "inner"
+        ]
+      },
+      {
+        "name": "imgFlag",
+        "uses": [
+          "src",
+          "removal",
+          "title"
+        ],
+        "attributes": [
+          "class"
+        ]
+      },
+      {
+        "name": "labelLastEdit",
+        "uses": [
+          "inner",
+          "removal"
+        ]
+      },
+      {
+        "name": "linkEdit",
+        "uses": [
+          "href",
+          "removal"
+        ]
+      },
+      {
+        "name": "panelRange",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "panelIp",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "labelBroadRange",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "labelNarrowRange",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "panelUploads",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "labelRole",
+        "uses": [
+          "inner",
+          "removal"
+        ]
+      },
+      {
+        "name": "linkName",
+        "uses": [
+          "inner",
+          "href"
+        ],
+        "attributes": [
+          "class"
+        ]
+      },
+      {
+        "name": "labelSubject",
+        "uses": [
+          "inner",
+          "removal"
+        ]
+      },
+      {
+        "name": "labelCreated",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "divMessage",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "linkSelf",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "linkQuote",
+        "uses": [
+          "href",
+          "inner"
+        ]
+      },
+      {
+        "name": "deletionCheckBox",
+        "attributes": [
+          "name"
+        ],
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "spanId",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "labelId",
+        "uses": [
+          "inner"
+        ],
+        "attributes": [
+          "style"
+        ]
+      }
+    ]
+  },
+  {
+    "template": "staffCell",
+    "fields": [
+      "userIdentifier",
+      "userLabel",
+      "roleCombo"
+    ]
+  },
+  {
+    "template": "volunteerCell",
+    "fields": [
+      "boardIdentifier",
+      "userIdentifier",
+      "userLabel"
+    ]
+  },
+  {
+    "template": "reportCell",
+    "fields": [
+      "reasonLabel",
+      "link",
+      "closureCheckbox",
+      "postingDiv"
+    ]
+  },
+  {
+    "template": "closedReportCell",
+    "fields": [
+      "reasonLabel",
+      "link",
+      "closedByLabel",
+      "closedDateLabel"
+    ]
+  },
+  {
+    "template": "banCell",
+    "fields": [
+      "reasonLabel",
+      "expirationLabel",
+      "appliedByLabel",
+      "idLabel",
+      "appealLabel",
+      "appealPanel",
+      "liftIdentifier",
+      "denyIdentifier",
+      "denyForm",
+      "boardLabel",
+      "boardPanel"
+    ]
+  },
+  {
+    "template": "logCell",
+    "fields": [
+      "indicatorGlobal",
+      "labelUser",
+      "labelTime",
+      "labelDescription",
+      "labelBoard",
+      "labelType"
+    ]
+  },
+  {
+    "template": "filterCell",
+    "fields": [
+      "labelOriginal",
+      "labelReplacement",
+      "boardIdentifier",
+      "filterIdentifier",
+      "labelCaseInsensitive"
+    ]
+  },
+  {
+    "template": "boardsCell",
+    "fields": [
+      "linkBoard",
+      "labelPostsPerHour",
+      "labelPostCount",
+      "divDescription",
+      "labelTags",
+      "labelUniqueIps",
+      "indicatorSfw",
+      "indicatorInactive"
+    ]
+  },
+  {
+    "template": "rangeBanCell",
+    "fields": [
+      "rangeLabel",
+      "idIdentifier"
+    ]
+  },
+  {
+    "template": "hashBanCell",
+    "fields": [
+      "hashLabel",
+      "idIdentifier"
+    ]
+  },
+  {
+    "template": "uploadCell",
+    "prebuiltFields": [
+      {
+        "name": "sizeLabel",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "imgLink",
+        "uses": [
+          "children",
+          "href"
+        ],
+        "attributes": [
+          "data-filewidth",
+          "data-fileheight",
+          "data-filemime"
+        ]
+      },
+      {
+        "name": "nameLink",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "divHash",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "labelHash",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "originalNameLink",
+        "uses": [
+          "inner",
+          "href"
+        ],
+        "attributes": [
+          "download"
+        ]
+      },
+      {
+        "name": "dimensionLabel",
+        "uses": [
+          "removal",
+          "inner"
+        ]
+      }
+    ]
+  },
+  {
+    "template": "ruleManagementCell",
+    "fields": [
+      "indexIdentifier",
+      "boardIdentifier",
+      "textLabel"
+    ]
+  },
+  {
+    "template": "ruleCell",
+    "fields": [
+      "indexLabel",
+      "textLabel"
+    ]
+  },
+  {
+    "template": "flagCell",
+    "fields": [
+      "flagImg",
+      "nameLabel",
+      "idIdentifier"
+    ]
+  },
+  {
+    "template": "hashBanCellDisplay",
+    "fields": [
+      "labelFile",
+      "labelBoard"
+    ]
+  },
+  {
+    "template": "latestPostCell",
+    "prebuiltFields": [
+      {
+        "name": "labelPreview",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "linkPost",
+        "uses": [
+          "inner",
+          "href"
+        ]
+      }
+    ]
+  },
+  {
+    "template": "logIndexCell",
+    "fields": [
+      "dateLink"
+    ]
+  },
+  {
+    "template": "graphIndexCell",
+    "fields": [
+      "dateLink"
+    ]
+  },
+  {
+    "template": "mediaCell",
+    "fields": [
+      "identifierCheckbox",
+      "thumbImg",
+      "fileLink",
+      "referencesLabel",
+      "detailsLink"
+    ]
+  },
+  {
+    "template": "languageCell",
+    "fields": [
+      "languageIdentifier",
+      "frontEndLabel",
+      "languagePackLabel",
+      "headerValuesLabel"
+    ]
+  },
+  {
+    "template": "accountCell",
+    "fields": [
+      "accountLink"
+    ]
+  }
+]

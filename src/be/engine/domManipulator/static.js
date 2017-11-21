@@ -162,7 +162,7 @@ exports.setThreadTitle = function(document, threadData) {
     title += common.clean(threadData.message.substring(0, 256));
   }
 
-  return document.replace('__tile__', title);
+  return document.replace('__title__', title);
 
 };
 
@@ -360,6 +360,9 @@ exports.page = function(page, threads, pageCount, boardData, flagData,
         null);
 
     var boardUri = common.clean(boardData.boardUri);
+
+    var title = '/' + boardUri + '/ - ' + boardData.boardName;
+    document = document.replace('__title__', title);
 
     document = document.replace('__linkManagement_href__',
         '/boardManagement.js?boardUri=' + boardUri);

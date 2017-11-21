@@ -1,0 +1,907 @@
+[
+  {
+    "template": "loginPage",
+    "fields": [
+      "divCreation"
+    ]
+  },
+  {
+    "template": "catalogPage",
+    "prebuiltFields": [
+      {
+        "name": "noFlagDiv",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "divThreads",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "labelBoard",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "flagsDiv",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "flagCombobox",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "boardIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "captchaDiv",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "labelMaxFileSize",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "labelMaxFiles",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "labelMessageLength",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "divUpload",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "postingForm",
+        "uses": [
+          "removal"
+        ]
+      }
+    ]
+  },
+  {
+    "template": "resetEmail",
+    "fields": [
+      "labelNewPass"
+    ]
+  },
+  {
+    "template": "bannerManagementPage",
+    "fields": [
+      "bannersDiv",
+      "boardIdentifier",
+      "maxSizeLabel"
+    ]
+  },
+  {
+    "template": "errorPage",
+    "fields": [
+      "codeLabel",
+      "errorLabel"
+    ]
+  },
+  {
+    "template": "recoveryEmail",
+    "fields": [
+      "linkRecovery"
+    ]
+  },
+  {
+    "template": "index",
+    "prebuiltFields": [
+      {
+        "name": "divBoards",
+        "uses": [
+          "removal",
+          "children"
+        ]
+      },
+      {
+        "name": "divLatestImages",
+        "uses": [
+          "removal",
+          "children"
+        ]
+      },
+      {
+        "name": "divLatestPosts",
+        "uses": [
+          "removal",
+          "children"
+        ]
+      },
+      {
+        "name": "linkEngine",
+        "uses": [
+          "href",
+          "inner"
+        ]
+      },
+      {
+        "name": "divStats",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "labelTotalPosts",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "labelTotalIps",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "labelTotalBoards",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "labelTotalPPH",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "labelTotalFiles",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "labelTotalSize",
+        "uses": [
+          "inner"
+        ]
+      }
+    ]
+  },
+  {
+    "template": "boardPage",
+    "headChildren": true,
+    "bodyChildren": true,
+    "prebuiltFields": [
+      {
+        "name": "labelName",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "labelDescription",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "noFlagDiv",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "panelMessage",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "divMessage",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "flagsDiv",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "flagCombobox",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "divThreads",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "divPages",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "boardIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "linkManagement",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "linkModeration",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "bannerImage",
+        "uses": [
+          "src"
+        ]
+      },
+      {
+        "name": "captchaDiv",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "divName",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "labelMaxFileSize",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "linkPrevious",
+        "uses": [
+          "href",
+          "removal"
+        ]
+      },
+      {
+        "name": "linkNext",
+        "uses": [
+          "href",
+          "removal"
+        ]
+      },
+      {
+        "name": "labelMaxFiles",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "labelMessageLength",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "divUpload",
+        "uses": [
+          "removal"
+        ]
+      }
+    ]
+  },
+  {
+    "template": "threadPage",
+    "headChildren": true,
+    "bodyChildren": true,
+    "prebuiltFields": [
+      {
+        "name": "noFlagDiv",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "ipDeletionForm",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "panelMessage",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "divMessage",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "labelName",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "flagsDiv",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "flagCombobox",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "labelDescription",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "divThreads",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "boardIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "threadIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "linkManagement",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "linkMod",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "divMod",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "divControls",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "controlBoardIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "controlThreadIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "checkboxLock",
+        "attributes": [
+          "checked"
+        ]
+      },
+      {
+        "name": "checkboxPin",
+        "attributes": [
+          "checked"
+        ]
+      },
+      {
+        "name": "checkboxCyclic",
+        "attributes": [
+          "checked"
+        ]
+      },
+      {
+        "name": "checkboxCyclic",
+        "attributes": [
+          "checked"
+        ]
+      },
+      {
+        "name": "bannerImage",
+        "uses": [
+          "src"
+        ]
+      },
+      {
+        "name": "captchaDiv",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "divName",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "labelMaxFileSize",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "formTransfer",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "transferBoardIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "transferThreadIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "labelMaxFiles",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "labelMessageLength",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "divUpload",
+        "uses": [
+          "removal"
+        ]
+      }
+    ]
+  },
+  {
+    "template": "messagePage",
+    "fields": [
+      "labelMessage",
+      "linkRedirect"
+    ]
+  },
+  {
+    "template": "accountPage",
+    "fields": [
+      "labelLogin",
+      "ownedDiv",
+      "emailField",
+      "volunteeredDiv",
+      "globalManagementLink",
+      "boardCreationDiv",
+      "checkboxAlwaysSign"
+    ]
+  },
+  {
+    "template": "banPage",
+    "fields": [
+      "boardLabel",
+      "reasonLabel",
+      "expirationLabel",
+      "idLabel",
+      "formAppeal",
+      "idIdentifier"
+    ]
+  },
+  {
+    "template": "gManagement",
+    "fields": [
+      "divStaff",
+      "userLabel",
+      "addStaffForm",
+      "newStaffCombo",
+      "reportDiv",
+      "bansLink",
+      "rangeBansLink",
+      "hashBansLink",
+      "globalSettingsLink",
+      "globalBannersLink",
+      "appealedBansPanel",
+      "languagesLink",
+      "accountsLink",
+      "socketLink",
+      "massBanPanel"
+    ]
+  },
+  {
+    "template": "bManagement",
+    "fields": [
+      "volunteersDiv",
+      "ownerControlDiv",
+      "bansLink",
+      "forceAnonymityCheckbox",
+      "customSpoilerIdentifier",
+      "addVolunteerBoardIdentifier",
+      "transferBoardIdentifier",
+      "deletionIdentifier",
+      "reportDiv",
+      "closedReportsLink",
+      "bannerManagementLink",
+      "boardNameField",
+      "boardDescriptionField",
+      "boardMessageField",
+      "boardSettingsIdentifier",
+      "unindexCheckbox",
+      "disableIdsCheckbox",
+      "rangeBansLink",
+      "captchaModeComboBox",
+      "filterManagementLink",
+      "anonymousNameField",
+      "boardLabel",
+      "customCssIdentifier",
+      "ruleManagementLink",
+      "allowCodeCheckbox",
+      "flagManagementLink",
+      "early404Checkbox",
+      "hourlyThreadLimitField",
+      "autoCaptchaThresholdField",
+      "hashBansLink",
+      "textBoardCheckbox",
+      "customSpoilerIndicator",
+      "tagsField",
+      "customJsForm",
+      "customJsIdentifier",
+      "blockDeletionCheckbox",
+      "requireFileCheckbox",
+      "appealedBansPanel",
+      "linkSelf",
+      "uniqueFilesCheckbox",
+      "uniquePostsCheckbox",
+      "locationComboBox",
+      "maxFilesField",
+      "maxFileSizeField",
+      "maxThreadFields",
+      "autoSageLimitField",
+      "validMimesField",
+      "maxBumpAgeField"
+    ]
+  },
+  {
+    "template": "closedReportsPage",
+    "fields": [
+      "reportDiv"
+    ]
+  },
+  {
+    "template": "bansPage",
+    "fields": [
+      "bansDiv"
+    ]
+  },
+  {
+    "template": "logsPage",
+    "fields": [
+      "divLogs"
+    ]
+  },
+  {
+    "template": "filterManagement",
+    "fields": [
+      "divFilters",
+      "boardIdentifier",
+      "checkboxCaseInsensitive"
+    ]
+  },
+  {
+    "template": "boardModerationPage",
+    "fields": [
+      "boardTransferIdentifier",
+      "boardDeletionIdentifier",
+      "labelTitle",
+      "labelOwner",
+      "labelLastSeen",
+      "checkboxSfw",
+      "specialSettingsIdentifier",
+      "checkboxLocked",
+      "divVolunteers"
+    ]
+  },
+  {
+    "template": "boardsPage",
+    "fields": [
+      "divBoards",
+      "divPages",
+      "linkOverboard",
+      "linkSfwOver"
+    ]
+  },
+  {
+    "template": "noCookieCaptchaPage",
+    "fields": [
+      "divSolvedCaptcha",
+      "labelCaptchaId",
+      "inputCaptchaId",
+      "imageCaptcha"
+    ]
+  },
+  {
+    "template": "rangeBansPage",
+    "fields": [
+      "rangeBansDiv",
+      "boardIdentifier"
+    ]
+  },
+  {
+    "template": "rangeBanPage",
+    "fields": [
+      "boardLabel",
+      "rangeLabel"
+    ]
+  },
+  {
+    "template": "hashBansPage",
+    "fields": [
+      "hashBansDiv",
+      "boardIdentifier"
+    ]
+  },
+  {
+    "template": "notFoundPage",
+    "fields": [
+      
+    ]
+  },
+  {
+    "template": "ruleManagementPage",
+    "fields": [
+      "divRules",
+      "boardIdentifier"
+    ]
+  },
+  {
+    "template": "rulesPage",
+    "fields": [
+      "boardLabel",
+      "divRules"
+    ]
+  },
+  {
+    "template": "maintenancePage",
+    "fields": [
+      
+    ]
+  },
+  {
+    "template": "editPage",
+    "fields": [
+      "fieldMessage",
+      "boardIdentifier",
+      "threadIdentifier",
+      "postIdentifier",
+      "labelMessageLength",
+      "fieldSubject"
+    ]
+  },
+  {
+    "template": "flagsPage",
+    "fields": [
+      "flagsDiv",
+      "boardIdentifier",
+      "maxSizeLabel",
+      "maxNameLengthLabel"
+    ]
+  },
+  {
+    "template": "globalSettingsPage",
+    "fields": [
+      "fieldAddress",
+      "fieldPort",
+      "fieldFePath",
+      "fieldPageSize",
+      "fieldLatestPostsCount",
+      "fieldAutoSageLimit",
+      "fieldThreadLimit",
+      "fieldTempDir",
+      "fieldSenderEmail",
+      "fieldCaptchaExpiration",
+      "fieldSiteTitle",
+      "fieldMaxRequestSize",
+      "fieldMaxFileSize",
+      "fieldAcceptedMimes",
+      "fieldMaxFiles",
+      "fieldBanMessage",
+      "fieldAnonymousName",
+      "fieldTopBoardsCount",
+      "fieldBoardsPerPage",
+      "fieldTorSource",
+      "fieldLanguagePack",
+      "fieldMaxRules",
+      "fieldCSP",
+      "fieldThumbSize",
+      "fieldMaxFilters",
+      "fieldMaxVolunteers",
+      "fieldMaxBannerSize",
+      "fieldMaxFlagSize",
+      "fieldFloodInterval",
+      "checkboxVerbose",
+      "checkboxDisable304",
+      "comboMinClearIpRole",
+      "checkboxMediaThumb",
+      "checkboxMaintenance",
+      "checkboxVerboseMisc",
+      "checkboxMultipleReports",
+      "fieldMaster",
+      "checkboxAutoPruneFiles",
+      "checkboxDisableAccountCreation",
+      "comboBoardCreationRequirement",
+      "fieldMaxTags",
+      "fieldGlobalLatestImages",
+      "fieldTorPort",
+      "checkboxDisableFloodCheck",
+      "comboSsl",
+      "fieldSfwOverboard",
+      "fieldThumbExtension",
+      "fieldSslPass",
+      "checkboxFrontPageStats",
+      "checkboxGlobalBoardModeration",
+      "checkboxGlobalBanners",
+      "checkboxAllowCustomJs",
+      "fieldGlobalLatestPosts",
+      "fieldSlaves",
+      "checkboxGlobalCaptcha",
+      "fieldRssDomain",
+      "fieldOverboard",
+      "comboBypassMode",
+      "fieldBypassHours",
+      "fieldBypassPosts",
+      "fieldMultiBoardThreadCount",
+      "fieldConcurrentRebuildMessages",
+      "checkboxSFWLatestImages",
+      "fieldInactivityThreshold",
+      "fieldMediaPageSize",
+      "fieldMessageLength",
+      "checkboxFfmpegGifs",
+      "fieldSpamIpsSource",
+      "checkboxSpamBypass",
+      "fieldIpExpiration",
+      "checkboxDisableSpamCheck",
+      "checkboxDisableCatalogPosting",
+      "comboTorPostingLevel",
+      "checkboxAllowTorFiles",
+      "checkboxUseAlternativeLanguages",
+      "checkboxVerboseGenerator",
+      "checkboxVerboseQueue",
+      "checkboxVerboseGridfs",
+      "checkboxVerboseStatic",
+      "checkboxVerboseApis",
+      "fieldIncrementalSpamIpsSource",
+      "fieldFlagNameLength",
+      "checkboxBlockedReport",
+      "checkboxPreemptiveCaching"
+    ]
+  },
+  {
+    "template": "hashBanPage",
+    "fields": [
+      "hashBansPanel"
+    ]
+  },
+  {
+    "template": "overboard",
+    "fields": [
+      "divThreads"
+    ]
+  },
+  {
+    "template": "bypassPage",
+    "fields": [
+      "indicatorValidBypass",
+      "renewForm"
+    ]
+  },
+  {
+    "template": "logIndexPage",
+    "fields": [
+      "divDates"
+    ]
+  },
+  {
+    "template": "graphsIndexPage",
+    "fields": [
+      "divDates"
+    ]
+  },
+  {
+    "template": "mediaManagementPage",
+    "fields": [
+      "filesDiv",
+      "pagesDiv"
+    ]
+  },
+  {
+    "template": "languagesManagementPage",
+    "fields": [
+      "languagesDiv"
+    ]
+  },
+  {
+    "template": "accountsPage",
+    "fields": [
+      "divAccounts"
+    ]
+  },
+  {
+    "template": "socketManagementPage",
+    "fields": [
+      "statusLabel"
+    ]
+  },
+  {
+    "template": "accountManagementPage",
+    "fields": [
+      "emailLabel",
+      "lastSeenLabel",
+      "ownedBoardsDiv",
+      "volunteeredBoardsDiv",
+      "globalRoleLabel"
+    ]
+  },
+  {
+    "template": "mediaDetailsPage",
+    "fields": [
+      "labelSize",
+      "labelUploadDate",
+      "panelReferences",
+      "labelIdentifier"
+    ]
+  }
+]

@@ -304,8 +304,7 @@ exports.setHeader = function(template, language, bData, flagData, thread) {
   var boardUri = exports.clean(bData.boardUri);
 
   var title = '/' + boardUri + '/ - ' + bData.boardName;
-  var document = template.template.replace('__title__', title);
-  document = document.replace('__labelName_inner__', title);
+  var document = template.template.replace('__labelName_inner__', title);
 
   var linkBanner = '/randomBanner.js?boardUri=' + boardUri;
   document = document.replace('__bannerImage_src__', linkBanner);
