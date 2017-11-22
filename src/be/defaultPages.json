@@ -544,22 +544,99 @@
   },
   {
     "template": "gManagement",
-    "fields": [
-      "divStaff",
-      "userLabel",
-      "addStaffForm",
-      "newStaffCombo",
-      "reportDiv",
-      "bansLink",
-      "rangeBansLink",
-      "hashBansLink",
-      "globalSettingsLink",
-      "globalBannersLink",
-      "appealedBansPanel",
-      "languagesLink",
-      "accountsLink",
-      "socketLink",
-      "massBanPanel"
+    "prebuiltFields": [
+      {
+        "name": "socketLink",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "accountsLink",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "appealedBansPanel",
+        "uses": [
+          "removal",
+          "children"
+        ]
+      },
+      {
+        "name": "globalBannersLink",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "languagesLink",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "globalSettingsLink",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "divStaff",
+        "uses": [
+          "removal",
+          "children"
+        ]
+      },
+      {
+        "name": "userLabel",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "addStaffForm",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "newStaffCombo",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "reportDiv",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "bansLink",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "rangeBansLink",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "massBanPanel",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "hashBansLink",
+        "uses": [
+          "removal"
+        ]
+      }
     ]
   },
   {

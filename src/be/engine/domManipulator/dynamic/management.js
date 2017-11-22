@@ -262,7 +262,8 @@ exports.setContent = function(document, boardData, userData, bans, reports,
   document.getElementById('appealedBansPanel').innerHTML += common.getBanList(
       bans, false, language);
 
-  common.setReportList(document, reports, language);
+  document.getElementById('reportDiv').innerHTML += common.getReportList(
+      reports, language);
 
 };
 
@@ -291,7 +292,7 @@ exports.boardManagement = function(userData, boardData, reports, bans,
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };
@@ -320,9 +321,7 @@ exports.getRoleComboBox = function(possibleRoles, user) {
 
 };
 
-exports.fillStaffDiv = function(document, possibleRoles, staff, language) {
-
-  var divStaff = document.getElementById('divStaff');
+exports.getStaffDiv = function(possibleRoles, staff, language) {
 
   var children = '';
 
@@ -344,8 +343,7 @@ exports.fillStaffDiv = function(document, possibleRoles, staff, language) {
 
   }
 
-  divStaff.innerHTML += children;
-
+  return children;
 };
 
 exports.getPossibleRoles = function(role, language) {
@@ -365,87 +363,118 @@ exports.getPossibleRoles = function(role, language) {
   return roles;
 };
 
-exports.setNewStaffComboBox = function(document, userRole, language) {
+exports.getNewStaffComboBox = function(userRole, language) {
 
-  var comboBox = document.getElementById('newStaffCombo');
+  var children = '';
 
   for (var i = userRole + 1; i <= miscOps.getMaxStaffRole(); i++) {
 
-    var option = document.createElement('option');
-    option.value = i;
-    option.innerHTML = miscOps.getGlobalRoleLabel(i, language);
+    var option = '<option value="' + i + '">';
+    option += miscOps.getGlobalRoleLabel(i, language) + '</option>';
+    children += option;
 
-    comboBox.add(option);
   }
+
+  return children;
 
 };
 
-exports.setGlobalManagementLinks = function(userRole, document) {
+exports.setGlobalBansLinks = function(document, userRole, removable) {
 
-  var displayBans = userRole < miscOps.getMaxStaffRole();
-
-  if (!displayBans) {
-    document.getElementById('hashBansLink').remove();
-    document.getElementById('bansLink').remove();
+  if (userRole < miscOps.getMaxStaffRole()) {
+    document = document.replace('__bansLink_location__', removable.bansLink);
+    document = document.replace('__hashBansLink_location__',
+        removable.hashBansLink);
+  } else {
+    document = document.replace('__bansLink_location__', '');
+    document = document.replace('__hashBansLink_location__', '');
   }
 
-  var displayRangeBans = userRole <= minClearIpRole;
-
-  if (!displayRangeBans) {
-    document.getElementById('rangeBansLink').remove();
+  if (userRole <= minClearIpRole) {
+    document = document.replace('__rangeBansLink_location__',
+        removable.rangeBansLink);
+  } else {
+    document = document.replace('__rangeBansLink_location__', '');
   }
+
+  return document;
+
+};
+
+exports.setGlobalManagementLinks = function(userRole, document, removable) {
+
+  document = exports.setGlobalBansLinks(document, userRole, removable);
 
   if (userRole !== 0) {
-    document.getElementById('globalSettingsLink').remove();
-    document.getElementById('languagesLink').remove();
-    document.getElementById('socketLink').remove();
+    document = document.replace('__globalSettingsLink_location__', '');
+    document = document.replace('__languagesLink_location__', '');
+    document = document.replace('__socketLink_location__', '');
+  } else {
+    document = document.replace('__globalSettingsLink_location__',
+        removable.globalSettingsLink);
+    document = document.replace('__languagesLink_location__',
+        removable.languagesLink);
+    document = document
+        .replace('__socketLink_location__', removable.socketLink);
   }
-
-  var admin = userRole < 2;
-
-  if (!admin) {
-    document.getElementById('globalBannersLink').remove();
-    document.getElementById('accountsLink').remove();
-  }
-};
-
-exports.processHideableElements = function(document, userRole, staff, lang) {
 
   if (userRole < 2) {
-    exports.setNewStaffComboBox(document, userRole, lang);
-    exports.fillStaffDiv(document, exports.getPossibleRoles(userRole, lang),
-        staff, lang);
+    document = document.replace('__accountsLink_location__',
+        removable.accountsLink);
+    document = document.replace('__globalBannersLink_location__',
+        removable.globalBannersLink);
   } else {
-    document.getElementById('addStaffForm').remove();
-    document.getElementById('massBanPanel').remove();
-    document.getElementById('divStaff').remove();
+    document = document.replace('__accountsLink_location__', '');
+    document = document.replace('__globalBannersLink_location__', '');
   }
+
+  return document;
 
 };
 
-exports.setGlobalManagementList = function(document, reports, appealedBans,
-    language) {
+exports.processHideableElements = function(document, userRole, staff, language,
+    removable) {
 
-  common.setReportList(document, reports, language);
+  if (userRole < 2) {
 
-  var banDiv = document.getElementById('appealedBansPanel');
+    document = document.replace('__addStaffForm_location__',
+        removable.addStaffForm);
+    document = document.replace('__massBanPanel_location__',
+        removable.massBanPanel);
+    document = document.replace('__divStaff_location__', removable.divStaff);
+
+    document = document.replace('__newStaffCombo_children__', exports
+        .getNewStaffComboBox(userRole, language));
+    document = document.replace('__divStaff_children__', exports.getStaffDiv(
+        exports.getPossibleRoles(userRole, language), staff, language));
+
+  } else {
+    document = document.replace('__addStaffForm_location__', '');
+    document = document.replace('__massBanPanel_location__', '');
+    document = document.replace('__divStaff_location__', '');
+  }
+
+  return document;
+
+};
+
+exports.setGlobalManagementLists = function(document, reports, appealedBans,
+    language, removable) {
+
+  document = document.replace('__reportDiv_children__', common.getReportList(
+      reports, language));
 
   if (appealedBans) {
-    banDiv.innerHTML += common.getBanList(appealedBans, true, language);
+    document = document.replace('__appealedBansPanel_location__',
+        removable.appealedBansPanel);
+
+    document = document.replace('__appealedBansPanel_children__', common
+        .getBanList(appealedBans, true, language));
   } else {
-    banDiv.remove();
+    document = document.replace('__appealedBansPanel_location__', '');
   }
 
-};
-
-exports.setUserLabel = function(document, userLogin, userRole, language) {
-
-  var userLabel = document.getElementById('userLabel');
-
-  var userLabelContent = userLogin + ': ';
-  userLabelContent += miscOps.getGlobalRoleLabel(userRole, language);
-
-  userLabel.innerHTML = userLabelContent;
+  return document;
 
 };
 
@@ -453,23 +482,29 @@ exports.globalManagement = function(userRole, userLogin, staff, reports,
     appealedBans, language) {
 
   try {
-    var dom = new JSDOM(templateHandler(language).gManagement);
-    var document = dom.window.document;
 
-    document.title = lang(language).titGlobalManagement;
+    var template = templateHandler(language, true).gManagement;
 
-    exports.setGlobalManagementList(document, reports, appealedBans, language);
+    var document = template.template.replace('__title__',
+        lang(language).titGlobalManagement);
 
-    exports.setGlobalManagementLinks(userRole, document);
+    document = exports.setGlobalManagementLists(document, reports,
+        appealedBans, language, template.removable);
 
-    exports.processHideableElements(document, userRole, staff, language);
+    document = exports.setGlobalManagementLinks(userRole, document,
+        template.removable);
 
-    exports.setUserLabel(document, userLogin, userRole, language);
+    document = exports.processHideableElements(document, userRole, staff,
+        language, template.removable);
 
-    return dom.serialize();
+    var userLabelContent = common.clean(userLogin) + ': ';
+    userLabelContent += miscOps.getGlobalRoleLabel(userRole, language);
+
+    return document.replace('__userLabel_inner__', userLabelContent);
+
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 };
 // } Section 2: Global Management
@@ -524,7 +559,7 @@ exports.filterManagement = function(boardUri, filters, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };
@@ -569,7 +604,7 @@ exports.ruleManagement = function(boardUri, rules, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };
@@ -623,7 +658,7 @@ exports.flagManagement = function(boardUri, flags, language) {
     return dom.serialize();
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };
@@ -693,7 +728,7 @@ exports.globalSettings = function(language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 };
 // } Section 6: Global settings
@@ -746,7 +781,7 @@ exports.bannerManagement = function(boardUri, banners, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
 
   }
 
@@ -843,7 +878,7 @@ exports.mediaManagement = function(media, pages, parameters, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
 
   }
 
@@ -889,7 +924,7 @@ exports.languages = function(languages, language) {
     return dom.serialize();
 
   } catch (error) {
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };
@@ -923,7 +958,7 @@ exports.accounts = function(accounts, language) {
     return dom.serialize();
 
   } catch (error) {
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };
@@ -985,7 +1020,7 @@ exports.accountManagement = function(accountData, account, userRole, language) {
     return dom.serialize();
 
   } catch (error) {
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };
@@ -1005,7 +1040,7 @@ exports.socketData = function(statusData, language) {
     return dom.serialize();
 
   } catch (error) {
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };
@@ -1062,7 +1097,7 @@ exports.mediaDetails = function(identifier, details, language) {
     return dom.serialize();
 
   } catch (error) {
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };

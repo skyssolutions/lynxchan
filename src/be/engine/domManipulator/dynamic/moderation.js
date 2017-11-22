@@ -44,7 +44,7 @@ exports.bans = function(bans, globalPage, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
 
   }
 
@@ -96,7 +96,7 @@ exports.closedReports = function(reports, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 };
 // } Section 2: Closed reports
@@ -154,7 +154,7 @@ exports.rangeBans = function(rangeBans, boardData, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };
@@ -204,7 +204,7 @@ exports.hashBans = function(hashBans, boardUri, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 };
 // } Section 4: Hash bans
@@ -277,7 +277,7 @@ exports.boardModeration = function(boardData, ownerData, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };

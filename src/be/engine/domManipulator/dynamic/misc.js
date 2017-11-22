@@ -60,7 +60,7 @@ exports.error = function(code, message, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
 
   }
 
@@ -79,7 +79,7 @@ exports.resetEmail = function(password, language) {
     return dom.serialize();
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 };
 
@@ -96,7 +96,7 @@ exports.recoveryEmail = function(recoveryLink, language) {
     return dom.serialize();
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 };
 
@@ -192,7 +192,7 @@ exports.account = function(userData, language) {
     return dom.serialize();
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 };
 // } Section 1: Account
@@ -234,7 +234,7 @@ exports.logs = function(dates, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };
@@ -385,7 +385,7 @@ exports.boards = function(parameters, boards, pageCount, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };
@@ -443,7 +443,7 @@ exports.ban = function(ban, board, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
 
   }
 
@@ -490,7 +490,7 @@ exports.hashBan = function(hashBans, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };
@@ -537,7 +537,7 @@ exports.edit = function(parameters, posting, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 };
 // } Section 7: Edit page
@@ -574,7 +574,7 @@ exports.noCookieCaptcha = function(parameters, captchaId, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };
@@ -601,7 +601,7 @@ exports.blockBypass = function(valid, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 };
 
@@ -642,7 +642,7 @@ exports.graphs = function(dates, language) {
 
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };
@@ -668,7 +668,7 @@ exports.message = function(message, link, language) {
     return dom.serialize();
   } catch (error) {
 
-    return error.toString();
+    return error.stack.replace(/\n/g, '<br>');
   }
 
 };

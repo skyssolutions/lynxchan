@@ -615,7 +615,7 @@ addStaffForm:
     description: form used to add a new user to the global staff.
 
 newStaffCombo:
-    use: will have option elements appended to it.
+    use: have children appended to it.
     description: combo-box used in the addStaffForm to define the role of the new staff member.
 
 reportDiv:

@@ -975,7 +975,7 @@ exports.getBanCell = function(ban, globalPage, language) {
 
     cell = cell.replace('_appealPanel_location__',
         template.removable.appealPanel);
-    cell = cell.replace('__appealLabel_inner__', ban.appeal);
+    cell = cell.replace('__appealLabel_inner__', exports.clean(ban.appeal));
 
   } else {
     cell = cell.replace('_appealPanel_location__', '');
@@ -1043,9 +1043,7 @@ exports.getReportCell = function(report, language) {
 
 };
 
-exports.setReportList = function(document, reports, language) {
-
-  var reportDiv = document.getElementById('reportDiv');
+exports.getReportList = function(reports, language) {
 
   var children = '';
 
@@ -1053,7 +1051,7 @@ exports.setReportList = function(document, reports, language) {
     children += exports.getReportCell(reports[i], language);
   }
 
-  reportDiv.innerHTML += children;
+  return children;
 
 };
 // } Section 5: Open reports
