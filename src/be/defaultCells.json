@@ -110,9 +110,7 @@
         "name": "linkName",
         "uses": [
           "inner",
-          "href"
-        ],
-        "attributes": [
+          "href",
           "class"
         ]
       },
@@ -146,9 +144,7 @@
         "uses": [
           "title",
           "src",
-          "removal"
-        ],
-        "attributes": [
+          "removal",
           "class"
         ]
       },
@@ -244,11 +240,9 @@
       },
       {
         "name": "deletionCheckBox",
-        "attributes": [
-          "name"
-        ],
         "uses": [
-          "removal"
+          "removal",
+          "name"
         ]
       },
       {
@@ -284,9 +278,7 @@
       {
         "name": "labelId",
         "uses": [
-          "inner"
-        ],
-        "attributes": [
+          "inner",
           "style"
         ]
       },
@@ -339,9 +331,7 @@
         "uses": [
           "src",
           "removal",
-          "title"
-        ],
-        "attributes": [
+          "title",
           "class"
         ]
       },
@@ -400,9 +390,7 @@
         "name": "linkName",
         "uses": [
           "inner",
-          "href"
-        ],
-        "attributes": [
+          "href",
           "class"
         ]
       },
@@ -440,11 +428,9 @@
       },
       {
         "name": "deletionCheckBox",
-        "attributes": [
-          "name"
-        ],
         "uses": [
-          "removal"
+          "removal",
+          "name"
         ]
       },
       {
@@ -456,9 +442,7 @@
       {
         "name": "labelId",
         "uses": [
-          "inner"
-        ],
-        "attributes": [
+          "inner",
           "style"
         ]
       }
@@ -469,7 +453,7 @@
     "prebuiltFields": [
       {
         "name": "userIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
@@ -492,13 +476,13 @@
     "prebuiltFields": [
       {
         "name": "boardIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "userIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
@@ -533,7 +517,7 @@
       },
       {
         "name": "closureCheckbox",
-        "attributes": [
+        "uses": [
           "name"
         ]
       }
@@ -583,7 +567,7 @@
       },
       {
         "name": "denyIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
@@ -601,7 +585,7 @@
       },
       {
         "name": "liftIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
@@ -680,12 +664,10 @@
         "name": "imgLink",
         "uses": [
           "children",
-          "href"
-        ],
-        "attributes": [
-          "data-filewidth",
-          "data-fileheight",
-          "data-filemime"
+          "href",
+          "width",
+          "height",
+          "mime"
         ]
       },
       {
@@ -710,9 +692,7 @@
         "name": "originalNameLink",
         "uses": [
           "inner",
-          "href"
-        ],
-        "attributes": [
+          "href",
           "download"
         ]
       },

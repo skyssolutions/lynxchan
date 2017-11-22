@@ -40,7 +40,7 @@
       },
       {
         "name": "boardIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
@@ -245,7 +245,7 @@
       },
       {
         "name": "boardIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
@@ -380,13 +380,13 @@
       },
       {
         "name": "boardIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "threadIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
@@ -416,37 +416,37 @@
       },
       {
         "name": "controlBoardIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "controlThreadIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "checkboxLock",
-        "attributes": [
+        "uses": [
           "checked"
         ]
       },
       {
         "name": "checkboxPin",
-        "attributes": [
+        "uses": [
           "checked"
         ]
       },
       {
         "name": "checkboxCyclic",
-        "attributes": [
+        "uses": [
           "checked"
         ]
       },
       {
         "name": "checkboxCyclic",
-        "attributes": [
+        "uses": [
           "checked"
         ]
       },
@@ -482,13 +482,13 @@
       },
       {
         "name": "transferBoardIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "transferThreadIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
@@ -662,19 +662,19 @@
       },
       {
         "name": "uniqueFilesCheckbox",
-        "attributes": [
+        "uses": [
           "checked"
         ]
       },
       {
         "name": "uniquePostsCheckbox",
-        "attributes": [
+        "uses": [
           "checked"
         ]
       },
       {
         "name": "blockDeletionCheckbox",
-        "attributes": [
+        "uses": [
           "checked"
         ]
       },
@@ -686,25 +686,25 @@
       },
       {
         "name": "tagsField",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "maxBumpAgeField",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "customSpoilerIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "customJsIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
@@ -716,13 +716,13 @@
       },
       {
         "name": "hourlyThreadLimitField",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "autoCaptchaThresholdField",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
@@ -740,7 +740,7 @@
       },
       {
         "name": "customCssIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
@@ -758,19 +758,19 @@
       },
       {
         "name": "addVolunteerBoardIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "transferBoardIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "deletionIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
@@ -807,37 +807,37 @@
       },
       {
         "name": "boardNameField",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "boardDescriptionField",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "boardSettingsIdentifier",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "disableIdsCheckbox",
-        "attributes": [
+        "uses": [
           "checked"
         ]
       },
       {
         "name": "allowCodeCheckbox",
-        "attributes": [
+        "uses": [
           "checked"
         ]
       },
       {
         "name": "early404Checkbox",
-        "attributes": [
+        "uses": [
           "checked"
         ]
       },
@@ -849,13 +849,13 @@
       },
       {
         "name": "unindexCheckbox",
-        "attributes": [
+        "uses": [
           "checked"
         ]
       },
       {
         "name": "forceAnonymityCheckbox",
-        "attributes": [
+        "uses": [
           "checked"
         ]
       },
@@ -867,7 +867,7 @@
       },
       {
         "name": "anonymousNameField",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
@@ -891,43 +891,43 @@
       },
       {
         "name": "textBoardCheckbox",
-        "attributes": [
+        "uses": [
           "checked"
         ]
       },
       {
         "name": "requireFileCheckbox",
-        "attributes": [
+        "uses": [
           "checked"
         ]
       },
       {
         "name": "maxFilesField",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "maxFileSizeField",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "maxThreadFields",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "autoSageLimitField",
-        "attributes": [
+        "uses": [
           "value"
         ]
       },
       {
         "name": "validMimesField",
-        "attributes": [
+        "uses": [
           "value"
         ]
       }

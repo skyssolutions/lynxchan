@@ -18,6 +18,7 @@ var preBuiltAlternative = {};
 
 var simpleAttributes = [ 'download', 'style', 'value', 'name', 'checked' ];
 var simpleProperties = [ 'href', 'title', 'src', 'defaultValue' ];
+var dataAttributes = [ 'mime', 'height', 'width' ];
 
 require('jsdom').defaultDocumentFeatures = {
   FetchExternalResources : false,
@@ -176,38 +177,63 @@ exports.loadPages = function(errors, fePath, templateSettings, templateObject,
   }
 };
 
+exports.processComplexUses = function(document, element, field, use, removed) {
+
+  switch (use) {
+
+  case 'removal': {
+    removed.push(field);
+    break;
+  }
+
+  case 'children': {
+    var text = '__' + field + '_children__';
+
+    element.appendChild(document.createTextNode(text));
+    break;
+  }
+
+  case 'inner': {
+    element.innerHTML = '__' + field + '_inner__';
+    break;
+  }
+
+  case 'class': {
+    element.className += ' __' + field + '_class__';
+    break;
+  }
+
+  }
+
+};
+
 exports.processFieldUses = function(field, removed, element, document) {
 
-  for (var i = 0; field.uses && i < field.uses.length; i++) {
+  for (var i = 0; i < field.uses.length; i++) {
 
-    if (simpleProperties.indexOf(field.uses[i]) > -1) {
+    var use = field.uses[i];
+    var name = field.name;
 
-      var value = '__' + field.name + '_' + field.uses[i] + '__';
+    if (simpleProperties.indexOf(use) > -1) {
 
-      element[field.uses[i]] = value;
+      var value = '__' + name + '_' + use + '__';
 
-      continue;
-    }
+      element[use] = value;
 
-    switch (field.uses[i]) {
+    } else if (simpleAttributes.indexOf(use) > -1) {
 
-    case 'removal': {
-      removed.push(field.name);
-      break;
-    }
+      value = '__' + name + '_' + use + '__';
 
-    case 'children': {
-      var text = '__' + field.name + '_children__';
+      element.setAttribute(use, value);
 
-      element.appendChild(document.createTextNode(text));
-      break;
-    }
+    } else if (dataAttributes.indexOf(use) > -1) {
 
-    case 'inner': {
-      element.innerHTML = '__' + field.name + '_inner__';
-      break;
-    }
+      value = '__' + name + '_' + use + '__';
 
+      element.setAttribute('data-file' + use, value);
+
+    } else {
+      exports.processComplexUses(document, element, name, use, removed);
     }
 
   }
@@ -228,26 +254,6 @@ exports.processFieldAttributes = function(element, field) {
     }
 
     switch (field.attributes[i]) {
-
-    case 'data-filemime': {
-      element.setAttribute('data-filemime', '__' + field.name + '_mime__');
-      break;
-    }
-
-    case 'data-fileheight': {
-      element.setAttribute('data-fileheight', '__' + field.name + '_height__');
-      break;
-    }
-
-    case 'data-filewidth': {
-      element.setAttribute('data-filewidth', '__' + field.name + '_width__');
-      break;
-    }
-
-    case 'class': {
-      element.className += ' __' + field.name + '_class__';
-      break;
-    }
 
     }
 
@@ -305,9 +311,6 @@ exports.iteratePrebuiltFields = function(template, base, document, removed,
 
     if (element) {
       exports.processFieldUses(field, removed, element, document);
-
-      exports.processFieldAttributes(element, field);
-
     } else {
       errors += '\nError, missing element ' + field.name;
     }
