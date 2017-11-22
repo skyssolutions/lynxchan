@@ -37,7 +37,7 @@ exports.bans = function(bans, globalPage, language) {
 
     document.title = lang(language).titBansManagement;
 
-    common.setBanList(document, document.getElementById('bansDiv'), bans,
+    document.getElementById('bansDiv').innerHTML += common.getBanList(bans,
         globalPage, language);
 
     return dom.serialize();

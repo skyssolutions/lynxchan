@@ -550,18 +550,73 @@
   },
   {
     "template": "banCell",
-    "fields": [
-      "reasonLabel",
-      "expirationLabel",
-      "appliedByLabel",
-      "idLabel",
-      "appealLabel",
-      "appealPanel",
-      "liftIdentifier",
-      "denyIdentifier",
-      "denyForm",
-      "boardLabel",
-      "boardPanel"
+    "prebuiltFields": [
+      {
+        "name": "reasonLabel",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "expirationLabel",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "appliedByLabel",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "idLabel",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "denyForm",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "denyIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "appealPanel",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "appealLabel",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "liftIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "boardLabel",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "boardPanel",
+        "uses": [
+          "removal"
+        ]
+      }
     ]
   },
   {

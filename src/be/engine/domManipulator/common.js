@@ -75,19 +75,11 @@ exports.formatFileSize = function(size, language) {
 
 exports.clean = function(toClean) {
 
-  if (typeof toClean === 'string') {
-    return toClean.replace(/__/g, '&#95;&#95;');
+  if (typeof toClean !== 'string') {
+    return toClean;
   }
 
-  for ( var key in toClean) {
-
-    var value = toClean[key];
-
-    if (typeof value === 'string') {
-      toClean[key] = exports.clean(toClean[key]);
-    }
-
-  }
+  return toClean.replace(/__/g, '&#95;&#95;');
 };
 
 exports.setFormCellBoilerPlate = function(cell, action, cssClass) {
@@ -344,11 +336,13 @@ exports.setHeader = function(template, language, bData, flagData, thread) {
 exports.setSharedSimpleElements = function(postingCell, posting, innerPage,
     removable, language) {
 
-  postingCell = postingCell.replace('__linkName_inner__', posting.name);
+  var name = exports.clean(posting.name);
+
+  postingCell = postingCell.replace('__linkName_inner__', name);
 
   if (posting.email) {
 
-    var email = 'mailto:' + posting.email;
+    var email = 'mailto:' + name;
 
     postingCell = postingCell.replace('__linkName_href__', email);
     postingCell = postingCell.replace('__linkName_class__', '');
@@ -396,7 +390,7 @@ exports.setPostingFlag = function(posting, postingCell, removable) {
 
 exports.setPostingLinks = function(postingCell, posting, removable) {
 
-  var boardUri = posting.boardUri;
+  var boardUri = exports.clean(posting.boardUri);
 
   var linkStart = '/' + boardUri + '/res/' + posting.threadId + '.html#';
 
@@ -417,7 +411,7 @@ exports.setPostingModdingElements = function(modding, posting, cell, bData,
     userRole, removable) {
 
   if (modding) {
-    var editLink = '/edit.js?boardUri=' + posting.boardUri;
+    var editLink = '/edit.js?boardUri=' + exports.clean(posting.boardUri);
 
     if (posting.postId) {
       editLink += '&postId=' + posting.postId;
@@ -453,7 +447,7 @@ exports.setPostingComplexElements = function(posting, postingCell, removable,
     postingCell = postingCell.replace('__labelRole_location__', '');
   }
 
-  var checkboxName = posting.boardUri + '-' + posting.threadId;
+  var checkboxName = exports.clean(posting.boardUri) + '-' + posting.threadId;
   if (posting.postId) {
     checkboxName += '-' + posting.postId;
   }
@@ -484,7 +478,7 @@ exports.setSharedHideableElements = function(posting, removable, postingCell,
         removable.labelLastEdit).replace(
         '__labelLastEdit_inner__',
         lang(language).guiEditInfo.replace('{$date}', formatedDate).replace(
-            '{$login}', posting.lastEditLogin));
+            '{$login}', exports.clean(posting.lastEditLogin)));
 
   } else {
     postingCell = postingCell.replace('__labelLastEdit_location__', '');
@@ -495,7 +489,7 @@ exports.setSharedHideableElements = function(posting, removable, postingCell,
   if (posting.subject) {
     postingCell = postingCell.replace('__labelSubject_location__',
         removable.labelSubject).replace('__labelSubject_inner__',
-        posting.subject);
+        exports.clean(posting.subject));
   } else {
     postingCell = postingCell.replace('__labelSubject_location__', '');
   }
@@ -513,7 +507,7 @@ exports.setSharedHideableElements = function(posting, removable, postingCell,
   } else {
     postingCell = postingCell.replace('__divBanMessage_location__',
         removable.divBanMessage).replace('__divBanMessage_inner__',
-        posting.banMessage);
+        exports.clean(posting.banMessage));
   }
 
   return postingCell;
@@ -665,9 +659,9 @@ exports.getThreadCellBase = function(thread) {
   }
 
   var threadCell = '<div class="' + classToUse + '" data-boarduri="';
-  threadCell += thread.boardUri + '" id="' + thread.threadId + '">';
+  threadCell += exports.clean(thread.boardUri) + '" id="' + thread.threadId;
 
-  return threadCell;
+  return threadCell + '">';
 
 };
 
@@ -690,7 +684,6 @@ exports.getThreadContent = function(thread, posts, innerPage, modding,
 exports.getThread = function(thread, posts, innerPage, modding, boardData,
     userRole, language) {
 
-  exports.clean(thread);
   var threadCell = exports.getThreadCellBase(thread, language);
 
   var cacheField = exports.getCacheField(false, innerPage, modding, userRole,
@@ -830,7 +823,7 @@ exports.getPostCellBase = function(post) {
   }
 
   var postCell = '<div class="' + classToUse;
-  postCell += '" data-boarduri="' + post.boardUri + '" id="';
+  postCell += '" data-boarduri="' + exports.clean(post.boardUri) + '" id="';
   postCell += post.postId + '">';
 
   return postCell;
@@ -844,8 +837,6 @@ exports.getPosts = function(posts, modding, boardData, userRole, innerPage,
 
   for (var i = 0; posts && i < posts.length; i++) {
     var post = posts[i];
-
-    exports.clean(post);
 
     var postCell = exports.getPostCellBase(post);
 
@@ -881,9 +872,11 @@ exports.setUploadLinks = function(cell, file) {
 
   cell = cell.replace('__imgLink_children__', img);
 
-  cell = cell.replace('__originalNameLink_inner__', file.originalName);
+  var originalName = exports.clean(file.originalName);
+
+  cell = cell.replace('__originalNameLink_inner__', originalName);
+  cell = cell.replace('__originalNameLink_download__', originalName);
   cell = cell.replace('__originalNameLink_href__', file.path);
-  cell = cell.replace('__originalNameLink_download__', file.originalName);
 
   return cell;
 
@@ -932,8 +925,6 @@ exports.setUploadCell = function(files, modding, language) {
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
 
-    exports.clean(file);
-
     var cell = '<figure class="uploadCell">' + template.template;
     cell += '</figure>';
 
@@ -957,63 +948,68 @@ exports.setUploadCell = function(files, modding, language) {
 // } Section 3: Thread content
 
 // Section 4: Ban div {
-exports.setBanCellHiddenElements = function(ban, cell, language) {
+exports.setBanCellHiddenElements = function(ban, template, language) {
+
+  var cell = template.template;
 
   if (!ban.denied && ban.appeal) {
-    cell.getElementsByClassName('denyIdentifier')[0].setAttribute('value',
-        ban._id);
+
+    cell = cell.replace('__denyForm_location__', template.removable.denyForm);
+    cell = cell.replace('__denyIdentifier_value__', ban._id);
+
   } else {
-    cell.getElementsByClassName('denyForm')[0].remove();
+    cell = cell.replace('__denyForm_location__', '');
   }
 
-  cell.getElementsByClassName('liftIdentifier')[0].setAttribute('value',
-      ban._id);
+  return cell.replace('__liftIdentifier_value__', ban._id);
 
 };
 
-exports.setBanCell = function(ban, cell, globalPage, language) {
+exports.getBanCell = function(ban, globalPage, language) {
+
+  var template = templateHandler(language, true).banCell;
+
+  var cell = exports.setBanCellHiddenElements(ban, template, language);
 
   if (ban.appeal) {
-    var label = cell.getElementsByClassName('appealLabel')[0];
-    label.innerHTML = ban.appeal;
+
+    cell = cell.replace('_appealPanel_location__',
+        template.removable.appealPanel);
+    cell = cell.replace('__appealLabel_inner__', ban.appeal);
+
   } else {
-    cell.getElementsByClassName('appealPanel')[0].remove();
+    cell = cell.replace('_appealPanel_location__', '');
   }
 
-  exports.setBanCellHiddenElements(ban, cell, language);
+  cell = cell.replace('__idLabel_inner__', ban._id);
+  cell = cell.replace('__appliedByLabel_inner__', exports.clean(ban.appliedBy));
+  cell = cell.replace('__reasonLabel_inner__', exports.clean(ban.reason));
 
-  cell.getElementsByClassName('idLabel')[0].innerHTML = ban._id;
-
-  cell.getElementsByClassName('reasonLabel')[0].innerHTML = ban.reason;
-
-  var expirationLabel = cell.getElementsByClassName('expirationLabel')[0];
-  expirationLabel.innerHTML = exports.formatDateToDisplay(ban.expiration, null,
-      language);
-
-  var appliedByLabel = cell.getElementsByClassName('appliedByLabel')[0];
-  appliedByLabel.innerHTML = ban.appliedBy;
+  cell = cell.replace('__expirationLabel_inner__', exports.formatDateToDisplay(
+      ban.expiration, null, language));
 
   if (!globalPage || !globalBoardModeration || !ban.boardUri) {
-    cell.getElementsByClassName('boardPanel')[0].remove();
+    cell = cell.replace('__boardPanel_location__', '');
   } else {
-    cell.getElementsByClassName('boardLabel')[0].innerHTML = ban.boardUri;
+    cell = cell.replace('__boardPanel_location__', '');
+
+    cell = cell.replace('__boardLabel_inner__', exports.clean(ban.boardUri));
   }
+
+  return cell;
 
 };
 
-exports.setBanList = function(document, div, bans, globalPage, language) {
+exports.getBanList = function(bans, globalPage, language) {
+
+  var children = '';
 
   for (var i = 0; i < bans.length; i++) {
-
-    var ban = bans[i];
-    var cell = document.createElement('div');
-    cell.innerHTML = templateHandler(language).banCell;
-
-    cell.setAttribute('class', 'banCell');
-
-    exports.setBanCell(ban, cell, globalPage, language);
-    div.appendChild(cell);
+    var cell = exports.getBanCell(bans[i], globalPage, language);
+    children += '<div class="banCell">' + cell + '</div>';
   }
+
+  return children;
 
 };
 // } Section 4: Ban div
@@ -1038,9 +1034,6 @@ exports.getReportCell = function(report, language) {
   cell = cell.replace('__link_href__', link);
 
   if (report.associatedPost) {
-
-    exports.clean(report.associatedPost);
-
     return cell.replace('__postingDiv_inner__', exports.getPostInnerElements(
         report.associatedPost, true, language));
 

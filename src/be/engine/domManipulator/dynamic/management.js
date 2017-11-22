@@ -259,7 +259,7 @@ exports.setContent = function(document, boardData, userData, bans, reports,
     document.getElementById('ownerControlDiv').remove();
   }
 
-  common.setBanList(document, document.getElementById('appealedBansPanel'),
+  document.getElementById('appealedBansPanel').innerHTML += common.getBanList(
       bans, false, language);
 
   common.setReportList(document, reports, language);
@@ -332,13 +332,13 @@ exports.fillStaffDiv = function(document, possibleRoles, staff, language) {
 
     var user = staff[i];
 
-    common.clean(user);
-
     var cell = common.getFormCellBoilerPlate(template, '/setGlobalRole.js',
         'staffCell');
 
-    cell = cell.replace('__userLabel_inner__', user.login);
-    cell = cell.replace('__userIdentifier_value__', user.login);
+    var login = common.clean(user.login);
+
+    cell = cell.replace('__userLabel_inner__', login);
+    cell = cell.replace('__userIdentifier_value__', login);
     children += cell.replace('__roleCombo_children__', exports.getRoleComboBox(
         possibleRoles, user));
 
@@ -431,7 +431,7 @@ exports.setGlobalManagementList = function(document, reports, appealedBans,
   var banDiv = document.getElementById('appealedBansPanel');
 
   if (appealedBans) {
-    common.setBanList(document, banDiv, appealedBans, true, language);
+    banDiv.innerHTML += common.getBanList(appealedBans, true, language);
   } else {
     banDiv.remove();
   }
