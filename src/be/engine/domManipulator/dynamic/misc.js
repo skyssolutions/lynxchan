@@ -70,13 +70,9 @@ exports.resetEmail = function(password, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).resetEmail);
-    var document = dom.window.document;
+    return templateHandler(language, true).resetEmail.template.replace(
+        '__labelNewPass_inner__', password);
 
-    var link = document.getElementById('labelNewPass');
-    link.innerHTML = password;
-
-    return dom.serialize();
   } catch (error) {
 
     return error.stack.replace(/\n/g, '<br>');
@@ -87,13 +83,9 @@ exports.recoveryEmail = function(recoveryLink, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).recoveryEmail);
-    var document = dom.window.document;
+    return templateHandler(language, true).recoveryEmail.template.replace(
+        '__linkRecovery_href__', recoveryLink);
 
-    var link = document.getElementById('linkRecovery');
-    link.href = recoveryLink;
-
-    return dom.serialize();
   } catch (error) {
 
     return error.stack.replace(/\n/g, '<br>');

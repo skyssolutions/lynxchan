@@ -371,25 +371,6 @@ exports.validate = function(auth, language, callback) {
 // } Section 4: Validate
 
 // Section 5: Reset request {
-exports.emailUserOfRequest = function(domain, login, email, hash, language,
-    callback) {
-
-  var recoveryLink = domain + '/recoverAccount.js?hash=' + hash + '&login=';
-  recoveryLink += login;
-
-  var content = domManipulator.recoveryEmail(recoveryLink, language);
-
-  mailer.sendMail({
-    from : sender,
-    to : email,
-    subject : lang(language).subPasswordRequest,
-    html : content
-  }, function emailSent(error) {
-    callback(error);
-  });
-
-};
-
 exports.generateRequest = function(domain, login, language, email, callback) {
 
   var requestHash = crypto.createHash('sha256').update(login + Math.random())
@@ -406,8 +387,16 @@ exports.generateRequest = function(domain, login, language, email, callback) {
     if (error) {
       callback(error);
     } else {
-      exports.emailUserOfRequest(domain, login, email, requestHash, language,
-          callback);
+
+      var recoveryLink = domain + '/recoverAccount.js?hash=' + requestHash;
+      recoveryLink += '&login=' + login;
+
+      mailer.sendMail({
+        from : sender,
+        to : email,
+        subject : lang(language).subPasswordRequest,
+        html : domManipulator.recoveryEmail(recoveryLink, language)
+      }, callback);
     }
 
   });
@@ -476,21 +465,6 @@ exports.requestRecovery = function(domain, language, parameters, captchaId,
 // } Section 5: Reset request
 
 // Section 6: Password reset {
-exports.emailUserNewPassword = function(email, newPass, callback, language) {
-
-  var content = domManipulator.resetEmail(newPass, language);
-
-  mailer.sendMail({
-    from : sender,
-    to : email,
-    subject : lang(language).subPasswordReset,
-    html : content
-  }, function emailSent(error) {
-    callback(error);
-  });
-
-};
-
 exports.generateNewPassword = function(login, callback, language) {
 
   var newPass = crypto.createHash('sha256').update(login + Math.random())
@@ -505,17 +479,22 @@ exports.generateNewPassword = function(login, callback, language) {
       // style exception, too simple
       users.findOne({
         login : login
-      },
-          function gotUser(error, user) {
+      }, function gotUser(error, user) {
 
-            if (error) {
-              callback(error);
-            } else {
-              exports.emailUserNewPassword(user.email, newPass, callback,
-                  language);
-            }
+        if (error) {
+          callback(error);
+        } else {
 
-          });
+          mailer.sendMail({
+            from : sender,
+            to : user.email,
+            subject : lang(language).subPasswordReset,
+            html : domManipulator.resetEmail(newPass, language)
+          }, callback);
+
+        }
+
+      });
       // style exception, too simple
 
     }

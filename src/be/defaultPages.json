@@ -84,8 +84,14 @@
   },
   {
     "template": "resetEmail",
-    "fields": [
-      "labelNewPass"
+    "noTitle": true,
+    "prebuiltFields": [
+      {
+        "name": "labelNewPass",
+        "uses": [
+          "inner"
+        ]
+      }
     ]
   },
   {
@@ -105,8 +111,14 @@
   },
   {
     "template": "recoveryEmail",
-    "fields": [
-      "linkRecovery"
+    "noTitle": true,
+    "prebuiltFields": [
+      {
+        "name": "linkRecovery",
+        "uses": [
+          "href"
+        ]
+      }
     ]
   },
   {
@@ -941,8 +953,13 @@
   },
   {
     "template": "bansPage",
-    "fields": [
-      "bansDiv"
+    "prebuiltFields": [
+      {
+        "name": "bansDiv",
+        "uses": [
+          "children"
+        ]
+      }
     ]
   },
   {

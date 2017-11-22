@@ -69,13 +69,9 @@ exports.loadSettings = function() {
 
 };
 
-exports.testPagePrebuiltFields = function(dom, page, prebuiltObject) {
+exports.checkMainChildren = function(page, document) {
 
   var error = '';
-
-  var document = dom.window.document;
-
-  document.title = '__title__';
 
   if (page.headChildren) {
     var head = document.getElementsByTagName('head')[0];
@@ -99,6 +95,20 @@ exports.testPagePrebuiltFields = function(dom, page, prebuiltObject) {
     }
 
   }
+
+  return error;
+
+};
+
+exports.testPagePrebuiltFields = function(dom, page, prebuiltObject) {
+
+  var document = dom.window.document;
+
+  if (!page.noTitle) {
+    document.title = '__title__';
+  }
+
+  var error = exports.checkMainChildren(page, document);
 
   error += exports.loadPrebuiltFields(dom, document, prebuiltObject, page);
 
@@ -146,7 +156,9 @@ exports.processPage = function(errors, page, fePath, templateSettings,
     return;
   }
 
-  templateObject[page.template] = template;
+  if (!page.prebuiltFields) {
+    templateObject[page.template] = template;
+  }
 
   var dom = new JSDOM(template);
 
@@ -378,14 +390,13 @@ exports.testCell = function(dom, cell, fePath, templateSettings,
     return '\nError loading ' + cell.template + '.\n' + thrownError;
   }
 
-  templateObject[cell.template] = template;
-
   cellElement.innerHTML = template;
 
   if (cell.prebuiltFields) {
     var error = exports.loadPrebuiltFields(dom, cellElement, prebuiltObject,
         cell, true);
   } else {
+    templateObject[cell.template] = template;
     error = exports.getCellsErrors(cell, cellElement);
   }
 

@@ -27,31 +27,23 @@ exports.loadDependencies = function() {
 
 };
 
-// Section 1: Bans {
 exports.bans = function(bans, globalPage, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).bansPage);
-    var document = dom.window.document;
+    var document = templateHandler(language, true).bansPage.template.replace(
+        '__title__', lang(language).titBansManagement);
 
-    document.title = lang(language).titBansManagement;
-
-    document.getElementById('bansDiv').innerHTML += common.getBanList(bans,
-        globalPage, language);
-
-    return dom.serialize();
+    return document.replace('__bansDiv_children__', common.getBanList(bans,
+        globalPage, language));
 
   } catch (error) {
-
     return error.stack.replace(/\n/g, '<br>');
-
   }
 
 };
-// } Section 1: Bans
 
-// Section 2: Closed reports {
+// Section 1: Closed reports {
 exports.setClosedReportCell = function(cell, report, language) {
 
   cell.innerHTML = templateHandler(language).closedReportCell;
@@ -99,9 +91,9 @@ exports.closedReports = function(reports, language) {
     return error.stack.replace(/\n/g, '<br>');
   }
 };
-// } Section 2: Closed reports
+// } Section 1: Closed reports
 
-// Section 3: Range bans {
+// Section 2: Range bans {
 exports.setRangeBanCells = function(document, rangeBans, boardData, language) {
 
   var bansDiv = document.getElementById('rangeBansDiv');
@@ -158,9 +150,9 @@ exports.rangeBans = function(rangeBans, boardData, language) {
   }
 
 };
-// } Section 3: Range bans
+// } Section 2: Range bans
 
-// Section 4: Hash bans {
+// Section 3: Hash bans {
 exports.setHashBanCells = function(document, hashBans, language) {
 
   var bansDiv = document.getElementById('hashBansDiv');
@@ -207,9 +199,9 @@ exports.hashBans = function(hashBans, boardUri, language) {
     return error.stack.replace(/\n/g, '<br>');
   }
 };
-// } Section 4: Hash bans
+// } Section 3: Hash bans
 
-// Section 5: Board moderation {
+// Section 4: Board moderation {
 exports.setSpecialCheckboxesAndIdentifiers = function(document, boardData) {
 
   var specialSettings = boardData.specialSettings || [];
@@ -281,4 +273,4 @@ exports.boardModeration = function(boardData, ownerData, language) {
   }
 
 };
-// } Section 5: Board moderation
+// } Section 4: Board moderation
