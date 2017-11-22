@@ -641,55 +641,296 @@
   },
   {
     "template": "bManagement",
-    "fields": [
-      "volunteersDiv",
-      "ownerControlDiv",
-      "bansLink",
-      "forceAnonymityCheckbox",
-      "customSpoilerIdentifier",
-      "addVolunteerBoardIdentifier",
-      "transferBoardIdentifier",
-      "deletionIdentifier",
-      "reportDiv",
-      "closedReportsLink",
-      "bannerManagementLink",
-      "boardNameField",
-      "boardDescriptionField",
-      "boardMessageField",
-      "boardSettingsIdentifier",
-      "unindexCheckbox",
-      "disableIdsCheckbox",
-      "rangeBansLink",
-      "captchaModeComboBox",
-      "filterManagementLink",
-      "anonymousNameField",
-      "boardLabel",
-      "customCssIdentifier",
-      "ruleManagementLink",
-      "allowCodeCheckbox",
-      "flagManagementLink",
-      "early404Checkbox",
-      "hourlyThreadLimitField",
-      "autoCaptchaThresholdField",
-      "hashBansLink",
-      "textBoardCheckbox",
-      "customSpoilerIndicator",
-      "tagsField",
-      "customJsForm",
-      "customJsIdentifier",
-      "blockDeletionCheckbox",
-      "requireFileCheckbox",
-      "appealedBansPanel",
-      "linkSelf",
-      "uniqueFilesCheckbox",
-      "uniquePostsCheckbox",
-      "locationComboBox",
-      "maxFilesField",
-      "maxFileSizeField",
-      "maxThreadFields",
-      "autoSageLimitField",
-      "validMimesField",
-      "maxBumpAgeField"
+    "prebuiltFields": [
+      {
+        "name": "locationComboBox",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "linkSelf",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "appealedBansPanel",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "uniqueFilesCheckbox",
+        "attributes": [
+          "checked"
+        ]
+      },
+      {
+        "name": "uniquePostsCheckbox",
+        "attributes": [
+          "checked"
+        ]
+      },
+      {
+        "name": "blockDeletionCheckbox",
+        "attributes": [
+          "checked"
+        ]
+      },
+      {
+        "name": "customJsForm",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "tagsField",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "maxBumpAgeField",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "customSpoilerIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "customJsIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "customSpoilerIndicator",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "hourlyThreadLimitField",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "autoCaptchaThresholdField",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "flagManagementLink",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "ruleManagementLink",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "customCssIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "boardLabel",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "volunteersDiv",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "addVolunteerBoardIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "transferBoardIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "deletionIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "reportDiv",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "bannerManagementLink",
+        "uses": [
+          "href",
+          "removal"
+        ]
+      },
+      {
+        "name": "ownerControlDiv",
+        "uses": [
+          "removal"
+        ]
+      },
+      {
+        "name": "closedReportsLink",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "bansLink",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "boardNameField",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "boardDescriptionField",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "boardSettingsIdentifier",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "disableIdsCheckbox",
+        "attributes": [
+          "checked"
+        ]
+      },
+      {
+        "name": "allowCodeCheckbox",
+        "attributes": [
+          "checked"
+        ]
+      },
+      {
+        "name": "early404Checkbox",
+        "attributes": [
+          "checked"
+        ]
+      },
+      {
+        "name": "captchaModeComboBox",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "unindexCheckbox",
+        "attributes": [
+          "checked"
+        ]
+      },
+      {
+        "name": "forceAnonymityCheckbox",
+        "attributes": [
+          "checked"
+        ]
+      },
+      {
+        "name": "filterManagementLink",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "anonymousNameField",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "rangeBansLink",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "hashBansLink",
+        "uses": [
+          "href"
+        ]
+      },
+      {
+        "name": "boardMessageField",
+        "uses": [
+          "defaultValue"
+        ]
+      },
+      {
+        "name": "textBoardCheckbox",
+        "attributes": [
+          "checked"
+        ]
+      },
+      {
+        "name": "requireFileCheckbox",
+        "attributes": [
+          "checked"
+        ]
+      },
+      {
+        "name": "maxFilesField",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "maxFileSizeField",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "maxThreadFields",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "autoSageLimitField",
+        "attributes": [
+          "value"
+        ]
+      },
+      {
+        "name": "validMimesField",
+        "attributes": [
+          "value"
+        ]
+      }
     ]
   },
   {

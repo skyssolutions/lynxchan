@@ -1020,7 +1020,8 @@ exports.getReportCell = function(report, language) {
   var cell = '<div class="reportCell">';
   cell += templateHandler(language, true).reportCell.template + '</div>';
 
-  cell = cell.replace('__reasonLabel_inner__', report.reason || '');
+  var reason = exports.clean(report.reason || '');
+  cell = cell.replace('__reasonLabel_inner__', reason);
   cell = cell.replace('__closureCheckbox_name__', 'report-' + report._id);
 
   var link = exports.getReportLink(report);

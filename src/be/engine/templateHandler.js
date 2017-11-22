@@ -17,7 +17,7 @@ var preBuiltDefault = {};
 var preBuiltAlternative = {};
 
 var simpleAttributes = [ 'download', 'style', 'value', 'name', 'checked' ];
-var simpleProperties = [ 'href', 'title', 'src' ];
+var simpleProperties = [ 'href', 'title', 'src', 'defaultValue' ];
 
 require('jsdom').defaultDocumentFeatures = {
   FetchExternalResources : false,
@@ -263,6 +263,14 @@ exports.handleRemovableFields = function(removed, cell, document, base) {
 
     var element = cell ? base.getElementsByClassName(removed[i])[0] : document
         .getElementById(removed[i]);
+
+    if (!element) {
+
+      console.log('Warning: ' + removed[i] + ' could not be removed');
+
+      continue;
+
+    }
 
     var textNode = document.createTextNode('__' + removed[i] + '_location__');
 

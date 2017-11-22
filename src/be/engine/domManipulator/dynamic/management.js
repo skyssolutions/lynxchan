@@ -106,22 +106,22 @@ exports.loadDependencies = function() {
 
 };
 
-// Section 1: Board control {
+// Section 1: Board Management {
 exports.setBoardControlCheckBoxes = function(document, boardData) {
 
-  var settings = boardData.settings;
+  for ( var setting in exports.boardSettingsRelation) {
 
-  for (var i = 0; i < settings.length; i++) {
-    var setting = settings[i];
+    var element = '__' + exports.boardSettingsRelation[setting] + '_checked__';
 
-    var checkBox = document
-        .getElementById(exports.boardSettingsRelation[setting]);
-
-    if (checkBox) {
-      checkBox.setAttribute('checked', true);
+    if (boardData.settings.indexOf(setting) > -1) {
+      document = document.replace(element, 'true');
+    } else {
+      document = document.replace('checked="' + element + '"', '');
     }
 
   }
+
+  return document;
 
 };
 
@@ -131,25 +131,27 @@ exports.setBoardComboBoxes = function(document, boardData, language) {
 
     var setting = exports.boardRangeSettingsRelation[i];
 
-    var element = document.getElementById(setting.element);
-
     var labels = lang(language)[setting.labels];
 
+    var children = '';
     for (var j = 0; j <= setting.limit; j++) {
 
-      var option = document.createElement('option');
-      option.innerHTML = labels[j];
-      option.setAttribute('value', j);
+      var option = '<option value="' + j;
 
       if (j === boardData[setting.setting]) {
-        option.setAttribute('selected', true);
+        option += '" selected="selected';
       }
 
-      element.appendChild(option);
+      children += option + '">' + labels[j] + '</option>';
 
     }
 
+    document = document.replace('__' + setting.element + '_children__',
+        children);
+
   }
+
+  return document;
 
 };
 
@@ -157,25 +159,30 @@ exports.setBoardFields = function(document, boardData) {
 
   for ( var key in exports.boardFieldsRelation) {
 
-    document.getElementById(key).setAttribute('value',
-        boardData[exports.boardFieldsRelation[key]] || '');
+    var value = boardData[exports.boardFieldsRelation[key]];
+
+    if (typeof value === 'string') {
+      value = common.clean(value);
+    }
+
+    document = document.replace('__' + key + '_value__', value || '');
+
   }
 
-  document.getElementById('validMimesField').setAttribute('value',
-      (boardData.acceptedMimes || []).join(', '));
+  document = document.replace('__validMimesField_value__', common
+      .clean((boardData.acceptedMimes || []).join(', ')));
 
-  document.getElementById('tagsField').setAttribute('value',
-      (boardData.tags || []).join(', '));
+  document = document.replace('__tagsField_value__', common
+      .clean((boardData.tags || []).join(', ')));
 
-  var messageContent = boardData.boardMessage || '';
+  document = document.replace('__boardMessageField_defaultValue__', common
+      .clean(boardData.boardMessage || ''));
 
-  document.getElementById('boardMessageField').defaultValue = messageContent;
+  return document;
 
 };
 
-exports.setVolunteersDiv = function(document, boardData, language) {
-
-  var volunteersDiv = document.getElementById('volunteersDiv');
+exports.getVolunteersDiv = function(boardData, language) {
 
   var volunteers = boardData.volunteers || [];
 
@@ -199,29 +206,34 @@ exports.setVolunteersDiv = function(document, boardData, language) {
     children += cell;
   }
 
-  volunteersDiv.innerHTML += children;
+  return children;
 
 };
 
 exports.setBoardOwnerControls = function(document, boardData, language) {
 
+  var boardUri = common.clean(boardData.boardUri);
+
   for (var i = 0; i < exports.boardControlIdentifiers.length; i++) {
-    document.getElementById(exports.boardControlIdentifiers[i]).setAttribute(
-        'value', boardData.boardUri);
+    var field = '__' + exports.boardControlIdentifiers[i] + '_value__';
+    document = document.replace(field, boardUri);
   }
+
+  var removable = templateHandler(language, true).bManagement.removable;
 
   if (customJs) {
-    document.getElementById('customJsIdentifier').setAttribute('value',
-        boardData.boardUri);
+    document = document.replace('__customJsForm_location__',
+        removable.customJsForm);
+    document = document.replace('__customJsIdentifier_value__', boardUri);
   } else {
-    document.getElementById('customJsForm').remove();
+    document = document.replace('__customJsForm_location__', '');
   }
 
-  if (!boardData.usesCustomSpoiler) {
-    document.getElementById('customSpoilerIndicator').remove();
-  }
+  document = document.replace('__customSpoilerIndicator_location__',
+      boardData.usesCustomSpoiler ? removable.customSpoilerIndicator : '');
 
-  exports.setVolunteersDiv(document, boardData, language);
+  return document.replace('__volunteersDiv_children__', exports
+      .getVolunteersDiv(boardData, language));
 
 };
 
@@ -230,65 +242,69 @@ exports.setBoardManagementLinks = function(document, boardData) {
   for (var i = 0; i < exports.boardManagementLinks.length; i++) {
     var link = exports.boardManagementLinks[i];
 
-    var url = '/' + link.page + '.js?boardUri=' + boardData.boardUri;
-    document.getElementById(link.element).href = url;
+    var url = '/' + link.page + '.js?boardUri=';
+    url += common.clean(boardData.boardUri);
+
+    document = document.replace('__' + link.element + '_href__', url);
 
   }
 
+  return document;
+
 };
 
-exports.setContent = function(document, boardData, userData, bans, reports,
-    language) {
+exports.getBoardManagementContent = function(boardData, userData, bans,
+    reports, language) {
 
-  document.getElementById('boardSettingsIdentifier').setAttribute('value',
-      boardData.boardUri);
+  var template = templateHandler(language, true).bManagement;
 
-  exports.setBoardManagementLinks(document, boardData);
+  var document = template.template.replace('__boardSettingsIdentifier_value__',
+      common.clean(boardData.boardUri));
 
-  exports.setBoardControlCheckBoxes(document, boardData);
-
-  exports.setBoardComboBoxes(document, boardData, language);
-
-  exports.setBoardFields(document, boardData);
+  document = exports.setBoardComboBoxes(document, boardData, language);
+  document = exports.setBoardControlCheckBoxes(document, boardData);
+  document = exports.setBoardFields(document, boardData);
 
   var globallyAllowed = globalBoardModeration && userData.globalRole <= 1;
 
   if (userData.login === boardData.owner || globallyAllowed) {
-    exports.setBoardOwnerControls(document, boardData, language);
+    document = document.replace('__ownerControlDiv_location__',
+        template.removable.ownerControlDiv);
+
+    document = document.replace('__bannerManagementLink_location__',
+        template.removable.bannerManagementLink);
+
+    document = exports.setBoardOwnerControls(document, boardData, language);
   } else {
-    document.getElementById('ownerControlDiv').remove();
+    document = document.replace('__ownerControlDiv_location__', '');
   }
 
-  document.getElementById('appealedBansPanel').innerHTML += common.getBanList(
-      bans, false, language);
+  document = exports.setBoardManagementLinks(document, boardData);
 
-  document.getElementById('reportDiv').innerHTML += common.getReportList(
-      reports, language);
+  document = document.replace('__appealedBansPanel_children__', common
+      .getBanList(bans, false, language));
+
+  return document.replace('__reportDiv_children__', common.getReportList(
+      reports, language));
 
 };
 
-exports.boardManagement = function(userData, boardData, reports, bans,
-    userLanguage) {
+exports.boardManagement = function(userData, bData, reports, bans, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(userLanguage).bManagement);
-    var document = dom.window.document;
+    var document = exports.getBoardManagementContent(bData, userData, bans,
+        reports, language);
 
-    document.title = lang(userLanguage).titBoardManagement.replace('{$board}',
-        boardData.boardUri);
+    var boardUri = common.clean(bData.boardUri);
+    var selfLink = '/' + boardUri + '/';
+    document = document.replace('__linkSelf_href__', selfLink);
 
-    document.getElementById('linkSelf').href = '/' + boardData.boardUri + '/';
+    var labelInner = '/' + boardUri + '/ - ' + common.clean(bData.boardName);
+    document = document.replace('__boardLabel_inner__', labelInner);
 
-    var boardLabel = document.getElementById('boardLabel');
-
-    var label = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
-    boardLabel.innerHTML = label;
-
-    exports.setContent(document, boardData, userData, bans, reports,
-        userLanguage);
-
-    return dom.serialize();
+    return document.replace('__title__', lang(language).titBoardManagement
+        .replace('{$board}', common.clean(bData.boardUri)));
 
   } catch (error) {
 
@@ -296,7 +312,7 @@ exports.boardManagement = function(userData, boardData, reports, bans,
   }
 
 };
-// } Section 1: Board control
+// } Section 1: Board Management
 
 // Section 2: Global Management {
 exports.getRoleComboBox = function(possibleRoles, user) {

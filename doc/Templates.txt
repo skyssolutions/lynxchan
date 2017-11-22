@@ -827,12 +827,36 @@ hashBansLink:
     description: link to the hash bans management page.
 
 boardMessageField:
-    use: have it's value manipulated.
+    use: have it's defaultValue manipulated.
     description: field with the board message.
 
 textBoardCheckbox:
     use: might be turned on.
     description: checkbox that indicates if the board is a textboard.
+
+requireFileCheckbox:
+    use: might be turned on.
+    description: checkbox that indicates if the board requires a file for thread creation.
+
+maxFilesField:
+    use: have it's value manipulated.
+    description: field with the maximum amount of files allowed for this board.
+
+maxFileSizeField:
+    use: have it's value manipulated.
+    description: field with the maximum size allowed for uploaded files.
+
+maxThreadFields:
+    use: have it's value manipulated.
+    description: field with the maximum amount of threads on the board.
+
+autoSageLimitField:
+    use: have it's value manipulated.
+    description: field with the limit of replies a thread can have before it cannot be bumped anymore.
+
+validMimesField:
+    use: have it's value manipulated.
+    description: field with the mimetypes allowed on the board.
 
 ------------------------------------------------------------------------------------------
 
