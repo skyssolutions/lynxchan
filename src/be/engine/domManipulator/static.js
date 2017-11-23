@@ -92,13 +92,17 @@ exports.notFound = function(language, callback) {
 exports.login = function(language, callback) {
 
   try {
-    var dom = new JSDOM(templateHandler(language).loginPage);
-    var document = dom.window.document;
 
-    document.title = lang(language).titLogin;
+    var template = templateHandler(language, true).loginPage;
+
+    var document = template.template.replace('__title__',
+        lang(language).titLogin);
 
     if (accountCreationDisabled) {
-      document.getElementById('divCreation').remove();
+      document = document.replace('__divCreation_location__', '');
+    } else {
+      document = document.replace('__divCreation_location__',
+          template.removable.divCreation);
     }
 
     var path = '/login.html';
@@ -110,7 +114,7 @@ exports.login = function(language, callback) {
       path += language.headerValues.join('-');
     }
 
-    gridFs.writeData(dom.serialize(), path, 'text/html', meta, callback);
+    gridFs.writeData(document, path, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);

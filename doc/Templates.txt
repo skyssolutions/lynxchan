@@ -846,7 +846,7 @@ maxFileSizeField:
     use: have it's value manipulated.
     description: field with the maximum size allowed for uploaded files.
 
-maxThreadFields:
+maxThreadField:
     use: have it's value manipulated.
     description: field with the maximum amount of threads on the board.
 

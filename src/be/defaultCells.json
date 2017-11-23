@@ -755,14 +755,26 @@
   },
   {
     "template": "logIndexCell",
-    "fields": [
-      "dateLink"
+    "prebuiltFields": [
+      {
+        "name": "dateLink",
+        "uses": [
+          "href",
+          "inner"
+        ]
+      }
     ]
   },
   {
     "template": "graphIndexCell",
-    "fields": [
-      "dateLink"
+    "prebuiltFields": [
+      {
+        "name": "dateLink",
+        "uses": [
+          "href",
+          "inner"
+        ]
+      }
     ]
   },
   {

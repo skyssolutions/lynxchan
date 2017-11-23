@@ -47,16 +47,12 @@ exports.error = function(code, message, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).errorPage);
-    var document = dom.window.document;
+    var document = templateHandler(language, true).errorPage.template.replace(
+        '__title__', lang(language).titError);
 
-    document.title = lang(language).titError;
+    document = document.replace('__codeLabel_inner__', code);
 
-    document.getElementById('codeLabel').innerHTML = code;
-
-    document.getElementById('errorLabel').innerHTML = message;
-
-    return dom.serialize();
+    return document.replace('__errorLabel_inner__', message);
 
   } catch (error) {
 
@@ -189,40 +185,31 @@ exports.account = function(userData, language) {
 };
 // } Section 1: Account
 
-// Section 2: Logs {
-exports.setLogIndexCell = function(dateCell, date, language) {
-
-  dateCell.setAttribute('class', 'logIndexCell');
-  dateCell.innerHTML = templateHandler(language).logIndexCell;
-
-  var link = dateCell.getElementsByClassName('dateLink')[0];
-  link.innerHTML = common.formatDateToDisplay(date, true, language);
-
-  link.href = '/.global/logs/' + logger.formatedDate(date) + '.html';
-
-};
-
 exports.logs = function(dates, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).logIndexPage);
-    var document = dom.window.document;
+    var document = templateHandler(language, true).logIndexPage.template
+        .replace('__title__', lang(language).titLogs);
 
-    document.title = lang(language).titLogs;
+    var children = '';
 
-    var divDates = document.getElementById('divDates');
+    var cellTemplate = templateHandler(language, true).logIndexCell.template;
 
     for (var i = 0; i < dates.length; i++) {
 
-      var dateCell = document.createElement('div');
+      var cell = '<div class="logIndexCell">' + cellTemplate;
 
-      exports.setLogIndexCell(dateCell, dates[i], language);
+      var href = '/.global/logs/' + logger.formatedDate(dates[i]) + '.html';
+      var displayDate = common.formatDateToDisplay(dates[i], true, language);
 
-      divDates.appendChild(dateCell);
+      cell = cell.replace('__dateLink_href__', href);
+
+      children += cell.replace('__dateLink_inner__', displayDate) + '</div>';
+
     }
 
-    return dom.serialize();
+    return document.replace('__divDates_children__', children);
 
   } catch (error) {
 
@@ -230,9 +217,8 @@ exports.logs = function(dates, language) {
   }
 
 };
-// } Section 2: Logs
 
-// Section 3: Board listing {
+// Section 2: Board listing {
 exports.setSimpleBoardCellLabels = function(board, boardCell) {
 
   var labelPPH = boardCell.getElementsByClassName('labelPostsPerHour')[0];
@@ -381,9 +367,9 @@ exports.boards = function(parameters, boards, pageCount, language) {
   }
 
 };
-// } Section 3: Board listing
+// } Section 2: Board listing
 
-// Section 4: Ban {
+// Section 3: Ban {
 exports.setBanPage = function(document, ban, board, language) {
 
   document.getElementById('boardLabel').innerHTML = board;
@@ -440,9 +426,9 @@ exports.ban = function(ban, board, language) {
   }
 
 };
-// } Section 4: Ban
+// } Section 3: Ban
 
-// Section 5: Hash ban page {
+// Section 4: Hash ban page {
 exports.setHashBanCells = function(document, hashBans, language) {
 
   var panel = document.getElementById('hashBansPanel');
@@ -486,9 +472,9 @@ exports.hashBan = function(hashBans, language) {
   }
 
 };
-// } Section 5: Hash ban page
+// } Section 4: Hash ban page
 
-// Section 7: Edit page {
+// Section 5: Edit page {
 exports.setEditIdentifiers = function(parameters, document) {
 
   if (parameters.threadId) {
@@ -532,9 +518,9 @@ exports.edit = function(parameters, posting, language) {
     return error.stack.replace(/\n/g, '<br>');
   }
 };
-// } Section 7: Edit page
+// } Section 5: Edit page
 
-// Section 8: No cookie captcha {
+// Section 6: No cookie captcha {
 exports.setCaptchaIdAndImage = function(document, captchaId) {
 
   var captchaPath = '/captcha.js?captchaId=' + captchaId;
@@ -570,7 +556,7 @@ exports.noCookieCaptcha = function(parameters, captchaId, language) {
   }
 
 };
-// } Section 8: No cookie captcha
+// } Section 6: No cookie captcha
 
 exports.blockBypass = function(valid, language) {
 
@@ -597,40 +583,31 @@ exports.blockBypass = function(valid, language) {
   }
 };
 
-// Section 9: Graphs {
-exports.setGraphIndexCell = function(dateCell, date, language) {
-
-  dateCell.setAttribute('class', 'graphIndexCell');
-  dateCell.innerHTML = templateHandler(language).graphIndexCell;
-
-  var link = dateCell.getElementsByClassName('dateLink')[0];
-  link.innerHTML = common.formatDateToDisplay(date, true, language);
-
-  link.href = '/.global/graphs/' + logger.formatedDate(date) + '.png';
-
-};
-
 exports.graphs = function(dates, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).graphsIndexPage);
-    var document = dom.window.document;
+    var document = templateHandler(language, true).graphsIndexPage.template
+        .replace('__title__', lang(language).titGraphs);
 
-    document.title = lang(language).titGraphs;
+    var children = '';
 
-    var divDates = document.getElementById('divDates');
+    var cellTemplate = templateHandler(language, true).graphIndexCell.template;
 
     for (var i = 0; i < dates.length; i++) {
 
-      var dateCell = document.createElement('div');
+      var cell = '<div class="graphIndexCell">' + cellTemplate;
 
-      exports.setGraphIndexCell(dateCell, dates[i], language);
+      var href = '/.global/graphs/' + logger.formatedDate(dates[i]) + '.png';
+      var displayDate = common.formatDateToDisplay(dates[i], true, language);
 
-      divDates.appendChild(dateCell);
+      cell = cell.replace('__dateLink_href__', href);
+
+      children += cell.replace('__dateLink_inner__', displayDate) + '</div>';
+
     }
 
-    return dom.serialize();
+    return document.replace('__divDates_children__', children);
 
   } catch (error) {
 
@@ -638,26 +615,17 @@ exports.graphs = function(dates, language) {
   }
 
 };
-// } Section 9: graphs
 
 exports.message = function(message, link, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).messagePage);
-    var document = dom.window.document;
+    var document = templateHandler(language, true).messagePage.template
+        .replace('__title__', message);
 
-    document.title = message;
+    document = document.replace('__labelMessage_inner__', message);
+    return document.replace('__linkRedirect_href__', link);
 
-    var messageLabel = document.getElementById('labelMessage');
-
-    messageLabel.innerHTML = message;
-
-    var redirectLink = document.getElementById('linkRedirect');
-
-    redirectLink.href = link;
-
-    return dom.serialize();
   } catch (error) {
 
     return error.stack.replace(/\n/g, '<br>');

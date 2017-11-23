@@ -38,7 +38,7 @@ exports.boardFieldsRelation = {
   anonymousNameField : 'anonymousName',
   maxFilesField : 'maxFiles',
   maxFileSizeField : 'maxFileSizeMB',
-  maxThreadFields : 'maxThreadCount',
+  maxThreadField : 'maxThreadCount',
   autoSageLimitField : 'autoSageLimit',
   maxBumpAgeField : 'maxBumpAgeDays'
 };

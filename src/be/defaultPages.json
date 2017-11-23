@@ -1,8 +1,13 @@
 [
   {
     "template": "loginPage",
-    "fields": [
-      "divCreation"
+    "prebuiltFields": [
+      {
+        "name": "divCreation",
+        "uses": [
+          "removal"
+        ]
+      }
     ]
   },
   {
@@ -104,9 +109,19 @@
   },
   {
     "template": "errorPage",
-    "fields": [
-      "codeLabel",
-      "errorLabel"
+    "prebuiltFields": [
+      {
+        "name": "codeLabel",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "errorLabel",
+        "uses": [
+          "inner"
+        ]
+      }
     ]
   },
   {
@@ -526,9 +541,19 @@
   },
   {
     "template": "messagePage",
-    "fields": [
-      "labelMessage",
-      "linkRedirect"
+    "prebuiltFields": [
+      {
+        "name": "labelMessage",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "linkRedirect",
+        "uses": [
+          "href"
+        ]
+      }
     ]
   },
   {
@@ -926,7 +951,7 @@
         ]
       },
       {
-        "name": "maxThreadFields",
+        "name": "maxThreadField",
         "uses": [
           "value"
         ]
@@ -1184,14 +1209,24 @@
   },
   {
     "template": "logIndexPage",
-    "fields": [
-      "divDates"
+    "prebuiltFields": [
+      {
+        "name": "divDates",
+        "uses": [
+          "children"
+        ]
+      }
     ]
   },
   {
     "template": "graphsIndexPage",
-    "fields": [
-      "divDates"
+    "prebuiltFields": [
+      {
+        "name": "divDates",
+        "uses": [
+          "children"
+        ]
+      }
     ]
   },
   {
