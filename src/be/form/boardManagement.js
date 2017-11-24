@@ -14,7 +14,7 @@ function getBoardManagementData(board, userData, res, json, auth, language) {
         if (error) {
           formOps.outputError(error, 500, res, language);
         } else {
-          res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+          res.writeHead(200, miscOps.getHeader(json ? 'application/json'
               : 'text/html', auth));
 
           if (json) {

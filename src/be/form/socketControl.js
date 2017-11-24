@@ -15,7 +15,7 @@ function getSocketData(userData, json, res, auth, language) {
       formOps.outputError(error, 500, res, language);
     } else {
 
-      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+      res.writeHead(200, miscOps.getHeader(json ? 'application/json'
           : 'text/html', auth));
 
       if (json) {

@@ -140,7 +140,7 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
           if (error) {
             formOps.outputError(error, 500, res, req.language);
           } else if (ban) {
-            res.writeHead(200, miscOps.corsHeader('text/html'));
+            res.writeHead(200, miscOps.getHeader('text/html'));
 
             var board = ban.boardUri ? '/' + ban.boardUri + '/'
                 : lang(req.language).miscAllBoards.toLowerCase();

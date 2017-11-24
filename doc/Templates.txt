@@ -2196,7 +2196,7 @@ Root element: div.
 
 Elements:
 identifierCheckbox:
-    use: have it's value manipulated.
+    use: have it's name manipulated.
     description: checkbox used to select the file.
 
 thumbImg:

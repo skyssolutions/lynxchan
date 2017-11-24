@@ -470,7 +470,7 @@ exports.outputResponse = function(auth, data, status, res) {
     data : data || null
   };
 
-  res.writeHead(200, miscOps.corsHeader('application/json'));
+  res.writeHead(200, miscOps.getHeader('application/json'));
 
   if (verbose) {
     console.log('Api output: ' + JSON.stringify(output, null, 2));

@@ -14,7 +14,7 @@ exports.process = function(req, res) {
     if (error) {
       formOps.outputError(error, 500, res, req.language);
     } else {
-      res.writeHead(200, miscOps.corsHeader('text/html'));
+      res.writeHead(200, miscOps.getHeader('text/html'));
 
       res.end(domManipulator.noCookieCaptcha(parameters, captchaData._id,
           req.language));

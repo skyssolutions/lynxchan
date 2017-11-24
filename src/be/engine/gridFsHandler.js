@@ -314,7 +314,7 @@ exports.readRangeHeader = function(range, totalLength) {
 };
 
 exports.getHeader = function(stats, req, cookies) {
-  var header = miscOps.corsHeader(stats.contentType);
+  var header = miscOps.getHeader(stats.contentType);
   var lastM = stats.metadata.lastModified || stats.uploadDate;
   header.push([ 'last-modified', lastM.toUTCString() ]);
 

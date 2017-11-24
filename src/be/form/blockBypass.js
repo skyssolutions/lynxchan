@@ -19,7 +19,7 @@ exports.process = function(req, res) {
     if (error) {
       formOps.outputError(error, 500, res, req.language);
     } else {
-      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+      res.writeHead(200, miscOps.getHeader(json ? 'application/json'
           : 'text/html'));
 
       if (json) {

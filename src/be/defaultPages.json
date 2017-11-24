@@ -1231,9 +1231,19 @@
   },
   {
     "template": "mediaManagementPage",
-    "fields": [
-      "filesDiv",
-      "pagesDiv"
+    "prebuiltFields": [
+      {
+        "name": "filesDiv",
+        "uses": [
+          "children"
+        ]
+      },
+      {
+        "name": "pagesDiv",
+        "uses": [
+          "children"
+        ]
+      }
     ]
   },
   {

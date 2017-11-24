@@ -113,7 +113,7 @@ exports.isPlainText = function(mime) {
 
 };
 
-exports.corsHeader = function(contentType, auth) {
+exports.getHeader = function(contentType, auth) {
 
   var header = [];
 

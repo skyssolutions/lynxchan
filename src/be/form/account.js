@@ -13,7 +13,7 @@ exports.process = function(req, res) {
 
         var json = url.parse(req.url, true).query.json;
 
-        res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+        res.writeHead(200, miscOps.getHeader(json ? 'application/json'
             : 'text/html', auth));
 
         if (json) {

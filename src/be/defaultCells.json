@@ -779,12 +779,38 @@
   },
   {
     "template": "mediaCell",
-    "fields": [
-      "identifierCheckbox",
-      "thumbImg",
-      "fileLink",
-      "referencesLabel",
-      "detailsLink"
+    "prebuiltFields": [
+      {
+        "name": "identifierCheckbox",
+        "uses": [
+          "name"
+        ]
+      },
+      {
+        "name": "thumbImg",
+        "uses": [
+          "src"
+        ]
+      },
+      {
+        "name": "fileLink",
+        "uses": [
+          "src",
+          "inner"
+        ]
+      },
+      {
+        "name": "referencesLabel",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "detailsLink",
+        "uses": [
+          "href"
+        ]
+      }
     ]
   },
   {

@@ -805,9 +805,9 @@ exports.bannerManagement = function(boardUri, banners, language) {
 // } Section 7: Banners
 
 // Section 8: Media management {
-exports.setMediaManagementPages = function(pages, document, parameters) {
+exports.getMediaManagementPages = function(pages, parameters) {
 
-  var pagesDiv = document.getElementById('pagesDiv');
+  var children = '';
 
   var boilerPlate = '';
 
@@ -821,20 +821,24 @@ exports.setMediaManagementPages = function(pages, document, parameters) {
 
   for (var i = 1; i <= pages; i++) {
 
-    var link = document.createElement('a');
-    link.innerHTML = i;
-    link.href = '/mediaManagement.js?page=' + i + boilerPlate;
+    var link = '<a href="' + '/mediaManagement.js?page=' + i + boilerPlate;
+    link += '">' + i + '</a>';
 
-    pagesDiv.appendChild(link);
+    children += link;
 
   }
 
+  return children;
+
 };
 
-exports.setMediaLinks = function(cell, file) {
+exports.getMediaLinks = function(template, file) {
 
-  var details = cell.getElementsByClassName('detailsLink')[0];
-  details.href = '/mediaDetails.js?identifier=' + file.identifier;
+  var cell = '<div class="mediaCell">';
+  cell += template.template;
+
+  var detailsHref = '/mediaDetails.js?identifier=' + file.identifier;
+  cell = cell.replace('__detailsLink_href__', detailsHref);
 
   var filePath = '/.media/' + file.identifier;
 
@@ -842,38 +846,34 @@ exports.setMediaLinks = function(cell, file) {
     filePath += '.' + file.extension;
   }
 
-  var link = cell.getElementsByClassName('fileLink')[0];
-  link.href = filePath;
-  link.innerHTML = file.identifier;
+  cell = cell.replace('__fileLink_href__', filePath);
+  cell = cell.replace('__fileLink_inner__', file.identifier);
+
+  return cell + '</div>';
 
 };
 
-exports.setMediaManagementCells = function(document, media, language) {
+exports.getMediaManagementCells = function(media, language) {
 
-  var filesDiv = document.getElementById('filesDiv');
+  var children = '';
+
+  var template = templateHandler(language, true).mediaCell;
 
   for (var i = 0; i < media.length; i++) {
 
     var file = media[i];
 
-    var cell = document.createElement('div');
-    cell.innerHTML = templateHandler(language).mediaCell;
-    cell.setAttribute('class', 'mediaCell');
+    var cell = exports.getMediaLinks(template, file);
 
-    exports.setMediaLinks(cell, file);
+    cell = cell.replace('__identifierCheckbox_name__', file.identifier);
+    cell = cell.replace('__thumbImg_src__', '/.media/t_' + file.identifier);
+    cell = cell.replace('__referencesLabel_inner__', file.references);
 
-    cell.getElementsByClassName('identifierCheckbox')[0].setAttribute('name',
-        file.identifier);
-
-    var thumbImg = cell.getElementsByClassName('thumbImg')[0];
-    thumbImg.setAttribute('src', '/.media/t_' + file.identifier);
-
-    var referencesLabel = cell.getElementsByClassName('referencesLabel')[0];
-    referencesLabel.innerHTML = file.references;
-
-    filesDiv.appendChild(cell);
+    children += cell;
 
   }
+
+  return children;
 
 };
 
@@ -881,16 +881,14 @@ exports.mediaManagement = function(media, pages, parameters, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).mediaManagementPage);
-    var document = dom.window.document;
+    var document = templateHandler(language, true).mediaManagementPage.template
+        .replace('__title__', lang(language).titMediaManagement);
 
-    document.title = lang(language).titMediaManagement;
+    document = document.replace('__pagesDiv_children__', exports
+        .getMediaManagementPages(pages, parameters));
 
-    exports.setMediaManagementPages(pages, document, parameters);
-
-    exports.setMediaManagementCells(document, media, language);
-
-    return dom.serialize();
+    return document.replace('__filesDiv_children__', exports
+        .getMediaManagementCells(media, language));
 
   } catch (error) {
 

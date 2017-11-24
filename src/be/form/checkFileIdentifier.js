@@ -16,7 +16,7 @@ exports.process = function(req, res) {
     _id : 0
   }, function foundReference(error, reference) {
 
-    res.writeHead(200, miscOps.corsHeader('application/json'));
+    res.writeHead(200, miscOps.getHeader('application/json'));
 
     res.end(reference ? 'true' : 'false');
 

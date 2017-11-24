@@ -121,7 +121,7 @@ exports.getFile = function(finalPath, mime, callback) {
 // Section 2: File output {
 exports.writeFile = function(req, file, mime, res) {
 
-  var header = miscOps.corsHeader(mime).concat(
+  var header = miscOps.getHeader(mime).concat(
       [ [ 'last-modified', file.mtime ],
           [ 'expires', new Date().toUTCString() ],
           [ 'Vary', 'Accept-Language' ] ]);

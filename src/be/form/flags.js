@@ -16,7 +16,7 @@ function getFlagData(parameters, userData, res, auth, language) {
         } else {
           var json = parameters.json;
 
-          res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+          res.writeHead(200, miscOps.getHeader(json ? 'application/json'
               : 'text/html', auth));
 
           if (json) {

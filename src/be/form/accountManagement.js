@@ -26,7 +26,7 @@ function getAccount(auth, userData, res, req) {
 
         } else {
 
-          res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+          res.writeHead(200, miscOps.getHeader(json ? 'application/json'
               : 'text/html', auth));
 
           if (json) {

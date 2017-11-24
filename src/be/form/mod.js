@@ -16,7 +16,7 @@ var formOps = require('../engine/formOps');
 function outputModData(bData, flagData, thread, posts, res, json, userRole,
     auth, language) {
 
-  var header = miscOps.corsHeader(json ? 'application/json' : 'text/html');
+  var header = miscOps.getHeader(json ? 'application/json' : 'text/html');
 
   if (auth && auth.authStatus === 'expired') {
     header.push([ 'Set-Cookie', 'hash=' + auth.newHash ]);

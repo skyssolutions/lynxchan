@@ -58,7 +58,7 @@ exports.loadDependencies = function() {
 
 exports.outputError = function(error, res) {
 
-  var header = miscOps.corsHeader('text/plain');
+  var header = miscOps.getHeader('text/plain');
 
   if (verbose) {
     console.log(error);
@@ -496,7 +496,7 @@ exports.serve = function(req, pathName, res) {
 exports.handle = function(req, res) {
 
   if (!req.headers || !req.headers.host) {
-    res.writeHead(200, miscOps.corsHeader('text/plain'));
+    res.writeHead(200, miscOps.getHeader('text/plain'));
     res.end('get fucked, m8 :^)');
     return;
   }

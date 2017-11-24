@@ -70,7 +70,7 @@ exports.process = function(req, res) {
 
       var dates = results.length ? results[0].dates : [];
 
-      res.writeHead(200, miscOps.corsHeader(json ? 'application/json'
+      res.writeHead(200, miscOps.getHeader(json ? 'application/json'
           : 'text/html'));
 
       if (json) {

@@ -366,7 +366,7 @@ exports.outputResponse = function(message, redirect, res, cookies, authBlock,
     console.log(message);
   }
 
-  var header = miscOps.corsHeader('text/html', authBlock);
+  var header = miscOps.getHeader('text/html', authBlock);
 
   if (cookies) {
     exports.setCookies(header, cookies);
@@ -391,7 +391,7 @@ exports.outputError = function(error, code, res, language) {
     code = 500;
   }
 
-  res.writeHead(code, miscOps.corsHeader('text/html'));
+  res.writeHead(code, miscOps.getHeader('text/html'));
 
   res.end(domManipulator.error(code, error.toString(), language));
 
@@ -478,7 +478,7 @@ exports.checkForBan = function(req, boardUri, res, callback, auth) {
         return;
       }
 
-      res.writeHead(200, miscOps.corsHeader('text/html', auth));
+      res.writeHead(200, miscOps.getHeader('text/html', auth));
 
       var board = ban.boardUri ? '/' + ban.boardUri + '/'
           : lang(req.language).miscAllBoards.toLowerCase();
