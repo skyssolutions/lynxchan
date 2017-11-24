@@ -474,53 +474,45 @@ exports.hashBan = function(hashBans, language) {
 };
 // } Section 4: Hash ban page
 
-// Section 5: Edit page {
-exports.setEditIdentifiers = function(parameters, document) {
-
-  if (parameters.threadId) {
-    document.getElementById('threadIdentifier').setAttribute('value',
-        parameters.threadId);
-
-    document.getElementById('postIdentifier').remove();
-
-  } else {
-    document.getElementById('postIdentifier').setAttribute('value',
-        parameters.postId);
-    document.getElementById('threadIdentifier').remove();
-  }
-
-};
-
 exports.edit = function(parameters, posting, language) {
   try {
 
-    var dom = new JSDOM(templateHandler(language).editPage);
-    var document = dom.window.document;
+    var document = templateHandler(language, true).editPage.template.replace(
+        '__labelMessageLength_inner__', messageLength);
 
-    document.getElementById('labelMessageLength').innerHTML = messageLength;
+    document = document.replace('__title__', lang(language).titEdit);
 
-    document.title = lang(language).titEdit;
+    document = document.replace('__fieldMessage_defaultValue__',
+        posting.message);
 
-    document.getElementById('fieldMessage').defaultValue = posting.message;
+    document = document
+        .replace('__fieldSubject_value__', posting.subject || '');
 
-    document.getElementById('fieldSubject').setAttribute('value',
-        posting.subject || '');
+    document = document.replace('__boardIdentifier_value__', common
+        .clean(parameters.boardUri));
 
-    document.getElementById('boardIdentifier').setAttribute('value',
-        parameters.boardUri);
+    if (parameters.threadId) {
 
-    exports.setEditIdentifiers(parameters, document);
+      document = document.replace('__threadIdentifier_value__',
+          parameters.threadId);
+      document = document.replace('value="__postIdentifier_value__"', '');
 
-    return dom.serialize();
+    } else {
+
+      document = document.replace('value="__threadIdentifier_value__"', '');
+      document = document
+          .replace('__postIdentifier_value__', parameters.postId);
+    }
+
+    return document;
 
   } catch (error) {
 
     return error.stack.replace(/\n/g, '<br>');
   }
 };
-// } Section 5: Edit page
 
-// Section 6: No cookie captcha {
+// Section 5: No cookie captcha {
 exports.setCaptchaIdAndImage = function(document, captchaId) {
 
   var captchaPath = '/captcha.js?captchaId=' + captchaId;
@@ -556,7 +548,7 @@ exports.noCookieCaptcha = function(parameters, captchaId, language) {
   }
 
 };
-// } Section 6: No cookie captcha
+// } Section 5: No cookie captcha
 
 exports.blockBypass = function(valid, language) {
 

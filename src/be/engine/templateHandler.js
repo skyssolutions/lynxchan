@@ -65,7 +65,7 @@ exports.getTemplates = function(language, preBuilt) {
 exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
-  verbose = 1;// settings.verbose || settings.verboseMisc;
+  verbose = settings.verbose || settings.verboseMisc;
 
 };
 
@@ -215,16 +215,25 @@ exports.processComplexUses = function(document, element, field, use, removed) {
     break;
   }
 
+  default: {
+    console.log('Unknown use ' + use);
+  }
+
   }
 
 };
 
 exports.processFieldUses = function(field, removed, element, document) {
 
+  if (typeof field.uses === 'string') {
+    field.uses = [ field.uses ];
+  }
+
+  var name = field.name;
+
   for (var i = 0; i < field.uses.length; i++) {
 
     var use = field.uses[i];
-    var name = field.name;
 
     if (simpleProperties.indexOf(use) > -1) {
 
@@ -246,27 +255,6 @@ exports.processFieldUses = function(field, removed, element, document) {
 
     } else {
       exports.processComplexUses(document, element, name, use, removed);
-    }
-
-  }
-
-};
-
-exports.processFieldAttributes = function(element, field) {
-
-  for (var i = 0; field.attributes && i < field.attributes.length; i++) {
-
-    if (simpleAttributes.indexOf(field.attributes[i]) > -1) {
-
-      var value = '__' + field.name + '_' + field.attributes[i] + '__';
-
-      element.setAttribute(field.attributes[i], value);
-
-      continue;
-    }
-
-    switch (field.attributes[i]) {
-
     }
 
   }

@@ -4,9 +4,7 @@
     "prebuiltFields": [
       {
         "name": "divCreation",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       }
     ]
   },
@@ -15,75 +13,51 @@
     "prebuiltFields": [
       {
         "name": "noFlagDiv",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "divThreads",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "labelBoard",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "flagsDiv",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "flagCombobox",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "boardIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "captchaDiv",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "labelMaxFileSize",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "labelMaxFiles",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "labelMessageLength",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "divUpload",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "postingForm",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       }
     ]
   },
@@ -93,9 +67,7 @@
     "prebuiltFields": [
       {
         "name": "labelNewPass",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       }
     ]
   },
@@ -112,15 +84,11 @@
     "prebuiltFields": [
       {
         "name": "codeLabel",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "errorLabel",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       }
     ]
   },
@@ -130,9 +98,7 @@
     "prebuiltFields": [
       {
         "name": "linkRecovery",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       }
     ]
   },
@@ -169,45 +135,31 @@
       },
       {
         "name": "divStats",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "labelTotalPosts",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "labelTotalIps",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "labelTotalBoards",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "labelTotalPPH",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "labelTotalFiles",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "labelTotalSize",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       }
     ]
   },
@@ -218,99 +170,67 @@
     "prebuiltFields": [
       {
         "name": "labelName",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "labelDescription",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "noFlagDiv",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "panelMessage",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "divMessage",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "flagsDiv",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "flagCombobox",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "divThreads",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "divPages",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "boardIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "linkManagement",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "linkModeration",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "bannerImage",
-        "uses": [
-          "src"
-        ]
+        "uses": "src"
       },
       {
         "name": "captchaDiv",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "divName",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "labelMaxFileSize",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "linkPrevious",
@@ -328,21 +248,15 @@
       },
       {
         "name": "labelMaxFiles",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "labelMessageLength",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "divUpload",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       }
     ]
   },
@@ -353,189 +267,127 @@
     "prebuiltFields": [
       {
         "name": "noFlagDiv",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "ipDeletionForm",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "panelMessage",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "divMessage",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "labelName",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "flagsDiv",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "flagCombobox",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "labelDescription",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "divThreads",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "boardIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "threadIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "linkManagement",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "linkMod",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "divMod",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "divControls",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "controlBoardIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "controlThreadIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "checkboxLock",
-        "uses": [
-          "checked"
-        ]
+        "uses": "checked"
       },
       {
         "name": "checkboxPin",
-        "uses": [
-          "checked"
-        ]
+        "uses": "checked"
       },
       {
         "name": "checkboxCyclic",
-        "uses": [
-          "checked"
-        ]
+        "uses": "checked"
       },
       {
         "name": "checkboxCyclic",
-        "uses": [
-          "checked"
-        ]
+        "uses": "checked"
       },
       {
         "name": "bannerImage",
-        "uses": [
-          "src"
-        ]
+        "uses": "src"
       },
       {
         "name": "captchaDiv",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "divName",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "labelMaxFileSize",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "formTransfer",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "transferBoardIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "transferThreadIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "labelMaxFiles",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "labelMessageLength",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "divUpload",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       }
     ]
   },
@@ -544,15 +396,11 @@
     "prebuiltFields": [
       {
         "name": "labelMessage",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "linkRedirect",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       }
     ]
   },
@@ -584,15 +432,11 @@
     "prebuiltFields": [
       {
         "name": "socketLink",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "accountsLink",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "appealedBansPanel",
@@ -603,21 +447,15 @@
       },
       {
         "name": "globalBannersLink",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "languagesLink",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "globalSettingsLink",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "divStaff",
@@ -628,51 +466,35 @@
       },
       {
         "name": "userLabel",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "addStaffForm",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "newStaffCombo",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "reportDiv",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "bansLink",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "rangeBansLink",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "massBanPanel",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "hashBansLink",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       }
     ]
   },
@@ -681,141 +503,95 @@
     "prebuiltFields": [
       {
         "name": "locationComboBox",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "linkSelf",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "appealedBansPanel",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "uniqueFilesCheckbox",
-        "uses": [
-          "checked"
-        ]
+        "uses": "checked"
       },
       {
         "name": "uniquePostsCheckbox",
-        "uses": [
-          "checked"
-        ]
+        "uses": "checked"
       },
       {
         "name": "blockDeletionCheckbox",
-        "uses": [
-          "checked"
-        ]
+        "uses": "checked"
       },
       {
         "name": "customJsForm",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "tagsField",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "maxBumpAgeField",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "customSpoilerIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "customJsIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "customSpoilerIndicator",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "hourlyThreadLimitField",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "autoCaptchaThresholdField",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "flagManagementLink",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "ruleManagementLink",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "customCssIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "boardLabel",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "volunteersDiv",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "addVolunteerBoardIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "transferBoardIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "deletionIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "reportDiv",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "bannerManagementLink",
@@ -826,147 +602,99 @@
       },
       {
         "name": "ownerControlDiv",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "closedReportsLink",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "bansLink",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "boardNameField",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "boardDescriptionField",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "boardSettingsIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "disableIdsCheckbox",
-        "uses": [
-          "checked"
-        ]
+        "uses": "checked"
       },
       {
         "name": "allowCodeCheckbox",
-        "uses": [
-          "checked"
-        ]
+        "uses": "checked"
       },
       {
         "name": "early404Checkbox",
-        "uses": [
-          "checked"
-        ]
+        "uses": "checked"
       },
       {
         "name": "captchaModeComboBox",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "unindexCheckbox",
-        "uses": [
-          "checked"
-        ]
+        "uses": "checked"
       },
       {
         "name": "forceAnonymityCheckbox",
-        "uses": [
-          "checked"
-        ]
+        "uses": "checked"
       },
       {
         "name": "filterManagementLink",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "anonymousNameField",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "rangeBansLink",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "hashBansLink",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "boardMessageField",
-        "uses": [
-          "defaultValue"
-        ]
+        "uses": "defaultValue"
       },
       {
         "name": "textBoardCheckbox",
-        "uses": [
-          "checked"
-        ]
+        "uses": "checked"
       },
       {
         "name": "requireFileCheckbox",
-        "uses": [
-          "checked"
-        ]
+        "uses": "checked"
       },
       {
         "name": "maxFilesField",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "maxFileSizeField",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "maxThreadField",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "autoSageLimitField",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "validMimesField",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       }
     ]
   },
@@ -981,9 +709,7 @@
     "prebuiltFields": [
       {
         "name": "bansDiv",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       }
     ]
   },
@@ -1076,13 +802,31 @@
   },
   {
     "template": "editPage",
-    "fields": [
-      "fieldMessage",
-      "boardIdentifier",
-      "threadIdentifier",
-      "postIdentifier",
-      "labelMessageLength",
-      "fieldSubject"
+    "prebuiltFields": [
+      {
+        "name": "fieldMessage",
+        "uses": "defaultValue"
+      },
+      {
+        "name": "boardIdentifier",
+        "uses": "value"
+      },
+      {
+        "name": "threadIdentifier",
+        "uses": "value"
+      },
+      {
+        "name": "postIdentifier",
+        "uses": "value"
+      },
+      {
+        "name": "labelMessageLength",
+        "uses": "inner"
+      },
+      {
+        "name": "fieldSubject",
+        "uses": "value"
+      }
     ]
   },
   {
@@ -1194,9 +938,7 @@
     "prebuiltFields": [
       {
         "name": "divThreads",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       }
     ]
   },
@@ -1212,9 +954,7 @@
     "prebuiltFields": [
       {
         "name": "divDates",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       }
     ]
   },
@@ -1223,9 +963,7 @@
     "prebuiltFields": [
       {
         "name": "divDates",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       }
     ]
   },
@@ -1234,15 +972,11 @@
     "prebuiltFields": [
       {
         "name": "filesDiv",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "pagesDiv",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       }
     ]
   },

@@ -35,33 +35,23 @@
       },
       {
         "name": "labelReplies",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "labelImages",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "labelPage",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "bumpLockIndicator",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "cyclicIndicator",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "labelSubject",
@@ -72,21 +62,15 @@
       },
       {
         "name": "divMessage",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "lockIndicator",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "pinIndicator",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       }
     ]
   },
@@ -102,9 +86,7 @@
     "prebuiltFields": [
       {
         "name": "contentOmissionIndicator",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "linkName",
@@ -116,21 +98,15 @@
       },
       {
         "name": "linkFullText",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "labelIp",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "panelRange",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "linkEdit",
@@ -164,27 +140,19 @@
       },
       {
         "name": "panelUploads",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "panelIp",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "labelBroadRange",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "labelNarrowRange",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "labelSubject",
@@ -195,21 +163,15 @@
       },
       {
         "name": "labelCreated",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "divMessage",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "divPosts",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "linkReply",
@@ -220,9 +182,7 @@
       },
       {
         "name": "linkSelf",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "linkQuote",
@@ -247,33 +207,23 @@
       },
       {
         "name": "lockIndicator",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "bumpLockIndicator",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "cyclicIndicator",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "pinIndicator",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "spanId",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "labelId",
@@ -303,21 +253,15 @@
     "prebuiltFields": [
       {
         "name": "contentOmissionIndicator",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "linkFullText",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "labelIp",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "divBanMessage",
@@ -351,33 +295,23 @@
       },
       {
         "name": "panelRange",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "panelIp",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "labelBroadRange",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "labelNarrowRange",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "panelUploads",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       },
       {
         "name": "labelRole",
@@ -403,21 +337,15 @@
       },
       {
         "name": "labelCreated",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "divMessage",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "linkSelf",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "linkQuote",
@@ -435,9 +363,7 @@
       },
       {
         "name": "spanId",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "labelId",
@@ -453,21 +379,15 @@
     "prebuiltFields": [
       {
         "name": "userIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "userLabel",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "roleCombo",
-        "uses": [
-          "children"
-        ]
+        "uses": "children"
       }
     ]
   },
@@ -476,21 +396,15 @@
     "prebuiltFields": [
       {
         "name": "boardIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "userIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "userLabel",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       }
     ]
   },
@@ -499,27 +413,19 @@
     "prebuiltFields": [
       {
         "name": "reasonLabel",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "link",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "postingDiv",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "closureCheckbox",
-        "uses": [
-          "name"
-        ]
+        "uses": "name"
       }
     ]
   },
@@ -537,69 +443,47 @@
     "prebuiltFields": [
       {
         "name": "reasonLabel",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "expirationLabel",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "appliedByLabel",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "idLabel",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "denyForm",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "denyIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "appealPanel",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "appealLabel",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "liftIdentifier",
-        "uses": [
-          "value"
-        ]
+        "uses": "value"
       },
       {
         "name": "boardLabel",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "boardPanel",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       }
     ]
   },
@@ -656,9 +540,7 @@
     "prebuiltFields": [
       {
         "name": "sizeLabel",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "imgLink",
@@ -672,21 +554,15 @@
       },
       {
         "name": "nameLink",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       },
       {
         "name": "divHash",
-        "uses": [
-          "removal"
-        ]
+        "uses": "removal"
       },
       {
         "name": "labelHash",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "originalNameLink",
@@ -740,9 +616,7 @@
     "prebuiltFields": [
       {
         "name": "labelPreview",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "linkPost",
@@ -782,15 +656,11 @@
     "prebuiltFields": [
       {
         "name": "identifierCheckbox",
-        "uses": [
-          "name"
-        ]
+        "uses": "name"
       },
       {
         "name": "thumbImg",
-        "uses": [
-          "src"
-        ]
+        "uses": "src"
       },
       {
         "name": "fileLink",
@@ -801,15 +671,11 @@
       },
       {
         "name": "referencesLabel",
-        "uses": [
-          "inner"
-        ]
+        "uses": "inner"
       },
       {
         "name": "detailsLink",
-        "uses": [
-          "href"
-        ]
+        "uses": "href"
       }
     ]
   },
