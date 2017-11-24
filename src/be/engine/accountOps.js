@@ -241,7 +241,7 @@ exports.createSession = function(login, callback) {
           logoutExpiration : logoutAt
         }
       }, function updatedUser(error) {
-        callback(error, hash);
+        callback(error, hash, logoutAt);
       });
       // style exception, too simple
 
@@ -287,8 +287,8 @@ exports.checkExpiration = function(user, now, callback) {
 
   if (user.renewExpiration < now) {
 
-    // style exception, too simple
-    exports.createSession(user.login, function createdSession(error, hash) {
+    exports.createSession(user.login, function createdSession(error, hash,
+        expiration) {
 
       if (error) {
         callback(error);
@@ -296,13 +296,13 @@ exports.checkExpiration = function(user, now, callback) {
 
         callback(null, {
           authStatus : 'expired',
-          newHash : hash
+          newHash : hash,
+          expiration : expiration
         }, user);
 
       }
 
     });
-    // style exception, too simple
 
   } else {
     callback(null, {

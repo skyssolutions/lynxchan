@@ -14,12 +14,13 @@ And will respond with serialized json objects with the following structure:
 {
     auth:{
         authStatus:"Status of authentication",
-        newHash: "Possible new hash for the user"},
+        newHash: "Possible new hash for the user",
+        expiration: "Possible new date for the expiration of the session"},
     status:"status of the operation",
     data: "Any kind of data to be returned will be in this field"
 }
 
-The authstatus can be either 'ok' or 'expired', in which case the user hash must be replaced by the content of 'newHash'.
+The authstatus can be either 'ok' or 'expired', in which case the user hash must be replaced by the content of 'newHash' and 'expiration' will tell for how long the hash will be valid.
 
 The global status are:
     bypassable: use has been prevented from posting but its possible for him to use the block bypass to post.
@@ -108,8 +109,6 @@ Parameters:
     email: e-mail of the account. 64 characters.
     captcha: input for captcha.
 
-Output: the hash of the recently created session for the account.
-
 ------------------------------------------------------------------------------------------
 
 PAG_ID::04
@@ -121,8 +120,6 @@ Description: performs login of the user.
 Parameters: 
     login: login of the account. 
     password: password of the account.
-
-Output: hash of the new session of the user.
 
 ------------------------------------------------------------------------------------------
 
@@ -612,7 +609,9 @@ Description: allows the user to renew his block bypass.
 Parameters:
     captcha: captcha input.
 
-Output: id of the new block bypass.
+Output(Object): object with the data of the new bypass containing the following fields:
+    id: Id of the bypass.
+    expiration(Date): date of the bypass expiration.
 
 ------------------------------------------------------------------------------------------
 

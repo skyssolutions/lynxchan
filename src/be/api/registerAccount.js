@@ -10,11 +10,16 @@ function createAccount(parameters, res, captchaId, language) {
     return;
   }
 
-  accountOps.registerUser(parameters, function userCreated(error, hash) {
+  accountOps.registerUser(parameters, function userCreated(error, hash,
+      expiration) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
-      apiOps.outputResponse(null, hash, 'ok', res);
+      apiOps.outputResponse({
+        newHash : hash,
+        expiration : expiration,
+        authStatus : 'expired'
+      }, null, 'ok', res);
     }
   }, null, null, captchaId, language);
 }

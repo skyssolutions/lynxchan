@@ -9,7 +9,7 @@ var lang = require('../engine/langOps').languagePack;
 function renewBypass(auth, parameters, res, language) {
 
   bypassOps.renewBypass(auth.captchaid, parameters.captcha, language,
-      function renewedBypass(error, bypassId) {
+      function renewedBypass(error, bypass) {
 
         if (error) {
           formOps.outputError(error, 500, res, language);
@@ -18,8 +18,9 @@ function renewBypass(auth, parameters, res, language) {
           formOps.outputResponse(lang(language).msgBypassRenewed,
               '/blockBypass.js', res, [ {
                 field : 'bypass',
-                value : bypassId,
-                path : '/'
+                value : bypass._id,
+                path : '/',
+                expiration : bypass.expiration
               } ], null, language);
         }
 

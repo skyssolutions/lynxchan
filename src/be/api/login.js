@@ -10,12 +10,17 @@ function login(parameters, res, language) {
     return;
   }
 
-  accountOps.login(parameters, language, function loggedIn(error, hash) {
+  accountOps.login(parameters, language, function loggedIn(error, hash,
+      expiration) {
 
     if (error) {
       apiOps.outputError(error, res);
     } else {
-      apiOps.outputResponse(null, hash, 'ok', res);
+      apiOps.outputResponse({
+        newHash : hash,
+        expiration : expiration,
+        authStatus : 'expired'
+      }, null, 'ok', res);
     }
   });
 }

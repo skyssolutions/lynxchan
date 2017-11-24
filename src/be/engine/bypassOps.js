@@ -19,7 +19,7 @@ exports.loadSettings = function() {
   bypassMaxPosts = settings.bypassMaxPosts;
   bypassMode = settings.bypassMode;
   floodDisabled = settings.disableFloodCheck;
-  expirationToAdd = 1000 * 60 * 60 * settings.bypassDurationHours;
+  expirationToAdd = settings.bypassDurationHours;
 };
 
 exports.loadDependencies = function() {
@@ -43,9 +43,12 @@ exports.renewBypass = function(captchaId, captchaInput, language, callback) {
           callback(error);
         } else {
 
+          var expiration = new Date();
+          expiration.setUTCHours(expiration.getUTCHours() + expirationToAdd);
+
           var newBypass = {
             usesLeft : bypassMaxPosts,
-            expiration : new Date(new Date().getTime() + expirationToAdd)
+            expiration : expiration
           };
 
           // style exception, too simple
@@ -53,7 +56,7 @@ exports.renewBypass = function(captchaId, captchaInput, language, callback) {
             if (error) {
               callback(error);
             } else {
-              callback(null, newBypass._id);
+              callback(null, newBypass);
             }
           });
           // style exception, too simple
@@ -84,18 +87,13 @@ exports.checkBypass = function(bypassId, callback) {
     }, callback);
 
   } catch (error) {
-    callback(error);
+    callback();
   }
 };
 
 exports.useBypass = function(bypassId, req, callback) {
 
-  if (!bypassMode) {
-    callback();
-    return;
-  }
-
-  if (!bypassId || !bypassId.length) {
+  if (!bypassMode || !bypassId || !bypassId.length) {
     callback();
     return;
   }
@@ -141,7 +139,7 @@ exports.useBypass = function(bypassId, req, callback) {
     });
 
   } catch (error) {
-    callback(error);
+    callback();
   }
 
 };

@@ -12,18 +12,25 @@ function createAccount(parameters, res, captchaId, language) {
     return;
   }
 
-  accountOps.registerUser(parameters, function userCreated(error, hash) {
+  accountOps.registerUser(parameters, function userCreated(error, hash,
+      expiration) {
     if (error) {
       formOps.outputError(error, 500, res, language);
     } else {
+
+      var loginExpiration = new Date();
+      loginExpiration.setUTCFullYear(loginExpiration.getUTCFullYear() + 1);
+
       formOps.outputResponse(lang(language).msgAccountCreated, '/account.js',
           res, [ {
             field : 'login',
-            value : parameters.login
-          }, {
-            field : 'hash',
-            value : hash
-          } ], null, language);
+            value : parameters.login,
+            expiration : loginExpiration
+          } ], {
+            authStatus : 'expired',
+            newHash : hash,
+            expiration : expiration
+          }, language);
     }
 
   }, null, null, captchaId, language);

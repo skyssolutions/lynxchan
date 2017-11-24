@@ -458,6 +458,7 @@ exports.outputError = function(error, res) {
 };
 
 exports.outputResponse = function(auth, data, status, res) {
+
   if (!res) {
     console.log('Null res object ' + status);
     return;

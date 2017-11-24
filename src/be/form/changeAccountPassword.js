@@ -6,16 +6,18 @@ var accountOps = require('../engine/accountOps');
 function changePassword(userData, parameters, res, language) {
 
   accountOps.changePassword(userData, parameters, language,
-      function changedPassword(error, newHash) {
+      function changedPassword(error, newHash, expiration) {
 
         if (error) {
           formOps.outputError(error, 500, res, language);
         } else {
+
           formOps.outputResponse(lang(language).msgChangedPassword,
-              '/account.js', res, [ {
-                field : 'hash',
-                value : newHash
-              } ], null, language);
+              '/account.js', res, null, {
+                authStatus : 'expired',
+                newHash : newHash,
+                expiration : expiration
+              }, language);
         }
 
       });

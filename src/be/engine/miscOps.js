@@ -128,7 +128,12 @@ exports.corsHeader = function(contentType, auth) {
   }
 
   if (auth && auth.authStatus === 'expired') {
-    header.push([ 'Set-Cookie', 'hash=' + auth.newHash + ';path=/' ]);
+
+    var cookieString = 'hash=' + auth.newHash + '; path=/; expires=';
+    cookieString += auth.expiration.toUTCString();
+
+    header.push([ 'Set-Cookie', cookieString ]);
+
   }
 
   return header;
