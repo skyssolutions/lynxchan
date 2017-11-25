@@ -76,9 +76,15 @@
   },
   {
     "template": "bannerCell",
-    "fields": [
-      "bannerImage",
-      "bannerIdentifier"
+    "prebuiltFields": [
+      {
+        "name": "bannerImage",
+        "uses": "src"
+      },
+      {
+        "name": "bannerIdentifier",
+        "uses": "value"
+      }
     ]
   },
   {
@@ -518,12 +524,27 @@
   },
   {
     "template": "filterCell",
-    "fields": [
-      "labelOriginal",
-      "labelReplacement",
-      "boardIdentifier",
-      "filterIdentifier",
-      "labelCaseInsensitive"
+    "prebuiltFields": [
+      {
+        "name": "labelOriginal",
+        "uses": "inner"
+      },
+      {
+        "name": "labelReplacement",
+        "uses": "inner"
+      },
+      {
+        "name": "boardIdentifier",
+        "uses": "value"
+      },
+      {
+        "name": "filterIdentifier",
+        "uses": "value"
+      },
+      {
+        "name": "labelCaseInsensitive",
+        "uses": "removal"
+      }
     ]
   },
   {

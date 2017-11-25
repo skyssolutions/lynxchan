@@ -526,52 +526,57 @@ exports.globalManagement = function(userRole, userLogin, staff, reports,
 // } Section 2: Global Management
 
 // Section 3: Filter management {
-exports.setFilterCell = function(document, boardUri, filter, language) {
+exports.getFilterDiv = function(boardUri, filters, language) {
 
-  var cell = document.createElement('form');
+  var children = '';
 
-  cell.innerHTML = templateHandler(language).filterCell;
+  var template = templateHandler(language, true).filterCell;
 
-  common.setFormCellBoilerPlate(cell, '/deleteFilter.js', 'filterCell');
+  for (var i = 0; i < filters.length; i++) {
 
-  var labelOriginal = cell.getElementsByClassName('labelOriginal')[0];
-  labelOriginal.innerHTML = filter.originalTerm;
+    var filter = filters[i];
 
-  var labelReplacement = cell.getElementsByClassName('labelReplacement')[0];
-  labelReplacement.innerHTML = filter.replacementTerm;
+    var originalTerm = common.clean(filter.originalTerm);
 
-  var filterIdentifier = cell.getElementsByClassName('filterIdentifier')[0];
-  filterIdentifier.setAttribute('value', filter.originalTerm);
+    var cell = common.getFormCellBoilerPlate(template.template,
+        '/deleteFilter.js', 'filterCell');
 
-  var boardIdentifier = cell.getElementsByClassName('boardIdentifier')[0];
-  boardIdentifier.setAttribute('value', boardUri);
+    cell = cell.replace('__labelOriginal_inner__', originalTerm);
 
-  if (!filter.caseInsensitive) {
-    cell.getElementsByClassName('labelCaseInsensitive')[0].remove();
+    cell = cell.replace('__labelReplacement_inner__', common
+        .clean(filter.replacementTerm));
+
+    cell = cell.replace('__boardIdentifier_value__', boardUri);
+
+    cell = cell.replace('__filterIdentifier_value__', originalTerm);
+
+    if (!filter.caseInsensitive) {
+      cell = cell.replace('__labelCaseInsensitive_location__', '');
+    } else {
+      cell = cell.replace('__labelCaseInsensitive_location__',
+          template.removable.labelCaseInsensitive);
+    }
+
+    children += cell;
   }
 
-  return cell;
+  return children;
 };
 
 exports.filterManagement = function(boardUri, filters, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).filterManagement);
-    var document = dom.window.document;
+    boardUri = common.clean(boardUri);
 
-    document.title = lang(language).titFilters.replace('{$board}', boardUri);
+    var document = templateHandler(language, true).filterManagement.template
+        .replace('__title__', lang(language).titFilters.replace('{$board}',
+            boardUri));
 
-    document.getElementById('boardIdentifier').setAttribute('value', boardUri);
+    document = document.replace('__boardIdentifier_value__', boardUri);
 
-    var filtersDiv = document.getElementById('divFilters');
-
-    for (var i = 0; i < filters.length; i++) {
-      filtersDiv.appendChild(exports.setFilterCell(document, boardUri,
-          filters[i], language));
-    }
-
-    return dom.serialize();
+    return document.replace('__divFilters_children__', exports.getFilterDiv(
+        boardUri, filters, language));
 
   } catch (error) {
 
@@ -750,25 +755,25 @@ exports.globalSettings = function(language) {
 // } Section 6: Global settings
 
 // Section 7: Banners {
-exports.addBannerCells = function(document, banners, language) {
+exports.getBannerCells = function(banners, language) {
 
-  var bannerDiv = document.getElementById('bannersDiv');
+  var children = '';
+
+  var template = templateHandler(language, true).bannerCell.template;
 
   for (var i = 0; i < banners.length; i++) {
     var banner = banners[i];
 
-    var cell = document.createElement('form');
-    cell.innerHTML = templateHandler(language).bannerCell;
+    var cell = common.getFormCellBoilerPlate(template, '/deleteBanner.js',
+        'bannerCell');
 
-    common.setFormCellBoilerPlate(cell, '/deleteBanner.js', 'bannerCell');
+    cell = cell.replace('__bannerImage_src__', banner.filename);
 
-    cell.getElementsByClassName('bannerImage')[0].src = banner.filename;
+    children += cell.replace('__bannerIdentifier_value__', banner._id);
 
-    cell.getElementsByClassName('bannerIdentifier')[0].setAttribute('value',
-        banner._id);
-
-    bannerDiv.appendChild(cell);
   }
+
+  return children;
 
 };
 
@@ -776,24 +781,28 @@ exports.bannerManagement = function(boardUri, banners, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).bannerManagementPage);
-    var document = dom.window.document;
+    var template = templateHandler(language, true).bannerManagementPage;
+
+    var document = template.template.replace('__maxSizeLabel_inner__',
+        displayMaxBannerSize);
 
     if (boardUri) {
-      document.title = lang(language).titBanners.replace('{$board}', boardUri);
-      document.getElementById('boardIdentifier')
-          .setAttribute('value', boardUri);
+
+      boardUri = common.clean(boardUri);
+
+      document = document.replace('__title__', lang(language).titBanners
+          .replace('{$board}', boardUri));
+      document = document.replace('__boardIdentifier_location__',
+          template.removable.boardIdentifier);
+      document = document.replace('__boardIdentifier_value__', boardUri);
 
     } else {
-      document.title = lang(language).titGlobalBanners;
-      document.getElementById('boardIdentifier').remove();
+      document = document.replace('__title__', lang(language).titGlobalBanners);
+      document = document.replace('__boardIdentifier_location__', '');
     }
 
-    document.getElementById('maxSizeLabel').innerHTML = displayMaxBannerSize;
-
-    exports.addBannerCells(document, banners, language);
-
-    return dom.serialize();
+    return document.replace('__bannersDiv_children__', exports.getBannerCells(
+        banners, language));
 
   } catch (error) {
 

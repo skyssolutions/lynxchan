@@ -1060,7 +1060,7 @@ errorLabel:
 
 TEM_ID::21
 
-banPage: page describing an user's ban, used by the form api.
+banPage: page describing an user's ban.
 
 Elements:
 boardLabel:
@@ -1103,7 +1103,7 @@ maxSizeLabel:
     description: label that displays the maximum size allowed for banners.
 
 boardIdentifier:
-    use: have it's value manipulated.
+    use: have it's value manipulated or might be removed.
     description: hidden input used to identify the board when creating banners.
 
 ------------------------------------------------------------------------------------------

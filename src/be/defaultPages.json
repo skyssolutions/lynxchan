@@ -73,10 +73,22 @@
   },
   {
     "template": "bannerManagementPage",
-    "fields": [
-      "bannersDiv",
-      "boardIdentifier",
-      "maxSizeLabel"
+    "prebuiltFields": [
+      {
+        "name": "bannersDiv",
+        "uses": "children"
+      },
+      {
+        "name": "maxSizeLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "boardIdentifier",
+        "uses": [
+          "value",
+          "removal"
+        ]
+      }
     ]
   },
   {
@@ -418,13 +430,31 @@
   },
   {
     "template": "banPage",
-    "fields": [
-      "boardLabel",
-      "reasonLabel",
-      "expirationLabel",
-      "idLabel",
-      "formAppeal",
-      "idIdentifier"
+    "prebuiltFields": [
+      {
+        "name": "boardLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "reasonLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "expirationLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "idLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "formAppeal",
+        "uses": "removal"
+      },
+      {
+        "name": "idIdentifier",
+        "uses": "value"
+      }
     ]
   },
   {
@@ -724,10 +754,15 @@
   },
   {
     "template": "filterManagement",
-    "fields": [
-      "divFilters",
-      "boardIdentifier",
-      "checkboxCaseInsensitive"
+    "prebuiltFields": [
+      {
+        "name": "divFilters",
+        "uses": "children"
+      },
+      {
+        "name": "boardIdentifier",
+        "uses": "value"
+      }
     ]
   },
   {
@@ -783,9 +818,19 @@
   },
   {
     "template": "rangeBanPage",
-    "fields": [
-      "boardLabel",
-      "rangeLabel"
+    "prebuiltFields": [
+      {
+        "name": "boardLabel",
+        "uses": [
+          "inner"
+        ]
+      },
+      {
+        "name": "rangeLabel",
+        "uses": [
+          "inner"
+        ]
+      }
     ]
   },
   {

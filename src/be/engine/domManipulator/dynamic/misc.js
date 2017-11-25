@@ -370,31 +370,43 @@ exports.boards = function(parameters, boards, pageCount, language) {
 // } Section 2: Board listing
 
 // Section 3: Ban {
-exports.setBanPage = function(document, ban, board, language) {
+exports.getBanPage = function(ban, language) {
 
-  document.getElementById('boardLabel').innerHTML = board;
+  var template;
 
   if (ban.range) {
-    document.getElementById('rangeLabel').innerHTML = ban.range.join('.');
+    template = templateHandler(language, true).rangeBanPage;
+  } else {
+    template = templateHandler(language, true).banPage;
+  }
+
+  var document = template.template;
+
+  if (ban.range) {
+    document = document.replace('__rangeLabel_inner__', ban.range.join('.'));
   } else {
 
-    document.getElementById('reasonLabel').innerHTML = ban.reason;
+    document = document.replace('__reasonLabel_inner__', common
+        .clean(ban.reason));
 
-    document.getElementById('idLabel').innerHTML = ban._id;
+    document = document.replace('__idLabel_inner__', ban._id);
 
-    ban.expiration = common.formatDateToDisplay(ban.expiration, null, language);
-    document.getElementById('expirationLabel').innerHTML = ban.expiration;
+    document = document.replace('__expirationLabel_inner__', common
+        .formatDateToDisplay(ban.expiration, null, language));
 
     if (ban.appeal) {
-      document.getElementById('formAppeal').remove();
+      document = document.replace('__formAppeal_location__', '');
     } else {
 
-      var identifier = document.getElementById('idIdentifier');
-      identifier.setAttribute('value', ban._id);
+      document = document.replace('__formAppeal_location__',
+          template.removable.formAppeal);
+      document = document.replace('__idIdentifier_value__', ban._id);
 
     }
 
   }
+
+  return document;
 
 };
 
@@ -402,22 +414,12 @@ exports.ban = function(ban, board, language) {
 
   try {
 
-    var templateToUse;
+    var document = exports.getBanPage(ban, language).replace('__title__',
+        lang(language).titBan);
 
-    if (ban.range) {
-      templateToUse = templateHandler(language).rangeBanPage;
-    } else {
-      templateToUse = templateHandler(language).banPage;
-    }
+    document = document.replace('__boardLabel_inner__', common.clean(board));
 
-    var dom = new JSDOM(templateToUse);
-    var document = dom.window.document;
-
-    document.title = lang(language).titBan;
-
-    exports.setBanPage(document, ban, board, language);
-
-    return dom.serialize();
+    return document;
 
   } catch (error) {
 
