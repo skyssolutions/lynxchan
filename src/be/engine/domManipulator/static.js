@@ -847,26 +847,31 @@ exports.overboard = function(foundThreads, previewRelation, callback,
 // } Section 5: Overboard
 
 // Section 6: Log page {
-exports.setLogEntry = function(logCell, log, language) {
+exports.getLogEntry = function(template, log, language) {
+
+  var cell = template.template;
 
   if (!log.global) {
-    logCell.getElementsByClassName('indicatorGlobal')[0].remove();
+    cell = cell.replace('__indicatorGlobal_location__', '');
+  } else {
+    cell = cell.replace('__indicatorGlobal_location__',
+        template.removable.indicatorGlobal);
   }
 
-  var labelType = logCell.getElementsByClassName('labelType')[0];
-  labelType.innerHTML = lang(language)[availableLogTypes[log.type]];
+  cell = cell.replace('__labelType_inner__',
+      lang(language)[availableLogTypes[log.type]]);
 
-  var labelTime = logCell.getElementsByClassName('labelTime')[0];
-  labelTime.innerHTML = common.formatDateToDisplay(log.time, null, language);
+  cell = cell.replace('__labelTime_inner__', common.formatDateToDisplay(
+      log.time, null, language));
 
-  var labelBoard = logCell.getElementsByClassName('labelBoard')[0];
-  labelBoard.innerHTML = log.boardUri || '';
+  cell = cell.replace('__labelBoard_inner__', common.clean(log.boardUri || ''));
 
-  var labelUser = logCell.getElementsByClassName('labelUser')[0];
-  labelUser.innerHTML = log.user;
+  cell = cell.replace('__labelUser_inner__', common.clean(log.user));
 
-  var labelDescription = logCell.getElementsByClassName('labelDescription')[0];
-  labelDescription.innerHTML = log.description;
+  cell = cell.replace('__labelDescription_inner__', common
+      .clean(log.description));
+
+  return cell;
 
 };
 
@@ -895,33 +900,33 @@ exports.getLogEntryCache = function(logEntry, language) {
 
 };
 
-exports.addLogEntry = function(logEntry, document, language) {
+exports.getLogCell = function(logEntry, language) {
 
-  var logCell = document.createElement('div');
-  logCell.setAttribute('class', 'logCell');
+  var logCell = '<div class="logCell">';
 
   var existingCache = exports.getLogEntryCache(logEntry, language);
 
   if (!existingCache || !individualCaches) {
 
-    logCell.innerHTML = templateHandler(language).logCell;
+    var cellContent = exports.getLogEntry(
+        templateHandler(language, true).logCell, logEntry, language);
 
-    exports.setLogEntry(logCell, logEntry, language);
+    logCell += cellContent;
 
     if (individualCaches) {
 
       staffLogs.updateOne({
         _id : logEntry._id
       }, {
-        $set : exports.getLogEntryCacheObject(logCell.innerHTML, language)
+        $set : exports.getLogEntryCacheObject(cellContent, language)
       });
     }
 
   } else {
-    logCell.innerHTML = existingCache;
+    logCell += existingCache;
   }
 
-  document.getElementById('divLogs').appendChild(logCell);
+  return logCell + '</div>';
 
 };
 
@@ -929,15 +934,17 @@ exports.log = function(language, date, logs, callback) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).logsPage);
-    var document = dom.window.document;
+    var document = templateHandler(language, true).logsPage.template.replace(
+        '__title__', lang(language).titLogPage.replace('{$date}', common
+            .formatDateToDisplay(date, true, language)));
 
-    document.title = lang(language).titLogPage.replace('{$date}', common
-        .formatDateToDisplay(date, true, language));
+    var children = '';
 
     for (var i = 0; i < logs.length; i++) {
-      exports.addLogEntry(logs[i], document, language);
+      children += exports.getLogCell(logs[i], language);
     }
+
+    document = document.replace('__divLogs_children__', children);
 
     var path = '/.global/logs/';
     path += logger.formatedDate(date) + '.html';
@@ -952,7 +959,7 @@ exports.log = function(language, date, logs, callback) {
       path += language.headerValues.join('-');
     }
 
-    gridFs.writeData(dom.serialize(), path, 'text/html', meta, callback);
+    gridFs.writeData(document, path, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);

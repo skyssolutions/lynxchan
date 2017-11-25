@@ -489,13 +489,31 @@
   },
   {
     "template": "logCell",
-    "fields": [
-      "indicatorGlobal",
-      "labelUser",
-      "labelTime",
-      "labelDescription",
-      "labelBoard",
-      "labelType"
+    "prebuiltFields": [
+      {
+        "name": "indicatorGlobal",
+        "uses": "removal"
+      },
+      {
+        "name": "labelUser",
+        "uses": "inner"
+      },
+      {
+        "name": "labelTime",
+        "uses": "inner"
+      },
+      {
+        "name": "labelDescription",
+        "uses": "inner"
+      },
+      {
+        "name": "labelBoard",
+        "uses": "inner"
+      },
+      {
+        "name": "labelType",
+        "uses": "inner"
+      }
     ]
   },
   {

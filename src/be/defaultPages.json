@@ -715,8 +715,11 @@
   },
   {
     "template": "logsPage",
-    "fields": [
-      "divLogs"
+    "prebuiltFields": [
+      {
+        "name": "divLogs",
+        "uses": "children"
+      }
     ]
   },
   {
