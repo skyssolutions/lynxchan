@@ -964,25 +964,28 @@ exports.log = function(language, date, logs, callback) {
 // Section 7: Rules {
 exports.getRulesDocument = function(language, boardUri, rules) {
 
-  var dom = new JSDOM(templateHandler(language).rulesPage);
-  var document = dom.window.document;
+  boardUri = common.clean(boardUri);
 
-  document.title = lang(language).titRules.replace('{$board}', boardUri);
-  document.getElementById('boardLabel').innerHTML = boardUri;
-  var rulesDiv = document.getElementById('divRules');
+  var document = templateHandler(language, true).rulesPage.template.replace(
+      '__title__', lang(language).titRules.replace('{$board}', boardUri));
+
+  document = document.replace('__boardLabel_inner__', boardUri);
+
+  var children = '';
+
+  var cellTemplate = templateHandler(language, true).ruleCell.template;
 
   for (var i = 0; i < rules.length; i++) {
-    var cell = document.createElement('div');
-    cell.innerHTML = templateHandler(language).ruleCell;
-    cell.setAttribute('class', 'ruleCell');
 
-    cell.getElementsByClassName('textLabel')[0].innerHTML = rules[i];
-    cell.getElementsByClassName('indexLabel')[0].innerHTML = i + 1;
+    var cell = '<div class="ruleCell">' + cellTemplate;
 
-    rulesDiv.appendChild(cell);
+    cell = cell.replace('__textLabel_inner__', rules[i]);
+
+    children += cell.replace('__indexLabel_inner__', i + 1) + '</div>';
+
   }
 
-  return dom.serialize();
+  return document.replace('__divRules_children__', children);
 
 };
 

@@ -582,41 +582,41 @@ exports.filterManagement = function(boardUri, filters, language) {
 // } Section 3: Filter management
 
 // Section 4: Rule management {
-exports.setRuleManagementCells = function(document, boardUri, rules, language) {
-  var rulesDiv = document.getElementById('divRules');
+exports.getRuleManagementCells = function(boardUri, rules, language) {
+
+  var children = '';
+
+  var template = templateHandler(language, true).ruleManagementCell.template;
 
   for (var i = 0; i < rules.length; i++) {
     var rule = rules[i];
 
-    var cell = document.createElement('form');
-    common.setFormCellBoilerPlate(cell, '/deleteRule.js', 'ruleManagementCell');
-    cell.innerHTML = templateHandler(language).ruleManagementCell;
-    cell.getElementsByClassName('textLabel')[0].innerHTML = rule;
+    var cell = common.getFormCellBoilerPlate(template, '/deleteRule.js',
+        'ruleManagementCell');
 
-    cell.getElementsByClassName('boardIdentifier')[0].setAttribute('value',
-        boardUri);
-    cell.getElementsByClassName('indexIdentifier')[0].setAttribute('value', i);
+    cell = cell.replace('__textLabel_inner__', common.clean(rule));
 
-    rulesDiv.appendChild(cell);
+    cell = cell.replace('__boardIdentifier_value__', boardUri);
+
+    children += cell.replace('__indexIdentifier_value__', i);
   }
+
+  return children;
 };
 
 exports.ruleManagement = function(boardUri, rules, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).ruleManagementPage);
-    var document = dom.window.document;
+    boardUri = common.clean(boardUri);
 
-    document.title = lang(language).titRuleManagement;
+    var document = templateHandler(language, true).ruleManagementPage.template
+        .replace('__title__', lang(language).titRuleManagement);
 
-    var boardIdentifier = document.getElementById('boardIdentifier');
+    document = document.replace('__boardIdentifier_value__', boardUri);
 
-    boardIdentifier.setAttribute('value', boardUri);
-
-    exports.setRuleManagementCells(document, boardUri, rules, language);
-
-    return dom.serialize();
+    return document.replace('__divRules_children__', exports
+        .getRuleManagementCells(boardUri, rules, language));
 
   } catch (error) {
 

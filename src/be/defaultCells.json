@@ -583,17 +583,32 @@
   },
   {
     "template": "ruleManagementCell",
-    "fields": [
-      "indexIdentifier",
-      "boardIdentifier",
-      "textLabel"
+    "prebuiltFields": [
+      {
+        "name": "indexIdentifier",
+        "uses": "value"
+      },
+      {
+        "name": "boardIdentifier",
+        "uses": "value"
+      },
+      {
+        "name": "textLabel",
+        "uses": "inner"
+      }
     ]
   },
   {
     "template": "ruleCell",
-    "fields": [
-      "indexLabel",
-      "textLabel"
+    "prebuiltFields": [
+      {
+        "name": "indexLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "textLabel",
+        "uses": "inner"
+      }
     ]
   },
   {

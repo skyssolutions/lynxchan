@@ -785,16 +785,28 @@
   },
   {
     "template": "ruleManagementPage",
-    "fields": [
-      "divRules",
-      "boardIdentifier"
+    "prebuiltFields": [
+      {
+        "name": "divRules",
+        "uses": "children"
+      },
+      {
+        "name": "boardIdentifier",
+        "uses": "value"
+      }
     ]
   },
   {
     "template": "rulesPage",
-    "fields": [
-      "boardLabel",
-      "divRules"
+    "prebuiltFields": [
+      {
+        "name": "boardLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "divRules",
+        "uses": "children"
+      }
     ]
   },
   {
