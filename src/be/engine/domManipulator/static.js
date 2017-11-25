@@ -66,10 +66,8 @@ exports.loadDependencies = function() {
 exports.notFound = function(language, callback) {
 
   try {
-    var dom = new JSDOM(templateHandler(language).notFoundPage);
-    var document = dom.window.document;
-
-    document.title = lang(language).titNotFound;
+    var document = templateHandler(language, true).notFoundPage.template
+        .replace('__title__');
 
     var path = '/404.html';
     var meta = {
@@ -82,7 +80,7 @@ exports.notFound = function(language, callback) {
       path += language.headerValues.join('-');
     }
 
-    gridFs.writeData(dom.serialize(), path, 'text/html', meta, callback);
+    gridFs.writeData(document, path, 'text/html', meta, callback);
   } catch (error) {
     callback(error);
   }
@@ -760,10 +758,8 @@ exports.frontPage = function(boards, latestPosts, latestImages, globalStats,
 exports.maintenance = function(language, callback) {
   try {
 
-    var dom = new JSDOM(templateHandler(language).maintenancePage);
-    var document = dom.window.document;
-
-    document.title = lang(language).titMaintenance;
+    var document = templateHandler(language, true).maintenancePage.template
+        .replace('__title__', lang(language).titMaintenance);
 
     var path = '/maintenance.html';
     var meta = {
@@ -776,7 +772,7 @@ exports.maintenance = function(language, callback) {
       path += language.headerValues.join('-');
     }
 
-    gridFs.writeData(dom.serialize(), path, 'text/html', meta, callback);
+    gridFs.writeData(document, path, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);

@@ -517,35 +517,29 @@ exports.edit = function(parameters, posting, language) {
   }
 };
 
-// Section 5: No cookie captcha {
-exports.setCaptchaIdAndImage = function(document, captchaId) {
-
-  var captchaPath = '/captcha.js?captchaId=' + captchaId;
-  document.getElementById('imageCaptcha').src = captchaPath;
-
-  document.getElementById('inputCaptchaId').setAttribute('value', captchaId);
-
-};
-
 exports.noCookieCaptcha = function(parameters, captchaId, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).noCookieCaptchaPage);
-    var document = dom.window.document;
-
-    document.title = lang(language).titNoCookieCaptcha;
+    var template = templateHandler(language, true).noCookieCaptchaPage;
+    var document = template.template.replace('__title__',
+        lang(language).titNoCookieCaptcha);
 
     if (!parameters.solvedCaptcha) {
-      document.getElementById('divSolvedCaptcha').remove();
+      document = document.replace('__divSolvedCaptcha_location__', '');
     } else {
-      var labelSolved = document.getElementById('labelCaptchaId');
-      labelSolved.innerHTML = parameters.solvedCaptcha;
+      document = document.replace('__divSolvedCaptcha_location__',
+          template.removable.divSolvedCaptcha);
+
+      document = document.replace('__labelCaptchaId_inner__',
+          parameters.solvedCaptcha);
+
     }
 
-    exports.setCaptchaIdAndImage(document, captchaId);
+    document = document.replace('__imageCaptcha_src__',
+        '/captcha.js?captchaId=' + captchaId);
 
-    return dom.serialize();
+    return document.replace('__inputCaptchaId_value__', captchaId);
 
   } catch (error) {
 
@@ -553,7 +547,6 @@ exports.noCookieCaptcha = function(parameters, captchaId, language) {
   }
 
 };
-// } Section 5: No cookie captcha
 
 exports.blockBypass = function(valid, language) {
 

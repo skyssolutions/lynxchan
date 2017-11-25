@@ -118,9 +118,9 @@ exports.testPagePrebuiltFields = function(dom, page, prebuiltObject) {
 
 exports.testPageFields = function(dom, page, prebuiltObject, errors) {
 
-  if (page.prebuiltFields) {
+  if (!page.fields) {
     return exports.testPagePrebuiltFields(dom, page, prebuiltObject);
-  } else if (page.fields) {
+  } else {
 
     var error = '';
 
@@ -327,8 +327,8 @@ exports.loadPrebuiltFields = function(dom, base, object, template, cell) {
 
   var document = dom.window.document;
 
-  var error = exports.iteratePrebuiltFields(template, base, document, removed,
-      cell);
+  var error = template.prebuiltFields ? exports.iteratePrebuiltFields(template,
+      base, document, removed, cell) : '';
 
   var removable = exports.handleRemovableFields(removed, cell, document, base);
 

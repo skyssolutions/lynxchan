@@ -1040,14 +1040,10 @@ exports.socketData = function(statusData, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).socketManagementPage);
-    var document = dom.window.document;
+    var document = templateHandler(language, true).socketManagementPage.template
+        .replace('__title__', lang(language).titSocketManagement);
 
-    document.title = lang(language).titSocketManagement;
-
-    document.getElementById('statusLabel').innerHTML = statusData.status;
-
-    return dom.serialize();
+    return document.replace('__statusLabel_inner__', statusData.status);
 
   } catch (error) {
     return error.stack.replace(/\n/g, '<br>');
@@ -1056,17 +1052,17 @@ exports.socketData = function(statusData, language) {
 };
 
 // Section 11: Media details {
-exports.fillReferencesDiv = function(document, details) {
+exports.getReferencesDiv = function(details) {
 
-  var referencesDiv = document.getElementById('panelReferences');
+  var children = '';
 
   for (var i = 0; i < details.references.length; i++) {
 
-    var link = document.createElement('a');
-
     var reference = details.references[i];
 
-    var url = '/' + reference.boardUri + '/res/' + reference.threadId;
+    var boardUri = common.clean(reference.boardUri);
+
+    var url = '/' + boardUri + '/res/' + reference.threadId;
     url += '.html';
 
     if (reference.postId) {
@@ -1074,14 +1070,13 @@ exports.fillReferencesDiv = function(document, details) {
     }
 
     var idToUse = reference.postId || reference.threadId;
+    var link = '<a href="' + url + '">' + boardUri + '/' + idToUse + '</a>';
 
-    link.innerHTML = reference.boardUri + '/' + idToUse;
-
-    link.href = url;
-
-    referencesDiv.appendChild(link);
+    children += link;
 
   }
+
+  return children;
 
 };
 
@@ -1089,22 +1084,19 @@ exports.mediaDetails = function(identifier, details, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).mediaDetailsPage);
-    var document = dom.window.document;
+    var document = templateHandler(language, true).mediaDetailsPage.template
+        .replace('__title__', lang(language).titMediaDetails);
 
-    document.title = lang(language).titMediaDetails;
+    document = document.replace('__labelSize_inner__', common.formatFileSize(
+        details.size, language));
 
-    document.getElementById('labelSize').innerHTML = common.formatFileSize(
-        details.size, language);
+    document = document.replace('__labelIdentifier_inner__', identifier);
 
-    document.getElementById('labelIdentifier').innerHTML = identifier;
+    document = document.replace('__labelUploadDate_inner__', common
+        .formatDateToDisplay(details.uploadDate, false, language));
 
-    document.getElementById('labelUploadDate').innerHTML = common
-        .formatDateToDisplay(details.uploadDate, false, language);
-
-    exports.fillReferencesDiv(document, details);
-
-    return dom.serialize();
+    return document.replace('__panelReferences_children__', exports
+        .getReferencesDiv(details));
 
   } catch (error) {
     return error.stack.replace(/\n/g, '<br>');

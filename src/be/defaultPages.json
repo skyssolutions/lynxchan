@@ -755,11 +755,23 @@
   },
   {
     "template": "noCookieCaptchaPage",
-    "fields": [
-      "divSolvedCaptcha",
-      "labelCaptchaId",
-      "inputCaptchaId",
-      "imageCaptcha"
+    "prebuiltFields": [
+      {
+        "name": "divSolvedCaptcha",
+        "uses": "removal"
+      },
+      {
+        "name": "labelCaptchaId",
+        "uses": "inner"
+      },
+      {
+        "name": "inputCaptchaId",
+        "uses": "value"
+      },
+      {
+        "name": "imageCaptcha",
+        "uses": "src"
+      }
     ]
   },
   {
@@ -1018,8 +1030,11 @@
   },
   {
     "template": "socketManagementPage",
-    "fields": [
-      "statusLabel"
+    "prebuiltFields": [
+      {
+        "name": "statusLabel",
+        "uses": "inner"
+      }
     ]
   },
   {
@@ -1057,11 +1072,23 @@
   },
   {
     "template": "mediaDetailsPage",
-    "fields": [
-      "labelSize",
-      "labelUploadDate",
-      "panelReferences",
-      "labelIdentifier"
+    "prebuiltFields": [
+      {
+        "name": "labelSize",
+        "uses": "inner"
+      },
+      {
+        "name": "labelUploadDate",
+        "uses": "inner"
+      },
+      {
+        "name": "panelReferences",
+        "uses": "children"
+      },
+      {
+        "name": "labelIdentifier",
+        "uses": "inner"
+      }
     ]
   }
 ]

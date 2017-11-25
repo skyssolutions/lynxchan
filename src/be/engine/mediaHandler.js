@@ -461,13 +461,7 @@ exports.postingSorting = function(a, b) {
   } else if (a.boardUri > b.boardUri) {
     return 1;
   } else {
-
-    if (a.threadId !== b.threadId) {
-      return a.threadId - b.threadId;
-    } else {
-      return a.postId - b.postId;
-    }
-
+    return (a.postId || a.threadId) - (b.postId || b.threadId);
   }
 
 };
