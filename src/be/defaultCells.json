@@ -617,9 +617,15 @@
   },
   {
     "template": "hashBanCell",
-    "fields": [
-      "hashLabel",
-      "idIdentifier"
+    "prebuiltFields": [
+      {
+        "name": "hashLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "idIdentifier",
+        "uses": "value"
+      }
     ]
   },
   {
@@ -792,11 +798,23 @@
   },
   {
     "template": "languageCell",
-    "fields": [
-      "languageIdentifier",
-      "frontEndLabel",
-      "languagePackLabel",
-      "headerValuesLabel"
+    "prebuiltFields": [
+      {
+        "name": "languageIdentifier",
+        "uses": "value"
+      },
+      {
+        "name": "frontEndLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "languagePackLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "headerValuesLabel",
+        "uses": "inner"
+      }
     ]
   },
   {

@@ -1516,7 +1516,7 @@ hashBansDiv:
     description: div that holds the hash bans.
 
 boardIdentifier:
-    use: have it's value manipulated.
+    use: have it's value manipulated or might be removed.
     description: hidden input that holds the board identification.
 
 ------------------------------------------------------------------------------------------

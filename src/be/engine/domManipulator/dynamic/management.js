@@ -906,50 +906,47 @@ exports.mediaManagement = function(media, pages, parameters, language) {
 };
 // } Section 8: Media management
 
-// Section 9: Language management {
-exports.addLanguageCell = function(document, language, userLanguage) {
-
-  var cell = document.createElement('form');
-
-  common.setFormCellBoilerPlate(cell, '/deleteLanguage.js', 'languageCell');
-
-  cell.innerHTML = templateHandler(userLanguage).languageCell;
-
-  cell.getElementsByClassName('languageIdentifier')[0].setAttribute('value',
-      language._id);
-  cell.getElementsByClassName('frontEndLabel')[0].innerHTML = language.frontEnd;
-
-  var languagePackLabel = cell.getElementsByClassName('languagePackLabel')[0];
-  languagePackLabel.innerHTML = language.languagePack;
-
-  var headerValuesLabel = cell.getElementsByClassName('headerValuesLabel')[0];
-  headerValuesLabel.innerHTML = language.headerValues.join(', ');
-
-  document.getElementById('languagesDiv').appendChild(cell);
-
-};
-
 exports.languages = function(languages, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).languagesManagementPage);
-    var document = dom.window.document;
+    var template = templateHandler(language, true).languagesManagementPage;
 
-    document.title = lang(language).titLanguages;
+    var document = template.template.replace('__title__',
+        lang(language).titLanguages);
+
+    var children = '';
+
+    var cellTemplate = templateHandler(language, true).languageCell.template;
 
     for (var i = 0; i < languages.length; i++) {
-      exports.addLanguageCell(document, languages[i], language);
+
+      var cell = common.getFormCellBoilerPlate(cellTemplate,
+          '/deleteLanguage.js', 'languageCell');
+
+      var currentLang = languages[i];
+
+      cell = cell.replace('__languageIdentifier_value__', currentLang._id);
+
+      cell = cell.replace('__frontEndLabel_inner__', common
+          .clean(currentLang.frontEnd));
+
+      cell = cell.replace('__languagePackLabel_inner__', common
+          .clean(currentLang.languagePack));
+
+      cell = cell.replace('__headerValuesLabel_inner__', common
+          .clean(currentLang.headerValues.join(', ')));
+
+      children += cell;
     }
 
-    return dom.serialize();
+    return document.replace('__languagesDiv_children__', children);
 
   } catch (error) {
     return error.stack.replace(/\n/g, '<br>');
   }
 
 };
-// } Section 9: Language management
 
 exports.accounts = function(accounts, language) {
 
@@ -983,7 +980,7 @@ exports.accounts = function(accounts, language) {
 
 };
 
-// Section 10: Account management {
+// Section 9: Account management {
 exports.setOwnedAndVolunteeredBoards = function(accountData, document) {
 
   var children = '';
@@ -1041,7 +1038,7 @@ exports.accountManagement = function(accountData, account, userRole, language) {
   }
 
 };
-// } Section 10: Account management
+// } Section 9: Account management
 
 exports.socketData = function(statusData, language) {
 
@@ -1058,7 +1055,7 @@ exports.socketData = function(statusData, language) {
 
 };
 
-// Section 11: Media details {
+// Section 10: Media details {
 exports.getReferencesDiv = function(details) {
 
   var children = '';
@@ -1110,4 +1107,4 @@ exports.mediaDetails = function(identifier, details, language) {
   }
 
 };
-// } Section 11: Media details
+// } Section 10: Media details

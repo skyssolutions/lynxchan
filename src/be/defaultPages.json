@@ -892,9 +892,18 @@
   },
   {
     "template": "hashBansPage",
-    "fields": [
-      "hashBansDiv",
-      "boardIdentifier"
+    "prebuiltFields": [
+      {
+        "name": "hashBansDiv",
+        "uses": "children"
+      },
+      {
+        "name": "boardIdentifier",
+        "uses": [
+          "value",
+          "removal"
+        ]
+      }
     ]
   },
   {
@@ -1135,8 +1144,11 @@
   },
   {
     "template": "languagesManagementPage",
-    "fields": [
-      "languagesDiv"
+    "prebuiltFields": [
+      {
+        "name": "languagesDiv",
+        "uses": "children"
+      }
     ]
   },
   {

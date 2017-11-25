@@ -145,23 +145,26 @@ exports.rangeBans = function(rangeBans, boardData, language) {
 // } Section 1: Range bans
 
 // Section 2: Hash bans {
-exports.setHashBanCells = function(document, hashBans, language) {
+exports.getHashBanCells = function(hashBans, language) {
 
-  var bansDiv = document.getElementById('hashBansDiv');
+  var children = '';
+
+  var template = templateHandler(language, true).hashBanCell.template;
 
   for (var i = 0; i < hashBans.length; i++) {
+
     var hashBan = hashBans[i];
 
-    var banCell = document.createElement('form');
-    banCell.innerHTML = templateHandler(language).hashBanCell;
-    common.setFormCellBoilerPlate(banCell, '/liftHashBan.js', 'hashBanCell');
+    var banCell = common.getFormCellBoilerPlate(template, '/liftHashBan.js',
+        'hashBanCell');
 
-    banCell.getElementsByClassName('hashLabel')[0].innerHTML = hashBan.md5;
-    banCell.getElementsByClassName('idIdentifier')[0].setAttribute('value',
-        hashBan._id);
+    banCell = banCell.replace('__hashLabel_inner__', common.clean(hashBan.md5));
+    banCell = banCell.replace('__idIdentifier_value__', hashBan._id);
 
-    bansDiv.appendChild(banCell);
+    children += banCell;
   }
+
+  return children;
 
 };
 
@@ -169,22 +172,23 @@ exports.hashBans = function(hashBans, boardUri, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).hashBansPage);
-    var document = dom.window.document;
+    var template = templateHandler(language, true).hashBansPage;
 
-    document.title = lang(language).titHashBans;
-
-    var boardIdentifier = document.getElementById('boardIdentifier');
+    var document = template.template.replace('__title__',
+        lang(language).titHashBans);
 
     if (boardUri) {
-      boardIdentifier.setAttribute('value', boardUri);
+      document = document.replace('__boardIdentifier_location__',
+          template.removable.boardIdentifier);
+      document = document.replace('__boardIdentifier_value__', common
+          .clean(boardUri));
+
     } else {
-      boardIdentifier.remove();
+      document = document.replace('__boardIdentifier_location__', '');
     }
 
-    exports.setHashBanCells(document, hashBans, language);
-
-    return dom.serialize();
+    return document.replace('__hashBansDiv_children__', exports
+        .getHashBanCells(hashBans, language));
 
   } catch (error) {
 
