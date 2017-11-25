@@ -828,11 +828,17 @@
       },
       {
         "name": "threadIdentifier",
-        "uses": "value"
+        "uses": [
+          "value",
+          "removal"
+        ]
       },
       {
         "name": "postIdentifier",
-        "uses": "value"
+        "uses": [
+          "value",
+          "removal"
+        ]
       },
       {
         "name": "labelMessageLength",
@@ -1003,8 +1009,11 @@
   },
   {
     "template": "accountsPage",
-    "fields": [
-      "divAccounts"
+    "prebuiltFields": [
+      {
+        "name": "divAccounts",
+        "uses": "children"
+      }
     ]
   },
   {
@@ -1015,12 +1024,35 @@
   },
   {
     "template": "accountManagementPage",
-    "fields": [
-      "emailLabel",
-      "lastSeenLabel",
-      "ownedBoardsDiv",
-      "volunteeredBoardsDiv",
-      "globalRoleLabel"
+    "prebuiltFields": [
+      {
+        "name": "emailLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "lastSeenLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "ownedBoardsDiv",
+        "uses": "children"
+      },
+      {
+        "name": "volunteeredBoardsDiv",
+        "uses": "children"
+      },
+      {
+        "name": "globalRoleLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "deletionForm",
+        "uses": "removal"
+      },
+      {
+        "name": "userIdentifier",
+        "uses": "value"
+      }
     ]
   },
   {

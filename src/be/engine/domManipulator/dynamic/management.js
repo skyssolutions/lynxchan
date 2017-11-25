@@ -948,28 +948,27 @@ exports.accounts = function(accounts, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).accountsPage);
-    var document = dom.window.document;
+    var document = templateHandler(language, true).accountsPage.template
+        .replace('__title__', lang(language).titAccounts);
 
-    document.title = lang(language).titAccounts;
+    var children = '';
 
-    var accountsDiv = document.getElementById('divAccounts');
+    var cellTemplate = templateHandler(language, true).accountCell.template;
 
     for (var i = 0; i < accounts.length; i++) {
 
-      var account = accounts[i];
+      var account = common.clean(accounts[i]);
 
-      var newCell = document.createElement('div');
-      newCell.innerHTML = templateHandler(language).accountCell;
+      var newCell = '<div class="accountCell">' + cellTemplate + '</div>';
 
-      var accountLink = newCell.getElementsByClassName('accountLink')[0];
-      accountLink.href = '/accountManagement.js?account=' + account;
-      accountLink.innerHTML = account;
+      newCell = newCell.replace('__accountLink_inner__', account);
+      newCell = newCell.replace('__accountLink_href__',
+          '/accountManagement.js?account=' + account);
 
-      accountsDiv.appendChild(newCell);
+      children += newCell;
     }
 
-    return dom.serialize();
+    return document.replace('__divAccounts_children__', children);
 
   } catch (error) {
     return error.stack.replace(/\n/g, '<br>');
@@ -980,25 +979,23 @@ exports.accounts = function(accounts, language) {
 // Section 10: Account management {
 exports.setOwnedAndVolunteeredBoards = function(accountData, document) {
 
-  var ownedBoardsDiv = document.getElementById('ownedBoardsDiv');
+  var children = '';
 
   for (var i = 0; i < accountData.ownedBoards.length; i++) {
-
-    var ownedCell = document.createElement('div');
-    ownedCell.innerHTML = accountData.ownedBoards[i];
-
-    ownedBoardsDiv.appendChild(ownedCell);
+    children += '<div>' + common.clean(accountData.ownedBoards[i]);
+    children += '</div>';
   }
 
-  var volunteeredBoardsDiv = document.getElementById('volunteeredBoardsDiv');
+  document = document.replace('__ownedBoardsDiv_children__', children);
+
+  children = '';
 
   for (i = 0; i < accountData.volunteeredBoards.length; i++) {
-
-    var volunteeredCell = document.createElement('div');
-    volunteeredCell.innerHTML = accountData.volunteeredBoards[i];
-
-    volunteeredBoardsDiv.appendChild(volunteeredCell);
+    children += '<div>' + common.clean(accountData.volunteeredBoards[i]);
+    children += '</div>';
   }
+
+  return document.replace('__volunteeredBoardsDiv_children__', children);
 
 };
 
@@ -1006,32 +1003,31 @@ exports.accountManagement = function(accountData, account, userRole, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).accountManagementPage);
-    var document = dom.window.document;
+    account = common.clean(account);
 
-    document.title = lang(language).titAccountManagement.replace('{$account}',
-        account);
+    var template = templateHandler(language, true).accountManagementPage;
+    var document = template.template.replace('__title__',
+        lang(language).titAccountManagement.replace('{$account}', account));
 
-    document.getElementById('emailLabel').innerHTML = accountData.email;
+    document = document.replace('__emailLabel_inner__', common
+        .clean(accountData.email));
 
     if (accountData.globalRole <= userRole) {
-      document.getElementById('deletionForm').remove();
+      document = document.replace('__deletionForm_location__', '');
     } else {
-      document.getElementById('userIdentifier').setAttribute('value', account);
+      document = document.replace('__deletionForm_location__',
+          template.removable.deletionForm);
+
+      document = document.replace('__userIdentifier_value__', account);
     }
 
-    var lastSeenLabel = document.getElementById('lastSeenLabel');
+    document = document.replace('__lastSeenLabel_inner__',
+        accountData.lastSeen ? accountData.lastSeen.toUTCString() : '');
 
-    if (accountData.lastSeen) {
-      lastSeenLabel.innerHTML = accountData.lastSeen.toUTCString();
-    }
+    document = exports.setOwnedAndVolunteeredBoards(accountData, document);
 
-    exports.setOwnedAndVolunteeredBoards(accountData, document);
-
-    document.getElementById('globalRoleLabel').innerHTML = miscOps
-        .getGlobalRoleLabel(accountData.globalRole, language);
-
-    return dom.serialize();
+    return document.replace('__globalRoleLabel_inner__', miscOps
+        .getGlobalRoleLabel(accountData.globalRole, language));
 
   } catch (error) {
     return error.stack.replace(/\n/g, '<br>');

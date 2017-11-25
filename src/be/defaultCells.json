@@ -723,8 +723,14 @@
   },
   {
     "template": "accountCell",
-    "fields": [
-      "accountLink"
+    "prebuiltFields": [
+      {
+        "name": "accountLink",
+        "uses": [
+          "href",
+          "inner"
+        ]
+      }
     ]
   }
 ]

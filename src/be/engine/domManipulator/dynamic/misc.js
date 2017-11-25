@@ -477,10 +477,10 @@ exports.hashBan = function(hashBans, language) {
 exports.edit = function(parameters, posting, language) {
   try {
 
-    var document = templateHandler(language, true).editPage.template.replace(
-        '__labelMessageLength_inner__', messageLength);
+    var template = templateHandler(language, true).editPage;
 
-    document = document.replace('__title__', lang(language).titEdit);
+    var document = template.template.replace('__labelMessageLength_inner__',
+        messageLength).replace('__title__', lang(language).titEdit);
 
     document = document.replace('__fieldMessage_defaultValue__',
         posting.message);
@@ -493,15 +493,20 @@ exports.edit = function(parameters, posting, language) {
 
     if (parameters.threadId) {
 
+      document = document.replace('__postIdentifier_location__', '');
+      document = document.replace('__threadIdentifier_location__',
+          template.removable.threadIdentifier);
       document = document.replace('__threadIdentifier_value__',
           parameters.threadId);
-      document = document.replace('value="__postIdentifier_value__"', '');
 
     } else {
 
-      document = document.replace('value="__threadIdentifier_value__"', '');
+      document = document.replace('__threadIdentifier_location__', '');
+      document = document.replace('__postIdentifier_location__',
+          template.removable.postIdentifier);
       document = document
           .replace('__postIdentifier_value__', parameters.postId);
+
     }
 
     return document;

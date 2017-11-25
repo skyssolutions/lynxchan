@@ -1637,7 +1637,7 @@ boardIdentifier:
     description: hidden input used to identify the board where the post belongs to.
 
 threadIdentifier:
-    use: have it's value manipulated.
+    use: have it's value manipulated or might be removed.
     description: hidden input used to identify the thread where the post belongs to.
 
 postIdentifier: 
