@@ -2,7 +2,6 @@
 
 // handles miscellaneous pages
 
-var JSDOM = require('jsdom').JSDOM;
 var logger = require('../../../logger');
 var debug = require('../../../kernel').debug();
 var overboard;

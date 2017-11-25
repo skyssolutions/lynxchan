@@ -82,14 +82,6 @@ exports.clean = function(toClean) {
   return toClean.replace(/__/g, '&#95;&#95;');
 };
 
-//TODO
-exports.setFormCellBoilerPlate = function(cell, action, cssClass) {
-  cell.method = 'post';
-  cell.enctype = 'multipart/form-data';
-  cell.action = action;
-  cell.setAttribute('class', cssClass);
-};
-
 exports.getFormCellBoilerPlate = function(cell, action, cssClass) {
 
   var toRet = '<form class="' + cssClass + '" action="' + action;

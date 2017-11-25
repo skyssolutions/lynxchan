@@ -2,7 +2,6 @@
 
 // handles management pages in general
 
-var JSDOM = require('jsdom').JSDOM;
 var debug = require('../../../kernel').debug();
 var settings;
 var minClearIpRole;
@@ -684,66 +683,93 @@ exports.flagManagement = function(boardUri, flags, language) {
 // } Section 5: Flag management
 
 // Section 6: Global settings {
-exports.setComboSetting = function(document, element, setting) {
+exports.getComboSetting = function(element, setting) {
 
   var limit = setting.limit && setting.limit < setting.options.length;
 
   limit = limit ? setting.limit + 1 : setting.options.length;
 
+  var children = '';
+
   for (var i = 0; i < limit; i++) {
 
-    var option = document.createElement('option');
-    option.value = i;
-    option.innerHTML = setting.options[i];
+    var option = '<option value="' + i;
 
     if (i === settings[setting.setting]) {
-      option.setAttribute('selected', 'selected');
+      option += '" selected="selected';
     }
 
-    element.appendChild(option);
+    children += option + '">' + setting.options[i] + '</option>';
+
   }
+
+  return children;
+
+};
+
+exports.getCheckboxSetting = function(element, setting, document) {
+
+  if (settings[setting.setting]) {
+    return document.replace(element + 'checked__', 'true');
+  } else {
+    return document.replace('checked="' + element + 'checked__"', '');
+  }
+
+};
+
+exports.setElements = function(siteSettingsRelation, document) {
+
+  for (var i = 0; i < siteSettingsRelation.length; i++) {
+
+    var setting = siteSettingsRelation[i];
+
+    var element = '__' + setting.element + '_';
+
+    switch (setting.type) {
+    case 'string':
+    case 'number': {
+
+      document = document.replace(element + 'value__',
+          settings[setting.setting] || '');
+
+      break;
+    }
+
+    case 'boolean': {
+      document = exports.getCheckboxSetting(element, setting, document);
+      break;
+    }
+
+    case 'array': {
+      document = document.replace(element + 'value__',
+          (settings[setting.setting] || '').toString());
+      break;
+
+    }
+
+    case 'range': {
+      document = document.replace(element + 'children__', exports
+          .getComboSetting(element, setting));
+
+      break;
+    }
+
+    }
+
+  }
+
+  return document;
+
 };
 
 exports.globalSettings = function(language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).globalSettingsPage);
-    var document = dom.window.document;
+    var document = templateHandler(language, true).globalSettingsPage.template
+        .replace('__title__', lang(language).titGlobalSettings);
 
-    var siteSettingsRelation = miscOps.getParametersArray(language);
-
-    for (var i = 0; i < siteSettingsRelation.length; i++) {
-
-      var setting = siteSettingsRelation[i];
-
-      var element = document.getElementById(setting.element);
-
-      switch (setting.type) {
-      case 'string':
-      case 'number':
-        element.setAttribute('value', settings[setting.setting] || '');
-        break;
-      case 'boolean':
-        if (settings[setting.setting]) {
-          element.setAttribute('checked', true);
-        }
-        break;
-
-      case 'array':
-        element.setAttribute('value', (settings[setting.setting] || '')
-            .toString());
-        break;
-      case 'range':
-        exports.setComboSetting(document, element, setting);
-        break;
-      }
-
-    }
-
-    document.title = lang(language).titGlobalSettings;
-
-    return dom.serialize();
+    return exports.setElements(miscOps.getParametersArray(language), document);
 
   } catch (error) {
 

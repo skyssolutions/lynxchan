@@ -1017,91 +1017,351 @@
   },
   {
     "template": "globalSettingsPage",
-    "fields": [
-      "fieldAddress",
-      "fieldPort",
-      "fieldFePath",
-      "fieldPageSize",
-      "fieldLatestPostsCount",
-      "fieldAutoSageLimit",
-      "fieldThreadLimit",
-      "fieldTempDir",
-      "fieldSenderEmail",
-      "fieldCaptchaExpiration",
-      "fieldSiteTitle",
-      "fieldMaxRequestSize",
-      "fieldMaxFileSize",
-      "fieldAcceptedMimes",
-      "fieldMaxFiles",
-      "fieldBanMessage",
-      "fieldAnonymousName",
-      "fieldTopBoardsCount",
-      "fieldBoardsPerPage",
-      "fieldTorSource",
-      "fieldLanguagePack",
-      "fieldMaxRules",
-      "fieldCSP",
-      "fieldThumbSize",
-      "fieldMaxFilters",
-      "fieldMaxVolunteers",
-      "fieldMaxBannerSize",
-      "fieldMaxFlagSize",
-      "fieldFloodInterval",
-      "checkboxVerbose",
-      "checkboxDisable304",
-      "comboMinClearIpRole",
-      "checkboxMediaThumb",
-      "checkboxMaintenance",
-      "checkboxVerboseMisc",
-      "checkboxMultipleReports",
-      "fieldMaster",
-      "checkboxAutoPruneFiles",
-      "checkboxDisableAccountCreation",
-      "comboBoardCreationRequirement",
-      "fieldMaxTags",
-      "fieldGlobalLatestImages",
-      "fieldTorPort",
-      "checkboxDisableFloodCheck",
-      "comboSsl",
-      "fieldSfwOverboard",
-      "fieldThumbExtension",
-      "fieldSslPass",
-      "checkboxFrontPageStats",
-      "checkboxGlobalBoardModeration",
-      "checkboxGlobalBanners",
-      "checkboxAllowCustomJs",
-      "fieldGlobalLatestPosts",
-      "fieldSlaves",
-      "checkboxGlobalCaptcha",
-      "fieldRssDomain",
-      "fieldOverboard",
-      "comboBypassMode",
-      "fieldBypassHours",
-      "fieldBypassPosts",
-      "fieldMultiBoardThreadCount",
-      "fieldConcurrentRebuildMessages",
-      "checkboxSFWLatestImages",
-      "fieldInactivityThreshold",
-      "fieldMediaPageSize",
-      "fieldMessageLength",
-      "checkboxFfmpegGifs",
-      "fieldSpamIpsSource",
-      "checkboxSpamBypass",
-      "fieldIpExpiration",
-      "checkboxDisableSpamCheck",
-      "checkboxDisableCatalogPosting",
-      "comboTorPostingLevel",
-      "checkboxAllowTorFiles",
-      "checkboxUseAlternativeLanguages",
-      "checkboxVerboseGenerator",
-      "checkboxVerboseQueue",
-      "checkboxVerboseGridfs",
-      "checkboxVerboseStatic",
-      "checkboxVerboseApis",
-      "fieldIncrementalSpamIpsSource",
-      "fieldFlagNameLength",
-      "checkboxBlockedReport",
-      "checkboxPreemptiveCaching"
+    "prebuiltFields": [
+      {
+        "name": "fieldAddons",
+        "uses": "value"
+      },
+      {
+        "name": "fieldAcceptedMimes",
+        "uses": "value"
+      },
+      {
+        "name": "fieldSlaves",
+        "uses": "value"
+      },
+      {
+        "name": "fieldAddress",
+        "uses": "value"
+      },
+      {
+        "name": "fieldFePath",
+        "uses": "value"
+      },
+      {
+        "name": "fieldMaster",
+        "uses": "value"
+      },
+      {
+        "name": "fieldTempDir",
+        "uses": "value"
+      },
+      {
+        "name": "fieldRssDomain",
+        "uses": "value"
+      },
+      {
+        "name": "fieldSslPass",
+        "uses": "value"
+      },
+      {
+        "name": "fieldSenderEmail",
+        "uses": "value"
+      },
+      {
+        "name": "fieldSiteTitle",
+        "uses": "value"
+      },
+      {
+        "name": "fieldBanMessage",
+        "uses": "value"
+      },
+      {
+        "name": "fieldAnonymousName",
+        "uses": "value"
+      },
+      {
+        "name": "fieldTorSource",
+        "uses": "value"
+      },
+      {
+        "name": "fieldCSP",
+        "uses": "value"
+      },
+      {
+        "name": "fieldIncrementalSpamIpsSource",
+        "uses": "value"
+      },
+      {
+        "name": "fieldLanguagePack",
+        "uses": "value"
+      },
+      {
+        "name": "fieldOverboard",
+        "uses": "value"
+      },
+      {
+        "name": "fieldSfwOverboard",
+        "uses": "value"
+      },
+      {
+        "name": "fieldSpamIpsSource",
+        "uses": "value"
+      },
+      {
+        "name": "fieldThumbExtension",
+        "uses": "value"
+      },
+      {
+        "name": "fieldPort",
+        "uses": "value"
+      },
+      {
+        "name": "fieldGlobalLatestImages",
+        "uses": "value"
+      },
+      {
+        "name": "fieldMessageLength",
+        "uses": "value"
+      },
+      {
+        "name": "fieldIpExpiration",
+        "uses": "value"
+      },
+      {
+        "name": "fieldInactivityThreshold",
+        "uses": "value"
+      },
+      {
+        "name": "fieldTorPort",
+        "uses": "value"
+      },
+      {
+        "name": "fieldCaptchaExpiration",
+        "uses": "value"
+      },
+      {
+        "name": "fieldOverBoardThreads",
+        "uses": "value"
+      },
+      {
+        "name": "fieldPageSize",
+        "uses": "value"
+      },
+      {
+        "name": "fieldLatestPostsCount",
+        "uses": "value"
+      },
+      {
+        "name": "fieldAutoSageLimit",
+        "uses": "value"
+      },
+      {
+        "name": "fieldMultiBoardThreadCount",
+        "uses": "value"
+      },
+      {
+        "name": "fieldThreadLimit",
+        "uses": "value"
+      },
+      {
+        "name": "fieldMaxRequestSize",
+        "uses": "value"
+      },
+      {
+        "name": "fieldMaxFileSize",
+        "uses": "value"
+      },
+      {
+        "name": "fieldMaxFiles",
+        "uses": "value"
+      },
+      {
+        "name": "fieldBypassHours",
+        "uses": "value"
+      },
+      {
+        "name": "fieldBypassPosts",
+        "uses": "value"
+      },
+      {
+        "name": "fieldTopBoardsCount",
+        "uses": "value"
+      },
+      {
+        "name": "fieldBoardsPerPage",
+        "uses": "value"
+      },
+      {
+        "name": "fieldThumbSize",
+        "uses": "value"
+      },
+      {
+        "name": "fieldMaxRules",
+        "uses": "value"
+      },
+      {
+        "name": "fieldMaxTags",
+        "uses": "value"
+      },
+      {
+        "name": "fieldMaxFilters",
+        "uses": "value"
+      },
+      {
+        "name": "fieldMaxVolunteers",
+        "uses": "value"
+      },
+      {
+        "name": "fieldMaxBannerSize",
+        "uses": "value"
+      },
+      {
+        "name": "fieldMaxFlagSize",
+        "uses": "value"
+      },
+      {
+        "name": "fieldFloodInterval",
+        "uses": "value"
+      },
+      {
+        "name": "fieldGlobalLatestPosts",
+        "uses": "value"
+      },
+      {
+        "name": "fieldConcurrentRebuildMessages",
+        "uses": "value"
+      },
+      {
+        "name": "fieldMediaPageSize",
+        "uses": "value"
+      },
+      {
+        "name": "fieldFlagNameLength",
+        "uses": "value"
+      },
+      {
+        "name": "checkboxDisable304",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxVerbose",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxBlockedReport",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxSFWLatestImages",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxFfmpegGifs",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxAutoPruneFiles",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxGlobalBanners",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxDisableFloodCheck",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxDisableSpamCheck",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxVerboseGenerator",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxVerboseMisc",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxVerboseQueue",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxVerboseGridfs",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxVerboseStatic",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxVerboseApis",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxMediaThumb",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxGlobalBoardModeration",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxMaintenance",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxDisableAccountCreation",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxAllowCustomJs",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxMultipleReports",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxGlobalCaptcha",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxSpamBypass",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxFrontPageStats",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxDisableCatalogPosting",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxAllowTorFiles",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxUseAlternativeLanguages",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxPreemptiveCaching",
+        "uses": "checked"
+      },
+      {
+        "name": "comboBypassMode",
+        "uses": "children"
+      },
+      {
+        "name": "comboSsl",
+        "uses": "children"
+      },
+      {
+        "name": "comboTorPostingLevel",
+        "uses": "children"
+      },
+      {
+        "name": "comboMinClearIpRole",
+        "uses": "children"
+      },
+      {
+        "name": "comboBoardCreationRequirement",
+        "uses": "children"
+      }
     ]
   },
   {

@@ -735,7 +735,10 @@ exports.processRangeSetting = function(item, parameters, defaultSettings,
 
   var processedParameter = +parameters[item.setting];
 
-  if (processedParameter) {
+  var exception = settingsHandler.isZeroException(item.setting,
+      processedParameter);
+
+  if (processedParameter || exception) {
     if (processedParameter !== defaultSettings[item.setting]) {
       newSettings[item.setting] = processedParameter > item.limit ? item.limit
           : processedParameter;

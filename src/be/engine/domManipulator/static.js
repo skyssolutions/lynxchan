@@ -6,7 +6,6 @@
 var kernel = require('../../kernel');
 var individualCaches = !kernel.debug();
 individualCaches = individualCaches && !kernel.feDebug();
-var JSDOM = require('jsdom').JSDOM;
 var logger = require('../../logger');
 var db = require('../../db');
 var postsCollection = db.posts();
