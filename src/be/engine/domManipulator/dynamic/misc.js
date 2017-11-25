@@ -89,95 +89,92 @@ exports.recoveryEmail = function(recoveryLink, language) {
 };
 
 // Section 1: Account {
-exports.fillBoardsDiv = function(document, boardDiv, boardList) {
+exports.getBoardsDiv = function(boardList) {
 
-  if (!boardList || !boardList.length) {
-    return;
-  }
+  var children = '';
 
-  for (var i = 0; i < boardList.length; i++) {
-    var link = document.createElement('a');
+  for (var i = 0; boardList && i < boardList.length; i++) {
 
-    if (i) {
-      boardDiv.appendChild(document.createElement('br'));
-    }
+    var boardUri = common.clean(boardList[i]);
 
-    link.innerHTML = '/' + boardList[i] + '/';
-    link.href = '/boardManagement.js?boardUri=' + boardList[i];
-
-    boardDiv.appendChild(link);
+    var href = '/boardManagement.js?boardUri=' + boardUri;
+    var link = '<a href="' + href + '">/' + boardUri + '/</a>';
+    children += '<div>' + link + '</div>';
 
   }
 
-};
+  return children;
 
-exports.setBoardCreationForm = function(userData, document) {
-
-  var allowed = userData.globalRole <= boardCreationRequirement;
-
-  if (boardCreationRequirement <= miscOps.getMaxStaffRole() && !allowed) {
-    document.getElementById('boardCreationDiv').remove();
-  }
 };
 
 exports.setAccountSettingsCheckbox = function(settings, document) {
 
-  if (!settings || !settings.length) {
-    return;
+  for ( var key in exports.accountSettingsRelation) {
+
+    var field = '__' + exports.accountSettingsRelation[key] + '_checked__';
+
+    if (settings && settings.indexOf(key) > -1) {
+      document = document.replace(field, 'true');
+    } else {
+      document = document.replace('checked="' + field + '"', '');
+    }
   }
 
-  for (var i = 0; i < settings.length; i++) {
-    var setting = settings[i];
-
-    var checkbox = document
-        .getElementById(exports.accountSettingsRelation[setting]);
-
-    checkbox.setAttribute('checked', true);
-  }
+  return document;
 
 };
 
-exports.setTitleLoginAndStaff = function(document, userData, language) {
-
-  document.title = lang(language).titAccount
-      .replace('{$login}', userData.login);
-
-  var loginLabel = document.getElementById('labelLogin');
-
-  loginLabel.innerHTML = userData.login;
+exports.setAccountHideableElements = function(userData, document, removable) {
 
   var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
-  exports.setBoardCreationForm(userData, document);
-
   if (!globalStaff) {
-    document.getElementById('globalManagementLink').remove();
+    document = document.replace('__globalManagementLink_location__', '');
+  } else {
+    document = document.replace('__globalManagementLink_location__',
+        removable.globalManagementLink);
   }
+
+  var allowed = userData.globalRole <= boardCreationRequirement;
+
+  if (boardCreationRequirement <= miscOps.getMaxStaffRole() && !allowed) {
+    document = document.replace('__boardCreationDiv_location__', '');
+  } else {
+    document = document.replace('__boardCreationDiv_location__',
+        removable.boardCreationDiv);
+  }
+
+  return document;
 
 };
 
 exports.account = function(userData, language) {
 
   try {
-    var dom = new JSDOM(templateHandler(language).accountPage);
-    var document = dom.window.document;
 
-    exports.setTitleLoginAndStaff(document, userData, language);
+    var template = templateHandler(language, true).accountPage;
 
-    exports.setAccountSettingsCheckbox(userData.settings, document);
+    var document = template.template.replace('__title__',
+        lang(language).titAccount.replace('{$login}', common
+            .clean(userData.login)));
 
-    if (userData.email && userData.email.length) {
-      document.getElementById('emailField').setAttribute('value',
-          userData.email);
-    }
+    document = document.replace('__labelLogin_inner__', common
+        .clean(userData.login));
 
-    exports.fillBoardsDiv(document, document.getElementById('ownedDiv'),
-        userData.ownedBoards);
+    document = exports.setAccountHideableElements(userData, document,
+        template.removable);
 
-    exports.fillBoardsDiv(document, document.getElementById('volunteeredDiv'),
-        userData.volunteeredBoards);
+    document = exports.setAccountSettingsCheckbox(userData.settings, document);
 
-    return dom.serialize();
+    document = document.replace('__emailField_value__', common
+        .clean(userData.email || ''));
+
+    document = document.replace('__ownedDiv_children__', exports
+        .getBoardsDiv(userData.ownedBoards));
+
+    return document.replace('__volunteeredDiv_children__', exports
+        .getBoardsDiv(userData.volunteeredBoards));
+
   } catch (error) {
 
     return error.stack.replace(/\n/g, '<br>');
@@ -463,43 +460,34 @@ exports.ban = function(ban, board, language) {
 };
 // } Section 3: Ban
 
-// Section 4: Hash ban page {
-exports.setHashBanCells = function(document, hashBans, language) {
-
-  var panel = document.getElementById('hashBansPanel');
-
-  for (var i = 0; i < hashBans.length; i++) {
-
-    var hashBan = hashBans[i];
-
-    var cell = document.createElement('div');
-    cell.innerHTML = templateHandler(language).hashBanCellDisplay;
-    cell.setAttribute('class', 'hashBanCellDisplay');
-
-    cell.getElementsByClassName('labelFile')[0].innerHTML = hashBan.file;
-
-    var boardLabel = cell.getElementsByClassName('labelBoard')[0];
-
-    boardLabel.innerHTML = hashBan.boardUri || lang(language).miscAllBoards;
-
-    panel.appendChild(cell);
-
-  }
-
-};
-
 exports.hashBan = function(hashBans, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).hashBanPage);
-    var document = dom.window.document;
+    var document = templateHandler(language, true).hashBanPage.template
+        .replace('__title__', lang(language).titHashBan);
 
-    document.title = lang(language).titHashBan;
+    var children = '';
 
-    exports.setHashBanCells(document, hashBans, language);
+    var cellTemplate = templateHandler(language, true).hashBanCellDisplay;
+    cellTemplate = cellTemplate.template;
 
-    return dom.serialize();
+    for (var i = 0; i < hashBans.length; i++) {
+
+      var hashBan = hashBans[i];
+
+      var cell = '<div class="hashBanCellDisplay">' + cellTemplate;
+
+      cell = cell.replace('__labelFile_inner__', common.clean(hashBan.file));
+
+      var boardToUse = hashBan.boardUri || lang(language).miscAllBoards;
+      cell = cell.replace('__labelBoard_inner__', common.clean(boardToUse));
+
+      children += cell + '</div>';
+
+    }
+
+    return document.replace('__hashBansPanel_children__', children);
 
   } catch (error) {
 
@@ -507,7 +495,6 @@ exports.hashBan = function(hashBans, language) {
   }
 
 };
-// } Section 4: Hash ban page
 
 exports.edit = function(parameters, posting, language) {
   try {

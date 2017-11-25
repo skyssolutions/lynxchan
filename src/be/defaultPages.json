@@ -418,14 +418,35 @@
   },
   {
     "template": "accountPage",
-    "fields": [
-      "labelLogin",
-      "ownedDiv",
-      "emailField",
-      "volunteeredDiv",
-      "globalManagementLink",
-      "boardCreationDiv",
-      "checkboxAlwaysSign"
+    "prebuiltFields": [
+      {
+        "name": "labelLogin",
+        "uses": "inner"
+      },
+      {
+        "name": "ownedDiv",
+        "uses": "children"
+      },
+      {
+        "name": "emailField",
+        "uses": "value"
+      },
+      {
+        "name": "volunteeredDiv",
+        "uses": "children"
+      },
+      {
+        "name": "globalManagementLink",
+        "uses": "removal"
+      },
+      {
+        "name": "boardCreationDiv",
+        "uses": "removal"
+      },
+      {
+        "name": "checkboxAlwaysSign",
+        "uses": "checked"
+      }
     ]
   },
   {
@@ -1085,8 +1106,11 @@
   },
   {
     "template": "hashBanPage",
-    "fields": [
-      "hashBansPanel"
+    "prebuiltFields": [
+      {
+        "name": "hashBansPanel",
+        "uses": "children"
+      }
     ]
   },
   {

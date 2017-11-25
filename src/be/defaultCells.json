@@ -723,9 +723,15 @@
   },
   {
     "template": "hashBanCellDisplay",
-    "fields": [
-      "labelFile",
-      "labelBoard"
+    "prebuiltFields": [
+      {
+        "name": "labelFile",
+        "uses": "inner"
+      },
+      {
+        "name": "labelBoard",
+        "uses": "inner"
+      }
     ]
   },
   {
