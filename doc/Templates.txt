@@ -846,7 +846,7 @@ maxFileSizeField:
     use: have it's value manipulated.
     description: field with the maximum size allowed for uploaded files.
 
-maxThreadField:
+maxThreadsField:
     use: have it's value manipulated.
     description: field with the maximum amount of threads on the board.
 
@@ -1427,7 +1427,7 @@ labelPostCount:
     description: label that holds the total post count of the board.
 
 labelTags:
-    use: have it's innerHTML manipulated.
+    use: have it's innerHTML manipulated or might be removed.
     description: label that holds the tags for this board.
 
 divDescription:
@@ -1469,7 +1469,7 @@ rangeBansDiv:
     description: div that holds the range bans.
 
 boardIdentifier:
-    use: have it's value manipulated.
+    use: have it's value manipulated or might be removed.
     description: hidden input that holds the board identification.
 
 ------------------------------------------------------------------------------------------

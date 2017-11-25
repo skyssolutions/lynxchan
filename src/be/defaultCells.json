@@ -561,22 +561,58 @@
   },
   {
     "template": "boardsCell",
-    "fields": [
-      "linkBoard",
-      "labelPostsPerHour",
-      "labelPostCount",
-      "divDescription",
-      "labelTags",
-      "labelUniqueIps",
-      "indicatorSfw",
-      "indicatorInactive"
+    "prebuiltFields": [
+      {
+        "name": "linkBoard",
+        "uses": [
+          "href",
+          "inner"
+        ]
+      },
+      {
+        "name": "labelPostsPerHour",
+        "uses": "inner"
+      },
+      {
+        "name": "labelPostCount",
+        "uses": "inner"
+      },
+      {
+        "name": "divDescription",
+        "uses": "href"
+      },
+      {
+        "name": "labelTags",
+        "uses": [
+          "inner",
+          "removal"
+        ]
+      },
+      {
+        "name": "labelUniqueIps",
+        "uses": "inner"
+      },
+      {
+        "name": "indicatorSfw",
+        "uses": "removal"
+      },
+      {
+        "name": "indicatorInactive",
+        "uses": "removal"
+      }
     ]
   },
   {
     "template": "rangeBanCell",
-    "fields": [
-      "rangeLabel",
-      "idIdentifier"
+    "prebuiltFields": [
+      {
+        "name": "rangeLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "idIdentifier",
+        "uses": "value"
+      }
     ]
   },
   {

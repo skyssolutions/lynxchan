@@ -83,16 +83,17 @@ exports.closedReports = function(reports, language) {
 };
 
 // Section 1: Range bans {
-exports.setRangeBanCells = function(document, rangeBans, boardData, language) {
+exports.getRangeBanCells = function(rangeBans, boardData, language) {
 
-  var bansDiv = document.getElementById('rangeBansDiv');
+  var children = '';
+
+  var template = templateHandler(language, true).rangeBanCell;
 
   for (var i = 0; i < rangeBans.length; i++) {
     var rangeBan = rangeBans[i];
 
-    var banCell = document.createElement('form');
-    banCell.innerHTML = templateHandler(language).rangeBanCell;
-    common.setFormCellBoilerPlate(banCell, '/liftBan.js', 'rangeBanCell');
+    var cell = common.getFormCellBoilerPlate(template.template, '/liftBan.js',
+        'rangeBanCell');
 
     var rangeToUse;
 
@@ -102,13 +103,13 @@ exports.setRangeBanCells = function(document, rangeBans, boardData, language) {
       rangeToUse = rangeBan.range.join('.');
     }
 
-    banCell.getElementsByClassName('rangeLabel')[0].innerHTML = rangeToUse;
-    banCell.getElementsByClassName('idIdentifier')[0].setAttribute('value',
-        rangeBan._id);
+    cell = cell.replace('__rangeLabel_inner__', rangeToUse);
+    cell = cell.replace('__idIdentifier_value__', rangeBan._id);
 
-    bansDiv.appendChild(banCell);
-
+    children += cell;
   }
+
+  return children;
 
 };
 
@@ -116,22 +117,24 @@ exports.rangeBans = function(rangeBans, boardData, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).rangeBansPage);
-    var document = dom.window.document;
+    var template = templateHandler(language, true).rangeBansPage;
 
-    document.title = lang(language).titRangeBans;
-
-    var boardIdentifier = document.getElementById('boardIdentifier');
+    var document = template.template.replace('__title__',
+        lang(language).titRangeBans);
 
     if (boardData) {
-      boardIdentifier.setAttribute('value', boardData.boardUri);
+
+      document = document.replace('__boardIdentifier_location__',
+          template.removable.boardIdentifier);
+      document = document.replace('__boardIdentifier_value__', common
+          .clean(boardData.boardUri));
+
     } else {
-      boardIdentifier.remove();
+      document = document.replace('__boardIdentifier_location__', '');
     }
 
-    exports.setRangeBanCells(document, rangeBans, boardData, language);
-
-    return dom.serialize();
+    return document.replace('__rangeBansDiv_children__', exports
+        .getRangeBanCells(rangeBans, boardData, language));
 
   } catch (error) {
 

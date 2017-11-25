@@ -715,7 +715,7 @@
         "uses": "value"
       },
       {
-        "name": "maxThreadField",
+        "name": "maxThreadsField",
         "uses": "value"
       },
       {
@@ -811,11 +811,29 @@
   },
   {
     "template": "boardsPage",
-    "fields": [
-      "divBoards",
-      "divPages",
-      "linkOverboard",
-      "linkSfwOver"
+    "prebuiltFields": [
+      {
+        "name": "divBoards",
+        "uses": "children"
+      },
+      {
+        "name": "divPages",
+        "uses": "children"
+      },
+      {
+        "name": "linkOverboard",
+        "uses": [
+          "href",
+          "removal"
+        ]
+      },
+      {
+        "name": "linkSfwOver",
+        "uses": [
+          "href",
+          "removal"
+        ]
+      }
     ]
   },
   {
@@ -841,9 +859,18 @@
   },
   {
     "template": "rangeBansPage",
-    "fields": [
-      "rangeBansDiv",
-      "boardIdentifier"
+    "prebuiltFields": [
+      {
+        "name": "rangeBansDiv",
+        "uses": "children"
+      },
+      {
+        "name": "boardIdentifier",
+        "uses": [
+          "value",
+          "removal"
+        ]
+      }
     ]
   },
   {

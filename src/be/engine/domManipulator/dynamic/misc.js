@@ -219,50 +219,72 @@ exports.logs = function(dates, language) {
 };
 
 // Section 2: Board listing {
-exports.setSimpleBoardCellLabels = function(board, boardCell) {
+exports.setSimpleBoardCellLabels = function(board, cell) {
 
-  var labelPPH = boardCell.getElementsByClassName('labelPostsPerHour')[0];
-  labelPPH.innerHTML = board.postsPerHour || 0;
+  cell = cell.replace('__labelPostsPerHour_inner__', board.postsPerHour || 0);
 
-  var labelUniqueIps = boardCell.getElementsByClassName('labelUniqueIps')[0];
-  labelUniqueIps.innerHTML = board.uniqueIps || 0;
+  cell = cell.replace('__labelUniqueIps_inner__', board.uniqueIps || 0);
 
-  var labelCount = boardCell.getElementsByClassName('labelPostCount')[0];
-  labelCount.innerHTML = board.lastPostId || 0;
+  cell = cell.replace('__labelPostCount_inner__', board.lastPostId || 0);
 
-  var labelDescription = boardCell.getElementsByClassName('divDescription')[0];
-  labelDescription.innerHTML = board.boardDescription;
+  cell = cell.replace('__divDescription__', common
+      .clean(board.boardDescription));
+
+  return cell;
 
 };
 
-exports.setBoardCell = function(board, boardCell) {
-
-  var linkContent = '/' + board.boardUri + '/ - ' + board.boardName;
-  var boardLink = boardCell.getElementsByClassName('linkBoard')[0];
-  boardLink.href = '/' + board.boardUri + '/';
-  boardLink.innerHTML = linkContent;
-
-  exports.setSimpleBoardCellLabels(board, boardCell);
-
-  var labelTags = boardCell.getElementsByClassName('labelTags')[0];
+exports.setBoardCellIndicators = function(cell, removable, board) {
 
   var specialSettings = board.specialSettings || [];
 
   if (specialSettings.indexOf('sfw') < 0) {
-    boardCell.getElementsByClassName('indicatorSfw')[0].remove();
+    cell = cell.replace('__indicatorSfw_location__', '');
+  } else {
+    cell = cell.replace('__indicatorSfw_location__', removable.indicatorSfw);
   }
 
   if (!board.inactive) {
-    var inactiveIndicator = boardCell
-        .getElementsByClassName('indicatorInactive')[0];
-    inactiveIndicator.remove();
+    cell = cell.replace('__indicatorInactive_location__', '');
+  } else {
+    cell = cell.replace('__indicatorInactive_location__',
+        removable.indicatorInactive);
   }
 
+  return cell;
+
+};
+
+exports.getBoardCell = function(board, language) {
+
+  var cellTemplate = templateHandler(language, true).boardsCell;
+
+  var boardUri = common.clean(board.boardUri);
+
+  var cell = '<div class="boardsCell">' + cellTemplate.template;
+  cell += '</div>';
+
+  var linkContent = '/' + boardUri + '/ - ' + common.clean(board.boardName);
+
+  cell = cell.replace('__linkBoard_href__', '/' + boardUri + '/');
+  cell = cell.replace('__linkBoard_inner__', linkContent);
+
+  cell = exports.setSimpleBoardCellLabels(board, cell);
+
   if (board.tags) {
-    labelTags.innerHTML = board.tags.join(', ');
+
+    cell = cell.replace('__labelTags_location__',
+        cellTemplate.removable.labelTags);
+
+    cell = cell.replace('__labelTags_inner__', common.clean(board.tags
+        .join(', ')));
+
   } else {
-    labelTags.remove();
+    cell = cell.replace('__labelTags_location__', '');
   }
+
+  return exports.setBoardCellIndicators(cell, cellTemplate.removable, board);
+
 };
 
 exports.getBoardPageLinkBoilerPlate = function(parameters) {
@@ -289,77 +311,88 @@ exports.getBoardPageLinkBoilerPlate = function(parameters) {
     href += '&sorting=' + parameters.sorting;
   }
 
-  return href;
+  return common.clean(href);
 
 };
 
-exports.setPages = function(parameters, document, pageCount) {
-  var pagesDiv = document.getElementById('divPages');
+exports.getPages = function(parameters, pageCount) {
 
   var boilerPlate = exports.getBoardPageLinkBoilerPlate(parameters);
 
+  var children = '';
+
   for (var j = 1; j <= pageCount; j++) {
 
-    var link = document.createElement('a');
-    link.innerHTML = j;
-    link.href = '/boards.js?page=' + j + boilerPlate;
+    var link = '<a href="/boards.js?page=' + j + boilerPlate + '">';
+    link += j + '</a>';
 
-    pagesDiv.appendChild(link);
+    children += link;
   }
+
+  return children;
+
 };
 
 exports.setBoards = function(boards, document, language) {
 
-  var divBoards = document.getElementById('divBoards');
+  var children = '';
+
+  var cellTemplate = templateHandler(language, true).boardsCell;
 
   for (var i = 0; i < boards.length; i++) {
     var board = boards[i];
 
-    var boardCell = document.createElement('div');
-    boardCell.innerHTML = templateHandler(language).boardsCell;
-    boardCell.setAttribute('class', 'boardsCell');
+    children += exports.getBoardCell(board, language);
 
-    exports.setBoardCell(board, boardCell);
-
-    divBoards.appendChild(boardCell);
   }
+
+  return document.replace('__divBoards_children__', children);
 
 };
 
-exports.setOverboardLinks = function(document) {
+exports.setOverboardLinks = function(template) {
 
-  var linkOverboard = document.getElementById('linkOverboard');
+  var document = template.template;
 
   if (overboard) {
-    linkOverboard.href = '/' + overboard + '/';
-  } else {
-    linkOverboard.remove();
-  }
+    document = document.replace('__linkOverboard_location__',
+        template.removable.linkOverboard);
 
-  var linkSfwOverboard = document.getElementById('linkSfwOver');
+    document = document
+        .replace('__linkOverboard_href__', '/' + overboard + '/');
+
+  } else {
+    document = document.replace('__linkOverboard_location__', '');
+  }
 
   if (sfwOverboard) {
-    linkSfwOverboard.href = '/' + sfwOverboard + '/';
+
+    document = document.replace('__linkSfwOver_location__',
+        template.removable.linkSfwOver);
+
+    var href = '/' + sfwOverboard + '/';
+    document = document.replace('__linkSfwOver_href__', href);
+
   } else {
-    linkSfwOverboard.remove();
+    document = document.replace('__linkSfwOver_location__', '');
   }
+
+  return document;
 
 };
 
 exports.boards = function(parameters, boards, pageCount, language) {
   try {
-    var dom = new JSDOM(templateHandler(language).boardsPage);
-    var document = dom.window.document;
 
-    document.title = lang(language).titBoards;
+    var template = templateHandler(language, true).boardsPage;
 
-    exports.setOverboardLinks(document);
+    var document = exports.setOverboardLinks(template).replace('__title__',
+        lang(language).titBoards);
 
-    exports.setBoards(boards, document, language);
+    document = exports.setBoards(boards, document, language);
 
-    exports.setPages(parameters, document, pageCount);
-
-    return dom.serialize();
+    return document.replace('__divPages_children__', exports.getPages(
+        parameters, pageCount));
 
   } catch (error) {
 
