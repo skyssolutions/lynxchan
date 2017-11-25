@@ -122,8 +122,8 @@ exports.setPostingIp = function(cell, postingData, boardData, userRole,
 
 exports.getReportLink = function(report) {
 
-  var link = '/mod.js?boardUri=' + report.boardUri + '&threadId=';
-  link += report.threadId + '#';
+  var link = '/mod.js?boardUri=' + exports.clean(report.boardUri);
+  link += '&threadId=' + report.threadId + '#';
 
   if (report.postId) {
     link += report.postId;

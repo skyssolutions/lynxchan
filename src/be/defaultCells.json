@@ -437,11 +437,23 @@
   },
   {
     "template": "closedReportCell",
-    "fields": [
-      "reasonLabel",
-      "link",
-      "closedByLabel",
-      "closedDateLabel"
+    "prebuiltFields": [
+      {
+        "name": "reasonLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "link",
+        "uses": "href"
+      },
+      {
+        "name": "closedByLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "closedDateLabel",
+        "uses": "inner"
+      }
     ]
   },
   {
@@ -652,10 +664,19 @@
   },
   {
     "template": "flagCell",
-    "fields": [
-      "flagImg",
-      "nameLabel",
-      "idIdentifier"
+    "prebuiltFields": [
+      {
+        "name": "flagImg",
+        "uses": "src"
+      },
+      {
+        "name": "nameLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "idIdentifier",
+        "uses": "value"
+      }
     ]
   },
   {

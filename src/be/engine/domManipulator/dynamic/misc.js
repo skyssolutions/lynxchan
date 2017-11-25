@@ -554,20 +554,26 @@ exports.blockBypass = function(valid, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).bypassPage);
-    var document = dom.window.document;
+    var template = templateHandler(language, true).bypassPage;
 
-    document.title = lang(language).titBlockbypass;
+    var document = template.template.replace('__title__',
+        lang(language).titBlockbypass);
 
     if (!valid) {
-      document.getElementById('indicatorValidBypass').remove();
+      document = document.replace('__indicatorValidBypass_location__', '');
+    } else {
+      document = document.replace('__indicatorValidBypass_location__',
+          template.removable.indicatorValidBypass);
     }
 
     if (!blockBypass) {
-      document.getElementById('renewForm').remove();
+      document = document.replace('__renewForm_location__', '');
+    } else {
+      document = document.replace('__renewForm_location__',
+          template.removable.renewForm);
     }
 
-    return dom.serialize();
+    return document;
 
   } catch (error) {
 

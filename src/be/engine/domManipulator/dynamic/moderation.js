@@ -43,57 +43,46 @@ exports.bans = function(bans, globalPage, language) {
 
 };
 
-// Section 1: Closed reports {
-exports.setClosedReportCell = function(cell, report, language) {
-
-  cell.innerHTML = templateHandler(language).closedReportCell;
-  cell.setAttribute('class', 'closedReportCell');
-
-  if (report.reason) {
-    var reason = cell.getElementsByClassName('reasonLabel')[0];
-    reason.innerHTML = report.reason;
-  }
-
-  var reportLink = cell.getElementsByClassName('link')[0];
-  reportLink.setAttribute('href', common.getReportLink(report));
-
-  var closedBy = cell.getElementsByClassName('closedByLabel')[0];
-  closedBy.innerHTML = report.closedBy;
-
-  var closedDate = cell.getElementsByClassName('closedDateLabel')[0];
-  closedDate.innerHTML = report.closing;
-};
-
 exports.closedReports = function(reports, language) {
 
   try {
-    var dom = new JSDOM(templateHandler(language).closedReportsPage);
-    var document = dom.window.document;
+    var document = templateHandler(language, true).closedReportsPage.template
+        .replace('__title__', lang(language).titClosedReports);
 
-    document.title = lang(language).titClosedReports;
+    var children = '';
 
-    var reportsDiv = document.getElementById('reportDiv');
+    var cellTemplate = templateHandler(language, true).closedReportCell;
 
     for (var i = 0; i < reports.length; i++) {
 
-      var cell = document.createElement('div');
+      var report = reports[i];
 
-      exports.setClosedReportCell(cell, reports[i], language);
+      var cell = '<div class="closedReportCell">' + cellTemplate.template;
 
-      reportsDiv.appendChild(cell);
+      cell = cell.replace('__reasonLabel_inner__', report.reason ? common
+          .clean(report.reason) : '');
+
+      cell = cell.replace('__link_href__', common.getReportLink(report));
+
+      cell = cell.replace('__closedByLabel_inner__', common
+          .clean(report.closedBy));
+
+      cell = cell.replace('__closedDateLabel_inner__', common
+          .formatDateToDisplay(report.closing, false, language));
+
+      children += cell + '</div>';
 
     }
 
-    return dom.serialize();
+    return document.replace('__reportDiv_children__', children);
 
   } catch (error) {
 
     return error.stack.replace(/\n/g, '<br>');
   }
 };
-// } Section 1: Closed reports
 
-// Section 2: Range bans {
+// Section 1: Range bans {
 exports.setRangeBanCells = function(document, rangeBans, boardData, language) {
 
   var bansDiv = document.getElementById('rangeBansDiv');
@@ -150,9 +139,9 @@ exports.rangeBans = function(rangeBans, boardData, language) {
   }
 
 };
-// } Section 2: Range bans
+// } Section 1: Range bans
 
-// Section 3: Hash bans {
+// Section 2: Hash bans {
 exports.setHashBanCells = function(document, hashBans, language) {
 
   var bansDiv = document.getElementById('hashBansDiv');
@@ -199,9 +188,9 @@ exports.hashBans = function(hashBans, boardUri, language) {
     return error.stack.replace(/\n/g, '<br>');
   }
 };
-// } Section 3: Hash bans
+// } Section 2: Hash bans
 
-// Section 4: Board moderation {
+// Section 3: Board moderation {
 exports.setSpecialCheckboxesAndIdentifiers = function(document, boardData) {
 
   var specialSettings = boardData.specialSettings || [];
@@ -212,35 +201,25 @@ exports.setSpecialCheckboxesAndIdentifiers = function(document, boardData) {
       continue;
     }
 
+    var field = '__' + specialSettingsRelation[key] + '_checked__';
+
     if (specialSettings.indexOf(key) > -1) {
-      document.getElementById(specialSettingsRelation[key]).setAttribute(
-          'checked', true);
+      document = document.replace(field, 'checked');
+    } else {
+      document = document.replace('checked="' + field + '"', '');
     }
   }
 
   for (var i = 0; i < boardModerationIdentifiers.length; i++) {
-    document.getElementById(boardModerationIdentifiers[i]).setAttribute(
-        'value', boardData.boardUri);
-  }
 
-};
+    var identifier = boardModerationIdentifiers[i];
 
-exports.fillVolunteers = function(document, volunteers) {
-
-  if (!volunteers) {
-    return;
-  }
-
-  var div = document.getElementById('divVolunteers');
-
-  for (var i = 0; i < volunteers.length; i++) {
-
-    var cell = document.createElement('div');
-    cell.innerHTML = volunteers[i];
-
-    div.appendChild(cell);
+    document = document.replace('__' + identifier + '_value__',
+        boardData.boardUri);
 
   }
+
+  return document;
 
 };
 
@@ -248,24 +227,34 @@ exports.boardModeration = function(boardData, ownerData, language) {
 
   try {
 
-    var dom = new JSDOM(templateHandler(language).boardModerationPage);
-    var document = dom.window.document;
+    boardData.boardUri = common.clean(boardData.boardUri);
 
-    document.title = lang(language).titBoardModeration.replace('{$board}',
-        boardData.boardUri);
+    var document = templateHandler(language, true).boardModerationPage.template
+        .replace('__title__', lang(language).titBoardModeration.replace(
+            '{$board}', boardData.boardUri));
 
-    exports.fillVolunteers(document, boardData.volunteers);
+    var children = '';
 
-    exports.setSpecialCheckboxesAndIdentifiers(document, boardData);
+    var volunteers = boardData.volunteers || [];
 
-    document.getElementById('labelOwner').innerHTML = ownerData.login;
+    for (var i = 0; i < volunteers.length; i++) {
+      children += '<div>' + common.clean(volunteers[i]) + '</div>';
+    }
 
-    document.getElementById('labelLastSeen').innerHTML = ownerData.lastSeen;
+    document = document.replace('__divVolunteers_children__', children);
+
+    document = exports.setSpecialCheckboxesAndIdentifiers(document, boardData);
+
+    document = document.replace('__labelOwner_inner__', common
+        .clean(ownerData.login));
+
+    document = document.replace('__labelLastSeen_inner__',
+        ownerData.lastSeen ? common.formatDateToDisplay(ownerData.lastSeen,
+            false, language) : '');
 
     var title = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
-    document.getElementById('labelTitle').innerHTML = title;
 
-    return dom.serialize();
+    return document.replace('__labelTitle_inner__', title);
 
   } catch (error) {
 
@@ -273,4 +262,4 @@ exports.boardModeration = function(boardData, ownerData, language) {
   }
 
 };
-// } Section 4: Board moderation
+// } Section 3: Board moderation

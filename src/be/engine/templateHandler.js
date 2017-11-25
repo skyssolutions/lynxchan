@@ -425,17 +425,12 @@ exports.handleLoadingErrors = function(errors) {
 
   console.log('Were found issues with templates.');
 
-  if (verbose) {
+  for (var i = 0; i < errors.length; i++) {
 
-    for (var i = 0; i < errors.length; i++) {
+    var error = errors[i];
 
-      var error = errors[i];
+    console.log(error);
 
-      console.log(error);
-
-    }
-  } else {
-    console.log('Enable verbose mode to output them.');
   }
 
   if (debug) {

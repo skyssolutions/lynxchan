@@ -730,8 +730,11 @@
   },
   {
     "template": "closedReportsPage",
-    "fields": [
-      "reportDiv"
+    "prebuiltFields": [
+      {
+        "name": "reportDiv",
+        "uses": "children"
+      }
     ]
   },
   {
@@ -767,16 +770,43 @@
   },
   {
     "template": "boardModerationPage",
-    "fields": [
-      "boardTransferIdentifier",
-      "boardDeletionIdentifier",
-      "labelTitle",
-      "labelOwner",
-      "labelLastSeen",
-      "checkboxSfw",
-      "specialSettingsIdentifier",
-      "checkboxLocked",
-      "divVolunteers"
+    "prebuiltFields": [
+      {
+        "name": "boardTransferIdentifier",
+        "uses": "value"
+      },
+      {
+        "name": "boardDeletionIdentifier",
+        "uses": "value"
+      },
+      {
+        "name": "labelTitle",
+        "uses": "inner"
+      },
+      {
+        "name": "labelOwner",
+        "uses": "inner"
+      },
+      {
+        "name": "labelLastSeen",
+        "uses": "inner"
+      },
+      {
+        "name": "checkboxSfw",
+        "uses": "checked"
+      },
+      {
+        "name": "specialSettingsIdentifier",
+        "uses": "value"
+      },
+      {
+        "name": "checkboxLocked",
+        "uses": "checked"
+      },
+      {
+        "name": "divVolunteers",
+        "uses": "children"
+      }
     ]
   },
   {
@@ -909,11 +939,23 @@
   },
   {
     "template": "flagsPage",
-    "fields": [
-      "flagsDiv",
-      "boardIdentifier",
-      "maxSizeLabel",
-      "maxNameLengthLabel"
+    "prebuiltFields": [
+      {
+        "name": "flagsDiv",
+        "uses": "children"
+      },
+      {
+        "name": "boardIdentifier",
+        "uses": "value"
+      },
+      {
+        "name": "maxSizeLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "maxNameLengthLabel",
+        "uses": "inner"
+      }
     ]
   },
   {
@@ -1022,9 +1064,15 @@
   },
   {
     "template": "bypassPage",
-    "fields": [
-      "indicatorValidBypass",
-      "renewForm"
+    "prebuiltFields": [
+      {
+        "name": "indicatorValidBypass",
+        "uses": "removal"
+      },
+      {
+        "name": "renewForm",
+        "uses": "removal"
+      }
     ]
   },
   {

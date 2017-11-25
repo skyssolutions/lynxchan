@@ -632,51 +632,49 @@ exports.ruleManagement = function(boardUri, rules, language) {
 // } Section 4: Rule management
 
 // Section 5: Flag management {
-exports.addFlagCells = function(document, flags, boardUri, language) {
+exports.getFlagCells = function(flags, boardUri, language) {
 
-  var flagsDiv = document.getElementById('flagsDiv');
+  var children = '';
+
+  var cellTemplate = templateHandler(language, true).flagCell.template;
 
   for (var i = 0; i < flags.length; i++) {
+
     var flag = flags[i];
 
-    var cell = document.createElement('form');
-
-    common.setFormCellBoilerPlate(cell, '/deleteFlag.js', 'flagCell');
-
-    cell.innerHTML = templateHandler(language).flagCell;
+    var cell = common.getFormCellBoilerPlate(cellTemplate, '/deleteFlag.js',
+        'flagCell');
 
     var flagUrl = '/' + boardUri + '/flags/' + flag._id;
+    cell = cell.replace('__flagImg_src__', flagUrl);
 
-    cell.getElementsByClassName('flagImg')[0].src = flagUrl;
+    cell = cell.replace('__idIdentifier_value__', flag._id);
 
-    cell.getElementsByClassName('idIdentifier')[0].setAttribute('value',
-        flag._id);
-
-    cell.getElementsByClassName('nameLabel')[0].innerHTML = flag.name;
-
-    flagsDiv.appendChild(cell);
+    children += cell.replace('__nameLabel_inner__', common.clean(flag.name));
   }
+
+  return children;
 
 };
 
 exports.flagManagement = function(boardUri, flags, language) {
   try {
 
-    var dom = new JSDOM(templateHandler(language).flagsPage);
-    var document = dom.window.document;
+    var document = templateHandler(language, true).flagsPage.template.replace(
+        '__title__', lang(language).titFlagManagement);
 
-    document.title = lang(language).titFlagManagement;
+    boardUri = common.clean(boardUri);
 
-    document.getElementById('maxSizeLabel').innerHTML = displayMaxFlagSize;
+    document = document.replace('__maxSizeLabel_inner__', displayMaxFlagSize);
 
-    var lengthLabel = document.getElementById('maxNameLengthLabel');
-    lengthLabel.innerHTML = displayMaxFlagNameLength;
+    document = document.replace('__maxNameLengthLabel_inner__',
+        displayMaxFlagNameLength);
 
-    document.getElementById('boardIdentifier').setAttribute('value', boardUri);
+    document = document.replace('__boardIdentifier_value__', boardUri);
 
-    exports.addFlagCells(document, flags, boardUri, language);
+    return document.replace('__flagsDiv_children__', exports.getFlagCells(
+        flags, boardUri, language));
 
-    return dom.serialize();
   } catch (error) {
 
     return error.stack.replace(/\n/g, '<br>');
