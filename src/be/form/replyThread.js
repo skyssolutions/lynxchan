@@ -46,7 +46,7 @@ function checkBans(req, res, parameters, userData, captchaId, auth) {
                 } else {
                   createPost(req, userData, parameters, captchaId, res, auth);
                 }
-              });
+              }, auth);
           // style exception, too simple
 
         }

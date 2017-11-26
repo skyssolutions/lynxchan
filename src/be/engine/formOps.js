@@ -491,7 +491,7 @@ exports.checkForBan = function(req, boardUri, res, callback, auth) {
 
 };
 
-exports.checkForHashBan = function(parameters, req, res, callback) {
+exports.checkForHashBan = function(parameters, req, res, callback, auth) {
 
   modOps.hashBan.checkForHashBans(parameters, req, function gotBans(error,
       hashBans) {
@@ -500,6 +500,9 @@ exports.checkForHashBan = function(parameters, req, res, callback) {
     } else if (!hashBans) {
       callback();
     } else {
+
+      res.writeHead(200, miscOps.getHeader('text/html', auth));
+
       res.end(domManipulator.hashBan(hashBans, req.language));
     }
   });

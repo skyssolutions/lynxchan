@@ -424,6 +424,10 @@
         "uses": "inner"
       },
       {
+        "name": "labelGlobalRole",
+        "uses": "inner"
+      },
+      {
         "name": "ownedDiv",
         "uses": "children"
       },
@@ -514,10 +518,6 @@
           "removal",
           "children"
         ]
-      },
-      {
-        "name": "userLabel",
-        "uses": "inner"
       },
       {
         "name": "addStaffForm",

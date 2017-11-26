@@ -18,13 +18,6 @@ var simpleAttributes = [ 'download', 'style', 'value', 'name', 'checked' ];
 var simpleProperties = [ 'href', 'title', 'src', 'defaultValue' ];
 var dataAttributes = [ 'mime', 'height', 'width' ];
 
-require('jsdom').defaultDocumentFeatures = {
-  FetchExternalResources : false,
-  ProcessExternalResources : false,
-  // someone said it might break stuff. If weird bugs, disable.
-  MutationEvents : false
-};
-
 exports.getAlternativeTemplates = function(language) {
 
   var toReturn = preBuiltAlternative[language._id];

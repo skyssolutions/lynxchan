@@ -673,8 +673,8 @@ exports.checkForLatestContent = function(document, latestImages, latestPosts,
 
 exports.setGlobalStats = function(document, globalStats, language) {
 
-  document = document.replace('__divStats_location__', templateHandler(
-      language).index.removable.divStats);
+  document = document.replace('__divStats_location__',
+      templateHandler(language).index.removable.divStats);
 
   document = document.replace('__labelTotalPosts_inner__',
       globalStats.totalPosts || 0);
@@ -757,8 +757,8 @@ exports.frontPage = function(boards, latestPosts, latestImages, globalStats,
 exports.maintenance = function(language, callback) {
   try {
 
-    var document = templateHandler(language).maintenancePage.template
-        .replace('__title__', lang(language).titMaintenance);
+    var document = templateHandler(language).maintenancePage.template.replace(
+        '__title__', lang(language).titMaintenance);
 
     var path = '/maintenance.html';
     var meta = {
@@ -903,8 +903,8 @@ exports.getLogCell = function(logEntry, language) {
 
   if (!existingCache || !individualCaches) {
 
-    var cellContent = exports.getLogEntry(
-        templateHandler(language).logCell, logEntry, language);
+    var cellContent = exports.getLogEntry(templateHandler(language).logCell,
+        logEntry, language);
 
     logCell += cellContent;
 

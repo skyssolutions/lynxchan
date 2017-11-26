@@ -61,8 +61,9 @@ Description: display the account page for the user. Requires validation.
 Json output(Object): object with the account data. Contains the following fields:
     login: login of the user.
     email: e-mail of the user.
+    globalRole(Number): global role of the user.
     volunteeredBoards(Array): array with the boards where this user is a volunteer.
-    boardCreationAllowed(boolean): indicates if the user is allowed to create boards.
+    boardCreationAllowed(Boolean): indicates if the user is allowed to create boards.
     ownedBoards(Array): array with the list of uri of boards owned by the user.
     settings(Array): array of account settings. May contain the following values:
         alwaysSignRole: user wishes to always use his role signature when posting.
@@ -150,7 +151,6 @@ Description: displays page for global staff to perform global management using t
 
 Json output(Object): object with data used in global management. Contains the following fields:
     login: login of the user.
-    globalRole(Number): global role of the user.
     staff(Array): array with the global staff of the site the user is allowed to manage. Contains objects each with the following fields:
         login: login of the user.
         globalRole: global role of the user.

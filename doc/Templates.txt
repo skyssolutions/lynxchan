@@ -549,6 +549,10 @@ boardCreationDiv:
     use: might be removed.
     description: panel that holds the board creation form.
 
+labelGlobalRole:
+    use: have it's innerHTML manipulated.
+    description: label with the user global role.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::08
@@ -605,10 +609,6 @@ globalSettingsLink:
 divStaff:
     use: have children appended to it or might be removed.
     description: contains the list of the staff of the site.
-
-userLabel:
-    use: have it's innerHTML manipulated.
-    description: contains general identification of the logged user.
 
 addStaffForm:
     use: might be removed.

@@ -433,17 +433,16 @@ exports.account = function(userData) {
     ownedBoards : userData.ownedBoards || [],
     settings : userData.settings || [],
     volunteeredBoards : userData.volunteeredBoards || [],
-    boardCreationAllowed : allowed
+    boardCreationAllowed : allowed,
+    globalRole : isNaN(userData.globalRole) ? 4 : userData.globalRole
   });
 
 };
 
-exports.globalManagement = function(userRole, userLogin, staff, reports,
-    appealedBans) {
+exports.globalManagement = function(userLogin, staff, reports, appealedBans) {
 
   return JSON.stringify({
     login : userLogin,
-    globalRole : isNaN(userRole) ? 4 : userRole,
     staff : staff || [],
     appealedBans : appealedBans || [],
     reports : reports || []

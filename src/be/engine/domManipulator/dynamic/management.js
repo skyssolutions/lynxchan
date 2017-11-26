@@ -509,13 +509,8 @@ exports.globalManagement = function(userRole, userLogin, staff, reports,
     document = exports.setGlobalManagementLinks(userRole, document,
         template.removable);
 
-    document = exports.processHideableElements(document, userRole, staff,
-        language, template.removable);
-
-    var userLabelContent = common.clean(userLogin) + ': ';
-    userLabelContent += miscOps.getGlobalRoleLabel(userRole, language);
-
-    return document.replace('__userLabel_inner__', userLabelContent);
+    return exports.processHideableElements(document, userRole, staff, language,
+        template.removable);
 
   } catch (error) {
 
@@ -568,9 +563,8 @@ exports.filterManagement = function(boardUri, filters, language) {
 
     boardUri = common.clean(boardUri);
 
-    var document = templateHandler(language).filterManagement.template
-        .replace('__title__', lang(language).titFilters.replace('{$board}',
-            boardUri));
+    var document = templateHandler(language).filterManagement.template.replace(
+        '__title__', lang(language).titFilters.replace('{$board}', boardUri));
 
     document = document.replace('__boardIdentifier_value__', boardUri);
 
@@ -978,8 +972,8 @@ exports.accounts = function(accounts, language) {
 
   try {
 
-    var document = templateHandler(language).accountsPage.template
-        .replace('__title__', lang(language).titAccounts);
+    var document = templateHandler(language).accountsPage.template.replace(
+        '__title__', lang(language).titAccounts);
 
     var children = '';
 
@@ -1114,8 +1108,8 @@ exports.mediaDetails = function(identifier, details, language) {
 
   try {
 
-    var document = templateHandler(language).mediaDetailsPage.template
-        .replace('__title__', lang(language).titMediaDetails);
+    var document = templateHandler(language).mediaDetailsPage.template.replace(
+        '__title__', lang(language).titMediaDetails);
 
     document = document.replace('__labelSize_inner__', common.formatFileSize(
         details.size, language));

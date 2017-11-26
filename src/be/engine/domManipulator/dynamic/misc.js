@@ -153,12 +153,12 @@ exports.account = function(userData, language) {
 
     var template = templateHandler(language).accountPage;
 
-    var document = template.template.replace('__title__',
-        lang(language).titAccount.replace('{$login}', common
-            .clean(userData.login)));
+    var login = common.clean(userData.login);
 
-    document = document.replace('__labelLogin_inner__', common
-        .clean(userData.login));
+    var document = template.template.replace('__title__',
+        lang(language).titAccount.replace('{$login}', login));
+
+    document = document.replace('__labelLogin_inner__', login);
 
     document = exports.setAccountHideableElements(userData, document,
         template.removable);
@@ -170,6 +170,9 @@ exports.account = function(userData, language) {
 
     document = document.replace('__ownedDiv_children__', exports
         .getBoardsDiv(userData.ownedBoards));
+
+    document = document.replace('__labelGlobalRole_inner__', miscOps
+        .getGlobalRoleLabel(userData.globalRole, language));
 
     return document.replace('__volunteeredDiv_children__', exports
         .getBoardsDiv(userData.volunteeredBoards));
@@ -185,8 +188,8 @@ exports.logs = function(dates, language) {
 
   try {
 
-    var document = templateHandler(language).logIndexPage.template
-        .replace('__title__', lang(language).titLogs);
+    var document = templateHandler(language).logIndexPage.template.replace(
+        '__title__', lang(language).titLogs);
 
     var children = '';
 
@@ -463,8 +466,8 @@ exports.hashBan = function(hashBans, language) {
 
   try {
 
-    var document = templateHandler(language).hashBanPage.template
-        .replace('__title__', lang(language).titHashBan);
+    var document = templateHandler(language).hashBanPage.template.replace(
+        '__title__', lang(language).titHashBan);
 
     var children = '';
 
@@ -604,8 +607,8 @@ exports.graphs = function(dates, language) {
 
   try {
 
-    var document = templateHandler(language).graphsIndexPage.template
-        .replace('__title__', lang(language).titGraphs);
+    var document = templateHandler(language).graphsIndexPage.template.replace(
+        '__title__', lang(language).titGraphs);
 
     var children = '';
 
@@ -637,8 +640,8 @@ exports.message = function(message, link, language) {
 
   try {
 
-    var document = templateHandler(language).messagePage.template
-        .replace('__title__', message);
+    var document = templateHandler(language).messagePage.template.replace(
+        '__title__', message);
 
     document = document.replace('__labelMessage_inner__', message);
     return document.replace('__linkRedirect_href__', link);

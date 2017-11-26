@@ -18,8 +18,8 @@ function getManagementData(userData, res, json, auth, language) {
               : 'text/html', auth));
 
           if (json) {
-            res.end(jsonBuilder.globalManagement(userData.globalRole,
-                userData.login, globalStaff, globalReports, appealedBans));
+            res.end(jsonBuilder.globalManagement(userData.login, globalStaff,
+                globalReports, appealedBans));
           } else {
 
             res.end(dom.globalManagement(userData.globalRole, userData.login,
