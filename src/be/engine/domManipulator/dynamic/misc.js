@@ -46,7 +46,7 @@ exports.error = function(code, message, language) {
 
   try {
 
-    var document = templateHandler(language, true).errorPage.template.replace(
+    var document = templateHandler(language).errorPage.template.replace(
         '__title__', lang(language).titError);
 
     document = document.replace('__codeLabel_inner__', code);
@@ -65,7 +65,7 @@ exports.resetEmail = function(password, language) {
 
   try {
 
-    return templateHandler(language, true).resetEmail.template.replace(
+    return templateHandler(language).resetEmail.template.replace(
         '__labelNewPass_inner__', password);
 
   } catch (error) {
@@ -78,7 +78,7 @@ exports.recoveryEmail = function(recoveryLink, language) {
 
   try {
 
-    return templateHandler(language, true).recoveryEmail.template.replace(
+    return templateHandler(language).recoveryEmail.template.replace(
         '__linkRecovery_href__', recoveryLink);
 
   } catch (error) {
@@ -151,7 +151,7 @@ exports.account = function(userData, language) {
 
   try {
 
-    var template = templateHandler(language, true).accountPage;
+    var template = templateHandler(language).accountPage;
 
     var document = template.template.replace('__title__',
         lang(language).titAccount.replace('{$login}', common
@@ -185,12 +185,12 @@ exports.logs = function(dates, language) {
 
   try {
 
-    var document = templateHandler(language, true).logIndexPage.template
+    var document = templateHandler(language).logIndexPage.template
         .replace('__title__', lang(language).titLogs);
 
     var children = '';
 
-    var cellTemplate = templateHandler(language, true).logIndexCell.template;
+    var cellTemplate = templateHandler(language).logIndexCell.template;
 
     for (var i = 0; i < dates.length; i++) {
 
@@ -253,7 +253,7 @@ exports.setBoardCellIndicators = function(cell, removable, board) {
 
 exports.getBoardCell = function(board, language) {
 
-  var cellTemplate = templateHandler(language, true).boardsCell;
+  var cellTemplate = templateHandler(language).boardsCell;
 
   var boardUri = common.clean(board.boardUri);
 
@@ -333,7 +333,7 @@ exports.setBoards = function(boards, document, language) {
 
   var children = '';
 
-  var cellTemplate = templateHandler(language, true).boardsCell;
+  var cellTemplate = templateHandler(language).boardsCell;
 
   for (var i = 0; i < boards.length; i++) {
     var board = boards[i];
@@ -380,7 +380,7 @@ exports.setOverboardLinks = function(template) {
 exports.boards = function(parameters, boards, pageCount, language) {
   try {
 
-    var template = templateHandler(language, true).boardsPage;
+    var template = templateHandler(language).boardsPage;
 
     var document = exports.setOverboardLinks(template).replace('__title__',
         lang(language).titBoards);
@@ -404,9 +404,9 @@ exports.getBanPage = function(ban, language) {
   var template;
 
   if (ban.range) {
-    template = templateHandler(language, true).rangeBanPage;
+    template = templateHandler(language).rangeBanPage;
   } else {
-    template = templateHandler(language, true).banPage;
+    template = templateHandler(language).banPage;
   }
 
   var document = template.template;
@@ -463,12 +463,12 @@ exports.hashBan = function(hashBans, language) {
 
   try {
 
-    var document = templateHandler(language, true).hashBanPage.template
+    var document = templateHandler(language).hashBanPage.template
         .replace('__title__', lang(language).titHashBan);
 
     var children = '';
 
-    var cellTemplate = templateHandler(language, true).hashBanCellDisplay;
+    var cellTemplate = templateHandler(language).hashBanCellDisplay;
     cellTemplate = cellTemplate.template;
 
     for (var i = 0; i < hashBans.length; i++) {
@@ -498,7 +498,7 @@ exports.hashBan = function(hashBans, language) {
 exports.edit = function(parameters, posting, language) {
   try {
 
-    var template = templateHandler(language, true).editPage;
+    var template = templateHandler(language).editPage;
 
     var document = template.template.replace('__labelMessageLength_inner__',
         messageLength).replace('__title__', lang(language).titEdit);
@@ -542,7 +542,7 @@ exports.noCookieCaptcha = function(parameters, captchaId, language) {
 
   try {
 
-    var template = templateHandler(language, true).noCookieCaptchaPage;
+    var template = templateHandler(language).noCookieCaptchaPage;
     var document = template.template.replace('__title__',
         lang(language).titNoCookieCaptcha);
 
@@ -573,7 +573,7 @@ exports.blockBypass = function(valid, language) {
 
   try {
 
-    var template = templateHandler(language, true).bypassPage;
+    var template = templateHandler(language).bypassPage;
 
     var document = template.template.replace('__title__',
         lang(language).titBlockbypass);
@@ -604,12 +604,12 @@ exports.graphs = function(dates, language) {
 
   try {
 
-    var document = templateHandler(language, true).graphsIndexPage.template
+    var document = templateHandler(language).graphsIndexPage.template
         .replace('__title__', lang(language).titGraphs);
 
     var children = '';
 
-    var cellTemplate = templateHandler(language, true).graphIndexCell.template;
+    var cellTemplate = templateHandler(language).graphIndexCell.template;
 
     for (var i = 0; i < dates.length; i++) {
 
@@ -637,7 +637,7 @@ exports.message = function(message, link, language) {
 
   try {
 
-    var document = templateHandler(language, true).messagePage.template
+    var document = templateHandler(language).messagePage.template
         .replace('__title__', message);
 
     document = document.replace('__labelMessage_inner__', message);

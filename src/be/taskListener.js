@@ -64,7 +64,34 @@ exports.handleSocket = function(socket) {
 
 };
 
-exports.start = function() {
+exports.start = function(firstBoot) {
+
+  if (firstBoot) {
+
+    process.on('exit', function(code) {
+
+      try {
+        fs.unlinkSync(socketLocation);
+      } catch (error) {
+        if (verbose) {
+          console.log(error);
+        }
+      }
+
+    });
+
+    process.on('SIGINT', function() {
+      console.log();
+
+      process.exit(2);
+
+    });
+
+    process.on('SIGTERM', function(code) {
+      process.exit(15);
+    });
+
+  }
 
   if (server) {
     server.close(function closed() {

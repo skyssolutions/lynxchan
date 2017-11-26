@@ -30,7 +30,7 @@ exports.bans = function(bans, globalPage, language) {
 
   try {
 
-    var document = templateHandler(language, true).bansPage.template.replace(
+    var document = templateHandler(language).bansPage.template.replace(
         '__title__', lang(language).titBansManagement);
 
     return document.replace('__bansDiv_children__', common.getBanList(bans,
@@ -45,12 +45,12 @@ exports.bans = function(bans, globalPage, language) {
 exports.closedReports = function(reports, language) {
 
   try {
-    var document = templateHandler(language, true).closedReportsPage.template
+    var document = templateHandler(language).closedReportsPage.template
         .replace('__title__', lang(language).titClosedReports);
 
     var children = '';
 
-    var cellTemplate = templateHandler(language, true).closedReportCell;
+    var cellTemplate = templateHandler(language).closedReportCell;
 
     for (var i = 0; i < reports.length; i++) {
 
@@ -86,7 +86,7 @@ exports.getRangeBanCells = function(rangeBans, boardData, language) {
 
   var children = '';
 
-  var template = templateHandler(language, true).rangeBanCell;
+  var template = templateHandler(language).rangeBanCell;
 
   for (var i = 0; i < rangeBans.length; i++) {
     var rangeBan = rangeBans[i];
@@ -116,7 +116,7 @@ exports.rangeBans = function(rangeBans, boardData, language) {
 
   try {
 
-    var template = templateHandler(language, true).rangeBansPage;
+    var template = templateHandler(language).rangeBansPage;
 
     var document = template.template.replace('__title__',
         lang(language).titRangeBans);
@@ -148,7 +148,7 @@ exports.getHashBanCells = function(hashBans, language) {
 
   var children = '';
 
-  var template = templateHandler(language, true).hashBanCell.template;
+  var template = templateHandler(language).hashBanCell.template;
 
   for (var i = 0; i < hashBans.length; i++) {
 
@@ -171,7 +171,7 @@ exports.hashBans = function(hashBans, boardUri, language) {
 
   try {
 
-    var template = templateHandler(language, true).hashBansPage;
+    var template = templateHandler(language).hashBansPage;
 
     var document = template.template.replace('__title__',
         lang(language).titHashBans);
@@ -235,7 +235,7 @@ exports.boardModeration = function(boardData, ownerData, language) {
 
     boardData.boardUri = common.clean(boardData.boardUri);
 
-    var document = templateHandler(language, true).boardModerationPage.template
+    var document = templateHandler(language).boardModerationPage.template
         .replace('__title__', lang(language).titBoardModeration.replace(
             '{$board}', boardData.boardUri));
 

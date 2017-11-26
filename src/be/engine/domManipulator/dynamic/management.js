@@ -189,7 +189,7 @@ exports.getVolunteersDiv = function(boardData, language) {
 
   var boardUri = common.clean(boardData.boardUri);
 
-  var template = templateHandler(language, true).volunteerCell.template;
+  var template = templateHandler(language).volunteerCell.template;
 
   for (var i = 0; i < volunteers.length; i++) {
 
@@ -218,7 +218,7 @@ exports.setBoardOwnerControls = function(document, boardData, language) {
     document = document.replace(field, boardUri);
   }
 
-  var removable = templateHandler(language, true).bManagement.removable;
+  var removable = templateHandler(language).bManagement.removable;
 
   if (customJs) {
     document = document.replace('__customJsForm_location__',
@@ -255,7 +255,7 @@ exports.setBoardManagementLinks = function(document, boardData) {
 exports.getBoardManagementContent = function(boardData, userData, bans,
     reports, language) {
 
-  var template = templateHandler(language, true).bManagement;
+  var template = templateHandler(language).bManagement;
 
   var document = template.template.replace('__boardSettingsIdentifier_value__',
       common.clean(boardData.boardUri));
@@ -340,7 +340,7 @@ exports.getStaffDiv = function(possibleRoles, staff, language) {
 
   var children = '';
 
-  var template = templateHandler(language, true).staffCell.template;
+  var template = templateHandler(language).staffCell.template;
 
   for (var i = 0; i < staff.length; i++) {
 
@@ -498,7 +498,7 @@ exports.globalManagement = function(userRole, userLogin, staff, reports,
 
   try {
 
-    var template = templateHandler(language, true).gManagement;
+    var template = templateHandler(language).gManagement;
 
     var document = template.template.replace('__title__',
         lang(language).titGlobalManagement);
@@ -529,7 +529,7 @@ exports.getFilterDiv = function(boardUri, filters, language) {
 
   var children = '';
 
-  var template = templateHandler(language, true).filterCell;
+  var template = templateHandler(language).filterCell;
 
   for (var i = 0; i < filters.length; i++) {
 
@@ -568,7 +568,7 @@ exports.filterManagement = function(boardUri, filters, language) {
 
     boardUri = common.clean(boardUri);
 
-    var document = templateHandler(language, true).filterManagement.template
+    var document = templateHandler(language).filterManagement.template
         .replace('__title__', lang(language).titFilters.replace('{$board}',
             boardUri));
 
@@ -590,7 +590,7 @@ exports.getRuleManagementCells = function(boardUri, rules, language) {
 
   var children = '';
 
-  var template = templateHandler(language, true).ruleManagementCell.template;
+  var template = templateHandler(language).ruleManagementCell.template;
 
   for (var i = 0; i < rules.length; i++) {
     var rule = rules[i];
@@ -614,7 +614,7 @@ exports.ruleManagement = function(boardUri, rules, language) {
 
     boardUri = common.clean(boardUri);
 
-    var document = templateHandler(language, true).ruleManagementPage.template
+    var document = templateHandler(language).ruleManagementPage.template
         .replace('__title__', lang(language).titRuleManagement);
 
     document = document.replace('__boardIdentifier_value__', boardUri);
@@ -635,7 +635,7 @@ exports.getFlagCells = function(flags, boardUri, language) {
 
   var children = '';
 
-  var cellTemplate = templateHandler(language, true).flagCell.template;
+  var cellTemplate = templateHandler(language).flagCell.template;
 
   for (var i = 0; i < flags.length; i++) {
 
@@ -659,7 +659,7 @@ exports.getFlagCells = function(flags, boardUri, language) {
 exports.flagManagement = function(boardUri, flags, language) {
   try {
 
-    var document = templateHandler(language, true).flagsPage.template.replace(
+    var document = templateHandler(language).flagsPage.template.replace(
         '__title__', lang(language).titFlagManagement);
 
     boardUri = common.clean(boardUri);
@@ -766,7 +766,7 @@ exports.globalSettings = function(language) {
 
   try {
 
-    var document = templateHandler(language, true).globalSettingsPage.template
+    var document = templateHandler(language).globalSettingsPage.template
         .replace('__title__', lang(language).titGlobalSettings);
 
     return exports.setElements(miscOps.getParametersArray(language), document);
@@ -783,7 +783,7 @@ exports.getBannerCells = function(banners, language) {
 
   var children = '';
 
-  var template = templateHandler(language, true).bannerCell.template;
+  var template = templateHandler(language).bannerCell.template;
 
   for (var i = 0; i < banners.length; i++) {
     var banner = banners[i];
@@ -805,7 +805,7 @@ exports.bannerManagement = function(boardUri, banners, language) {
 
   try {
 
-    var template = templateHandler(language, true).bannerManagementPage;
+    var template = templateHandler(language).bannerManagementPage;
 
     var document = template.template.replace('__maxSizeLabel_inner__',
         displayMaxBannerSize);
@@ -890,7 +890,7 @@ exports.getMediaManagementCells = function(media, language) {
 
   var children = '';
 
-  var template = templateHandler(language, true).mediaCell;
+  var template = templateHandler(language).mediaCell;
 
   for (var i = 0; i < media.length; i++) {
 
@@ -914,7 +914,7 @@ exports.mediaManagement = function(media, pages, parameters, language) {
 
   try {
 
-    var document = templateHandler(language, true).mediaManagementPage.template
+    var document = templateHandler(language).mediaManagementPage.template
         .replace('__title__', lang(language).titMediaManagement);
 
     document = document.replace('__pagesDiv_children__', exports
@@ -936,14 +936,14 @@ exports.languages = function(languages, language) {
 
   try {
 
-    var template = templateHandler(language, true).languagesManagementPage;
+    var template = templateHandler(language).languagesManagementPage;
 
     var document = template.template.replace('__title__',
         lang(language).titLanguages);
 
     var children = '';
 
-    var cellTemplate = templateHandler(language, true).languageCell.template;
+    var cellTemplate = templateHandler(language).languageCell.template;
 
     for (var i = 0; i < languages.length; i++) {
 
@@ -978,12 +978,12 @@ exports.accounts = function(accounts, language) {
 
   try {
 
-    var document = templateHandler(language, true).accountsPage.template
+    var document = templateHandler(language).accountsPage.template
         .replace('__title__', lang(language).titAccounts);
 
     var children = '';
 
-    var cellTemplate = templateHandler(language, true).accountCell.template;
+    var cellTemplate = templateHandler(language).accountCell.template;
 
     for (var i = 0; i < accounts.length; i++) {
 
@@ -1035,7 +1035,7 @@ exports.accountManagement = function(accountData, account, userRole, language) {
 
     account = common.clean(account);
 
-    var template = templateHandler(language, true).accountManagementPage;
+    var template = templateHandler(language).accountManagementPage;
     var document = template.template.replace('__title__',
         lang(language).titAccountManagement.replace('{$account}', account));
 
@@ -1070,7 +1070,7 @@ exports.socketData = function(statusData, language) {
 
   try {
 
-    var document = templateHandler(language, true).socketManagementPage.template
+    var document = templateHandler(language).socketManagementPage.template
         .replace('__title__', lang(language).titSocketManagement);
 
     return document.replace('__statusLabel_inner__', statusData.status);
@@ -1114,7 +1114,7 @@ exports.mediaDetails = function(identifier, details, language) {
 
   try {
 
-    var document = templateHandler(language, true).mediaDetailsPage.template
+    var document = templateHandler(language).mediaDetailsPage.template
         .replace('__title__', lang(language).titMediaDetails);
 
     document = document.replace('__labelSize_inner__', common.formatFileSize(

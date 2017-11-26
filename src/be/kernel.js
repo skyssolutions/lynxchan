@@ -422,7 +422,7 @@ function bootWorkers() {
     bootedWorkers++;
 
     if (workerLimit === bootedWorkers) {
-      require('./taskListener').start();
+      require('./taskListener').start(true);
     }
 
     forkTime[worker.id] = new Date().getTime();

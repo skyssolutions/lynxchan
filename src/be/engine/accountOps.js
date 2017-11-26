@@ -250,7 +250,6 @@ exports.createSession = function(login, callback) {
 
 };
 
-// Section 3: Login {
 exports.login = function(parameters, language, callback) {
 
   users.findOne({
@@ -280,9 +279,8 @@ exports.login = function(parameters, language, callback) {
   });
 
 };
-// } Section 3: Login
 
-// Section 4: Validate {
+// Section 3: Validate {
 exports.checkExpiration = function(user, now, callback) {
 
   if (user.renewExpiration < now) {
@@ -368,9 +366,9 @@ exports.validate = function(auth, language, callback) {
     }
   });
 };
-// } Section 4: Validate
+// } Section 3: Validate
 
-// Section 5: Reset request {
+// Section 4: Reset request {
 exports.generateRequest = function(domain, login, language, email, callback) {
 
   var requestHash = crypto.createHash('sha256').update(login + Math.random())
@@ -462,9 +460,9 @@ exports.requestRecovery = function(domain, language, parameters, captchaId,
       });
 
 };
-// } Section 5: Reset request
+// } Section 4: Reset request
 
-// Section 6: Password reset {
+// Section 5: Password reset {
 exports.generateNewPassword = function(login, callback, language) {
 
   var newPass = crypto.createHash('sha256').update(login + Math.random())
@@ -521,7 +519,7 @@ exports.recoverAccount = function(parameters, language, callback) {
     }
   });
 };
-// } Section 6: Reset request
+// } Section 5: Reset request
 
 exports.changeSettings = function(userData, parameters, callback) {
 
@@ -540,7 +538,7 @@ exports.changeSettings = function(userData, parameters, callback) {
 
 };
 
-// Section 7: Password change {
+// Section 6: Password change {
 exports.updatePassword = function(userData, parameters, callback) {
 
   exports.setUserPassword(userData.login, parameters.newPassword,
@@ -590,7 +588,7 @@ exports.changePassword = function(userData, parameters, language, callback) {
   });
 
 };
-// } Section 7: Password change
+// } Section 6: Password change
 
 exports.passwordMatches = function(userData, password, callback) {
 
@@ -753,7 +751,7 @@ exports.addAccount = function(userRole, parameters, language, callback) {
 
 };
 
-// Section 8: Account deletion {
+// Section 7: Account deletion {
 exports.finishAccountDeletion = function(account, callback) {
 
   boards.updateMany({
@@ -831,4 +829,4 @@ exports.deleteAccount = function(userData, parameters, language, callback) {
   });
 
 };
-// } Section 8: Account deletion
+// } Section 7: Account deletion

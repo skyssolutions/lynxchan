@@ -614,7 +614,7 @@ exports.assembleOmissionContent = function(thread, displayedImages,
 
 exports.setOmittedInformation = function(thread, posts, innerPage, language) {
 
-  var template = templateHandler(language, true).opCell;
+  var template = templateHandler(language).opCell;
 
   var threadCell = template.template;
 
@@ -664,7 +664,7 @@ exports.getThreadContent = function(thread, posts, innerPage, modding,
   var threadCell = exports.setOmittedInformation(thread, posts, innerPage,
       language);
 
-  var removable = templateHandler(language, true).opCell.removable;
+  var removable = templateHandler(language).opCell.removable;
 
   threadCell = exports.setThreadHiddeableElements(thread, threadCell,
       removable, innerPage);
@@ -711,7 +711,7 @@ exports.getThread = function(thread, posts, innerPage, modding, boardData,
 exports.generatePostHTML = function(post, language, innerPage, modding,
     preview, boardData, userRole, cacheField) {
 
-  var template = templateHandler(language, true).postCell;
+  var template = templateHandler(language).postCell;
 
   var postCell = exports.setAllSharedPostingElements(template.template, post,
       template.removable, language, modding, innerPage, userRole, boardData,
@@ -913,7 +913,7 @@ exports.setUploadCell = function(files, modding, language) {
 
   var children = '';
 
-  var template = templateHandler(language, true).uploadCell;
+  var template = templateHandler(language).uploadCell;
 
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
@@ -960,7 +960,7 @@ exports.setBanCellHiddenElements = function(ban, template, language) {
 
 exports.getBanCell = function(ban, globalPage, language) {
 
-  var template = templateHandler(language, true).banCell;
+  var template = templateHandler(language).banCell;
 
   var cell = exports.setBanCellHiddenElements(ban, template, language);
 
@@ -1011,7 +1011,7 @@ exports.getBanList = function(bans, globalPage, language) {
 exports.getReportCell = function(report, language) {
 
   var cell = '<div class="reportCell">';
-  cell += templateHandler(language, true).reportCell.template + '</div>';
+  cell += templateHandler(language).reportCell.template + '</div>';
 
   var reason = exports.clean(report.reason || '');
   cell = cell.replace('__reasonLabel_inner__', reason);

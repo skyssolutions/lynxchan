@@ -65,7 +65,7 @@ exports.loadDependencies = function() {
 exports.notFound = function(language, callback) {
 
   try {
-    var document = templateHandler(language, true).notFoundPage.template
+    var document = templateHandler(language).notFoundPage.template
         .replace('__title__');
 
     var path = '/404.html';
@@ -90,7 +90,7 @@ exports.login = function(language, callback) {
 
   try {
 
-    var template = templateHandler(language, true).loginPage;
+    var template = templateHandler(language).loginPage;
 
     var document = template.template.replace('__title__',
         lang(language).titLogin);
@@ -237,7 +237,7 @@ exports.thread = function(boardData, flagData, threadData, posts, callback,
 
     var boardUri = boardData.boardUri;
 
-    var template = templateHandler(language, true).threadPage;
+    var template = templateHandler(language).threadPage;
 
     var document = exports.setThreadCommonInfo(template, threadData, boardData,
         language, flagData, posts, modding, userRole);
@@ -355,7 +355,7 @@ exports.page = function(page, threads, pageCount, boardData, flagData,
 
   try {
 
-    var template = templateHandler(language, true).boardPage;
+    var template = templateHandler(language).boardPage;
 
     var document = common.setHeader(template, language, boardData, flagData,
         null);
@@ -401,7 +401,7 @@ exports.setCatalogCellThumb = function(thread, language) {
   var href = '/' + thread.boardUri + '/res/';
   href += thread.threadId + '.html';
 
-  var cell = templateHandler(language, true).catalogCell.template.replace(
+  var cell = templateHandler(language).catalogCell.template.replace(
       '__linkThumb_href__', href);
 
   if (thread.files && thread.files.length) {
@@ -440,7 +440,7 @@ exports.getCatalogCell = function(boardUri, document, thread, language) {
   cell = cell.replace('__labelImages_inner__', thread.fileCount || 0);
   cell = cell.replace('__labelPage_inner__', thread.page);
 
-  var removable = templateHandler(language, true).catalogCell.removable;
+  var removable = templateHandler(language).catalogCell.removable;
 
   if (thread.subject) {
 
@@ -479,7 +479,7 @@ exports.setCatalogPosting = function(boardData, flagData, document, language,
 
 exports.setCatalogElements = function(boardData, language, threads, flagData) {
 
-  var template = templateHandler(language, true).catalogPage;
+  var template = templateHandler(language).catalogPage;
 
   var document = template.template;
 
@@ -542,7 +542,7 @@ exports.catalog = function(language, boardData, threads, flagData, callback) {
 // Section 4: Front page {
 exports.getLatestImages = function(latestImages, language) {
 
-  var cellTemplate = templateHandler(language, true).latestImageCell.template;
+  var cellTemplate = templateHandler(language).latestImageCell.template;
 
   var children = '';
 
@@ -574,7 +574,7 @@ exports.getLatestImages = function(latestImages, language) {
 
 exports.getTopBoards = function(boards, language) {
 
-  var cellTemplate = templateHandler(language, true).topBoardCell.template;
+  var cellTemplate = templateHandler(language).topBoardCell.template;
   var children = '';
 
   for (var i = 0; i < boards.length; i++) {
@@ -600,7 +600,7 @@ exports.getTopBoards = function(boards, language) {
 
 exports.getLatestPosts = function(latestPosts, language) {
 
-  var cellTemplate = templateHandler(language, true).latestPostCell.template;
+  var cellTemplate = templateHandler(language).latestPostCell.template;
 
   var children = '';
 
@@ -644,7 +644,7 @@ exports.setEngineInfo = function(document) {
 exports.checkForLatestContent = function(document, latestImages, latestPosts,
     language) {
 
-  var removable = templateHandler(language, true).index.removable;
+  var removable = templateHandler(language).index.removable;
 
   if (!latestPosts) {
     document = document.replace('__divLatestPosts_location__', '');
@@ -674,7 +674,7 @@ exports.checkForLatestContent = function(document, latestImages, latestPosts,
 exports.setGlobalStats = function(document, globalStats, language) {
 
   document = document.replace('__divStats_location__', templateHandler(
-      language, true).index.removable.divStats);
+      language).index.removable.divStats);
 
   document = document.replace('__labelTotalPosts_inner__',
       globalStats.totalPosts || 0);
@@ -696,7 +696,7 @@ exports.setGlobalStats = function(document, globalStats, language) {
 exports.getFrontPageContent = function(boards, globalStats, latestImages,
     latestPosts, language) {
 
-  var templateData = templateHandler(language, true).index;
+  var templateData = templateHandler(language).index;
 
   var titleToUse = siteTitle || lang(language).titDefaultChanTitle;
 
@@ -757,7 +757,7 @@ exports.frontPage = function(boards, latestPosts, latestImages, globalStats,
 exports.maintenance = function(language, callback) {
   try {
 
-    var document = templateHandler(language, true).maintenancePage.template
+    var document = templateHandler(language).maintenancePage.template
         .replace('__title__', lang(language).titMaintenance);
 
     var path = '/maintenance.html';
@@ -797,7 +797,7 @@ exports.getOverboardThreads = function(foundThreads, foundPreviews, language) {
 
   }
 
-  var template = templateHandler(language, true).overboard.template;
+  var template = templateHandler(language).overboard.template;
   return template.replace('__divThreads_children__', children);
 
 };
@@ -904,7 +904,7 @@ exports.getLogCell = function(logEntry, language) {
   if (!existingCache || !individualCaches) {
 
     var cellContent = exports.getLogEntry(
-        templateHandler(language, true).logCell, logEntry, language);
+        templateHandler(language).logCell, logEntry, language);
 
     logCell += cellContent;
 
@@ -929,7 +929,7 @@ exports.log = function(language, date, logs, callback) {
 
   try {
 
-    var document = templateHandler(language, true).logsPage.template.replace(
+    var document = templateHandler(language).logsPage.template.replace(
         '__title__', lang(language).titLogPage.replace('{$date}', common
             .formatDateToDisplay(date, true, language)));
 
@@ -968,14 +968,14 @@ exports.getRulesDocument = function(language, boardUri, rules) {
 
   boardUri = common.clean(boardUri);
 
-  var document = templateHandler(language, true).rulesPage.template.replace(
+  var document = templateHandler(language).rulesPage.template.replace(
       '__title__', lang(language).titRules.replace('{$board}', boardUri));
 
   document = document.replace('__boardLabel_inner__', boardUri);
 
   var children = '';
 
-  var cellTemplate = templateHandler(language, true).ruleCell.template;
+  var cellTemplate = templateHandler(language).ruleCell.template;
 
   for (var i = 0; i < rules.length; i++) {
 
