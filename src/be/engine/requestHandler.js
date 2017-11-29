@@ -123,7 +123,6 @@ exports.showMaintenance = function(req, pathName, res) {
 
     res.writeHead(302, {
       'Location' : kernel.maintenanceImage()
-
     });
 
     res.end();
@@ -175,27 +174,29 @@ exports.processFormRequest = function(req, pathName, res) {
 
 };
 
-exports.getPathNameForGfs = function(pathName) {
+exports.extractMultiBoardBoards = function(boards) {
 
-  // these rules are to conform with how the files are saved on gridfs
-  if (pathName.length > 1) {
+  var boardsToPick = [];
 
-    var delta = pathName.length - indexString.length;
+  for (var i = 0; i < boards.length; i++) {
 
-    // if it ends with index.html, strip it
-    if (pathName.indexOf(indexString, delta) !== -1) {
+    var piece = boards[i];
 
-      pathName = pathName.substring(0, pathName.length - indexString.length);
-
+    if (/\W/.test(piece)) {
+      return false;
     }
+
+    boardsToPick.push(piece);
+
   }
 
-  return pathName;
+  return boardsToPick;
+
 };
 
-exports.testForMultiBoard = function(pathName, boardsToReturn) {
+exports.testForMultiBoard = function(pathName, req, res, callback) {
 
-  if (!multiBoardAllowed || maintenance) {
+  if (!multiBoardAllowed) {
     return;
   }
 
@@ -211,65 +212,15 @@ exports.testForMultiBoard = function(pathName, boardsToReturn) {
     return false;
   }
 
-  for (var i = 0; i < boards.length; i++) {
+  var boardsToPick = exports.extractMultiBoardBoards(boards);
 
-    var piece = boards[i];
-
-    boardsToReturn.push(piece);
-
-    if (/\W/.test(piece)) {
-      return false;
-    }
+  if (!boardsToPick) {
+    return false;
   }
+
+  multiBoard.outputBoards(boardsToPick, req, res, callback);
 
   return true;
-
-};
-
-exports.outputGfsFile = function(req, pathName, res) {
-
-  pathName = exports.getPathNameForGfs(pathName);
-
-  var splitArray = pathName.split('/');
-
-  var firstPart = splitArray[1];
-
-  var gotSecondString = splitArray.length === 2 && splitArray[1].length;
-
-  var selectedBoards = [];
-
-  if (firstPart.indexOf('.js', firstPart.length - 3) !== -1) {
-
-    exports.processFormRequest(req, pathName, res);
-
-  } else if (gotSecondString && !/\W/.test(splitArray[1])) {
-
-    // redirects if we missed the slash
-    res.writeHead(302, {
-      'Location' : '/' + splitArray[1] + '/'
-
-    });
-    res.end();
-
-  } else if (exports.testForMultiBoard(pathName, selectedBoards)) {
-
-    multiBoard.outputBoards(selectedBoards, req, res, function outputComplete(
-        error) {
-
-      if (error) {
-        formOps.outputError(error, 500, res, req.language);
-      }
-
-    });
-
-  } else {
-
-    gridFs.outputFile(pathName, req, res, function streamedFile(error) {
-      if (error) {
-        exports.outputError(error, res);
-      }
-    });
-  }
 
 };
 
@@ -441,27 +392,71 @@ exports.getLanguageToUse = function(req, callback) {
 
 };
 
-exports.decideRouting = function(req, pathName, res) {
+exports.routeToFormApi = function(req, pathName, res, firstPart) {
 
-  if (pathName.indexOf('/.api/') === 0) {
-    exports.processApiRequest(req, pathName.substring(5), res);
-  } else if (pathName.indexOf('/.static/') === 0) {
+  if (firstPart.length < 4) {
+    return false;
+  }
 
-    staticHandler.outputFile(req, pathName.substring(8), res,
-        function fileOutput(error) {
-          if (error) {
-            exports.outputError(error, res);
-          }
-
-        });
-
-  } else {
-    exports.outputGfsFile(req, pathName, res);
+  if (firstPart.lastIndexOf('.js') === firstPart.length - 3) {
+    exports.processFormRequest(req, pathName, res);
+    return true;
   }
 
 };
 
-exports.serve = function(req, pathName, res) {
+exports.getCleanPathName = function(pathName) {
+
+  if (!pathName || pathName.length <= indexString.length) {
+    return pathName;
+  }
+
+  var delta = pathName.length - indexString.length;
+
+  if (pathName.lastIndexOf(indexString) === delta) {
+    pathName = pathName.substring(0, pathName.length - indexString.length);
+  }
+
+  return pathName;
+
+};
+
+exports.decideRouting = function(req, pathName, res, callback) {
+
+  if (pathName.indexOf('/.api/') === 0) {
+    exports.processApiRequest(req, pathName.substring(5), res);
+    return;
+  } else if (pathName.indexOf('/.static/') === 0) {
+    staticHandler.outputFile(req, pathName.substring(8), res, callback);
+    return;
+  }
+
+  pathName = exports.getCleanPathName(pathName);
+
+  var splitArray = pathName.split('/');
+
+  if (exports.routeToFormApi(req, pathName, res, splitArray[1])) {
+    return;
+  }
+
+  var gotSecondString = splitArray.length === 2 && splitArray[1];
+
+  if (gotSecondString && !/\W/.test(splitArray[1])) {
+
+    // redirects if we missed the slash on the board front-page
+    res.writeHead(302, {
+      'Location' : '/' + splitArray[1] + '/'
+
+    });
+    res.end();
+
+  } else if (!exports.testForMultiBoard(pathName, req, res, callback)) {
+    gridFs.outputFile(pathName, req, res, callback);
+  }
+
+};
+
+exports.serve = function(req, pathName, res, callback) {
 
   if (req.headers['accept-encoding']) {
     req.compressed = req.headers['accept-encoding'].indexOf('gzip') > -1;
@@ -483,12 +478,12 @@ exports.serve = function(req, pathName, res) {
 
       req.language = language;
 
-      exports.decideRouting(req, pathName, res);
+      exports.decideRouting(req, pathName, res, callback);
 
     });
 
   } else {
-    exports.decideRouting(req, pathName, res);
+    exports.decideRouting(req, pathName, res, callback);
   }
 
 };
@@ -505,8 +500,14 @@ exports.handle = function(req, res) {
 
   if (exports.checkForRedirection(req, pathName, res)) {
     return;
-  } else {
-    exports.serve(req, pathName, res);
   }
+
+  exports.serve(req, pathName, res, function served(error) {
+
+    if (error) {
+      exports.outputError(error, res);
+    }
+
+  });
 
 };
