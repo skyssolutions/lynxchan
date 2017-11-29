@@ -692,17 +692,6 @@ exports.startEngine = function() {
 var socketLocation = settingsHandler.getGeneralSettings().tempDirectory;
 socketLocation += '/unix.socket';
 
-function transmitSocketData(data) {
-
-  var client = new require('net').Socket();
-
-  client.connect(socketLocation, function() {
-    client.write(JSON.stringify(data));
-    client.destroy();
-  });
-
-}
-
 function checkMaintenanceMode() {
 
   var parsedValue = JSON.parse(informedArguments.maintenance.value) ? true
@@ -714,7 +703,7 @@ function checkMaintenanceMode() {
 
   if (changed) {
 
-    transmitSocketData({
+    require('./taskListener').sendToSocket(socketLocation, {
       type : 'maintenance',
       value : parsedValue
     });
@@ -736,13 +725,13 @@ function initTorControl() {
           checkMaintenanceMode();
         } else if (informedArguments.reloadFrontEnd.informed) {
 
-          transmitSocketData({
+          require('./taskListener').sendToSocket(socketLocation, {
             type : 'reloadFE'
           });
 
         } else if (informedArguments.shutdown.informed) {
 
-          transmitSocketData({
+          require('./taskListener').sendToSocket(socketLocation, {
             type : 'shutdown'
           });
 

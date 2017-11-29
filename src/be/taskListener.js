@@ -13,8 +13,10 @@ var verbose = settings.verbose || settings.verboseMisc;
 var kernel = require('./kernel');
 var debug = kernel.debug();
 var server;
+var Socket = require('net').Socket;
+var headerBuffer = Buffer.alloc(5);
 
-function processTask(task) {
+exports.processTask = function(task, socket) {
 
   switch (task.type) {
   case 'maintenance': {
@@ -43,24 +45,75 @@ function processTask(task) {
     console.log('Unknown task type ' + task.type);
   }
 
-}
+};
 
-exports.handleSocket = function(socket) {
+exports.handleSocket = function(socket, callback) {
 
-  var buffer = '';
+  var buffer;
 
   socket.on('data', function(data) {
-    buffer += data;
-  });
 
-  socket.on('end', function() {
-
-    try {
-      processTask(JSON.parse(buffer));
-    } catch (error) {
-      console.log(error);
+    if (!buffer || !buffer.length) {
+      buffer = data;
+    } else {
+      buffer = Buffer.concat([ buffer, data ], buffer.length + data.length);
     }
+
+    while (true) {
+
+      if (buffer.length < 4) {
+        return;
+      }
+
+      var payloadLength = buffer.readInt32BE(0);
+
+      if (buffer.length < payloadLength) {
+        return;
+      }
+
+      var payload = buffer.slice(5, payloadLength);
+
+      if (!buffer[4]) {
+        payload = JSON.parse(payload.toString('utf8'));
+      }
+
+      callback(payload, socket);
+
+      buffer = buffer.slice(payloadLength);
+
+    }
+
   });
+
+};
+
+exports.sendToSocket = function(socket, data) {
+
+  if (typeof socket === 'string') {
+
+    var client = new Socket();
+
+    client.connect(socket, function() {
+      exports.sendToSocket(client, data);
+
+      client.destroy();
+    });
+
+    return;
+
+  }
+
+  var binary = Buffer.isBuffer(data);
+
+  if (!binary) {
+    data = Buffer.from(JSON.stringify(data), 'utf-8');
+  }
+
+  headerBuffer.writeInt32BE(data.length + 5);
+  headerBuffer[4] = binary ? 1 : 0;
+
+  socket.write(headerBuffer);
+  socket.write(data);
 
 };
 
@@ -121,10 +174,8 @@ exports.start = function(firstBoot) {
     exports.status = null;
 
     // style exception, too simple
-    server = net.createServer(function(socket) {
-
-      exports.handleSocket(socket);
-
+    server = net.createServer(function clientConnected(client) {
+      exports.handleSocket(client, exports.processTask);
     }).listen(socketLocation);
 
     server.on('error', function handleError(error) {
