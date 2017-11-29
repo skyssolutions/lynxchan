@@ -532,8 +532,21 @@ exports.pickFile = function(fileRequested, req, res, cookies, possibleFiles,
 
 };
 
-// retry means it has already failed to get a page and now is trying to get the
-// 404 page. It prevents infinite recursion
+exports.handleJit = function(file, req, res, callback, cookies) {
+
+  jitCache.checkCache(file, function checked(error, notFound) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.outputFile(notFound ? '/404.html' : file, req, res, callback,
+          cookies);
+
+    }
+  });
+
+};
+
 exports.outputFile = function(file, req, res, callback, cookies) {
 
   if (verbose) {
@@ -575,7 +588,7 @@ exports.outputFile = function(file, req, res, callback, cookies) {
           code : 'ENOENT'
         });
       } else if (!preemptiveCache) {
-        jitCache.checkCache(file, req, res, cookies, callback);
+        exports.handleJit(file, req, res, callback, cookies);
       } else {
         exports.outputFile('/404.html', req, res, callback, cookies);
       }

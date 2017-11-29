@@ -284,40 +284,21 @@ exports.getLockData = function(file) {
 
 };
 
-exports.finishedCacheGeneration = function(lockData, error, notFound, file,
-    req, res, cookies, callback) {
+exports.finishedCacheGeneration = function(lockData, error, notFound, cb) {
 
   cacheLocks.deleteOne(lockData, function deletedLock(deletionError) {
-
-    if (error) {
-      callback(error);
-    } else if (deletionError) {
-      callback(deletionError);
-    } else {
-      gridFsHandler.outputFile(notFound ? '/404.html' : file, req, res,
-          callback, cookies);
-    }
-
+    cb(error || deletionError, notFound);
   });
 
 };
 
-exports.waitForUnlock = function(file, req, res, callback, cookies, lockData,
-    attempts) {
+exports.waitForUnlock = function(callback, lockData, attempts) {
 
   attempts = attempts || 0;
 
   if (attempts > 9) {
 
-    cacheLocks.deleteOne(lockData, function deleted(error) {
-
-      if (error) {
-        callback(error);
-      } else {
-        gridFsHandler.outputFile(file, req, res, callback, cookies);
-      }
-
-    });
+    cacheLocks.deleteOne(lockData, callback);
 
     return;
   }
@@ -328,23 +309,22 @@ exports.waitForUnlock = function(file, req, res, callback, cookies, lockData,
       callback(error);
     } else if (foundLock) {
       setTimeout(function() {
-        exports.waitForUnlock(file, req, res, callback, cookies, lockData,
-            ++attempts);
+        exports.waitForUnlock(callback, lockData, ++attempts);
       }, 500);
     } else {
-      gridFsHandler.outputFile(file, req, res, callback, cookies);
+      callback();
     }
 
   });
 
 };
 
-exports.checkCache = function(file, req, res, cookies, callback) {
+exports.checkCache = function(file, callback) {
 
   var lockData = exports.getLockData(file);
 
   if (!lockData) {
-    gridFsHandler.outputFile('/404.html', req, res, callback, cookies);
+    callback(null, true);
     return;
   }
 
@@ -358,15 +338,12 @@ exports.checkCache = function(file, req, res, cookies, callback) {
 
       // style exception, too simple
       exports.generateCache(lockData, function generatedCache(error, notFound) {
-
-        exports.finishedCacheGeneration(lockData, error, notFound, file, req,
-            res, cookies, callback);
-
+        exports.finishedCacheGeneration(lockData, error, notFound, callback);
       });
       // style exception, too simple
 
     } else {
-      exports.waitForUnlock(file, req, res, callback, cookies, lockData);
+      exports.waitForUnlock(callback, lockData);
     }
 
   });
