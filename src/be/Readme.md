@@ -143,7 +143,6 @@ Settings files that goes into the settings directory:
 * `bypassDurationHours`(Number): how many hours a block bypass will last. Defaults to 24
 * `bypassMode`(Number): mode used for bypass. 0 means that it won`t be enabled. 1 means that users caught in range bans and TOR users (if TOR is allowed to use block bypass) will be able to post if they get a bypass token. 2 means that anyone will only be able to post if they get a bypass token. Defaults to 0.
 * `multiboardThreadCount`(Number): amount of threads to be displayed on the multi-board. If none is set, multi-board will not be enabled.
-* `concurrentRebuildMessages`(Number): maximum amount of concurrent rebuild queue messages being processed.
 * `rssDomain`: domain used on links on the RSS feeds. Defaults to ''. 
 * `globalLatestImages`(Number): amount of global latest images to be displayed on the front-page.
 * `master`: ip of the master.
@@ -175,7 +174,6 @@ Settings files that goes into the settings directory:
 * `incSpamIpsSource`(Boolean): complete url to be used to fetch latest additions to the spam ip database. Same rules for `spamIpsSource` apply, except that ips are separated by new lines instead of commas. Downloaded every hour. Defaults to `https://www.stopforumspam.com/downloads/listed_ip_1.zip`.
 * `flagNameLength`(Number): maximum size allowed for custom flags names. Defaults to 32.
 * `allowBlockedToReport`(Boolean): allows users that were banned or blocked to report content, including TOR users if they are not allowed to post.
-* `preemptiveCaching`(Boolean): makes the engine use the old caching behaviour, building the cache once the content changes.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.
@@ -194,9 +192,7 @@ Meta-data of files on gridfs will have the following values:
 * `lastModified`(Date): date of the last modification of the file.
 * `boards`(Array): array of boards present on the multi-board page cache.
 * `expiration`(Date): date of the expiration of the file, marking it to be removed.
-* `threadId`(Number): id of the thread the file belongs to.
 * `compressed`(Boolean): if true, it means the file has or is a compressed version.
-* `postId`(Number): id of the post the file belongs to.
 * `status`(Number): http status to be used when outputting this page. Defaults to 200 when outputting.
 * `date`(Number): date to which the file refers to.
 * `identifier`: identifier for media files.

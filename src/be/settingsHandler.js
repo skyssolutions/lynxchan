@@ -500,7 +500,6 @@ exports.getDefaultSettings = function() {
   return {
     address : '0.0.0.0',
     port : 80,
-    concurrentRebuildMessages : 1,
     fePath : __dirname + '/../fe',
     tempDirectory : '/tmp',
     pageSize : 10,

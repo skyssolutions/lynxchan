@@ -389,10 +389,6 @@ exports.prepareStream = function(stats, req, callback, cookies, res, retries) {
 
 exports.output304 = function(fileStats, res) {
 
-  if (verbose) {
-    console.log('304');
-  }
-
   var header = [];
 
   if (alternativeLanguages) {

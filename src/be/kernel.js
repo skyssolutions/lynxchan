@@ -403,10 +403,6 @@ function bootWorkers() {
 
   genQueue = require('./generationQueue');
 
-  if (!settingsHandler.getGeneralSettings().master) {
-    genQueue.loadUnfinishedMessages();
-  }
-
   var workerLimit = getWorkerLimit();
 
   for (var i = 0; i < workerLimit; i++) {
@@ -504,18 +500,6 @@ function iterateOptionalReloads(index) {
 
 }
 
-function shouldGenerateMissingFile(fileToCheck, foundFiles) {
-
-  var skip = fileToCheck === '/';
-
-  if (skip && !settingsHandler.getGeneralSettings().preemptiveCaching) {
-    return;
-  }
-
-  return foundFiles.indexOf(fileToCheck) === -1;
-
-}
-
 function iterateDefaultPages(foundFiles, index) {
 
   index = index || 0;
@@ -530,7 +514,7 @@ function iterateDefaultPages(foundFiles, index) {
 
   var fileData = defaultFilesRelation[fileToCheck];
 
-  if (shouldGenerateMissingFile(fileToCheck, foundFiles) || fileData.command) {
+  if (foundFiles.indexOf(fileToCheck) === -1 || fileData.command) {
     generator[fileData.generatorModule][fileData.generatorFunction]
         (function generated(error) {
           if (error) {
@@ -555,11 +539,7 @@ function iterateDefaultPages(foundFiles, index) {
 // we need to check if the default pages can be found
 function checkForDefaultPages() {
 
-  if (settingsHandler.getGeneralSettings().preemptiveCaching) {
-    generator = require('./engine/generator');
-  } else {
-    generator = require('./engine/degenerator');
-  }
+  generator = require('./engine/degenerator');
 
   if (informedArguments.reload.informed) {
     regenerateAll();

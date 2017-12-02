@@ -327,10 +327,6 @@ uploadReferences: stores reference count to uploaded files.
 
 ----------------------------------------------------------------------------------------
 
-rebuildMessages: internal usage collection that stores rebuild message that were not completed yet.
-
-----------------------------------------------------------------------------------------
-
 languages: stores alternative languages.
     frontEnd: path for the language's front-end.
     languagePack: path for the language's language pack.

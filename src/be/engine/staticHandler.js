@@ -187,10 +187,6 @@ exports.outputFile = function(req, pathName, res, callback) {
 
       if (lastSeen === file.mtime && !disable304) {
 
-        if (verbose) {
-          console.log('304');
-        }
-
         var header = [ [ 'expires', new Date().toUTCString() ],
             [ 'Vary', 'Accept-Language' ] ];
 

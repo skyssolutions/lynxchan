@@ -22,7 +22,6 @@ var cachedDb;
 
 var maxIndexesSet = 21;
 
-var cachedMessages;
 var cachedLanguages;
 var cachedUploadReferences;
 var cachedLatestImages;
@@ -648,10 +647,6 @@ function initFiles(callback) {
 // end of index initialization
 
 // start of getters
-exports.messages = function() {
-  return cachedMessages;
-};
-
 exports.languages = function() {
   return cachedLanguages;
 };
@@ -825,7 +820,6 @@ function initGlobalIndexedCollections(callback) {
   cachedTripcodes = cachedDb.collection('secureTripcodes');
   cachedFlood = cachedDb.collection('floodRecord');
   cachedCaptchas = cachedDb.collection('captchas');
-  cachedMessages = cachedDb.collection('rebuildMessages');
   cachedRecoveryRequests = cachedDb.collection('recoveryRequests');
   cachedUsers = cachedDb.collection('users');
   cachedUploadReferences = cachedDb.collection('uploadReferences');

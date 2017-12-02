@@ -13,6 +13,7 @@ var proxy = require('http-proxy').createProxyServer({
 var multiBoard = require('./multiBoardHandler');
 var multiBoardAllowed;
 var verbose;
+var verboseApis;
 var maintenance;
 var feDebug = kernel.feDebug();
 var debug = kernel.debug();
@@ -40,6 +41,7 @@ exports.loadSettings = function() {
 
   multiBoardAllowed = settings.multiboardThreadCount;
   verbose = settings.verbose || settings.verboseMisc;
+  verboseApis = settings.verbose || settings.verboseApis;
   slaves = settings.slaves;
   useLanguages = settings.useAlternativeLanguages;
   master = settings.master;
@@ -126,7 +128,7 @@ exports.outputError = function(error, res) {
 
 exports.processApiRequest = function(req, pathName, res) {
 
-  if (verbose) {
+  if (verboseApis) {
     console.log('Processing api request: ' + pathName);
   }
 
@@ -177,7 +179,7 @@ exports.showMaintenance = function(req, pathName, res) {
 
 exports.processFormRequest = function(req, pathName, res) {
 
-  if (verbose) {
+  if (verboseApis) {
     console.log('Processing form request: ' + pathName);
   }
 

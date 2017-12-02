@@ -1219,10 +1219,6 @@
         "uses": "value"
       },
       {
-        "name": "fieldConcurrentRebuildMessages",
-        "uses": "value"
-      },
-      {
         "name": "fieldMediaPageSize",
         "uses": "value"
       },
@@ -1336,10 +1332,6 @@
       },
       {
         "name": "checkboxUseAlternativeLanguages",
-        "uses": "checked"
-      },
-      {
-        "name": "checkboxPreemptiveCaching",
         "uses": "checked"
       },
       {

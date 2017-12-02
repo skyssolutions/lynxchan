@@ -1963,10 +1963,6 @@ fieldMultiBoardThreadCount:
     use: have it's value manipulated.
     description: indicates how threads should be displayed on the multi-board.
 
-fieldConcurrentRebuildMessages:
-    use: have it's value manipulated.
-    description: indicates how many maximum concurrent messages should be handled concurrently.
-
 fieldGlobalLatestImages:
     use: have it's value manipulated.
     description: field that displays the amount of global latest images to be displayed on the front-page.
@@ -2034,10 +2030,6 @@ checkboxVerboseStatic:
 checkboxVerboseApis:
     use: might be turned on.
     description: checkbox that indicates if the verbose apis mode is on.
-
-checkboxPreemptiveCaching:
-    use: might be turned on.
-    description: checkbox that indicates if the preemptive caching is on.
 
 ------------------------------------------------------------------------------------------
 

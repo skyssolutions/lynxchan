@@ -503,10 +503,6 @@ exports.getParametersArray = function(language) {
     element : 'fieldGlobalLatestPosts'
   }, {
     type : 'number',
-    setting : 'concurrentRebuildMessages',
-    element : 'fieldConcurrentRebuildMessages'
-  }, {
-    type : 'number',
     setting : 'mediaPageSize',
     element : 'fieldMediaPageSize'
   }, {
@@ -622,10 +618,6 @@ exports.getParametersArray = function(language) {
     type : 'boolean',
     setting : 'useAlternativeLanguages',
     element : 'checkboxUseAlternativeLanguages'
-  }, {
-    type : 'boolean',
-    setting : 'preemptiveCaching',
-    element : 'checkboxPreemptiveCaching'
   }, {
     // range
     type : 'range',

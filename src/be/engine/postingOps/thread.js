@@ -6,12 +6,10 @@ var crypto = require('crypto');
 var db = require('../../db');
 var threads = db.threads();
 var boards = db.boards();
-var generator = require('../generator').board;
 var debug = require('../../kernel').debug();
 var logger = require('../../logger');
 var common;
 var delOps;
-var generator;
 var overboardOps;
 var uploadHandler;
 var lang;
@@ -38,7 +36,6 @@ exports.loadDependencies = function() {
 
   common = require('.').common;
   delOps = require('../deletionOps').miscDeletions;
-  generator = require('../generator').board;
   uploadHandler = require('../uploadHandler');
   lang = require('../langOps').languagePack;
   overboardOps = require('../overboardOps');
@@ -90,22 +87,12 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
     });
   }
 
-  generator.thread(boardUri, threadId, function generateThread(error) {
-
+  common.addPostToStats(thread.ip, boardUri, function updatedStats(error) {
     if (error) {
-      console.log(error);
+      console.log(error.toString());
     }
 
-    // style exception, too simple
-    common.addPostToStats(thread.ip, boardUri, function updatedStats(error) {
-      if (error) {
-        console.log(error.toString());
-      }
-
-      exports.addThreadToLatestPosts(thread, threadId, callback);
-    });
-    // style exception, too simple
-
+    exports.addThreadToLatestPosts(thread, threadId, callback);
   });
 
 };
