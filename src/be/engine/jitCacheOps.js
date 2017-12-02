@@ -5,14 +5,16 @@ var feDebug = kernel.feDebug();
 var debug = kernel.debug();
 var db = require('../db');
 var boards = db.boards();
+var taskListener = require('../taskListener');
 var threads = db.threads();
 var posts = db.posts();
 var aggregatedLogs = db.aggregatedLogs();
-var cacheLocks = db.cacheLocks();
 var generator;
+var cacheHandler;
 var gridFsHandler;
 var templateHandler;
 var overboardPages;
+var socketLocation;
 var overboardAlternativePages = [ '1.json', 'index.rss', '' ];
 var catalogPages = [ 'catalog.html', 'catalog.json', 'index.rss' ];
 var rulesPages = [ 'rules.html', 'rules.json' ];
@@ -20,6 +22,9 @@ var rulesPages = [ 'rules.html', 'rules.json' ];
 exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
+
+  socketLocation = settings.tempDirectory;
+  socketLocation += '/unix.socket';
 
   overboardPages = [];
 
@@ -36,6 +41,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
   templateHandler = require('./templateHandler');
   generator = require('./generator');
+  cacheHandler = require('./cacheHandler');
   gridFsHandler = require('./gridFsHandler');
 };
 
@@ -70,7 +76,7 @@ exports.generateBoardCache = function(lockData, callback) {
 
           switch (lockData.type) {
 
-          case 'board': {
+          case 'page': {
             generator.board.page(lockData.boardUri, lockData.page, callback,
                 board);
             break;
@@ -111,7 +117,7 @@ exports.generateCache = function(lockData, callback) {
   case 'rules':
   case 'catalog':
   case 'thread':
-  case 'board': {
+  case 'page': {
     exports.generateBoardCache(lockData, callback);
     break;
   }
@@ -248,7 +254,7 @@ exports.getLockData = function(file) {
         return {
           boardUri : fileParts[1],
           page : 1,
-          type : 'board'
+          type : 'page'
         };
       }
 
@@ -259,7 +265,7 @@ exports.getLockData = function(file) {
         return {
           boardUri : fileParts[1],
           page : +matches[1],
-          type : 'board'
+          type : 'page'
         };
 
       } else if (catalogPages.indexOf(fileParts[2]) > -1) {
@@ -286,7 +292,10 @@ exports.getLockData = function(file) {
 
 exports.finishedCacheGeneration = function(lockData, error, notFound, cb) {
 
-  cacheLocks.deleteOne(lockData, function deletedLock(deletionError) {
+  taskListener.sendToSocket(socketLocation, {
+    type : 'deleteLock',
+    lockData : lockData
+  }, function deletedLock(deletionError) {
     cb(error || deletionError, notFound);
   });
 
@@ -298,16 +307,19 @@ exports.waitForUnlock = function(callback, lockData, attempts) {
 
   if (attempts > 9) {
 
-    cacheLocks.deleteOne(lockData, callback);
+    taskListener.sendToSocket(socketLocation, {
+      type : 'deleteLock',
+      lockData : lockData
+    }, callback);
 
     return;
   }
 
-  cacheLocks.findOne(lockData, function found(error, foundLock) {
+  cacheHandler.getLock(lockData, true, function found(error, isLocked) {
 
     if (error) {
       callback(error);
-    } else if (foundLock) {
+    } else if (isLocked) {
       setTimeout(function() {
         exports.waitForUnlock(callback, lockData, ++attempts);
       }, 500);
@@ -328,13 +340,11 @@ exports.checkCache = function(file, callback) {
     return;
   }
 
-  cacheLocks.findOneAndUpdate(lockData, lockData, {
-    upsert : true
-  }, function gotLock(error, result) {
+  cacheHandler.getLock(lockData, false, function gotLock(error, isLocked) {
 
     if (error) {
       callback(error);
-    } else if (!result.value) {
+    } else if (!isLocked) {
 
       // style exception, too simple
       exports.generateCache(lockData, function generatedCache(error, notFound) {

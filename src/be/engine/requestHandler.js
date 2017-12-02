@@ -22,6 +22,7 @@ var formOps;
 var apiOps;
 var miscOps;
 var gridFs;
+var cacheHandler;
 var staticHandler;
 var lastSlaveIndex = 0;
 var slaves;
@@ -52,7 +53,42 @@ exports.loadDependencies = function() {
   apiOps = require('./apiOps');
   miscOps = require('./miscOps');
   gridFs = require('./gridFsHandler');
+  cacheHandler = require('./cacheHandler');
   staticHandler = require('./staticHandler');
+
+};
+
+exports.readRangeHeader = function(range, totalLength) {
+
+  if (!range) {
+    return null;
+  }
+
+  var array = range.split(/bytes=([0-9]*)-([0-9]*)/);
+  var start = parseInt(array[1]);
+  var end = parseInt(array[2]);
+
+  if (isNaN(start)) {
+    start = totalLength - end;
+    end = totalLength - 1;
+  } else if (isNaN(end)) {
+    end = totalLength - 1;
+  }
+
+  // limit last-byte-pos to current length
+  if (end > totalLength - 1) {
+    end = totalLength - 1;
+  }
+
+  // invalid or unsatisifiable
+  if (isNaN(start) || isNaN(end) || start > end || start < 0) {
+    return null;
+  }
+
+  return {
+    start : start,
+    end : end
+  };
 
 };
 
@@ -451,7 +487,7 @@ exports.decideRouting = function(req, pathName, res, callback) {
     res.end();
 
   } else if (!exports.testForMultiBoard(pathName, req, res, callback)) {
-    gridFs.outputFile(pathName, req, res, callback);
+    cacheHandler.outputFile(pathName, req, res, callback);
   }
 
 };

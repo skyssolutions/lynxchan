@@ -9,12 +9,56 @@ var settingsHandler = require('./settingsHandler');
 var settings = settingsHandler.getGeneralSettings();
 var socketLocation = settings.tempDirectory;
 socketLocation += '/unix.socket';
-var verbose = settings.verbose || settings.verboseMisc;
 var kernel = require('./kernel');
 var debug = kernel.debug();
 var server;
-var Socket = require('net').Socket;
+var verbose;
+var cacheHandler;
+var Socket = net.Socket;
 var headerBuffer = Buffer.alloc(5);
+
+exports.reload = function() {
+
+  var settings = settingsHandler.getGeneralSettings();
+  verbose = settings.verbose || settings.verboseMisc;
+  cacheHandler = require('./engine/cacheHandler');
+
+};
+
+exports.processCacheTasks = function(task, socket) {
+
+  switch (task.type) {
+
+  case 'deleteLock': {
+    cacheHandler.deleteLock(task);
+    break;
+  }
+
+  case 'getLock': {
+    cacheHandler.receiveGetLock(task, socket);
+    break;
+  }
+
+  case 'cacheWrite': {
+    cacheHandler.receiveWriteData(task, socket);
+    break;
+  }
+
+  case 'cacheRead': {
+    cacheHandler.receiveOutputFile(task, socket);
+    break;
+  }
+
+  case 'cacheClear': {
+    cacheHandler.clear(task);
+    break;
+  }
+
+  default:
+    exports.processTask(task, socket);
+  }
+
+};
 
 exports.processTask = function(task, socket) {
 
@@ -87,16 +131,21 @@ exports.handleSocket = function(socket, callback) {
 
 };
 
-exports.sendToSocket = function(socket, data) {
+exports.sendToSocket = function(socket, data, callback) {
 
   if (typeof socket === 'string') {
 
     var client = new Socket();
 
+    if (callback) {
+      client.on('end', callback);
+      client.on('error', callback);
+    }
+
     client.connect(socket, function() {
       exports.sendToSocket(client, data);
 
-      client.destroy();
+      client.end();
     });
 
     return;
@@ -175,7 +224,7 @@ exports.start = function(firstBoot) {
 
     // style exception, too simple
     server = net.createServer(function clientConnected(client) {
-      exports.handleSocket(client, exports.processTask);
+      exports.handleSocket(client, exports.processCacheTasks);
     }).listen(socketLocation);
 
     server.on('error', function handleError(error) {

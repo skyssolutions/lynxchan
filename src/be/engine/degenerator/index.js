@@ -34,22 +34,17 @@ var fullReloadCallback = function(error, callback) {
 
   toDegenerate--;
 
-  var left = MAX_TO_DEGENERATE - toDegenerate;
-  var percentage = Math.floor(left * 100 / MAX_TO_DEGENERATE);
-
-  console.log('Full deletion progress: ' + percentage + '%');
-
   if (!toDegenerate) {
     callback();
   }
 
 };
 
-exports.globalReloads = function(callback) {
+exports.globalReloads = function(callback, direct) {
 
   exports.global.frontPage(function reloaded(error) {
     fullReloadCallback(error, callback);
-  });
+  }, direct);
 
   exports.global.spoiler(function reloaded(error) {
     fullReloadCallback(error, callback);
@@ -85,15 +80,15 @@ exports.globalReloads = function(callback) {
 
   exports.global.overboard(function reloaded(error) {
     fullReloadCallback(error, callback);
-  });
+  }, direct);
 
   exports.global.logs(function reloaded(error) {
     fullReloadCallback(error, callback);
-  });
+  }, direct);
 
 };
 
-exports.all = function(callback) {
+exports.all = function(callback, direct) {
 
   if (reloading) {
     return;
@@ -104,8 +99,8 @@ exports.all = function(callback) {
 
   exports.board.boards(function reloaded(error) {
     fullReloadCallback(error, callback);
-  });
+  }, direct);
 
-  exports.globalReloads(callback);
+  exports.globalReloads(callback, direct);
 
 };

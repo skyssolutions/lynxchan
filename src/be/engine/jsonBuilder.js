@@ -4,7 +4,7 @@
 
 var logger = require('../logger');
 var settings;
-var gridFsHandler;
+var cacheHandler;
 var miscOps;
 var overboard;
 var minClearIpRole;
@@ -41,7 +41,7 @@ exports.loadDependencies = function() {
 
   domManipulator = require('./domManipulator').common;
   miscOps = require('./miscOps');
-  gridFsHandler = require('./gridFsHandler');
+  cacheHandler = require('./cacheHandler');
   version = require('./addonOps').getEngineInfo().version;
 
 };
@@ -209,7 +209,7 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
 
     var path = '/' + boardUri + '/res/' + threadData.threadId + '.json';
 
-    gridFsHandler.writeData(JSON.stringify(threadObject), path,
+    cacheHandler.writeData(JSON.stringify(threadObject), path,
         'application/json', {
           boardUri : boardUri,
           threadId : threadData.threadId,
@@ -297,7 +297,7 @@ exports.frontPage = function(boards, globalLatestPosts, globalLatestImages,
 
   exports.setGlobalStats(globalStats, object);
 
-  gridFsHandler.writeData(JSON.stringify(object), '/index.json',
+  cacheHandler.writeData(JSON.stringify(object), '/index.json',
       'application/json', {
         type : 'frontPage'
       }, callback);
@@ -367,10 +367,11 @@ exports.page = function(boardUri, page, threads, pageCount, boardData,
     toWrite.flagData = flagData;
   }
 
-  gridFsHandler.writeData(JSON.stringify(toWrite), ownName, 'application/json',
+  cacheHandler.writeData(JSON.stringify(toWrite), ownName, 'application/json',
       {
         boardUri : boardUri,
-        type : 'board'
+        type : 'page',
+        page : page
       }, callback);
 
 };
@@ -405,7 +406,7 @@ exports.catalog = function(boardUri, threads, callback) {
 
   var path = '/' + boardUri + '/catalog.json';
 
-  gridFsHandler.writeData(JSON.stringify(threadsArray), path,
+  cacheHandler.writeData(JSON.stringify(threadsArray), path,
       'application/json', {
         boardUri : boardUri,
         type : 'catalog'
@@ -414,8 +415,8 @@ exports.catalog = function(boardUri, threads, callback) {
 };
 
 exports.rules = function(boardUri, rules, callback) {
-  gridFsHandler.writeData(JSON.stringify(rules),
-      '/' + boardUri + '/rules.json', 'application/json', {
+  cacheHandler.writeData(JSON.stringify(rules), '/' + boardUri + '/rules.json',
+      'application/json', {
         boardUri : boardUri,
         type : 'rules'
       }, callback);
@@ -601,7 +602,7 @@ exports.overboard = function(foundThreads, previewRelation, callback,
   } else {
     var url = '/' + (sfw ? sfwOverboard : overboard) + '/1.json';
 
-    gridFsHandler.writeData(JSON.stringify({
+    cacheHandler.writeData(JSON.stringify({
       threads : threadsToAdd
     }), url, 'application/json', {
       type : 'overboard'
@@ -615,8 +616,9 @@ exports.log = function(date, logs, callback) {
   var path = '/.global/logs/';
   path += logger.formatedDate(date) + '.json';
 
-  gridFsHandler.writeData(JSON.stringify(logs), path, 'application/json', {
-    type : 'log'
+  cacheHandler.writeData(JSON.stringify(logs), path, 'application/json', {
+    type : 'log',
+    date : date.toUTCString()
   }, callback);
 
 };

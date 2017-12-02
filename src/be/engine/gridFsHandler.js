@@ -5,14 +5,13 @@
 var fs = require('fs');
 var db = require('../db');
 var files = db.files();
-var preemptiveCache;
 var chunks = db.chunks();
 var bucket = new (require('mongodb')).GridFSBucket(db.conn());
 var disable304;
 var verbose;
 var alternativeLanguages;
 var miscOps;
-var jitCache;
+var requestHandler;
 var zlib = require('zlib');
 
 var permanentTypes = [ 'media', 'graph' ];
@@ -21,7 +20,6 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
-  preemptiveCache = settings.preemptiveCaching;
   disable304 = settings.disable304;
   verbose = settings.verbose || settings.verboseGridfs;
   alternativeLanguages = settings.useAlternativeLanguages;
@@ -29,7 +27,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
   miscOps = require('./miscOps');
-  jitCache = require('./jitCacheOps');
+  requestHandler = require('./requestHandler');
 };
 
 exports.removeDuplicates = function(uploadStream, callback) {
@@ -279,40 +277,6 @@ exports.setCookies = function(header, cookies) {
   }
 };
 
-exports.readRangeHeader = function(range, totalLength) {
-
-  if (!range || range.length === 0) {
-    return null;
-  }
-
-  var array = range.split(/bytes=([0-9]*)-([0-9]*)/);
-  var start = parseInt(array[1]);
-  var end = parseInt(array[2]);
-
-  if (isNaN(start)) {
-    start = totalLength - end;
-    end = totalLength - 1;
-  } else if (isNaN(end)) {
-    end = totalLength - 1;
-  }
-
-  // limit last-byte-pos to current length
-  if (end > totalLength - 1) {
-    end = totalLength - 1;
-  }
-
-  // invalid or unsatisifiable
-  if (isNaN(start) || isNaN(end) || start > end || start < 0) {
-    return null;
-  }
-
-  return {
-    start : start,
-    end : end
-  };
-
-};
-
 exports.getHeader = function(stats, req, cookies) {
   var header = miscOps.getHeader(stats.contentType);
   var lastM = stats.metadata.lastModified || stats.uploadDate;
@@ -323,33 +287,6 @@ exports.getHeader = function(stats, req, cookies) {
   exports.setCookies(header, cookies);
 
   return header;
-};
-
-// Side effects: push data to the header and adds fields to options
-exports.isRangeValid = function(range, options, stats, header, res) {
-
-  // If the range can't be fulfilled.
-  if (range.start >= stats.length || range.end >= stats.length) {
-
-    if (verbose) {
-      console.log('416');
-    }
-
-    header.push([ 'Content-Range', 'bytes */' + stats.length ]);
-    res.writeHead(416, header);
-
-    res.end();
-    return false;
-  }
-
-  header.push([ 'Content-Range',
-      'bytes ' + range.start + '-' + range.end + '/' + stats.length ]);
-
-  options.start = range.start;
-  options.end = range.end + 1;
-
-  return true;
-
 };
 
 exports.streamFile = function(stream, range, stats, req, res, header, cookies,
@@ -412,11 +349,23 @@ exports.streamFile = function(stream, range, stats, req, res, header, cookies,
 
 };
 
+exports.handleRangeSettings = function(options, range, stats, header) {
+
+  options.start = range.start;
+  options.end = range.end + 1;
+
+  header.push([ 'Content-Range',
+      'bytes ' + range.start + '-' + range.end + '/' + stats.length ]);
+
+  return range.end - range.start + 1;
+
+};
+
 exports.prepareStream = function(stats, req, callback, cookies, res, retries) {
 
   var header = exports.getHeader(stats, req, cookies);
 
-  var range = exports.readRangeHeader(req.headers.range, stats.length);
+  var range = requestHandler.readRangeHeader(req.headers.range, stats.length);
   header.push([ 'Accept-Ranges', 'bytes' ]);
 
   var options = {
@@ -426,14 +375,7 @@ exports.prepareStream = function(stats, req, callback, cookies, res, retries) {
   var length;
 
   if (range) {
-
-    if (!exports.isRangeValid(range, options, stats, header, res)) {
-      callback();
-      return;
-    }
-
-    length = range.end - range.start + 1;
-
+    length = exports.handleRangeSettings(options, range, stats, header);
   } else {
     length = stats.length;
   }
@@ -474,9 +416,8 @@ exports.shouldOutput304 = function(req, stats) {
 
   var lastModified = stats.metadata.lastModified || stats.uploadDate;
 
-  var lastSeen = req.headers ? req.headers['if-modified-since'] : null;
-
-  var mTimeMatches = lastSeen === lastModified.toUTCString();
+  var mTimeMatches = req.headers['if-modified-since'] === lastModified
+      .toUTCString();
 
   return mTimeMatches && !disable304 && !stats.metadata.status;
 
@@ -532,21 +473,6 @@ exports.pickFile = function(fileRequested, req, res, cookies, possibleFiles,
 
 };
 
-exports.handleJit = function(file, req, res, callback, cookies) {
-
-  jitCache.checkCache(file, function checked(error, notFound) {
-
-    if (error) {
-      callback(error);
-    } else {
-      exports.outputFile(notFound ? '/404.html' : file, req, res, callback,
-          cookies);
-
-    }
-  });
-
-};
-
 exports.outputFile = function(file, req, res, callback, cookies) {
 
   if (verbose) {
@@ -587,8 +513,6 @@ exports.outputFile = function(file, req, res, callback, cookies) {
         callback({
           code : 'ENOENT'
         });
-      } else if (!preemptiveCache) {
-        exports.handleJit(file, req, res, callback, cookies);
       } else {
         exports.outputFile('/404.html', req, res, callback, cookies);
       }

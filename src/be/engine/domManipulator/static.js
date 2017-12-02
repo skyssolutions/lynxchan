@@ -23,6 +23,7 @@ var sfwOverboard;
 var siteTitle;
 var engineInfo;
 var disableCatalogPosting;
+var cacheHandler;
 
 var availableLogTypes = {
   ban : 'guiTypeBan',
@@ -53,6 +54,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  cacheHandler = require('../cacheHandler');
   miscOps = require('../miscOps');
   engineInfo = require('../addonOps').getEngineInfo();
   common = require('.').common;
@@ -267,7 +269,7 @@ exports.thread = function(boardData, flagData, threadData, posts, callback,
       var path = exports.getThreadPathAndMeta(boardUri, language, meta,
           threadData);
 
-      gridFs.writeData(document, path, 'text/html', meta, callback);
+      cacheHandler.writeData(document, path, 'text/html', meta, callback);
     }
 
   } catch (error) {
@@ -379,13 +381,14 @@ exports.page = function(page, threads, pageCount, boardData, flagData,
 
     var meta = {
       boardUri : boardUri,
-      type : 'board'
+      type : 'page',
+      page : page
     };
 
     var path = exports.getPagePathAndMeta(boardData.boardUri, page, meta,
         language);
 
-    gridFs.writeData(document, path, 'text/html', meta, cb);
+    cacheHandler.writeData(document, path, 'text/html', meta, cb);
 
   } catch (error) {
     cb(error);
@@ -530,7 +533,7 @@ exports.catalog = function(language, boardData, threads, flagData, callback) {
       path += language.headerValues.join('-');
     }
 
-    gridFs.writeData(document, path, 'text/html', meta, callback);
+    cacheHandler.writeData(document, path, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);
@@ -745,7 +748,7 @@ exports.frontPage = function(boards, latestPosts, latestImages, globalStats,
       filePath += language.headerValues.join('-');
     }
 
-    gridFs.writeData(document, filePath, 'text/html', meta, callback);
+    cacheHandler.writeData(document, filePath, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);
@@ -831,7 +834,7 @@ exports.overboard = function(foundThreads, previewRelation, callback,
 
       document = document.replace('__title__', title);
 
-      gridFs.writeData(document, path, 'text/html', meta, callback);
+      cacheHandler.writeData(document, path, 'text/html', meta, callback);
 
     }
 
@@ -945,7 +948,8 @@ exports.log = function(language, date, logs, callback) {
     path += logger.formatedDate(date) + '.html';
 
     var meta = {
-      type : 'log'
+      type : 'log',
+      date : date.toUTCString()
     };
 
     if (language) {
@@ -954,7 +958,7 @@ exports.log = function(language, date, logs, callback) {
       path += language.headerValues.join('-');
     }
 
-    gridFs.writeData(document, path, 'text/html', meta, callback);
+    cacheHandler.writeData(document, path, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);
@@ -1006,8 +1010,8 @@ exports.rules = function(language, boardUri, rules, callback) {
       path += language.headerValues.join('-');
     }
 
-    gridFs.writeData(exports.getRulesDocument(language, boardUri, rules), path,
-        'text/html', meta, callback);
+    cacheHandler.writeData(exports.getRulesDocument(language, boardUri, rules),
+        path, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);

@@ -10,6 +10,9 @@ var overboard;
 var overboardSFW;
 var verbose;
 var gridFsHandler;
+var cacheHandler;
+var socketLocation;
+var taskListener = require('../../taskListener');
 
 exports.loadSettings = function() {
 
@@ -18,11 +21,14 @@ exports.loadSettings = function() {
   overboardSFW = settings.sfwOverboard;
   overboard = settings.overboard;
   verbose = settings.verbose || settings.verboseGenerator;
+  socketLocation = settings.tempDirectory;
+  socketLocation += '/unix.socket';
 
 };
 
 exports.loadDependencies = function() {
   gridFsHandler = require('../gridFsHandler');
+  cacheHandler = require('../cacheHandler');
 
   var generator = require('../generator').global;
 
@@ -37,140 +43,84 @@ exports.loadDependencies = function() {
 
 };
 
-exports.frontPage = function(callback) {
+exports.frontPage = function(callback, direct) {
 
   if (verbose) {
     console.log('Degenerating front-page');
   }
 
-  files.aggregate([ {
-    $match : {
-      'metadata.type' : 'frontPage'
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
+  var task = {
+    cacheType : 'frontPage',
+    type : 'cacheClear'
+  };
 
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
-    }
-
-  });
+  if (direct) {
+    cacheHandler.clear(task);
+    callback();
+  } else {
+    taskListener.sendToSocket(socketLocation, task, callback);
+  }
 
 };
 
-exports.overboard = function(callback, altUri, altUriSFW) {
+exports.overboard = function(callback, direct) {
 
   if (verbose) {
     console.log('Degenerating overboard');
   }
 
-  files.aggregate([ {
-    $match : {
-      'metadata.type' : 'overboard'
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
+  var task = {
+    cacheType : 'overboard',
+    type : 'cacheClear'
+  };
 
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
-    }
-
-  });
+  if (direct) {
+    cacheHandler.clear(task);
+    callback();
+  } else {
+    taskListener.sendToSocket(socketLocation, task, callback);
+  }
 
 };
 
-exports.log = function(date, callback) {
-
-  var dateString = logger.formatedDate(date);
+exports.log = function(date, callback, direct) {
 
   if (verbose) {
+    var dateString = logger.formatedDate(date);
     console.log('Degenerating log from ' + dateString);
   }
 
-  var prefix = '/.global/logs/' + dateString;
+  var task = {
+    cacheType : 'log',
+    date : date.toUTCString(),
+    type : 'cacheClear'
+  };
 
-  var filesNames = [ prefix + '.html', prefix + '.json' ];
-
-  files.aggregate([ {
-    $match : {
-      $or : [ {
-        filename : {
-          $in : filesNames
-        }
-      }, {
-        'metadata.referenceFile' : {
-          $in : filesNames
-        }
-      } ]
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
-
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
-    }
-
-  });
+  if (direct) {
+    cacheHandler.clear(task);
+    callback();
+  } else {
+    taskListener.sendToSocket(socketLocation, task, callback);
+  }
 
 };
 
-exports.logs = function(callback) {
+exports.logs = function(callback, direct) {
 
   if (verbose) {
     console.log('Degenerating logs');
   }
 
-  files.aggregate([ {
-    $match : {
-      'metadata.type' : 'log'
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
+  var task = {
+    cacheType : 'log',
+    type : 'cacheClear'
+  };
 
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-      gridFsHandler.removeFiles(results[0].files, callback);
-    }
-
-  });
+  if (direct) {
+    cacheHandler.clear(task);
+    callback();
+  } else {
+    taskListener.sendToSocket(socketLocation, task, callback);
+  }
 
 };

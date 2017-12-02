@@ -215,13 +215,7 @@ exports.processMessage = function(message, callback) {
   if (message.globalRebuild) {
     generator.all(callback);
   } else if (message.log) {
-
-    if (message.date) {
-      generator.global.log(new Date(message.date), callback);
-    } else {
-      generator.global.logs(callback);
-    }
-
+    generator.global.log(new Date(message.date), callback);
   } else if (message.overboard) {
     generator.global.overboard(callback);
   } else if (message.allBoards) {
@@ -369,17 +363,17 @@ function getNextQueueItem() {
 function deleteCacheForBoards(message, callback) {
 
   if (message.buildAll) {
-    degenerator.board.board(message.board, true, true, callback);
+    degenerator.board.board(message.board, true, true, callback, true);
   } else if (message.catalog) {
-    degenerator.board.catalog(message.board, callback);
+    degenerator.board.catalog(message.board, callback, true);
   } else if (message.rules) {
-    degenerator.board.rules(message.board, callback);
+    degenerator.board.rules(message.board, callback, true);
   } else if (!message.page && !message.thread) {
-    degenerator.board.board(message.board, false, false, callback);
+    degenerator.board.board(message.board, false, false, callback, true);
   } else if (message.page) {
-    degenerator.board.page(message.board, message.page, callback);
+    degenerator.board.page(message.board, message.page, callback, true);
   } else {
-    degenerator.board.thread(message.board, message.thread, callback);
+    degenerator.board.thread(message.board, message.thread, callback, true);
   }
 
 }
@@ -387,21 +381,15 @@ function deleteCacheForBoards(message, callback) {
 exports.deleteCache = function(message, callback) {
 
   if (message.globalRebuild) {
-    degenerator.all(callback);
+    degenerator.all(callback, true);
   } else if (message.log) {
-
-    if (message.date) {
-      degenerator.global.log(new Date(message.date), callback);
-    } else {
-      degenerator.global.logs(callback);
-    }
-
+    degenerator.global.log(new Date(message.date), callback, true);
   } else if (message.overboard) {
-    degenerator.global.overboard(callback);
+    degenerator.global.overboard(callback, true);
   } else if (message.allBoards) {
-    degenerator.board.boards(callback);
+    degenerator.board.boards(callback, true);
   } else if (message.frontPage) {
-    degenerator.global.frontPage(callback);
+    degenerator.global.frontPage(callback, true);
   } else if (message.login) {
     degenerator.global.login(callback);
   } else {

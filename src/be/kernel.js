@@ -57,6 +57,7 @@ function reloadCore() {
   if (cluster.isMaster) {
     require('./scheduleHandler').reload();
     require('./generationQueue').reload();
+    require('./taskListener').reload();
   } else {
     require('./workerBoot').reload();
   }
@@ -77,8 +78,6 @@ exports.reload = function() {
   setDefaultImages();
 
   exports.startEngine();
-
-  reloadCore();
 
 };
 
@@ -122,6 +121,10 @@ exports.informedArguments = function() {
 };
 
 var optionalReloads = [ {
+  generatorModule : 'global',
+  generatorFunction : 'frontPage',
+  command : informedArguments.reloadFront.informed
+}, {
   generatorFunction : 'overboard',
   generatorModule : 'global',
   command : informedArguments.reloadOverboard.informed
@@ -222,16 +225,11 @@ function setDefaultImages() {
 }
 
 function composeDefaultFiles() {
-  defaultFilesArray = [ '/', '/404.html', genericThumb, '/login.html',
+  defaultFilesArray = [ '/404.html', genericThumb, '/login.html',
       defaultBanner, spoilerImage, '/maintenance.html', genericAudioThumb,
       maintenanceImage ];
 
   defaultFilesRelation = {
-    '/' : {
-      generatorModule : 'global',
-      generatorFunction : 'frontPage',
-      command : informedArguments.reloadFront.informed
-    },
     '/404.html' : {
       generatorModule : 'global',
       generatorFunction : 'notFound',
@@ -686,6 +684,8 @@ exports.startEngine = function() {
   require('./engine/addonOps').startAddons();
 
   require('./engine/templateHandler').loadTemplates();
+
+  reloadCore();
 
 };
 

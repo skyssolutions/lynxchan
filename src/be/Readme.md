@@ -203,17 +203,10 @@ Meta-data of files on gridfs will have the following values:
 * `languages`(Array): array of languages that this page is aimed at.
 * `referenceFile`: version of the default language for a file. Used for alternative language files. 
 * `type`: type of file. May hold one of the following values: 
-  * `board`
-  * `thread` 
   * `media`
   * `captcha` 
   * `banner`
-  * `catalog`
-  * `rules`
   * `flag`
-  * `log`
   * `multiboard`
   * `graph`
-  * `frontPage`
-  * `overboard`
   * `custom`

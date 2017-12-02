@@ -2,351 +2,184 @@
 
 var settingsHandler = require('../../settingsHandler');
 var verbose;
+var taskListener = require('../../taskListener');
 var db = require('../../db');
 var files = db.files();
-var cacheLocks = db.cacheLocks();
-var gridFsHandler;
+var cacheHandler;
+var socketLocation;
+var Socket = require('net').Socket;
 
 exports.loadDependencies = function() {
-  gridFsHandler = require('../gridFsHandler');
+  cacheHandler = require('../cacheHandler');
 };
 
 exports.loadSettings = function() {
   var settings = settingsHandler.getGeneralSettings();
   verbose = settings.verbose || settings.verboseGenerator;
+  socketLocation = settings.tempDirectory;
+  socketLocation += '/unix.socket';
 };
 
-exports.thread = function(boardUri, threadId, callback) {
+exports.thread = function(boardUri, threadId, callback, direct) {
 
   if (verbose) {
     console.log('Degenerating thread ' + threadId + ' of board ' + boardUri);
   }
 
-  files.aggregate([ {
-    $match : {
-      'metadata.boardUri' : boardUri,
-      'metadata.threadId' : threadId,
-      'metadata.type' : 'thread'
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
+  var task = {
+    cacheType : 'thread',
+    threadId : threadId,
+    boardUri : boardUri,
+    type : 'cacheClear'
+  };
 
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-
-      gridFsHandler.removeFiles(results[0].files, function deletedFiles(error) {
-
-        if (error) {
-          callback(error);
-        } else {
-
-          // style exception, too simple
-          cacheLocks.deleteOne({
-            type : 'thread',
-            boardUri : boardUri,
-            postingId : threadId
-          }, callback);
-          // style exception, too simple
-
-        }
-
-      });
-    }
-
-  });
+  if (direct) {
+    cacheHandler.clear(task);
+    callback();
+  } else {
+    taskListener.sendToSocket(socketLocation, task, callback);
+  }
 
 };
 
-exports.page = function(boardUri, page, callback) {
+exports.page = function(boardUri, page, callback, direct) {
 
   if (verbose) {
     console.log('Degenerating page ' + page + ' of board ' + boardUri);
   }
 
-  var filesNames = [ '/' + boardUri + '/' + page + '.json',
-      '/' + boardUri + '/' + (page > 1 ? (page + '.html') : '') ];
+  var task = {
+    cacheType : 'page',
+    page : page,
+    boardUri : boardUri,
+    type : 'cacheClear'
+  };
 
-  files.aggregate([ {
-    $match : {
-      $or : [ {
-        filename : {
-          $in : filesNames
-        }
-      }, {
-        'metadata.referenceFile' : {
-          $in : filesNames
-        }
-      } ]
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
-
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-
-      gridFsHandler.removeFiles(results[0].files, function deletedFiles(error) {
-
-        if (error) {
-          callback(error);
-        } else {
-
-          // style exception, too simple
-          cacheLocks.deleteOne({
-            type : 'board',
-            boardUri : boardUri,
-            page : page
-          }, callback);
-          // style exception, too simple
-
-        }
-
-      });
-    }
-
-  });
+  if (direct) {
+    cacheHandler.clear(task);
+    callback();
+  } else {
+    taskListener.sendToSocket(socketLocation, task, callback);
+  }
 
 };
 
-exports.catalog = function(boardUri, callback) {
+exports.catalog = function(boardUri, callback, direct) {
 
   if (verbose) {
     console.log('Degenerating catalog of ' + boardUri);
   }
 
-  files.aggregate([ {
-    $match : {
-      'metadata.boardUri' : boardUri,
-      'metadata.type' : 'catalog'
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
+  var task = {
+    cacheType : 'catalog',
+    boardUri : boardUri,
+    type : 'cacheClear'
+  };
 
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-
-      gridFsHandler.removeFiles(results[0].files, function deletedFiles(error) {
-
-        if (error) {
-          callback(error);
-        } else {
-
-          // style exception, too simple
-          cacheLocks.deleteOne({
-            type : 'catalog',
-            boardUri : boardUri
-          }, callback);
-          // style exception, too simple
-
-        }
-
-      });
-    }
-
-  });
+  if (direct) {
+    cacheHandler.clear(task);
+    callback();
+  } else {
+    taskListener.sendToSocket(socketLocation, task, callback);
+  }
 
 };
 
-exports.board = function(boardUri, reloadThreads, reloadRules, callback) {
+exports.board = function(boardUri, reloadThreads, reloadRules, cb, direct) {
 
   if (verbose) {
     console.log('Degenerating ' + boardUri);
   }
 
-  var exceptions = [ 'flag', 'banner', 'custom' ];
-
-  if (!reloadRules) {
-    exceptions.push('rules');
-  }
-
-  if (!reloadThreads) {
-    exceptions.push('thread');
-  }
-
-  files.aggregate([ {
-    $match : {
-      'metadata.boardUri' : boardUri,
-      'metadata.type' : {
-        $not : {
-          $in : exceptions
-        }
-      }
-    }
+  var tasks = [ {
+    type : 'cacheClear',
+    boardUri : boardUri,
+    cacheType : 'page'
   }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
+    type : 'cacheClear',
+    boardUri : boardUri,
+    cacheType : 'catalog'
+  } ];
+
+  if (reloadRules) {
+    tasks.push({
+      type : 'cacheClear',
+      boardUri : boardUri,
+      cacheType : 'rules'
+    });
+  }
+
+  if (reloadThreads) {
+    tasks.push({
+      type : 'cacheClear',
+      boardUri : boardUri,
+      cacheType : 'thread'
+    });
+  }
+
+  if (direct) {
+    for (var i = 0; i < tasks.length; i++) {
+      cacheHandler.clear(tasks[i]);
+    }
+
+    cb();
+
+  } else {
+
+    var client = new Socket();
+
+    client.on('end', cb);
+    client.on('error', cb);
+
+    client.connect(socketLocation, function() {
+
+      for (var i = 0; i < tasks.length; i++) {
+        taskListener.sendToSocket(client, tasks[i]);
       }
-    }
-  } ], function(error, results) {
 
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-
-      gridFsHandler.removeFiles(results[0].files, function deletedFiles(error) {
-
-        if (error) {
-          callback(error);
-        } else {
-
-          var deletionTypes = [ 'board', 'catalog' ];
-
-          if (reloadRules) {
-            deletionTypes.push('rules');
-          }
-
-          if (reloadThreads) {
-            deletionTypes.push('thread');
-          }
-
-          // style exception, too simple
-          cacheLocks.deleteMany({
-            type : {
-              $in : deletionTypes
-            },
-            boardUri : boardUri
-          }, callback);
-          // style exception, too simple
-
-        }
-
-      });
-    }
-
-  });
+      client.end();
+    });
+  }
 
 };
 
-exports.rules = function(boardUri, callback) {
+exports.rules = function(boardUri, callback, direct) {
 
   if (verbose) {
     console.log('Degenerating rules on ' + boardUri);
   }
 
-  files.aggregate([ {
-    $match : {
-      'metadata.boardUri' : boardUri,
-      'metadata.type' : 'rules'
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
+  var task = {
+    cacheType : 'rules',
+    boardUri : boardUri,
+    type : 'cacheClear'
+  };
 
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-
-      gridFsHandler.removeFiles(results[0].files, function deletedFiles(error) {
-
-        if (error) {
-          callback(error);
-        } else {
-
-          // style exception, too simple
-          cacheLocks.deleteOne({
-            type : 'rules',
-            boardUri : boardUri
-          }, callback);
-          // style exception, too simple
-
-        }
-
-      });
-
-    }
-
-  });
+  if (direct) {
+    cacheHandler.clear(task);
+    callback();
+  } else {
+    taskListener.sendToSocket(socketLocation, task, callback);
+  }
 
 };
 
-exports.boards = function(callback) {
+exports.boards = function(callback, direct) {
 
   if (verbose) {
     console.log('Degenerating boards');
   }
 
-  files.aggregate([ {
-    $match : {
-      'metadata.boardUri' : {
-        $exists : true
-      },
-      'metadata.type' : {
-        $not : {
-          $in : [ 'flag', 'banner', 'custom' ]
-        }
-      }
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function(error, results) {
+  var task = {
+    cacheType : 'boards',
+    type : 'cacheClear'
+  };
 
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-
-      gridFsHandler.removeFiles(results[0].files, function filesRemoved(error) {
-
-        if (error) {
-          callback(error);
-        } else {
-
-          // style exception, too simple
-          cacheLocks.deleteMany({
-            type : {
-              $in : [ 'board', 'catalog', 'thread', 'rules' ]
-            }
-          }, callback);
-          // style exception, too simple
-
-        }
-
-      });
-    }
-
-  });
+  if (direct) {
+    cacheHandler.clear(task);
+    callback();
+  } else {
+    taskListener.sendToSocket(socketLocation, task, callback);
+  }
 
 };

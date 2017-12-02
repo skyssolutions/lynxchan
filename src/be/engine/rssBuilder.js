@@ -3,7 +3,7 @@
 // builds RSS versions of pages
 
 var rssDomain;
-var gridFsHandler;
+var cacheHandler;
 var overboard;
 var sfwOverboard;
 
@@ -19,7 +19,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
-  gridFsHandler = require('./gridFsHandler');
+  cacheHandler = require('./cacheHandler');
 
 };
 
@@ -58,7 +58,7 @@ exports.getThreads = function(threads) {
 
 };
 
-exports.board = function(boardData, threads, callback) {
+exports.getBoilerPlate = function(boardData) {
 
   var rssContent = '<?xml version="1.0" encoding="UTF-8"?>';
   rssContent += '<rss version="2.0"><channel>';
@@ -76,6 +76,14 @@ exports.board = function(boardData, threads, callback) {
     rssContent += '</description>';
   }
 
+  return rssContent;
+
+};
+
+exports.board = function(boardData, threads, callback) {
+
+  var rssContent = exports.getBoilerPlate(boardData);
+
   rssContent += exports.getThreads(threads);
 
   rssContent += '</channel></rss>';
@@ -84,11 +92,9 @@ exports.board = function(boardData, threads, callback) {
 
   var uri = boardData.boardUri;
 
-  var type = uri === overboard || uri === sfwOverboard ? 'overboard' : 'board';
-
-  gridFsHandler.writeData(rssContent, ownName, 'application/rss+xml', {
+  cacheHandler.writeData(rssContent, ownName, 'application/rss+xml', {
     boardUri : boardData.boardUri,
-    type : type
+    type : uri === overboard || uri === sfwOverboard ? 'overboard' : 'catalog'
   }, callback);
 
 };
