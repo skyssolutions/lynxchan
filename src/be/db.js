@@ -129,7 +129,7 @@ function upgrade(version, callback) {
     break;
 
   case 11:
-    newerMigrations.addExtraTypes(callback);
+    newerMigrations.cleanCache(callback);
     break;
 
   default:

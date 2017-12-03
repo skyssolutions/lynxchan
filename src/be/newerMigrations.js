@@ -73,97 +73,83 @@ exports.removeGhostReports = function(callback, lastId) {
 };
 
 // Added on 2.0
-function fillOverboardExtraTypesOperations(operations) {
+function getNamesToDelete() {
 
-  if (!settings.overboard && !settings.sfwOverboard) {
-    return;
-  }
-
-  var overboardPaths = [];
+  var names = [ '/', '/index.json' ];
 
   if (settings.overboard) {
-    overboardPaths.push('/' + settings.sfwOverboard + '/');
-    overboardPaths.push('/' + settings.sfwOverboard + '/index.rss');
-    overboardPaths.push('/' + settings.sfwOverboard + '/1.json');
+    names.push('/' + settings.sfwOverboard + '/');
+    names.push('/' + settings.sfwOverboard + '/index.rss');
+    names.push('/' + settings.sfwOverboard + '/1.json');
   }
 
   if (settings.sfwOverboard) {
-    overboardPaths.push('/' + settings.overboard + '/');
-    overboardPaths.push('/' + settings.overboard + '/index.rss');
-    overboardPaths.push('/' + settings.overboard + '/1.json');
+    names.push('/' + settings.overboard + '/');
+    names.push('/' + settings.overboard + '/index.rss');
+    names.push('/' + settings.overboard + '/1.json');
   }
 
-  operations.push({
-    updateMany : {
-      filter : {
-        $or : [ {
-          filename : {
-            $in : overboardPaths
-          }
-        }, {
-          'metadata.referenceFile' : {
-            $in : overboardPaths
-          }
-        } ]
-      },
-      update : {
-        $set : {
-          'metadata.type' : 'overboard'
-        }
-      }
-    }
-
-  });
+  return names;
 
 }
 
-exports.addExtraTypes = function(callback) {
+function eraseOldCache(callback) {
 
-  var operations = [];
-
-  fillOverboardExtraTypesOperations(operations);
-
-  var frontPagePaths = [ '/', '/index.json' ];
-
-  operations.push({
-    updateMany : {
-      filter : {
-        $or : [ {
-          filename : {
-            $in : frontPagePaths
-          }
-        }, {
-          'metadata.referenceFile' : {
-            $in : frontPagePaths
-          }
-        } ]
-      },
-      update : {
-        $set : {
-          'metadata.type' : 'frontPage'
+  files.aggregate([ {
+    $match : {
+      $or : [ {
+        filename : {
+          $in : getNamesToDelete()
         }
-      }
-
+      }, {
+        'metadata.type' : {
+          $in : [ 'board', 'thread', 'catalog', 'rules', 'log', 'multiboard' ]
+        }
+      } ]
     }
-  });
-
-  operations.push({
-    updateMany : {
-      filter : {
-        filename : /\/custom\.(css|js|spoiler)$/,
-        'metadata.boardUri' : {
-          $exists : true
-        }
-      },
-      update : {
-        $set : {
-          'metadata.type' : 'custom'
-        }
+  }, {
+    $group : {
+      _id : 0,
+      files : {
+        $push : '$filename'
       }
     }
+  } ],
+      function(error, results) {
+
+        if (error) {
+          callback(error);
+        } else if (!results.length) {
+          callback();
+        } else {
+
+          require('./engine/gridFsHandler').removeFiles(results[0].files,
+              callback);
+        }
+
+      });
+
+}
+
+exports.cleanCache = function(callback) {
+
+  files.updateMany({
+    filename : /\/custom\.(css|js|spoiler)$/,
+    'metadata.boardUri' : {
+      $exists : true
+    }
+  }, {
+    $set : {
+      'metadata.type' : 'custom'
+    }
+  }, function updateCustomFiles(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      eraseOldCache(callback);
+    }
 
   });
-
-  files.bulkWrite(operations, callback);
 
 };
