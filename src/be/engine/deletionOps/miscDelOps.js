@@ -60,6 +60,13 @@ exports.removeThreads = function(boardUri, threadsToDelete, callback) {
       callback(error);
     } else {
 
+      for (var i = 0; i < threadsToDelete.length; i++) {
+        process.send({
+          board : boardUri,
+          thread : threadsToDelete[i]
+        });
+      }
+
       // style exception, too simple
       reports.removeMany(queryBlock, function removedReports(error) {
 
@@ -98,45 +105,6 @@ exports.removePostsFromPrunedThreads = function(boardUri, threadsToDelete,
 
 };
 
-exports.getThreadFilesToRemove = function(boardUri, threadsToRemove, callback) {
-
-  files.aggregate([ {
-    $match : {
-      'metadata.boardUri' : boardUri,
-      'metadata.threadId' : {
-        $in : threadsToRemove
-      }
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function gotFilesToDelete(error, filesToDelete) {
-    if (error) {
-      callback(error);
-    } else if (!filesToDelete.length) {
-      callback();
-    } else {
-
-      // style exception, too simple
-      gridFs.removeFiles(filesToDelete[0].files, function deletedFiles(error) {
-        if (error) {
-          callback(error);
-        } else {
-          exports.removePostsFromPrunedThreads(boardUri, threadsToRemove,
-              callback);
-        }
-      });
-      // style exception, too simple
-
-    }
-  });
-
-};
-
 exports.pruneThreadsForQuery = function(matchBlock, limit, boardUri, language,
     callback) {
 
@@ -157,6 +125,7 @@ exports.pruneThreadsForQuery = function(matchBlock, limit, boardUri, language,
       }
     }
   } ], function gotThreads(error, threadsToRemove) {
+
     if (error) {
       callback(error);
     } else if (!threadsToRemove.length) {
@@ -166,17 +135,16 @@ exports.pruneThreadsForQuery = function(matchBlock, limit, boardUri, language,
       var prunedThreads = threadsToRemove[0].threads;
 
       // style exception, too simple
-      referenceHandler
-          .clearPostingReferences(boardUri, prunedThreads, null, false, false,
-              language, function removedReferences(error) {
+      referenceHandler.clearPostingReferences(boardUri, prunedThreads, null,
+          false, false, language, function removedReferences(error) {
 
-                if (error) {
-                  callback(error);
-                } else {
-                  exports.getThreadFilesToRemove(boardUri, prunedThreads,
-                      callback);
-                }
-              });
+            if (error) {
+              callback(error);
+            } else {
+              exports.removePostsFromPrunedThreads(boardUri, prunedThreads,
+                  callback);
+            }
+          });
       // style exception, too simple
 
     }
@@ -229,6 +197,12 @@ exports.deleteBoardContent = function(board, callback, index) {
     });
 
   } else {
+
+    process.send({
+      board : board,
+      buildAll : true
+    });
+
     process.send({
       frontPage : true
     });
@@ -261,6 +235,8 @@ exports.deleteBoardFiles = function(board, callback) {
   } ], function gotFiles(error, results) {
     if (error) {
       callback(error);
+    } else if (!results.length) {
+      exports.deleteBoardContent(board.boardUri, callback);
     } else {
 
       // style exception, too simple

@@ -571,23 +571,13 @@ exports.insertBoard = function(parameters, userData, language, callback) {
       callback(lang(language).errUriInUse);
     } else {
 
-      // style exception, too simple
       users.updateOne({
         login : userData.login
       }, {
         $addToSet : {
           ownedBoards : parameters.boardUri
         }
-      }, function updatedUser(error) {
-        // signal rebuild of board pages
-        process.send({
-          board : parameters.boardUri,
-          buildAll : true
-        });
-
-        callback(error);
-      });
-      // style exception, too simple
+      }, callback);
 
     }
   });

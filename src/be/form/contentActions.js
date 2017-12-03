@@ -29,51 +29,54 @@ function processPostForDeletion(board, thread, splitKey, threadsToDelete,
 function processSplitKeyForDeletion(splitKey, threadsToDelete, postsToDelete,
     onlyFiles) {
 
-  var longEnough = splitKey.length > 1;
+  var board = splitKey[0];
+  var thread = splitKey[1];
 
-  if (longEnough && !/\W/.test(splitKey[0]) && !isNaN(splitKey[1])) {
+  if (splitKey.length > 2 && !isNaN(splitKey[2])) {
 
-    var board = splitKey[0];
-    var thread = splitKey[1];
+    processPostForDeletion(board, thread, splitKey, threadsToDelete,
+        postsToDelete, onlyFiles);
 
-    if (splitKey.length > 2 && !isNaN(splitKey[2])) {
+  } else {
+    var boardObject = threadsToDelete[board] || [];
 
-      processPostForDeletion(board, thread, splitKey, threadsToDelete,
-          postsToDelete, onlyFiles);
+    boardObject.push(+thread);
 
-    } else {
-      var boardObject = threadsToDelete[board] || [];
-
-      boardObject.push(+thread);
-
-      threadsToDelete[board] = boardObject;
-
-    }
+    threadsToDelete[board] = boardObject;
 
   }
+
 }
 
 function processSplitKeyForGeneralUse(splitKey, reportedObjects) {
-  var longEnough = splitKey.length > 1;
 
-  if (longEnough && !/\W/.test(splitKey[0]) && !isNaN(splitKey[1])) {
+  var board = splitKey[0];
+  var thread = splitKey[1];
 
-    var board = splitKey[0];
-    var thread = splitKey[1];
+  var report = {
+    board : board,
+    thread : thread
+  };
 
-    var report = {
-      board : board,
-      thread : thread
-    };
+  if (splitKey.length > 2 && !isNaN(splitKey[2])) {
 
-    if (splitKey.length > 2 && !isNaN(splitKey[2])) {
-
-      report.post = splitKey[2];
-    }
-
-    reportedObjects.push(report);
+    report.post = splitKey[2];
   }
+
+  reportedObjects.push(report);
+
 }
+
+exports.decideProcessing = function(parameters, split, threads, posts,
+    reportedObjects) {
+
+  if (parameters.action === 'delete') {
+    processSplitKeyForDeletion(split, threads, posts, parameters.deleteUploads);
+  } else {
+    processSplitKeyForGeneralUse(split, reportedObjects);
+  }
+
+};
 
 function getProcessedObjects(parameters, threads, posts, reportedObjects) {
 
@@ -83,18 +86,18 @@ function getProcessedObjects(parameters, threads, posts, reportedObjects) {
   for ( var key in parameters) {
     if (parameters.hasOwnProperty(key)) {
 
-      var splitKey = key.split('-');
+      var split = key.split('-');
 
-      if (!redirectBoard) {
-        redirectBoard = splitKey[0];
+      if (!redirectBoard && split.length > 1) {
+        redirectBoard = split[0];
       }
 
-      if (parameters.action === 'delete') {
-        processSplitKeyForDeletion(splitKey, threads, posts,
-            parameters.deleteUploads);
-      } else {
-        processSplitKeyForGeneralUse(splitKey, reportedObjects);
+      if (split.length === 1 || /\W/.test(split[0]) || isNaN(split[1])) {
+        continue;
       }
+
+      exports.decideProcessing(parameters, split, threads, posts,
+          reportedObjects);
 
       if (i < 1000) {
         i++;

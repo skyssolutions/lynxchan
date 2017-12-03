@@ -4,16 +4,12 @@
 
 var db = require('../../db');
 var boards = db.boards();
-var files = db.files();
 var posts = db.posts();
 var reports = db.reports();
 var threads = db.threads();
 var logger = require('../../logger');
-var debug = require('../../kernel').debug();
 var common;
-var gsHandler;
 var overboardOps;
-var generator;
 var referenceHandler;
 var r9k;
 var uploadHandler;
@@ -47,8 +43,6 @@ exports.loadDependencies = function() {
   common = require('.').common;
   overboardOps = require('../overboardOps');
   referenceHandler = require('../mediaHandler');
-  gsHandler = require('../gridFsHandler');
-  generator = require('../generator').board;
   r9k = require('../r9k');
   uploadHandler = require('../uploadHandler');
   lang = require('../langOps').languagePack;
@@ -115,35 +109,6 @@ exports.reaggregateThread = function(boardUri, threadId, postId, callback) {
 
 };
 
-exports.cleanPostFiles = function(postsToDelete, boardUri, callback) {
-
-  files.aggregate([ {
-    $match : {
-      'metadata.boardUri' : boardUri,
-      'metadata.postId' : {
-        $in : postsToDelete
-      }
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ], function gotFileNames(error, results) {
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-      gsHandler.removeFiles(results[0].files, callback);
-    }
-
-  });
-
-};
-
 exports.removeCleanedPostsReports = function(postsToDelete, boardUri, threadId,
     postId, callback) {
 
@@ -177,19 +142,8 @@ exports.removeCleanedPosts = function(postsToDelete, boardUri, threadId,
       callback(error);
     } else {
 
-      // style exception, too simple
-      exports.cleanPostFiles(postsToDelete, boardUri, function cleanedFiles(
-          error) {
-
-        if (error) {
-          callback(error);
-        } else {
-          exports.removeCleanedPostsReports(postsToDelete, boardUri, threadId,
-              postId, callback);
-        }
-
-      });
-      // style exception, too simple
+      exports.removeCleanedPostsReports(postsToDelete, boardUri, threadId,
+          postId, callback);
 
     }
   });

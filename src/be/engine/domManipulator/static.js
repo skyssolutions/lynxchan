@@ -67,8 +67,8 @@ exports.loadDependencies = function() {
 exports.notFound = function(language, callback) {
 
   try {
-    var document = templateHandler(language).notFoundPage.template
-        .replace('__title__');
+    var document = templateHandler(language).notFoundPage.template.replace(
+        '__title__', lang(language).titNotFound);
 
     var path = '/404.html';
     var meta = {

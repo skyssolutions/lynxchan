@@ -8,7 +8,6 @@ var logger = require('../../logger');
 var db = require('../../db');
 var boards = db.boards();
 var threads = db.threads();
-var files = db.files();
 var posts = db.posts();
 var logOps;
 var miscOps;
@@ -60,19 +59,6 @@ exports.getAdjustedFiles = function(newBoard, originalThread, files) {
 // } Section 1: Posting files update
 
 // Section 2: Reverts {
-exports.revertPosts = function(revertOps, originalError, callback) {
-
-  posts.bulkWrite(revertOps, function revertedPosts(error) {
-    if (error) {
-      console.log(error);
-    }
-
-    callback(originalError);
-
-  });
-
-};
-
 exports.revertThreadCount = function(revertOps, originalError, callback) {
 
   boards.bulkWrite(revertOps, function revertedThreadCounts(error) {
@@ -201,90 +187,33 @@ exports.getFileUpdateOps = function(newPostIdRelation, originalThread,
 
 };
 
-exports.updateFiles = function(newBoard, newThreadId, originalThread, userData,
-    updateOps, callback) {
+exports.runRebuilds = function(newBoard, newThreadId, originalThread, userData,
+    callback) {
 
-  files.bulkWrite(updateOps, function updatedFiles(error) {
-
-    if (error) {
-      callback(error);
-    } else {
-
-      // update both boards and new thread page
-      process.send({
-        board : newBoard.boardUri
-      });
-
-      process.send({
-        board : originalThread.boardUri
-
-      });
-
-      process.send({
-        board : newBoard.boardUri,
-        thread : newThreadId
-      });
-
-      exports.logTransfer(newBoard, userData, newThreadId, originalThread,
-          callback);
-    }
-
+  process.send({
+    board : newBoard.boardUri
   });
 
-};
+  process.send({
+    board : originalThread.boardUri
+  });
 
-exports.findFiles = function(newPostIdRelation, userData, newBoard,
-    originalThread, newThreadId, cb) {
+  process.send({
+    board : originalThread.boardUri,
+    thread : originalThread.threadId
+  });
 
-  files.find({
-    'metadata.boardUri' : originalThread.boardUri,
-    'metadata.threadId' : originalThread.threadId
-  }, {
-    filename : 1,
-    metadata : 1
-  }).toArray(
-      function gotFiles(error, foundFiles) {
-        if (error) {
-          cb(error);
-        } else {
-
-          var updateOps = exports.getFileUpdateOps(newPostIdRelation,
-              originalThread, newBoard, newThreadId, foundFiles);
-
-          exports.updateFiles(newBoard, newThreadId, originalThread, userData,
-              updateOps, cb);
-
-        }
-
-      });
+  exports
+      .logTransfer(newBoard, userData, newThreadId, originalThread, callback);
 
 };
-// Section 3: Files update {
 
 // Section 4: Posts update {
 exports.getPostsOps = function(newPostIdRelation, newBoard, foundPosts,
-    updateOps, revertOps, newThreadId, originalThread) {
+    updateOps, newThreadId, originalThread) {
 
   for (var i = 0; i < foundPosts.length; i++) {
     var post = foundPosts[i];
-
-    revertOps.push({
-      updateOne : {
-        filter : {
-          _id : post._id
-        },
-        update : {
-          $set : {
-            boardUri : originalThread.boardUri,
-            postId : post.postId,
-            threadId : originalThread.threadId,
-            files : post.files,
-            flag : post.flag,
-            flagName : post.flagName
-          }
-        }
-      }
-    });
 
     var newPostId = newThreadId + 1 + i;
 
@@ -325,16 +254,15 @@ exports.updatePosts = function(newBoard, userData, foundPosts, newThreadId,
     originalThread, callback) {
 
   var updateOps = [];
-  var revertOps = [];
   var newPostIdRelation = {};
 
   exports.getPostsOps(newPostIdRelation, newBoard, foundPosts, updateOps,
-      revertOps, newThreadId, originalThread);
+      newThreadId, originalThread);
 
   if (!updateOps.length) {
-    // no posts, skip to file update and let it execute the callback
-    exports.findFiles(newPostIdRelation, userData, newBoard, originalThread,
-        newThreadId, callback);
+
+    exports.runRebuilds(newBoard, newThreadId, originalThread, userData,
+        callback);
 
     return;
   }
@@ -344,19 +272,8 @@ exports.updatePosts = function(newBoard, userData, foundPosts, newThreadId,
       callback(error);
     } else {
 
-      // style exception, too simple
-      exports.findFiles(newPostIdRelation, userData, newBoard, originalThread,
-          newThreadId, function updatedFiles(error) {
-
-            if (error) {
-              exports.revertPosts(revertOps, error, callback);
-
-            } else {
-              callback();
-            }
-
-          });
-      // style exception, too simple
+      exports.runRebuilds(newBoard, newThreadId, originalThread, userData,
+          callback);
 
     }
   });
