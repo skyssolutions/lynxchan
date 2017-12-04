@@ -14,7 +14,6 @@ var cacheHandler;
 var gridFsHandler;
 var templateHandler;
 var overboardPages;
-var socketLocation;
 var overboardAlternativePages = [ '1.json', 'index.rss', '' ];
 var catalogPages = [ 'catalog.html', 'catalog.json', 'index.rss' ];
 var rulesPages = [ 'rules.html', 'rules.json' ];
@@ -22,9 +21,6 @@ var rulesPages = [ 'rules.html', 'rules.json' ];
 exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
-
-  socketLocation = settings.tempDirectory;
-  socketLocation += '/unix.socket';
 
   overboardPages = [];
 
@@ -292,7 +288,7 @@ exports.getLockData = function(file) {
 
 exports.finishedCacheGeneration = function(lockData, error, notFound, cb) {
 
-  taskListener.sendToSocket(socketLocation, {
+  taskListener.sendToSocket(null, {
     type : 'deleteLock',
     lockData : lockData
   }, function deletedLock(deletionError) {
@@ -307,7 +303,7 @@ exports.waitForUnlock = function(callback, lockData, attempts) {
 
   if (attempts > 9) {
 
-    taskListener.sendToSocket(socketLocation, {
+    taskListener.sendToSocket(null, {
       type : 'deleteLock',
       lockData : lockData
     }, callback);

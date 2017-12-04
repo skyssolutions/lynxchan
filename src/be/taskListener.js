@@ -131,25 +131,40 @@ exports.handleSocket = function(socket, callback) {
 
 };
 
+exports.openSocket = function(callback) {
+
+  var client = new Socket();
+
+  client.on('error', callback);
+
+  client.connect(socketLocation, function() {
+    callback(null, client);
+  });
+
+};
+
 exports.sendToSocket = function(socket, data, callback) {
 
-  if (typeof socket === 'string') {
+  if (!socket) {
 
-    var client = new Socket();
+    exports.openSocket(function opened(error, socket) {
 
-    if (callback) {
-      client.on('end', callback);
-      client.on('error', callback);
-    }
+      if (error) {
+        callback(error);
+      } else {
 
-    client.connect(socket, function() {
-      exports.sendToSocket(client, data);
+        if (callback) {
+          socket.on('end', callback);
+        }
 
-      client.end();
+        exports.sendToSocket(socket, data);
+
+        socket.end();
+      }
+
     });
 
     return;
-
   }
 
   var binary = Buffer.isBuffer(data);

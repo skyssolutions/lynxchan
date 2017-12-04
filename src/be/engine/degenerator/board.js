@@ -6,8 +6,6 @@ var taskListener = require('../../taskListener');
 var db = require('../../db');
 var files = db.files();
 var cacheHandler;
-var socketLocation;
-var Socket = require('net').Socket;
 
 exports.loadDependencies = function() {
   cacheHandler = require('../cacheHandler');
@@ -16,8 +14,6 @@ exports.loadDependencies = function() {
 exports.loadSettings = function() {
   var settings = settingsHandler.getGeneralSettings();
   verbose = settings.verbose || settings.verboseGenerator;
-  socketLocation = settings.tempDirectory;
-  socketLocation += '/unix.socket';
 };
 
 exports.thread = function(boardUri, threadId, callback, direct) {
@@ -34,10 +30,14 @@ exports.thread = function(boardUri, threadId, callback, direct) {
   };
 
   if (direct) {
-    cacheHandler.clear(task);
-    callback();
+    try {
+      cacheHandler.clear(task);
+      callback();
+    } catch (error) {
+      callback(error);
+    }
   } else {
-    taskListener.sendToSocket(socketLocation, task, callback);
+    taskListener.sendToSocket(null, task, callback);
   }
 
 };
@@ -56,10 +56,14 @@ exports.page = function(boardUri, page, callback, direct) {
   };
 
   if (direct) {
-    cacheHandler.clear(task);
-    callback();
+    try {
+      cacheHandler.clear(task);
+      callback();
+    } catch (error) {
+      callback(error);
+    }
   } else {
-    taskListener.sendToSocket(socketLocation, task, callback);
+    taskListener.sendToSocket(null, task, callback);
   }
 
 };
@@ -77,10 +81,14 @@ exports.catalog = function(boardUri, callback, direct) {
   };
 
   if (direct) {
-    cacheHandler.clear(task);
-    callback();
+    try {
+      cacheHandler.clear(task);
+      callback();
+    } catch (error) {
+      callback(error);
+    }
   } else {
-    taskListener.sendToSocket(socketLocation, task, callback);
+    taskListener.sendToSocket(null, task, callback);
   }
 
 };
@@ -118,28 +126,37 @@ exports.board = function(boardUri, reloadThreads, reloadRules, cb, direct) {
   }
 
   if (direct) {
-    for (var i = 0; i < tasks.length; i++) {
-      cacheHandler.clear(tasks[i]);
-    }
 
-    cb();
-
-  } else {
-
-    var client = new Socket();
-
-    client.on('end', cb);
-    client.on('error', cb);
-
-    client.connect(socketLocation, function() {
-
+    try {
       for (var i = 0; i < tasks.length; i++) {
-        taskListener.sendToSocket(client, tasks[i]);
+        cacheHandler.clear(tasks[i]);
       }
 
-      client.end();
-    });
+      cb();
+    } catch (error) {
+      cb(error);
+    }
+
+    return;
+
   }
+
+  taskListener.openSocket(function opened(error, socket) {
+
+    if (error) {
+      cb(error);
+      return;
+    }
+
+    socket.on('end', cb);
+
+    for (var i = 0; i < tasks.length; i++) {
+      taskListener.sendToSocket(socket, tasks[i]);
+    }
+
+    socket.end();
+
+  });
 
 };
 
@@ -156,10 +173,14 @@ exports.rules = function(boardUri, callback, direct) {
   };
 
   if (direct) {
-    cacheHandler.clear(task);
-    callback();
+    try {
+      cacheHandler.clear(task);
+      callback();
+    } catch (error) {
+      callback(error);
+    }
   } else {
-    taskListener.sendToSocket(socketLocation, task, callback);
+    taskListener.sendToSocket(null, task, callback);
   }
 
 };
@@ -176,10 +197,14 @@ exports.boards = function(callback, direct) {
   };
 
   if (direct) {
-    cacheHandler.clear(task);
-    callback();
+    try {
+      cacheHandler.clear(task);
+      callback();
+    } catch (error) {
+      callback(error);
+    }
   } else {
-    taskListener.sendToSocket(socketLocation, task, callback);
+    taskListener.sendToSocket(null, task, callback);
   }
 
 };

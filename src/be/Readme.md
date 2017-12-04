@@ -33,19 +33,14 @@ It accepts the following arguments:
 * `--reload-maintenance-image`, `-rmi`: will rebuild maintenance image page on boot.
 * `--reload-overboard`, `-ro`: reloads the overboard.
 * `--reload-logs`, `-rlog`: reloads logs.
-* `--reload-boards`, `-rboard`: reloads boards. If a board uri is informed it will start from the informed board. If an interval is informed it will skip said interval after finishing each board. The board and interval will only be used if the comand to not fork is issued.
+* `--reload-boards`, `-rboard`: reloads boards. If a board uri is informed it will start from the informed board.
 * `--reload-front-end`, `-rfe`: reloads the front-end files on a running instance, including cached static files. Will be ignored if maintenance mode is being changed on the same command or if no daemon was not informed.
 * `--prune-files`, `-pf`: prunes files that no longer contains references to them. Its advisable to turn on maintenance mode before using this command to avoid race conditions.
 * `--reload-graphs`, `-rg`: redraws daily graphs.
 * `--no-daemon`, `-nd`: will not start listening to HTTP requests. For running commands while having a server running.
 * `--create-account`, `-ca`: will create a new account. Require the use of the login, role and password parameters.
 * `--login`, `-l`: informs a login.
-* `--no-fork`, `-nf`: prevents the engine from spawning aditional processes to run commands. It will also make the engine stop after a rebuild error. Meant for internal usage, but hey, I`m not your dad or anything to tell you how to use your computer. :^)
 * `--password`, `-p`: informs a password.
-* `--board`, `-b`: informs a board uri.
-* `--thread`, `-t`: informs a thread id. Not threadId, but the document `_id`.
-* `--post`, `-po`: informs a post id. Not postId, but the document `_id`.
-* `--interval`, `-i`: informs an interval.
 * `--global-role`, `-gr`: informs a role from 0 to 4, 0 meaning root user, 1 admin, 2 global volunteer, 3 global janitor and 4 regular user.
 * `--set-role`, `-sr`: set a new role for an existing account. Will not be used if `-ca` is used. Takes a login and global role.
 * `--maintenance`, `-m`: indicates a new value for maintenance mode on a running instance. The value will be parsed as JSON, so informing `true` or `false` will work, so as informing numbers that evaluate to false or true. Will be ignored if no daemon was not informed.

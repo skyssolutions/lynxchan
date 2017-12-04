@@ -2,8 +2,6 @@
 
 var zlib = require('zlib');
 var cache = {};
-var net = require('net');
-var socketLocation;
 var gridFsHandler;
 var settingsHandler = require('../settingsHandler');
 var taskListener = require('../taskListener');
@@ -27,8 +25,6 @@ exports.loadSettings = function() {
 
   disable304 = settings.disable304;
   alternativeLanguages = settings.useAlternativeLanguages;
-  socketLocation = settings.tempDirectory;
-  socketLocation += '/unix.socket';
 
 };
 
@@ -103,17 +99,18 @@ exports.receiveGetLock = function(task, socket) {
 
 exports.getLock = function(lockData, readOnly, callback) {
 
-  var client = new net.Socket();
+  taskListener.openSocket(function opened(error, socket) {
 
-  client.on('error', callback);
+    if (error) {
+      callback(error);
+      return;
+    }
 
-  client.connect(socketLocation, function() {
-
-    taskListener.handleSocket(client, function receivedData(data) {
+    taskListener.handleSocket(socket, function receivedData(data) {
       callback(null, data.locked);
     });
 
-    taskListener.sendToSocket(client, {
+    taskListener.sendToSocket(socket, {
       type : 'getLock',
       lockData : lockData,
       readOnly : readOnly
@@ -375,6 +372,7 @@ exports.receiveWriteData = function(task, socket) {
   };
 
   zlib.gzip(task.data, function gotCompressedData(error, compressedData) {
+
     if (error) {
 
       taskListener.sendToSocket(socket, {
@@ -402,17 +400,17 @@ exports.receiveWriteData = function(task, socket) {
 
 exports.writeData = function(data, dest, mime, meta, callback) {
 
-  var client = new net.Socket();
+  taskListener.openSocket(function opened(error, socket) {
+    if (error) {
+      callback(error);
+      return;
+    }
 
-  client.on('error', callback);
-
-  client.connect(socketLocation, function() {
-
-    taskListener.handleSocket(client, function receivedData(data) {
+    taskListener.handleSocket(socket, function receivedData(data) {
       callback(data.error);
     });
 
-    taskListener.sendToSocket(client, {
+    taskListener.sendToSocket(socket, {
       type : 'cacheWrite',
       data : data,
       dest : dest,
@@ -640,21 +638,22 @@ exports.outputFile = function(pathName, req, res, callback) {
   var stats;
   var content;
 
-  var client = new net.Socket();
+  taskListener.openSocket(function opened(error, socket) {
 
-  client.on('end', function ended() {
+    if (error) {
+      callback(error);
+      return;
+    }
 
-    exports.handleReceivedData(pathName, req, res, stats || {
-      code : 404
-    }, content, callback);
+    socket.on('end', function ended() {
 
-  });
+      exports.handleReceivedData(pathName, req, res, stats || {
+        code : 404
+      }, content, callback);
 
-  client.on('error', callback);
+    });
 
-  client.connect(socketLocation, function() {
-
-    taskListener.handleSocket(client, function receivedData(data) {
+    taskListener.handleSocket(socket, function receivedData(data) {
 
       if (!stats) {
         stats = data;
@@ -664,7 +663,7 @@ exports.outputFile = function(pathName, req, res, callback) {
 
     });
 
-    taskListener.sendToSocket(client, {
+    taskListener.sendToSocket(socket, {
       type : 'cacheRead',
       range : req.headers.range,
       lastSeen : req.headers['if-modified-since'],

@@ -11,7 +11,6 @@ var overboardSFW;
 var verbose;
 var gridFsHandler;
 var cacheHandler;
-var socketLocation;
 var taskListener = require('../../taskListener');
 
 exports.loadSettings = function() {
@@ -21,9 +20,6 @@ exports.loadSettings = function() {
   overboardSFW = settings.sfwOverboard;
   overboard = settings.overboard;
   verbose = settings.verbose || settings.verboseGenerator;
-  socketLocation = settings.tempDirectory;
-  socketLocation += '/unix.socket';
-
 };
 
 exports.loadDependencies = function() {
@@ -55,10 +51,14 @@ exports.frontPage = function(callback, direct) {
   };
 
   if (direct) {
-    cacheHandler.clear(task);
-    callback();
+    try {
+      cacheHandler.clear(task);
+      callback();
+    } catch (error) {
+      callback(error);
+    }
   } else {
-    taskListener.sendToSocket(socketLocation, task, callback);
+    taskListener.sendToSocket(null, task, callback);
   }
 
 };
@@ -75,10 +75,16 @@ exports.overboard = function(callback, direct) {
   };
 
   if (direct) {
-    cacheHandler.clear(task);
-    callback();
+
+    try {
+      cacheHandler.clear(task);
+      callback();
+    } catch (error) {
+      callback(error);
+    }
+
   } else {
-    taskListener.sendToSocket(socketLocation, task, callback);
+    taskListener.sendToSocket(null, task, callback);
   }
 
 };
@@ -97,10 +103,14 @@ exports.log = function(date, callback, direct) {
   };
 
   if (direct) {
-    cacheHandler.clear(task);
-    callback();
+    try {
+      cacheHandler.clear(task);
+      callback();
+    } catch (error) {
+      callback(error);
+    }
   } else {
-    taskListener.sendToSocket(socketLocation, task, callback);
+    taskListener.sendToSocket(null, task, callback);
   }
 
 };
@@ -117,10 +127,14 @@ exports.logs = function(callback, direct) {
   };
 
   if (direct) {
-    cacheHandler.clear(task);
-    callback();
+    try {
+      cacheHandler.clear(task);
+      callback();
+    } catch (error) {
+      callback(error);
+    }
   } else {
-    taskListener.sendToSocket(socketLocation, task, callback);
+    taskListener.sendToSocket(null, task, callback);
   }
 
 };

@@ -147,26 +147,6 @@ var informedArguments = {
     short : '-gr',
     long : '--global-role',
     type : 'value'
-  },
-  board : {
-    short : '-b',
-    long : '--board',
-    type : 'value'
-  },
-  thread : {
-    short : '-t',
-    long : '--thread',
-    type : 'value'
-  },
-  post : {
-    short : '-po',
-    long : '--post',
-    type : 'value'
-  },
-  interval : {
-    short : '-i',
-    long : '--interval',
-    type : 'value'
   }
 };
 

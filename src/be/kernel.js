@@ -669,9 +669,6 @@ exports.startEngine = function() {
 
 };
 
-var socketLocation = settingsHandler.getGeneralSettings().tempDirectory;
-socketLocation += '/unix.socket';
-
 function checkMaintenanceMode() {
 
   var parsedValue = JSON.parse(informedArguments.maintenance.value) ? true
@@ -683,7 +680,7 @@ function checkMaintenanceMode() {
 
   if (changed) {
 
-    require('./taskListener').sendToSocket(socketLocation, {
+    require('./taskListener').sendToSocket(null, {
       type : 'maintenance',
       value : parsedValue
     });
@@ -705,13 +702,13 @@ function initTorControl() {
           checkMaintenanceMode();
         } else if (informedArguments.reloadFrontEnd.informed) {
 
-          require('./taskListener').sendToSocket(socketLocation, {
+          require('./taskListener').sendToSocket(null, {
             type : 'reloadFE'
           });
 
         } else if (informedArguments.shutdown.informed) {
 
-          require('./taskListener').sendToSocket(socketLocation, {
+          require('./taskListener').sendToSocket(null, {
             type : 'shutdown'
           });
 

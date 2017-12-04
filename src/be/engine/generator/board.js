@@ -2,8 +2,6 @@
 
 // handles generation control of pages specific to a board
 
-var exec = require('child_process').exec;
-var kernel = require('../../kernel');
 var db = require('../../db');
 var boards = db.boards();
 var flags = db.flags();
@@ -63,11 +61,7 @@ exports.loadDependencies = function() {
 
 };
 
-// Section 1: Boards {
-
-// Section 1.1: Board {
-
-// Section 1.1.1: Thread {
+// Section 1: Thread {
 exports.generateThreadHTML = function(boardData, flagData, threadData,
     foundPosts, callback, language) {
 
@@ -196,67 +190,9 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
       });
 
 };
+// } Section 1: Thread
 
-exports.iterateThreadsCursor = function(boardUri, boardData, cursor, callback) {
-
-  cursor.next(function(error, thread) {
-    if (error) {
-      callback(error);
-    } else if (!thread) {
-      callback();
-    } else {
-
-      // style exception, too simple
-      exports.thread(boardUri, thread.threadId, function generatedPage(error) {
-        if (error) {
-          callback(error);
-        } else {
-          exports.iterateThreadsCursor(boardUri, boardData, cursor, callback);
-        }
-
-      }, boardData, thread);
-      // style exception, too simple
-
-    }
-  });
-
-};
-
-exports.getThreads = function(boardUri, boardData, callback) {
-
-  var cursor = threads.find({
-    boardUri : boardUri,
-  }, threadProjection);
-
-  exports.iterateThreadsCursor(boardUri, boardData, cursor, callback);
-
-};
-
-exports.allThreads = function(boardUri, callback, boardData) {
-
-  if (!boardData) {
-
-    boards.findOne({
-      boardUri : boardUri
-    }, boardProjection, function gotBoard(error, board) {
-      if (error) {
-        callback(error);
-      } else if (!board) {
-        callback('Board not found');
-      } else {
-        exports.allThreads(boardUri, callback, board);
-      }
-    });
-
-    return;
-  }
-
-  exports.getThreads(boardUri, boardData, callback);
-
-};
-// } Section 1.1.1: Thread
-
-// Section 1.1.2: Board page {
+// Section 2: Board page {
 exports.saveBoardHTML = function(boardUri, page, threadsArray, pageCount,
     boardData, flagData, latestPosts, callback, language) {
 
@@ -422,9 +358,9 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
       });
 
 };
-// } Section 1.1.2: Board page
+// } Section 2: Board page
 
-// Section 1.1.3: Catalog {
+// Section 3: Catalog {
 exports.buildCatalogJsonAndRss = function(boardData, threads, callback) {
 
   jsonBuilder.catalog(boardData.boardUri, threads,
@@ -532,89 +468,9 @@ exports.catalog = function(boardUri, callback, boardData, flagData) {
   });
 
 };
-// } Section 1.1.3: Catalog
+// } Section 3: Catalog
 
-exports.pageIteration = function(boardUri, currentPage, boardData, callback,
-    rebuildThreadPages) {
-
-  if (currentPage < 1) {
-
-    exports.catalog(boardUri, function generatedCatalog(error) {
-      if (error) {
-        callback(error);
-      } else {
-        if (rebuildThreadPages) {
-          exports.allThreads(boardUri, callback, boardData);
-        } else {
-          callback();
-        }
-      }
-    });
-
-    return;
-  }
-
-  exports.page(boardUri, currentPage, function createdPage(error) {
-    if (error) {
-      callback(error);
-    } else {
-      exports.pageIteration(boardUri, --currentPage, boardData, callback,
-          rebuildThreadPages);
-    }
-  }, boardData);
-
-};
-
-exports.board = function(boardUri, reloadThreads, reloadRules, cb, boardData) {
-
-  // we allow for the basic board data to be informed, but fetch if not sent.
-  if (!boardData) {
-
-    boards.findOne({
-      boardUri : boardUri
-    }, boardProjection, function gotBoard(error, board) {
-      if (error) {
-        cb(error);
-      } else if (!board) {
-        cb('Board not found');
-      } else {
-        exports.board(boardUri, reloadThreads, reloadRules, cb, board);
-      }
-    });
-
-    return;
-  }
-
-  if (reloadRules) {
-    exports.rules(boardUri, function reloadedRules(error) {
-      if (error) {
-        cb(error);
-      } else {
-        exports.board(boardUri, reloadThreads, false, cb, boardData);
-      }
-    });
-
-    return;
-  }
-
-  if (verbose) {
-    console.log('\nGenerating board ' + boardUri);
-  }
-
-  if (boardData.threadCount > maxThreads) {
-    boardData.threadCount = maxThreads;
-  }
-
-  var pageCount = Math.ceil(boardData.threadCount / pageSize);
-
-  pageCount = pageCount || 1;
-
-  exports.pageIteration(boardUri, pageCount, boardData, cb, reloadThreads);
-
-};
-// } Section 1.1: Board
-
-// Section 1.2: Rules {
+// Section 4: Rules {
 exports.buildRulesHTML = function(boardUri, rules, callback, language) {
 
   domManipulator.rules(language, boardUri, rules,
@@ -662,141 +518,5 @@ exports.rules = function(boardUri, callback) {
   });
 
 };
-// } Section 1.2: Rules
-
-exports.iterateBoards = function(callback, lastUri, toSkip, startedSkipping) {
-
-  var query = {};
-
-  if (lastUri) {
-    query.boardUri = {
-      $lt : lastUri
-    };
-  }
-
-  var cursor = boards.find(query, boardProjection).sort({
-    boardUri : -1
-  });
-
-  if (toSkip && startedSkipping) {
-    cursor.skip(toSkip);
-  }
-
-  cursor.limit(1).toArray(function gotResults(error, results) {
-
-    if (error) {
-      callback(error);
-    } else if (!results || !results.length) {
-      callback();
-    } else {
-
-      var board = results[0];
-
-      // style exception parent callback is too simple
-      exports.board(board.boardUri, true, true, function generatedBoard(error) {
-
-        if (error) {
-          callback(error);
-        } else {
-          exports.iterateBoards(callback, board.boardUri, toSkip, true);
-        }
-
-      }, board);
-      // style exception parent callback is too simple
-
-    }
-
-  });
-
-};
-
-exports.startBoardRebuildProcesses = function(callback, initialBoards) {
-
-  var remaining = initialBoards.length;
-
-  var bootPath = __dirname + '/../../boot.js -nd -rboard -nf';
-
-  if (remaining > 1) {
-    bootPath += ' -i ' + (remaining - 1);
-  } else if (!remaining) {
-    callback();
-
-    return;
-  }
-
-  var running = true;
-
-  var execCallback = function(error, stdout, stderr) {
-
-    if (!running) {
-      return;
-    }
-
-    var trimmed = stdout.trim();
-
-    if (trimmed.length) {
-      console.log(trimmed);
-    }
-
-    if (error) {
-      running = false;
-      callback(stderr);
-
-    } else {
-
-      remaining--;
-
-      if (!remaining) {
-        running = false;
-        callback();
-      }
-
-    }
-
-  };
-
-  for (var i = 0; i < remaining; i++) {
-
-    var pathToUse = bootPath;
-
-    if (i) {
-      pathToUse += ' -b ' + (initialBoards[i - 1]).boardUri;
-    }
-
-    exec(pathToUse, execCallback);
-
-  }
-
-};
-
-exports.boards = function(callback) {
-
-  var informedArguments = kernel.informedArguments();
-
-  if (informedArguments.noFork.informed) {
-
-    exports.iterateBoards(callback, informedArguments.board.value,
-        +informedArguments.interval.value);
-
-    return;
-  }
-
-  boards.find({}, {
-    boardUri : 1,
-    _id : 0
-  }).sort({
-    boardUri : -1
-  }).limit(require('os').cpus().length).toArray(
-      function gotInitialBoards(error, initialBoards) {
-
-        if (error) {
-          callback(error);
-        } else {
-          exports.startBoardRebuildProcesses(callback, initialBoards);
-        }
-
-      });
-
-};
-// } Section 1: Boards
+// } Section 4: Rules
 

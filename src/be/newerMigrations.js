@@ -95,26 +95,30 @@ function getNamesToDelete() {
 
 function eraseOldCache(callback) {
 
-  files.aggregate([ {
-    $match : {
-      $or : [ {
-        filename : {
-          $in : getNamesToDelete()
+  files.aggregate([
+      {
+        $match : {
+          $or : [
+              {
+                filename : {
+                  $in : getNamesToDelete()
+                }
+              },
+              {
+                'metadata.type' : {
+                  $in : [ 'board', 'thread', 'catalog', 'rules', 'log',
+                      'multiboard', 'preview' ]
+                }
+              } ]
         }
       }, {
-        'metadata.type' : {
-          $in : [ 'board', 'thread', 'catalog', 'rules', 'log', 'multiboard' ]
+        $group : {
+          _id : 0,
+          files : {
+            $push : '$filename'
+          }
         }
-      } ]
-    }
-  }, {
-    $group : {
-      _id : 0,
-      files : {
-        $push : '$filename'
-      }
-    }
-  } ],
+      } ],
       function(error, results) {
 
         if (error) {
