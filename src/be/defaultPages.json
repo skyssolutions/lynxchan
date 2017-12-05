@@ -1303,6 +1303,10 @@
         "uses": "checked"
       },
       {
+        "name": "checkboxVerboseCache",
+        "uses": "checked"
+      },
+      {
         "name": "checkboxDisableAccountCreation",
         "uses": "checked"
       },

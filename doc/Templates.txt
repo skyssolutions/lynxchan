@@ -2035,6 +2035,10 @@ checkboxVerboseApis:
     use: might be turned on.
     description: checkbox that indicates if the verbose apis mode is on.
 
+checkboxVerboseCache:
+    use: might be turned on.
+    description: checkbox that indicates if the verbose cache mode is on.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::50

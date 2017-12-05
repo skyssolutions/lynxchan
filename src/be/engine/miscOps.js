@@ -524,6 +524,10 @@ exports.getParametersArray = function(language) {
     element : 'checkboxVerbose'
   }, {
     type : 'boolean',
+    setting : 'verboseCache',
+    element : 'checkboxVerboseCache'
+  }, {
+    type : 'boolean',
     setting : 'allowBlockedToReport',
     element : 'checkboxBlockedReport'
   }, {

@@ -8,6 +8,7 @@ var taskListener = require('../taskListener');
 var miscOps;
 var jitCacheOps;
 var requestHandler;
+var verbose;
 var disable304;
 var alternativeLanguages;
 var typeIndex = {
@@ -24,6 +25,7 @@ exports.loadSettings = function() {
   var settings = settingsHandler.getGeneralSettings();
 
   disable304 = settings.disable304;
+  verbose = settings.verbose || settings.verboseCache;
   alternativeLanguages = settings.useAlternativeLanguages;
 
 };
@@ -231,6 +233,11 @@ exports.clearArray = function(object, indexKey) {
   var toClear = object[indexKey];
 
   while (toClear && toClear.length) {
+
+    if (verbose) {
+      console.log('Deleting cached ' + toClear[toClear.length - 1]);
+    }
+
     delete cache[toClear.pop()];
   }
 
@@ -381,6 +388,10 @@ exports.receiveWriteData = function(task, socket) {
 
     } else {
 
+      if (verbose) {
+        console.log('Cached ' + task.dest);
+      }
+
       referenceBlock[task.dest] = regularEntry;
       referenceBlock[task.dest + '.gz'] = compressedEntry;
 
@@ -463,6 +474,31 @@ exports.getAlternative = function(task, alternatives) {
 
 };
 
+exports.returnCacheToSend = function(task, socket, toSend) {
+
+  if (verbose) {
+    console.log('Read cache ' + task.file);
+  }
+
+  var parsedRange = requestHandler.readRangeHeader(task.range, toSend.length);
+
+  taskListener.sendToSocket(socket, {
+    code : parsedRange ? 206 : 200,
+    range : parsedRange,
+    compressed : toSend.compressed,
+    mime : toSend.mime,
+    languages : toSend.languages,
+    length : toSend.length,
+    lastModified : toSend.lastModified
+  });
+
+  taskListener.sendToSocket(socket, parsedRange ? toSend.content.slice(
+      parsedRange.start, parsedRange.end + 1) : toSend.content);
+
+  socket.end();
+
+};
+
 exports.receiveOutputFile = function(task, socket) {
 
   var alternatives = cache[task.file];
@@ -491,24 +527,7 @@ exports.receiveOutputFile = function(task, socket) {
 
     socket.end();
   } else {
-
-    var parsedRange = requestHandler.readRangeHeader(task.range, toSend.length);
-
-    taskListener.sendToSocket(socket, {
-      code : parsedRange ? 206 : 200,
-      range : parsedRange,
-      compressed : toSend.compressed,
-      mime : toSend.mime,
-      languages : toSend.languages,
-      length : toSend.length,
-      lastModified : toSend.lastModified
-    });
-
-    taskListener.sendToSocket(socket, parsedRange ? toSend.content.slice(
-        parsedRange.start, parsedRange.end + 1) : toSend.content);
-
-    socket.end();
-
+    exports.returnCacheToSend(task, socket, toSend);
   }
 
 };
