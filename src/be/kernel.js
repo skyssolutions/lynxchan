@@ -54,10 +54,11 @@ function reloadDirectory(directory) {
 
 function reloadCore() {
 
+  require('./taskListener').reload();
+
   if (cluster.isMaster) {
     require('./scheduleHandler').reload();
     require('./generationQueue').reload();
-    require('./taskListener').reload();
   } else {
     require('./workerBoot').reload();
   }

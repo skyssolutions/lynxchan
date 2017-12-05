@@ -407,6 +407,10 @@ exports.getParametersArray = function(language) {
     element : 'fieldInactivityThreshold'
   }, {
     type : 'number',
+    setting : 'clusterPort',
+    element : 'fieldClusterPort'
+  }, {
+    type : 'number',
     setting : 'torPort',
     element : 'fieldTorPort'
   }, {

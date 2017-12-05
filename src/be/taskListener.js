@@ -9,12 +9,19 @@ var settingsHandler = require('./settingsHandler');
 var settings = settingsHandler.getGeneralSettings();
 var socketLocation = settings.tempDirectory;
 socketLocation += '/unix.socket';
+var clusterPort;
 var kernel = require('./kernel');
+var noDaemon = kernel.noDaemon();
 var debug = kernel.debug();
 var server;
+var tcpServer;
+var master;
+var slaves;
 var verbose;
 var cacheHandler;
+var generationQueue;
 var Socket = net.Socket;
+var isMaster = require('cluster').isMaster;
 var headerBuffer = Buffer.alloc(5);
 
 exports.reload = function() {
@@ -22,6 +29,10 @@ exports.reload = function() {
   var settings = settingsHandler.getGeneralSettings();
   verbose = settings.verbose || settings.verboseMisc;
   cacheHandler = require('./engine/cacheHandler');
+  master = settings.master;
+  clusterPort = settings.clusterPort;
+  slaves = settings.slaves;
+  generationQueue = require('./generationQueue');
 
 };
 
@@ -75,8 +86,19 @@ exports.processTask = function(task, socket) {
     break;
   }
 
+  case 'rebuildMessage': {
+    generationQueue.queue(task.message);
+    break;
+  }
+
   case 'shutdown': {
-    server.close();
+    if (server) {
+      server.close();
+    }
+
+    if (tcpServer) {
+      tcpServer.close();
+    }
 
     kernel.broadCastTopDownMessage({
       shutdown : true
@@ -136,10 +158,14 @@ exports.openSocket = function(callback) {
   var client = new Socket();
 
   client.on('error', callback);
-
-  client.connect(socketLocation, function() {
+  client.on('connect', function() {
     callback(null, client);
   });
+
+  client.connect(master && !noDaemon ? {
+    port : clusterPort,
+    host : master
+  } : socketLocation);
 
 };
 
@@ -150,7 +176,13 @@ exports.sendToSocket = function(socket, data, callback) {
     exports.openSocket(function opened(error, socket) {
 
       if (error) {
-        callback(error);
+
+        if (callback) {
+          callback(error);
+        } else {
+          console.log(error);
+        }
+
       } else {
 
         if (callback) {
@@ -199,9 +231,7 @@ exports.start = function(firstBoot) {
 
     process.on('SIGINT', function() {
       console.log();
-
       process.exit(2);
-
     });
 
     process.on('SIGTERM', function(code) {
@@ -216,6 +246,13 @@ exports.start = function(firstBoot) {
       exports.start();
     });
     return;
+  }
+
+  if (tcpServer) {
+    tcpServer.close(function closed() {
+      tcpServer = null;
+      exports.start();
+    });
   }
 
   fs.unlink(socketLocation, function removedFile(error) {
@@ -241,6 +278,25 @@ exports.start = function(firstBoot) {
     server = net.createServer(function clientConnected(client) {
       exports.handleSocket(client, exports.processCacheTasks);
     }).listen(socketLocation);
+
+    if (clusterPort) {
+      tcpServer = net.createServer(function clientConnected(client) {
+
+        var remote = client.remoteAddress;
+
+        var isSlave = slaves.indexOf(remote) > -1;
+
+        var isMaster = master === remote;
+
+        // Is up to the webserver to drop unwanted connections.
+        if (remote !== '127.0.0.1' && ((master && !isMaster) || !isSlave)) {
+          client.end();
+          return;
+        }
+
+        exports.handleSocket(client, exports.processCacheTasks);
+      }).listen(clusterPort, '0.0.0.0');
+    }
 
     server.on('error', function handleError(error) {
 

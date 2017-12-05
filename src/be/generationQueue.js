@@ -6,87 +6,17 @@ var kernel = require('./kernel');
 var debug = kernel.debug();
 var feDebug = kernel.feDebug();
 var degenerator;
-var http = require('http');
 var verbose;
-var currentSlave = 0;
-var MAX_TRIES = 4;
+var taskListener;
 var master;
-var port;
 
 exports.reload = function() {
+  taskListener = require('./taskListener');
   degenerator = require('./engine/degenerator');
   var settings = require('./settingsHandler').getGeneralSettings();
   verbose = settings.verbose || settings.verboseQueue;
   master = settings.master;
-  port = settings.port;
 };
-
-function sendMessageByHttp(message, callback, error, retries) {
-
-  retries = retries || 0;
-
-  if (retries >= MAX_TRIES) {
-    callback(error);
-    return;
-  }
-
-  if (verbose) {
-    console.log('Try ' + retries);
-  }
-
-  retries++;
-
-  var req = http.request({
-    hostname : master,
-    port : port,
-    path : '/.api/takeMessage.js',
-    method : 'POST'
-  }, function gotResponse(res) {
-
-    if (res.statusCode !== 200) {
-
-      sendMessageByHttp(message, callback, 'Request status ' + res.statusCode,
-          retries);
-      return;
-    }
-
-    var response = '';
-
-    res.on('data', function(data) {
-
-      response += data;
-    });
-
-    res.on('end', function() {
-
-      try {
-
-        var parsedResponse = JSON.parse(response);
-
-        if (parsedResponse.status === 'ok') {
-          callback();
-        } else {
-          sendMessageByHttp(message, callback, parsedResponse.data, retries);
-        }
-
-      } catch (error) {
-        sendMessageByHttp(message, callback, error, retries);
-      }
-
-    });
-
-  });
-
-  req.on('error', function(error) {
-    sendMessageByHttp(message, callback, error, retries);
-  });
-
-  req.write(JSON.stringify({
-    parameters : message
-  }));
-  req.end();
-
-}
 
 function deleteCacheForBoards(message, callback) {
 
@@ -160,17 +90,9 @@ exports.queue = function(message) {
       console.log('Sending message to master node');
     }
 
-    // TODO use a socket
-    sendMessageByHttp(message, function sentMessage(error) {
-      if (error) {
-
-        if (debug) {
-          throw error;
-        } else if (verbose) {
-          console.log(error);
-        }
-
-      }
+    taskListener.sendToSocket(null, {
+      type : 'rebuildMessage',
+      message : message
     });
 
     return;

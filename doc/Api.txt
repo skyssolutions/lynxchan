@@ -640,17 +640,6 @@ Parameters:
 
 PAG_ID::43
 
-Name: takeMessage
-
-Description: internal use only, it receives a page generation message.
-
-Parameters:
-    varies according to the message. The parameters field of the incoming json should be the message itself.
-
-------------------------------------------------------------------------------------------
-
-PAG_ID::44
-
 Name: takeSettings
 
 Description: internal use only, it receives settings from a master node.
@@ -660,7 +649,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::45
+PAG_ID::44
 
 Name: setSpecialBoardSettings
 
@@ -674,7 +663,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::46
+PAG_ID::45
 
 Name: deleteMedia
 
@@ -685,7 +674,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::47
+PAG_ID::46
 
 Name: deleteFromIpOnBoard
 
@@ -699,7 +688,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::48
+PAG_ID::47
 
 Name: addLanguage
 
@@ -712,7 +701,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::49
+PAG_ID::48
 
 Name: deleteLanguage
 
@@ -723,7 +712,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::50
+PAG_ID::49
 
 Name: addAccount
 
@@ -735,7 +724,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::51
+PAG_ID::50
 
 Name: deleteAccount
 
@@ -747,7 +736,7 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::52
+PAG_ID::51
 
 Name: restartSocket
 
@@ -755,7 +744,7 @@ Description: restarts the unix socket. Requires authentication. Restricted to us
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::53
+PAG_ID::52
 
 Name: massBan
 

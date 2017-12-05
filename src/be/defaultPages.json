@@ -1135,6 +1135,10 @@
         "uses": "value"
       },
       {
+        "name": "fieldClusterPort",
+        "uses": "value"
+      },
+      {
         "name": "fieldPageSize",
         "uses": "value"
       },

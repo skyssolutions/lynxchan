@@ -169,6 +169,7 @@ Settings files that goes into the settings directory:
 * `incSpamIpsSource`(Boolean): complete url to be used to fetch latest additions to the spam ip database. Same rules for `spamIpsSource` apply, except that ips are separated by new lines instead of commas. Downloaded every hour. Defaults to `https://www.stopforumspam.com/downloads/listed_ip_1.zip`.
 * `flagNameLength`(Number): maximum size allowed for custom flags names. Defaults to 32.
 * `allowBlockedToReport`(Boolean): allows users that were banned or blocked to report content, including TOR users if they are not allowed to post.
+* `clusterPort`(Number): port used for cluster communication.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.
