@@ -73,6 +73,11 @@ var informedArguments = {
     long : '--reload-boards',
     type : 'boolean'
   },
+  reloadMultiboard : {
+    short : '-rmb',
+    long : '--reload-multiboard',
+    type : 'boolean'
+  },
   reloadLogin : {
     short : '-rl',
     long : '--reload-login',

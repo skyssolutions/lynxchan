@@ -13,11 +13,13 @@ var disable304;
 var alternativeLanguages;
 var typeIndex = {
   boards : {},
-  logs : {}
+  logs : {},
+  multiboards : {}
 };
 var locks = {
   boards : {},
-  logs : {}
+  logs : {},
+  multiboards : {}
 };
 
 exports.loadSettings = function() {
@@ -38,7 +40,7 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Lock read {
-exports.returnLock = function(task, lockKey, object, socket) {
+exports.returnLock = function(task, lockKey, object, socket, selectedBoards) {
 
   var toReturn = object[lockKey] || false;
 
@@ -47,7 +49,8 @@ exports.returnLock = function(task, lockKey, object, socket) {
   }
 
   taskListener.sendToSocket(socket, {
-    locked : toReturn
+    locked : toReturn,
+    selectedBoards : selectedBoards
   });
 
   socket.end();
@@ -70,6 +73,11 @@ exports.receiveGetLock = function(task, socket) {
   }
 
   switch (lockData.type) {
+
+  case 'multiboard': {
+    return exports.returnLock(task, lockData.boards.join('_'),
+        locks.multiboards, socket);
+  }
 
   case 'thread': {
     return exports.returnLock(task, lockData.threadId, boardObject.threads,
@@ -109,7 +117,7 @@ exports.getLock = function(lockData, readOnly, callback) {
     }
 
     taskListener.handleSocket(socket, function receivedData(data) {
-      callback(null, data.locked);
+      callback(data.error, data.locked);
     });
 
     taskListener.sendToSocket(socket, {
@@ -127,6 +135,11 @@ exports.deleteLock = function(task) {
   var lockData = task.lockData;
 
   switch (lockData.type) {
+
+  case 'multiboard': {
+    delete locks.multiboards[lockData.boards.join('_')];
+    break;
+  }
 
   case 'thread': {
     delete locks.boards[lockData.boardUri].threads[lockData.threadId];
@@ -159,6 +172,7 @@ exports.deleteLock = function(task) {
 
 };
 
+// Section 2: Cache deletion {
 exports.getInfoToClear = function(task) {
 
   var boardIndex;
@@ -214,6 +228,42 @@ exports.getInfoToClear = function(task) {
 
 };
 
+exports.clearMultiBoardSelection = function(boardUri) {
+
+  var toClear = typeIndex.multiboards[boardUri] || {};
+
+  for ( var key in toClear) {
+
+    if (!toClear.hasOwnProperty(key)) {
+      continue;
+    }
+
+    var keyParts = key.split('_');
+
+    for (var i = 0; i < keyParts.length; i++) {
+      exports.clearArray(typeIndex.multiboards[keyParts[i]], key);
+    }
+
+  }
+
+  delete typeIndex.multiboards[boardUri];
+
+};
+
+exports.clearMultiBoard = function(task) {
+
+  if (task.boardUri) {
+    exports.clearMultiBoardSelection(task.boardUri);
+  } else {
+
+    for ( var key in typeIndex.multiboards) {
+      exports.clearMultiBoardSelection(key);
+    }
+
+  }
+
+};
+
 exports.performFullClear = function(object) {
 
   for ( var key in object) {
@@ -233,11 +283,6 @@ exports.clearArray = function(object, indexKey) {
   var toClear = object[indexKey];
 
   while (toClear && toClear.length) {
-
-    if (verbose) {
-      console.log('Deleting cached ' + toClear[toClear.length - 1]);
-    }
-
     delete cache[toClear.pop()];
   }
 
@@ -279,6 +324,8 @@ exports.clear = function(task) {
 
   if (task.cacheType === 'boards') {
     return exports.clearAllBoards();
+  } else if (task.cacheType === 'multiboard') {
+    return exports.clearMultiBoard(task);
   }
 
   var clearInfo = exports.getInfoToClear(task);
@@ -294,14 +341,31 @@ exports.clear = function(task) {
   }
 
 };
+// } Section 2: Cache deletion
 
-// Section 2: Master write file {
+// Section 3: Master write file {
 exports.pushIndex = function(indexToUse, key, dest) {
 
   var indexList = indexToUse[key] || [];
   indexToUse[key] = indexList;
 
   indexList.push(dest);
+
+};
+
+exports.pushMultiboardIndex = function(task) {
+
+  var key = task.meta.boards.join('_');
+
+  for (var i = 0; i < task.meta.boards.length; i++) {
+
+    var boardUri = task.meta.boards[i];
+
+    var indexList = typeIndex.multiboards[boardUri] || {};
+    typeIndex.multiboards[boardUri] = indexList;
+
+    exports.pushIndex(typeIndex.multiboards[boardUri], key, task.dest);
+  }
 
 };
 
@@ -319,6 +383,10 @@ exports.placeIndex = function(task) {
   }
 
   switch (task.meta.type) {
+
+  case 'multiboard': {
+    return exports.pushMultiboardIndex(task);
+  }
 
   case 'catalog':
   case 'rules': {
@@ -353,8 +421,10 @@ exports.receiveWriteData = function(task, socket) {
   var keyToUse = task.meta.referenceFile || task.dest;
   var referenceBlock = cache[keyToUse];
 
+  var addIndex;
+
   if (!referenceBlock) {
-    exports.placeIndex(task);
+    addIndex = true;
     referenceBlock = {};
     cache[keyToUse] = referenceBlock;
   } else {
@@ -392,6 +462,10 @@ exports.receiveWriteData = function(task, socket) {
         console.log('Cached ' + task.dest);
       }
 
+      if (addIndex) {
+        exports.placeIndex(task);
+      }
+
       referenceBlock[task.dest] = regularEntry;
       referenceBlock[task.dest + '.gz'] = compressedEntry;
 
@@ -407,7 +481,7 @@ exports.receiveWriteData = function(task, socket) {
   });
 
 };
-// } Section 2: Master write file
+// } Section 3: Master write file
 
 exports.writeData = function(data, dest, mime, meta, callback) {
 
@@ -433,7 +507,7 @@ exports.writeData = function(data, dest, mime, meta, callback) {
 
 };
 
-// Section 3: Master read file {
+// Section 4: Master read file {
 exports.languageIntersects = function(task, alternative) {
 
   for (var i = 0; task.languages && i < alternative.languages.length; i++) {
@@ -531,9 +605,9 @@ exports.receiveOutputFile = function(task, socket) {
   }
 
 };
-// } Section 3: Master read file
+// } Section 4: Master read file
 
-// Section 4: Worker read file {
+// Section 5: Worker read file {
 exports.addHeaderBoilerPlate = function(header) {
 
   header.push([ 'Vary', 'Accept-Encoding' ]);
@@ -616,7 +690,8 @@ exports.output304 = function(res, callback) {
 
 exports.handleJit = function(pathName, req, res, callback) {
 
-  jitCacheOps.checkCache(pathName, function finished(error, notFound) {
+  jitCacheOps.checkCache(pathName, req.boards, function finished(error,
+      notFound) {
 
     if (error) {
       callback(error);
@@ -694,4 +769,4 @@ exports.outputFile = function(pathName, req, res, callback) {
   });
 
 };
-// } Section 4: Worker read file
+// } Section 5: Worker read file

@@ -40,6 +40,8 @@ exports.deleteCache = function(message, callback) {
 
   if (message.globalRebuild) {
     degenerator.all(callback, true);
+  } else if (message.multiboard && typeof message.multiboard === 'boolean') {
+    degenerator.global.multiboard(callback, message.board, true);
   } else if (message.log) {
     degenerator.global.log(new Date(message.date), callback, true);
   } else if (message.overboard) {

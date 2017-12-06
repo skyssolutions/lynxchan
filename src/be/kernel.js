@@ -130,6 +130,10 @@ var optionalReloads = [ {
   generatorModule : 'global',
   command : informedArguments.reloadOverboard.informed
 }, {
+  generatorFunction : 'multiboard',
+  generatorModule : 'global',
+  command : informedArguments.reloadMultiboard.informed
+}, {
   generatorFunction : 'logs',
   generatorModule : 'global',
   command : informedArguments.reloadLogs.informed

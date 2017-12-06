@@ -13,6 +13,7 @@ var generator;
 var cacheHandler;
 var gridFsHandler;
 var templateHandler;
+var multiBoardAllowed;
 var overboardPages;
 var overboardAlternativePages = [ '1.json', 'index.rss', '' ];
 var catalogPages = [ 'catalog.html', 'catalog.json', 'index.rss' ];
@@ -21,6 +22,8 @@ var rulesPages = [ 'rules.html', 'rules.json' ];
 exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
+
+  multiBoardAllowed = settings.multiboardThreadCount;
 
   overboardPages = [];
 
@@ -103,12 +106,12 @@ exports.generateBoardCache = function(lockData, callback) {
 
 exports.generateCache = function(lockData, callback) {
 
-  if (feDebug && !debug) {
-    templateHandler.dropAlternativeTemplates();
-    templateHandler.loadTemplates();
-  }
-
   switch (lockData.type) {
+
+  case 'multiboard': {
+    generator.global.multiboard(lockData.boards, callback);
+    break;
+  }
 
   case 'rules':
   case 'catalog':
@@ -144,12 +147,6 @@ exports.generateCache = function(lockData, callback) {
 
     break;
   }
-
-  default: {
-    console.log('Warning: unknown lock type ' + lockData.type);
-    callback(null, true);
-  }
-    break;
 
   }
 
@@ -232,56 +229,67 @@ exports.getOverboardLockData = function(fileParts) {
 
 };
 
-exports.getLockData = function(file) {
+exports.getBoardLock = function(fileParts) {
 
-  var fileParts = (file || '').split('/');
+  if (fileParts.length === 4) {
+    return exports.getThreadLockData(fileParts);
+  } else if (fileParts.length === 3) {
+
+    if (!fileParts[2]) {
+      return {
+        boardUri : fileParts[1],
+        page : 1,
+        type : 'page'
+      };
+    }
+
+    var matches = fileParts[2].match(/^(\d+)\.(html|json)$/);
+
+    if (matches) {
+
+      return {
+        boardUri : fileParts[1],
+        page : +matches[1],
+        type : 'page'
+      };
+
+    } else if (catalogPages.indexOf(fileParts[2]) > -1) {
+
+      return {
+        boardUri : fileParts[1],
+        type : 'catalog'
+      };
+
+    } else if (rulesPages.indexOf(fileParts[2]) > -1) {
+
+      return {
+        boardUri : fileParts[1],
+        type : 'rules'
+      };
+
+    }
+
+  }
+
+};
+
+exports.getLockData = function(file, boards) {
+
+  if (boards) {
+    return {
+      type : 'multiboard',
+      boards : boards
+    };
+  }
+
+  var fileParts = (file || '').trim().split('/');
 
   if (!fileParts[1] || /\W/.test(fileParts[1])) {
     return exports.getGlobalLockData(fileParts);
   } else if (overboardPages.indexOf(fileParts[1]) > -1) {
     return exports.getOverboardLockData(fileParts);
   } else {
-
-    if (fileParts.length === 4) {
-      return exports.getThreadLockData(fileParts);
-    } else if (fileParts.length === 3) {
-
-      if (!fileParts[2]) {
-        return {
-          boardUri : fileParts[1],
-          page : 1,
-          type : 'page'
-        };
-      }
-
-      var matches = fileParts[2].match(/^(\d+)\.(html|json)$/);
-
-      if (matches) {
-
-        return {
-          boardUri : fileParts[1],
-          page : +matches[1],
-          type : 'page'
-        };
-
-      } else if (catalogPages.indexOf(fileParts[2]) > -1) {
-
-        return {
-          boardUri : fileParts[1],
-          type : 'catalog'
-        };
-
-      } else if (rulesPages.indexOf(fileParts[2]) > -1) {
-
-        return {
-          boardUri : fileParts[1],
-          type : 'rules'
-        };
-
-      }
-
-    }
-
+    return exports.getBoardLock(fileParts);
   }
 
 };
@@ -327,9 +335,9 @@ exports.waitForUnlock = function(callback, lockData, attempts) {
 
 };
 
-exports.checkCache = function(file, callback) {
+exports.checkCache = function(file, boards, callback) {
 
-  var lockData = exports.getLockData(file);
+  var lockData = exports.getLockData(file, boards);
 
   if (!lockData) {
     callback(null, true);
@@ -341,6 +349,11 @@ exports.checkCache = function(file, callback) {
     if (error) {
       callback(error);
     } else if (!isLocked) {
+
+      if (feDebug && !debug) {
+        templateHandler.dropAlternativeTemplates();
+        templateHandler.loadTemplates();
+      }
 
       // style exception, too simple
       exports.generateCache(lockData, function generatedCache(error, notFound) {

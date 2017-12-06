@@ -22,6 +22,7 @@ var settingsHandler = require('../../settingsHandler');
 var templateSettings = settingsHandler.getTemplateSettings();
 var topBoardsCount;
 var verbose;
+var multiboardThreadCount;
 var globalLatestPosts;
 var globalLatestImages;
 var domManipulator;
@@ -43,6 +44,7 @@ var overBoardThreadCount;
 exports.loadSettings = function() {
   var settings = settingsHandler.getGeneralSettings();
 
+  multiboardThreadCount = settings.multiboardThreadCount;
   verbose = settings.verbose || settings.verboseGenerator;
   altLanguages = settings.useAlternativeLanguages;
   topBoardsCount = settings.topBoardsCount;
@@ -1043,3 +1045,138 @@ exports.logs = function(callback) {
 exports.graphs = function(callback) {
   require('../../dbMigrations').generateGraphs(callback);
 };
+
+// Section 4: Multi-board {
+exports.generateHTMLPage = function(boardList, previewRelation, foundThreads,
+    callback, language) {
+
+  domManipulator.overboard(foundThreads, previewRelation, function gotContent(
+      error) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      if (!altLanguages) {
+        jsonBuilder.overboard(foundThreads, previewRelation, callback,
+            boardList);
+        return;
+      }
+
+      rootModule.nextLanguage(language, function gotLanguage(error, language) {
+
+        if (error) {
+          callback(error);
+        } else if (!language) {
+          jsonBuilder.overboard(foundThreads, previewRelation, callback,
+              boardList);
+        } else {
+          exports.generateHTMLPage(boardList, previewRelation, foundThreads,
+              callback, language);
+        }
+
+      });
+
+    }
+
+  }, boardList, null, language);
+
+};
+
+exports.generatePage = function(boardList, foundPosts, foundThreads, callback) {
+
+  var previewRelation = {};
+
+  for (var i = 0; i < foundPosts.length; i++) {
+
+    var post = foundPosts[i];
+
+    var boardElement = previewRelation[post.boardUri] || {};
+
+    previewRelation[post.boardUri] = boardElement;
+
+    var threadArray = boardElement[post.threadId] || [];
+
+    threadArray.push(post);
+
+    boardElement[post.threadId] = threadArray;
+
+  }
+
+  exports.generateHTMLPage(boardList, previewRelation, foundThreads, callback);
+
+};
+
+exports.getPosts = function(boardList, foundThreads, callback) {
+
+  var previewRelation = {};
+
+  for (var i = 0; i < foundThreads.length; i++) {
+
+    var thread = foundThreads[i];
+
+    var boardUri = thread.boardUri;
+
+    var previewArray = previewRelation[boardUri] || [];
+
+    previewArray = previewArray.concat(thread.latestPosts);
+
+    previewRelation[boardUri] = previewArray;
+  }
+
+  var orArray = [];
+
+  for ( var key in previewRelation) {
+
+    orArray.push({
+      boardUri : key,
+      postId : {
+        $in : previewRelation[key]
+      }
+    });
+  }
+
+  if (!orArray.length) {
+    exports.generatePage(boardList, [], foundThreads, callback);
+    return;
+  }
+
+  posts.find({
+    $or : orArray
+  }, postProjection).sort({
+    creation : 1
+  }).toArray(function gotPosts(error, foundPosts) {
+    if (error) {
+      callback(error);
+    } else {
+      exports.generatePage(boardList, foundPosts, foundThreads, callback);
+    }
+
+  });
+
+};
+
+exports.multiboard = function(boardList, callback) {
+
+  if (verbose) {
+    console.log('Generating multiboard');
+  }
+
+  threads.find({
+    boardUri : {
+      $in : boardList
+    }
+  }, threadProjection).sort({
+    lastBump : -1
+  }).limit(multiboardThreadCount).toArray(
+      function gotThreads(error, foundThreads) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.getPosts(boardList, foundThreads, callback);
+        }
+      });
+
+};
+// } Section 4: Multi-board

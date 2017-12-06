@@ -15,7 +15,6 @@ var altLanguages;
 var postProjection;
 var threadProjection;
 var rootModule;
-var mbHandler;
 var boardOps;
 var rssBuilder;
 var jsonBuilder;
@@ -51,7 +50,6 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   rootModule = require('.');
-  mbHandler = require('../multiBoardHandler');
   postProjection = rootModule.postProjection;
   threadProjection = rootModule.threadProjection;
   boardOps = require('../boardOps').rules;
@@ -175,8 +173,6 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
                 if (error) {
                   callback(error);
                 } else {
-
-                  mbHandler.clearCache(boardUri);
 
                   exports.generateThreadHTML(boardData, flagData, threadData,
                       foundPosts, callback);

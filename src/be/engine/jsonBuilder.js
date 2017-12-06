@@ -577,7 +577,7 @@ exports.globalSettings = function() {
 };
 
 exports.overboard = function(foundThreads, previewRelation, callback,
-    multiboard, sfw) {
+    boardList, sfw) {
 
   var threadsToAdd = [];
 
@@ -595,19 +595,18 @@ exports.overboard = function(foundThreads, previewRelation, callback,
 
   }
 
-  if (multiboard) {
-    callback(null, JSON.stringify({
-      threads : threadsToAdd
-    }));
+  if (boardList) {
+    var url = '/' + boardList.join('+') + '/1.json';
   } else {
-    var url = '/' + (sfw ? sfwOverboard : overboard) + '/1.json';
-
-    cacheHandler.writeData(JSON.stringify({
-      threads : threadsToAdd
-    }), url, 'application/json', {
-      type : 'overboard'
-    }, callback);
+    url = '/' + (sfw ? sfwOverboard : overboard) + '/1.json';
   }
+
+  cacheHandler.writeData(JSON.stringify({
+    threads : threadsToAdd
+  }), url, 'application/json', {
+    boards : boardList,
+    type : boardList ? 'multiboard' : 'overboard'
+  }, callback);
 
 };
 

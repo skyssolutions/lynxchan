@@ -138,3 +138,28 @@ exports.logs = function(callback, direct) {
   }
 
 };
+
+exports.multiboard = function(callback, boardUri, direct) {
+
+  if (verbose) {
+    console.log('Degenerating multi-boards');
+  }
+
+  var task = {
+    cacheType : 'multiboard',
+    type : 'cacheClear',
+    boardUri : boardUri
+  };
+
+  if (direct) {
+    try {
+      cacheHandler.clear(task);
+      callback();
+    } catch (error) {
+      callback(error);
+    }
+  } else {
+    taskListener.sendToSocket(null, task, callback);
+  }
+
+};

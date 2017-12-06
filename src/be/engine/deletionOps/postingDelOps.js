@@ -190,6 +190,11 @@ exports.signalAndLoop = function(parentThreads, board, parameters,
   }
 
   process.send({
+    multiboard : true,
+    board : board.boardUri
+  });
+
+  process.send({
     board : board.boardUri
   });
 

@@ -28,6 +28,7 @@ It accepts the following arguments:
 * `--reload-notfound`, `-rn`: will rebuild 404 page on boot.
 * `--reload-thumb`, `-rt`: will rebuild generic thumbnail on boot.
 * `--reload-audio`, `-ra`: will rebuild generic audio thumb on boot.
+* `--reload-multiboard`, `-rbm`: will rebuild multiboard pages on boot.
 * `--reload-spoiler`, `-rs`: will rebuild spoiler image on boot.
 * `--reload-maintenance`, `-rm`: will rebuild maintenance page on boot.
 * `--reload-maintenance-image`, `-rmi`: will rebuild maintenance image page on boot.

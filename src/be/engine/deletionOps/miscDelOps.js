@@ -204,6 +204,11 @@ exports.deleteBoardContent = function(board, callback, index) {
     });
 
     process.send({
+      board : board,
+      multiboard : true
+    });
+
+    process.send({
       frontPage : true
     });
 

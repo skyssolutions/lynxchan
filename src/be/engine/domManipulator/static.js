@@ -806,41 +806,40 @@ exports.getOverboardThreads = function(foundThreads, foundPreviews, language) {
 };
 
 exports.overboard = function(foundThreads, previewRelation, callback,
-    multiBoard, sfw, language) {
+    boardList, sfw, language) {
 
   try {
 
     var document = exports.getOverboardThreads(foundThreads, previewRelation,
         language);
 
-    if (multiBoard) {
-      document = document.replace('__title__', lang(language).titMultiboard);
-      callback(null, document);
+    if (boardList) {
+      var title = lang(language).titMultiboard;
+      var path = '/' + boardList.join('+') + '/';
     } else {
-
-      var meta = {
-        type : 'overboard'
-      };
-
-      var title = '/' + (sfw ? sfwOverboard : overboard) + '/';
-
-      var path = title;
-
-      if (language) {
-        meta.referenceFile = path;
-        meta.languages = language.headerValues;
-        path += language.headerValues.join('-');
-      }
-
-      document = document.replace('__title__', title);
-
-      cacheHandler.writeData(document, path, 'text/html', meta, callback);
-
+      title = '/' + (sfw ? sfwOverboard : overboard) + '/';
+      path = title;
     }
+
+    var meta = {
+      type : boardList ? 'multiboard' : 'overboard',
+      boards : boardList
+    };
+
+    if (language) {
+      meta.referenceFile = path;
+      meta.languages = language.headerValues;
+      path += language.headerValues.join('-');
+    }
+
+    document = document.replace('__title__', title);
+
+    cacheHandler.writeData(document, path, 'text/html', meta, callback);
 
   } catch (error) {
     callback(error);
   }
+
 };
 // } Section 5: Overboard
 

@@ -10,14 +10,15 @@ var url = require('url');
 var proxy = require('http-proxy').createProxyServer({
   secure : false
 });
-var multiBoard = require('./multiBoardHandler');
 var multiBoardAllowed;
 var verbose;
 var verboseApis;
 var maintenance;
 var feDebug = kernel.feDebug();
 var debug = kernel.debug();
-var langs = require('../db').languages();
+var db = require('../db');
+var langs = db.languages();
+var boards = db.boards();
 var useLanguages;
 var formOps;
 var apiOps;
@@ -212,7 +213,17 @@ exports.processFormRequest = function(req, pathName, res) {
 
 };
 
-exports.extractMultiBoardBoards = function(boards) {
+exports.extractMultiBoard = function(parts) {
+
+  if (parts.length < 2) {
+    return false;
+  }
+
+  var boards = parts[1].split('+');
+
+  if (boards.length < 2) {
+    return false;
+  }
 
   var boardsToPick = [];
 
@@ -229,36 +240,6 @@ exports.extractMultiBoardBoards = function(boards) {
   }
 
   return boardsToPick;
-
-};
-
-exports.testForMultiBoard = function(pathName, req, res, callback) {
-
-  if (!multiBoardAllowed) {
-    return;
-  }
-
-  var parts = pathName.split('/');
-
-  if (parts.length < 2) {
-    return false;
-  }
-
-  var boards = parts[1].split('+');
-
-  if (boards.length < 2) {
-    return false;
-  }
-
-  var boardsToPick = exports.extractMultiBoardBoards(boards);
-
-  if (!boardsToPick) {
-    return false;
-  }
-
-  multiBoard.outputBoards(boardsToPick, req, res, callback);
-
-  return true;
 
 };
 
@@ -459,6 +440,95 @@ exports.getCleanPathName = function(pathName) {
 
 };
 
+exports.multiBoardsDiff = function(found, toUse) {
+
+  if (found.length !== toUse.length) {
+    return true;
+  }
+
+  for (var i = 0; i < found.length; i++) {
+
+    if (found[i] !== toUse[i]) {
+      return true;
+    }
+
+  }
+
+  return false;
+
+};
+
+exports.checkMultiBoardRouting = function(splitArray, req, res, callback) {
+
+  if (!multiBoardAllowed || splitArray.length > 3) {
+    callback();
+    return;
+  }
+
+  if (splitArray.length > 2 && splitArray[2] && splitArray[2] !== '1.json') {
+    callback();
+    return;
+  }
+
+  var boardsToUse = exports.extractMultiBoard(splitArray);
+
+  if (!boardsToUse) {
+    callback();
+    return;
+  }
+
+  boards.aggregate([ {
+    $match : {
+      boardUri : {
+        $in : boardsToUse
+      }
+    }
+  }, {
+    $project : {
+      boardUri : 1,
+      _id : 0
+    }
+  }, {
+    $group : {
+      _id : 0,
+      boards : {
+        $push : '$boardUri'
+      }
+    }
+  } ], function gotExistingBoards(error, results) {
+
+    if (error || !results.length) {
+      callback(error);
+    } else {
+
+      var foundBoards = results[0].boards.sort();
+
+      var diff = exports.multiBoardsDiff(foundBoards, boardsToUse);
+
+      if (diff || splitArray.length === 2) {
+
+        splitArray[1] = foundBoards.join('+');
+
+        if (splitArray.length === 2) {
+          splitArray.push('');
+        }
+
+        res.writeHead(302, {
+          'Location' : splitArray.join('/')
+        });
+        res.end();
+
+      } else {
+        req.boards = foundBoards;
+        callback();
+      }
+
+    }
+
+  });
+
+};
+
 exports.decideRouting = function(req, pathName, res, callback) {
 
   if (pathName.indexOf('/.api/') === 0) {
@@ -477,20 +547,23 @@ exports.decideRouting = function(req, pathName, res, callback) {
     return;
   }
 
-  var gotSecondString = splitArray.length === 2 && splitArray[1];
+  exports.checkMultiBoardRouting(splitArray, req, res, function checked(error) {
 
-  if (gotSecondString && !/\W/.test(splitArray[1])) {
+    var gotSecondString = splitArray.length === 2 && splitArray[1];
 
-    // redirects if we missed the slash on the board front-page
-    res.writeHead(302, {
-      'Location' : '/' + splitArray[1] + '/'
+    if (gotSecondString && !/\W/.test(splitArray[1])) {
 
-    });
-    res.end();
+      // redirects if we missed the slash on the board front-page
+      res.writeHead(302, {
+        'Location' : '/' + splitArray[1] + '/'
 
-  } else if (!exports.testForMultiBoard(pathName, req, res, callback)) {
-    cacheHandler.outputFile(pathName, req, res, callback);
-  }
+      });
+      res.end();
+
+    } else {
+      cacheHandler.outputFile(pathName, req, res, callback);
+    }
+  });
 
 };
 

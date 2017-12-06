@@ -191,6 +191,16 @@ exports.runRebuilds = function(newBoard, newThreadId, originalThread, userData,
     callback) {
 
   process.send({
+    multiboard : true,
+    board : newBoard.boardUri
+  });
+
+  process.send({
+    multiboard : true,
+    board : originalThread.boardUri
+  });
+
+  process.send({
     board : newBoard.boardUri
   });
 

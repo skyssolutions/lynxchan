@@ -211,16 +211,19 @@ exports.cleanThreadPosts = function(boardUri, threadId, postId, language,
 exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
     cleanPosts, bump, language, callback) {
 
-  // signal rebuild of thread
   process.send({
     board : parameters.boardUri,
     thread : parameters.threadId
   });
 
-  // signal rebuild of board catalog
   process.send({
     board : parameters.boardUri,
     catalog : true
+  });
+
+  process.send({
+    multiboard : true,
+    board : parameters.boardUri
   });
 
   if (bump) {

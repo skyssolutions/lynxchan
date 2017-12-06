@@ -79,6 +79,11 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
     });
   }
 
+  process.send({
+    multiboard : true,
+    board : boardUri
+  });
+
   if (overboard || sfwOverboard) {
     overboardOps.reaggregate({
       overboard : true,
