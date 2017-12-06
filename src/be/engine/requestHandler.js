@@ -231,7 +231,7 @@ exports.extractMultiBoard = function(parts) {
 
     var piece = boards[i];
 
-    if (/\W/.test(piece)) {
+    if (!piece || /\W/.test(piece)) {
       return false;
     }
 

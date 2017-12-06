@@ -16,7 +16,7 @@ exports.loadDependencies = function() {
 };
 
 var toDegenerate;
-var MAX_TO_DEGENERATE = 12;
+var MAX_TO_DEGENERATE = 13;
 var reloading;
 
 var fullReloadCallback = function(error, callback) {
@@ -75,6 +75,10 @@ exports.globalReloads = function(callback, direct) {
   });
 
   exports.global.audioThumb(function reloaded(error) {
+    fullReloadCallback(error, callback);
+  });
+
+  exports.global.multiboard(function reloaded(error) {
     fullReloadCallback(error, callback);
   });
 
