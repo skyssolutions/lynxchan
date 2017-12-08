@@ -161,7 +161,7 @@ Settings files that goes into the settings directory:
 * `torPostingLevel`(Number): indicates the permission level for TOR posting. 0 means no posting at all, 1 means posting with a block bypass and 2 means regular posting.
 * `allowTorFiles`(Boolean): when posting, allows TOR users to post files.
 * `verboseApis`(Boolean): causes both the json api and the form api to print what is being both input and output.
-* `verboseStatic`(Boolean): causes the static file handler to print information of what is serving.
+* `verboseCache`(Boolean): causes the cache handler to print reads and writes.
 * `verboseGridfs`(Boolean): causes the gridFsHandler to print information about it's operations.
 * `verboseQueue`(Boolean): causes the message queue to print information about it's operations.
 * `verboseMisc`(Boolean): causes any message being output outside of the other modes to be printed.

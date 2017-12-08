@@ -1,16 +1,23 @@
 'use strict';
 
 var zlib = require('zlib');
+var path = require('path');
+var fs = require('fs');
 var cache = {};
+var staticCache = {};
 var gridFsHandler;
 var settingsHandler = require('../settingsHandler');
+var kernel = require('../kernel');
 var taskListener = require('../taskListener');
+var logger = require('../logger');
 var miscOps;
 var jitCacheOps;
 var requestHandler;
 var verbose;
 var disable304;
 var alternativeLanguages;
+var defaultFePath;
+var debug = kernel.debug() || kernel.feDebug();
 var typeIndex = {
   boards : {},
   logs : {},
@@ -26,6 +33,7 @@ exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
 
+  defaultFePath = settings.fePath;
   disable304 = settings.disable304;
   verbose = settings.verbose || settings.verboseCache;
   alternativeLanguages = settings.useAlternativeLanguages;
@@ -37,6 +45,10 @@ exports.loadDependencies = function() {
   jitCacheOps = require('./jitCacheOps');
   requestHandler = require('./requestHandler');
   gridFsHandler = require('./gridFsHandler');
+};
+
+exports.dropStaticCache = function() {
+  staticCache = {};
 };
 
 // Section 1: Lock read {
@@ -418,36 +430,6 @@ exports.receiveWriteData = function(task, socket) {
 
   task.data = Buffer.from(task.data, 'utf-8');
 
-  var keyToUse = task.meta.referenceFile || task.dest;
-  var referenceBlock = cache[keyToUse];
-
-  var addIndex;
-
-  if (!referenceBlock) {
-    addIndex = true;
-    referenceBlock = {};
-    cache[keyToUse] = referenceBlock;
-  } else {
-    delete referenceBlock[task.dest];
-    delete referenceBlock[task.dest + '.gz'];
-  }
-
-  var regularEntry = {
-    content : task.data,
-    mime : task.mime,
-    length : task.data.length,
-    compressed : false,
-    languages : task.meta.languages,
-    lastModified : new Date().toUTCString()
-  };
-
-  var compressedEntry = {
-    mime : task.mime,
-    languages : task.meta.languages,
-    lastModified : regularEntry.lastModified,
-    compressed : true
-  };
-
   zlib.gzip(task.data, function gotCompressedData(error, compressedData) {
 
     if (error) {
@@ -462,15 +444,34 @@ exports.receiveWriteData = function(task, socket) {
         console.log('Cached ' + task.dest);
       }
 
-      if (addIndex) {
+      var keyToUse = task.meta.referenceFile || task.dest;
+      var referenceBlock = cache[keyToUse];
+
+      if (!referenceBlock) {
+        referenceBlock = {};
+        cache[keyToUse] = referenceBlock;
         exports.placeIndex(task);
       }
 
-      referenceBlock[task.dest] = regularEntry;
-      referenceBlock[task.dest + '.gz'] = compressedEntry;
+      referenceBlock[task.dest] = {
+        content : task.data,
+        mime : task.mime,
+        length : task.data.length,
+        compressed : false,
+        compressable : true,
+        languages : task.meta.languages,
+        lastModified : new Date().toUTCString()
+      };
 
-      compressedEntry.length = compressedData.length;
-      compressedEntry.content = compressedData;
+      referenceBlock[task.dest + '.gz'] = {
+        mime : task.mime,
+        languages : task.meta.languages,
+        lastModified : referenceBlock[task.dest].lastModified,
+        compressed : true,
+        compressable : true,
+        content : compressedData,
+        length : compressedData.length
+      };
 
       taskListener.sendToSocket(socket, {});
 
@@ -510,11 +511,11 @@ exports.writeData = function(data, dest, mime, meta, callback) {
 // Section 4: Master read file {
 exports.languageIntersects = function(task, alternative) {
 
-  for (var i = 0; task.languages && i < alternative.languages.length; i++) {
+  for (var i = 0; task.language && i < alternative.languages.length; i++) {
 
     var languageValue = alternative.languages[i];
 
-    if (task.languages.indexOf(languageValue) >= 0) {
+    if (task.language.headerValues.indexOf(languageValue) >= 0) {
       return true;
     }
 
@@ -522,7 +523,134 @@ exports.languageIntersects = function(task, alternative) {
 
 };
 
-exports.getAlternative = function(task, alternatives) {
+exports.compressStaticFile = function(task, finalPath, file, callback) {
+
+  zlib.gzip(file.content, function compressed(error, data) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      var compressedFile = {
+        compressable : true,
+        compressed : true,
+        mime : file.mime,
+        content : data,
+        length : data.length,
+        lastModified : file.lastModified,
+        languages : file.languages
+      };
+
+      if (!debug) {
+        staticCache[finalPath + '.gz'] = compressedFile;
+      }
+
+      callback(null, task.compressed ? compressedFile : file);
+
+    }
+
+  });
+
+};
+
+exports.getStaticFile = function(task, finalPath, callback) {
+
+  if (!finalPath) {
+    callback('No path to get static file from');
+    return;
+  }
+
+  var file = staticCache[finalPath];
+
+  if (file && file.compressable && task.compressed) {
+    file = staticCache[finalPath + '.gz'];
+  }
+
+  if (file) {
+    callback(null, file);
+    return;
+  }
+
+  fs.stat(finalPath, function gotStats(error, stats) {
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      fs.readFile(finalPath, function(error, data) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          var mime = logger.getMime(finalPath);
+          var compressable = miscOps.isPlainText(mime);
+
+          file = {
+            lastModified : stats.mtime.toUTCString(),
+            mime : mime,
+            content : data,
+            compressed : false,
+            compressable : compressable,
+            length : data.length,
+            languages : task.language ? task.language.headerLanguages : null
+          };
+
+          if (!debug) {
+            if (verbose) {
+              console.log('Cached ' + task.file);
+            }
+
+            staticCache[finalPath] = file;
+          }
+
+          if (!compressable) {
+            callback(null, file);
+            return;
+          }
+
+          exports.compressStaticFile(task, finalPath, file, callback);
+        }
+
+      });
+      // style exception, too simple
+
+    }
+  });
+
+};
+
+exports.getStaticFilePath = function(task) {
+
+  var feToUse = task.language ? task.language.frontEnd : defaultFePath;
+
+  var requiredRoot = path.normalize(feToUse + '/static');
+
+  var finalPath = path.normalize(requiredRoot + task.file.substring(8));
+
+  if (finalPath.indexOf(requiredRoot) < 0) {
+    return null;
+  }
+
+  return finalPath;
+
+};
+
+exports.getAlternative = function(task, callback) {
+
+  if (!task.isStatic) {
+    callback(null, exports.pickAlternative(task, cache[task.file]));
+  } else {
+    exports.getStaticFile(task, exports.getStaticFilePath(task), callback);
+  }
+
+};
+
+exports.pickAlternative = function(task, alternatives) {
+
+  if (!alternatives) {
+    return;
+  }
 
   var vanilla;
   var language;
@@ -563,54 +691,50 @@ exports.returnCacheToSend = function(task, socket, toSend) {
     mime : toSend.mime,
     languages : toSend.languages,
     length : toSend.length,
-    lastModified : toSend.lastModified
+    lastModified : toSend.lastModified,
+    compressable : toSend.compressable
   });
 
   taskListener.sendToSocket(socket, parsedRange ? toSend.content.slice(
       parsedRange.start, parsedRange.end + 1) : toSend.content);
 
-  socket.end();
-
 };
 
 exports.receiveOutputFile = function(task, socket) {
 
-  var alternatives = cache[task.file];
+  exports.getAlternative(task, function gotAlternative(error, toSend) {
 
-  if (!alternatives) {
-    taskListener.sendToSocket(socket, {
-      code : 404
-    });
-
-    socket.end();
-    return;
-  }
-
-  var toSend = exports.getAlternative(task, alternatives);
-
-  if (!toSend) {
-    taskListener.sendToSocket(socket, {
-      code : 404
-    });
-
-    socket.end();
-  } else if (toSend.lastModified === task.lastSeen) {
-    taskListener.sendToSocket(socket, {
-      code : 304
-    });
+    if (error) {
+      taskListener.sendToSocket(socket, {
+        code : 500,
+        error : error
+      });
+    } else if (!toSend) {
+      taskListener.sendToSocket(socket, {
+        code : 404
+      });
+    } else if (toSend.lastModified === task.lastSeen && !disable304) {
+      taskListener.sendToSocket(socket, {
+        code : 304
+      });
+    } else {
+      exports.returnCacheToSend(task, socket, toSend);
+    }
 
     socket.end();
-  } else {
-    exports.returnCacheToSend(task, socket, toSend);
-  }
+
+  });
 
 };
 // } Section 4: Master read file
 
 // Section 5: Worker read file {
-exports.addHeaderBoilerPlate = function(header) {
+exports.addHeaderBoilerPlate = function(header, stats) {
 
-  header.push([ 'Vary', 'Accept-Encoding' ]);
+  if (stats.compressable) {
+    header.push([ 'Vary', 'Accept-Encoding' ]);
+  }
+
   header.push([ 'Accept-Ranges', 'bytes' ]);
   header.push([ 'expires', new Date().toUTCString() ]);
 
@@ -643,7 +767,7 @@ exports.getResponseHeader = function(stats, length) {
 
   header.push([ 'Content-Length', length ]);
 
-  exports.addHeaderBoilerPlate(header);
+  exports.addHeaderBoilerPlate(header, stats);
 
   return header;
 
@@ -665,7 +789,7 @@ exports.writeResponse = function(stats, data, res, callback) {
 
 };
 
-exports.output304 = function(res, callback) {
+exports.output304 = function(stats, res, callback) {
 
   try {
 
@@ -675,7 +799,9 @@ exports.output304 = function(res, callback) {
       header.push([ 'Vary', 'Accept-Language' ]);
     }
 
-    header.push([ 'Vary', 'Accept-Encoding' ]);
+    if (stats.compressable) {
+      header.push([ 'Vary', 'Accept-Encoding' ]);
+    }
 
     res.writeHead(304, header);
     res.end();
@@ -705,17 +831,29 @@ exports.handleJit = function(pathName, req, res, callback) {
 
 };
 
-exports.handleReceivedData = function(pathName, req, res, stats, content, cb) {
+exports.handleReceivedData = function(pathName, req, res, stats, content,
+    isStatic, cb) {
 
   switch (stats.code) {
 
+  case 500: {
+    cb(stats.error);
+    break;
+  }
+
   case 404: {
-    exports.handleJit(pathName, req, res, cb);
+
+    if (isStatic) {
+      gridFsHandler.outputFile('/404.html', req, res, cb);
+    } else {
+      exports.handleJit(pathName, req, res, cb);
+    }
+
     break;
   }
 
   case 304: {
-    exports.output304(res, cb);
+    exports.output304(stats, res, cb);
     break;
   }
 
@@ -727,7 +865,7 @@ exports.handleReceivedData = function(pathName, req, res, stats, content, cb) {
 
 };
 
-exports.outputFile = function(pathName, req, res, callback) {
+exports.outputFile = function(pathName, req, res, callback, isStatic) {
 
   var stats;
   var content;
@@ -743,7 +881,7 @@ exports.outputFile = function(pathName, req, res, callback) {
 
       exports.handleReceivedData(pathName, req, res, stats || {
         code : 404
-      }, content, callback);
+      }, content, isStatic, callback);
 
     });
 
@@ -763,7 +901,8 @@ exports.outputFile = function(pathName, req, res, callback) {
       lastSeen : req.headers['if-modified-since'],
       file : pathName,
       compressed : req.compressed,
-      languages : req.language ? req.language.headerValues : null
+      language : req.language,
+      isStatic : isStatic
     });
 
   });

@@ -572,10 +572,6 @@ exports.getParametersArray = function(language) {
     element : 'checkboxVerboseGridfs'
   }, {
     type : 'boolean',
-    setting : 'verboseStatic',
-    element : 'checkboxVerboseStatic'
-  }, {
-    type : 'boolean',
     setting : 'verboseApis',
     element : 'checkboxVerboseApis'
   }, {

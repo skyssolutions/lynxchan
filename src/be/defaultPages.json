@@ -1283,10 +1283,6 @@
         "uses": "checked"
       },
       {
-        "name": "checkboxVerboseStatic",
-        "uses": "checked"
-      },
-      {
         "name": "checkboxVerboseApis",
         "uses": "checked"
       },

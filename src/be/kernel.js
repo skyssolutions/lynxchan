@@ -111,7 +111,7 @@ function reloadFe() {
 
   templateHandler.dropAlternativeTemplates();
   templateHandler.loadTemplates();
-  require('./engine/staticHandler').dropCache();
+  require('./engine/cacheHandler').dropStaticCache();
 
 }
 

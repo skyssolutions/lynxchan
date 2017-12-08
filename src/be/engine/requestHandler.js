@@ -25,7 +25,6 @@ var apiOps;
 var miscOps;
 var gridFs;
 var cacheHandler;
-var staticHandler;
 var lastSlaveIndex = 0;
 var slaves;
 var master;
@@ -57,7 +56,6 @@ exports.loadDependencies = function() {
   miscOps = require('./miscOps');
   gridFs = require('./gridFsHandler');
   cacheHandler = require('./cacheHandler');
-  staticHandler = require('./staticHandler');
 
 };
 
@@ -535,7 +533,7 @@ exports.decideRouting = function(req, pathName, res, callback) {
     exports.processApiRequest(req, pathName.substring(5), res);
     return;
   } else if (pathName.indexOf('/.static/') === 0) {
-    staticHandler.outputFile(req, pathName.substring(8), res, callback);
+    cacheHandler.outputFile(pathName, req, res, callback, true);
     return;
   }
 
