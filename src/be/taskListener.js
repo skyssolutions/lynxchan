@@ -23,6 +23,7 @@ var generationQueue;
 var Socket = net.Socket;
 var isMaster = require('cluster').isMaster;
 var headerBuffer = Buffer.alloc(5);
+var pool = [];
 
 exports.reload = function() {
 
@@ -153,11 +154,77 @@ exports.handleSocket = function(socket, callback) {
 
 };
 
+exports.freeSocket = function(socket) {
+
+  delete socket.handler;
+  delete socket.onData;
+
+  if (noDaemon) {
+    socket.end();
+  } else if (!socket.invalid) {
+    pool.push(socket);
+  }
+
+};
+
 exports.openSocket = function(callback) {
+
+  if (pool.length) {
+
+    var toRet = pool.pop();
+    toRet.handler = callback;
+
+    callback(null, toRet);
+    return;
+  }
 
   var client = new Socket();
 
-  client.on('error', callback);
+  exports.handleSocket(client, function gotData(data) {
+
+    if (client.onData) {
+      client.onData(data);
+    }
+
+  });
+
+  client.handler = callback;
+
+  client.on('error', function(error) {
+
+    if (client.handler) {
+      client.handler(error);
+      client.invalid = true;
+      exports.freeSocket(client);
+
+    } else {
+
+      var index = pool.indexOf(client);
+
+      if (index >= 0) {
+        pool.splice(index, 1);
+      }
+    }
+
+  });
+
+  client.on('end', function() {
+
+    if (client.handler) {
+      client.handler('Lost connection');
+      client.invalid = true;
+      exports.freeSocket(client);
+    } else {
+
+      var index = pool.indexOf(client);
+
+      if (index >= 0) {
+        pool.splice(index, 1);
+      }
+    }
+
+  });
+
   client.on('connect', function() {
     callback(null, client);
   });
@@ -185,13 +252,13 @@ exports.sendToSocket = function(socket, data, callback) {
 
       } else {
 
-        if (callback) {
-          socket.on('end', callback);
-        }
-
         exports.sendToSocket(socket, data);
 
-        socket.end();
+        exports.freeSocket(socket);
+
+        if (callback) {
+          callback();
+        }
       }
 
     });
@@ -276,6 +343,7 @@ exports.start = function(firstBoot) {
 
     // style exception, too simple
     server = net.createServer(function clientConnected(client) {
+
       exports.handleSocket(client, exports.processCacheTasks);
     }).listen(socketLocation);
 

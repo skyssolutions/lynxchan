@@ -65,8 +65,6 @@ exports.returnLock = function(task, lockKey, object, socket, selectedBoards) {
     selectedBoards : selectedBoards
   });
 
-  socket.end();
-
 };
 
 exports.receiveGetLock = function(task, socket) {
@@ -128,9 +126,10 @@ exports.getLock = function(lockData, readOnly, callback) {
       return;
     }
 
-    taskListener.handleSocket(socket, function receivedData(data) {
+    socket.onData = function receivedData(data) {
       callback(data.error, data.locked);
-    });
+      taskListener.freeSocket(socket);
+    };
 
     taskListener.sendToSocket(socket, {
       type : 'getLock',
@@ -477,8 +476,6 @@ exports.receiveWriteData = function(task, socket) {
 
     }
 
-    socket.end();
-
   });
 
 };
@@ -492,9 +489,12 @@ exports.writeData = function(data, dest, mime, meta, callback) {
       return;
     }
 
-    taskListener.handleSocket(socket, function receivedData(data) {
+    socket.onData = function receivedData(data) {
       callback(data.error);
-    });
+
+      taskListener.freeSocket(socket);
+
+    };
 
     taskListener.sendToSocket(socket, {
       type : 'cacheWrite',
@@ -721,8 +721,6 @@ exports.receiveOutputFile = function(task, socket) {
       exports.returnCacheToSend(task, socket, toSend);
     }
 
-    socket.end();
-
   });
 
 };
@@ -868,7 +866,6 @@ exports.handleReceivedData = function(pathName, req, res, stats, content,
 exports.outputFile = function(pathName, req, res, callback, isStatic) {
 
   var stats;
-  var content;
 
   taskListener.openSocket(function opened(error, socket) {
 
@@ -877,23 +874,30 @@ exports.outputFile = function(pathName, req, res, callback, isStatic) {
       return;
     }
 
-    socket.on('end', function ended() {
-
-      exports.handleReceivedData(pathName, req, res, stats || {
-        code : 404
-      }, content, isStatic, callback);
-
-    });
-
-    taskListener.handleSocket(socket, function receivedData(data) {
+    socket.onData = function receivedData(data) {
 
       if (!stats) {
         stats = data;
+
+        if (stats.code >= 300) {
+
+          exports.handleReceivedData(pathName, req, res, stats, null, isStatic,
+              callback);
+
+          taskListener.freeSocket(socket);
+
+        }
+
       } else {
-        content = data;
+
+        exports.handleReceivedData(pathName, req, res, stats, data, isStatic,
+            callback);
+
+        taskListener.freeSocket(socket);
+
       }
 
-    });
+    };
 
     taskListener.sendToSocket(socket, {
       type : 'cacheRead',

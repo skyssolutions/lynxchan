@@ -148,13 +148,13 @@ exports.board = function(boardUri, reloadThreads, reloadRules, cb, direct) {
       return;
     }
 
-    socket.on('end', cb);
-
     for (var i = 0; i < tasks.length; i++) {
       taskListener.sendToSocket(socket, tasks[i]);
     }
 
-    socket.end();
+    taskListener.freeSocket(socket);
+
+    cb();
 
   });
 

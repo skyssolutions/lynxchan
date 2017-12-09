@@ -2027,10 +2027,6 @@ checkboxVerboseGridfs:
     use: might be turned on.
     description: checkbox that indicates verbose GridFS mode is on.
 
-checkboxVerboseStatic:
-    use: might be turned on.
-    description: checkbox that indicates if verbose static file serving mode is on.
-
 checkboxVerboseApis:
     use: might be turned on.
     description: checkbox that indicates if the verbose apis mode is on.

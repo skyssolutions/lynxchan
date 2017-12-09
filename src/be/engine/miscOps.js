@@ -7,6 +7,7 @@ var verbose;
 var db = require('../db');
 var bans = db.bans();
 var crypto = require('crypto');
+var fs = require('fs');
 var users = db.users();
 var reports = db.reports();
 var reportOps;
@@ -15,10 +16,13 @@ var CSP;
 var globalBoardModeration;
 var lang;
 var clearIpMinRole;
+var settingsRelation;
 
 var MAX_STAFF_ROLE = 3;
 var plainTextMimes = [ 'application/x-javascript', 'application/json',
     'application/rss+xml' ];
+var optionList = [ 'guiBypassModes', 'guiBypassModes', 'guiTorPostingLevels',
+    'miscRoles', 'miscRoles' ];
 
 exports.loadSettings = function() {
 
@@ -41,6 +45,18 @@ exports.loadDependencies = function() {
   formOps = require('./formOps');
   reportOps = require('./modOps').report;
   lang = require('./langOps').languagePack;
+
+  fs.readFile(__dirname + '/../settingsRelation.json', function read(error,
+      data) {
+
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    settingsRelation = data.toString('utf8');
+
+  });
 
 };
 
@@ -298,362 +314,14 @@ exports.getRange = function(ip, threeQuarters) {
 
 exports.getParametersArray = function(language) {
 
-  return [ {
-    // array
-    type : 'array',
-    setting : 'addons',
-    element : 'fieldAddons'
-  }, {
-    type : 'array',
-    setting : 'acceptedMimes',
-    element : 'fieldAcceptedMimes'
-  }, {
-    type : 'array',
-    setting : 'slaves',
-    element : 'fieldSlaves'
-  }, {
-    // string
-    type : 'string',
-    setting : 'address',
-    element : 'fieldAddress'
-  }, {
-    type : 'string',
-    setting : 'fePath',
-    element : 'fieldFePath'
-  }, {
-    type : 'string',
-    setting : 'master',
-    element : 'fieldMaster'
-  }, {
-    type : 'string',
-    setting : 'tempDirectory',
-    element : 'fieldTempDir'
-  }, {
-    type : 'string',
-    setting : 'rssDomain',
-    element : 'fieldRssDomain'
-  }, {
-    type : 'string',
-    setting : 'sslPass',
-    element : 'fieldSslPass'
-  }, {
-    type : 'string',
-    setting : 'emailSender',
-    element : 'fieldSenderEmail'
-  }, {
-    type : 'string',
-    setting : 'siteTitle',
-    element : 'fieldSiteTitle'
-  }, {
-    type : 'string',
-    setting : 'defaultBanMessage',
-    element : 'fieldBanMessage'
-  }, {
-    type : 'string',
-    setting : 'defaultAnonymousName',
-    element : 'fieldAnonymousName'
-  }, {
-    type : 'string',
-    setting : 'torSource',
-    element : 'fieldTorSource'
-  }, {
-    type : 'string',
-    setting : 'CSP',
-    element : 'fieldCSP'
-  }, {
-    type : 'string',
-    setting : 'incSpamIpsSource',
-    element : 'fieldIncrementalSpamIpsSource'
-  }, {
-    type : 'string',
-    setting : 'languagePackPath',
-    element : 'fieldLanguagePack'
-  }, {
-    type : 'string',
-    setting : 'overboard',
-    element : 'fieldOverboard'
-  }, {
-    type : 'string',
-    setting : 'sfwOverboard',
-    element : 'fieldSfwOverboard'
-  }, {
-    type : 'string',
-    setting : 'spamIpsSource',
-    element : 'fieldSpamIpsSource'
-  }, {
-    type : 'string',
-    setting : 'thumbExtension',
-    element : 'fieldThumbExtension'
-  }, {
-    // number
-    type : 'number',
-    setting : 'port',
-    element : 'fieldPort'
-  }, {
-    type : 'number',
-    setting : 'globalLatestImages',
-    element : 'fieldGlobalLatestImages'
-  }, {
-    type : 'number',
-    setting : 'messageLength',
-    element : 'fieldMessageLength'
-  }, {
-    type : 'number',
-    setting : 'ipExpirationDays',
-    element : 'fieldIpExpiration'
-  }, {
-    type : 'number',
-    setting : 'inactivityThreshold',
-    element : 'fieldInactivityThreshold'
-  }, {
-    type : 'number',
-    setting : 'clusterPort',
-    element : 'fieldClusterPort'
-  }, {
-    type : 'number',
-    setting : 'torPort',
-    element : 'fieldTorPort'
-  }, {
-    type : 'number',
-    setting : 'captchaExpiration',
-    element : 'fieldCaptchaExpiration'
-  }, {
-    type : 'number',
-    setting : 'overBoardThreadCount',
-    element : 'fieldOverBoardThreads'
-  }, {
-    type : 'number',
-    setting : 'pageSize',
-    element : 'fieldPageSize'
-  }, {
-    type : 'number',
-    setting : 'latestPostCount',
-    element : 'fieldLatestPostsCount'
-  }, {
-    type : 'number',
-    setting : 'autoSageLimit',
-    element : 'fieldAutoSageLimit'
-  }, {
-    type : 'number',
-    setting : 'multiboardThreadCount',
-    element : 'fieldMultiBoardThreadCount'
-  }, {
-    type : 'number',
-    setting : 'maxThreadCount',
-    element : 'fieldThreadLimit'
-  }, {
-    type : 'number',
-    setting : 'maxRequestSizeMB',
-    element : 'fieldMaxRequestSize'
-  }, {
-    type : 'number',
-    setting : 'maxFileSizeMB',
-    element : 'fieldMaxFileSize'
-  }, {
-    type : 'number',
-    setting : 'maxFiles',
-    element : 'fieldMaxFiles'
-  }, {
-    type : 'number',
-    setting : 'bypassDurationHours',
-    element : 'fieldBypassHours'
-  }, {
-    type : 'number',
-    setting : 'bypassMaxPosts',
-    element : 'fieldBypassPosts'
-  }, {
-    type : 'number',
-    setting : 'topBoardsCount',
-    element : 'fieldTopBoardsCount'
-  }, {
-    type : 'number',
-    setting : 'boardsPerPage',
-    element : 'fieldBoardsPerPage'
-  }, {
-    type : 'number',
-    setting : 'thumbSize',
-    element : 'fieldThumbSize'
-  }, {
-    type : 'number',
-    setting : 'maxBoardRules',
-    element : 'fieldMaxRules'
-  }, {
-    type : 'number',
-    setting : 'maxBoardTags',
-    element : 'fieldMaxTags'
-  }, {
-    type : 'number',
-    setting : 'maxFilters',
-    element : 'fieldMaxFilters'
-  }, {
-    type : 'number',
-    setting : 'maxBoardVolunteers',
-    element : 'fieldMaxVolunteers'
-  }, {
-    type : 'number',
-    setting : 'maxBannerSizeKB',
-    element : 'fieldMaxBannerSize'
-  }, {
-    type : 'number',
-    setting : 'maxFlagSizeKB',
-    element : 'fieldMaxFlagSize'
-  }, {
-    type : 'number',
-    setting : 'floodTimerSec',
-    element : 'fieldFloodInterval'
-  }, {
-    type : 'number',
-    setting : 'globalLatestPosts',
-    element : 'fieldGlobalLatestPosts'
-  }, {
-    type : 'number',
-    setting : 'mediaPageSize',
-    element : 'fieldMediaPageSize'
-  }, {
-    type : 'number',
-    setting : 'flagNameLength',
-    element : 'fieldFlagNameLength'
-  }, {
-    // boolean
-    type : 'boolean',
-    setting : 'disable304',
-    element : 'checkboxDisable304'
-  }, {
-    type : 'boolean',
-    setting : 'verbose',
-    element : 'checkboxVerbose'
-  }, {
-    type : 'boolean',
-    setting : 'verboseCache',
-    element : 'checkboxVerboseCache'
-  }, {
-    type : 'boolean',
-    setting : 'allowBlockedToReport',
-    element : 'checkboxBlockedReport'
-  }, {
-    type : 'boolean',
-    setting : 'onlySfwLatestImages',
-    element : 'checkboxSFWLatestImages'
-  }, {
-    type : 'boolean',
-    setting : 'ffmpegGifs',
-    element : 'checkboxFfmpegGifs'
-  }, {
-    type : 'boolean',
-    setting : 'autoPruneFiles',
-    element : 'checkboxAutoPruneFiles'
-  }, {
-    type : 'boolean',
-    setting : 'useGlobalBanners',
-    element : 'checkboxGlobalBanners'
-  }, {
-    type : 'boolean',
-    setting : 'disableFloodCheck',
-    element : 'checkboxDisableFloodCheck'
-  }, {
-    type : 'boolean',
-    setting : 'disableSpamCheck',
-    element : 'checkboxDisableSpamCheck'
-  }, {
-    type : 'boolean',
-    setting : 'verboseGenerator',
-    element : 'checkboxVerboseGenerator'
-  }, {
-    type : 'boolean',
-    setting : 'verboseMisc',
-    element : 'checkboxVerboseMisc'
-  }, {
-    type : 'boolean',
-    setting : 'verboseQueue',
-    element : 'checkboxVerboseQueue'
-  }, {
-    type : 'boolean',
-    setting : 'verboseGridfs',
-    element : 'checkboxVerboseGridfs'
-  }, {
-    type : 'boolean',
-    setting : 'verboseApis',
-    element : 'checkboxVerboseApis'
-  }, {
-    type : 'boolean',
-    setting : 'mediaThumb',
-    element : 'checkboxMediaThumb'
-  }, {
-    type : 'boolean',
-    setting : 'allowGlobalBoardModeration',
-    element : 'checkboxGlobalBoardModeration'
-  }, {
-    type : 'boolean',
-    setting : 'maintenance',
-    element : 'checkboxMaintenance'
-  }, {
-    type : 'boolean',
-    setting : 'disableAccountCreation',
-    element : 'checkboxDisableAccountCreation'
-  }, {
-    type : 'boolean',
-    setting : 'allowBoardCustomJs',
-    element : 'checkboxAllowCustomJs'
-  }, {
-    type : 'boolean',
-    setting : 'multipleReports',
-    element : 'checkboxMultipleReports'
-  }, {
-    type : 'boolean',
-    setting : 'forceCaptcha',
-    element : 'checkboxGlobalCaptcha'
-  }, {
-    type : 'boolean',
-    setting : 'allowSpamBypass',
-    element : 'checkboxSpamBypass'
-  }, {
-    type : 'boolean',
-    setting : 'frontPageStats',
-    element : 'checkboxFrontPageStats'
-  }, {
-    type : 'boolean',
-    setting : 'disableCatalogPosting',
-    element : 'checkboxDisableCatalogPosting'
-  }, {
-    type : 'boolean',
-    setting : 'allowTorFiles',
-    element : 'checkboxAllowTorFiles'
-  }, {
-    type : 'boolean',
-    setting : 'useAlternativeLanguages',
-    element : 'checkboxUseAlternativeLanguages'
-  }, {
-    // range
-    type : 'range',
-    limit : 2,
-    options : lang(language).guiBypassModes,
-    setting : 'bypassMode',
-    element : 'comboBypassMode'
-  }, {
-    type : 'range',
-    limit : 2,
-    options : lang(language).guiBypassModes,
-    setting : 'ssl',
-    element : 'comboSsl'
-  }, {
-    type : 'range',
-    limit : 2,
-    setting : 'torPostingLevel',
-    element : 'comboTorPostingLevel',
-    options : lang(language).guiTorPostingLevels
-  }, {
-    type : 'range',
-    setting : 'clearIpMinRole',
-    limit : 3,
-    element : 'comboMinClearIpRole',
-    options : lang(language).miscRoles
-  }, {
-    type : 'range',
-    setting : 'boardCreationRequirement',
-    limit : 4,
-    element : 'comboBoardCreationRequirement',
-    options : lang(language).miscRoles
-  } ];
+  var toRet = JSON.parse(settingsRelation);
+
+  for (var i = 0; i < optionList.length; i++) {
+    toRet[i + 80].options = lang(language)[optionList[i]];
+  }
+
+  return toRet;
+
 };
 
 exports.sanitizeIp = function(ip) {
