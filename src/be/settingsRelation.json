@@ -1,5 +1,35 @@
 [
   {
+    "type": "range",
+    "limit": 2,
+    "setting": "ssl",
+    "element": "comboSsl"
+  },
+  {
+    "type": "range",
+    "limit": 2,
+    "setting": "torPostingLevel",
+    "element": "comboTorPostingLevel"
+  },
+  {
+    "type": "range",
+    "setting": "clearIpMinRole",
+    "limit": 3,
+    "element": "comboMinClearIpRole"
+  },
+  {
+    "type": "range",
+    "setting": "boardCreationRequirement",
+    "limit": 4,
+    "element": "comboBoardCreationRequirement"
+  },
+  {
+    "type": "range",
+    "limit": 2,
+    "setting": "bypassMode",
+    "element": "comboBypassMode"
+  },
+  {
     "type": "array",
     "setting": "addons",
     "element": "fieldAddons"
@@ -265,6 +295,11 @@
     "element": "fieldFlagNameLength"
   },
   {
+    "type": "number",
+    "setting": "boardMessageLength",
+    "element": "fieldBoardMessageLength"
+  },
+  {
     "type": "boolean",
     "setting": "disable304",
     "element": "checkboxDisable304"
@@ -398,35 +433,5 @@
     "type": "boolean",
     "setting": "useAlternativeLanguages",
     "element": "checkboxUseAlternativeLanguages"
-  },
-  {
-    "type": "range",
-    "limit": 2,
-    "setting": "bypassMode",
-    "element": "comboBypassMode"
-  },
-  {
-    "type": "range",
-    "limit": 2,
-    "setting": "ssl",
-    "element": "comboSsl"
-  },
-  {
-    "type": "range",
-    "limit": 2,
-    "setting": "torPostingLevel",
-    "element": "comboTorPostingLevel"
-  },
-  {
-    "type": "range",
-    "setting": "clearIpMinRole",
-    "limit": 3,
-    "element": "comboMinClearIpRole"
-  },
-  {
-    "type": "range",
-    "setting": "boardCreationRequirement",
-    "limit": 4,
-    "element": "comboBoardCreationRequirement"
   }
 ]

@@ -317,7 +317,7 @@ exports.getParametersArray = function(language) {
   var toRet = JSON.parse(settingsRelation);
 
   for (var i = 0; i < optionList.length; i++) {
-    toRet[i + 80].options = lang(language)[optionList[i]];
+    toRet[i].options = lang(language)[optionList[i]];
   }
 
   return toRet;

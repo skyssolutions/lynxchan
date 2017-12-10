@@ -625,6 +625,10 @@
         "uses": "inner"
       },
       {
+        "name": "messageLengthLabel",
+        "uses": "inner"
+      },
+      {
         "name": "volunteersDiv",
         "uses": "children"
       },
@@ -1152,6 +1156,10 @@
       },
       {
         "name": "fieldMultiBoardThreadCount",
+        "uses": "value"
+      },
+      {
+        "name": "fieldBoardMessageLength",
         "uses": "value"
       },
       {

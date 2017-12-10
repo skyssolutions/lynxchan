@@ -670,6 +670,10 @@ locationComboBox:
     use: have children appended to it.
     description: combo box that indicates the status of location flags.
 
+messageLengthLabel:
+    use: have it's innerHTML manipulated.
+    description: label with the maximum size allowed for the board message.
+
 linkSelf:
     use: have it's href manipulated.
     description: link that leads to the board front-page.
@@ -2006,6 +2010,10 @@ checkboxFfmpegGifs:
 comboTorPostingLevel:
     use: have children appended to it.
     description: combo box with the level of posting permission for TOR users.
+
+fieldBoardMessageLength:
+    use: have it's value manipualted.
+    description: field with the maximum length for board messages.
 
 checkboxAllowTorFiles:
     use: might be turned on.

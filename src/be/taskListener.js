@@ -343,7 +343,6 @@ exports.start = function(firstBoot) {
 
     // style exception, too simple
     server = net.createServer(function clientConnected(client) {
-
       exports.handleSocket(client, exports.processCacheTasks);
     }).listen(socketLocation);
 

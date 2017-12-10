@@ -171,6 +171,7 @@ Settings files that goes into the settings directory:
 * `flagNameLength`(Number): maximum size allowed for custom flags names. Defaults to 32.
 * `allowBlockedToReport`(Boolean): allows users that were banned or blocked to report content, including TOR users if they are not allowed to post.
 * `clusterPort`(Number): port used for cluster communication.
+* `boardMessageLength`(Number): maximum size for board messages. Defaults to 256.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

@@ -11,6 +11,7 @@ var common;
 var templateHandler;
 var lang;
 var miscOps;
+var boardMessageLength;
 
 var displayMaxBannerSize;
 var displayMaxFlagSize;
@@ -77,6 +78,7 @@ exports.loadSettings = function() {
   settings = require('../../../settingsHandler').getGeneralSettings();
   globalBoardModeration = settings.allowGlobalBoardModeration;
   customJs = settings.allowBoardCustomJs;
+  boardMessageLength = settings.boardMessageLength;
   displayMaxBannerSize = common.formatFileSize(settings.maxBannerSizeB);
   displayMaxFlagSize = common.formatFileSize(settings.maxFlagSizeB);
   minClearIpRole = settings.clearIpMinRole;
@@ -277,6 +279,9 @@ exports.getBoardManagementContent = function(boardData, userData, bans,
   } else {
     document = document.replace('__ownerControlDiv_location__', '');
   }
+
+  document = document.replace('__messageLengthLabel_inner__',
+      boardMessageLength);
 
   document = exports.setBoardManagementLinks(document, boardData);
 

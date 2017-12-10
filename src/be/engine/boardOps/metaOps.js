@@ -45,8 +45,7 @@ var boardParameters = [ {
   length : 128,
   removeHTML : true
 }, {
-  field : 'boardMessage',
-  length : 256
+  field : 'boardMessage'
 } ];
 
 var transferParameters = [ {
@@ -67,6 +66,7 @@ exports.loadSettings = function() {
   overboard = settings.overboard;
   sfwOverboard = settings.sfwOverboard;
   allowedMimes = settings.acceptedMimes;
+  boardParameters[4].length = settings.boardMessageLength;
 
 };
 
