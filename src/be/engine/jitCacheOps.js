@@ -174,7 +174,7 @@ exports.getThreadLockData = function(fileParts) {
 
 exports.getLogLockData = function(fileParts) {
 
-  if (fileParts.length > 4) {
+  if (fileParts.length !== 4) {
     return;
   }
 
