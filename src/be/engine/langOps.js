@@ -74,13 +74,9 @@ exports.processArray = function(defaultObject, chosenObject, missingKeys,
 
   for (i = 0; i < defaultObject.length; i++) {
 
-    var isArray = Object.prototype.toString.call(defaultObject[i]);
-    isArray = isArray === '[object Array]';
-    // Because fuck people being able to tell an object from an array, right?
-
     var nextKey = currentKey + '.' + i;
 
-    if (isArray) {
+    if (Array.isArray(defaultObject[i])) {
       exports.processArray(defaultObject[i], chosenObject[i], missingKeys,
           nextKey);
     } else if (typeof (defaultObject[i]) === 'object') {
@@ -95,16 +91,12 @@ exports.processObject = function(defaultObject, chosenObject, missingKeys,
     currentKey) {
   for ( var key in defaultObject) {
 
-    var isArray = Object.prototype.toString.call(defaultObject[key]);
-    isArray = isArray === '[object Array]';
-    // Because fuck people being able to tell an object from an array, right?
-
     var next = (currentKey ? currentKey + '.' : '') + key;
 
     if (!chosenObject[key]) {
       missingKeys.push(next);
       chosenObject[key] = defaultObject[key];
-    } else if (isArray) {
+    } else if (Array.isArray(defaultObject[key])) {
       exports.processArray(defaultObject[key], chosenObject[key], missingKeys,
           next);
     } else if (typeof (defaultObject[key]) === 'object') {

@@ -206,8 +206,7 @@ exports.report = function(req, reportedContent, parameters, captchaId, cb) {
           cb(error);
         } else {
 
-          var isArray = Object.prototype.toString.call(reportedContent);
-          if (isArray !== '[object Array]') {
+          if (!Array.isArray(reportedContent)) {
             cb();
           } else {
             reportedContent = reportedContent.slice(0, 1000);

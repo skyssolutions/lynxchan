@@ -54,7 +54,7 @@ exports.aggregateLog = function(entryTime, collectedIds, callback) {
 
 exports.insertLog = function(entry, callback) {
 
-  if (Object.prototype.toString.call(entry) !== '[object Array]') {
+  if (!Array.isArray(entry)) {
     entry = [ entry ];
   }
 

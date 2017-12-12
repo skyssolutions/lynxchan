@@ -317,7 +317,7 @@ exports.clearAllBoards = function() {
 
       var value = typeIndex.boards[boardUri][key];
 
-      if (Object.prototype.toString.call(value) === '[object Array]') {
+      if (Array.isArray(value)) {
         exports.clearArray(typeIndex.boards[boardUri], key);
       } else {
         exports.performFullClear(value);
@@ -325,7 +325,7 @@ exports.clearAllBoards = function() {
 
     }
 
-    delete typeIndex[boardUri];
+    delete typeIndex.boards[boardUri];
 
   }
 
@@ -822,6 +822,7 @@ exports.handleJit = function(pathName, req, res, callback) {
     } else if (notFound) {
       gridFsHandler.outputFile(pathName, req, res, callback);
     } else {
+      req.alreadyCached = true;
       exports.outputFile(pathName, req, res, callback);
     }
 
@@ -841,7 +842,7 @@ exports.handleReceivedData = function(pathName, req, res, stats, content,
 
   case 404: {
 
-    if (isStatic) {
+    if (isStatic || req.alreadyCached) {
       gridFsHandler.outputFile('/404.html', req, res, cb);
     } else {
       exports.handleJit(pathName, req, res, cb);
