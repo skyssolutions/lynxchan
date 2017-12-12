@@ -26,9 +26,9 @@ exports.indicatorsRelation = {
   autoSage : 'bumpLockIndicator'
 };
 
-var sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
+exports.sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 var displayMaxSize;
-var maxPreviewBreaks = 16;
+exports.maxPreviewBreaks = 16;
 
 exports.loadSettings = function() {
 
@@ -62,14 +62,14 @@ exports.formatFileSize = function(size, language) {
 
   var orderIndex = 0;
 
-  while (orderIndex < sizeOrders.length - 1 && size > 1023) {
+  while (orderIndex < exports.sizeOrders.length - 1 && size > 1023) {
 
     orderIndex++;
     size /= 1024;
 
   }
 
-  return size.toFixed(2) + ' ' + sizeOrders[orderIndex];
+  return size.toFixed(2) + ' ' + exports.sizeOrders[orderIndex];
 
 };
 
@@ -511,12 +511,15 @@ exports.addMessage = function(innerPage, cell, posting, removable) {
 
   var markdown = posting.markdown;
 
-  if (!innerPage && (markdown.match(/<br>/g) || []).length > maxPreviewBreaks) {
+  var arrayToUse = (markdown.match(/<br>/g) || []);
+
+  if (!innerPage && arrayToUse.length > exports.maxPreviewBreaks) {
 
     cell = cell.replace('__contentOmissionIndicator_location__',
         removable.contentOmissionIndicator);
 
-    markdown = markdown.split('<br>', maxPreviewBreaks + 1).join('<br>');
+    markdown = markdown.split('<br>', exports.maxPreviewBreaks + 1)
+        .join('<br>');
 
     var href = '/' + posting.boardUri + '/res/' + posting.threadId + '.html';
 

@@ -5,7 +5,7 @@ var bypassOps = require('../engine/bypassOps');
 var settingsHandler = require('../settingsHandler');
 var lang = require('../engine/langOps').languagePack;
 
-function renewBypass(parameters, captchaId, res, language) {
+exports.renewBypass = function(parameters, captchaId, res, language) {
 
   bypassOps.renewBypass(captchaId, parameters.captcha, language,
       function renewedBypass(error, bypass) {
@@ -21,7 +21,7 @@ function renewBypass(parameters, captchaId, res, language) {
         }
 
       });
-}
+};
 
 exports.process = function(req, res) {
 
@@ -33,7 +33,7 @@ exports.process = function(req, res) {
 
   apiOps.getAnonJsonData(req, res,
       function gotData(auth, parameters, captchaId) {
-        renewBypass(parameters, captchaId, res, req.language);
+        exports.renewBypass(parameters, captchaId, res, req.language);
       });
 
 };

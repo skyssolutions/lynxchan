@@ -7,7 +7,8 @@ var jsonB = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 var formOps = require('../engine/formOps');
 
-function getBoardManagementData(board, userData, res, json, auth, language) {
+exports.getBoardManagementData = function(board, userData, res, json, auth,
+    language) {
 
   boardOps.getBoardManagementData(userData, board, !json, language,
       function gotManagementData(error, boardData, reports, bans) {
@@ -26,7 +27,7 @@ function getBoardManagementData(board, userData, res, json, auth, language) {
 
         }
       });
-}
+};
 
 exports.process = function(req, res) {
 
@@ -34,7 +35,7 @@ exports.process = function(req, res) {
       function gotData(auth, userData) {
         var parameters = url.parse(req.url, true).query;
 
-        getBoardManagementData(parameters.boardUri, userData, res,
+        exports.getBoardManagementData(parameters.boardUri, userData, res,
             parameters.json, auth, req.language);
       });
 };

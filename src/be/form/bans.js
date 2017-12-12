@@ -7,7 +7,7 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var modOps = require('../engine/modOps').ipBan.versatile;
 
-function getBans(userData, parameters, res, auth, language) {
+exports.getBans = function(userData, parameters, res, auth, language) {
 
   modOps.getBans(userData, parameters, language, function gotBans(error, bans) {
     if (error) {
@@ -27,7 +27,8 @@ function getBans(userData, parameters, res, auth, language) {
 
     }
   });
-}
+
+};
 
 exports.process = function(req, res) {
 
@@ -35,6 +36,6 @@ exports.process = function(req, res) {
       function gotData(auth, userData) {
         var parameters = url.parse(req.url, true).query;
 
-        getBans(userData, parameters, res, auth, req.language);
+        exports.getBans(userData, parameters, res, auth, req.language);
       });
 };

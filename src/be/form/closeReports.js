@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack;
 var modOps = require('../engine/modOps').report;
 
-function closeReport(userData, parameters, res, auth, language) {
+exports.closeReport = function(userData, parameters, res, auth, language) {
 
   var reports = [];
 
@@ -37,15 +37,13 @@ function closeReport(userData, parameters, res, auth, language) {
 
   });
 
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-
-    closeReport(userData, parameters, res, auth, req.language);
-
+    exports.closeReport(userData, parameters, res, auth, req.language);
   });
 
 };

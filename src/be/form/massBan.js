@@ -5,7 +5,7 @@ var banOps = require('../engine/modOps').ipBan.specific;
 var lang = require('../engine/langOps').languagePack;
 var mandatoryParameters = [ 'ips' ];
 
-function massBan(auth, parameters, userData, res, language) {
+exports.massBan = function(auth, parameters, userData, res, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
       language)) {
@@ -23,12 +23,12 @@ function massBan(auth, parameters, userData, res, language) {
 
     }
   });
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-    massBan(auth, parameters, userData, res, req.language);
+    exports.massBan(auth, parameters, userData, res, req.language);
   });
 };

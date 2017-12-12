@@ -33,7 +33,7 @@ proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.setHeader('x-forwarded-for', logger.getRawIp(req));
 });
 
-var formImages = [ '/captcha.js', '/randomBanner.js' ];
+exports.formImages = [ '/captcha.js', '/randomBanner.js' ];
 
 exports.loadSettings = function() {
 
@@ -156,7 +156,7 @@ exports.processApiRequest = function(req, pathName, res) {
 
 exports.showMaintenance = function(req, pathName, res) {
 
-  if (formImages.indexOf(pathName) >= 0) {
+  if (exports.formImages.indexOf(pathName) >= 0) {
 
     res.writeHead(302, {
       'Location' : kernel.maintenanceImage()

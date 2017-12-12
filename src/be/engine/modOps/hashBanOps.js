@@ -15,7 +15,7 @@ var common;
 var captchaOps;
 var miscOps;
 
-var hashBanArguments = [ {
+exports.hashBanArguments = [ {
   field : 'hash',
   length : 32,
   removeHTML : true
@@ -129,7 +129,7 @@ exports.writeHashBan = function(userData, parameters, callback) {
 exports.checkForHashBanPermission = function(userData, parameters, language,
     callback) {
 
-  miscOps.sanitizeStrings(parameters, hashBanArguments);
+  miscOps.sanitizeStrings(parameters, exports.hashBanArguments);
 
   var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 

@@ -5,7 +5,7 @@ var lang = require('../engine/langOps').languagePack;
 var boardOps = require('../engine/boardOps').rules;
 var mandatoryParameters = [ 'rule', 'boardUri' ];
 
-function addRule(parameters, userData, res, auth, language) {
+exports.addRule = function(parameters, userData, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
       language)) {
@@ -24,15 +24,13 @@ function addRule(parameters, userData, res, auth, language) {
     }
   });
 
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-
-    addRule(parameters, userData, res, auth, req.language);
-
+    exports.addRule(parameters, userData, res, auth, req.language);
   });
 
 };

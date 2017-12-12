@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack;
 var deletionOps = require('../engine/deletionOps').miscDeletions;
 
-function deleteBoard(userData, parameters, res, auth, language) {
+exports.deleteBoard = function(userData, parameters, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, [ 'boardUri' ], res, language)) {
     return;
@@ -20,15 +20,13 @@ function deleteBoard(userData, parameters, res, auth, language) {
         }
       });
 
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-
-    deleteBoard(userData, parameters, res, auth, req.language);
-
+    exports.deleteBoard(userData, parameters, res, auth, req.language);
   });
 
 };

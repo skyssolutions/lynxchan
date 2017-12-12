@@ -14,9 +14,9 @@ var JSDOM = require('jsdom').JSDOM;
 var preBuiltDefault = {};
 var preBuiltAlternative = {};
 
-var simpleAttributes = [ 'download', 'style', 'value', 'name', 'checked' ];
-var simpleProperties = [ 'href', 'title', 'src', 'defaultValue' ];
-var dataAttributes = [ 'mime', 'height', 'width' ];
+exports.simpleAttributes = [ 'download', 'style', 'value', 'name', 'checked' ];
+exports.simpleProperties = [ 'href', 'title', 'src', 'defaultValue' ];
+exports.dataAttributes = [ 'mime', 'height', 'width' ];
 
 exports.getAlternativeTemplates = function(language) {
 
@@ -191,19 +191,19 @@ exports.processFieldUses = function(field, removed, element, document) {
 
     var use = field.uses[i];
 
-    if (simpleProperties.indexOf(use) > -1) {
+    if (exports.simpleProperties.indexOf(use) > -1) {
 
       var value = '__' + name + '_' + use + '__';
 
       element[use] = value;
 
-    } else if (simpleAttributes.indexOf(use) > -1) {
+    } else if (exports.simpleAttributes.indexOf(use) > -1) {
 
       value = '__' + name + '_' + use + '__';
 
       element.setAttribute(use, value);
 
-    } else if (dataAttributes.indexOf(use) > -1) {
+    } else if (exports.dataAttributes.indexOf(use) > -1) {
 
       value = '__' + name + '_' + use + '__';
 

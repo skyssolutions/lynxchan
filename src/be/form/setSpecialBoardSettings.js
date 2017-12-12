@@ -5,7 +5,8 @@ var boardOps = require('../engine/boardOps').meta;
 var lang = require('../engine/langOps').languagePack;
 var mandatoryParameters = [ 'boardUri' ];
 
-function setBoardSpecialSettings(userData, parameters, res, auth, language) {
+exports.setBoardSpecialSettings = function(userData, parameters, res, auth,
+    language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
       language)) {
@@ -39,15 +40,14 @@ function setBoardSpecialSettings(userData, parameters, res, auth, language) {
 
       });
 
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-
-    setBoardSpecialSettings(userData, parameters, res, auth, req.language);
-
+    exports.setBoardSpecialSettings(userData, parameters, res, auth,
+        req.language);
   });
 
 };

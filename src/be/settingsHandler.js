@@ -9,7 +9,7 @@ var templateSettings;
 
 var MAX_ATTEMPTS = 4;
 
-var zeroSettingsExceptions = [ 'boardCreationRequirement' ];
+exports.zeroSettingsExceptions = [ 'boardCreationRequirement' ];
 
 // Section 1: New settings {
 function broadCastToSlaves(newSettings, callback, index, attempts) {
@@ -423,9 +423,7 @@ function loadDatabasesSettings() {
 }
 
 exports.isZeroException = function(setting, value) {
-
-  return zeroSettingsExceptions.indexOf(setting) > -1 && !isNaN(value);
-
+  return exports.zeroSettingsExceptions.indexOf(setting) > -1 && !isNaN(value);
 };
 
 function loadGeneralSettings() {

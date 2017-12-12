@@ -3,7 +3,7 @@
 var apiOps = require('../engine/apiOps');
 var boardOps = require('../engine/boardOps').custom;
 
-function setCustomJs(auth, parameters, userData, res, language) {
+exports.setCustomJs = function(auth, parameters, userData, res, language) {
 
   if (parameters.files.length) {
     boardOps.setCustomJs(userData, parameters.boardUri, parameters.files[0],
@@ -25,12 +25,12 @@ function setCustomJs(auth, parameters, userData, res, language) {
           }
         });
   }
-}
+};
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-    setCustomJs(auth, parameters, userData, res, req.language);
+    exports.setCustomJs(auth, parameters, userData, res, req.language);
   }, false, true);
 };

@@ -21,7 +21,7 @@ var jsonBuilder;
 var maxThreads;
 var disableCatalogPosting;
 
-var boardProjection = {
+exports.boardProjection = {
   boardUri : 1,
   threadCount : 1,
   boardName : 1,
@@ -121,7 +121,7 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
 
     boards.findOne({
       boardUri : boardUri
-    }, boardProjection, function gotBoard(error, board) {
+    }, exports.boardProjection, function gotBoard(error, board) {
       if (error) {
         callback(error);
       } else if (!board) {
@@ -309,7 +309,7 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
 
     boards.findOne({
       boardUri : boardUri
-    }, boardProjection, function gotBoard(error, board) {
+    }, exports.boardProjection, function gotBoard(error, board) {
       if (error) {
         callback(error);
       } else if (!board) {
@@ -416,7 +416,7 @@ exports.catalog = function(boardUri, callback, boardData, flagData) {
 
     boards.findOne({
       boardUri : boardUri
-    }, boardProjection, function gotBoardData(error, boardData) {
+    }, exports.boardProjection, function gotBoardData(error, boardData) {
       if (error) {
         callback(error);
       } else if (!boardData) {

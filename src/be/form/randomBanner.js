@@ -9,15 +9,14 @@ var gridFsHandler = require('../engine/gridFsHandler');
 var miscOps = require('../engine/miscOps');
 var formOps = require('../engine/formOps');
 
-function outputFile(file, res) {
+exports.outputFile = function(file, res) {
 
   res.writeHead(302, {
     'Location' : file
-
   });
   res.end();
 
-}
+};
 
 exports.process = function(req, res) {
 
@@ -36,11 +35,12 @@ exports.process = function(req, res) {
     if (error) {
       formOps.outputError(error, 500, res, req.language);
     } else if (!banners.length) {
-      outputFile(defaultBanner, res);
+      exports.outputFile(defaultBanner, res);
     } else {
 
       var file = banners[miscOps.getRandomInt(0, banners.length - 1)];
-      outputFile(file.filename, res);
+      exports.outputFile(file.filename, res);
     }
   });
+
 };

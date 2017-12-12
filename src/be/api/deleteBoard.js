@@ -3,7 +3,7 @@
 var apiOps = require('../engine/apiOps');
 var deletionOps = require('../engine/deletionOps').miscDeletions;
 
-function deleteBoard(auth, userData, parameters, res, language) {
+exports.deleteBoard = function(auth, userData, parameters, res, language) {
 
   if (apiOps.checkBlankParameters(parameters, [ 'boardUri' ], res)) {
     return;
@@ -17,13 +17,13 @@ function deleteBoard(auth, userData, parameters, res, language) {
           apiOps.outputResponse(auth, null, 'ok', res);
         }
       });
-}
+};
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    deleteBoard(auth, userData, parameters, res, req.language);
+    exports.deleteBoard(auth, userData, parameters, res, req.language);
   });
 };

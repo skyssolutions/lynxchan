@@ -33,14 +33,15 @@ var ffmpegGif;
 var onlySfwImages;
 var apngThreshold = 25 * 1024;
 
-var correctedMimesRelation = {
+exports.correctedMimesRelation = {
   'video/webm' : 'audio/webm',
   'video/ogg' : 'audio/ogg'
 };
 
-var thumbAudioMimes = [ 'audio/mpeg', 'audio/ogg', 'audio/webm', 'audio/flac' ];
+exports.thumbAudioMimes = [ 'audio/mpeg', 'audio/ogg', 'audio/webm',
+    'audio/flac' ];
 
-var videoMimes = [ 'video/webm', 'video/mp4', 'video/ogg' ];
+exports.videoMimes = [ 'video/webm', 'video/mp4', 'video/ogg' ];
 
 exports.loadSettings = function() {
 
@@ -62,10 +63,6 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Utility functions {
-exports.videoMimes = function() {
-  return videoMimes;
-};
-
 exports.getImageBounds = function(file, callback) {
 
   var path = file.pathInDisk;
@@ -113,7 +110,7 @@ exports.getVideoBounds = function(file, callback) {
       var matches = output.match(/width\=(\d+)\nheight\=(\d+)/);
 
       if (!matches) {
-        var correctedMime = correctedMimesRelation[file.mime];
+        var correctedMime = exports.correctedMimesRelation[file.mime];
 
         if (!correctedMime) {
           callback('Unable to get dimensions for file.');
@@ -504,7 +501,7 @@ exports.generateImageThumb = function(identifier, file, callback) {
 
 exports.decideOnDefaultThumb = function(file, identifier, callback) {
 
-  if (thumbAudioMimes.indexOf(file.mime) > -1) {
+  if (exports.thumbAudioMimes.indexOf(file.mime) > -1) {
     file.thumbPath = genericAudioThumb;
   } else if (file.mime.indexOf('image/') < 0) {
     file.thumbPath = genericThumb;
@@ -532,25 +529,15 @@ exports.generateThumb = function(identifier, file, callback) {
   imageCondition = imageCondition && !tooSmall && file.mime !== 'image/svg+xml';
 
   if (file.mime === 'image/gif' && gifCondition) {
-
     exports.generateGifThumb(identifier, file, callback);
-
   } else if (imageCondition) {
-
     exports.generateImageThumb(identifier, file, callback);
-
-  } else if (videoMimes.indexOf(file.mime) > -1 && mediaThumb) {
-
+  } else if (exports.videoMimes.indexOf(file.mime) > -1 && mediaThumb) {
     exports.generateVideoThumb(identifier, file, tooSmall, callback);
-
-  } else if (thumbAudioMimes.indexOf(file.mime) > -1 && mediaThumb) {
-
+  } else if (exports.thumbAudioMimes.indexOf(file.mime) > -1 && mediaThumb) {
     exports.generateAudioThumb(identifier, file, callback);
-
   } else {
-
     exports.decideOnDefaultThumb(file, identifier, callback);
-
   }
 
 };
@@ -622,7 +609,7 @@ exports.checkForThumb = function(reference, identifier, boardData, threadId,
       callback(error);
     } else if (!result) {
 
-      if (thumbAudioMimes.indexOf(file.mime) > -1) {
+      if (exports.thumbAudioMimes.indexOf(file.mime) > -1) {
         file.thumbPath = genericAudioThumb;
       } else if (file.mime.indexOf('image/') < 0) {
         file.thumbPath = genericThumb;
@@ -683,7 +670,7 @@ exports.willRequireThumb = function(file) {
     return true;
   } else if (imageCondition) {
     return true;
-  } else if (videoMimes.indexOf(file.mime) > -1 && mediaThumb) {
+  } else if (exports.videoMimes.indexOf(file.mime) > -1 && mediaThumb) {
     return true;
   }
 

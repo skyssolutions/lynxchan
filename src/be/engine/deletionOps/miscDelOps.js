@@ -24,7 +24,7 @@ var referenceHandler;
 var overboardOps;
 var gridFs;
 
-var collectionsToClean = [ reports, posts, threads, flags, hashBans,
+exports.collectionsToClean = [ reports, posts, threads, flags, hashBans,
     boardStats, bans, globalLatestPosts, globalLatestImages ];
 
 exports.loadSettings = function() {
@@ -187,9 +187,9 @@ exports.cleanThreads = function(boardUri, early404, limit, language, callback) {
 exports.deleteBoardContent = function(board, callback, index) {
   index = index || 0;
 
-  if (index < collectionsToClean.length) {
+  if (index < exports.collectionsToClean.length) {
 
-    collectionsToClean[index].deleteMany({
+    exports.collectionsToClean[index].deleteMany({
       boardUri : board
     }, function removedData(error) {
       exports.deleteBoardContent(board, callback, ++index);

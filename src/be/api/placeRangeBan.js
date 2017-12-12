@@ -4,7 +4,8 @@ var apiOps = require('../engine/apiOps');
 var mandatoryParameters = [ 'range' ];
 var modOps = require('../engine/modOps').ipBan.general;
 
-function placeRangeBan(auth, userData, parameters, captchaId, res, language) {
+exports.placeRangeBan = function(auth, userData, parameters, captchaId, res,
+    language) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -18,12 +19,13 @@ function placeRangeBan(auth, userData, parameters, captchaId, res, language) {
           apiOps.outputResponse(auth, null, 'ok', res);
         }
       });
-}
+};
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters, captchaId) {
-    placeRangeBan(auth, userData, parameters, captchaId, res, req.language);
+    exports.placeRangeBan(auth, userData, parameters, captchaId, res,
+        req.language);
   });
 };

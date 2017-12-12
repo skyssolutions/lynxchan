@@ -23,9 +23,9 @@ var iterations = 4096;
 var keyLength = 256;
 var hashDigest = 'sha512';
 
-var validAccountSettings = [ 'alwaysSignRole' ];
+exports.validAccountSettings = [ 'alwaysSignRole' ];
 
-var newAccountParameters = [ {
+exports.newAccountParameters = [ {
   field : 'login',
   length : 16
 }, {
@@ -33,7 +33,7 @@ var newAccountParameters = [ {
   length : 64
 } ];
 
-var changeSettingsParameters = [ {
+exports.changeSettingsParameters = [ {
   field : 'email',
   length : 64
 } ];
@@ -56,10 +56,6 @@ exports.loadDependencies = function() {
   domManipulator = require('./domManipulator').dynamicPages.miscPages;
   lang = require('./langOps').languagePack;
 
-};
-
-exports.validAccountSettings = function() {
-  return validAccountSettings;
 };
 
 // Section 1: Global role change {
@@ -184,7 +180,7 @@ exports.registerUser = function(parameters, cb, role, override, captchaId,
     return;
   }
 
-  miscOps.sanitizeStrings(parameters, newAccountParameters);
+  miscOps.sanitizeStrings(parameters, exports.newAccountParameters);
 
   if (!parameters.login || /\W/.test(parameters.login)) {
     cb(lang(language).errInvalidLogin);
@@ -523,7 +519,7 @@ exports.recoverAccount = function(parameters, language, callback) {
 
 exports.changeSettings = function(userData, parameters, callback) {
 
-  miscOps.sanitizeStrings(parameters, changeSettingsParameters);
+  miscOps.sanitizeStrings(parameters, exports.changeSettingsParameters);
 
   users.updateOne({
     login : userData.login

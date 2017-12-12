@@ -8,7 +8,7 @@ var domManipulator = require('../engine/domManipulator').dynamicPages;
 domManipulator = domManipulator.managementPages;
 var accountOps = require('../engine/accountOps');
 
-function getAccounts(auth, userData, res, req) {
+exports.getAccounts = function(auth, userData, res, req) {
 
   var json = url.parse(req.url, true).query.json;
 
@@ -36,13 +36,13 @@ function getAccounts(auth, userData, res, req) {
 
   });
 
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, false,
       function gotData(auth, userData) {
-        getAccounts(auth, userData, res, req);
+        exports.getAccounts(auth, userData, res, req);
       });
 
 };

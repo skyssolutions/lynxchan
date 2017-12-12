@@ -4,7 +4,8 @@ var apiOps = require('../engine/apiOps');
 var boardOps = require('../engine/boardOps').meta;
 var mandatoryParameters = [ 'boardUri' ];
 
-function setBoardSpecialSettings(auth, userData, parameters, res, language) {
+exports.setBoardSpecialSettings = function(auth, userData, parameters, res,
+    language) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -36,13 +37,14 @@ function setBoardSpecialSettings(auth, userData, parameters, res, language) {
 
       });
 
-}
+};
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-    setBoardSpecialSettings(auth, userData, parameters, res, req.language);
+    exports.setBoardSpecialSettings(auth, userData, parameters, res,
+        req.language);
   });
 
 };

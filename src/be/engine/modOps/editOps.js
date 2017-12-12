@@ -17,7 +17,7 @@ var r9k;
 var sfwOverboard;
 var overboard;
 
-var editArguments = [ {
+exports.editArguments = [ {
   field : 'message',
   removeHTML : false
 }, {
@@ -29,7 +29,7 @@ var editArguments = [ {
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
-  editArguments[0].length = settings.messageLength;
+  exports.editArguments[0].length = settings.messageLength;
 
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
@@ -325,7 +325,7 @@ exports.getMarkdown = function(parameters, userData, board, language, cb) {
 
 exports.saveEdit = function(userData, parameters, language, callback) {
 
-  miscOps.sanitizeStrings(parameters, editArguments);
+  miscOps.sanitizeStrings(parameters, exports.editArguments);
 
   parameters.hash = r9k.getMessageHash(parameters.message);
 

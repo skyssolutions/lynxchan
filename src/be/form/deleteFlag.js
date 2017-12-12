@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var boardOps = require('../engine/boardOps').flags;
 var lang = require('../engine/langOps').languagePack;
 
-function deleteFlag(parameters, userData, res, auth, language) {
+exports.deleteFlag = function(parameters, userData, res, auth, language) {
 
   boardOps.deleteFlag(userData, parameters.flagId, language,
       function deletedFlag(error, board) {
@@ -19,15 +19,13 @@ function deleteFlag(parameters, userData, res, auth, language) {
         }
       });
 
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-
-    deleteFlag(parameters, userData, res, auth, req.language);
-
+    exports.deleteFlag(parameters, userData, res, auth, req.language);
   });
 
 };

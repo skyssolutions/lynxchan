@@ -4,8 +4,8 @@ var apiOps = require('../engine/apiOps');
 var accountOps = require('../engine/accountOps');
 var deleteOps = require('../engine/deletionOps').postingDeletions;
 
-function processReceivedPosting(threadsToDelete, postsToDelete, posting,
-    onlyFiles) {
+exports.processReceivedPosting = function(threadsToDelete, postsToDelete,
+    posting, onlyFiles) {
   var boardObject;
 
   if (!posting.board || !posting.thread) {
@@ -33,9 +33,9 @@ function processReceivedPosting(threadsToDelete, postsToDelete, posting,
 
     threadsToDelete[posting.board] = boardObject;
   }
-}
+};
 
-function processParameters(userData, parameters, res, auth, language) {
+exports.processParameters = function(userData, parameters, res, auth, lang) {
 
   if (apiOps.checkBlankParameters(parameters, [ 'postings' ], res)) {
     return;
@@ -45,12 +45,12 @@ function processParameters(userData, parameters, res, auth, language) {
   var threadsToDelete = {};
 
   for (var i = 0; i < parameters.postings.length && i < 1000; i++) {
-    processReceivedPosting(threadsToDelete, postsToDelete,
+    exports.processReceivedPosting(threadsToDelete, postsToDelete,
         parameters.postings[i], parameters.deleteUploads);
   }
 
-  deleteOps.posting(userData, parameters, threadsToDelete, postsToDelete,
-      language, function deletedPostings(error, removedThreads, removedPosts) {
+  deleteOps.posting(userData, parameters, threadsToDelete, postsToDelete, lang,
+      function deletedPostings(error, removedThreads, removedPosts) {
 
         if (error) {
           apiOps.outputError(error, res);
@@ -61,7 +61,7 @@ function processParameters(userData, parameters, res, auth, language) {
           }, 'ok', res);
         }
       });
-}
+};
 
 exports.process = function(req, res) {
 
@@ -84,7 +84,8 @@ exports.process = function(req, res) {
       if (error && !parameters.password) {
         apiOps.outputError(error, res);
       } else {
-        processParameters(userData, parameters, res, auth, req.language);
+        exports
+            .processParameters(userData, parameters, res, auth, req.language);
       }
 
     });

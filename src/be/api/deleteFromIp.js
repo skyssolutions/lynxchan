@@ -4,7 +4,7 @@ var apiOps = require('../engine/apiOps');
 var delOps = require('../engine/deletionOps');
 var mandatoryParameters = [ 'ip' ];
 
-function deleteFromIp(auth, userData, parameters, res, language) {
+exports.deleteFromIp = function(auth, userData, parameters, res, language) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -21,14 +21,14 @@ function deleteFromIp(auth, userData, parameters, res, language) {
 
   });
 
-}
+};
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    deleteFromIp(auth, userData, parameters, res, req.language);
+    exports.deleteFromIp(auth, userData, parameters, res, req.language);
   });
 
 };

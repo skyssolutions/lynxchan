@@ -13,8 +13,8 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var modOps = require('../engine/modOps').common;
 var formOps = require('../engine/formOps');
 
-function outputModData(bData, flagData, thread, posts, res, json, userRole,
-    auth, language) {
+exports.outputModData = function(bData, flagData, thread, posts, res, json,
+    userRole, auth, language) {
 
   var header = miscOps.getHeader(json ? 'application/json' : 'text/html');
 
@@ -42,10 +42,10 @@ function outputModData(bData, flagData, thread, posts, res, json, userRole,
         }, true, userRole, language);
   }
 
-}
+};
 
-function getPostingData(boardData, flagData, parameters, res, json, userRole,
-    auth, language) {
+exports.getPostingData = function(boardData, flagData, parameters, res, json,
+    userRole, auth, language) {
 
   threads.findOne({
     threadId : +parameters.threadId,
@@ -121,8 +121,8 @@ function getPostingData(boardData, flagData, parameters, res, json, userRole,
                 if (error) {
                   formOps.outputError(error, 500, res, language);
                 } else {
-                  outputModData(boardData, flagData, thread, posts, res, json,
-                      userRole, auth, language);
+                  exports.outputModData(boardData, flagData, thread, posts,
+                      res, json, userRole, auth, language);
                 }
 
               });
@@ -132,9 +132,10 @@ function getPostingData(boardData, flagData, parameters, res, json, userRole,
 
       });
 
-}
+};
 
-function getFlags(board, parameters, res, json, userRole, auth, language) {
+exports.getFlags = function(board, parameters, res, json, userRole, auth,
+    language) {
 
   flags.find({
     boardUri : parameters.boardUri
@@ -147,12 +148,12 @@ function getFlags(board, parameters, res, json, userRole, auth, language) {
         if (error) {
           formOps.outputError(error, 500, res, language);
         } else {
-          getPostingData(board, flagData, parameters, res, json, userRole,
-              auth, language);
+          exports.getPostingData(board, flagData, parameters, res, json,
+              userRole, auth, language);
         }
       });
 
-}
+};
 
 exports.process = function(req, res) {
 
@@ -197,7 +198,7 @@ exports.process = function(req, res) {
             formOps.outputError(lang(req.language).errDeniedManageBoard, 500,
                 res, req.language);
           } else {
-            getFlags(board, parameters, res, parameters.json,
+            exports.getFlags(board, parameters, res, parameters.json,
                 userData.globalRole, auth, req.language);
           }
         });

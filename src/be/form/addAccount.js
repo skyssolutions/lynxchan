@@ -6,7 +6,7 @@ var languageOps = require('../engine/langOps');
 var lang = languageOps.languagePack;
 var mandatoryParameters = [ 'login', 'password' ];
 
-function addAccount(auth, parameters, userData, res, language) {
+exports.addAccount = function(auth, parameters, userData, res, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
       language)) {
@@ -22,12 +22,12 @@ function addAccount(auth, parameters, userData, res, language) {
               '/accounts.js', res, null, auth, language);
         }
       });
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-    addAccount(auth, parameters, userData, res, req.language);
+    exports.addAccount(auth, parameters, userData, res, req.language);
   });
 };

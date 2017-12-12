@@ -27,9 +27,9 @@ var maxVolunteers;
 var allowedMimes;
 var rangeSettings;
 
-var defaultSettings = [ 'disableIds' ];
+exports.defaultSettings = [ 'disableIds' ];
 
-var boardParameters = [ {
+exports.boardParameters = [ {
   field : 'boardUri',
   length : 32
 }, {
@@ -48,7 +48,7 @@ var boardParameters = [ {
   field : 'boardMessage'
 } ];
 
-var transferParameters = [ {
+exports.transferParameters = [ {
   field : 'login',
   length : 16
 } ];
@@ -66,7 +66,7 @@ exports.loadSettings = function() {
   overboard = settings.overboard;
   sfwOverboard = settings.sfwOverboard;
   allowedMimes = settings.acceptedMimes;
-  boardParameters[4].length = settings.boardMessageLength;
+  exports.boardParameters[4].length = settings.boardMessageLength;
 
 };
 
@@ -321,7 +321,7 @@ exports.setSettings = function(userData, parameters, language, callback) {
     } else if (!modCommonOps.isInBoardStaff(userData, board, 2)) {
       callback(lang(language).errDeniedChangeBoardSettings);
     } else {
-      miscOps.sanitizeStrings(parameters, boardParameters);
+      miscOps.sanitizeStrings(parameters, exports.boardParameters);
 
       exports.saveNewSettings(board, parameters, callback);
 
@@ -430,7 +430,7 @@ exports.transfer = function(userData, parameters, language, callback) {
       callback();
     } else {
 
-      miscOps.sanitizeStrings(parameters, transferParameters);
+      miscOps.sanitizeStrings(parameters, exports.transferParameters);
 
       // style exception, too simple
       users.findOne({
@@ -559,7 +559,7 @@ exports.insertBoard = function(parameters, userData, language, callback) {
         parameters.toString() + Math.random() + new Date()).digest('hex'),
     boardDescription : parameters.boardDescription,
     owner : userData.login,
-    settings : defaultSettings,
+    settings : exports.defaultSettings,
     uniqueIps : 0,
     lastPostId : 0,
     captchaMode : 0,
@@ -594,7 +594,7 @@ exports.createBoard = function(captchaId, parameters, userData, language,
     return;
   }
 
-  miscOps.sanitizeStrings(parameters, boardParameters);
+  miscOps.sanitizeStrings(parameters, exports.boardParameters);
 
   var reservedUris = [ overboard, sfwOverboard ];
 

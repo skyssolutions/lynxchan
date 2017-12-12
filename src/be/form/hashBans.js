@@ -7,7 +7,7 @@ var miscOps = require('../engine/miscOps');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var modOps = require('../engine/modOps').hashBan;
 
-function getHashBans(userData, parameters, res, auth, language) {
+exports.getHashBans = function(userData, parameters, res, auth, language) {
 
   modOps.getHashBans(userData, parameters, language, function gotHashBans(
       error, hashBans) {
@@ -28,7 +28,7 @@ function getHashBans(userData, parameters, res, auth, language) {
     }
   });
 
-}
+};
 
 exports.process = function(req, res) {
 
@@ -37,7 +37,7 @@ exports.process = function(req, res) {
 
         var parameters = url.parse(req.url, true).query;
 
-        getHashBans(userData, parameters, res, auth, req.language);
+        exports.getHashBans(userData, parameters, res, auth, req.language);
 
       });
 

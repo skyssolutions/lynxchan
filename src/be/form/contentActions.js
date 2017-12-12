@@ -9,8 +9,8 @@ var miscOps = require('../engine/miscOps');
 var deleteOps = require('../engine/deletionOps');
 var mandatoryAuth = [ 'spoil', 'ban', 'ip-deletion' ];
 
-function processPostForDeletion(board, thread, splitKey, threadsToDelete,
-    postsToDelete, onlyFiles) {
+exports.processPostForDeletion = function(board, thread, splitKey,
+    threadsToDelete, postsToDelete, onlyFiles) {
   var threadTestObject = threadsToDelete[board] || [];
 
   if (threadTestObject.indexOf(+thread) === -1 || onlyFiles) {
@@ -24,17 +24,17 @@ function processPostForDeletion(board, thread, splitKey, threadsToDelete,
     boardObject.push(+post);
 
   }
-}
+};
 
-function processSplitKeyForDeletion(splitKey, threadsToDelete, postsToDelete,
-    onlyFiles) {
+exports.processSplitKeyForDeletion = function(splitKey, threadsToDelete,
+    postsToDelete, onlyFiles) {
 
   var board = splitKey[0];
   var thread = splitKey[1];
 
   if (splitKey.length > 2 && !isNaN(splitKey[2])) {
 
-    processPostForDeletion(board, thread, splitKey, threadsToDelete,
+    exports.processPostForDeletion(board, thread, splitKey, threadsToDelete,
         postsToDelete, onlyFiles);
 
   } else {
@@ -46,9 +46,9 @@ function processSplitKeyForDeletion(splitKey, threadsToDelete, postsToDelete,
 
   }
 
-}
+};
 
-function processSplitKeyForGeneralUse(splitKey, reportedObjects) {
+exports.processSplitKeyForGeneralUse = function(splitKey, reportedObjects) {
 
   var board = splitKey[0];
   var thread = splitKey[1];
@@ -65,20 +65,22 @@ function processSplitKeyForGeneralUse(splitKey, reportedObjects) {
 
   reportedObjects.push(report);
 
-}
+};
 
 exports.decideProcessing = function(parameters, split, threads, posts,
     reportedObjects) {
 
   if (parameters.action === 'delete') {
-    processSplitKeyForDeletion(split, threads, posts, parameters.deleteUploads);
+    exports.processSplitKeyForDeletion(split, threads, posts,
+        parameters.deleteUploads);
   } else {
-    processSplitKeyForGeneralUse(split, reportedObjects);
+    exports.processSplitKeyForGeneralUse(split, reportedObjects);
   }
 
 };
 
-function getProcessedObjects(parameters, threads, posts, reportedObjects) {
+exports.getProcessedObjects = function(parameters, threads, posts,
+    reportedObjects) {
 
   var redirectBoard;
   var i = 0;
@@ -110,14 +112,15 @@ function getProcessedObjects(parameters, threads, posts, reportedObjects) {
 
   return redirectBoard ? '/' + redirectBoard + '/' : '/';
 
-}
+};
 
-function processParameters(req, userData, parameters, res, captchaId, auth) {
+exports.processParameters = function(req, userData, parameters, res, captchaId,
+    auth) {
 
   var reportedObjects = [];
   var threads = {};
   var posts = {};
-  var redirectBoard = getProcessedObjects(parameters, threads, posts,
+  var redirectBoard = exports.getProcessedObjects(parameters, threads, posts,
       reportedObjects);
 
   switch (parameters.action) {
@@ -215,7 +218,7 @@ function processParameters(req, userData, parameters, res, captchaId, auth) {
 
   }
 
-}
+};
 
 exports.process = function(req, res) {
 
@@ -241,8 +244,8 @@ exports.process = function(req, res) {
 
     var cookies = formOps.getCookies(req);
 
-    processParameters(req, userData, parameters, res, cookies.captchaid,
-        newAuth);
+    exports.processParameters(req, userData, parameters, res,
+        cookies.captchaid, newAuth);
 
   }, true);
 

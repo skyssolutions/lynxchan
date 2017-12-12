@@ -5,7 +5,7 @@ var lang = require('../engine/langOps').languagePack;
 var boardOps = require('../engine/boardOps').meta;
 var mandatoryParameters = [ 'boardUri', 'login' ];
 
-function setVolunteer(userData, parameters, res, auth, language) {
+exports.setVolunteer = function(userData, parameters, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
       language)) {
@@ -28,15 +28,13 @@ function setVolunteer(userData, parameters, res, auth, language) {
 
   });
 
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-
-    setVolunteer(userData, parameters, res, auth, req.language);
-
+    exports.setVolunteer(userData, parameters, res, auth, req.language);
   });
 
 };

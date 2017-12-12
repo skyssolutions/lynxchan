@@ -29,6 +29,9 @@ var locks = {
   multiboards : {}
 };
 
+exports.typeIndex = typeIndex;
+exports.locks = locks;
+
 exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();

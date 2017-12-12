@@ -25,7 +25,7 @@ var engineInfo;
 var disableCatalogPosting;
 var cacheHandler;
 
-var availableLogTypes = {
+exports.availableLogTypes = {
   ban : 'guiTypeBan',
   banLift : 'guiTypeBanLift',
   deletion : 'guiTypeDeletion',
@@ -856,7 +856,7 @@ exports.getLogEntry = function(template, log, language) {
   }
 
   cell = cell.replace('__labelType_inner__',
-      lang(language)[availableLogTypes[log.type]]);
+      lang(language)[exports.availableLogTypes[log.type]]);
 
   cell = cell.replace('__labelTime_inner__', common.formatDateToDisplay(
       log.time, null, language));

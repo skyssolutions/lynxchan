@@ -4,13 +4,13 @@ var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack;
 var accountOps = require('../engine/accountOps');
 
-function requestRecovery(domain, parameters, res, captchaId, language) {
+exports.requestRecovery = function(domain, params, res, captchaId, language) {
 
-  if (formOps.checkBlankParameters(parameters, [ 'login' ], res, language)) {
+  if (formOps.checkBlankParameters(params, [ 'login' ], res, language)) {
     return;
   }
 
-  accountOps.requestRecovery(domain, language, parameters, captchaId,
+  accountOps.requestRecovery(domain, language, params, captchaId,
       function requestCreated(error) {
         if (error) {
           formOps.outputError(error, 500, res, language);
@@ -20,7 +20,7 @@ function requestRecovery(domain, parameters, res, captchaId, language) {
         }
       });
 
-}
+};
 
 exports.process = function(req, res) {
 
@@ -28,8 +28,8 @@ exports.process = function(req, res) {
 
     var cookies = formOps.getCookies(req);
 
-    requestRecovery(formOps.getDomain(req), parameters, res, cookies.captchaid,
-        req.language);
+    exports.requestRecovery(formOps.getDomain(req), parameters, res,
+        cookies.captchaid, req.language);
 
   });
 };

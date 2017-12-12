@@ -6,7 +6,7 @@ var url = require('url');
 var modOps = require('../engine/modOps').edit;
 var mandatoryParameters = [ 'message', 'boardUri' ];
 
-function saveEdit(parameters, userData, res, auth, language) {
+exports.saveEdit = function(parameters, userData, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
       language)) {
@@ -29,15 +29,13 @@ function saveEdit(parameters, userData, res, auth, language) {
     }
   });
 
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-
-    saveEdit(parameters, userData, res, auth, req.language);
-
+    exports.saveEdit(parameters, userData, res, auth, req.language);
   });
 
 };

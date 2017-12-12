@@ -53,7 +53,7 @@ exports.loadDependencies = function() {
   miscOps = require('./miscOps');
   modOps = require('./modOps');
   uploadHandler = require('./uploadHandler');
-  videoMimes = uploadHandler.videoMimes();
+  videoMimes = uploadHandler.videoMimes;
   lang = require('./langOps').languagePack;
 
 };

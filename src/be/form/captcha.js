@@ -7,7 +7,7 @@ var captchaOps = require('../engine/captchaOps');
 var formOps = require('../engine/formOps');
 var gridFsHandler = require('../engine/gridFsHandler');
 
-function showCaptcha(req, captchaData, res) {
+exports.showCaptcha = function(req, captchaData, res) {
 
   var cookies = [ {
     field : 'captchaid',
@@ -35,7 +35,7 @@ function showCaptcha(req, captchaData, res) {
 
         }
       }, cookies);
-}
+};
 
 exports.process = function(req, res) {
 
@@ -71,11 +71,11 @@ exports.process = function(req, res) {
 
           formOps.outputError(error, 500, res, req.language);
         } else {
-          showCaptcha(req, captchaData, res);
+          exports.showCaptcha(req, captchaData, res);
         }
       });
     } else {
-      showCaptcha(req, captchaData, res);
+      exports.showCaptcha(req, captchaData, res);
     }
   });
 };

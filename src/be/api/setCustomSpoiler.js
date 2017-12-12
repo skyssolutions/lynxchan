@@ -3,7 +3,7 @@
 var apiOps = require('../engine/apiOps');
 var boardOps = require('../engine/boardOps').custom;
 
-function setCustomSpoiler(auth, parameters, userData, res, language) {
+exports.setCustomSpoiler = function(auth, parameters, userData, res, language) {
 
   if (parameters.files.length) {
     boardOps.setCustomSpoiler(userData, parameters.boardUri,
@@ -26,12 +26,12 @@ function setCustomSpoiler(auth, parameters, userData, res, language) {
           }
         });
   }
-}
+};
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-    setCustomSpoiler(auth, parameters, userData, res, req.language);
+    exports.setCustomSpoiler(auth, parameters, userData, res, req.language);
   }, false, true);
 };

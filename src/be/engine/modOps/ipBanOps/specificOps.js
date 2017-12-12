@@ -16,13 +16,13 @@ var captchaOps;
 var common;
 var lang;
 
-var appealArguments = [ {
+exports.appealArguments = [ {
   length : 512,
   field : 'appeal',
   removeHTML : true
 } ];
 
-var banArguments = [ {
+exports.banArguments = [ {
   field : 'reason',
   length : 256,
   removeHTML : true
@@ -32,13 +32,13 @@ var banArguments = [ {
   removeHTML : true
 } ];
 
-var massBanArguments = [ {
+exports.massBanArguments = [ {
   field : 'reason',
   length : 256,
   removeHTML : true
 } ];
 
-var regexRelation = {
+exports.regexRelation = {
   FullYear : new RegExp(/(\d+)y/),
   Month : new RegExp(/(\d+)M/),
   Date : new RegExp(/(\d+)d/),
@@ -497,9 +497,9 @@ exports.parseExpiration = function(parameters) {
 
   var foundDuration = false;
 
-  for ( var key in regexRelation) {
+  for ( var key in exports.regexRelation) {
 
-    var durationMatch = informedDuration.match(regexRelation[key]);
+    var durationMatch = informedDuration.match(exports.regexRelation[key]);
 
     if (durationMatch) {
       foundDuration = true;
@@ -519,7 +519,7 @@ exports.parseExpiration = function(parameters) {
 exports.isolateBoards = function(userData, reportedObjects, parameters,
     language, callback) {
 
-  miscOps.sanitizeStrings(parameters, banArguments);
+  miscOps.sanitizeStrings(parameters, exports.banArguments);
 
   if (!parameters.banType) {
     exports.parseExpiration(parameters);
@@ -578,7 +578,7 @@ exports.appealBan = function(ip, parameters, language, callback) {
 
   try {
 
-    miscOps.sanitizeStrings(parameters, appealArguments);
+    miscOps.sanitizeStrings(parameters, exports.appealArguments);
 
     bans.findOneAndUpdate({
       _id : new ObjectID(parameters.banId),
@@ -731,7 +731,7 @@ exports.massBan = function(userData, parameters, language, callback) {
     return;
   }
 
-  miscOps.sanitizeStrings(parameters, massBanArguments);
+  miscOps.sanitizeStrings(parameters, exports.massBanArguments);
 
   var banList = exports.getMassBans(parameters, userData.login);
 

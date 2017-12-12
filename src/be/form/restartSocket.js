@@ -5,7 +5,7 @@ var socket = require('../engine/socketOps');
 var languageOps = require('../engine/langOps');
 var lang = languageOps.languagePack;
 
-function restartSocket(auth, userData, res, language) {
+exports.restartSocket = function(auth, userData, res, language) {
 
   socket.restartSocket(userData, language, function restartedSocket(error) {
     if (error) {
@@ -15,13 +15,14 @@ function restartSocket(auth, userData, res, language) {
           '/socketControl.js', res, null, auth, language);
     }
   });
-}
+
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, false,
       function gotData(auth, userData) {
-        restartSocket(auth, userData, res, req.language);
+        exports.restartSocket(auth, userData, res, req.language);
       });
 
 };

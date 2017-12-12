@@ -5,7 +5,7 @@ var lang = require('../engine/langOps').languagePack;
 var boardOps = require('../engine/boardOps').meta;
 var mandatoryParameters = [ 'boardUri', 'login' ];
 
-function transferBoard(userData, parameters, res, auth, language) {
+exports.transferBoard = function(userData, parameters, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
       language)) {
@@ -25,15 +25,13 @@ function transferBoard(userData, parameters, res, auth, language) {
 
   });
 
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-
-    transferBoard(userData, parameters, res, auth, req.language);
-
+    exports.transferBoard(userData, parameters, res, auth, req.language);
   });
 
 };

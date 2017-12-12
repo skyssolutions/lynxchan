@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack;
 var bannerOps = require('../engine/bannerOps');
 
-function createBanner(parameters, userData, res, auth, language) {
+exports.createBanner = function(parameters, userData, res, auth, language) {
 
   bannerOps.addBanner(userData, parameters, language, function createdBanner(
       error) {
@@ -23,15 +23,13 @@ function createBanner(parameters, userData, res, auth, language) {
     }
   });
 
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-
-    createBanner(parameters, userData, res, auth, req.language);
-
+    exports.createBanner(parameters, userData, res, auth, req.language);
   });
 
 };

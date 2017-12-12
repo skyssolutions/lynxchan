@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var languageOps = require('../engine/langOps');
 var lang = languageOps.languagePack;
 
-function deleteLanguage(auth, parameters, userData, res, language) {
+exports.deleteLanguage = function(auth, parameters, userData, res, language) {
 
   languageOps.deleteLanguage(userData.globalRole, parameters.languageId,
       language, function deletedLanguage(error) {
@@ -16,12 +16,12 @@ function deleteLanguage(auth, parameters, userData, res, language) {
 
         }
       });
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-    deleteLanguage(auth, parameters, userData, res, req.language);
+    exports.deleteLanguage(auth, parameters, userData, res, req.language);
   });
 };

@@ -3,7 +3,7 @@
 var apiOps = require('../engine/apiOps');
 var mediaHandler = require('../engine/mediaHandler');
 
-function deleteMedia(parameters, userData, auth, res, language) {
+exports.deleteMedia = function(parameters, userData, auth, res, language) {
 
   mediaHandler.deleteFiles(parameters.identifiers, userData, language,
       function deletedFiles(error) {
@@ -15,14 +15,14 @@ function deleteMedia(parameters, userData, auth, res, language) {
         }
       });
 
-}
+};
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    deleteMedia(parameters, userData, auth, res, req.language);
+    exports.deleteMedia(parameters, userData, auth, res, req.language);
   });
 
 };

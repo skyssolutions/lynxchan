@@ -6,7 +6,7 @@ var lang = require('../engine/langOps').languagePack;
 var mandatoryParameters = [ 'boardUri', 'boardName', 'boardDescription' ];
 var possibleSettings = boardOps.getValidSettings();
 
-function setBoardSettings(userData, parameters, res, auth, language) {
+exports.setBoardSettings = function(userData, parameters, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
       language)) {
@@ -48,14 +48,14 @@ function setBoardSettings(userData, parameters, res, auth, language) {
 
   });
 
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    setBoardSettings(userData, parameters, res, auth, req.language);
+    exports.setBoardSettings(userData, parameters, res, auth, req.language);
 
   });
 

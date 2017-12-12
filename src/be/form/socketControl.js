@@ -7,7 +7,7 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 var socket = require('../engine/socketOps');
 
-function getSocketData(userData, json, res, auth, language) {
+exports.getSocketData = function(userData, json, res, auth, language) {
 
   socket.getSocketStatus(userData, language, function gotSocketStatus(error,
       statusData) {
@@ -27,16 +27,14 @@ function getSocketData(userData, json, res, auth, language) {
     }
   });
 
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, false,
       function gotData(auth, userData) {
-
-        getSocketData(userData, url.parse(req.url, true).query.json, res, auth,
-            req.language);
-
+        exports.getSocketData(userData, url.parse(req.url, true).query.json,
+            res, auth, req.language);
       });
 
 };

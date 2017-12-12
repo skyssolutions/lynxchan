@@ -4,7 +4,7 @@ var apiOps = require('../engine/apiOps');
 var modOps = require('../engine/modOps').report;
 var lang = require('../engine/langOps').languagePack;
 
-function reportContent(req, parameters, res, captchaId) {
+exports.reportContent = function(req, parameters, res, captchaId) {
 
   parameters.global = parameters.global ? true : false;
 
@@ -25,12 +25,12 @@ function reportContent(req, parameters, res, captchaId) {
           apiOps.outputResponse(null, null, 'ok', res);
         }
       });
-}
+};
 
 exports.process = function(req, res) {
 
   apiOps.getAnonJsonData(req, res,
       function gotData(auth, parameters, captchaId) {
-        reportContent(req, parameters, res, captchaId);
+        exports.reportContent(req, parameters, res, captchaId);
       });
 };

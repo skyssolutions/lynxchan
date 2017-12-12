@@ -8,7 +8,7 @@ var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var settingsHandler = require('../settingsHandler');
 var url = require('url');
 
-function getTags(parameters) {
+exports.getTags = function(parameters) {
 
   var tags = [];
 
@@ -24,9 +24,9 @@ function getTags(parameters) {
 
   return tags;
 
-}
+};
 
-function getQueryBlock(parameters) {
+exports.getQueryBlock = function(parameters) {
 
   var queryBlock = {};
 
@@ -49,7 +49,7 @@ function getQueryBlock(parameters) {
   if (parameters.tags && parameters.tags.length) {
 
     queryBlock.tags = {
-      $all : getTags(parameters)
+      $all : exports.getTags(parameters)
     };
 
   } else {
@@ -66,9 +66,9 @@ function getQueryBlock(parameters) {
 
   return queryBlock;
 
-}
+};
 
-function getSortBlock(parameters) {
+exports.getSortBlock = function(parameters) {
 
   switch (parameters.sorting) {
 
@@ -116,7 +116,7 @@ function getSortBlock(parameters) {
       lastPostId : -1
     };
   }
-}
+};
 
 exports.process = function(req, res) {
 
@@ -124,7 +124,7 @@ exports.process = function(req, res) {
 
   var page = parameters.page || 1;
 
-  var queryBlock = getQueryBlock(parameters);
+  var queryBlock = exports.getQueryBlock(parameters);
 
   var pageSize = settingsHandler.getGeneralSettings().boardsPerPage;
 
@@ -150,25 +150,26 @@ exports.process = function(req, res) {
         boardDescription : 1,
         postsPerHour : 1,
         lastPostId : 1
-      }).sort(getSortBlock(parameters)).skip(toSkip).limit(pageSize).toArray(
-          function(error, foundBoards) {
-            if (error) {
-              formOps.outputError(error, 500, res, req.language);
-            } else {
-              var json = parameters.json;
+      }).sort(exports.getSortBlock(parameters)).skip(toSkip).limit(pageSize)
+          .toArray(
+              function(error, foundBoards) {
+                if (error) {
+                  formOps.outputError(error, 500, res, req.language);
+                } else {
+                  var json = parameters.json;
 
-              res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-                  : 'text/html'));
+                  res.writeHead(200, miscOps
+                      .getHeader(json ? 'application/json' : 'text/html'));
 
-              if (json) {
-                res.end(jsonBuilder.boards(pageCount, foundBoards));
-              } else {
-                res.end(domManipulator.boards(parameters, foundBoards,
-                    pageCount, req.language));
-              }
+                  if (json) {
+                    res.end(jsonBuilder.boards(pageCount, foundBoards));
+                  } else {
+                    res.end(domManipulator.boards(parameters, foundBoards,
+                        pageCount, req.language));
+                  }
 
-            }
-          });
+                }
+              });
       // style exception, too simple
 
     }

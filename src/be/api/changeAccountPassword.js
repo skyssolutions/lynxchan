@@ -3,7 +3,7 @@
 var apiOps = require('../engine/apiOps');
 var accountOps = require('../engine/accountOps');
 
-function changeSettings(userData, parameters, res, language) {
+exports.changeSettings = function(userData, parameters, res, language) {
 
   accountOps.changePassword(userData, parameters, language,
       function changedPassword(error, newHash, expiration) {
@@ -18,13 +18,13 @@ function changeSettings(userData, parameters, res, language) {
           }, null, 'ok', res);
         }
       });
-}
+};
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    changeSettings(userData, parameters, res, req.language);
+    exports.changeSettings(userData, parameters, res, req.language);
   });
 };

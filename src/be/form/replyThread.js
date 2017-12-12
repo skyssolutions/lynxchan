@@ -7,7 +7,7 @@ var captchaOps = require('../engine/captchaOps');
 var lang = require('../engine/langOps').languagePack;
 var mandatoryParameters = [ 'boardUri', 'threadId' ];
 
-function createPost(req, userData, parameters, captchaId, res, auth) {
+exports.createPost = function(req, userData, parameters, captchaId, res, auth) {
 
   postingOps.newPost(req, userData, parameters, captchaId,
       function postCreated(error, id) {
@@ -22,9 +22,9 @@ function createPost(req, userData, parameters, captchaId, res, auth) {
         }
       });
 
-}
+};
 
-function checkBans(req, res, parameters, userData, captchaId, auth) {
+exports.checkBans = function(req, res, parameters, userData, captchaId, auth) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
       req.language)) {
@@ -44,7 +44,8 @@ function checkBans(req, res, parameters, userData, captchaId, auth) {
                 if (error) {
                   formOps.outputError(error, 500, res, req.language);
                 } else {
-                  createPost(req, userData, parameters, captchaId, res, auth);
+                  exports.createPost(req, userData, parameters, captchaId, res,
+                      auth);
                 }
               }, auth);
           // style exception, too simple
@@ -53,19 +54,20 @@ function checkBans(req, res, parameters, userData, captchaId, auth) {
 
       }, auth);
 
-}
+};
 
-function useBypass(req, res, parameters, userData, captchaId, bypassId, auth) {
+exports.useBypass = function(req, res, parameters, userData, captchaId,
+    bypassId, auth) {
 
   bypassOps.useBypass(bypassId, req, function usedBypass(error) {
 
     if (error) {
       formOps.outputError(error, 500, res, req.language);
     } else {
-      checkBans(req, res, parameters, userData, captchaId, auth);
+      exports.checkBans(req, res, parameters, userData, captchaId, auth);
     }
   });
-}
+};
 
 exports.process = function(req, res) {
 
@@ -73,7 +75,7 @@ exports.process = function(req, res) {
       parameters) {
 
     var cookies = formOps.getCookies(req);
-    useBypass(req, res, parameters, userData, cookies.captchaid,
+    exports.useBypass(req, res, parameters, userData, cookies.captchaid,
         cookies.bypass, auth);
   }, true);
 

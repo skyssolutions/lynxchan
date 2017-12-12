@@ -6,7 +6,7 @@ var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var settingsHandler = require('../settingsHandler');
 var lang = require('../engine/langOps').languagePack;
 
-function renewBypass(auth, parameters, res, language) {
+exports.renewBypass = function(auth, parameters, res, language) {
 
   bypassOps.renewBypass(auth.captchaid, parameters.captcha, language,
       function renewedBypass(error, bypass) {
@@ -25,7 +25,7 @@ function renewBypass(auth, parameters, res, language) {
         }
 
       });
-}
+};
 
 exports.process = function(req, res) {
 
@@ -37,7 +37,7 @@ exports.process = function(req, res) {
   }
 
   formOps.getPostData(req, res, function gotData(auth, parameters) {
-    renewBypass(auth, parameters, res, req.language);
+    exports.renewBypass(auth, parameters, res, req.language);
   });
 
 };

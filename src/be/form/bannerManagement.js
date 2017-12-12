@@ -7,7 +7,7 @@ var miscOps = require('../engine/miscOps');
 var bOps = require('../engine/bannerOps');
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
-function getBannerData(auth, parameters, userData, res, language) {
+exports.getBannerData = function(auth, parameters, userData, res, language) {
 
   bOps
       .getBannerData(userData, parameters.boardUri, language,
@@ -30,7 +30,7 @@ function getBannerData(auth, parameters, userData, res, language) {
 
             }
           });
-}
+};
 
 exports.process = function(req, res) {
 
@@ -38,6 +38,6 @@ exports.process = function(req, res) {
       function gotData(auth, userData) {
         var parameters = url.parse(req.url, true).query;
 
-        getBannerData(auth, parameters, userData, res, req.language);
+        exports.getBannerData(auth, parameters, userData, res, req.language);
       });
 };

@@ -6,7 +6,7 @@ var languageOps = require('../engine/langOps');
 var lang = languageOps.languagePack;
 var mandatoryParameters = [ 'account' ];
 
-function deleteAccount(auth, parameters, userData, res, language) {
+exports.deleteAccount = function(auth, parameters, userData, res, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
       language)) {
@@ -22,12 +22,12 @@ function deleteAccount(auth, parameters, userData, res, language) {
               '/accounts.js', res, null, auth, language);
         }
       });
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-    deleteAccount(auth, parameters, userData, res, req.language);
+    exports.deleteAccount(auth, parameters, userData, res, req.language);
   });
 };

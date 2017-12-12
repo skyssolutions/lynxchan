@@ -4,7 +4,7 @@ var apiOps = require('../engine/apiOps');
 var accountOps = require('../engine/accountOps');
 var mandatoryParameters = [ 'login' ];
 
-function createAccount(parameters, res, captchaId, language) {
+exports.createAccount = function(parameters, res, captchaId, language) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -22,12 +22,12 @@ function createAccount(parameters, res, captchaId, language) {
       }, null, 'ok', res);
     }
   }, null, null, captchaId, language);
-}
+};
 
 exports.process = function(req, res) {
 
   apiOps.getAnonJsonData(req, res,
       function gotData(auth, parameters, captchaId) {
-        createAccount(parameters, res, captchaId, req.language);
+        exports.createAccount(parameters, res, captchaId, req.language);
       });
 };

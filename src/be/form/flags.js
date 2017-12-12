@@ -7,7 +7,7 @@ var miscOps = require('../engine/miscOps');
 var boardOps = require('../engine/boardOps').flags;
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
-function getFlagData(parameters, userData, res, auth, language) {
+exports.getFlagData = function(parameters, userData, res, auth, language) {
 
   boardOps.getFlagsData(userData, parameters.boardUri, language,
       function gotFlagData(error, flags) {
@@ -28,7 +28,7 @@ function getFlagData(parameters, userData, res, auth, language) {
         }
       });
 
-}
+};
 
 exports.process = function(req, res) {
 
@@ -37,7 +37,7 @@ exports.process = function(req, res) {
 
         var parameters = url.parse(req.url, true).query;
 
-        getFlagData(parameters, userData, res, auth, req.language);
+        exports.getFlagData(parameters, userData, res, auth, req.language);
 
       });
 

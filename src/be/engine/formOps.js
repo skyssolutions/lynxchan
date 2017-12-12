@@ -48,7 +48,7 @@ exports.loadDependencies = function() {
   domManipulator = require('./domManipulator').dynamicPages.miscPages;
   lang = require('./langOps').languagePack;
   uploadHandler = require('./uploadHandler');
-  videoMimes = uploadHandler.videoMimes();
+  videoMimes = uploadHandler.videoMimes;
 
 };
 

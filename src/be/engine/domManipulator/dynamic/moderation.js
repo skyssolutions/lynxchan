@@ -9,10 +9,10 @@ var lang;
 var miscOps;
 var common;
 
-var boardModerationIdentifiers = [ 'boardTransferIdentifier',
+exports.boardModerationIdentifiers = [ 'boardTransferIdentifier',
     'boardDeletionIdentifier', 'specialSettingsIdentifier' ];
 
-var specialSettingsRelation = {
+exports.specialSettingsRelation = {
   sfw : 'checkboxSfw',
   locked : 'checkboxLocked'
 };
@@ -201,13 +201,13 @@ exports.setSpecialCheckboxesAndIdentifiers = function(document, boardData) {
 
   var specialSettings = boardData.specialSettings || [];
 
-  for ( var key in specialSettingsRelation) {
+  for ( var key in exports.specialSettingsRelation) {
 
-    if (!specialSettingsRelation.hasOwnProperty(key)) {
+    if (!exports.specialSettingsRelation.hasOwnProperty(key)) {
       continue;
     }
 
-    var field = '__' + specialSettingsRelation[key] + '_checked__';
+    var field = '__' + exports.specialSettingsRelation[key] + '_checked__';
 
     if (specialSettings.indexOf(key) > -1) {
       document = document.replace(field, 'checked');
@@ -216,9 +216,9 @@ exports.setSpecialCheckboxesAndIdentifiers = function(document, boardData) {
     }
   }
 
-  for (var i = 0; i < boardModerationIdentifiers.length; i++) {
+  for (var i = 0; i < exports.boardModerationIdentifiers.length; i++) {
 
-    var identifier = boardModerationIdentifiers[i];
+    var identifier = exports.boardModerationIdentifiers[i];
 
     document = document.replace('__' + identifier + '_value__',
         boardData.boardUri);

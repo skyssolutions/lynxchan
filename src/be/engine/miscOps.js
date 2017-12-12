@@ -19,10 +19,10 @@ var clearIpMinRole;
 var settingsRelation;
 
 var MAX_STAFF_ROLE = 3;
-var plainTextMimes = [ 'application/x-javascript', 'application/json',
+exports.plainTextMimes = [ 'application/x-javascript', 'application/json',
     'application/rss+xml' ];
-var optionList = [ 'guiBypassModes', 'guiBypassModes', 'guiTorPostingLevels',
-    'miscRoles', 'miscRoles' ];
+exports.optionList = [ 'guiBypassModes', 'guiBypassModes',
+    'guiTorPostingLevels', 'miscRoles', 'miscRoles' ];
 
 exports.loadSettings = function() {
 
@@ -123,7 +123,7 @@ exports.sanitizeStrings = function(object, parameters) {
 
 exports.isPlainText = function(mime) {
 
-  if (!mime.indexOf('text/') || plainTextMimes.indexOf(mime) > -1) {
+  if (!mime.indexOf('text/') || exports.plainTextMimes.indexOf(mime) > -1) {
     return true;
   }
 
@@ -316,8 +316,8 @@ exports.getParametersArray = function(language) {
 
   var toRet = JSON.parse(settingsRelation);
 
-  for (var i = 0; i < optionList.length; i++) {
-    toRet[i].options = lang(language)[optionList[i]];
+  for (var i = 0; i < exports.optionList.length; i++) {
+    toRet[i].options = lang(language)[exports.optionList[i]];
   }
 
   return toRet;

@@ -4,7 +4,7 @@ var apiOps = require('../engine/apiOps');
 var mandatoryParameters = [ 'boardUri', 'threadId', 'boardUriDestination' ];
 var transferOps = require('../engine/modOps').transfer;
 
-function transferThread(auth, userData, parameters, res, language) {
+exports.transferThread = function(auth, userData, parameters, res, language) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -21,14 +21,12 @@ function transferThread(auth, userData, parameters, res, language) {
 
       });
 
-}
+};
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-
-    transferThread(auth, userData, parameters, res, req.language);
-
+    exports.transferThread(auth, userData, parameters, res, req.language);
   });
 };

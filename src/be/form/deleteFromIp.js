@@ -5,7 +5,7 @@ var lang = require('../engine/langOps').languagePack;
 var delOps = require('../engine/deletionOps');
 var mandatoryParameters = [ 'ip' ];
 
-function deleteFromIp(userData, parameters, res, auth, language) {
+exports.deleteFromIp = function(userData, parameters, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
       language)) {
@@ -24,15 +24,13 @@ function deleteFromIp(userData, parameters, res, auth, language) {
 
   });
 
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-
-    deleteFromIp(userData, parameters, res, auth, req.language);
-
+    exports.deleteFromIp(userData, parameters, res, auth, req.language);
   });
 
 };

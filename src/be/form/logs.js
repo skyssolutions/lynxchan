@@ -7,7 +7,7 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var formOps = require('../engine/formOps');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 
-function getMinDate(informedYear) {
+exports.getMinDate = function(informedYear) {
 
   var date = new Date();
 
@@ -29,13 +29,13 @@ function getMinDate(informedYear) {
 
   return date;
 
-}
+};
 
 exports.process = function(req, res) {
 
   var parameters = url.parse(req.url, true).query;
 
-  var date = getMinDate(parameters.year);
+  var date = exports.getMinDate(parameters.year);
 
   var maxDate = new Date(date);
 

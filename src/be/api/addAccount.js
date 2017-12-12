@@ -4,7 +4,7 @@ var apiOps = require('../engine/apiOps');
 var accountOps = require('../engine/accountOps');
 var mandatoryParameters = [ 'login', 'password' ];
 
-function addAccount(auth, parameters, userData, language, res) {
+exports.addAccount = function(auth, parameters, userData, language, res) {
 
   if (apiOps.checkBlankParameters(parameters, mandatoryParameters, res)) {
     return;
@@ -18,13 +18,13 @@ function addAccount(auth, parameters, userData, language, res) {
           apiOps.outputResponse(auth, null, 'ok', res);
         }
       });
-}
+};
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    addAccount(auth, parameters, userData, req.language, res);
+    exports.addAccount(auth, parameters, userData, req.language, res);
   });
 };

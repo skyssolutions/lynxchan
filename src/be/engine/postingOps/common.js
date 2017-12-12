@@ -29,7 +29,7 @@ var globalMaxFiles;
 
 var dataPath = __dirname + '/../../locationData/data.json';
 
-var fieldList = [ 'country', 'region', 'city' ];
+exports.fieldList = [ 'country', 'region', 'city' ];
 
 exports.linkSanitizationRelation = {
   '_' : '&#95;',
@@ -744,9 +744,9 @@ exports.searchLocation = function(data, ipData) {
   var currentObject;
   var parentObject;
 
-  while (!selectedObject && index < fieldList.length) {
+  while (!selectedObject && index < exports.fieldList.length) {
 
-    var field = fieldList[index];
+    var field = exports.fieldList[index];
 
     currentObject = exports.getCurrentObject(ipData, field, currentObject,
         data.relation);

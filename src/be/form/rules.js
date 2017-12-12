@@ -7,7 +7,7 @@ var miscOps = require('../engine/miscOps');
 var boardOps = require('../engine/boardOps').rules;
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
-function getRulesData(parameters, userData, res, auth, language) {
+exports.getRulesData = function(parameters, userData, res, auth, language) {
 
   boardOps.boardRules(parameters.boardUri, userData, language,
       function gotRules(error, rules) {
@@ -27,7 +27,7 @@ function getRulesData(parameters, userData, res, auth, language) {
         }
       });
 
-}
+};
 
 exports.process = function(req, res) {
 
@@ -36,7 +36,7 @@ exports.process = function(req, res) {
 
         var parameters = url.parse(req.url, true).query;
 
-        getRulesData(parameters, userData, res, auth, req.language);
+        exports.getRulesData(parameters, userData, res, auth, req.language);
 
       });
 

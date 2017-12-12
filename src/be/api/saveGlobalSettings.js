@@ -4,7 +4,8 @@ var apiOps = require('../engine/apiOps');
 var miscOps = require('../engine/miscOps');
 var toSanitize = [ 'acceptedMimes', 'addons', 'slaves' ];
 
-function changeGlobalSettings(auth, userData, parameters, res, language) {
+exports.changeGlobalSettings = function(auth, userData, parameters, res,
+    language) {
 
   for (var i = 0; i < toSanitize.length; i++) {
 
@@ -39,12 +40,13 @@ function changeGlobalSettings(auth, userData, parameters, res, language) {
           apiOps.outputResponse(auth, null, 'ok', res);
         }
       });
-}
+};
 
 exports.process = function(req, res) {
 
-  apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
-      parameters) {
-    changeGlobalSettings(auth, userData, parameters, res, req.language);
-  });
+  apiOps.getAuthenticatedData(req, res,
+      function gotData(auth, userData, parameters) {
+        exports.changeGlobalSettings(auth, userData, parameters, res,
+            req.language);
+      });
 };

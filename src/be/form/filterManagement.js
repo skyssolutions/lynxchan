@@ -7,7 +7,7 @@ var miscOps = require('../engine/miscOps');
 var boardOps = require('../engine/boardOps').filters;
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
-function getFilterData(parameters, userData, res, auth, language) {
+exports.getFilterData = function(parameters, userData, res, auth, language) {
 
   boardOps.getFilterData(userData, parameters.boardUri, language,
       function gotFilterData(error, filters) {
@@ -29,7 +29,7 @@ function getFilterData(parameters, userData, res, auth, language) {
         }
       });
 
-}
+};
 
 exports.process = function(req, res) {
 
@@ -38,7 +38,7 @@ exports.process = function(req, res) {
 
         var parameters = url.parse(req.url, true).query;
 
-        getFilterData(parameters, userData, res, auth, req.language);
+        exports.getFilterData(parameters, userData, res, auth, req.language);
 
       });
 

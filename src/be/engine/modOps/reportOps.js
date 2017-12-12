@@ -23,7 +23,7 @@ var globalBoardModeration;
 var lang;
 var allowBlockedToReport;
 
-var reportArguments = [ {
+exports.reportArguments = [ {
   field : 'reason',
   length : 256,
   removeHTML : true
@@ -198,7 +198,7 @@ exports.iterateReports = function(req, reportedContent, parameters, cb) {
 
 exports.report = function(req, reportedContent, parameters, captchaId, cb) {
 
-  miscOps.sanitizeStrings(parameters, reportArguments);
+  miscOps.sanitizeStrings(parameters, exports.reportArguments);
 
   captchaOps.attemptCaptcha(captchaId, parameters.captcha, null, req.language,
       function solvedCaptcha(error) {

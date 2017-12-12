@@ -6,7 +6,7 @@ var url = require('url');
 var boardOps = require('../engine/boardOps').filters;
 var mandatoryParameters = [ 'boardUri', 'originalTerm', 'replacementTerm' ];
 
-function createFilter(parameters, userData, res, auth, language) {
+exports.createFilter = function(parameters, userData, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
       language)) {
@@ -24,15 +24,13 @@ function createFilter(parameters, userData, res, auth, language) {
     }
   });
 
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-
-    createFilter(parameters, userData, res, auth, req.language);
-
+    exports.createFilter(parameters, userData, res, auth, req.language);
   });
 
 };

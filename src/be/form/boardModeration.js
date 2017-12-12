@@ -7,7 +7,8 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var formOps = require('../engine/formOps');
 
-function getBoardModerationData(parameters, userData, res, auth, language) {
+exports.getBoardModerationData = function(parameters, userData, res, auth,
+    language) {
 
   boardOps.getBoardModerationData(userData, parameters.boardUri, language,
       function gotBoardModerationData(error, boardData, ownerData) {
@@ -27,7 +28,7 @@ function getBoardModerationData(parameters, userData, res, auth, language) {
 
         }
       });
-}
+};
 
 exports.process = function(req, res) {
 
@@ -35,6 +36,7 @@ exports.process = function(req, res) {
       function gotData(auth, userData) {
         var parameters = url.parse(req.url, true).query;
 
-        getBoardModerationData(parameters, userData, res, auth, req.language);
+        exports.getBoardModerationData(parameters, userData, res, auth,
+            req.language);
       });
 };

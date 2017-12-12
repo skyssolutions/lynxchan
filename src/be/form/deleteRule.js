@@ -5,7 +5,7 @@ var lang = require('../engine/langOps').languagePack;
 var boardOps = require('../engine/boardOps').rules;
 var mandatoryParameters = [ 'boardUri', 'ruleIndex' ];
 
-function deleteRule(parameters, userData, res, auth, language) {
+exports.deleteRule = function(parameters, userData, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
       language)) {
@@ -24,15 +24,13 @@ function deleteRule(parameters, userData, res, auth, language) {
     }
   });
 
-}
+};
 
 exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-
-    deleteRule(parameters, userData, res, auth, req.language);
-
+    exports.deleteRule(parameters, userData, res, auth, req.language);
   });
 
 };

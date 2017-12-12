@@ -3,7 +3,7 @@
 var apiOps = require('../engine/apiOps');
 var boardOps = require('../engine/boardOps').custom;
 
-function setCustomCss(auth, parameters, userData, res, language) {
+exports.setCustomCss = function(auth, parameters, userData, res, language) {
 
   if (parameters.files.length) {
     boardOps.setCustomCss(userData, parameters.boardUri, parameters.files[0],
@@ -25,12 +25,12 @@ function setCustomCss(auth, parameters, userData, res, language) {
           }
         });
   }
-}
+};
 
 exports.process = function(req, res) {
 
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
-    setCustomCss(auth, parameters, userData, res, req.language);
+    exports.setCustomCss(auth, parameters, userData, res, req.language);
   }, false, true);
 };

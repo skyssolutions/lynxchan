@@ -14,7 +14,7 @@ var miscOps;
 var requestHandler;
 var zlib = require('zlib');
 
-var permanentTypes = [ 'media', 'graph' ];
+exports.permanentTypes = [ 'media', 'graph' ];
 
 exports.loadSettings = function() {
 
@@ -248,7 +248,7 @@ exports.removeFiles = function(name, callback) {
 exports.setExpiration = function(header, stats) {
   var expiration = new Date();
 
-  if (permanentTypes.indexOf(stats.metadata.type) > -1) {
+  if (exports.permanentTypes.indexOf(stats.metadata.type) > -1) {
     expiration.setFullYear(expiration.getFullYear() + 1);
   }
 

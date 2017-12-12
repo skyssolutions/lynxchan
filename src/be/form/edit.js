@@ -8,7 +8,7 @@ var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var modOps = require('../engine/modOps').edit;
 var mandatoryParameters = [ 'boardUri' ];
 
-function getPostingToEdit(userData, parameters, res, auth, language) {
+exports.getPostingToEdit = function(userData, parameters, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
       language)) {
@@ -34,17 +34,16 @@ function getPostingToEdit(userData, parameters, res, auth, language) {
         }
       });
 
-}
+};
 
 exports.process = function(req, res) {
 
-  formOps.getAuthenticatedPost(req, res, false,
-      function gotData(auth, userData) {
+  formOps.getAuthenticatedPost(req, res, false, function gotData(auth, user) {
 
-        var parameters = url.parse(req.url, true).query;
+    var parameters = url.parse(req.url, true).query;
 
-        getPostingToEdit(userData, parameters, res, auth, req.language);
+    exports.getPostingToEdit(user, parameters, res, auth, req.language);
 
-      });
+  });
 
 };

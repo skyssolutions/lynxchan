@@ -7,7 +7,7 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var modOps = require('../engine/modOps').report;
 
-function getClosedReports(userData, parameters, res, auth, language) {
+exports.getClosedReports = function(userData, parameters, res, auth, language) {
 
   modOps.getClosedReports(userData, parameters, language,
       function gotClosedReports(error, reports) {
@@ -28,17 +28,16 @@ function getClosedReports(userData, parameters, res, auth, language) {
         }
       });
 
-}
+};
 
 exports.process = function(req, res) {
 
-  formOps.getAuthenticatedPost(req, res, false,
-      function gotData(auth, userData) {
+  formOps.getAuthenticatedPost(req, res, false, function gotData(auth, user) {
 
-        var parameters = url.parse(req.url, true).query;
+    var parameters = url.parse(req.url, true).query;
 
-        getClosedReports(userData, parameters, res, auth, req.language);
+    exports.getClosedReports(user, parameters, res, auth, req.language);
 
-      });
+  });
 
 };

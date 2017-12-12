@@ -8,7 +8,7 @@ var jsonBuilder = require('../engine/jsonBuilder');
 var domManipulator = require('../engine/domManipulator');
 domManipulator = domManipulator.dynamicPages.managementPages;
 
-function getMediaDetails(auth, userData, parameters, res, language) {
+exports.getMediaDetails = function(auth, userData, parameters, res, language) {
 
   mediaHandler.getMediaDetails(userData, parameters, language,
       function gotMediaDetails(error, details) {
@@ -33,17 +33,16 @@ function getMediaDetails(auth, userData, parameters, res, language) {
 
       });
 
-}
+};
 
 exports.process = function(req, res) {
 
-  formOps.getAuthenticatedPost(req, res, false,
-      function gotData(auth, userData) {
+  formOps.getAuthenticatedPost(req, res, false, function gotData(auth, user) {
 
-        var parameters = url.parse(req.url, true).query;
+    var parameters = url.parse(req.url, true).query;
 
-        getMediaDetails(auth, userData, parameters, res, req.language);
+    exports.getMediaDetails(auth, user, parameters, res, req.language);
 
-      });
+  });
 
 };
