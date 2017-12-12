@@ -275,6 +275,10 @@ exports.getBoardLock = function(fileParts) {
 
 exports.getLockData = function(file, boards) {
 
+  if (!file) {
+    return;
+  }
+
   if (boards) {
     return {
       type : 'multiboard',
@@ -282,7 +286,11 @@ exports.getLockData = function(file, boards) {
     };
   }
 
-  var fileParts = (file || '').trim().split('/');
+  var fileParts = file.split('/');
+
+  if (fileParts[0]) {
+    return;
+  }
 
   if (!fileParts[1] || /\W/.test(fileParts[1])) {
     return exports.getGlobalLockData(fileParts);
