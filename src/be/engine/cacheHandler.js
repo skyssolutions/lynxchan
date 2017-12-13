@@ -675,7 +675,7 @@ exports.pickAlternative = function(task, alternatives) {
 
   }
 
-  return vanilla || language;
+  return language || vanilla;
 
 };
 
