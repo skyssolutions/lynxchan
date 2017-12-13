@@ -569,6 +569,8 @@ exports.serve = function(req, pathName, res, callback) {
 
   if (req.headers['accept-encoding']) {
     req.compressed = req.headers['accept-encoding'].indexOf('gzip') > -1;
+  } else {
+    req.compressed = false;
   }
 
   if (req.headers['accept-language'] && useLanguages) {
