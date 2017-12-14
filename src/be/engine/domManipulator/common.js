@@ -969,12 +969,12 @@ exports.getBanCell = function(ban, globalPage, language) {
 
   if (ban.appeal) {
 
-    cell = cell.replace('_appealPanel_location__',
+    cell = cell.replace('__appealPanel_location__',
         template.removable.appealPanel);
     cell = cell.replace('__appealLabel_inner__', exports.clean(ban.appeal));
 
   } else {
-    cell = cell.replace('_appealPanel_location__', '');
+    cell = cell.replace('__appealPanel_location__', '');
   }
 
   cell = cell.replace('__idLabel_inner__', ban._id);

@@ -21,8 +21,8 @@ var settingsRelation;
 var MAX_STAFF_ROLE = 3;
 exports.plainTextMimes = [ 'application/x-javascript', 'application/json',
     'application/rss+xml' ];
-exports.optionList = [ 'guiBypassModes', 'guiBypassModes',
-    'guiTorPostingLevels', 'miscRoles', 'miscRoles' ];
+exports.optionList = [ 'guiBypassModes', 'guiTorPostingLevels', 'miscRoles',
+    'miscRoles', 'guiBypassModes' ];
 
 exports.loadSettings = function() {
 

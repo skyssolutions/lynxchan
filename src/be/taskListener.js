@@ -24,6 +24,8 @@ var Socket = net.Socket;
 var isMaster = require('cluster').isMaster;
 var headerBuffer = Buffer.alloc(5);
 var pool = [];
+var activeUnixSocketClients = [];
+var activeTCPSocketClients = [];
 
 exports.reload = function() {
 
@@ -308,27 +310,38 @@ exports.start = function(firstBoot) {
   }
 
   if (server) {
+
     server.close(function closed() {
       server = null;
       exports.start();
     });
+
+    for (var i = 0; i < activeUnixSocketClients.length; i++) {
+      activeUnixSocketClients[i].end();
+    }
+
     return;
   }
 
   if (tcpServer) {
+
     tcpServer.close(function closed() {
       tcpServer = null;
       exports.start();
     });
+
+    for (i = 0; i < activeTCPSocketClients.length; i++) {
+      activeTCPSocketClients[i].end();
+    }
+
+    return;
   }
 
   fs.unlink(socketLocation, function removedFile(error) {
 
     if (error && error.code !== 'ENOENT') {
 
-      if (verbose) {
-        console.log(error);
-      }
+      console.log(error);
 
       kernel.broadCastTopDownMessage({
         socketStatus : true,
@@ -343,6 +356,19 @@ exports.start = function(firstBoot) {
 
     // style exception, too simple
     server = net.createServer(function clientConnected(client) {
+
+      activeUnixSocketClients.push(client);
+
+      client.on('end', function() {
+
+        var index = activeUnixSocketClients.indexOf(client);
+
+        if (index >= 0) {
+          activeUnixSocketClients.splice(index, 1);
+        }
+
+      });
+
       exports.handleSocket(client, exports.processCacheTasks);
     }).listen(socketLocation);
 
@@ -361,6 +387,18 @@ exports.start = function(firstBoot) {
           return;
         }
 
+        activeTCPSocketClients.push(client);
+
+        client.on('end', function() {
+
+          var index = activeTCPSocketClients.indexOf(client);
+
+          if (index >= 0) {
+            activeTCPSocketClients.splice(index, 1);
+          }
+
+        });
+
         exports.handleSocket(client, exports.processCacheTasks);
       }).listen(clusterPort, '0.0.0.0');
     }
@@ -369,7 +407,7 @@ exports.start = function(firstBoot) {
 
       if (debug) {
         throw error;
-      } else if (verbose) {
+      } else {
         console.log(error);
       }
 
