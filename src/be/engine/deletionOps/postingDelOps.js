@@ -443,17 +443,129 @@ exports.removeGlobalLatestPosts = function(userData, board, parameters, cb,
 
 };
 
+exports.applyNewBump = function(post, board, userData, parentThreads, callback,
+    index) {
+
+  if (!post) {
+
+    threads.findOne({
+      boardUri : board.boardUri,
+      threadId : parentThreads[index]
+    }, {
+      creation : 1,
+      _id : 0
+    }, function gotThread(error, thread) {
+
+      if (error) {
+        callback(error);
+      } else {
+
+        // style exception, too simple
+        threads.updateOne({
+          boardUri : board.boardUri,
+          threadId : parentThreads[index]
+        }, {
+          $set : {
+            lastBump : thread.creation
+          }
+        }, function updated(error) {
+
+          if (error) {
+            callback(error);
+          } else {
+            exports.resetLastBump(userData, board, parentThreads, callback,
+                ++index);
+          }
+
+        });
+        // style exception, too simple
+
+      }
+
+    });
+  } else {
+
+    threads.updateOne({
+      boardUri : board.boardUri,
+      threadId : parentThreads[index]
+    }, {
+      $set : {
+        lastBump : post.creation
+      }
+    }, function updated(error) {
+
+      if (error) {
+        callback(error);
+      } else {
+        exports
+            .resetLastBump(userData, board, parentThreads, callback, ++index);
+      }
+
+    });
+
+  }
+
+};
+
+exports.resetLastBump = function(userData, board, parentThreads, callback,
+    index) {
+
+  index = index || 0;
+
+  if (!userData || index >= parentThreads.length) {
+    callback();
+    return;
+  }
+
+  posts.find({
+    boardUri : board.boardUri,
+    threadId : parentThreads[index],
+    email : {
+      $ne : 'sage'
+    }
+  }, {
+    creation : 1,
+    _id : 0
+  }).sort({
+    creation : -1
+  }).limit(1).toArray(
+      function gotLastPost(error, foundPosts) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          exports.applyNewBump(foundPosts[0], board, userData, parentThreads,
+              callback, index);
+
+        }
+
+      });
+
+};
+
 exports.updateThreadPages = function(userData, board, parameters, cb,
     foundThreads, foundPosts, parentThreads) {
 
-  common.setThreadsPage(board.boardUri, function update(error) {
+  exports.resetLastBump(userData, board, parentThreads, function resetBumps(
+      error) {
 
     if (error) {
-      console.log(error);
-    }
+      cb(error);
+    } else {
 
-    exports.removeGlobalLatestPosts(userData, board, parameters, cb,
-        foundThreads, foundPosts, parentThreads);
+      common.setThreadsPage(board.boardUri, function update(error) {
+
+        if (error) {
+          console.log(error);
+        }
+
+        exports.removeGlobalLatestPosts(userData, board, parameters, cb,
+            foundThreads, foundPosts, parentThreads);
+
+      });
+
+    }
 
   });
 
