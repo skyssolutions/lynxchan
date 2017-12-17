@@ -874,7 +874,7 @@ exports.outputFile = function(pathName, req, res, callback, isStatic) {
   taskListener.openSocket(function opened(error, socket) {
 
     if (error) {
-      callback(error);
+      gridFsHandler.outputFile(pathName, req, res, callback);
       return;
     }
 
