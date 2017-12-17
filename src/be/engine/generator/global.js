@@ -935,8 +935,8 @@ exports.log = function(date, callback, logData) {
   if (!logData) {
 
     if (!date) {
-      if (verbose) {
 
+      if (verbose) {
         console.log('Could not build log page, no data.');
       }
 
@@ -997,43 +997,6 @@ exports.log = function(date, callback, logData) {
       callback(error);
     } else {
       exports.createLogPage(logData.date, foundLogs, callback);
-    }
-
-  });
-
-};
-
-exports.iterateLogs = function(foundAggregatedLogs, callback) {
-
-  if (!foundAggregatedLogs.length) {
-    callback();
-    return;
-  }
-
-  exports.log(null, function generatedLog(error) {
-
-    if (error) {
-      callback(error);
-    } else {
-      exports.iterateLogs(foundAggregatedLogs, callback);
-    }
-
-  }, foundAggregatedLogs.pop());
-
-};
-
-exports.logs = function(callback) {
-
-  aggregatedLogs.find({}, {
-    _id : 0,
-    logs : 1,
-    date : 1
-  }).toArray(function gotLogs(error, foundAggregatedLogs) {
-
-    if (error) {
-      callback(error);
-    } else {
-      exports.iterateLogs(foundAggregatedLogs, callback);
     }
 
   });

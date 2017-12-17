@@ -295,25 +295,18 @@ exports.getBoardManagementContent = function(boardData, userData, bans,
 
 exports.boardManagement = function(userData, bData, reports, bans, language) {
 
-  try {
+  var document = exports.getBoardManagementContent(bData, userData, bans,
+      reports, language);
 
-    var document = exports.getBoardManagementContent(bData, userData, bans,
-        reports, language);
+  var boardUri = common.clean(bData.boardUri);
+  var selfLink = '/' + boardUri + '/';
+  document = document.replace('__linkSelf_href__', selfLink);
 
-    var boardUri = common.clean(bData.boardUri);
-    var selfLink = '/' + boardUri + '/';
-    document = document.replace('__linkSelf_href__', selfLink);
+  var labelInner = '/' + boardUri + '/ - ' + common.clean(bData.boardName);
+  document = document.replace('__boardLabel_inner__', labelInner);
 
-    var labelInner = '/' + boardUri + '/ - ' + common.clean(bData.boardName);
-    document = document.replace('__boardLabel_inner__', labelInner);
-
-    return document.replace('__title__', lang(language).titBoardManagement
-        .replace('{$board}', common.clean(bData.boardUri)));
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
-  }
+  return document.replace('__title__', lang(language).titBoardManagement
+      .replace('{$board}', common.clean(bData.boardUri)));
 
 };
 // } Section 1: Board Management
@@ -501,26 +494,20 @@ exports.setGlobalManagementLists = function(document, reports, appealedBans,
 exports.globalManagement = function(userRole, userLogin, staff, reports,
     appealedBans, language) {
 
-  try {
+  var template = templateHandler(language).gManagement;
 
-    var template = templateHandler(language).gManagement;
+  var document = template.template.replace('__title__',
+      lang(language).titGlobalManagement);
 
-    var document = template.template.replace('__title__',
-        lang(language).titGlobalManagement);
+  document = exports.setGlobalManagementLists(document, reports, appealedBans,
+      language, template.removable);
 
-    document = exports.setGlobalManagementLists(document, reports,
-        appealedBans, language, template.removable);
+  document = exports.setGlobalManagementLinks(userRole, document,
+      template.removable);
 
-    document = exports.setGlobalManagementLinks(userRole, document,
-        template.removable);
+  return exports.processHideableElements(document, userRole, staff, language,
+      template.removable);
 
-    return exports.processHideableElements(document, userRole, staff, language,
-        template.removable);
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
-  }
 };
 // } Section 2: Global Management
 
@@ -564,22 +551,15 @@ exports.getFilterDiv = function(boardUri, filters, language) {
 
 exports.filterManagement = function(boardUri, filters, language) {
 
-  try {
+  boardUri = common.clean(boardUri);
 
-    boardUri = common.clean(boardUri);
+  var document = templateHandler(language).filterManagement.template.replace(
+      '__title__', lang(language).titFilters.replace('{$board}', boardUri));
 
-    var document = templateHandler(language).filterManagement.template.replace(
-        '__title__', lang(language).titFilters.replace('{$board}', boardUri));
+  document = document.replace('__boardIdentifier_value__', boardUri);
 
-    document = document.replace('__boardIdentifier_value__', boardUri);
-
-    return document.replace('__divFilters_children__', exports.getFilterDiv(
-        boardUri, filters, language));
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
-  }
+  return document.replace('__divFilters_children__', exports.getFilterDiv(
+      boardUri, filters, language));
 
 };
 // } Section 3: Filter management
@@ -609,22 +589,15 @@ exports.getRuleManagementCells = function(boardUri, rules, language) {
 
 exports.ruleManagement = function(boardUri, rules, language) {
 
-  try {
+  boardUri = common.clean(boardUri);
 
-    boardUri = common.clean(boardUri);
+  var document = templateHandler(language).ruleManagementPage.template.replace(
+      '__title__', lang(language).titRuleManagement);
 
-    var document = templateHandler(language).ruleManagementPage.template
-        .replace('__title__', lang(language).titRuleManagement);
+  document = document.replace('__boardIdentifier_value__', boardUri);
 
-    document = document.replace('__boardIdentifier_value__', boardUri);
-
-    return document.replace('__divRules_children__', exports
-        .getRuleManagementCells(boardUri, rules, language));
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
-  }
+  return document.replace('__divRules_children__', exports
+      .getRuleManagementCells(boardUri, rules, language));
 
 };
 // } Section 4: Rule management
@@ -656,27 +629,21 @@ exports.getFlagCells = function(flags, boardUri, language) {
 };
 
 exports.flagManagement = function(boardUri, flags, language) {
-  try {
 
-    var document = templateHandler(language).flagsPage.template.replace(
-        '__title__', lang(language).titFlagManagement);
+  var document = templateHandler(language).flagsPage.template.replace(
+      '__title__', lang(language).titFlagManagement);
 
-    boardUri = common.clean(boardUri);
+  boardUri = common.clean(boardUri);
 
-    document = document.replace('__maxSizeLabel_inner__', displayMaxFlagSize);
+  document = document.replace('__maxSizeLabel_inner__', displayMaxFlagSize);
 
-    document = document.replace('__maxNameLengthLabel_inner__',
-        displayMaxFlagNameLength);
+  document = document.replace('__maxNameLengthLabel_inner__',
+      displayMaxFlagNameLength);
 
-    document = document.replace('__boardIdentifier_value__', boardUri);
+  document = document.replace('__boardIdentifier_value__', boardUri);
 
-    return document.replace('__flagsDiv_children__', exports.getFlagCells(
-        flags, boardUri, language));
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
-  }
+  return document.replace('__flagsDiv_children__', exports.getFlagCells(flags,
+      boardUri, language));
 
 };
 // } Section 5: Flag management
@@ -763,17 +730,11 @@ exports.setElements = function(siteSettingsRelation, document) {
 
 exports.globalSettings = function(language) {
 
-  try {
+  var document = templateHandler(language).globalSettingsPage.template.replace(
+      '__title__', lang(language).titGlobalSettings);
 
-    var document = templateHandler(language).globalSettingsPage.template
-        .replace('__title__', lang(language).titGlobalSettings);
+  return exports.setElements(miscOps.getParametersArray(language), document);
 
-    return exports.setElements(miscOps.getParametersArray(language), document);
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
-  }
 };
 // } Section 6: Global settings
 
@@ -802,36 +763,28 @@ exports.getBannerCells = function(banners, language) {
 
 exports.bannerManagement = function(boardUri, banners, language) {
 
-  try {
+  var template = templateHandler(language).bannerManagementPage;
 
-    var template = templateHandler(language).bannerManagementPage;
+  var document = template.template.replace('__maxSizeLabel_inner__',
+      displayMaxBannerSize);
 
-    var document = template.template.replace('__maxSizeLabel_inner__',
-        displayMaxBannerSize);
+  if (boardUri) {
 
-    if (boardUri) {
+    boardUri = common.clean(boardUri);
 
-      boardUri = common.clean(boardUri);
+    document = document.replace('__title__', lang(language).titBanners.replace(
+        '{$board}', boardUri));
+    document = document.replace('__boardIdentifier_location__',
+        template.removable.boardIdentifier);
+    document = document.replace('__boardIdentifier_value__', boardUri);
 
-      document = document.replace('__title__', lang(language).titBanners
-          .replace('{$board}', boardUri));
-      document = document.replace('__boardIdentifier_location__',
-          template.removable.boardIdentifier);
-      document = document.replace('__boardIdentifier_value__', boardUri);
-
-    } else {
-      document = document.replace('__title__', lang(language).titGlobalBanners);
-      document = document.replace('__boardIdentifier_location__', '');
-    }
-
-    return document.replace('__bannersDiv_children__', exports.getBannerCells(
-        banners, language));
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
-
+  } else {
+    document = document.replace('__title__', lang(language).titGlobalBanners);
+    document = document.replace('__boardIdentifier_location__', '');
   }
+
+  return document.replace('__bannersDiv_children__', exports.getBannerCells(
+      banners, language));
 
 };
 // } Section 7: Banners
@@ -911,97 +864,77 @@ exports.getMediaManagementCells = function(media, language) {
 
 exports.mediaManagement = function(media, pages, parameters, language) {
 
-  try {
+  var document = templateHandler(language).mediaManagementPage.template
+      .replace('__title__', lang(language).titMediaManagement);
 
-    var document = templateHandler(language).mediaManagementPage.template
-        .replace('__title__', lang(language).titMediaManagement);
+  document = document.replace('__pagesDiv_children__', exports
+      .getMediaManagementPages(pages, parameters));
 
-    document = document.replace('__pagesDiv_children__', exports
-        .getMediaManagementPages(pages, parameters));
-
-    return document.replace('__filesDiv_children__', exports
-        .getMediaManagementCells(media, language));
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
-
-  }
+  return document.replace('__filesDiv_children__', exports
+      .getMediaManagementCells(media, language));
 
 };
 // } Section 8: Media management
 
 exports.languages = function(languages, language) {
 
-  try {
+  var template = templateHandler(language).languagesManagementPage;
 
-    var template = templateHandler(language).languagesManagementPage;
+  var document = template.template.replace('__title__',
+      lang(language).titLanguages);
 
-    var document = template.template.replace('__title__',
-        lang(language).titLanguages);
+  var children = '';
 
-    var children = '';
+  var cellTemplate = templateHandler(language).languageCell.template;
 
-    var cellTemplate = templateHandler(language).languageCell.template;
+  for (var i = 0; i < languages.length; i++) {
 
-    for (var i = 0; i < languages.length; i++) {
+    var cell = common.getFormCellBoilerPlate(cellTemplate,
+        '/deleteLanguage.js', 'languageCell');
 
-      var cell = common.getFormCellBoilerPlate(cellTemplate,
-          '/deleteLanguage.js', 'languageCell');
+    var currentLang = languages[i];
 
-      var currentLang = languages[i];
+    cell = cell.replace('__languageIdentifier_value__', currentLang._id);
 
-      cell = cell.replace('__languageIdentifier_value__', currentLang._id);
+    cell = cell.replace('__frontEndLabel_inner__', common
+        .clean(currentLang.frontEnd));
 
-      cell = cell.replace('__frontEndLabel_inner__', common
-          .clean(currentLang.frontEnd));
+    cell = cell.replace('__languagePackLabel_inner__', common
+        .clean(currentLang.languagePack));
 
-      cell = cell.replace('__languagePackLabel_inner__', common
-          .clean(currentLang.languagePack));
+    cell = cell.replace('__headerValuesLabel_inner__', common
+        .clean(currentLang.headerValues.join(', ')));
 
-      cell = cell.replace('__headerValuesLabel_inner__', common
-          .clean(currentLang.headerValues.join(', ')));
-
-      children += cell;
-    }
-
-    return document.replace('__languagesDiv_children__', children);
-
-  } catch (error) {
-    return error.stack.replace(/\n/g, '<br>');
+    children += cell;
   }
+
+  return document.replace('__languagesDiv_children__', children);
 
 };
 
 exports.accounts = function(accounts, language) {
 
-  try {
+  var document = templateHandler(language).accountsPage.template.replace(
+      '__title__', lang(language).titAccounts);
 
-    var document = templateHandler(language).accountsPage.template.replace(
-        '__title__', lang(language).titAccounts);
+  var children = '';
 
-    var children = '';
+  var cellTemplate = templateHandler(language).accountCell.template;
 
-    var cellTemplate = templateHandler(language).accountCell.template;
+  for (var i = 0; i < accounts.length; i++) {
 
-    for (var i = 0; i < accounts.length; i++) {
+    var account = common.clean(accounts[i]);
 
-      var account = common.clean(accounts[i]);
+    var newCell = '<div class="accountCell">' + cellTemplate + '</div>';
 
-      var newCell = '<div class="accountCell">' + cellTemplate + '</div>';
+    newCell = newCell.replace('__accountLink_inner__', account);
+    newCell = newCell.replace('__accountLink_href__',
+        '/accountManagement.js?account=' + account);
 
-      newCell = newCell.replace('__accountLink_inner__', account);
-      newCell = newCell.replace('__accountLink_href__',
-          '/accountManagement.js?account=' + account);
-
-      children += newCell;
-    }
-
-    return document.replace('__divAccounts_children__', children);
-
-  } catch (error) {
-    return error.stack.replace(/\n/g, '<br>');
+    children += newCell;
   }
+
+  return document.replace('__divAccounts_children__', children);
 
 };
 
@@ -1030,53 +963,41 @@ exports.setOwnedAndVolunteeredBoards = function(accountData, document) {
 
 exports.accountManagement = function(accountData, account, userRole, language) {
 
-  try {
+  account = common.clean(account);
 
-    account = common.clean(account);
+  var template = templateHandler(language).accountManagementPage;
+  var document = template.template.replace('__title__',
+      lang(language).titAccountManagement.replace('{$account}', account));
 
-    var template = templateHandler(language).accountManagementPage;
-    var document = template.template.replace('__title__',
-        lang(language).titAccountManagement.replace('{$account}', account));
+  document = document.replace('__emailLabel_inner__', common
+      .clean(accountData.email));
 
-    document = document.replace('__emailLabel_inner__', common
-        .clean(accountData.email));
+  if (accountData.globalRole <= userRole) {
+    document = document.replace('__deletionForm_location__', '');
+  } else {
+    document = document.replace('__deletionForm_location__',
+        template.removable.deletionForm);
 
-    if (accountData.globalRole <= userRole) {
-      document = document.replace('__deletionForm_location__', '');
-    } else {
-      document = document.replace('__deletionForm_location__',
-          template.removable.deletionForm);
-
-      document = document.replace('__userIdentifier_value__', account);
-    }
-
-    document = document.replace('__lastSeenLabel_inner__',
-        accountData.lastSeen ? accountData.lastSeen.toUTCString() : '');
-
-    document = exports.setOwnedAndVolunteeredBoards(accountData, document);
-
-    return document.replace('__globalRoleLabel_inner__', miscOps
-        .getGlobalRoleLabel(accountData.globalRole, language));
-
-  } catch (error) {
-    return error.stack.replace(/\n/g, '<br>');
+    document = document.replace('__userIdentifier_value__', account);
   }
+
+  document = document.replace('__lastSeenLabel_inner__',
+      accountData.lastSeen ? accountData.lastSeen.toUTCString() : '');
+
+  document = exports.setOwnedAndVolunteeredBoards(accountData, document);
+
+  return document.replace('__globalRoleLabel_inner__', miscOps
+      .getGlobalRoleLabel(accountData.globalRole, language));
 
 };
 // } Section 9: Account management
 
 exports.socketData = function(statusData, language) {
 
-  try {
+  var document = templateHandler(language).socketManagementPage.template
+      .replace('__title__', lang(language).titSocketManagement);
 
-    var document = templateHandler(language).socketManagementPage.template
-        .replace('__title__', lang(language).titSocketManagement);
-
-    return document.replace('__statusLabel_inner__', statusData.status);
-
-  } catch (error) {
-    return error.stack.replace(/\n/g, '<br>');
-  }
+  return document.replace('__statusLabel_inner__', statusData.status);
 
 };
 
@@ -1111,25 +1032,19 @@ exports.getReferencesDiv = function(details) {
 
 exports.mediaDetails = function(identifier, details, language) {
 
-  try {
+  var document = templateHandler(language).mediaDetailsPage.template.replace(
+      '__title__', lang(language).titMediaDetails);
 
-    var document = templateHandler(language).mediaDetailsPage.template.replace(
-        '__title__', lang(language).titMediaDetails);
+  document = document.replace('__labelSize_inner__', common.formatFileSize(
+      details.size, language));
 
-    document = document.replace('__labelSize_inner__', common.formatFileSize(
-        details.size, language));
+  document = document.replace('__labelIdentifier_inner__', identifier);
 
-    document = document.replace('__labelIdentifier_inner__', identifier);
+  document = document.replace('__labelUploadDate_inner__', common
+      .formatDateToDisplay(details.uploadDate, false, language));
 
-    document = document.replace('__labelUploadDate_inner__', common
-        .formatDateToDisplay(details.uploadDate, false, language));
-
-    return document.replace('__panelReferences_children__', exports
-        .getReferencesDiv(details));
-
-  } catch (error) {
-    return error.stack.replace(/\n/g, '<br>');
-  }
+  return document.replace('__panelReferences_children__', exports
+      .getReferencesDiv(details));
 
 };
 // } Section 10: Media details

@@ -66,58 +66,48 @@ exports.loadDependencies = function() {
 
 exports.notFound = function(language, callback) {
 
-  try {
-    var document = templateHandler(language).notFoundPage.template.replace(
-        '__title__', lang(language).titNotFound);
+  var document = templateHandler(language).notFoundPage.template.replace(
+      '__title__', lang(language).titNotFound);
 
-    var path = '/404.html';
-    var meta = {
-      status : 404
-    };
+  var path = '/404.html';
+  var meta = {
+    status : 404
+  };
 
-    if (language) {
-      meta.referenceFile = path;
-      meta.languages = language.headerValues;
-      path += language.headerValues.join('-');
-    }
-
-    gridFs.writeData(document, path, 'text/html', meta, callback);
-  } catch (error) {
-    callback(error);
+  if (language) {
+    meta.referenceFile = path;
+    meta.languages = language.headerValues;
+    path += language.headerValues.join('-');
   }
+
+  gridFs.writeData(document, path, 'text/html', meta, callback);
 
 };
 
 exports.login = function(language, callback) {
 
-  try {
+  var template = templateHandler(language).loginPage;
 
-    var template = templateHandler(language).loginPage;
+  var document = template.template
+      .replace('__title__', lang(language).titLogin);
 
-    var document = template.template.replace('__title__',
-        lang(language).titLogin);
-
-    if (accountCreationDisabled) {
-      document = document.replace('__divCreation_location__', '');
-    } else {
-      document = document.replace('__divCreation_location__',
-          template.removable.divCreation);
-    }
-
-    var path = '/login.html';
-    var meta = {};
-
-    if (language) {
-      meta.referenceFile = path;
-      meta.languages = language.headerValues;
-      path += language.headerValues.join('-');
-    }
-
-    gridFs.writeData(document, path, 'text/html', meta, callback);
-
-  } catch (error) {
-    callback(error);
+  if (accountCreationDisabled) {
+    document = document.replace('__divCreation_location__', '');
+  } else {
+    document = document.replace('__divCreation_location__',
+        template.removable.divCreation);
   }
+
+  var path = '/login.html';
+  var meta = {};
+
+  if (language) {
+    meta.referenceFile = path;
+    meta.languages = language.headerValues;
+    path += language.headerValues.join('-');
+  }
+
+  gridFs.writeData(document, path, 'text/html', meta, callback);
 
 };
 
@@ -235,45 +225,39 @@ exports.getThreadPathAndMeta = function(boardUri, language, meta, threadData) {
 exports.thread = function(boardData, flagData, threadData, posts, callback,
     modding, userRole, language) {
 
-  try {
+  var boardUri = boardData.boardUri;
 
-    var boardUri = boardData.boardUri;
+  var template = templateHandler(language).threadPage;
 
-    var template = templateHandler(language).threadPage;
+  var document = exports.setThreadCommonInfo(template, threadData, boardData,
+      language, flagData, posts, modding, userRole);
 
-    var document = exports.setThreadCommonInfo(template, threadData, boardData,
-        language, flagData, posts, modding, userRole);
+  if (modding) {
 
-    if (modding) {
+    document = document.replace('__divControls_location__',
+        template.removable.divControls);
+    document = document.replace('__divMod_location__',
+        template.removable.divMod);
 
-      document = document.replace('__divControls_location__',
-          template.removable.divControls);
-      document = document.replace('__divMod_location__',
-          template.removable.divMod);
+    document = exports.setModdingInformation(document, threadData);
 
-      document = exports.setModdingInformation(document, threadData);
+    callback(null, document);
 
-      callback(null, document);
+  } else {
 
-    } else {
+    document = document.replace('__divControls_location__', '');
+    document = document.replace('__divMod_location__', '');
 
-      document = document.replace('__divControls_location__', '');
-      document = document.replace('__divMod_location__', '');
+    var meta = {
+      boardUri : boardUri,
+      type : 'thread',
+      threadId : threadData.threadId
+    };
 
-      var meta = {
-        boardUri : boardUri,
-        type : 'thread',
-        threadId : threadData.threadId
-      };
+    var path = exports.getThreadPathAndMeta(boardUri, language, meta,
+        threadData);
 
-      var path = exports.getThreadPathAndMeta(boardUri, language, meta,
-          threadData);
-
-      cacheHandler.writeData(document, path, 'text/html', meta, callback);
-    }
-
-  } catch (error) {
-    callback(error);
+    cacheHandler.writeData(document, path, 'text/html', meta, callback);
   }
 
 };
@@ -355,44 +339,39 @@ exports.getPagePathAndMeta = function(board, page, meta, language) {
 exports.page = function(page, threads, pageCount, boardData, flagData,
     latestPosts, language, cb) {
 
-  try {
+  var template = templateHandler(language).boardPage;
 
-    var template = templateHandler(language).boardPage;
+  var document = common
+      .setHeader(template, language, boardData, flagData, null);
 
-    var document = common.setHeader(template, language, boardData, flagData,
-        null);
+  var boardUri = common.clean(boardData.boardUri);
 
-    var boardUri = common.clean(boardData.boardUri);
+  var title = '/' + boardUri + '/ - ' + common.clean(boardData.boardName);
+  document = document.replace('__title__', title);
 
-    var title = '/' + boardUri + '/ - ' + common.clean(boardData.boardName);
-    document = document.replace('__title__', title);
+  document = document.replace('__linkManagement_href__',
+      '/boardManagement.js?boardUri=' + boardUri);
 
-    document = document.replace('__linkManagement_href__',
-        '/boardManagement.js?boardUri=' + boardUri);
+  document = document.replace('__linkModeration_href__',
+      '/boardModeration.js?boardUri=' + boardUri);
 
-    document = document.replace('__linkModeration_href__',
-        '/boardModeration.js?boardUri=' + boardUri);
+  document = exports.addPagesLinks(document, pageCount, page,
+      template.removable);
 
-    document = exports.addPagesLinks(document, pageCount, page,
-        template.removable);
+  document = document.replace('__divThreads_children__', exports
+      .getThreadListing(latestPosts, threads, language));
 
-    document = document.replace('__divThreads_children__', exports
-        .getThreadListing(latestPosts, threads, language));
+  var meta = {
+    boardUri : boardUri,
+    type : 'page',
+    page : page
+  };
 
-    var meta = {
-      boardUri : boardUri,
-      type : 'page',
-      page : page
-    };
+  var path = exports.getPagePathAndMeta(boardData.boardUri, page, meta,
+      language);
 
-    var path = exports.getPagePathAndMeta(boardData.boardUri, page, meta,
-        language);
+  cacheHandler.writeData(document, path, 'text/html', meta, cb);
 
-    cacheHandler.writeData(document, path, 'text/html', meta, cb);
-
-  } catch (error) {
-    cb(error);
-  }
 };
 // } Section 2: Board
 
@@ -515,29 +494,23 @@ exports.setCatalogElements = function(boardData, language, threads, flagData) {
 
 exports.catalog = function(language, boardData, threads, flagData, callback) {
 
-  try {
+  var document = exports.setCatalogElements(boardData, language, threads,
+      flagData);
 
-    var document = exports.setCatalogElements(boardData, language, threads,
-        flagData);
+  var path = '/' + boardData.boardUri + '/catalog.html';
 
-    var path = '/' + boardData.boardUri + '/catalog.html';
+  var meta = {
+    boardUri : boardData.boardUri,
+    type : 'catalog'
+  };
 
-    var meta = {
-      boardUri : boardData.boardUri,
-      type : 'catalog'
-    };
-
-    if (language) {
-      meta.languges = language.headerValues;
-      meta.referenceFile = path;
-      path += language.headerValues.join('-');
-    }
-
-    cacheHandler.writeData(document, path, 'text/html', meta, callback);
-
-  } catch (error) {
-    callback(error);
+  if (language) {
+    meta.languges = language.headerValues;
+    meta.referenceFile = path;
+    path += language.headerValues.join('-');
   }
+
+  cacheHandler.writeData(document, path, 'text/html', meta, callback);
 
 };
 // } Section 3: Catalog
@@ -732,53 +705,43 @@ exports.getFrontPageContent = function(boards, globalStats, latestImages,
 exports.frontPage = function(boards, latestPosts, latestImages, globalStats,
     language, callback) {
 
-  try {
+  var document = exports.getFrontPageContent(boards, globalStats, latestImages,
+      latestPosts, language);
 
-    var document = exports.getFrontPageContent(boards, globalStats,
-        latestImages, latestPosts, language);
+  var filePath = '/';
+  var meta = {
+    type : 'frontPage'
+  };
 
-    var filePath = '/';
-    var meta = {
-      type : 'frontPage'
-    };
-
-    if (language) {
-      meta.referenceFile = filePath;
-      meta.languages = language.headerValues;
-      filePath += language.headerValues.join('-');
-    }
-
-    cacheHandler.writeData(document, filePath, 'text/html', meta, callback);
-
-  } catch (error) {
-    callback(error);
+  if (language) {
+    meta.referenceFile = filePath;
+    meta.languages = language.headerValues;
+    filePath += language.headerValues.join('-');
   }
+
+  cacheHandler.writeData(document, filePath, 'text/html', meta, callback);
 
 };
 // } Section 4: Front page
 
 exports.maintenance = function(language, callback) {
-  try {
 
-    var document = templateHandler(language).maintenancePage.template.replace(
-        '__title__', lang(language).titMaintenance);
+  var document = templateHandler(language).maintenancePage.template.replace(
+      '__title__', lang(language).titMaintenance);
 
-    var path = '/maintenance.html';
-    var meta = {
-      status : 200
-    };
+  var path = '/maintenance.html';
+  var meta = {
+    status : 200
+  };
 
-    if (language) {
-      meta.referenceFile = path;
-      meta.languages = language.headerValues;
-      path += language.headerValues.join('-');
-    }
-
-    gridFs.writeData(document, path, 'text/html', meta, callback);
-
-  } catch (error) {
-    callback(error);
+  if (language) {
+    meta.referenceFile = path;
+    meta.languages = language.headerValues;
+    path += language.headerValues.join('-');
   }
+
+  gridFs.writeData(document, path, 'text/html', meta, callback);
+
 };
 
 // Section 5: Overboard {
@@ -808,37 +771,31 @@ exports.getOverboardThreads = function(foundThreads, foundPreviews, language) {
 exports.overboard = function(foundThreads, previewRelation, callback,
     boardList, sfw, language) {
 
-  try {
+  var document = exports.getOverboardThreads(foundThreads, previewRelation,
+      language);
 
-    var document = exports.getOverboardThreads(foundThreads, previewRelation,
-        language);
-
-    if (boardList) {
-      var title = lang(language).titMultiboard;
-      var path = '/' + boardList.join('+') + '/';
-    } else {
-      title = '/' + (sfw ? sfwOverboard : overboard) + '/';
-      path = title;
-    }
-
-    var meta = {
-      type : boardList ? 'multiboard' : 'overboard',
-      boards : boardList
-    };
-
-    if (language) {
-      meta.referenceFile = path;
-      meta.languages = language.headerValues;
-      path += language.headerValues.join('-');
-    }
-
-    document = document.replace('__title__', title);
-
-    cacheHandler.writeData(document, path, 'text/html', meta, callback);
-
-  } catch (error) {
-    callback(error);
+  if (boardList) {
+    var title = lang(language).titMultiboard;
+    var path = '/' + boardList.join('+') + '/';
+  } else {
+    title = '/' + (sfw ? sfwOverboard : overboard) + '/';
+    path = title;
   }
+
+  var meta = {
+    type : boardList ? 'multiboard' : 'overboard',
+    boards : boardList
+  };
+
+  if (language) {
+    meta.referenceFile = path;
+    meta.languages = language.headerValues;
+    path += language.headerValues.join('-');
+  }
+
+  document = document.replace('__title__', title);
+
+  cacheHandler.writeData(document, path, 'text/html', meta, callback);
 
 };
 // } Section 5: Overboard
@@ -929,39 +886,33 @@ exports.getLogCell = function(logEntry, language) {
 
 exports.log = function(language, date, logs, callback) {
 
-  try {
+  var document = templateHandler(language).logsPage.template.replace(
+      '__title__', lang(language).titLogPage.replace('{$date}', common
+          .formatDateToDisplay(date, true, language)));
 
-    var document = templateHandler(language).logsPage.template.replace(
-        '__title__', lang(language).titLogPage.replace('{$date}', common
-            .formatDateToDisplay(date, true, language)));
+  var children = '';
 
-    var children = '';
-
-    for (var i = 0; i < logs.length; i++) {
-      children += exports.getLogCell(logs[i], language);
-    }
-
-    document = document.replace('__divLogs_children__', children);
-
-    var path = '/.global/logs/';
-    path += logger.formatedDate(date) + '.html';
-
-    var meta = {
-      type : 'log',
-      date : date.toUTCString()
-    };
-
-    if (language) {
-      meta.languages = language.headerValues;
-      meta.referenceFile = path;
-      path += language.headerValues.join('-');
-    }
-
-    cacheHandler.writeData(document, path, 'text/html', meta, callback);
-
-  } catch (error) {
-    callback(error);
+  for (var i = 0; i < logs.length; i++) {
+    children += exports.getLogCell(logs[i], language);
   }
+
+  document = document.replace('__divLogs_children__', children);
+
+  var path = '/.global/logs/';
+  path += logger.formatedDate(date) + '.html';
+
+  var meta = {
+    type : 'log',
+    date : date.toUTCString()
+  };
+
+  if (language) {
+    meta.languages = language.headerValues;
+    meta.referenceFile = path;
+    path += language.headerValues.join('-');
+  }
+
+  cacheHandler.writeData(document, path, 'text/html', meta, callback);
 
 };
 // Section 6: Log page {
@@ -995,25 +946,21 @@ exports.getRulesDocument = function(language, boardUri, rules) {
 };
 
 exports.rules = function(language, boardUri, rules, callback) {
-  try {
 
-    var path = '/' + boardUri + '/rules.html';
-    var meta = {
-      boardUri : boardUri,
-      type : 'rules'
-    };
+  var path = '/' + boardUri + '/rules.html';
+  var meta = {
+    boardUri : boardUri,
+    type : 'rules'
+  };
 
-    if (language) {
-      meta.referenceFile = path;
-      meta.languages = language.headerValues;
-      path += language.headerValues.join('-');
-    }
-
-    cacheHandler.writeData(exports.getRulesDocument(language, boardUri, rules),
-        path, 'text/html', meta, callback);
-
-  } catch (error) {
-    callback(error);
+  if (language) {
+    meta.referenceFile = path;
+    meta.languages = language.headerValues;
+    path += language.headerValues.join('-');
   }
+
+  cacheHandler.writeData(exports.getRulesDocument(language, boardUri, rules),
+      path, 'text/html', meta, callback);
+
 };
 // } Section 7: Rules

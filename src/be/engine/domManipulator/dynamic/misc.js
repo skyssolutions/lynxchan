@@ -44,47 +44,27 @@ exports.loadDependencies = function() {
 
 exports.error = function(code, message, language) {
 
-  try {
+  var document = templateHandler(language).errorPage.template.replace(
+      '__title__', lang(language).titError);
 
-    var document = templateHandler(language).errorPage.template.replace(
-        '__title__', lang(language).titError);
+  document = document.replace('__codeLabel_inner__', code);
 
-    document = document.replace('__codeLabel_inner__', code);
-
-    return document.replace('__errorLabel_inner__', message);
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
-
-  }
+  return document.replace('__errorLabel_inner__', message);
 
 };
 
 exports.resetEmail = function(password, language) {
 
-  try {
+  return templateHandler(language).resetEmail.template.replace(
+      '__labelNewPass_inner__', password);
 
-    return templateHandler(language).resetEmail.template.replace(
-        '__labelNewPass_inner__', password);
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
-  }
 };
 
 exports.recoveryEmail = function(recoveryLink, language) {
 
-  try {
+  return templateHandler(language).recoveryEmail.template.replace(
+      '__linkRecovery_href__', recoveryLink);
 
-    return templateHandler(language).recoveryEmail.template.replace(
-        '__linkRecovery_href__', recoveryLink);
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
-  }
 };
 
 // Section 1: Account {
@@ -149,71 +129,58 @@ exports.setAccountHideableElements = function(userData, document, removable) {
 
 exports.account = function(userData, language) {
 
-  try {
+  var template = templateHandler(language).accountPage;
 
-    var template = templateHandler(language).accountPage;
+  var login = common.clean(userData.login);
 
-    var login = common.clean(userData.login);
+  var document = template.template.replace('__title__',
+      lang(language).titAccount.replace('{$login}', login));
 
-    var document = template.template.replace('__title__',
-        lang(language).titAccount.replace('{$login}', login));
+  document = document.replace('__labelLogin_inner__', login);
 
-    document = document.replace('__labelLogin_inner__', login);
+  document = exports.setAccountHideableElements(userData, document,
+      template.removable);
 
-    document = exports.setAccountHideableElements(userData, document,
-        template.removable);
+  document = exports.setAccountSettingsCheckbox(userData.settings, document);
 
-    document = exports.setAccountSettingsCheckbox(userData.settings, document);
+  document = document.replace('__emailField_value__', common
+      .clean(userData.email || ''));
 
-    document = document.replace('__emailField_value__', common
-        .clean(userData.email || ''));
+  document = document.replace('__ownedDiv_children__', exports
+      .getBoardsDiv(userData.ownedBoards));
 
-    document = document.replace('__ownedDiv_children__', exports
-        .getBoardsDiv(userData.ownedBoards));
+  document = document.replace('__labelGlobalRole_inner__', miscOps
+      .getGlobalRoleLabel(userData.globalRole, language));
 
-    document = document.replace('__labelGlobalRole_inner__', miscOps
-        .getGlobalRoleLabel(userData.globalRole, language));
+  return document.replace('__volunteeredDiv_children__', exports
+      .getBoardsDiv(userData.volunteeredBoards));
 
-    return document.replace('__volunteeredDiv_children__', exports
-        .getBoardsDiv(userData.volunteeredBoards));
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
-  }
 };
 // } Section 1: Account
 
 exports.logs = function(dates, language) {
 
-  try {
+  var document = templateHandler(language).logIndexPage.template.replace(
+      '__title__', lang(language).titLogs);
 
-    var document = templateHandler(language).logIndexPage.template.replace(
-        '__title__', lang(language).titLogs);
+  var children = '';
 
-    var children = '';
+  var cellTemplate = templateHandler(language).logIndexCell.template;
 
-    var cellTemplate = templateHandler(language).logIndexCell.template;
+  for (var i = 0; i < dates.length; i++) {
 
-    for (var i = 0; i < dates.length; i++) {
+    var cell = '<div class="logIndexCell">' + cellTemplate;
 
-      var cell = '<div class="logIndexCell">' + cellTemplate;
+    var href = '/.global/logs/' + logger.formatedDate(dates[i]) + '.html';
+    var displayDate = common.formatDateToDisplay(dates[i], true, language);
 
-      var href = '/.global/logs/' + logger.formatedDate(dates[i]) + '.html';
-      var displayDate = common.formatDateToDisplay(dates[i], true, language);
+    cell = cell.replace('__dateLink_href__', href);
 
-      cell = cell.replace('__dateLink_href__', href);
+    children += cell.replace('__dateLink_inner__', displayDate) + '</div>';
 
-      children += cell.replace('__dateLink_inner__', displayDate) + '</div>';
-
-    }
-
-    return document.replace('__divDates_children__', children);
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
   }
+
+  return document.replace('__divDates_children__', children);
 
 };
 
@@ -381,22 +348,16 @@ exports.setOverboardLinks = function(template) {
 };
 
 exports.boards = function(parameters, boards, pageCount, language) {
-  try {
 
-    var template = templateHandler(language).boardsPage;
+  var template = templateHandler(language).boardsPage;
 
-    var document = exports.setOverboardLinks(template).replace('__title__',
-        lang(language).titBoards);
+  var document = exports.setOverboardLinks(template).replace('__title__',
+      lang(language).titBoards);
 
-    document = exports.setBoards(boards, document, language);
+  document = exports.setBoards(boards, document, language);
 
-    return document.replace('__divPages_children__', exports.getPages(
-        parameters, pageCount));
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
-  }
+  return document.replace('__divPages_children__', exports.getPages(parameters,
+      pageCount));
 
 };
 // } Section 2: Board listing
@@ -444,211 +405,161 @@ exports.getBanPage = function(ban, language) {
 
 exports.ban = function(ban, board, language) {
 
-  try {
+  var document = exports.getBanPage(ban, language).replace('__title__',
+      lang(language).titBan);
 
-    var document = exports.getBanPage(ban, language).replace('__title__',
-        lang(language).titBan);
+  document = document.replace('__boardLabel_inner__', common.clean(board));
 
-    document = document.replace('__boardLabel_inner__', common.clean(board));
-
-    return document;
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
-
-  }
+  return document;
 
 };
 // } Section 3: Ban
 
 exports.hashBan = function(hashBans, language) {
 
-  try {
+  var document = templateHandler(language).hashBanPage.template.replace(
+      '__title__', lang(language).titHashBan);
 
-    var document = templateHandler(language).hashBanPage.template.replace(
-        '__title__', lang(language).titHashBan);
+  var children = '';
 
-    var children = '';
+  var cellTemplate = templateHandler(language).hashBanCellDisplay;
+  cellTemplate = cellTemplate.template;
 
-    var cellTemplate = templateHandler(language).hashBanCellDisplay;
-    cellTemplate = cellTemplate.template;
+  for (var i = 0; i < hashBans.length; i++) {
 
-    for (var i = 0; i < hashBans.length; i++) {
+    var hashBan = hashBans[i];
 
-      var hashBan = hashBans[i];
+    var cell = '<div class="hashBanCellDisplay">' + cellTemplate;
 
-      var cell = '<div class="hashBanCellDisplay">' + cellTemplate;
+    cell = cell.replace('__labelFile_inner__', common.clean(hashBan.file));
 
-      cell = cell.replace('__labelFile_inner__', common.clean(hashBan.file));
+    var boardToUse = hashBan.boardUri || lang(language).miscAllBoards;
+    cell = cell.replace('__labelBoard_inner__', common.clean(boardToUse));
 
-      var boardToUse = hashBan.boardUri || lang(language).miscAllBoards;
-      cell = cell.replace('__labelBoard_inner__', common.clean(boardToUse));
+    children += cell + '</div>';
 
-      children += cell + '</div>';
-
-    }
-
-    return document.replace('__hashBansPanel_children__', children);
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
   }
+
+  return document.replace('__hashBansPanel_children__', children);
 
 };
 
 exports.edit = function(parameters, posting, language) {
-  try {
 
-    var template = templateHandler(language).editPage;
+  var template = templateHandler(language).editPage;
 
-    var document = template.template.replace('__labelMessageLength_inner__',
-        messageLength).replace('__title__', lang(language).titEdit);
+  var document = template.template.replace('__labelMessageLength_inner__',
+      messageLength).replace('__title__', lang(language).titEdit);
 
-    document = document.replace('__fieldMessage_defaultValue__',
-        posting.message);
+  document = document.replace('__fieldMessage_defaultValue__', posting.message);
 
-    document = document
-        .replace('__fieldSubject_value__', posting.subject || '');
+  document = document.replace('__fieldSubject_value__', posting.subject || '');
 
-    document = document.replace('__boardIdentifier_value__', common
-        .clean(parameters.boardUri));
+  document = document.replace('__boardIdentifier_value__', common
+      .clean(parameters.boardUri));
 
-    if (parameters.threadId) {
+  if (parameters.threadId) {
 
-      document = document.replace('__postIdentifier_location__', '');
-      document = document.replace('__threadIdentifier_location__',
-          template.removable.threadIdentifier);
-      document = document.replace('__threadIdentifier_value__',
-          parameters.threadId);
+    document = document.replace('__postIdentifier_location__', '');
+    document = document.replace('__threadIdentifier_location__',
+        template.removable.threadIdentifier);
+    document = document.replace('__threadIdentifier_value__',
+        parameters.threadId);
 
-    } else {
+  } else {
 
-      document = document.replace('__threadIdentifier_location__', '');
-      document = document.replace('__postIdentifier_location__',
-          template.removable.postIdentifier);
-      document = document
-          .replace('__postIdentifier_value__', parameters.postId);
+    document = document.replace('__threadIdentifier_location__', '');
+    document = document.replace('__postIdentifier_location__',
+        template.removable.postIdentifier);
+    document = document.replace('__postIdentifier_value__', parameters.postId);
 
-    }
-
-    return document;
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
   }
+
+  return document;
+
 };
 
 exports.noCookieCaptcha = function(parameters, captchaId, language) {
 
-  try {
+  var template = templateHandler(language).noCookieCaptchaPage;
+  var document = template.template.replace('__title__',
+      lang(language).titNoCookieCaptcha);
 
-    var template = templateHandler(language).noCookieCaptchaPage;
-    var document = template.template.replace('__title__',
-        lang(language).titNoCookieCaptcha);
+  if (!parameters.solvedCaptcha) {
+    document = document.replace('__divSolvedCaptcha_location__', '');
+  } else {
+    document = document.replace('__divSolvedCaptcha_location__',
+        template.removable.divSolvedCaptcha);
 
-    if (!parameters.solvedCaptcha) {
-      document = document.replace('__divSolvedCaptcha_location__', '');
-    } else {
-      document = document.replace('__divSolvedCaptcha_location__',
-          template.removable.divSolvedCaptcha);
+    document = document.replace('__labelCaptchaId_inner__',
+        parameters.solvedCaptcha);
 
-      document = document.replace('__labelCaptchaId_inner__',
-          parameters.solvedCaptcha);
-
-    }
-
-    document = document.replace('__imageCaptcha_src__',
-        '/captcha.js?captchaId=' + captchaId);
-
-    return document.replace('__inputCaptchaId_value__', captchaId);
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
   }
+
+  var captchaUrl = '/captcha.js?captchaId=' + captchaId;
+  document = document.replace('__imageCaptcha_src__', captchaUrl);
+
+  return document.replace('__inputCaptchaId_value__', captchaId);
 
 };
 
 exports.blockBypass = function(valid, language) {
 
-  try {
+  var template = templateHandler(language).bypassPage;
 
-    var template = templateHandler(language).bypassPage;
+  var document = template.template.replace('__title__',
+      lang(language).titBlockbypass);
 
-    var document = template.template.replace('__title__',
-        lang(language).titBlockbypass);
-
-    if (!valid) {
-      document = document.replace('__indicatorValidBypass_location__', '');
-    } else {
-      document = document.replace('__indicatorValidBypass_location__',
-          template.removable.indicatorValidBypass);
-    }
-
-    if (!blockBypass) {
-      document = document.replace('__renewForm_location__', '');
-    } else {
-      document = document.replace('__renewForm_location__',
-          template.removable.renewForm);
-    }
-
-    return document;
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
+  if (!valid) {
+    document = document.replace('__indicatorValidBypass_location__', '');
+  } else {
+    document = document.replace('__indicatorValidBypass_location__',
+        template.removable.indicatorValidBypass);
   }
+
+  if (!blockBypass) {
+    document = document.replace('__renewForm_location__', '');
+  } else {
+    document = document.replace('__renewForm_location__',
+        template.removable.renewForm);
+  }
+
+  return document;
+
 };
 
 exports.graphs = function(dates, language) {
 
-  try {
+  var document = templateHandler(language).graphsIndexPage.template.replace(
+      '__title__', lang(language).titGraphs);
 
-    var document = templateHandler(language).graphsIndexPage.template.replace(
-        '__title__', lang(language).titGraphs);
+  var children = '';
 
-    var children = '';
+  var cellTemplate = templateHandler(language).graphIndexCell.template;
 
-    var cellTemplate = templateHandler(language).graphIndexCell.template;
+  for (var i = 0; i < dates.length; i++) {
 
-    for (var i = 0; i < dates.length; i++) {
+    var cell = '<div class="graphIndexCell">' + cellTemplate;
 
-      var cell = '<div class="graphIndexCell">' + cellTemplate;
+    var href = '/.global/graphs/' + logger.formatedDate(dates[i]) + '.png';
+    var displayDate = common.formatDateToDisplay(dates[i], true, language);
 
-      var href = '/.global/graphs/' + logger.formatedDate(dates[i]) + '.png';
-      var displayDate = common.formatDateToDisplay(dates[i], true, language);
+    cell = cell.replace('__dateLink_href__', href);
 
-      cell = cell.replace('__dateLink_href__', href);
+    children += cell.replace('__dateLink_inner__', displayDate) + '</div>';
 
-      children += cell.replace('__dateLink_inner__', displayDate) + '</div>';
-
-    }
-
-    return document.replace('__divDates_children__', children);
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
   }
+
+  return document.replace('__divDates_children__', children);
 
 };
 
 exports.message = function(message, link, language) {
 
-  try {
+  var document = templateHandler(language).messagePage.template.replace(
+      '__title__', message);
 
-    var document = templateHandler(language).messagePage.template.replace(
-        '__title__', message);
-
-    document = document.replace('__labelMessage_inner__', message);
-    return document.replace('__linkRedirect_href__', link);
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
-  }
+  document = document.replace('__labelMessage_inner__', message);
+  return document.replace('__linkRedirect_href__', link);
 
 };

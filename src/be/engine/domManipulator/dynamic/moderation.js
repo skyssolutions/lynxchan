@@ -28,57 +28,46 @@ exports.loadDependencies = function() {
 
 exports.bans = function(bans, globalPage, language) {
 
-  try {
+  var document = templateHandler(language).bansPage.template.replace(
+      '__title__', lang(language).titBansManagement);
 
-    var document = templateHandler(language).bansPage.template.replace(
-        '__title__', lang(language).titBansManagement);
-
-    return document.replace('__bansDiv_children__', common.getBanList(bans,
-        globalPage, language));
-
-  } catch (error) {
-    return error.stack.replace(/\n/g, '<br>');
-  }
+  return document.replace('__bansDiv_children__', common.getBanList(bans,
+      globalPage, language));
 
 };
 
 exports.closedReports = function(reports, language) {
 
-  try {
-    var document = templateHandler(language).closedReportsPage.template
-        .replace('__title__', lang(language).titClosedReports);
+  var document = templateHandler(language).closedReportsPage.template.replace(
+      '__title__', lang(language).titClosedReports);
 
-    var children = '';
+  var children = '';
 
-    var cellTemplate = templateHandler(language).closedReportCell;
+  var cellTemplate = templateHandler(language).closedReportCell;
 
-    for (var i = 0; i < reports.length; i++) {
+  for (var i = 0; i < reports.length; i++) {
 
-      var report = reports[i];
+    var report = reports[i];
 
-      var cell = '<div class="closedReportCell">' + cellTemplate.template;
+    var cell = '<div class="closedReportCell">' + cellTemplate.template;
 
-      cell = cell.replace('__reasonLabel_inner__', report.reason ? common
-          .clean(report.reason) : '');
+    cell = cell.replace('__reasonLabel_inner__', report.reason ? common
+        .clean(report.reason) : '');
 
-      cell = cell.replace('__link_href__', common.getReportLink(report));
+    cell = cell.replace('__link_href__', common.getReportLink(report));
 
-      cell = cell.replace('__closedByLabel_inner__', common
-          .clean(report.closedBy));
+    cell = cell.replace('__closedByLabel_inner__', common
+        .clean(report.closedBy));
 
-      cell = cell.replace('__closedDateLabel_inner__', common
-          .formatDateToDisplay(report.closing, false, language));
+    cell = cell.replace('__closedDateLabel_inner__', common
+        .formatDateToDisplay(report.closing, false, language));
 
-      children += cell + '</div>';
+    children += cell + '</div>';
 
-    }
-
-    return document.replace('__reportDiv_children__', children);
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
   }
+
+  return document.replace('__reportDiv_children__', children);
+
 };
 
 // Section 1: Range bans {
@@ -114,31 +103,24 @@ exports.getRangeBanCells = function(rangeBans, boardData, language) {
 
 exports.rangeBans = function(rangeBans, boardData, language) {
 
-  try {
+  var template = templateHandler(language).rangeBansPage;
 
-    var template = templateHandler(language).rangeBansPage;
+  var document = template.template.replace('__title__',
+      lang(language).titRangeBans);
 
-    var document = template.template.replace('__title__',
-        lang(language).titRangeBans);
+  if (boardData) {
 
-    if (boardData) {
+    document = document.replace('__boardIdentifier_location__',
+        template.removable.boardIdentifier);
+    document = document.replace('__boardIdentifier_value__', common
+        .clean(boardData.boardUri));
 
-      document = document.replace('__boardIdentifier_location__',
-          template.removable.boardIdentifier);
-      document = document.replace('__boardIdentifier_value__', common
-          .clean(boardData.boardUri));
-
-    } else {
-      document = document.replace('__boardIdentifier_location__', '');
-    }
-
-    return document.replace('__rangeBansDiv_children__', exports
-        .getRangeBanCells(rangeBans, boardData, language));
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
+  } else {
+    document = document.replace('__boardIdentifier_location__', '');
   }
+
+  return document.replace('__rangeBansDiv_children__', exports
+      .getRangeBanCells(rangeBans, boardData, language));
 
 };
 // } Section 1: Range bans
@@ -169,30 +151,24 @@ exports.getHashBanCells = function(hashBans, language) {
 
 exports.hashBans = function(hashBans, boardUri, language) {
 
-  try {
+  var template = templateHandler(language).hashBansPage;
 
-    var template = templateHandler(language).hashBansPage;
+  var document = template.template.replace('__title__',
+      lang(language).titHashBans);
 
-    var document = template.template.replace('__title__',
-        lang(language).titHashBans);
+  if (boardUri) {
+    document = document.replace('__boardIdentifier_location__',
+        template.removable.boardIdentifier);
+    document = document.replace('__boardIdentifier_value__', common
+        .clean(boardUri));
 
-    if (boardUri) {
-      document = document.replace('__boardIdentifier_location__',
-          template.removable.boardIdentifier);
-      document = document.replace('__boardIdentifier_value__', common
-          .clean(boardUri));
-
-    } else {
-      document = document.replace('__boardIdentifier_location__', '');
-    }
-
-    return document.replace('__hashBansDiv_children__', exports
-        .getHashBanCells(hashBans, language));
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
+  } else {
+    document = document.replace('__boardIdentifier_location__', '');
   }
+
+  return document.replace('__hashBansDiv_children__', exports.getHashBanCells(
+      hashBans, language));
+
 };
 // } Section 2: Hash bans
 
@@ -231,41 +207,34 @@ exports.setSpecialCheckboxesAndIdentifiers = function(document, boardData) {
 
 exports.boardModeration = function(boardData, ownerData, language) {
 
-  try {
+  boardData.boardUri = common.clean(boardData.boardUri);
 
-    boardData.boardUri = common.clean(boardData.boardUri);
+  var document = templateHandler(language).boardModerationPage.template
+      .replace('__title__', lang(language).titBoardModeration.replace(
+          '{$board}', boardData.boardUri));
 
-    var document = templateHandler(language).boardModerationPage.template
-        .replace('__title__', lang(language).titBoardModeration.replace(
-            '{$board}', boardData.boardUri));
+  var children = '';
 
-    var children = '';
+  var volunteers = boardData.volunteers || [];
 
-    var volunteers = boardData.volunteers || [];
-
-    for (var i = 0; i < volunteers.length; i++) {
-      children += '<div>' + common.clean(volunteers[i]) + '</div>';
-    }
-
-    document = document.replace('__divVolunteers_children__', children);
-
-    document = exports.setSpecialCheckboxesAndIdentifiers(document, boardData);
-
-    document = document.replace('__labelOwner_inner__', common
-        .clean(ownerData.login));
-
-    document = document.replace('__labelLastSeen_inner__',
-        ownerData.lastSeen ? common.formatDateToDisplay(ownerData.lastSeen,
-            false, language) : '');
-
-    var title = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
-
-    return document.replace('__labelTitle_inner__', title);
-
-  } catch (error) {
-
-    return error.stack.replace(/\n/g, '<br>');
+  for (var i = 0; i < volunteers.length; i++) {
+    children += '<div>' + common.clean(volunteers[i]) + '</div>';
   }
+
+  document = document.replace('__divVolunteers_children__', children);
+
+  document = exports.setSpecialCheckboxesAndIdentifiers(document, boardData);
+
+  document = document.replace('__labelOwner_inner__', common
+      .clean(ownerData.login));
+
+  document = document.replace('__labelLastSeen_inner__',
+      ownerData.lastSeen ? common.formatDateToDisplay(ownerData.lastSeen,
+          false, language) : '');
+
+  var title = '/' + boardData.boardUri + '/ - ' + boardData.boardName;
+
+  return document.replace('__labelTitle_inner__', title);
 
 };
 // } Section 3: Board moderation
