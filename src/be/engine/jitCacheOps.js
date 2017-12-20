@@ -308,7 +308,7 @@ exports.finishedCacheGeneration = function(lockData, error, notFound, cb) {
     type : 'deleteLock',
     lockData : lockData
   }, function deletedLock(deletionError) {
-    cb(error || deletionError, notFound);
+    cb(error || deletionError, notFound, true);
   });
 
 };

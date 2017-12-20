@@ -818,15 +818,14 @@ exports.output304 = function(stats, res, callback) {
 exports.handleJit = function(pathName, req, res, callback) {
 
   jitCacheOps.checkCache(pathName, req.boards, function finished(error,
-      notFound) {
+      notFound, usedJit) {
 
     if (error) {
       callback(error);
     } else if (notFound) {
       gridFsHandler.outputFile(pathName, req, res, callback);
     } else {
-      req.alreadyCached = true;
-      exports.outputFile(pathName, req, res, callback);
+      exports.outputFile(pathName, req, res, callback, null, usedJit);
     }
 
   });
@@ -834,7 +833,7 @@ exports.handleJit = function(pathName, req, res, callback) {
 };
 
 exports.handleReceivedData = function(pathName, req, res, stats, content,
-    isStatic, cb) {
+    isStatic, cb, usedJit) {
 
   switch (stats.code) {
 
@@ -845,7 +844,7 @@ exports.handleReceivedData = function(pathName, req, res, stats, content,
 
   case 404: {
 
-    if (isStatic || req.alreadyCached) {
+    if (isStatic || usedJit) {
       gridFsHandler.outputFile('/404.html', req, res, cb);
     } else {
       exports.handleJit(pathName, req, res, cb);
@@ -867,7 +866,7 @@ exports.handleReceivedData = function(pathName, req, res, stats, content,
 
 };
 
-exports.outputFile = function(pathName, req, res, callback, isStatic) {
+exports.outputFile = function(pathName, req, res, callback, isStatic, usedJit) {
 
   var stats;
 
@@ -886,7 +885,7 @@ exports.outputFile = function(pathName, req, res, callback, isStatic) {
         if (stats.code >= 300) {
 
           exports.handleReceivedData(pathName, req, res, stats, null, isStatic,
-              callback);
+              callback, usedJit);
 
           taskListener.freeSocket(socket);
 
