@@ -172,6 +172,7 @@ Settings files that goes into the settings directory:
 * `allowBlockedToReport`(Boolean): allows users that were banned or blocked to report content, including TOR users if they are not allowed to post.
 * `clusterPort`(Number): port used for cluster communication.
 * `boardMessageLength`(Number): maximum size for board messages. Defaults to 256.
+* `staticExpiration`(Number): amount of minutes that static files served from cache will inform as expiration when requested. Defaults to 60.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

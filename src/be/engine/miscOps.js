@@ -415,7 +415,10 @@ exports.processNumberSetting = function(parameters, defaultSettings, item,
 
   var processedParameter = +parameters[item.setting];
 
-  if (processedParameter) {
+  var exception = settingsHandler.isZeroException(item.setting,
+      processedParameter);
+
+  if (processedParameter || exception) {
     if (processedParameter !== defaultSettings[item.setting]) {
       newSettings[item.setting] = processedParameter;
     }

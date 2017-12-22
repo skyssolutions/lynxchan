@@ -9,7 +9,8 @@ var templateSettings;
 
 var MAX_ATTEMPTS = 4;
 
-exports.zeroSettingsExceptions = [ 'boardCreationRequirement' ];
+exports.zeroSettingsExceptions = [ 'boardCreationRequirement',
+    'staticExpiration' ];
 
 // Section 1: New settings {
 function broadCastToSlaves(newSettings, callback, index, attempts) {
@@ -536,6 +537,7 @@ exports.getDefaultSettings = function() {
     spamIpsSource : 'https://www.stopforumspam.com/downloads/bannedips.zip',
     flagNameLength : 32,
     boardMessageLength : 256,
+    staticExpiration : 60,
     incSpamIpsSource : 'https://www.stopforumspam.com/downloads/listed_ip_1.zip'
   };
 

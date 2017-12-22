@@ -281,6 +281,11 @@
   },
   {
     "type": "number",
+    "setting": "staticExpiration",
+    "element": "fieldStaticExpiration"
+  },
+  {
+    "type": "number",
     "setting": "globalLatestPosts",
     "element": "fieldGlobalLatestPosts"
   },

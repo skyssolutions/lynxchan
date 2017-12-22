@@ -17,6 +17,7 @@ var verbose;
 var disable304;
 var alternativeLanguages;
 var defaultFePath;
+var staticExpiration;
 var debug = kernel.debug() || kernel.feDebug();
 var typeIndex = {
   boards : {},
@@ -36,6 +37,7 @@ exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
 
+  staticExpiration = settings.staticExpiration;
   defaultFePath = settings.fePath;
   disable304 = settings.disable304;
   verbose = settings.verbose || settings.verboseCache;
@@ -730,18 +732,25 @@ exports.receiveOutputFile = function(task, socket) {
 // } Section 4: Master read file
 
 // Section 5: Worker read file {
-exports.addHeaderBoilerPlate = function(header, stats) {
+exports.addHeaderBoilerPlate = function(header, stats, isStatic) {
 
   if (stats.compressable) {
     header.push([ 'Vary', 'Accept-Encoding' ]);
   }
 
   header.push([ 'Accept-Ranges', 'bytes' ]);
-  header.push([ 'expires', new Date().toUTCString() ]);
+
+  var expiration = new Date();
+
+  if (isStatic && staticExpiration) {
+    expiration.setUTCMinutes(expiration.getUTCMinutes() + staticExpiration);
+  }
+
+  header.push([ 'expires', expiration.toUTCString() ]);
 
 };
 
-exports.getResponseHeader = function(stats, length) {
+exports.getResponseHeader = function(stats, length, isStatic) {
 
   var header = miscOps.getHeader(stats.mime);
 
@@ -768,17 +777,18 @@ exports.getResponseHeader = function(stats, length) {
 
   header.push([ 'Content-Length', length ]);
 
-  exports.addHeaderBoilerPlate(header, stats);
+  exports.addHeaderBoilerPlate(header, stats, isStatic);
 
   return header;
 
 };
 
-exports.writeResponse = function(stats, data, res, callback) {
+exports.writeResponse = function(stats, data, res, isStatic, callback) {
 
   try {
 
-    res.writeHead(stats.code, exports.getResponseHeader(stats, data.length));
+    res.writeHead(stats.code, exports.getResponseHeader(stats, data.length,
+        isStatic));
 
     res.end(data);
 
@@ -790,7 +800,7 @@ exports.writeResponse = function(stats, data, res, callback) {
 
 };
 
-exports.output304 = function(stats, res, callback) {
+exports.output304 = function(stats, res, isStatic, callback) {
 
   try {
 
@@ -802,6 +812,12 @@ exports.output304 = function(stats, res, callback) {
 
     if (stats.compressable) {
       header.push([ 'Vary', 'Accept-Encoding' ]);
+    }
+
+    if (isStatic && staticExpiration) {
+      var expiration = new Date();
+      expiration.setUTCMinutes(expiration.getUTCMinutes() + staticExpiration);
+      header.push([ 'expires', expiration.toUTCString() ]);
     }
 
     res.writeHead(304, header);
@@ -854,12 +870,12 @@ exports.handleReceivedData = function(pathName, req, res, stats, content,
   }
 
   case 304: {
-    exports.output304(stats, res, cb);
+    exports.output304(stats, res, isStatic, cb);
     break;
   }
 
   default: {
-    exports.writeResponse(stats, content, res, cb);
+    exports.writeResponse(stats, content, res, isStatic, cb);
   }
 
   }

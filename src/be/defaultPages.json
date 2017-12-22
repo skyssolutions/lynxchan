@@ -1211,6 +1211,10 @@
         "uses": "value"
       },
       {
+        "name": "fieldStaticExpiration",
+        "uses": "value"
+      },
+      {
         "name": "fieldMaxVolunteers",
         "uses": "value"
       },

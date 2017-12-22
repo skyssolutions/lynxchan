@@ -1707,6 +1707,10 @@ fieldClusterPort:
     use: have it's value manipulated.
     description: field that displays port to be used for cluster communication.
 
+fieldStaticExpiration:
+    use: have it's value manipulated.
+    description: field that displays the static expiration that will be informed.
+
 fieldFlagNameLength:
     use: have it's value manipulated.
     description: field that displays the maximum size allowed for custom flag names.
