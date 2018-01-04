@@ -492,7 +492,9 @@ exports.noCookieCaptcha = function(parameters, captchaId, language) {
         template.removable.divSolvedCaptcha);
 
     document = document.replace('__labelCaptchaId_inner__',
-        parameters.solvedCaptcha);
+        parameters.solvedCaptcha.replace(/[<>]/g, function replace(match) {
+          return miscOps.htmlReplaceTable[match];
+        }));
 
   }
 
