@@ -103,8 +103,32 @@ exports.testPagePrebuiltFields = function(dom, page, prebuiltObject) {
 
 };
 
+exports.getPageDom = function(template, headerContent, footerContent) {
+
+  var dom = new JSDOM(template);
+
+  if (headerContent) {
+    var headerElement = dom.window.document.getElementById('dynamicHeader');
+
+    if (headerElement) {
+      headerElement.innerHTML = headerContent;
+    }
+  }
+
+  if (footerContent) {
+    var footerElement = dom.window.document.getElementById('dynamicFooter');
+
+    if (footerElement) {
+      footerElement.innerHTML = footerContent;
+    }
+  }
+
+  return dom;
+
+};
+
 exports.processPage = function(errors, page, fePath, templateSettings,
-    prebuiltObject) {
+    prebuiltObject, headerContent, footerContent) {
 
   var fullPath = fePath + '/templates/';
   fullPath += templateSettings[page.template];
@@ -118,9 +142,8 @@ exports.processPage = function(errors, page, fePath, templateSettings,
     return;
   }
 
-  var dom = new JSDOM(template);
-
-  var error = exports.testPagePrebuiltFields(dom, page, prebuiltObject);
+  var error = exports.testPagePrebuiltFields(exports.getPageDom(template,
+      headerContent, footerContent), page, prebuiltObject);
 
   if (error) {
     errors.push('\nPage ' + page.template + error);
@@ -129,6 +152,26 @@ exports.processPage = function(errors, page, fePath, templateSettings,
 };
 
 exports.loadPages = function(errors, fePath, templateSettings, prebuiltObject) {
+
+  var headerContent;
+
+  try {
+
+    headerContent = fs.readFileSync(
+        fePath + '/templates/' + templateSettings.header).toString();
+  } catch (error) {
+    headerContent = null;
+  }
+
+  var footerContent;
+
+  try {
+
+    footerContent = fs.readFileSync(
+        fePath + '/templates/' + templateSettings.footer).toString();
+  } catch (error) {
+    footerContent = null;
+  }
 
   for (var i = 0; i < exports.pageTests.length; i++) {
 
@@ -140,7 +183,8 @@ exports.loadPages = function(errors, fePath, templateSettings, prebuiltObject) {
       continue;
     }
 
-    exports.processPage(errors, page, fePath, templateSettings, prebuiltObject);
+    exports.processPage(errors, page, fePath, templateSettings, prebuiltObject,
+        headerContent, footerContent);
 
   }
 };
