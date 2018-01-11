@@ -95,30 +95,31 @@ function getNamesToDelete() {
 
 function eraseOldCache(callback) {
 
-  files.aggregate([
-      {
-        $match : {
-          $or : [
-              {
-                filename : {
-                  $in : getNamesToDelete()
-                }
-              },
-              {
-                'metadata.type' : {
-                  $in : [ 'board', 'thread', 'catalog', 'rules', 'log',
-                      'multiboard', 'preview' ]
-                }
-              } ]
-        }
-      }, {
-        $group : {
-          _id : 0,
-          files : {
-            $push : '$filename'
-          }
-        }
-      } ],
+  files.aggregate(
+      [
+          {
+            $match : {
+              $or : [
+                  {
+                    filename : {
+                      $in : getNamesToDelete()
+                    }
+                  },
+                  {
+                    'metadata.type' : {
+                      $in : [ 'board', 'thread', 'catalog', 'rules', 'log',
+                          'multiboard', 'preview' ]
+                    }
+                  } ]
+            }
+          }, {
+            $group : {
+              _id : 0,
+              files : {
+                $push : '$filename'
+              }
+            }
+          } ]).toArray(
       function(error, results) {
 
         if (error) {

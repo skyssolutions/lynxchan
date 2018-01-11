@@ -603,18 +603,19 @@ exports.markdownText = function(message, board, replaceCode, callback) {
         }
 
       }
-    } ], function gotPosts(error, result) {
+    } ]).toArray(
+        function gotPosts(error, result) {
 
-      if (error) {
-        callback(error);
-      } else if (!result.length) {
-        exports.replaceMarkdown(message, [], board, replaceCode, callback);
-      } else {
-        exports.replaceMarkdown(message, result[0].posts, board, replaceCode,
-            callback);
-      }
+          if (error) {
+            callback(error);
+          } else if (!result.length) {
+            exports.replaceMarkdown(message, [], board, replaceCode, callback);
+          } else {
+            exports.replaceMarkdown(message, result[0].posts, board,
+                replaceCode, callback);
+          }
 
-    });
+        });
   }
 };
 // } Section 2: Markdown
@@ -645,7 +646,7 @@ exports.cleanGlobalLatestPosts = function(callback) {
         $push : '$_id'
       }
     }
-  } ], function gotLatestPostsToClean(error, results) {
+  } ]).toArray(function gotLatestPostsToClean(error, results) {
     if (error) {
       callback(error);
     } else if (!results.length) {
@@ -885,7 +886,7 @@ exports.setThreadsPage = function(boardUri, callback, page) {
         $push : '$_id'
       }
     }
-  } ], function gotThreads(error, results) {
+  } ]).toArray(function gotThreads(error, results) {
 
     if (error) {
       callback(error);

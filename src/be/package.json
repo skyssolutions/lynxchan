@@ -8,7 +8,7 @@
   },
   "version": "2.0.0",
   "dependencies": {
-    "mongodb": "2.2.x",
+    "mongodb": "3.0.x",
     "jsdom": "11.5.x",
     "nodemailer": "4.4.x",
     "multiparty": "4.1.x",

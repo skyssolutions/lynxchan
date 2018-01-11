@@ -75,7 +75,7 @@ exports.reaggregateLatestPosts = function(countData, board, parentThreads,
         $push : '$postId'
       }
     }
-  } ], function gotIds(error, results) {
+  } ]).toArray(function gotIds(error, results) {
     if (error) {
       callback(error);
     } else {
@@ -143,22 +143,23 @@ exports.reaggregateThread = function(board, parentThreads, callback, index) {
         $sum : '$fileCount'
       }
     }
-  } ], function gotResults(error, results) {
+  } ]).toArray(
+      function gotResults(error, results) {
 
-    if (error) {
-      callback(error);
-    } else {
+        if (error) {
+          callback(error);
+        } else {
 
-      var data = results.length ? results[0] : {
-        postCount : 0,
-        fileCount : 0
-      };
+          var data = results.length ? results[0] : {
+            postCount : 0,
+            fileCount : 0
+          };
 
-      exports.reaggregateLatestPosts(data, board, parentThreads, callback,
-          index);
-    }
+          exports.reaggregateLatestPosts(data, board, parentThreads, callback,
+              index);
+        }
 
-  });
+      });
 
 };
 
@@ -785,38 +786,39 @@ exports.getPostsToDelete = function(userData, board, postsToDelete, parameters,
         $addToSet : '$threadId'
       }
     }
-  } ], function gotPosts(error, results) {
-    if (error) {
-      cb(error);
-    } else {
-      var foundPosts = results.length ? results[0].posts : [];
+  } ]).toArray(
+      function gotPosts(error, results) {
+        if (error) {
+          cb(error);
+        } else {
+          var foundPosts = results.length ? results[0].posts : [];
 
-      if (!foundPosts.length && !foundThreads.length) {
-        cb();
-        console.log('returned');
-        return;
-      }
+          if (!foundPosts.length && !foundThreads.length) {
+            cb();
+            console.log('returned');
+            return;
+          }
 
-      var parentThreads = results.length ? exports.sanitizeParentThreads(
-          foundThreads, results[0].parentThreads) : [];
+          var parentThreads = results.length ? exports.sanitizeParentThreads(
+              foundThreads, results[0].parentThreads) : [];
 
-      // style exception, too simple
-      referenceHandler.clearPostingReferences(board.boardUri, foundThreads,
-          foundPosts, parameters.deleteUploads, parameters.deleteMedia,
-          language, function clearedReferences(error) {
+          // style exception, too simple
+          referenceHandler.clearPostingReferences(board.boardUri, foundThreads,
+              foundPosts, parameters.deleteUploads, parameters.deleteMedia,
+              language, function clearedReferences(error) {
 
-            if (error) {
-              cb(error);
-            } else {
-              exports.removeFoundContent(userData, board, parameters, cb,
-                  foundThreads, foundPosts, parentThreads);
-            }
+                if (error) {
+                  cb(error);
+                } else {
+                  exports.removeFoundContent(userData, board, parameters, cb,
+                      foundThreads, foundPosts, parentThreads);
+                }
 
-          });
-      // style exception, too simple
+              });
+          // style exception, too simple
 
-    }
-  });
+        }
+      });
 
 };
 
@@ -845,17 +847,18 @@ exports.getThreadsToDelete = function(userData, board, threadsToDelete,
         $push : '$threadId'
       }
     }
-  } ], function gotThreads(error, results) {
-    if (error) {
-      callback(error);
-    } else {
+  } ]).toArray(
+      function gotThreads(error, results) {
+        if (error) {
+          callback(error);
+        } else {
 
-      var foundThreads = results.length ? results[0].threads : [];
+          var foundThreads = results.length ? results[0].threads : [];
 
-      exports.getPostsToDelete(userData, board, postsToDelete, parameters,
-          language, callback, foundThreads, threadQueryBlock);
-    }
-  });
+          exports.getPostsToDelete(userData, board, postsToDelete, parameters,
+              language, callback, foundThreads, threadQueryBlock);
+        }
+      });
 
 };
 

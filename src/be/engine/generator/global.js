@@ -569,39 +569,41 @@ exports.fetchGlobalStats = function(foundBoards, globalLatestPosts,
         $sum : '$postsPerHour'
       }
     }
-  } ], function gotBoardStats(error, results) {
-
-    if (error) {
-      callback(error);
-    } else {
-
-      // style exception, too simple
-      uploadReferences.aggregate([ {
-        $group : {
-          _id : 0,
-          totalFiles : {
-            $sum : 1
-          },
-          totalSize : {
-            $sum : '$size'
-          }
-        }
-      } ], function gotMediaStats(error, mediaResults) {
+  } ]).toArray(
+      function gotBoardStats(error, results) {
 
         if (error) {
           callback(error);
         } else {
-          exports.saveFrontPage(foundBoards, globalLatestPosts,
-              globalLatestImages, results.length ? results[0] : null,
-              mediaResults.length ? mediaResults[0] : null, callback);
+
+          // style exception, too simple
+          uploadReferences.aggregate([ {
+            $group : {
+              _id : 0,
+              totalFiles : {
+                $sum : 1
+              },
+              totalSize : {
+                $sum : '$size'
+              }
+            }
+          } ]).toArray(
+              function gotMediaStats(error, mediaResults) {
+
+                if (error) {
+                  callback(error);
+                } else {
+                  exports.saveFrontPage(foundBoards, globalLatestPosts,
+                      globalLatestImages, results.length ? results[0] : null,
+                      mediaResults.length ? mediaResults[0] : null, callback);
+                }
+
+              });
+          // style exception, too simple
+
         }
 
       });
-      // style exception, too simple
-
-    }
-
-  });
 
 };
 
@@ -881,16 +883,17 @@ exports.overboard = function(callback, sfw) {
         $push : '$thread'
       }
     }
-  } ], function gotOverBoardThreads(error, results) {
+  } ]).toArray(
+      function gotOverBoardThreads(error, results) {
 
-    if (error) {
-      callback(error);
-    } else {
-      exports.getOverboardThreads(results.length ? results[0].ids : [],
-          callback, sfw);
-    }
+        if (error) {
+          callback(error);
+        } else {
+          exports.getOverboardThreads(results.length ? results[0].ids : [],
+              callback, sfw);
+        }
 
-  });
+      });
 
 };
 // } Section 2: Overboard

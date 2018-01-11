@@ -54,62 +54,64 @@ exports.gatherContentToDelete = function(boardUri, ips, userData, language,
         $push : '$threadId'
       }
     }
-  } ], function gotThreads(error, results) {
+  } ]).toArray(
+      function gotThreads(error, results) {
 
-    if (error) {
-      callback(error);
-    } else {
-
-      var foundThreads = {};
-
-      for (var i = 0; i < results.length; i++) {
-
-        var result = results[i];
-
-        foundThreads[result._id] = result.threads;
-
-      }
-
-      // style exception, too simple
-      posts.aggregate([ {
-        $match : queryBlock
-      }, {
-        $project : {
-          boardUri : 1,
-          postId : 1
-        }
-      }, {
-        $group : {
-          _id : '$boardUri',
-          posts : {
-            $push : '$postId'
-          }
-        }
-      } ], function gotPosts(error, results) {
         if (error) {
           callback(error);
         } else {
 
-          var foundPosts = {};
+          var foundThreads = {};
 
           for (var i = 0; i < results.length; i++) {
 
             var result = results[i];
 
-            foundPosts[result._id] = result.posts;
+            foundThreads[result._id] = result.threads;
 
           }
 
-          exports.postingDeletions.posting(userData, {}, foundThreads,
-              foundPosts, language, callback);
+          // style exception, too simple
+          posts.aggregate([ {
+            $match : queryBlock
+          }, {
+            $project : {
+              boardUri : 1,
+              postId : 1
+            }
+          }, {
+            $group : {
+              _id : '$boardUri',
+              posts : {
+                $push : '$postId'
+              }
+            }
+          } ]).toArray(
+              function gotPosts(error, results) {
+                if (error) {
+                  callback(error);
+                } else {
+
+                  var foundPosts = {};
+
+                  for (var i = 0; i < results.length; i++) {
+
+                    var result = results[i];
+
+                    foundPosts[result._id] = result.posts;
+
+                  }
+
+                  exports.postingDeletions.posting(userData, {}, foundThreads,
+                      foundPosts, language, callback);
+
+                }
+              });
+          // style exception, too simple
 
         }
+
       });
-      // style exception, too simple
-
-    }
-
-  });
 
 };
 
@@ -153,58 +155,60 @@ exports.gatherIpsToDelete = function(objects, userData, language, callback) {
         $push : '$ip'
       }
     }
-  } ], function gotThreads(error, results) {
-
-    if (error) {
-      callback(error);
-    } else {
-
-      var ips = results.length ? results[0].ips : [];
-
-      // style exception, too simple
-      posts.aggregate([ {
-        $match : {
-          boardUri : board,
-          ip : {
-            $ne : null,
-            $nin : ips
-          },
-          postId : {
-            $in : selectedPosts
-          }
-        }
-      }, {
-        $group : {
-          _id : 0,
-          ips : {
-            $push : '$ip'
-          }
-        }
-      } ], function gotPosts(error, results) {
+  } ]).toArray(
+      function gotThreads(error, results) {
 
         if (error) {
           callback(error);
         } else {
 
-          if (results.length) {
-            ips = ips.concat(results[0].ips);
-          }
+          var ips = results.length ? results[0].ips : [];
 
-          if (ips.length) {
-            exports.gatherContentToDelete(board, ips, userData, language,
-                callback);
-          } else {
-            callback();
-          }
+          // style exception, too simple
+          posts.aggregate([ {
+            $match : {
+              boardUri : board,
+              ip : {
+                $ne : null,
+                $nin : ips
+              },
+              postId : {
+                $in : selectedPosts
+              }
+            }
+          }, {
+            $group : {
+              _id : 0,
+              ips : {
+                $push : '$ip'
+              }
+            }
+          } ]).toArray(
+              function gotPosts(error, results) {
+
+                if (error) {
+                  callback(error);
+                } else {
+
+                  if (results.length) {
+                    ips = ips.concat(results[0].ips);
+                  }
+
+                  if (ips.length) {
+                    exports.gatherContentToDelete(board, ips, userData,
+                        language, callback);
+                  } else {
+                    callback();
+                  }
+
+                }
+
+              });
+          // style exception, too simple
 
         }
 
       });
-      // style exception, too simple
-
-    }
-
-  });
 
 };
 
@@ -304,61 +308,63 @@ exports.deleteFromIp = function(parameters, userData, language, callback) {
         $push : '$threadId'
       }
     }
-  } ], function gotThreads(error, results) {
+  } ]).toArray(
+      function gotThreads(error, results) {
 
-    if (error) {
-      callback(error);
-    } else {
-
-      var foundThreads = {};
-
-      for (var i = 0; i < results.length; i++) {
-
-        var result = results[i];
-
-        foundThreads[result._id] = result.threads;
-
-      }
-
-      // style exception, too simple
-      posts.aggregate([ {
-        $match : queryBlock
-      }, {
-        $project : {
-          boardUri : 1,
-          postId : 1
-        }
-      }, {
-        $group : {
-          _id : '$boardUri',
-          posts : {
-            $push : '$postId'
-          }
-        }
-      } ], function gotPosts(error, results) {
         if (error) {
           callback(error);
         } else {
 
-          var foundPosts = {};
+          var foundThreads = {};
 
           for (var i = 0; i < results.length; i++) {
 
             var result = results[i];
 
-            foundPosts[result._id] = result.posts;
+            foundThreads[result._id] = result.threads;
 
           }
 
-          exports.postingDeletions.posting(userData, parameters, foundThreads,
-              foundPosts, language, callback);
+          // style exception, too simple
+          posts.aggregate([ {
+            $match : queryBlock
+          }, {
+            $project : {
+              boardUri : 1,
+              postId : 1
+            }
+          }, {
+            $group : {
+              _id : '$boardUri',
+              posts : {
+                $push : '$postId'
+              }
+            }
+          } ]).toArray(
+              function gotPosts(error, results) {
+                if (error) {
+                  callback(error);
+                } else {
+
+                  var foundPosts = {};
+
+                  for (var i = 0; i < results.length; i++) {
+
+                    var result = results[i];
+
+                    foundPosts[result._id] = result.posts;
+
+                  }
+
+                  exports.postingDeletions.posting(userData, parameters,
+                      foundThreads, foundPosts, language, callback);
+
+                }
+              });
+          // style exception, too simple
 
         }
+
       });
-      // style exception, too simple
-
-    }
-
-  });
 
 };

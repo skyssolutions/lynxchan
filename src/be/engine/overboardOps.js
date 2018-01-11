@@ -46,7 +46,7 @@ function getThreadsToRemove(toRemove, ids, message) {
         $push : '$_id'
       }
     }
-  } ], function(error, results) {
+  } ]).toArray(function(error, results) {
 
     if (error) {
       console.log(error);
@@ -96,20 +96,21 @@ function checkAmount(message) {
             $push : '$thread'
           }
         }
-      } ], function gotThreads(error, foundThreads) {
+      } ]).toArray(
+          function gotThreads(error, foundThreads) {
 
-        if (error) {
-          console.log(error);
-        } else if (!foundThreads.length) {
-          // will probably never fall into this condition
-          process.send(message);
+            if (error) {
+              console.log(error);
+            } else if (!foundThreads.length) {
+              // will probably never fall into this condition
+              process.send(message);
 
-        } else {
-          getThreadsToRemove(count - overboardSize, foundThreads[0].ids,
-              message);
-        }
+            } else {
+              getThreadsToRemove(count - overboardSize, foundThreads[0].ids,
+                  message);
+            }
 
-      });
+          });
       // style exception, too simple
 
     } else {

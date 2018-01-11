@@ -201,7 +201,7 @@ function getStats() {
         }
       }
     }
-  } ], function gotStats(error, result) {
+  } ]).toArray( function gotStats(error, result) {
 
     if (error) {
 
@@ -407,7 +407,7 @@ function checkExpiredCaptchas() {
         $push : '$filename'
       }
     }
-  } ], function gotExpiredFiles(error, results) {
+  } ]).toArray( function gotExpiredFiles(error, results) {
     if (error) {
 
       if (debug) {
@@ -551,7 +551,7 @@ function updateUniqueIpCount() {
         $size : '$ips'
       }
     }
-  } ], function gotCount(error, results) {
+  } ]).toArray( function gotCount(error, results) {
 
     uniqueIps.deleteMany({}, function clearedUniqueIps(deletionError) {
 

@@ -344,49 +344,51 @@ exports.getPostIps = function(foundIps, pages, informedPosts, board, userData,
         $addToSet : '$threadId'
       }
     }
-  } ], function gotIps(error, results) {
+  } ]).toArray(
+      function gotIps(error, results) {
 
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-
-      exports.createBans(foundIps, [], pages, board, userData, parameters,
-          callback, informedThreads, informedPosts);
-
-    } else {
-
-      // style exception, too simple
-      threads.aggregate([ {
-        $match : {
-          threadId : {
-            $in : results[0].parents
-          }
-        }
-      }, {
-        $group : {
-          _id : 0,
-          pages : {
-            $addToSet : '$page'
-          },
-          parents : {
-            $addToSet : '$threadId'
-          }
-        }
-      } ], function gotPages(error, pageResults) {
         if (error) {
           callback(error);
+        } else if (!results.length) {
+
+          exports.createBans(foundIps, [], pages, board, userData, parameters,
+              callback, informedThreads, informedPosts);
+
         } else {
-          exports.createBans(foundIps.concat(results[0].ips),
-              pageResults[0].parents, pages.concat(pageResults[0].pages),
-              board, userData, parameters, callback, informedThreads,
-              informedPosts);
+
+          // style exception, too simple
+          threads.aggregate([ {
+            $match : {
+              threadId : {
+                $in : results[0].parents
+              }
+            }
+          }, {
+            $group : {
+              _id : 0,
+              pages : {
+                $addToSet : '$page'
+              },
+              parents : {
+                $addToSet : '$threadId'
+              }
+            }
+          } ]).toArray(
+              function gotPages(error, pageResults) {
+                if (error) {
+                  callback(error);
+                } else {
+                  exports.createBans(foundIps.concat(results[0].ips),
+                      pageResults[0].parents, pages
+                          .concat(pageResults[0].pages), board, userData,
+                      parameters, callback, informedThreads, informedPosts);
+
+                }
+              });
+          // style exception, too simple
 
         }
       });
-      // style exception, too simple
-
-    }
-  });
 
 };
 
@@ -433,19 +435,20 @@ exports.getThreadIps = function(board, userData, reportedObjects, parameters,
       }
 
     }
-  } ], function gotIps(error, results) {
+  } ]).toArray(
+      function gotIps(error, results) {
 
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      exports.getPostIps([], [], informedPosts, board, userData, parameters,
-          callback, informedThreads);
-    } else {
-      exports.getPostIps(results[0].ips, results[0].pages, informedPosts,
-          board, userData, parameters, callback, informedThreads);
-    }
+        if (error) {
+          callback(error);
+        } else if (!results.length) {
+          exports.getPostIps([], [], informedPosts, board, userData,
+              parameters, callback, informedThreads);
+        } else {
+          exports.getPostIps(results[0].ips, results[0].pages, informedPosts,
+              board, userData, parameters, callback, informedThreads);
+        }
 
-  });
+      });
 
 };
 

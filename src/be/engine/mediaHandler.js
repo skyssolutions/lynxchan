@@ -153,7 +153,7 @@ exports.getThreadReferences = function(postReferences, boardUri,
     };
   }
 
-  threads.aggregate(exports.getAggregationQuery(query),
+  threads.aggregate(exports.getAggregationQuery(query)).toArray(
       function countedReferences(error, results) {
 
         if (error) {
@@ -202,7 +202,7 @@ exports.clearPostingReferences = function(boardUri, threadsToClear,
     return;
   }
 
-  posts.aggregate(exports.getAggregationQuery(query),
+  posts.aggregate(exports.getAggregationQuery(query)).toArray(
       function countedReferences(error, results) {
 
         if (error) {
@@ -224,16 +224,17 @@ exports.clearBoardReferences = function(boardUri, language, callback) {
     'files.0' : {
       $exists : 1
     }
-  }), function gotPostsReferences(error, results) {
+  })).toArray(
+      function gotPostsReferences(error, results) {
 
-    if (error) {
-      callback(error);
-    } else {
-      exports.getThreadReferences(results, boardUri, null, false, language,
-          callback, true);
-    }
+        if (error) {
+          callback(error);
+        } else {
+          exports.getThreadReferences(results, boardUri, null, false, language,
+              callback, true);
+        }
 
-  });
+      });
 
 };
 // } Section 1: Reference decrease
@@ -276,7 +277,7 @@ exports.prune = function(callback) {
         $push : '$identifier'
       }
     }
-  } ], function gotIdentifiers(error, results) {
+  } ]).toArray(function gotIdentifiers(error, results) {
 
     if (error) {
       callback(error);
@@ -303,7 +304,7 @@ exports.prune = function(callback) {
             $push : '$filename'
           }
         }
-      } ], function gotNames(error, results) {
+      } ]).toArray(function gotNames(error, results) {
 
         if (error) {
           callback(error);
@@ -418,7 +419,7 @@ exports.deleteFiles = function(identifiers, userData, language, callback,
         $push : '$filename'
       }
     }
-  } ], function gotNames(error, results) {
+  } ]).toArray(function gotNames(error, results) {
 
     if (error) {
       callback(error);

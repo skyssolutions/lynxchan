@@ -251,7 +251,7 @@ exports.generate = function(date, callback) {
     $sort : {
       _id : 1
     }
-  } ], function gotDailyStats(error, results) {
+  } ]).toArray(function gotDailyStats(error, results) {
 
     if (error) {
       callback(error);

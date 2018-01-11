@@ -72,7 +72,7 @@ exports.reaggregateThread = function(boardUri, threadId, postId, callback) {
         }
       }
     }
-  } ], function aggregated(error, results) {
+  } ]).toArray(function aggregated(error, results) {
 
     if (error) {
       callback(error);
@@ -178,33 +178,35 @@ exports.cleanThreadPosts = function(boardUri, threadId, postId, language,
         }
       }
     }
-  } ], function gotPosts(error, results) {
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback(null, postId);
-    } else {
+  } ]).toArray(
+      function gotPosts(error, results) {
+        if (error) {
+          callback(error);
+        } else if (!results.length) {
+          callback(null, postId);
+        } else {
 
-      var postsToDelete = results[0].posts;
-      var removedFileCount = results[0].removedFileCount;
+          var postsToDelete = results[0].posts;
+          var removedFileCount = results[0].removedFileCount;
 
-      // style exception, too simple
-      referenceHandler.clearPostingReferences(boardUri, null, postsToDelete,
-          false, false, language, function removedReferences(error) {
+          // style exception, too simple
+          referenceHandler.clearPostingReferences(boardUri, null,
+              postsToDelete, false, false, language,
+              function removedReferences(error) {
 
-            if (error) {
-              callback(error);
-            } else {
-              exports.removeCleanedPosts(postsToDelete, boardUri, threadId,
-                  postId, removedFileCount, callback);
-            }
+                if (error) {
+                  callback(error);
+                } else {
+                  exports.removeCleanedPosts(postsToDelete, boardUri, threadId,
+                      postId, removedFileCount, callback);
+                }
 
-          });
-      // style exception, too simple
+              });
+          // style exception, too simple
 
-    }
+        }
 
-  });
+      });
 
 };
 

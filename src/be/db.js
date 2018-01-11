@@ -844,11 +844,11 @@ function initCollections(callback) {
 
 }
 
-function connect(connectString, callback, attempts) {
+function connect(connectString, dbToUse, callback, attempts) {
 
   attempts = attempts || 0;
 
-  mongo.MongoClient.connect(connectString, function connectedDb(error, db) {
+  mongo.MongoClient.connect(connectString, function connectedDb(error, client) {
 
     if (error) {
 
@@ -866,7 +866,7 @@ function connect(connectString, callback, attempts) {
 
     } else {
 
-      cachedDb = db;
+      cachedDb = client.db(dbToUse);
 
       initCollections(callback);
     }
@@ -900,6 +900,6 @@ exports.init = function(callback) {
     connectString += '?ssl=true';
   }
 
-  connect(connectString, callback);
+  connect(connectString, dbSettings.db, callback);
 
 };

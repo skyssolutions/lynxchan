@@ -153,31 +153,12 @@ exports.cleanLatestImages = function(boardData, threadId, postId, file,
         $push : '$_id'
       }
     }
-  } ], function gotLatestPostsToClean(error, results) {
-
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-
-      process.send({
-        frontPage : true
-      });
-
-      exports.updatePostingFiles(boardData, threadId, postId, file, callback,
-          false, true);
-
-    } else {
-
-      // style exception, too simple
-      globalLatestImages.removeMany({
-        _id : {
-          $in : results[0].ids
-        }
-      }, function removedOldImages(error) {
+  } ]).toArray(
+      function gotLatestPostsToClean(error, results) {
 
         if (error) {
           callback(error);
-        } else {
+        } else if (!results.length) {
 
           process.send({
             frontPage : true
@@ -185,13 +166,33 @@ exports.cleanLatestImages = function(boardData, threadId, postId, file,
 
           exports.updatePostingFiles(boardData, threadId, postId, file,
               callback, false, true);
+
+        } else {
+
+          // style exception, too simple
+          globalLatestImages.removeMany({
+            _id : {
+              $in : results[0].ids
+            }
+          }, function removedOldImages(error) {
+
+            if (error) {
+              callback(error);
+            } else {
+
+              process.send({
+                frontPage : true
+              });
+
+              exports.updatePostingFiles(boardData, threadId, postId, file,
+                  callback, false, true);
+            }
+          });
+          // style exception, too simple
+
         }
+
       });
-      // style exception, too simple
-
-    }
-
-  });
 
 };
 

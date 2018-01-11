@@ -553,7 +553,7 @@ function checkForDefaultPages() {
 
   var files = db.files();
 
-  files.aggregate({
+  files.aggregate([ {
     $match : {
       filename : {
         $in : defaultFilesArray
@@ -571,7 +571,7 @@ function checkForDefaultPages() {
         $push : '$filename'
       }
     }
-  }, function gotFiles(error, files) {
+  } ]).toArray(function gotFiles(error, files) {
 
     if (error) {
       throw error;

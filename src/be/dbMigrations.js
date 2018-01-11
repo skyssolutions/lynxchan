@@ -402,7 +402,7 @@ exports.iterateDays = function(date, callback, foundResults) {
         $push : '$_id'
       }
     }
-  } ], function gotLogs(error, results) {
+  } ]).toArray(function gotLogs(error, results) {
 
     if (error) {
       callback();
@@ -437,7 +437,7 @@ exports.aggregateLogs = function(callback) {
         $min : '$time'
       }
     }
-  } ], function gotOldestLog(error, results) {
+  } ]).toArray(function gotOldestLog(error, results) {
 
     if (error) {
       callback(error);
@@ -750,7 +750,7 @@ exports.removeOrphanedPosts = function(callback) {
         $push : '$threadId'
       }
     }
-  } ], function gotThreads(error, results) {
+  } ]).toArray(function gotThreads(error, results) {
 
     if (error) {
       callback(error);

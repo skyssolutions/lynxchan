@@ -493,7 +493,7 @@ exports.checkMultiBoardRouting = function(splitArray, req, res, callback) {
         $push : '$boardUri'
       }
     }
-  } ], function gotExistingBoards(error, results) {
+  } ]).toArray(function gotExistingBoards(error, results) {
 
     if (error || !results.length) {
       callback(error);

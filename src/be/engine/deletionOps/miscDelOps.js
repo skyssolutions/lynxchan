@@ -124,31 +124,32 @@ exports.pruneThreadsForQuery = function(matchBlock, limit, boardUri, language,
         $push : '$threadId'
       }
     }
-  } ], function gotThreads(error, threadsToRemove) {
+  } ]).toArray(
+      function gotThreads(error, threadsToRemove) {
 
-    if (error) {
-      callback(error);
-    } else if (!threadsToRemove.length) {
-      callback();
-    } else {
+        if (error) {
+          callback(error);
+        } else if (!threadsToRemove.length) {
+          callback();
+        } else {
 
-      var prunedThreads = threadsToRemove[0].threads;
+          var prunedThreads = threadsToRemove[0].threads;
 
-      // style exception, too simple
-      referenceHandler.clearPostingReferences(boardUri, prunedThreads, null,
-          false, false, language, function removedReferences(error) {
+          // style exception, too simple
+          referenceHandler.clearPostingReferences(boardUri, prunedThreads,
+              null, false, false, language, function removedReferences(error) {
 
-            if (error) {
-              callback(error);
-            } else {
-              exports.removePostsFromPrunedThreads(boardUri, prunedThreads,
-                  callback);
-            }
-          });
-      // style exception, too simple
+                if (error) {
+                  callback(error);
+                } else {
+                  exports.removePostsFromPrunedThreads(boardUri, prunedThreads,
+                      callback);
+                }
+              });
+          // style exception, too simple
 
-    }
-  });
+        }
+      });
 
 };
 
@@ -237,7 +238,7 @@ exports.deleteBoardFiles = function(board, callback) {
         $push : '$filename'
       }
     }
-  } ], function gotFiles(error, results) {
+  } ]).toArray(function gotFiles(error, results) {
     if (error) {
       callback(error);
     } else if (!results.length) {

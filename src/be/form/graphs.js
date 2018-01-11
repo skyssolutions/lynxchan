@@ -62,25 +62,26 @@ exports.process = function(req, res) {
         $push : '$metadata.date'
       }
     }
-  } ], function gotDates(error, results) {
+  } ]).toArray(
+      function gotDates(error, results) {
 
-    if (error) {
-      formOps.outputError(error, 500, res, req.language);
-    } else {
+        if (error) {
+          formOps.outputError(error, 500, res, req.language);
+        } else {
 
-      var dates = results.length ? results[0].dates : [];
+          var dates = results.length ? results[0].dates : [];
 
-      res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-          : 'text/html'));
+          res.writeHead(200, miscOps.getHeader(json ? 'application/json'
+              : 'text/html'));
 
-      if (json) {
-        res.end(jsonBuilder.graphs(dates));
-      } else {
-        res.end(domManipulator.graphs(dates, req.language));
-      }
+          if (json) {
+            res.end(jsonBuilder.graphs(dates));
+          } else {
+            res.end(domManipulator.graphs(dates, req.language));
+          }
 
-    }
+        }
 
-  });
+      });
 
 };

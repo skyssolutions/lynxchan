@@ -408,7 +408,7 @@ exports.clearCstomJs = function() {
         $push : '$boardUri'
       }
     }
-  } ], function gotBoards(error, foundBoards) {
+  } ]).toArray(function gotBoards(error, foundBoards) {
 
     if (error) {
       console.log(error);

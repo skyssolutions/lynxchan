@@ -681,7 +681,7 @@ exports.getAccounts = function(userData, language, callback) {
         $push : '$login'
       }
     }
-  } ], function gotAccounts(error, data) {
+  } ]).toArray(function gotAccounts(error, data) {
 
     if (error) {
       callback(error);

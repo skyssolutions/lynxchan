@@ -206,7 +206,7 @@ exports.removeFiles = function(name, callback) {
         $push : '$_id'
       }
     }
-  } ], function gotFiles(error, results) {
+  } ]).toArray(function gotFiles(error, results) {
 
     if (error) {
       if (callback) {

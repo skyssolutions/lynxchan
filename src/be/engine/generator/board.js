@@ -275,14 +275,16 @@ exports.getLatestPosts = function(boardUri, page, threadsArray, pageCount,
         }
       }
     }
-  } ], function gotPosts(error, latestPosts) {
-    if (error) {
-      callback(error);
-    } else {
-      exports.saveBoardHTML(boardUri, page, threadsArray, pageCount, boardData,
-          flagData, latestPosts, callback);
-    }
-  });
+  } ]).toArray(
+      function gotPosts(error, latestPosts) {
+        if (error) {
+          callback(error);
+        } else {
+
+          exports.saveBoardHTML(boardUri, page, threadsArray, pageCount,
+              boardData, flagData, latestPosts, callback);
+        }
+      });
 
 };
 
