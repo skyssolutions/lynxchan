@@ -313,7 +313,7 @@ exports.processTopDownMessage = function(message) {
     } else {
 
       require('./workerBoot').stopServers(function serversStoppedCallback() {
-        db.conn().close();
+        db.client().close();
         process.exit(0);
       });
 
@@ -369,7 +369,7 @@ var workerExitCallback = function(worker, code, signal) {
   if (exports.shuttingDown) {
 
     if (!Object.keys(cluster.workers).length) {
-      db.conn().close();
+      db.client().close();
     }
 
     return;
@@ -402,7 +402,7 @@ function getWorkerLimit() {
 function bootWorkers() {
 
   if (noDaemon) {
-    db.conn().close();
+    db.client().close();
     return;
   }
 
@@ -479,7 +479,7 @@ function iterateOptionalReloads(index) {
               console.error(error);
 
               // style exception, too simple
-              db.conn().close(function closed() {
+              db.client().close(function closed() {
                 process.exit(1);
               });
               // style exception, too simple

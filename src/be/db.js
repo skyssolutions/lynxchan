@@ -19,6 +19,7 @@ var debug = kernel.debug();
 var indexesSet;
 
 var cachedDb;
+var cachedClient;
 
 var maxIndexesSet = 21;
 
@@ -655,6 +656,10 @@ exports.chunks = function() {
   return cachedChunks;
 };
 
+exports.client = function() {
+  return cachedClient;
+};
+
 exports.conn = function() {
   return cachedDb;
 };
@@ -866,6 +871,7 @@ function connect(connectString, dbToUse, callback, attempts) {
 
     } else {
 
+      cachedClient = client;
       cachedDb = client.db(dbToUse);
 
       initCollections(callback);

@@ -120,6 +120,7 @@ Description: performs login of the user.
 Parameters: 
     login: login of the account. 
     password: password of the account.
+    remember(Boolean): if true, user will have longer sessions.
 
 ------------------------------------------------------------------------------------------
 

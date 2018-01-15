@@ -165,6 +165,7 @@ users: stores users.
         alwaysSignRole: indicates the user wishes to always use his role signature on posts.
         lockEnabled: indicates the user wishes to have it's account locked after 10 consecutive failed login attempts.
     inactive(Boolean): indicates the account is inactive.
+    remember(Boolean): indicates if the user wishes to have longer sessions. As it stands, without this, users will be logged out after 1 hour of inactivity and 1 month if set to true.
 
 ----------------------------------------------------------------------------------------
 

@@ -162,7 +162,7 @@ exports.createAccount = function(parameters, role, language, callback) {
             if (error) {
               callback(error);
             } else {
-              exports.createSession(parameters.login, callback);
+              exports.createSession(parameters.login, false, callback);
             }
           });
       // style exception, too simple
@@ -211,9 +211,9 @@ exports.registerUser = function(parameters, cb, role, override, captchaId,
 };
 // } Section 2: Account creation
 
-exports.createSession = function(login, callback) {
+exports.createSession = function(login, remember, callback) {
 
-  crypto.randomBytes(64, function gotHash(error, buffer) {
+  crypto.randomBytes(256, function gotHash(error, buffer) {
 
     if (error) {
       callback(error);
@@ -225,7 +225,12 @@ exports.createSession = function(login, callback) {
       renewAt.setMinutes(renewAt.getMinutes() + 1);
 
       var logoutAt = new Date();
-      logoutAt.setHours(logoutAt.getHours() + 1);
+
+      if (remember) {
+        logoutAt.setMonth(logoutAt.getMonth() + 1);
+      } else {
+        logoutAt.setHours(logoutAt.getHours() + 1);
+      }
 
       // style exception, too simple
       users.updateOne({
@@ -234,7 +239,8 @@ exports.createSession = function(login, callback) {
         $set : {
           hash : hash,
           renewExpiration : renewAt,
-          logoutExpiration : logoutAt
+          logoutExpiration : logoutAt,
+          remember : remember
         }
       }, function updatedUser(error) {
         callback(error, hash, logoutAt);
@@ -266,7 +272,8 @@ exports.login = function(parameters, language, callback) {
         } else if (!matches) {
           callback(lang(language).errLoginFailed);
         } else {
-          exports.createSession(parameters.login, callback);
+          exports.createSession(parameters.login, parameters.remember ? true
+              : false, callback);
         }
       });
       // style exception, too simple
@@ -281,8 +288,8 @@ exports.checkExpiration = function(user, now, callback) {
 
   if (user.renewExpiration < now) {
 
-    exports.createSession(user.login, function createdSession(error, hash,
-        expiration) {
+    exports.createSession(user.login, user.remember, function createdSession(
+        error, hash, expiration) {
 
       if (error) {
         callback(error);
@@ -543,7 +550,7 @@ exports.updatePassword = function(userData, parameters, callback) {
         if (error) {
           callback(error);
         } else {
-          exports.createSession(userData.login, callback);
+          exports.createSession(userData.login, userData.remember, callback);
         }
 
       });
