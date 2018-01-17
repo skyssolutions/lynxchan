@@ -177,11 +177,6 @@ logBanLift: object with the pieces used on the log of ban lift. Contains the fol
     boardBanPiece: piece used to indicate the board of the ban. Replaces: {$board}.
     finalPiece: final piece used for regular bans. Replaces: {$ban}, {$expiration}.
     unknownPiece: piece used for bans which type could not be identififed. Replaces: {$ban}.
-logHashBan: object containing the pieces used for logs of hash bans. Contains the following fields:
-    startPiece: piece used at the beginning. Replaces: {$login}.
-    globalPiece: piece used to indicate it is a hash ban.
-    boardPiece: piece used to indicate the board of the hash ban. Replaces: {$board}.
-    finalPiece: piece used at the end. Replaces: {$hash}.
 logLiftHashBan: object containing the pieces used for logs of hash ban lifts. Contains the following fields:
     startPiece: piece used at the beginning. Replaces: {$login}.
     globalPiece: piece used to indicate it is a global hash ban.

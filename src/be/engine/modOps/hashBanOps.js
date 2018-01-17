@@ -84,6 +84,7 @@ exports.getHashBans = function(userData, parameters, language, callback) {
 
 // Section 2: Hash ban {
 exports.writeHashBan = function(userData, parameters, callback) {
+
   var hashBan = {
     md5 : parameters.hash
   };
@@ -95,39 +96,13 @@ exports.writeHashBan = function(userData, parameters, callback) {
   hashBans.insertOne(hashBan, function insertedBan(error) {
     if (error && error.code !== 11000) {
       callback(error);
-    } else if (error) {
-      callback();
     } else {
-      var pieces = lang().logHashBan;
-
-      var logMessage = pieces.startPiece.replace('{$login}', userData.login);
-
-      if (parameters.boardUri) {
-        logMessage += pieces.boardPiece
-            .replace('{$board}', parameters.boardUri);
-      } else {
-        logMessage += pieces.globalPiece;
-      }
-
-      logMessage += pieces.finalPiece.replace('{$hash}', parameters.hash);
-
-      // style exception,too simple
-      logOps.insertLog({
-        user : userData.login,
-        global : parameters.boardUri ? false : true,
-        time : new Date(),
-        description : logMessage,
-        type : 'hashBan',
-        boardUri : parameters.boardUri
-      }, callback);
-      // style exception,too simple
-
+      callback();
     }
   });
 };
 
-exports.checkForHashBanPermission = function(userData, parameters, language,
-    callback) {
+exports.placeHashBan = function(userData, parameters, language, callback) {
 
   miscOps.sanitizeStrings(parameters, exports.hashBanArguments);
 
@@ -155,23 +130,6 @@ exports.checkForHashBanPermission = function(userData, parameters, language,
   } else {
     exports.writeHashBan(userData, parameters, callback);
   }
-
-};
-
-exports.placeHashBan = function(userData, parameters, captchaId, language,
-    callback) {
-
-  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null, language,
-      function solvedCaptcha(error) {
-
-        if (error) {
-          callback(error);
-        } else {
-          exports.checkForHashBanPermission(userData, parameters, language,
-              callback);
-        }
-
-      });
 
 };
 // } Section 2: Hash ban
