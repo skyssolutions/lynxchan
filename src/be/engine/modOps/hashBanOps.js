@@ -14,6 +14,7 @@ var lang;
 var common;
 var captchaOps;
 var miscOps;
+var hashBanLimit;
 
 exports.hashBanArguments = [ {
   field : 'hash',
@@ -25,6 +26,7 @@ exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
   allowTor = settings.allowTorFiles;
+  hashBanLimit = settings.maxBoardHashBans;
 };
 
 exports.loadDependencies = function() {
@@ -102,7 +104,8 @@ exports.writeHashBan = function(userData, parameters, callback) {
   });
 };
 
-exports.placeHashBan = function(userData, parameters, language, callback) {
+exports.placeHashBan = function(userData, parameters, language, callback,
+    checkedHashCount) {
 
   miscOps.sanitizeStrings(parameters, exports.hashBanArguments);
 
@@ -110,7 +113,25 @@ exports.placeHashBan = function(userData, parameters, language, callback) {
 
   if (parameters.boardUri) {
 
-    parameters.boardUri = parameters.boardUri.toString();
+    if (!checkedHashCount) {
+      parameters.boardUri = parameters.boardUri.toString();
+
+      hashBans.count({
+        boardUri : parameters.boardUri
+      }, function gotCount(error, count) {
+
+        if (error) {
+          callback(error);
+        } else if (count >= hashBanLimit) {
+          callback(lang(language).errHashBanLimit);
+        } else {
+          exports.placeHashBan(userData, parameters, language, callback, true);
+        }
+
+      });
+
+      return;
+    }
 
     boards.findOne({
       boardUri : parameters.boardUri

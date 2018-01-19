@@ -319,5 +319,6 @@
   "msgMassBanned": "Mass ban applied.",
   "errNotAllowedToMassBan": "You are not allowed to mass ban.",
   "errMediaNotFound": "Media entry could not be found.",
-  "titMediaDetails": "Media details"
+  "titMediaDetails": "Media details",
+  "errHashBanLimit": "This board already reached the hash ban limit."
 }

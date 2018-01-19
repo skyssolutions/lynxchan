@@ -305,6 +305,11 @@
     "element": "fieldBoardMessageLength"
   },
   {
+    "type": "number",
+    "setting": "maxBoardHashBans",
+    "element": "fieldMaxBoardHashBans"
+  },
+  {
     "type": "boolean",
     "setting": "disable304",
     "element": "checkboxDisable304"

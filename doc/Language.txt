@@ -118,6 +118,7 @@ errNoAccountDeletionConfirmation: error thrown when the user didn't confirmed he
 errNotAllowedToDeleteAccount: error thrown when the user tries to delete an account he is not allowed to.
 errNotAllowedToManageSocket: error thrown when the user tries to manage the unix socket and is not allowed to.
 errNotAllowedToMassBan: error thrown when the user tries to mass ban ips and is not allowed to.
+errHashBanLimit: error thrown when the board already has too many bans.
 guiTypeBan: label used for logs of bans.
 guiTypeBanLift: label used for logs of ban lifts.
 guiTypeDeletion: label used for logs of deletions.

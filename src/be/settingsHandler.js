@@ -538,6 +538,7 @@ exports.getDefaultSettings = function() {
     flagNameLength : 32,
     boardMessageLength : 256,
     staticExpiration : 60,
+    maxBoardHashBans : 128,
     incSpamIpsSource : 'https://www.stopforumspam.com/downloads/listed_ip_1.zip'
   };
 

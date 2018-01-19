@@ -1243,6 +1243,10 @@
         "uses": "value"
       },
       {
+        "name": "fieldMaxBoardHashBans",
+        "uses": "value"
+      },
+      {
         "name": "checkboxDisable304",
         "uses": "checked"
       },
