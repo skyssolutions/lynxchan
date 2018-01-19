@@ -427,6 +427,17 @@ exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
 
   var postObject = {};
 
+  message = message.replace(/(http|https)\:\/\/\S+/g, function links(match) {
+
+    match = match.replace(/>/g, '&gt').replace(/[_='~*]/g,
+        function sanitization(innerMatch) {
+          return exports.linkSanitizationRelation[innerMatch];
+        });
+
+    return '<a target="blank" href="' + match + '">' + match + '</a>';
+
+  });
+
   for (var i = 0; i < posts.length; i++) {
     var post = posts[i];
 
@@ -484,17 +495,6 @@ exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
     toReturn += quotedPost + '</a>';
 
     return toReturn;
-
-  });
-
-  message = message.replace(/(http|https)\:\/\/\S+/g, function links(match) {
-
-    match = match.replace(/>/g, '&gt').replace(/[_='~*]/g,
-        function sanitization(innerMatch) {
-          return exports.linkSanitizationRelation[innerMatch];
-        });
-
-    return '<a target="blank" href="' + match + '">' + match + '</a>';
 
   });
 

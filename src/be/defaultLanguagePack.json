@@ -144,12 +144,6 @@
     "unknownPiece": "unknown type of ban with id {$ban}."
   },
   "errDeniedThreadManagement": "You are not allowed to change thread settings in this board.",
-  "logHashBan": {
-    "startPiece": "User {$login} placed a ",
-    "globalPiece": "global hash ban ",
-    "boardPiece": "hash ban on board {$board} ",
-    "finalPiece": "for hash {$hash}."
-  },
   "logLiftHashBan": {
     "startPiece": "User {$login} lifted ",
     "globalPiece": "a global hash ban ",
