@@ -337,4 +337,4 @@ languages: stores alternative languages.
 
 *: duplicated data, foreign key.
 **: unique key
-***:part of a unique key combination.
+***: part of a unique key combination.

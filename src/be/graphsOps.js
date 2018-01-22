@@ -1,34 +1,85 @@
 'use strict';
 
 // Handles graph generation
-var mongo = require('mongodb');
 var exec = require('child_process').exec;
 var db = require('./db');
+var files = db.files();
+var chunks = db.chunks();
 var logger = require('./logger');
-var conn = db.conn();
+var bucket = new (require('mongodb')).GridFSBucket(db.conn());
 var stats = db.stats();
 var settings = require('./settingsHandler').getGeneralSettings();
 var verbose = settings.verbose || settings.verboseMisc;
 
 // Duplicated code, since we can't make a core module depend on an engine module
-function writeData(data, dest, mime, meta, callback) {
+exports.removeDuplicates = function(uploadStream, callback) {
 
-  meta.lastModified = new Date();
-
-  var gs = mongo.GridStore(conn, dest, 'w', {
-    'content_type' : mime,
-    metadata : meta
-  });
-
-  gs.open(function openedGs(error, gs) {
+  files.aggregate([ {
+    $match : {
+      _id : {
+        $ne : uploadStream.id
+      },
+      filename : uploadStream.filename
+    }
+  }, {
+    $group : {
+      _id : 0,
+      ids : {
+        $push : '$_id'
+      }
+    }
+  } ]).toArray(function gotArray(error, results) {
 
     if (error) {
       callback(error);
+    } else if (!results.length) {
+      callback();
     } else {
-      gs.write(data, true, callback);
-    }
 
+      var ids = results[0].ids;
+
+      // style exception, too simple
+      chunks.removeMany({
+        'files_id' : {
+          $in : ids
+        }
+      }, function removedChunks(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          files.removeMany({
+            _id : {
+              $in : ids
+            }
+          }, callback);
+
+        }
+
+      });
+      // style exception, too simple
+
+    }
   });
+};
+
+function writeData(data, dest, mime, meta, callback) {
+
+  var uploadStream = bucket.openUploadStream(dest, {
+    contentType : mime,
+    metadata : meta
+  });
+
+  uploadStream.once('error', callback);
+
+  uploadStream.once('finish', function finished() {
+    exports.removeDuplicates(uploadStream, callback);
+  });
+
+  uploadStream.write(data);
+
+  uploadStream.end();
 
 }
 

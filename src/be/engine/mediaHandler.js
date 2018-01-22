@@ -257,7 +257,7 @@ exports.deletePrunedFiles = function(files, callback) {
 
 };
 
-exports.prune = function(callback) {
+exports.getFilesToPrune = function(callback) {
 
   references.aggregate([ {
     $match : {
@@ -321,6 +321,101 @@ exports.prune = function(callback) {
         }
 
       });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.getRepliesCount = function(currentCount, query, id, callback) {
+
+  posts.aggregate(query).toArray(function gotFiles(error, results) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      currentCount += results.length ? results[0].count : 0;
+
+      // style exception, too simple
+      references.updateOne({
+        _id : id
+      }, {
+        $set : {
+          references : currentCount
+        }
+      }, function updatedCount(error) {
+        if (error) {
+          callback(error);
+        } else {
+          exports.prune(callback, id);
+        }
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.getReferenceCountQuery = function(md5) {
+
+  return [ {
+    $match : {
+      'files.md5' : md5
+    }
+  }, {
+    $project : {
+      files : 1,
+      _id : 0
+    }
+  }, {
+    $unwind : '$files'
+  }, {
+    $match : {
+      'files.md5' : md5
+    }
+  }, {
+    $count : 'count'
+  } ];
+
+};
+
+exports.prune = function(callback, lastId) {
+
+  references.findOne(lastId ? {
+    _id : {
+      $gt : lastId
+    }
+  } : {}, {
+    identifier : 1
+  }, function gotReference(error, reference) {
+
+    if (error) {
+      callback(error);
+    } else if (!reference) {
+      exports.getFilesToPrune(callback);
+    } else {
+
+      var query = exports.getReferenceCountQuery(reference.identifier
+          .substring(0, 32));
+
+      // style exception, too simple
+      threads.aggregate(query).toArray(
+          function gotFiles(error, results) {
+
+            if (error) {
+              callback(error);
+            } else {
+
+              exports.getRepliesCount(results.length ? results[0].count : 0,
+                  query, reference._id, callback);
+            }
+
+          });
       // style exception, too simple
 
     }

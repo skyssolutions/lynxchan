@@ -21,7 +21,7 @@ var indexesSet;
 var cachedDb;
 var cachedClient;
 
-var maxIndexesSet = 21;
+var maxIndexesSet = 23;
 
 var cachedLanguages;
 var cachedUploadReferences;
@@ -481,6 +481,20 @@ function initPosts(callback) {
       indexSet(callback);
     }
   });
+
+  cachedPosts.ensureIndex({
+    'files.md5' : 1
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
 }
 
 function initRecoveryRequests(callback) {
@@ -545,6 +559,20 @@ function initThreads(callback) {
   cachedThreads.ensureIndex({
     pinned : 1,
     lastBump : 1
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+
+  cachedThreads.ensureIndex({
+    'files.md5' : 1
   }, function setIndex(error, index) {
     if (error) {
       if (loading) {

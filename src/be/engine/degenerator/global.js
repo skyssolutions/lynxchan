@@ -36,6 +36,7 @@ exports.loadDependencies = function() {
   exports.maintenanceImage = generator.maintenanceImage;
   exports.thumb = generator.thumb;
   exports.notFound = generator.notFound;
+  exports.graphs = generator.graphs;
 
 };
 
