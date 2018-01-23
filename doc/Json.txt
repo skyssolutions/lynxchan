@@ -176,6 +176,7 @@ Path:/<board>/catalog.json
 
 Root(Array): array of objects representing threads. Each element contains the following fields:
     message: message of the thread.
+    markdown: message with html markdown applied.
     threadId(Number): id of the thread.
     postCount(Number): how many replies the thread has.
     fileCount(Number): how many files were posted in replies in this thread.

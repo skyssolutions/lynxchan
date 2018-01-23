@@ -218,15 +218,21 @@ exports.boardModeration = function(boardData, ownerData, language) {
   var volunteers = boardData.volunteers || [];
 
   for (var i = 0; i < volunteers.length; i++) {
-    children += '<div>' + common.clean(volunteers[i]) + '</div>';
+
+    var volunteer = common.clean(volunteers[i]);
+
+    children += '<a href="/accountManagement.js?account=' + volunteer + '">';
+    children += volunteer + '</a>';
   }
 
   document = document.replace('__divVolunteers_children__', children);
 
   document = exports.setSpecialCheckboxesAndIdentifiers(document, boardData);
 
-  document = document.replace('__labelOwner_inner__', common
-      .clean(ownerData.login));
+  var owner = common.clean(ownerData.login);
+
+  document = document.replace('__linkOwner_inner__', owner).replace(
+      '__linkOwner_href__', '/accountManagement.js?account=' + owner);
 
   document = document.replace('__labelLastSeen_inner__',
       ownerData.lastSeen ? common.formatDateToDisplay(ownerData.lastSeen,

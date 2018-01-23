@@ -1353,8 +1353,8 @@ labelTitle:
     use: have it's innerHTML manipulated.
     description: header that displays basic board information.
 
-labelOwner:
-    use: have it's innerHTML manipulated.
+linkOwner:
+    use: have it's innerHTML and href manipulated.
     description: displays the login of the board owner.
 
 labelLastSeen:
@@ -2314,6 +2314,10 @@ emailLabel:
 lastSeenLabel:
     use: have it's innerHTML manipulated.
     description: label showing the last time the account was active.
+
+loginLabel:
+    use: have it's innerHTML manipulated.
+    description: label showing the account login.
 
 ownedBoardsDiv:
     use: have children appended to it.

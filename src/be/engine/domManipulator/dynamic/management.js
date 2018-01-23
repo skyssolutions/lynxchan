@@ -944,8 +944,12 @@ exports.setOwnedAndVolunteeredBoards = function(accountData, document) {
   var children = '';
 
   for (var i = 0; i < accountData.ownedBoards.length; i++) {
-    children += '<div>' + common.clean(accountData.ownedBoards[i]);
-    children += '</div>';
+
+    var boardUri = common.clean(accountData.ownedBoards[i]);
+
+    children += '<a href="/boardModeration.js?boardUri=' + boardUri + '">';
+    children += boardUri + '</a>';
+
   }
 
   document = document.replace('__ownedBoardsDiv_children__', children);
@@ -953,8 +957,11 @@ exports.setOwnedAndVolunteeredBoards = function(accountData, document) {
   children = '';
 
   for (i = 0; i < accountData.volunteeredBoards.length; i++) {
-    children += '<div>' + common.clean(accountData.volunteeredBoards[i]);
-    children += '</div>';
+
+    boardUri = common.clean(accountData.volunteeredBoards[i]);
+
+    children += '<a href="/boardModeration.js?boardUri=' + boardUri + '">';
+    children += boardUri + '</a>';
   }
 
   return document.replace('__volunteeredBoardsDiv_children__', children);
@@ -980,6 +987,8 @@ exports.accountManagement = function(accountData, account, userRole, language) {
 
     document = document.replace('__userIdentifier_value__', account);
   }
+
+  document = document.replace('__loginLabel_inner__', account);
 
   document = document.replace('__lastSeenLabel_inner__',
       accountData.lastSeen ? accountData.lastSeen.toUTCString() : '');

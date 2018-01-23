@@ -809,8 +809,11 @@
         "uses": "inner"
       },
       {
-        "name": "labelOwner",
-        "uses": "inner"
+        "name": "linkOwner",
+        "uses": [
+          "inner",
+          "href"
+        ]
       },
       {
         "name": "labelLastSeen",
@@ -1495,6 +1498,10 @@
       {
         "name": "userIdentifier",
         "uses": "value"
+      },
+      {
+        "name": "loginLabel",
+        "uses": "inner"
       }
     ]
   },

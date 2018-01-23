@@ -385,6 +385,7 @@ exports.catalog = function(boardUri, threads, callback) {
 
     var threadToPush = {
       message : thread.message,
+      markdown : thread.markdown,
       threadId : thread.threadId,
       postCount : thread.postCount,
       fileCount : thread.fileCount,
