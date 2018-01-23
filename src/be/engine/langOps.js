@@ -134,7 +134,7 @@ exports.loadLanguagePack = function(defaultPack, languagePackPath) {
 
 exports.init = function(language) {
 
-  var defaultLanguagePath = __dirname + '/../defaultLanguagePack.json';
+  var defaultLanguagePath = __dirname + '/../data/defaultLanguagePack.json';
 
   var defaultPack = JSON.parse(fs.readFileSync(defaultLanguagePath));
 

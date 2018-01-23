@@ -46,8 +46,8 @@ exports.loadDependencies = function() {
   reportOps = require('./modOps').report;
   lang = require('./langOps').languagePack;
 
-  fs.readFile(__dirname + '/../settingsRelation.json', function read(error,
-      data) {
+  fs.readFile(__dirname + '/../data/settingsRelation.json', function read(
+      error, data) {
 
     if (error) {
       console.log(error);
