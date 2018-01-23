@@ -165,18 +165,13 @@ exports.logs = function(dates, language) {
 
   var children = '';
 
-  var cellTemplate = templateHandler(language).logIndexCell.template;
-
   for (var i = 0; i < dates.length; i++) {
 
-    var cell = '<div class="logIndexCell">' + cellTemplate;
-
-    var href = '/.global/logs/' + logger.formatedDate(dates[i]) + '.html';
     var displayDate = common.formatDateToDisplay(dates[i], true, language);
 
-    cell = cell.replace('__dateLink_href__', href);
+    var cell = '<a href="/.global/logs/' + logger.formatedDate(dates[i]);
 
-    children += cell.replace('__dateLink_inner__', displayDate) + '</div>';
+    children += cell + '.html">' + displayDate + '</a>';
 
   }
 
@@ -537,18 +532,13 @@ exports.graphs = function(dates, language) {
 
   var children = '';
 
-  var cellTemplate = templateHandler(language).graphIndexCell.template;
-
   for (var i = 0; i < dates.length; i++) {
 
-    var cell = '<div class="graphIndexCell">' + cellTemplate;
-
-    var href = '/.global/graphs/' + logger.formatedDate(dates[i]) + '.png';
     var displayDate = common.formatDateToDisplay(dates[i], true, language);
 
-    cell = cell.replace('__dateLink_href__', href);
+    var cell = '<a href="/.global/graphs/' + logger.formatedDate(dates[i]);
 
-    children += cell.replace('__dateLink_inner__', displayDate) + '</div>';
+    children += cell + '.png">' + displayDate + '</a>';
 
   }
 

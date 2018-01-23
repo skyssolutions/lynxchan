@@ -751,30 +751,6 @@
     ]
   },
   {
-    "template": "logIndexCell",
-    "prebuiltFields": [
-      {
-        "name": "dateLink",
-        "uses": [
-          "href",
-          "inner"
-        ]
-      }
-    ]
-  },
-  {
-    "template": "graphIndexCell",
-    "prebuiltFields": [
-      {
-        "name": "dateLink",
-        "uses": [
-          "href",
-          "inner"
-        ]
-      }
-    ]
-  },
-  {
     "template": "mediaCell",
     "prebuiltFields": [
       {
