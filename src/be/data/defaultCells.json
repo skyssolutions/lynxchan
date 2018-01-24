@@ -1,29 +1,5 @@
 [
   {
-    "template": "latestImageCell",
-    "prebuiltFields": [
-      {
-        "name": "linkPost",
-        "uses": [
-          "children",
-          "href"
-        ]
-      }
-    ]
-  },
-  {
-    "template": "topBoardCell",
-    "prebuiltFields": [
-      {
-        "name": "boardLink",
-        "uses": [
-          "inner",
-          "href"
-        ]
-      }
-    ]
-  },
-  {
     "template": "catalogCell",
     "prebuiltFields": [
       {
@@ -796,18 +772,6 @@
       {
         "name": "headerValuesLabel",
         "uses": "inner"
-      }
-    ]
-  },
-  {
-    "template": "accountCell",
-    "prebuiltFields": [
-      {
-        "name": "accountLink",
-        "uses": [
-          "href",
-          "inner"
-        ]
       }
     ]
   }

@@ -518,29 +518,20 @@ exports.catalog = function(language, boardData, threads, flagData, callback) {
 // Section 4: Front page {
 exports.getLatestImages = function(latestImages, language) {
 
-  var cellTemplate = templateHandler(language).latestImageCell.template;
-
   var children = '';
 
   for (var i = 0; i < latestImages.length; i++) {
 
     var image = latestImages[i];
 
-    common.clean(image);
+    var boardUri = common.clean(image.boardUri);
 
-    var cell = '<div class="latestImageCell">' + cellTemplate;
-    cell += '</div>';
-
-    var postLink = '/' + image.boardUri + '/res/' + image.threadId + '.html';
+    var postLink = '/' + boardUri + '/res/' + image.threadId + '.html';
     postLink += '#' + (image.postId || image.threadId);
 
-    cell = cell.replace('__linkPost_href__', postLink);
+    var cell = '<a href="' + postLink + '"><img src="' + image.thumb + '">';
 
-    var img = '<img src="' + image.thumb + '">';
-
-    cell = cell.replace('__linkPost_children__', img);
-
-    children += cell;
+    children += cell + '</a>';
 
   }
 
@@ -550,24 +541,18 @@ exports.getLatestImages = function(latestImages, language) {
 
 exports.getTopBoards = function(boards, language) {
 
-  var cellTemplate = templateHandler(language).topBoardCell.template;
   var children = '';
 
   for (var i = 0; i < boards.length; i++) {
 
     var board = boards[i];
 
-    common.clean(board);
+    var boardUri = common.clean(board.boardUri);
+    var boardName = common.clean(board.boardName);
 
-    var cell = '<div class="topBoardCell">' + cellTemplate;
-    cell += '</div>';
+    var cell = '<a href="/' + boardUri + '/">/' + boardUri + '/ - ';
 
-    var content = '/' + board.boardUri + '/ - ' + board.boardName;
-    cell = cell.replace('__boardLink_inner__', content);
-
-    cell = cell.replace('__boardLink_href__', '/' + board.boardUri + '/');
-
-    children += cell;
+    children += cell + boardName + '</a>';
   }
 
   return children;

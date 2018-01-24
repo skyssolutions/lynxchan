@@ -2137,19 +2137,6 @@ divDates:
 
 TEM_ID::56
 
-latestImageCell*: cell used to list global latest images on the front-page.
-
-Root element: div
-
-Elements:
-linkPost:
-    use: have it's href and children appended to it.
-    description: link that leads to the post on which the image was posted.
-
-------------------------------------------------------------------------------------------
-
-TEM_ID::57
-
 graphsIndexPage: page that lists the available dates that contain daily graphs for a specific year.
 
 Elements:
@@ -2159,7 +2146,7 @@ divDates:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::58
+TEM_ID::57
 
 mediaManagementPage: page that allows the global staff to manage the uploaded media files.
 
@@ -2174,7 +2161,7 @@ pagesDiv:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::59
+TEM_ID::58
 
 mediaCell*: cell that represents a media element for management.
 
@@ -2203,7 +2190,7 @@ detailsLink:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::60
+TEM_ID::59
 
 languagesManagementPage: page used to manage alternative languages.
 
@@ -2214,7 +2201,7 @@ languagesDiv:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::61
+TEM_ID::60
 
 languageCell*: cell that represents an alternative language.
 
@@ -2239,20 +2226,7 @@ headerValuesLabel:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::62
-
-topBoardCell*: cell used for top boards on the front-page.
-
-Root element: div.
-
-Elements:
-boardLink:
-    use: have it's href and innerHTML manipulated.
-    description: link to the board.
-
-------------------------------------------------------------------------------------------
-
-TEM_ID::63
+TEM_ID::61
 
 accountsPage: page that displays all existing accounts.
 
@@ -2263,20 +2237,7 @@ divAccounts:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::64
-
-accountCell*: cell used to display existing accounts.
-
-Root element: div.
-
-Elements:
-accountLink:
-    use: have it's href and innerHTML manipulated.
-    description: link that leads to the selected account management page.
-
-------------------------------------------------------------------------------------------
-
-TEM_ID::65
+TEM_ID::62
 
 accountManagementPage: page used to display data for an account.
 
@@ -2315,7 +2276,7 @@ userIdentifier:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::66
+TEM_ID::63
 
 socketManagementPage: page used to manage the unix socket.
 
@@ -2326,7 +2287,7 @@ statusLabel:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::67
+TEM_ID::64
 
 mediaDetailsPage: page used to display details of a media file.
 
@@ -2349,13 +2310,13 @@ panelReferences:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::68
+TEM_ID::65
 
 header: optional header. If any page has an element with the id dynamicHeader, this element will have it's innerHTML set as this template's content.
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::69
+TEM_ID::66
 
 footer: optional footer. If any page has an element with the id dynamicFooter, this element will have it's innerHTML set as this template's content.
 

@@ -919,19 +919,13 @@ exports.accounts = function(accounts, language) {
 
   var children = '';
 
-  var cellTemplate = templateHandler(language).accountCell.template;
-
   for (var i = 0; i < accounts.length; i++) {
 
     var account = common.clean(accounts[i]);
 
-    var newCell = '<div class="accountCell">' + cellTemplate + '</div>';
+    var newCell = '<a href="/accountManagement.js?account=' + account + '">';
 
-    newCell = newCell.replace('__accountLink_inner__', account);
-    newCell = newCell.replace('__accountLink_href__',
-        '/accountManagement.js?account=' + account);
-
-    children += newCell;
+    children += newCell + account + '</a>';
   }
 
   return document.replace('__divAccounts_children__', children);
