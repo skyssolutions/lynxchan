@@ -753,6 +753,15 @@ exports.getPostsToDelete = function(userData, board, postsToDelete, parameters,
       }
     };
 
+    if (!exports.isAllowedByStaffPower(userData, board)) {
+      if (!parameters.password) {
+        cb();
+        return;
+      } else {
+        queryBlock.password = parameters.password;
+      }
+    }
+
   } else {
 
     var orBlock = [ {
@@ -795,7 +804,6 @@ exports.getPostsToDelete = function(userData, board, postsToDelete, parameters,
 
           if (!foundPosts.length && !foundThreads.length) {
             cb();
-            console.log('returned');
             return;
           }
 
