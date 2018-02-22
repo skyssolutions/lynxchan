@@ -1907,6 +1907,10 @@ checkboxSFWLatestImages:
     use: might be turned on.
     description: indicates that only SFW images should be displayed on the front-page.
 
+checkboxOmitUnindexedContent:
+    use: might be turned on.
+    description: indicates that content from unindexes boards are not shown on overboard or the front-page.
+
 checkboxDisableFloodCheck:
     use: might be turned on.
     description: indicates that flood checks are disabled.

@@ -12,6 +12,7 @@ var users = db.users();
 var reports = db.reports();
 var reportOps;
 var formOps;
+var omitUnindexed;
 var CSP;
 var globalBoardModeration;
 var lang;
@@ -31,6 +32,7 @@ exports.loadSettings = function() {
   globalBoardModeration = settings.allowGlobalBoardModeration;
   CSP = settings.CSP;
   clearIpMinRole = settings.clearIpMinRole;
+  omitUnindexed = settings.omitUnindexedContent;
   verbose = settings.verbose || settings.verboseMisc;
 
 };
@@ -57,6 +59,18 @@ exports.loadDependencies = function() {
     settingsRelation = data.toString('utf8');
 
   });
+
+};
+
+exports.omitted = function(boardData) {
+
+  var settings = boardData.settings || [];
+
+  if (settings.indexOf('unindex') === -1) {
+    return false;
+  } else {
+    return omitUnindexed;
+  }
 
 };
 

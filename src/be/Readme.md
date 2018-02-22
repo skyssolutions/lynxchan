@@ -174,6 +174,7 @@ Settings files that goes into the settings directory:
 * `boardMessageLength`(Number): maximum size for board messages. Defaults to 256.
 * `staticExpiration`(Number): amount of minutes that static files served from cache will inform as expiration when requested. Defaults to 60.
 * `maxBoardHashBans`(Number): limit for board hash bans boards can have. Defaults to 128.
+* `omitUnindexedContent`(Boolean): causes content from unindexes boards to not be displayed on the front-page or overboards.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

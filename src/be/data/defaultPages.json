@@ -1274,6 +1274,10 @@
         "uses": "checked"
       },
       {
+        "name": "checkboxOmitUnindexedContent",
+        "uses": "checked"
+      },
+      {
         "name": "checkboxGlobalBanners",
         "uses": "checked"
       },

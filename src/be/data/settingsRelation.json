@@ -366,6 +366,11 @@
   },
   {
     "type": "boolean",
+    "setting": "omitUnindexedContent",
+    "element": "checkboxOmitUnindexedContent"
+  },
+  {
+    "type": "boolean",
     "setting": "verboseMisc",
     "element": "checkboxVerboseMisc"
   },

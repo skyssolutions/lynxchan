@@ -45,9 +45,9 @@ exports.loadDependencies = function() {
 
 };
 
-exports.addThreadToLatestPosts = function(thread, threadId, callback) {
+exports.addThreadToLatestPosts = function(omitted, thread, threadId, callback) {
 
-  if (!globalLatestPosts) {
+  if (omitted || !globalLatestPosts) {
     callback(null, threadId);
   } else {
 
@@ -63,28 +63,30 @@ exports.addThreadToLatestPosts = function(thread, threadId, callback) {
   }
 };
 
-exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
+exports.finishThreadCreation = function(boardData, threadId, enabledCaptcha,
     callback, thread) {
 
   if (enabledCaptcha) {
     process.send({
-      board : boardUri,
+      board : boardData.boardUri,
       buildAll : true
     });
   } else {
 
     // signal rebuild of board pages
     process.send({
-      board : boardUri
+      board : boardData.boardUri
     });
   }
 
   process.send({
     multiboard : true,
-    board : boardUri
+    board : boardData.boardUri
   });
 
-  if (overboard || sfwOverboard) {
+  var omitted = miscOps.omitted(boardData);
+
+  if (!omitted && (overboard || sfwOverboard)) {
     overboardOps.reaggregate({
       overboard : true,
       _id : thread._id,
@@ -92,26 +94,28 @@ exports.finishThreadCreation = function(boardUri, threadId, enabledCaptcha,
     });
   }
 
-  common.addPostToStats(thread.ip, boardUri, function updatedStats(error) {
+  common.addPostToStats(thread.ip, boardData.boardUri, function updatedStats(
+      error) {
+
     if (error) {
       console.log(error.toString());
     }
 
-    exports.addThreadToLatestPosts(thread, threadId, callback);
+    exports.addThreadToLatestPosts(omitted, thread, threadId, callback);
   });
 
 };
 
-exports.updatePages = function(boardUri, threadId, enabledCaptcha, callback,
+exports.updatePages = function(boardData, threadId, enabledCaptcha, callback,
     thread) {
 
-  common.setThreadsPage(boardUri, function updatedPages(error) {
+  common.setThreadsPage(boardData.boardUri, function updatedPages(error) {
 
     if (error) {
       console.log(error);
     }
 
-    exports.finishThreadCreation(boardUri, threadId, enabledCaptcha, callback,
+    exports.finishThreadCreation(boardData, threadId, enabledCaptcha, callback,
         thread);
   });
 
@@ -152,14 +156,14 @@ exports.updateBoardForThreadCreation = function(boardData, threadId,
               if (error) {
                 callback(error);
               } else {
-                exports.updatePages(boardUri, threadId, enabledCaptcha,
+                exports.updatePages(boardData, threadId, enabledCaptcha,
                     callback, thread);
               }
             });
         // style exception, too simple
 
       } else {
-        exports.updatePages(boardUri, threadId, enabledCaptcha, callback,
+        exports.updatePages(boardData, threadId, enabledCaptcha, callback,
             thread);
       }
 

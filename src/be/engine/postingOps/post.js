@@ -271,10 +271,10 @@ exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
 
 };
 
-exports.addPostToGlobalLatest = function(post, thread, parameters, cleanPosts,
-    bump, language, callback) {
+exports.addPostToGlobalLatest = function(omitted, post, thread, parameters,
+    cleanPosts, bump, language, callback) {
 
-  if (!globalLatestPosts || !post.message.length) {
+  if (omitted || !globalLatestPosts || !post.message.length) {
     exports.updateBoardForPostCreation(post.ip, parameters, post.postId,
         thread, cleanPosts, bump, language, callback);
 
@@ -408,6 +408,8 @@ exports.updateThread = function(boardData, parameters, postId, thread,
       callback(error);
     } else {
 
+      var omitted = miscOps.omitted(boardData);
+
       if (bump) {
 
         common.setThreadsPage(parameters.boardUri, function setPages(error) {
@@ -415,14 +417,14 @@ exports.updateThread = function(boardData, parameters, postId, thread,
             console.log(error);
           }
 
-          exports.addPostToGlobalLatest(post, thread, parameters, cleanPosts,
-              bump, language, callback);
+          exports.addPostToGlobalLatest(omitted, post, thread, parameters,
+              cleanPosts, bump, language, callback);
 
         });
 
       } else {
-        exports.addPostToGlobalLatest(post, thread, parameters, cleanPosts,
-            bump, language, callback);
+        exports.addPostToGlobalLatest(omitted, post, thread, parameters,
+            cleanPosts, bump, language, callback);
       }
 
     }
