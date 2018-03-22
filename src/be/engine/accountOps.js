@@ -30,12 +30,14 @@ exports.newAccountParameters = [ {
   length : 16
 }, {
   field : 'email',
-  length : 64
+  length : 64,
+  removeHTML : true
 } ];
 
 exports.changeSettingsParameters = [ {
   field : 'email',
-  length : 64
+  length : 64,
+  removeHTML : true
 } ];
 
 exports.loadSettings = function() {
@@ -741,6 +743,8 @@ exports.getAccountData = function(account, userData, language, callback) {
 exports.addAccount = function(userRole, parameters, language, callback) {
 
   var isAdmin = userRole < 2;
+
+  miscOps.sanitizeStrings(parameters, exports.newAccountParameters);
 
   if (!isAdmin) {
     callback(lang(language).errDeniedAccountManagement);

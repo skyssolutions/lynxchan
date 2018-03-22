@@ -721,6 +721,7 @@ Description: adds a new user account. Requires authentication. Reserved for user
 
 Parameters:
     login: login for the new account.
+    email: e-mail for the new account.
     password: password for the new account.
 
 ------------------------------------------------------------------------------------------
