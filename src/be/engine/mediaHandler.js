@@ -9,8 +9,11 @@ var maxGlobalStaffRole;
 var gridFsHandler;
 var lang;
 var maxFilesToDisplay;
+var logOps;
 
 exports.loadDependencies = function() {
+
+  logOps = require('./logOps');
   gridFsHandler = require('./gridFsHandler');
   lang = require('./langOps').languagePack;
 
@@ -99,7 +102,7 @@ exports.getOperations = function(postReferences, threadReferences) {
 };
 
 exports.updateReferencesCount = function(postReferences, threadReferences,
-    deleteMedia, language, callback) {
+    deleteMedia, userData, language, callback) {
 
   if (deleteMedia) {
 
@@ -114,7 +117,7 @@ exports.updateReferencesCount = function(postReferences, threadReferences,
 
     }
 
-    exports.deleteFiles(identifiers, null, language, callback, true);
+    exports.deleteFiles(identifiers, userData, language, callback, true);
 
   } else {
 
@@ -131,11 +134,11 @@ exports.updateReferencesCount = function(postReferences, threadReferences,
 };
 
 exports.getThreadReferences = function(postReferences, boardUri,
-    threadsToClear, deleteMedia, language, callback, boardDeletion) {
+    threadsToClear, deleteMedia, userData, language, callback, boardDeletion) {
 
   if ((!threadsToClear || !threadsToClear.length) && !boardDeletion) {
-    exports.updateReferencesCount(postReferences, [], deleteMedia, language,
-        callback);
+    exports.updateReferencesCount(postReferences, [], deleteMedia, userData,
+        language, callback);
 
     return;
   }
@@ -160,7 +163,7 @@ exports.getThreadReferences = function(postReferences, boardUri,
           callback(error);
         } else {
           exports.updateReferencesCount(postReferences, results, deleteMedia,
-              language, callback);
+              userData, language, callback);
         }
 
       });
@@ -168,7 +171,8 @@ exports.getThreadReferences = function(postReferences, boardUri,
 };
 
 exports.clearPostingReferences = function(boardUri, threadsToClear,
-    postsToClear, onlyFilesDeletion, mediaDeletion, language, callback) {
+    postsToClear, onlyFilesDeletion, mediaDeletion, userData, language,
+    callback) {
 
   var query = {
     boardUri : boardUri,
@@ -197,7 +201,7 @@ exports.clearPostingReferences = function(boardUri, threadsToClear,
 
   if (!addedLimiter) {
     exports.getThreadReferences([], boardUri, threadsToClear, mediaDeletion,
-        language, callback);
+        userData, language, callback);
 
     return;
   }
@@ -210,7 +214,7 @@ exports.clearPostingReferences = function(boardUri, threadsToClear,
         } else {
 
           exports.getThreadReferences(results, boardUri, threadsToClear,
-              mediaDeletion, language, callback);
+              mediaDeletion, userData, language, callback);
         }
 
       });
@@ -230,8 +234,8 @@ exports.clearBoardReferences = function(boardUri, language, callback) {
         if (error) {
           callback(error);
         } else {
-          exports.getThreadReferences(results, boardUri, null, false, language,
-              callback, true);
+          exports.getThreadReferences(results, boardUri, null, false, null,
+              language, callback, true);
         }
 
       });
@@ -480,6 +484,34 @@ exports.getMedia = function(userData, parameters, language, callback) {
 
 };
 
+// Section 3: File deletion {
+exports.deleteReferences = function(userData, identifiers, callback) {
+
+  references.removeMany({
+    identifier : {
+      $in : identifiers
+    }
+  }, function removedIdentifiers(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      logOps.insertLog({
+        user : userData.login,
+        type : 'mediaDeletion',
+        time : new Date(),
+        description : lang().logMediaDeletion.replace('{$login}',
+            userData.login).replace('{$identifiers}', identifiers.join(', ')),
+        global : true
+      }, callback);
+
+    }
+
+  });
+
+};
+
 exports.deleteFiles = function(identifiers, userData, language, callback,
     override) {
 
@@ -519,13 +551,7 @@ exports.deleteFiles = function(identifiers, userData, language, callback,
     if (error) {
       callback(error);
     } else if (!results.length) {
-
-      references.removeMany({
-        identifier : {
-          $in : identifiers
-        }
-      }, callback);
-
+      exports.deleteReferences(userData, identifiers, callback);
     } else {
 
       // style exception, too simple
@@ -534,11 +560,7 @@ exports.deleteFiles = function(identifiers, userData, language, callback,
         if (error) {
           callback(error);
         } else {
-          references.removeMany({
-            identifier : {
-              $in : identifiers
-            }
-          }, callback);
+          exports.deleteReferences(userData, identifiers, callback);
         }
       });
       // style exception, too simple
@@ -548,6 +570,7 @@ exports.deleteFiles = function(identifiers, userData, language, callback,
   });
 
 };
+// } Section 3: File deletion
 
 // Section 3: Media details {
 exports.postingSorting = function(a, b) {

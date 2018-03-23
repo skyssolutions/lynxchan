@@ -37,7 +37,8 @@ exports.availableLogTypes = {
   hashBan : 'guiTypeHashBan',
   hashBanLift : 'guiTypeHashBanLift',
   threadTransfer : 'guiTypeThreadTransfer',
-  appealDeny : 'guiTypeAppealDeny'
+  appealDeny : 'guiTypeAppealDeny',
+  mediaDeletion : 'guiTypeMediaDeletion'
 };
 
 exports.loadSettings = function() {

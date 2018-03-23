@@ -320,5 +320,7 @@
   "errNotAllowedToMassBan": "You are not allowed to mass ban.",
   "errMediaNotFound": "Media entry could not be found.",
   "titMediaDetails": "Media details",
-  "errHashBanLimit": "This board already reached the hash ban limit."
+  "errHashBanLimit": "This board already reached the hash ban limit.",
+  "logMediaDeletion": "User {$login} requested deletion of the following files: {$identifiers}.",
+  "guiTypeMediaDeletion": "Media deletion"
 }

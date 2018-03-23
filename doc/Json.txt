@@ -38,6 +38,17 @@ JSO_ID::02
 Path:/<board>/res/<thread>.json
 
 Root(Object):
+    boardName: name of the board.
+    boardDescription: description of the board.
+    boardMarkdown: markdown of the board message.
+    usesCustomCss(Boolean): true of the board uses custom css.
+    maxMessageLength(Number): maximum allowed message length.
+    maxFileCount(Number): maximum amount of files allowed.
+    maxFileSize: maximimum size allowed for files.
+    usesCustomJs(Boolean): true of the board uses custom js.
+    captcha(Boolean): true if the thread requires captcha to be replied to.
+    textBoard(Boolean): true if the board is a textboard.
+    forceAnonymity(Boolean): true if the board forces anonymity.
     signedRole: role of the user that posted the thread.
     banMessage: message to be displayed indicating this message was a cause to a ban.
     id: thread-wise id of the poster.

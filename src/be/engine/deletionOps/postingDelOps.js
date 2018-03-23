@@ -813,7 +813,7 @@ exports.getPostsToDelete = function(userData, board, postsToDelete, parameters,
           // style exception, too simple
           referenceHandler.clearPostingReferences(board.boardUri, foundThreads,
               foundPosts, parameters.deleteUploads, parameters.deleteMedia,
-              language, function clearedReferences(error) {
+              userData, language, function clearedReferences(error) {
 
                 if (error) {
                   cb(error);

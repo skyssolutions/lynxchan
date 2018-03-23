@@ -137,7 +137,8 @@ exports.pruneThreadsForQuery = function(matchBlock, limit, boardUri, language,
 
           // style exception, too simple
           referenceHandler.clearPostingReferences(boardUri, prunedThreads,
-              null, false, false, language, function removedReferences(error) {
+              null, false, false, null, language, function removedReferences(
+                  error) {
 
                 if (error) {
                   callback(error);

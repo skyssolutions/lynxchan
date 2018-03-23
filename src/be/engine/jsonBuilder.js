@@ -192,11 +192,42 @@ exports.getThreadObject = function(thread, posts, board, modding, userRole) {
 };
 // } Section 1: Shared functions
 
+// Section 2: Thread {
+exports.addExtraThreadInfo = function(threadObject, boardData) {
+
+  threadObject.usesCustomJs = boardData.usesCustomJs;
+  threadObject.boardName = boardData.boardName;
+  threadObject.boardDescription = boardData.boardDescription;
+  threadObject.boardMarkdown = boardData.boardMarkdown;
+  threadObject.maxMessageLength = messageLength;
+  threadObject.usesCustomCss = boardData.usesCustomCss;
+
+  exports.setFileLimits(threadObject, boardData);
+
+  if (boardData.captchaMode || globalCaptcha) {
+    threadObject.captcha = true;
+  }
+
+  if (boardData.settings) {
+
+    if (boardData.settings.indexOf('forceAnonymity') >= 0) {
+      threadObject.forceAnonymity = true;
+    }
+
+    if (boardData.settings.indexOf('textBoard') >= 0) {
+      threadObject.textBoard = true;
+    }
+  }
+
+};
+
 exports.thread = function(boardUri, boardData, threadData, posts, callback,
     modding, userRole, flagData) {
 
   var threadObject = exports.getThreadObject(threadData, posts, boardData,
       modding, userRole);
+
+  exports.addExtraThreadInfo(threadObject, boardData);
 
   if (flagData && flagData.length) {
     threadObject.flagData = flagData;
@@ -217,8 +248,9 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
         }, callback);
   }
 };
+// } Section 2: Thread
 
-// Section 2: Front-page {
+// Section 3: Front-page {
 exports.getLatestPosts = function(globalLatestPosts) {
 
   var latestPosts = [];
@@ -303,7 +335,7 @@ exports.frontPage = function(boards, globalLatestPosts, globalLatestImages,
       }, callback);
 
 };
-// } Section 2: Front-page
+// } Section 3: Front-page
 
 exports.setFileLimits = function(toWrite, bData) {
 
