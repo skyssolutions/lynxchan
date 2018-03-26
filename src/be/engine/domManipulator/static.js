@@ -38,7 +38,8 @@ exports.availableLogTypes = {
   hashBanLift : 'guiTypeHashBanLift',
   threadTransfer : 'guiTypeThreadTransfer',
   appealDeny : 'guiTypeAppealDeny',
-  mediaDeletion : 'guiTypeMediaDeletion'
+  mediaDeletion : 'guiTypeMediaDeletion',
+  filePruning : 'guiTypeFilePruning'
 };
 
 exports.loadSettings = function() {
@@ -806,7 +807,7 @@ exports.getLogEntry = function(template, log, language) {
 
   cell = cell.replace('__labelBoard_inner__', common.clean(log.boardUri || ''));
 
-  cell = cell.replace('__labelUser_inner__', common.clean(log.user));
+  cell = cell.replace('__labelUser_inner__', common.clean(log.user || ''));
 
   cell = cell.replace('__labelDescription_inner__', common
       .clean(log.description));

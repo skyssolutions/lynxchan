@@ -239,6 +239,7 @@ staffLogs: stores log activity from staff.
         fileDeletion
         threadTransfer
         appealDeny
+        filePruning
         mediaDeletion
     time(Date): date and time of when the event occurred.
     boardUri*: board related to the event.

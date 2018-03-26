@@ -261,6 +261,46 @@ exports.deletePrunedFiles = function(files, callback) {
 
 };
 
+exports.removePrunedFiles = function(identifiers, callback) {
+
+  files.aggregate([ {
+    $match : {
+      'metadata.identifier' : {
+        $in : identifiers
+      }
+    }
+  }, {
+    $project : {
+      filename : 1,
+      _id : 0
+    }
+  }, {
+    $group : {
+      _id : 0,
+      files : {
+        $push : '$filename'
+      }
+    }
+  } ]).toArray(function gotNames(error, results) {
+
+    if (error) {
+      callback(error);
+    } else if (!results.length) {
+
+      references.removeMany({
+        references : {
+          $lt : 1
+        }
+      }, callback);
+
+    } else {
+      exports.deletePrunedFiles(results[0].files, callback);
+    }
+
+  });
+
+};
+
 exports.getFilesToPrune = function(callback) {
 
   references.aggregate([ {
@@ -281,55 +321,38 @@ exports.getFilesToPrune = function(callback) {
         $push : '$identifier'
       }
     }
-  } ]).toArray(function gotIdentifiers(error, results) {
-
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      callback();
-    } else {
-
-      // style exception, too simple
-      files.aggregate([ {
-        $match : {
-          'metadata.identifier' : {
-            $in : results[0].identifiers
-          }
-        }
-      }, {
-        $project : {
-          filename : 1,
-          _id : 0
-        }
-      }, {
-        $group : {
-          _id : 0,
-          files : {
-            $push : '$filename'
-          }
-        }
-      } ]).toArray(function gotNames(error, results) {
+  } ]).toArray(
+      function gotIdentifiers(error, results) {
 
         if (error) {
           callback(error);
         } else if (!results.length) {
-
-          references.removeMany({
-            references : {
-              $lt : 1
-            }
-          }, callback);
-
+          callback();
         } else {
-          exports.deletePrunedFiles(results[0].files, callback);
+
+          var identifiers = results[0].identifiers;
+
+          // style exception, too simple
+          logOps.insertLog({
+            type : 'filePruning',
+            time : new Date(),
+            description : lang().logFilePruning.replace('{$identifiers}',
+                identifiers.join(', ')),
+            global : true
+          }, function loggedPruning(error) {
+
+            if (error) {
+              console.log(error);
+            }
+
+            exports.removePrunedFiles(identifiers, callback);
+
+          });
+          // style exception, too simple
+
         }
 
       });
-      // style exception, too simple
-
-    }
-
-  });
 
 };
 
