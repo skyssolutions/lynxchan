@@ -728,8 +728,12 @@ exports.getCurrentObject = function(ipData, field, currentObject, flags,
 
   if (location) {
     currentObject = currentObject ? currentObject[location] : flags[location];
-    currentObject.code = (currentObject.code || '');
-    currentObject.code += '-' + location.toLowerCase();
+
+    if (currentObject) {
+      currentObject.code = (currentObject.code || '');
+      currentObject.code += '-' + location.toLowerCase();
+    }
+
   } else {
     currentObject = null;
   }
