@@ -218,12 +218,10 @@ msgBanLifted: message used after lifting a ban.
 msgHashBanLifted: message used after lifting a hash ban.
 msgLoginSuccessful: message used after logging in.
 msgLogout: message used after logging out.
-msgThreadCreated: message used after creating a thread.
 msgHashBanCreated: message used after creating a hash ban.
 msgRangeBanCreated: message used after creating a range ban.
 msgPasswordReset: message used after resetting the user's password.
 msgAccountCreated: message used after creating an account.
-msgPostCreated: message used after replying to a thread.
 msgRequestCreated: message used after requesting a password reset.
 msgBoardSettingsSaved: message used after saving the settings of a board.
 msgUserRoleChanged: message used after changing the global role of an user.

@@ -14,11 +14,15 @@ exports.createPost = function(req, userData, parameters, captchaId, res, auth) {
         if (error) {
           formOps.outputError(error, 500, res, req.language);
         } else {
-          var redirectLink = '../' + parameters.boardUri;
+
+          var redirectLink = '/' + parameters.boardUri;
           redirectLink += '/res/' + parameters.threadId;
           redirectLink += '.html#' + id;
-          formOps.outputResponse(lang(req.language).msgPostCreated,
-              redirectLink, res, null, auth, req.language);
+
+          res.writeHead(302, [ [ 'Location', redirectLink ] ]);
+
+          res.end();
+
         }
       });
 

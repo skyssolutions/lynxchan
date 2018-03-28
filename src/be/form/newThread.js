@@ -14,10 +14,14 @@ exports.createThread = function(req, user, parameters, captchaId, res, auth) {
         if (error) {
           formOps.outputError(error, 500, res, req.language);
         } else {
-          var redirectLink = '../' + parameters.boardUri;
+
+          var redirectLink = '/' + parameters.boardUri;
           redirectLink += '/res/' + id + '.html';
-          formOps.outputResponse(lang(req.language).msgThreadCreated,
-              redirectLink, res, null, auth, req.language);
+
+          res.writeHead(302, [ [ 'Location', redirectLink ] ]);
+
+          res.end();
+
         }
       });
 
