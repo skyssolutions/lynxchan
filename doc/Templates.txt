@@ -533,6 +533,10 @@ ownedDiv:
     use: have children appended to it.
     description: contains the list of boards owned by the user.
 
+confirmationForm:
+    use: might be removed.
+    description: form that is shown when the user haven't confirmed his e-mail yet.
+
 volunteeredDiv:
     use: have children appended to it.
     description: contains the list of boards owned by the user.
@@ -563,6 +567,10 @@ Elements:
 linkRecovery:
     use: have it's href manipulated.
     description: contains the link to be used to reset the account's password.
+
+loginLabel:
+  use: have it's innerHTML manipulated.
+  description: label with the login of the account that requested the password reset.
 
 ------------------------------------------------------------------------------------------
 
@@ -2323,6 +2331,21 @@ header: optional header. If any page has an element with the id dynamicHeader, t
 TEM_ID::66
 
 footer: optional footer. If any page has an element with the id dynamicFooter, this element will have it's innerHTML set as this template's content.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::67
+
+confirmationEmail: e-mail used to confirm e-mail accounts.
+
+Elements:
+confirmationLink:
+  use: have it's href manipulated.
+  description: link with the url to confirm the e-mail.
+
+loginLabel:
+  use: have its innerHTML manipulated.
+  description: label with the login of the account that used this e-mail.
 
 ------------------------------------------------------------------------------------------
 

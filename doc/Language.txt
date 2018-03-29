@@ -27,9 +27,10 @@ errLoginInUse: error thrown when the provided login for a new account is already
 errLoginFailed: error thrown when the user fails to login.
 errInvalidAccount: error thrown when the user tries to perform an operation but the credentials fail to validate.
 errAccountNotFound: error thrown when the account of the password reset request can't be found.
-errNoEmailForAccount: error thrown when the specified account doesn't exist.
+errNoEmailForAccount: error thrown when the specified account doesn't have an e-mail.
 errPendingRequest: error thrown when the user tries to request a password reset with another one still pending. Replaces: {$expiration}.
 errInvalidRequest: error thrown when the user tries to reset his password with an invalid password reset request.
+errPendingConfirmation: error thrown when the user tries to request a password confirmation with another one still pending. Replaces: {$expiration}.
 errPasswordMismatch: error thrown when the user tries to change his password but the new password doesn't match with its confirmation.
 errIncorrectPassword: error thrown when the user tries to change his password but the current password is incorrect.
 errBoardNotFound: error thrown when the board for an operation can't be found.
@@ -119,6 +120,8 @@ errNotAllowedToDeleteAccount: error thrown when the user tries to delete an acco
 errNotAllowedToManageSocket: error thrown when the user tries to manage the unix socket and is not allowed to.
 errNotAllowedToMassBan: error thrown when the user tries to mass ban ips and is not allowed to.
 errHashBanLimit: error thrown when the board already has too many bans.
+errInvalidConfirmation: error thrown when the user tries to confirm his e-mail with an invalid confirmation request.
+errNotConfirmed: error thrown when the user tries to perform an action that requires a confirmed e-mail while not having one.
 guiTypeBan: label used for logs of bans.
 guiTypeBanLift: label used for logs of ban lifts.
 guiTypeDeletion: label used for logs of deletions.
@@ -256,9 +259,12 @@ msgAccountAdded: message displayed after adding a new account.
 msgAccountDeleted: message displayed after deleting an account.
 msgSocketRestarted: message displayed after restarting the unix socket.
 msgMassBanned: message displayed after mass banning ips.
+msgConfirmationSent: message displayed after requesting an e-mail confirmation.
+msgEmailConfirmed: message displayed after confirming an e-mail.
 subPasswordReset: subject of the e-mail informing the new password of the user's account.
 subPasswordRequest: subject of the e-mail of a password reset request.
 subLockedAccount: subject of the e-mail used when the user got his account locked.
+subEmailConfirmation: subject of the e-mail used when the user requests an e-mail confirmation.
 titDefaultChanTitle: title of the front-page.
 titMediaManagement: title of the media management page.
 titBanners: title for the banner management page. Replaces: {$board}.

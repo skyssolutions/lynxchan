@@ -60,10 +60,19 @@ exports.resetEmail = function(password, language) {
 
 };
 
-exports.recoveryEmail = function(recoveryLink, language) {
+exports.recoveryEmail = function(recoveryLink, login, language) {
 
   return templateHandler(language).recoveryEmail.template.replace(
-      '__linkRecovery_href__', recoveryLink);
+      '__linkRecovery_href__', recoveryLink).replace('__loginLabel_inner__',
+      login);
+
+};
+
+exports.confirmationEmail = function(confirmationLink, login, language) {
+
+  return templateHandler(language).confirmationEmail.template.replace(
+      '__confirmationLink_href__', confirmationLink).replace(
+      '__loginLabel_inner__', login);
 
 };
 
@@ -121,6 +130,13 @@ exports.setAccountHideableElements = function(userData, document, removable) {
   } else {
     document = document.replace('__boardCreationDiv_location__',
         removable.boardCreationDiv);
+  }
+
+  if (userData.confirmed || !userData.email) {
+    document = document.replace('__confirmationForm_location__', '');
+  } else {
+    document = document.replace('__confirmationForm_location__',
+        removable.confirmationForm);
   }
 
   return document;

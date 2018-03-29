@@ -72,6 +72,20 @@
     ]
   },
   {
+    "template": "confirmationEmail",
+    "noTitle": true,
+    "prebuiltFields": [
+      {
+        "name": "loginLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "confirmationLink",
+        "uses": "href"
+      }
+    ]
+  },
+  {
     "template": "bannerManagementPage",
     "prebuiltFields": [
       {
@@ -111,6 +125,10 @@
       {
         "name": "linkRecovery",
         "uses": "href"
+      },
+      {
+        "name": "loginLabel",
+        "uses": "inner"
       }
     ]
   },
@@ -419,6 +437,10 @@
   {
     "template": "accountPage",
     "prebuiltFields": [
+      {
+        "name": "confirmationForm",
+        "uses": "removal"
+      },
       {
         "name": "labelLogin",
         "uses": "inner"

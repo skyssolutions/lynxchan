@@ -1214,5 +1214,25 @@ JSON output(Object): object containing the details of the media:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::79
+
+Name: requestEmailConfirmation
+
+Description: requests a confirmation e-mail to be sent to the user's registered e-mail. Requires authentication.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::80
+
+Name: confirmEmail
+
+Description: confirms the specified account's e-mail. Uses get parameters.
+
+Parameters:
+  login: login of the account to be confirmed.
+  hash: token required to confirm the account.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

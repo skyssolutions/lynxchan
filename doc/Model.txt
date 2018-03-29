@@ -1,3 +1,5 @@
+----------------------------------------------------------------------------------------
+
 boards: stores boards.
     owner*: login of the board owner.
     uniqueIps(Number): unique ips seen on last day.
@@ -144,6 +146,7 @@ posts: stores posts.
 
 users: stores users.
     login**: login of the user. 16 characters. Only a-Z, _ and 0-9 allowed.
+    confirmed(Boolean): true if the current e-mail has been confirmed.
     email: e-mail of the user. 64 characters.
     passwordSalt: salt used to hash the user's password. 
     passwordMethod: string indicating which algorithm was used for the password. If not informed, bcrypt is the used algorithm. May hold one of the following values:
@@ -334,6 +337,13 @@ languages: stores alternative languages.
     frontEnd: path for the language's front-end.
     languagePack: path for the language's language pack.
     headerValues(Array): array with the possible values that will use this language.
+
+----------------------------------------------------------------------------------------
+
+confirmationRequests: stores active e-mail confirmation requests.
+    login*: login of the account that requested to confirm it's e-mail.
+    confirmationToken: token used to confirm the e-mail.
+    expiration(Date): time when the request will expire.
 
 ----------------------------------------------------------------------------------------
 

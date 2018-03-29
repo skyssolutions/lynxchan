@@ -6,6 +6,7 @@ var db = require('../db');
 var users = db.users();
 var boards = db.boards();
 var requests = db.recoveryRequests();
+var confirmations = db.confirmations();
 var bcrypt = require('bcrypt');
 var crypto = require('crypto');
 var mailer = require('nodemailer').createTransport(
@@ -398,7 +399,7 @@ exports.generateRequest = function(domain, login, language, email, callback) {
         from : sender,
         to : email,
         subject : lang(language).subPasswordRequest,
-        html : domManipulator.recoveryEmail(recoveryLink, language)
+        html : domManipulator.recoveryEmail(recoveryLink, login, language)
       }, callback);
     }
 
@@ -418,8 +419,10 @@ exports.lookForUserEmailOfRequest = function(domain, login, language, cb) {
       cb(error);
     } else if (!user) {
       cb(lang(language).errAccountNotFound);
-    } else if (!user.email || !user.email.length) {
+    } else if (!user.email) {
       cb(lang(language).errNoEmailForAccount);
+    } else if (!user.confirmed) {
+      cb(lang(language).errNotConfirmed);
     } else {
       exports.generateRequest(domain, login, language, user.email, cb);
     }
@@ -452,7 +455,7 @@ exports.requestRecovery = function(domain, language, parameters, captchaId,
             } else if (request) {
 
               callback(lang(language).errPendingRequest.replace(
-                  '{$expiration}', request.expiration.toString()));
+                  '{$expiration}', request.expiration.toUTCString()));
             } else {
               exports.lookForUserEmailOfRequest(domain, parameters.login,
                   language, callback);
@@ -530,12 +533,16 @@ exports.changeSettings = function(userData, parameters, callback) {
 
   miscOps.sanitizeStrings(parameters, exports.changeSettingsParameters);
 
+  var confirmed = parameters.email !== userData.email ? false
+      : userData.confirmed;
+
   users.updateOne({
     login : userData.login
   }, {
     $set : {
       email : parameters.email,
-      settings : parameters.settings
+      settings : parameters.settings,
+      confirmed : confirmed
     }
   }, function updatedSettings(error) {
     callback(error);
@@ -837,3 +844,101 @@ exports.deleteAccount = function(userData, parameters, language, callback) {
 
 };
 // } Section 7: Account deletion
+
+// Section 8: Confirmation request {
+exports.generateRequestKey = function(domain, userData, language, callback) {
+
+  var token = crypto.createHash('sha256')
+      .update(userData.login + Math.random()).digest('hex');
+
+  var expiration = new Date();
+
+  expiration.setUTCDate(expiration.getUTCDate() + 1);
+
+  confirmations.insertOne({
+    login : userData.login,
+    expiration : expiration,
+    confirmationToken : token
+  }, function addedConfirmationRequest(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      var confirmationLink = domain + '/confirmEmail.js?login=';
+      confirmationLink += userData.login + '&hash=' + token;
+
+      mailer.sendMail({
+        from : sender,
+        to : userData.email,
+        subject : lang(language).subEmailConfirmation,
+        html : domManipulator.confirmationEmail(confirmationLink,
+            userData.login, language)
+      }, callback);
+
+    }
+
+  });
+
+};
+
+exports.requestConfirmation = function(domain, language, userData, callback) {
+
+  if (!userData.email) {
+    callback(lang(language).errNoEmailForAccount);
+    return;
+  }
+
+  confirmations.findOne({
+    login : userData.login,
+    expiration : {
+      $gte : new Date()
+    }
+  }, {
+    _id : 0,
+    expiration : 1
+  }, function gotRequest(error, confirmation) {
+    if (error) {
+      callback(error);
+    } else if (confirmation) {
+
+      callback(lang(language).errPendingConfirmation.replace('{$expiration}',
+          confirmation.expiration.toUTCString()));
+
+    } else {
+      exports.generateRequestKey(domain, userData, language, callback);
+    }
+  });
+
+};
+// } Section 8: Confirmation request
+
+exports.confirmEmail = function(parameters, language, callback) {
+
+  confirmations.findOneAndDelete({
+    expiration : {
+      $gte : new Date()
+    },
+    login : parameters.login,
+    confirmationToken : parameters.hash
+  }, {}, function gotConfirmation(error, result) {
+
+    if (error) {
+      callback(error);
+    } else if (!result.value) {
+      callback(lang(language).errInvalidConfirmation);
+    } else {
+
+      users.updateOne({
+        login : parameters.login
+      }, {
+        $set : {
+          confirmed : true
+        }
+      }, callback);
+
+    }
+
+  });
+
+};

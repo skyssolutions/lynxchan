@@ -21,9 +21,10 @@ var indexesSet;
 var cachedDb;
 var cachedClient;
 
-var maxIndexesSet = 23;
+var maxIndexesSet = 24;
 
 var cachedLanguages;
+var cachedConfirmationRequests;
 var cachedUploadReferences;
 var cachedLatestImages;
 var cachedAggregatedLogs;
@@ -517,6 +518,26 @@ function initRecoveryRequests(callback) {
 
 }
 
+function initConfirmationRequests(callback) {
+
+  cachedConfirmationRequests.ensureIndex({
+    expiration : 1
+  }, {
+    expireAfterSeconds : 0
+  }, function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+
+}
+
 function initUsers(callback) {
 
   cachedUsers.ensureIndex({
@@ -779,6 +800,10 @@ exports.aggregatedLogs = function() {
 exports.uploadReferences = function() {
   return cachedUploadReferences;
 };
+
+exports.confirmations = function() {
+  return cachedConfirmationRequests;
+};
 // end of getters
 
 function initGlobalIndexes(callback) {
@@ -794,6 +819,8 @@ function initGlobalIndexes(callback) {
   initCaptchas(callback);
 
   initRecoveryRequests(callback);
+
+  initConfirmationRequests(callback);
 
   initTripcodes(callback);
 
@@ -857,6 +884,7 @@ function initGlobalIndexedCollections(callback) {
   cachedUsers = cachedDb.collection('users');
   cachedUploadReferences = cachedDb.collection('uploadReferences');
   cachedFiles = cachedDb.collection('fs.files');
+  cachedConfirmationRequests = cachedDb.collection('confirmationRequests');
 
   initBoardIndexedCollections(callback);
 
