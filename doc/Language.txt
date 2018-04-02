@@ -265,6 +265,7 @@ subPasswordReset: subject of the e-mail informing the new password of the user's
 subPasswordRequest: subject of the e-mail of a password reset request.
 subLockedAccount: subject of the e-mail used when the user got his account locked.
 subEmailConfirmation: subject of the e-mail used when the user requests an e-mail confirmation.
+subReportNotify: subject of the e-mail used to notify reports made.
 titDefaultChanTitle: title of the front-page.
 titMediaManagement: title of the media management page.
 titBanners: title for the banner management page. Replaces: {$board}.

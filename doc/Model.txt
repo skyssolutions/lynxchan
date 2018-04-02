@@ -166,7 +166,7 @@ users: stores users.
         0 means root. All power of admins plus is able to assign global admins.
     settings(Array): array with the account settings. May hold the following values:
         alwaysSignRole: indicates the user wishes to always use his role signature on posts.
-        lockEnabled: indicates the user wishes to have it's account locked after 10 consecutive failed login attempts.
+        reportNotify: indicates the user wishes to receive e-mail notifications of reports.
     inactive(Boolean): indicates the account is inactive.
     remember(Boolean): indicates if the user wishes to have longer sessions. As it stands, without this, users will be logged out after 1 hour of inactivity and 1 month if set to true.
 

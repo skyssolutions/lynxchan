@@ -328,5 +328,6 @@
   "errPendingConfirmation": "Pending confirmation to be expired at {$expiration}.",
   "msgEmailConfirmed": "Your e-mail has been confirmed.",
   "errInvalidConfirmation": "Invalid confirmation request.",
-  "errNotConfirmed": "You haven't confirmed your e-mail yet."
+  "errNotConfirmed": "You haven't confirmed your e-mail yet.",
+  "subReportNotify": "Report notification"
 }

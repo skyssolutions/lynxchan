@@ -8,15 +8,21 @@ var db = require('../../db');
 var boards = db.boards();
 var threads = db.threads();
 var posts = db.posts();
+var users = db.users();
 var reports = db.reports();
 var logger = require('../../logger');
+var mailer = logger.mailer;
+var maxStaffRole;
 var multipleReports;
 var logOps;
 var miscOps;
 var delOps;
+var domManipulator;
 var generator;
 var moduleRoot;
 var ipBan;
+var formOps;
+var sender;
 var common;
 var captchaOps;
 var globalBoardModeration;
@@ -34,12 +40,14 @@ exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
   multipleReports = settings.multipleReports;
   allowBlockedToReport = settings.allowBlockedToReport;
+  sender = settings.emailSender;
   globalBoardModeration = settings.allowGlobalBoardModeration;
 
 };
 
 exports.loadDependencies = function() {
 
+  formOps = require('../formOps');
   delOps = require('../deletionOps').postingDeletions;
   logOps = require('../logOps');
   miscOps = require('../miscOps');
@@ -49,6 +57,8 @@ exports.loadDependencies = function() {
   common = moduleRoot.common;
   captchaOps = require('../captchaOps');
   lang = require('../langOps').languagePack;
+  maxStaffRole = require('../miscOps').getMaxStaffRole();
+  domManipulator = require('../domManipulator').dynamicPages.miscPages;
 
 };
 
@@ -111,6 +121,131 @@ exports.getClosedReports = function(userData, parameters, language, callback) {
 // } Section 1: Closed reports
 
 // Section 2: Create report {
+exports.fetchEmails = function(req, report, mods, callback) {
+
+  users.aggregate([ {
+    $match : {
+      confirmed : true,
+      settings : 'reportNotify',
+      email : {
+        $exists : true,
+        $ne : null
+      },
+      login : {
+        $in : mods
+      }
+    }
+  }, {
+    $group : {
+      _id : 0,
+      emails : {
+        $addToSet : '$email'
+      }
+    }
+  } ]).toArray(function gotEmails(error, results) {
+
+    if (error || !results.length) {
+      callback(error);
+    } else {
+
+      var subject = lang().subReportNotify;
+
+      if (report.reason) {
+        subject += ': ' + report.reason;
+      }
+
+      var url = formOps.getDomain(req) + '/' + report.boardUri;
+      url += '/res/' + report.threadId + '.html';
+
+      if (report.postId) {
+        url += '#' + report.postId;
+      }
+
+      mailer.sendMail({
+        from : sender,
+        bcc : results[0].emails.join(', '),
+        subject : subject,
+        html : domManipulator.reportNotificationEmail(url)
+      }, callback);
+
+    }
+
+  });
+
+};
+
+exports.fetchGlobalUsers = function(req, report, mods, callback) {
+
+  if (!report.global && !globalBoardModeration) {
+    exports.fetchEmails(req, report, mods, callback);
+    return;
+  }
+
+  users.aggregate([ {
+    $match : {
+      globalRole : {
+        $lte : maxStaffRole
+      },
+      login : {
+        $nin : mods
+      }
+    }
+  }, {
+    $group : {
+      _id : 0,
+      logins : {
+        $addToSet : '$login'
+      }
+    }
+  } ]).toArray(
+      function gotGlobalUsers(error, results) {
+
+        if (error) {
+          callback(error);
+        } else if (!results.length) {
+          exports.fetchEmails(req, report, mods, callback);
+        } else {
+
+          exports.fetchEmails(req, report, mods.concat(results[0].logins),
+              callback);
+
+        }
+
+      });
+
+};
+
+exports.notifyReport = function(req, report, callback) {
+
+  if (report.global) {
+    exports.fetchGlobalUsers(req, report, [], callback);
+    return;
+  }
+
+  boards.findOne({
+    boardUri : report.boardUri
+  }, {
+    owner : 1,
+    _id : 0,
+    volunteers : 1
+  }, function gotBoard(error, board) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      var mods = board.volunteers || [];
+
+      mods.push(board.owner);
+
+      exports.fetchGlobalUsers(req, report, mods, callback);
+
+    }
+
+  });
+
+};
+
 exports.createReport = function(req, report, reportedContent, parameters,
     callback) {
 
@@ -132,8 +267,22 @@ exports.createReport = function(req, report, reportedContent, parameters,
   reports.insertOne(toAdd, function createdReport(error) {
     if (error && error.code !== 11000) {
       callback(error);
-    } else {
+    } else if (error) {
       exports.iterateReports(req, reportedContent, parameters, callback);
+    } else {
+
+      // style exception, too simple
+      exports.notifyReport(req, toAdd, function notified(error) {
+
+        if (error) {
+          console.log(error);
+        }
+
+        exports.iterateReports(req, reportedContent, parameters, callback);
+
+      });
+      // style exception, too simple
+
     }
   });
 

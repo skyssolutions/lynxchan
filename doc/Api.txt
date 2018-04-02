@@ -305,6 +305,7 @@ Parameters:
     email: new e-mail of the account. 64 characters.
     settings(Array): new settings for the account. May hold the following values:
         alwaysSignRole: indicates the user wishes to always use his role signature on posts.
+        reportNotify: indicates the user wishes to receive e-mail report notifications.
 
 ------------------------------------------------------------------------------------------
 

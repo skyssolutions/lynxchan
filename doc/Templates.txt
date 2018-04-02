@@ -529,6 +529,10 @@ checkboxAlwaysSign:
     use: might be turned on.
     description: check-box that indicates the user wishes to always sign posts with his role.
 
+checkboxReportNotify:
+    use: might be turned on.
+    description: check-box that indicates the user wishes to receive e-mail report notifications.
+
 ownedDiv:
     use: have children appended to it.
     description: contains the list of boards owned by the user.
@@ -2346,6 +2350,17 @@ confirmationLink:
 loginLabel:
   use: have its innerHTML manipulated.
   description: label with the login of the account that used this e-mail.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::68
+
+reportNotificationEmail: e-mail used to send notification of reports.
+
+Elements:
+linkThread:
+  use: have it's href and innerHTML manipulated.
+  description: link to the reported content.
 
 ------------------------------------------------------------------------------------------
 

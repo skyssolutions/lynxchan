@@ -9,8 +9,7 @@ var requests = db.recoveryRequests();
 var confirmations = db.confirmations();
 var bcrypt = require('bcrypt');
 var crypto = require('crypto');
-var mailer = require('nodemailer').createTransport(
-    require('nodemailer-direct-transport')());
+var mailer = require('../logger').mailer;
 var sender;
 var creationDisabled;
 var logOps;
@@ -24,7 +23,7 @@ var iterations = 4096;
 var keyLength = 256;
 var hashDigest = 'sha512';
 
-exports.validAccountSettings = [ 'alwaysSignRole' ];
+exports.validAccountSettings = [ 'alwaysSignRole', 'reportNotify' ];
 
 exports.newAccountParameters = [ {
   field : 'login',

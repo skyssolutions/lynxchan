@@ -17,7 +17,8 @@ var messageLength;
 exports.optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
 
 exports.accountSettingsRelation = {
-  alwaysSignRole : 'checkboxAlwaysSign'
+  alwaysSignRole : 'checkboxAlwaysSign',
+  reportNotify : 'checkboxReportNotify'
 };
 
 exports.loadSettings = function() {
@@ -57,6 +58,13 @@ exports.resetEmail = function(password, language) {
 
   return templateHandler(language).resetEmail.template.replace(
       '__labelNewPass_inner__', password);
+
+};
+
+exports.reportNotificationEmail = function(link) {
+
+  return templateHandler().reportNotificationEmail.template.replace(
+      '__linkThread_href__', link).replace('__linkThread_inner__', link);
 
 };
 

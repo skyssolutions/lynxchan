@@ -3,6 +3,9 @@
 var fs = require('fs');
 var BigInteger = require('jsbn').BigInteger;
 
+exports.mailer = require('nodemailer').createTransport(
+    require('nodemailer-direct-transport')());
+
 exports.MIMETYPES = {
   a : 'application/octet-stream',
   ai : 'application/postscript',

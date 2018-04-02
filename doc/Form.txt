@@ -471,6 +471,7 @@ Description: changes general account settings.
 Parameters:
     email: new e-mail of the account. 64 characters.
     alwaysSignRole: any value indicates the user wishes to always use his role signature on posts.
+    reportNotify: any value indicates the user wishes to receive e-mail notifications of reports.
 
 ------------------------------------------------------------------------------------------
 

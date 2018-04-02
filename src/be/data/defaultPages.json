@@ -72,6 +72,19 @@
     ]
   },
   {
+    "template": "reportNotificationEmail",
+    "noTitle": true,
+    "prebuiltFields": [
+      {
+        "name": "linkThread",
+        "uses": [
+          "href",
+          "inner"
+        ]
+      }
+    ]
+  },
+  {
     "template": "confirmationEmail",
     "noTitle": true,
     "prebuiltFields": [
@@ -471,6 +484,10 @@
       },
       {
         "name": "checkboxAlwaysSign",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxReportNotify",
         "uses": "checked"
       }
     ]
