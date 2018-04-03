@@ -333,7 +333,7 @@ labelOmission:
     description: label indicating how many files and posts are being omitted when the thread is listed on a board page.
 
 panelUploads:
-    use: have children appended to it.
+    use: have children appended to it or might be removed.
     description: contains the uploads for the post.
 
 linkName:
@@ -471,7 +471,7 @@ labelNarrowRange:
     description: contains the poster's first three quarters of his ip.
 
 panelUploads:
-    use: have children appended to it.
+    use: have children appended to it or might be removed.
     description: contains the uploads for the post.
 
 labelRole:

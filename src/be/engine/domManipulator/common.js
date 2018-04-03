@@ -554,6 +554,13 @@ exports.setAllSharedPostingElements = function(postingCell, posting, removable,
   postingCell = exports.setSharedSimpleElements(postingCell, posting,
       innerPage, removable, language);
 
+  if (!posting.files || !posting.files.length) {
+    return postingCell.replace('__panelUploads_location__', '');
+  }
+
+  postingCell = postingCell.replace('__panelUploads_location__',
+      removable.panelUploads);
+
   return postingCell.replace('__panelUploads_children__', exports
       .setUploadCell(posting.files, modding, language));
 
@@ -909,10 +916,6 @@ exports.setUploadDimensionLabel = function(cell, file, t) {
 };
 
 exports.setUploadCell = function(files, modding, language) {
-
-  if (!files) {
-    return '';
-  }
 
   var children = '';
 
