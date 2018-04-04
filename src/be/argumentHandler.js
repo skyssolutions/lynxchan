@@ -13,6 +13,11 @@ var informedArguments = {
     long : '--shutdown',
     type : 'boolean'
   },
+  setPassword : {
+    short : '-sp',
+    long : '--set-password',
+    type : 'boolean'
+  },
   debug : {
     short : '-d',
     long : '--debug',

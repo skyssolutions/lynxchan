@@ -47,6 +47,7 @@ It accepts the following arguments:
 * `--maintenance`, `-m`: indicates a new value for maintenance mode on a running instance. The value will be parsed as JSON, so informing `true` or `false` will work, so as informing numbers that evaluate to false or true. Will be ignored if no daemon was not informed.
 * `--clear-individual-cache`, `-cc`: clears individual cache of postings and log entries.
 * `--shutdown`, `-s`: orders a running instance to shut down. Will be ignored if no daemon was not informed or if either maintenance mode is being changed or if the front-end is being reloaded on the same command.
+* `--set-password`, `-sp`: sets the password of the given account. Require the use of the login and password parameters.
 
 Arguments that are meant to inform values should be used in the following manner:
 `argument value`

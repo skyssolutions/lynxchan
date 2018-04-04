@@ -593,6 +593,7 @@ composeDefaultFiles();
 db = require('./db');
 
 var createAccountFunction = function() {
+
   require('./engine/accountOps').registerUser({
     login : informedLogin,
     password : informedPassword
@@ -640,6 +641,28 @@ var setRoleFunction = function() {
   }, true);
 
 };
+
+function setPassword() {
+
+  require('./engine/accountOps').setUserPassword(informedLogin,
+      informedPassword, function setPassword(error) {
+
+        if (error) {
+          if (debug) {
+            throw error;
+          } else {
+            console.log(error);
+          }
+
+        }
+
+        console.log('Password set for ' + informedLogin + '.');
+
+        checkForDefaultPages();
+
+      }, true);
+
+}
 
 // loads inter-modular dependencies in the engine by making sure every module is
 // loaded to only then set references they might have between them
@@ -723,6 +746,8 @@ function initTorControl() {
         createAccountFunction();
       } else if (informedArguments.setRole.informed) {
         setRoleFunction();
+      } else if (informedArguments.setPassword.informed) {
+        setPassword();
       } else {
         checkForDefaultPages();
       }

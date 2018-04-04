@@ -565,7 +565,8 @@ exports.updatePassword = function(userData, parameters, callback) {
 
 };
 
-exports.changePassword = function(userData, parameters, language, callback) {
+exports.changePassword = function(userData, parameters, language, callback,
+    override) {
 
   if (parameters.newPassword !== parameters.confirmation) {
 
