@@ -335,7 +335,7 @@ exports.setSharedSimpleElements = function(postingCell, posting, innerPage,
 
   if (posting.email) {
 
-    var email = 'mailto:' + name;
+    var email = 'mailto:' + exports.clean(posting.email);
 
     postingCell = postingCell.replace('__linkName_href__', email);
     postingCell = postingCell.replace('__linkName_class__', '');

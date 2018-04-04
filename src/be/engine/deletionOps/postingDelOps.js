@@ -444,8 +444,7 @@ exports.removeGlobalLatestPosts = function(userData, board, parameters, cb,
 
 };
 
-exports.applyNewBump = function(post, board, userData, parentThreads, callback,
-    index) {
+exports.applyNewBump = function(post, board, parentThreads, callback, index) {
 
   if (!post) {
 
@@ -474,8 +473,7 @@ exports.applyNewBump = function(post, board, userData, parentThreads, callback,
           if (error) {
             callback(error);
           } else {
-            exports.resetLastBump(userData, board, parentThreads, callback,
-                ++index);
+            exports.resetLastBump(board, parentThreads, callback, ++index);
           }
 
         });
@@ -498,8 +496,7 @@ exports.applyNewBump = function(post, board, userData, parentThreads, callback,
       if (error) {
         callback(error);
       } else {
-        exports
-            .resetLastBump(userData, board, parentThreads, callback, ++index);
+        exports.resetLastBump(board, parentThreads, callback, ++index);
       }
 
     });
@@ -508,12 +505,11 @@ exports.applyNewBump = function(post, board, userData, parentThreads, callback,
 
 };
 
-exports.resetLastBump = function(userData, board, parentThreads, callback,
-    index) {
+exports.resetLastBump = function(board, parentThreads, callback, index) {
 
   index = index || 0;
 
-  if (!userData || index >= parentThreads.length) {
+  if (index >= parentThreads.length) {
     callback();
     return;
   }
@@ -536,8 +532,8 @@ exports.resetLastBump = function(userData, board, parentThreads, callback,
           callback(error);
         } else {
 
-          exports.applyNewBump(foundPosts[0], board, userData, parentThreads,
-              callback, index);
+          exports.applyNewBump(foundPosts[0], board, parentThreads, callback,
+              index);
 
         }
 
@@ -548,8 +544,7 @@ exports.resetLastBump = function(userData, board, parentThreads, callback,
 exports.updateThreadPages = function(userData, board, parameters, cb,
     foundThreads, foundPosts, parentThreads) {
 
-  exports.resetLastBump(userData, board, parentThreads, function resetBumps(
-      error) {
+  exports.resetLastBump(board, parentThreads, function resetBumps(error) {
 
     if (error) {
       cb(error);
