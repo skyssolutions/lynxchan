@@ -3,7 +3,7 @@
 var fs = require('fs');
 var exec = require('child_process').exec;
 var logger = require('../logger');
-var command = 'curl {$host} | gunzip -';
+var command = 'curl -s {$host} | gunzip -';
 var ipLineSize = 4;
 var ipSource;
 var incrementalIpSource;

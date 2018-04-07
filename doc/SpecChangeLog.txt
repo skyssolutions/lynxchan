@@ -1,3 +1,301 @@
+2.0.0:
+
+**Api.txt**
+
+The auth block on the response now contains a new field named 'expiration' with the time for when the session expires.
+
+---------------------------------------
+
+registerAccount:
+
+Removed response data.
+
+---------------------------------------
+
+login:
+
+New parameters:
+remember
+
+---------------------------------------
+
+changeAccountSettings:
+
+New parameters:
+settings.reportNotify
+
+---------------------------------------
+
+renewBypass:
+
+Changed output from a string to an object.
+
+---------------------------------------
+
+addAccount:
+
+New parameters:
+email
+
+---------------------------------------
+
+New pages:
+
+requestEmailConfirmation
+
+---------------------------------------
+
+Removed pages:
+takeMessage
+
+---------------------------------------
+
+renewBypass:
+
+Changed output from a string to an object.
+
+---------------------------------------
+
+**Form.txt**
+
+account:
+
+Added fields on json output:
+globalRole
+
+---------------------------------------
+
+login:
+
+New parameters:
+remember
+
+---------------------------------------
+
+globalManagement:
+
+Removed fields on json output:
+globalRole
+
+---------------------------------------
+
+changeAccountSettings:
+
+New parameters:
+reportNotify
+
+---------------------------------------
+
+addAccount:
+
+New parameters:
+email
+
+---------------------------------------
+
+New pages:
+mediaDetails
+requestEmailConfirmation
+confirmEmail
+
+---------------------------------------
+
+**Json.txt**
+
+<board>/res/<thread>.json:
+
+New fields:
+boardName
+boardDescription
+boardMarkdown
+usesCustomCss
+maxMessageLength
+maxFileCount
+maxFileSize
+usesCustomJs
+captcha
+textBoard
+forceAnonymity
+
+---------------------------------------
+
+<board>/catalog.json
+
+New fields:
+markdown
+
+---------------------------------------
+
+Removed pages:
+<board>/preview/<posting>.json
+
+---------------------------------------
+
+**Language.txt**
+
+New entries:
+errPendingConfirmation
+errMediaNotFound
+errHashBanLimit
+errInvalidConfirmation
+errNotConfirmed
+guiTypeMediaDeletion
+guiTypeFilePruning
+logFilePruning
+msgConfirmationSent
+msgEmailConfirmed
+logMediaDeletion
+subEmailConfirmation
+subReportNotify
+titMediaDetails
+
+---------------------------------------
+
+Removed entries:
+logHashBan
+msgThreadCreated
+msgPostCreated
+
+---------------------------------------
+
+**Model.txt**
+
+users:
+
+New fields:
+confirmed
+remember
+settings.reportNotify
+
+Removed fields:
+settings.lockEnabled
+
+---------------------------------------
+
+Removed collections:
+rebuildMessages
+cacheLocks
+
+---------------------------------------
+
+New collections:
+confirmationRequests
+
+---------------------------------------
+
+**Templates.txt**
+
+opCell:
+
+Removed elements:
+linkPreview
+
+---------------------------------------
+
+postCell:
+
+Removed elements:
+linkPreview
+
+---------------------------------------
+
+accountPage:
+
+New elements:
+checkboxReportNotify
+confirmationForm
+labelGlobalRole
+
+---------------------------------------
+
+recoveryEmail:
+
+New elements:
+loginLabel
+
+---------------------------------------
+
+gManagement:
+
+Removed elements:
+userLabel
+
+---------------------------------------
+
+bManagement:
+
+New elements:
+messageLengthLabel
+requireFileCheckbox
+maxFilesField
+maxFileSizeField
+maxThreadsField
+autoSageLimitField
+validMimesField
+
+---------------------------------------
+
+boardModerationPage:
+
+New elements:
+linkOwner
+divVolunteers
+
+Removed elements:
+labelOwner
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldClusterPort
+fieldMaxBoardHashBans
+fieldStaticExpiration
+checkboxOmitUnindexedContent
+fieldBoardMessageLength
+checkboxVerboseCache
+
+Removed elements:
+checkboxPreemptiveCaching
+fieldConcurrentRebuildMessages
+checkboxVerboseStatic
+
+---------------------------------------
+
+mediaCell:
+
+New elements:
+detailsLink
+
+---------------------------------------
+
+accountManagementPage:
+
+New elements:
+loginLabel
+
+---------------------------------------
+
+New templates:
+mediaDetailsPage
+header
+footer
+confirmationEmail
+reportNotificationEmail
+
+---------------------------------------
+
+Removed templates:
+logIndexCell
+previewPage
+topBoardCell
+accountCell
+latestImageCell
+graphIndexCell
+
+---------------------------------------
+
 1.9.0:
 
 **Api.txt**
