@@ -47,7 +47,9 @@ exports.readHashBans = function(parameters, callback) {
       $exists : false
     }
   }, {
-    md5 : 1
+    projection : {
+      md5 : 1
+    }
   }).sort({
     md5 : 1
   }).toArray(function gotBans(error, hashBans) {

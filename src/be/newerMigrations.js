@@ -32,9 +32,11 @@ exports.removeGhostReports = function(callback, lastId) {
       $gt : lastId
     }
   } : {}, {
-    boardUri : 1,
-    threadId : 1,
-    postId : 1
+    projection : {
+      boardUri : 1,
+      threadId : 1,
+      postId : 1
+    }
   }, function gotReport(error, report) {
 
     if (error) {
@@ -51,8 +53,10 @@ exports.removeGhostReports = function(callback, lastId) {
         threadId : report.threadId,
         postId : report.postId
       }, {
-        boardUri : 1,
-        _id : 0
+        projection : {
+          boardUri : 1,
+          _id : 0
+        }
       }, function gotPosting(error, posting) {
 
         if (error) {

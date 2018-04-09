@@ -553,16 +553,18 @@ exports.getThread = function(req, parameters, userData, board, callback) {
     boardUri : parameters.boardUri,
     threadId : parameters.threadId
   }, {
-    _id : 1,
-    sfw : 1,
-    salt : 1,
-    page : 1,
-    cyclic : 1,
-    locked : 1,
-    autoSage : 1,
-    creation : 1,
-    postCount : 1,
-    latestPosts : 1
+    projection : {
+      _id : 1,
+      sfw : 1,
+      salt : 1,
+      page : 1,
+      cyclic : 1,
+      locked : 1,
+      autoSage : 1,
+      creation : 1,
+      postCount : 1,
+      latestPosts : 1
+    }
   }, function gotThread(error, thread) {
     if (error) {
       callback(error);
@@ -630,22 +632,24 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
   boards.findOne({
     boardUri : parameters.boardUri
   }, {
-    _id : 0,
-    filters : 1,
-    owner : 1,
-    boardUri : 1,
-    usesCustomSpoiler : 1,
-    anonymousName : 1,
-    specialSettings : 1,
-    acceptedMimes : 1,
-    maxFiles : 1,
-    locationFlagMode : 1,
-    maxBumpAgeDays : 1,
-    captchaMode : 1,
-    autoSageLimit : 1,
-    maxFileSizeMB : 1,
-    settings : 1,
-    volunteers : 1
+    projection : {
+      _id : 0,
+      filters : 1,
+      owner : 1,
+      boardUri : 1,
+      usesCustomSpoiler : 1,
+      anonymousName : 1,
+      specialSettings : 1,
+      acceptedMimes : 1,
+      maxFiles : 1,
+      locationFlagMode : 1,
+      maxBumpAgeDays : 1,
+      captchaMode : 1,
+      autoSageLimit : 1,
+      maxFileSizeMB : 1,
+      settings : 1,
+      volunteers : 1
+    }
   }, function gotBoard(error, board) {
 
     var boardLimitError = common.checkBoardFileLimits(parameters.files, board,

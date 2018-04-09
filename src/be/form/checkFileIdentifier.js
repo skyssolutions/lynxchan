@@ -12,8 +12,10 @@ exports.process = function(req, res) {
   references.findOne({
     identifier : parameters.identifier
   }, {
-    identifier : 1,
-    _id : 0
+    projection : {
+      identifier : 1,
+      _id : 0
+    }
   }, function foundReference(error, reference) {
 
     res.writeHead(200, miscOps.getHeader('application/json'));

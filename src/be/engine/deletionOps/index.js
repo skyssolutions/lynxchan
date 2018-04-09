@@ -231,8 +231,10 @@ exports.deleteFromIpOnBoard = function(objects, userData, language, callback,
     boards.findOne({
       boardUri : objects[0].board
     }, {
-      owner : 1,
-      volunteers : 1
+      projection : {
+        owner : 1,
+        volunteers : 1
+      }
     }, function gotBoard(error, board) {
 
       if (error) {

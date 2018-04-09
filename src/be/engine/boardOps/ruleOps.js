@@ -142,9 +142,11 @@ exports.boardRules = function(boardUri, userData, language, callback) {
   boards.findOne({
     boardUri : boardUri
   }, {
-    rules : 1,
-    owner : 1,
-    _id : 0
+    projection : {
+      rules : 1,
+      owner : 1,
+      _id : 0
+    }
   }, function gotBoard(error, board) {
     if (error) {
       callback(error);

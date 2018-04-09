@@ -217,8 +217,10 @@ function reaggregateSfw(message, nsfwIds) {
   threads.find({
     sfw : true
   }, {
-    lastBump : 1,
-    sfw : 1
+    projection : {
+      lastBump : 1,
+      sfw : 1
+    }
   }).sort({
     lastBump : -1
   }).limit(overboardSize).toArray(function gotThreads(error, results) {
@@ -247,7 +249,9 @@ function fullReaggregate(message) {
       $ne : true
     }
   }, {
-    lastBump : 1,
+    projection : {
+      lastBump : 1,
+    }
   }).sort({
     lastBump : -1
   }).limit(overboardSize).toArray(function gotThreads(error, results) {

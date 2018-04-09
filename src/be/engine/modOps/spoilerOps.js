@@ -257,9 +257,11 @@ exports.getParentThreads = function(foundThreads, foundPosts, board, callback) {
       $in : parentsToFind
     }
   }, {
-    threadId : 1,
-    _id : 0,
-    page : 1
+    projection : {
+      threadId : 1,
+      _id : 0,
+      page : 1
+    }
   }).toArray(
       function gotParents(error, parentThreads) {
         if (error) {
@@ -284,9 +286,11 @@ exports.getBoardFiles = function(board, element, callback) {
       $exists : true
     }
   }, {
-    files : 1,
-    threadId : 1,
-    page : 1
+    projection : {
+      files : 1,
+      threadId : 1,
+      page : 1
+    }
   }).toArray(function gotThreads(error, foundThreads) {
     if (error) {
       callback(error);
@@ -302,9 +306,11 @@ exports.getBoardFiles = function(board, element, callback) {
           $exists : true
         }
       }, {
-        files : 1,
-        postId : 1,
-        threadId : 1,
+        projection : {
+          files : 1,
+          postId : 1,
+          threadId : 1,
+        }
       }).toArray(function gotPosts(error, foundPosts) {
 
         if (error) {
@@ -332,11 +338,13 @@ exports.iterateBoards = function(foundBoards, elementRelation, userData,
   boards.findOne({
     boardUri : foundBoards.shift()
   }, {
-    _id : 0,
-    boardUri : 1,
-    usesCustomSpoiler : 1,
-    owner : 1,
-    volunteers : 1
+    projection : {
+      _id : 0,
+      boardUri : 1,
+      usesCustomSpoiler : 1,
+      owner : 1,
+      volunteers : 1
+    }
   }, function gotBoard(error, board) {
     if (error) {
       callback(error);

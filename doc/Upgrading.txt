@@ -14,10 +14,10 @@ Npm location was /usr/local/lib/node_modules
 
 5: update your front-end, be by pulling the latest version of the placeholder front-end or deploying your front-end on the version that is compatible with the engine version you are going to use.
 
-6: run lynxchan -r -nd so the database will be upgraded and pages rebuilt.
+6: restart the engine.
 
-7: restart the engine.
+7: take the server out of maintenance mode.
 
-8: take the server out of maintenance mode.
+8: run lynxchan -r -cc -nd so pages cached on mongo rebuilt and individual caches discarded.
 
 Done. New version without having the server offline for the process. 

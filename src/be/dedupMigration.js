@@ -481,9 +481,11 @@ function deduplicatePostsFiles(callback, lastPostId) {
   }
 
   cachedPosts.find(matchBlock, {
-    files : 1,
-    boardUri : 1,
-    postId : 1
+    projection : {
+      files : 1,
+      boardUri : 1,
+      postId : 1
+    }
   }).sort({
     _id : 1
   }).limit(1).toArray(function gotThread(error, results) {
@@ -528,8 +530,10 @@ exports.deduplicateFiles = function(callback, lastThreadId) {
   }
 
   cachedThreads.find(matchBlock, {
-    files : 1,
-    boardUri : 1
+    projection : {
+      files : 1,
+      boardUri : 1
+    }
   }).sort({
     _id : 1
   }).limit(1).toArray(function gotThread(error, results) {

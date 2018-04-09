@@ -103,7 +103,9 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
     flags.find({
       boardUri : boardUri
     }, {
-      name : 1
+      projection : {
+        name : 1
+      }
     }).sort({
       name : 1
     }).toArray(
@@ -121,7 +123,9 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
 
     boards.findOne({
       boardUri : boardUri
-    }, exports.boardProjection, function gotBoard(error, board) {
+    }, {
+      projection : exports.boardProjection
+    }, function gotBoard(error, board) {
       if (error) {
         callback(error);
       } else if (!board) {
@@ -137,7 +141,9 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
     threads.findOne({
       boardUri : boardUri,
       threadId : threadId
-    }, threadProjection, function gotThread(error, thread) {
+    }, {
+      projection : threadProjection
+    }, function gotThread(error, thread) {
       if (error) {
         callback(error);
       } else if (!thread) {
@@ -158,7 +164,9 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
   posts.find({
     boardUri : boardUri,
     threadId : threadId
-  }, postProjection).sort({
+  }, {
+    projection : postProjection
+  }).sort({
     creation : 1
   }).toArray(
       function(error, foundPosts) {
@@ -295,7 +303,9 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
     flags.find({
       boardUri : boardUri
     }, {
-      name : 1
+      projection : {
+        name : 1
+      }
     }).sort({
       name : 1
     }).toArray(function gotFlags(error, foundFlags) {
@@ -311,7 +321,9 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
 
     boards.findOne({
       boardUri : boardUri
-    }, exports.boardProjection, function gotBoard(error, board) {
+    }, {
+      projection : exports.boardProjection
+    }, function gotBoard(error, board) {
       if (error) {
         callback(error);
       } else if (!board) {
@@ -339,7 +351,9 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
 
   threads.find({
     boardUri : boardUri
-  }, threadProjection).sort({
+  }, {
+    projection : threadProjection
+  }).sort({
     pinned : -1,
     lastBump : -1
   }).skip(toSkip).limit(pageSize).toArray(
@@ -418,7 +432,9 @@ exports.catalog = function(boardUri, callback, boardData, flagData) {
 
     boards.findOne({
       boardUri : boardUri
-    }, exports.boardProjection, function gotBoardData(error, boardData) {
+    }, {
+      projection : exports.boardProjection
+    }, function gotBoardData(error, boardData) {
       if (error) {
         callback(error);
       } else if (!boardData) {
@@ -434,7 +450,9 @@ exports.catalog = function(boardUri, callback, boardData, flagData) {
     flags.find({
       boardUri : boardUri
     }, {
-      name : 1
+      projection : {
+        name : 1
+      }
     }).sort({
       name : 1
     }).toArray(function gotFlags(error, foundFlags) {
@@ -454,7 +472,9 @@ exports.catalog = function(boardUri, callback, boardData, flagData) {
 
   threads.find({
     boardUri : boardUri
-  }, threadProjection).sort({
+  }, {
+    projection : threadProjection
+  }).sort({
     pinned : -1,
     lastBump : -1
   }).limit(maxThreads).toArray(function gotThreads(error, foundThreads) {

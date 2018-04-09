@@ -259,7 +259,9 @@ exports.getFlagsData = function(userData, boardUri, language, callback) {
       flags.find({
         boardUri : boardUri
       }, {
-        name : 1
+        projection : {
+          name : 1
+        }
       }).sort({
         name : 1
       }).toArray(callback);

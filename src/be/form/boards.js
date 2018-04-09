@@ -140,16 +140,18 @@ exports.process = function(req, res) {
 
       // style exception, too simple
       boards.find(queryBlock, {
-        _id : 0,
-        boardName : 1,
-        boardUri : 1,
-        inactive : 1,
-        specialSettings : 1,
-        uniqueIps : 1,
-        tags : 1,
-        boardDescription : 1,
-        postsPerHour : 1,
-        lastPostId : 1
+        projection : {
+          _id : 0,
+          boardName : 1,
+          boardUri : 1,
+          inactive : 1,
+          specialSettings : 1,
+          uniqueIps : 1,
+          tags : 1,
+          boardDescription : 1,
+          postsPerHour : 1,
+          lastPostId : 1
+        }
       }).sort(exports.getSortBlock(parameters)).skip(toSkip).limit(pageSize)
           .toArray(
               function(error, foundBoards) {

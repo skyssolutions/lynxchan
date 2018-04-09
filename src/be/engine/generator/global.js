@@ -618,12 +618,14 @@ exports.fetchLatestGlobalImages = function(foundBoards, globalLatestPosts,
   }
 
   latestImagesCol.find({}, {
-    _id : 0,
-    thumb : 1,
-    creation : 1,
-    boardUri : 1,
-    threadId : 1,
-    postId : 1
+    projection : {
+      _id : 0,
+      thumb : 1,
+      creation : 1,
+      boardUri : 1,
+      threadId : 1,
+      postId : 1
+    }
   }).toArray(
       function gotImages(error, images) {
 
@@ -646,12 +648,14 @@ exports.fetchLatestGlobalPosts = function(foundBoards, callback) {
   }
 
   latestPostsCol.find({}, {
-    _id : 0,
-    boardUri : 1,
-    threadId : 1,
-    postId : 1,
-    creation : 1,
-    previewText : 1
+    projection : {
+      _id : 0,
+      boardUri : 1,
+      threadId : 1,
+      postId : 1,
+      creation : 1,
+      previewText : 1
+    }
   }).sort({
     creation : -1
   }).toArray(
@@ -686,9 +690,11 @@ exports.frontPage = function(callback) {
       }
     }
   }, {
-    boardUri : 1,
-    _id : 0,
-    boardName : 1
+    projection : {
+      boardUri : 1,
+      _id : 0,
+      boardName : 1
+    }
   }).sort({
     uniqueIps : -1,
     postsPerHour : -1,
@@ -804,7 +810,9 @@ exports.getOverboardPosts = function(foundThreads, callback, sfw) {
 
   posts.find({
     $or : orArray
-  }, postProjection).sort({
+  }, {
+    projection : postProjection
+  }).sort({
     creation : 1
   }).toArray(function gotPosts(error, foundPosts) {
     if (error) {
@@ -843,7 +851,9 @@ exports.getOverboardThreads = function(ids, callback, sfw) {
     _id : {
       $in : ids
     }
-  }, threadProjection).sort({
+  }, {
+    projection : threadProjection
+  }).sort({
     lastBump : -1
   }).limit(overBoardThreadCount).toArray(
       function gotThreads(error, foundThreads) {
@@ -984,14 +994,16 @@ exports.log = function(date, callback, logData) {
       $in : toFind
     }
   }, {
-    type : 1,
-    user : 1,
-    cache : 1,
-    alternativeCaches : 1,
-    time : 1,
-    boardUri : 1,
-    description : 1,
-    global : 1
+    projection : {
+      type : 1,
+      user : 1,
+      cache : 1,
+      alternativeCaches : 1,
+      time : 1,
+      boardUri : 1,
+      description : 1,
+      global : 1
+    }
   }).sort({
     time : 1
   }).toArray(function gotLogs(error, foundLogs) {
@@ -1109,7 +1121,9 @@ exports.getPosts = function(boardList, foundThreads, callback) {
 
   posts.find({
     $or : orArray
-  }, postProjection).sort({
+  }, {
+    projection : postProjection
+  }).sort({
     creation : 1
   }).toArray(function gotPosts(error, foundPosts) {
     if (error) {
@@ -1132,7 +1146,9 @@ exports.multiboard = function(boardList, callback) {
     boardUri : {
       $in : boardList
     }
-  }, threadProjection).sort({
+  }, {
+    projection : threadProjection
+  }).sort({
     lastBump : -1
   }).limit(multiboardThreadCount).toArray(
       function gotThreads(error, foundThreads) {

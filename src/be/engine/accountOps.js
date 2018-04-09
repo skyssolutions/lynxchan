@@ -102,8 +102,10 @@ exports.setGlobalRole = function(operatorData, parameters, language, callback,
   users.findOne({
     login : parameters.login
   }, {
-    _id : 0,
-    globalRole : 1
+    projection : {
+      _id : 0,
+      globalRole : 1
+    }
   }, function gotUser(error, user) {
     if (error) {
       callback(error);
@@ -411,8 +413,10 @@ exports.lookForUserEmailOfRequest = function(domain, login, language, cb) {
   users.findOne({
     login : login
   }, {
-    email : 1,
-    _id : 0
+    projection : {
+      email : 1,
+      _id : 0
+    }
   }, function gotUser(error, user) {
     if (error) {
       cb(error);
@@ -446,8 +450,10 @@ exports.requestRecovery = function(domain, language, parameters, captchaId,
               $gte : new Date()
             }
           }, {
-            _id : 0,
-            expiration : 1
+            projection : {
+              _id : 0,
+              expiration : 1
+            }
           }, function gotRequest(error, request) {
             if (error) {
               callback(error);
@@ -721,12 +727,14 @@ exports.getAccountData = function(account, userData, language, callback) {
   users.findOne({
     login : account
   }, {
-    _id : 0,
-    email : 1,
-    lastSeen : 1,
-    ownedBoards : 1,
-    volunteeredBoards : 1,
-    globalRole : 1
+    projection : {
+      _id : 0,
+      email : 1,
+      lastSeen : 1,
+      ownedBoards : 1,
+      volunteeredBoards : 1,
+      globalRole : 1
+    }
   }, function gotAccount(error, accountData) {
 
     if (error) {
@@ -895,8 +903,10 @@ exports.requestConfirmation = function(domain, language, userData, callback) {
       $gte : new Date()
     }
   }, {
-    _id : 0,
-    expiration : 1
+    projection : {
+      _id : 0,
+      expiration : 1
+    }
   }, function gotRequest(error, confirmation) {
     if (error) {
       callback(error);

@@ -30,8 +30,10 @@ function setPostingPreAggregatedFileMime(posting, collection, callback) {
       $in : files
     }
   }, {
-    filename : 1,
-    contentType : 1
+    projection : {
+      filename : 1,
+      contentType : 1
+    }
   }).toArray(function(error, foundFiles) {
     if (error) {
       callback(error);
@@ -69,7 +71,9 @@ function setPostsPreAggreGatedFileMime(callback, cursor) {
         $exists : true
       }
     }, {
-      files : 1
+      projection : {
+        files : 1
+      }
     });
 
   }
@@ -104,7 +108,9 @@ exports.setThreadsPreAggregatedFileMime = function(callback, cursor) {
         $exists : true
       }
     }, {
-      files : 1
+      projection : {
+        files : 1
+      }
     });
 
   }
@@ -137,7 +143,7 @@ exports.setThreadsPreAggregatedFileMime = function(callback, cursor) {
 // Section 2: Board salt creation {
 exports.setBoardIpSalt = function(callback) {
 
-  cachedBoards.find({}, {}).toArray(
+  cachedBoards.find({}).toArray(
       function gotBoards(error, boards) {
         if (error || !boards.length) {
           callback(error);
@@ -198,8 +204,10 @@ function convertIp(ip) {
 function migrateBanIps(callback) {
 
   cachedBans.find({}, {
-    ip : 1,
-    range : 1
+    projection : {
+      ip : 1,
+      range : 1
+    }
   }).toArray(function gotBans(error, bans) {
     if (error) {
       callback(error);
@@ -253,7 +261,9 @@ function migratePostIps(callback) {
       $exists : true
     }
   }, {
-    ip : 1
+    projection : {
+      ip : 1
+    }
   }).toArray(function gotPosts(error, posts) {
     if (error) {
       callback(error);
@@ -302,7 +312,9 @@ exports.migrateThreadIps = function(callback) {
       $exists : true
     }
   }, {
-    ip : 1
+    projection : {
+      ip : 1
+    }
   }).toArray(function gotThreads(error, threads) {
     if (error) {
       callback(error);
@@ -475,7 +487,9 @@ exports.getMessageHash = function(message) {
 exports.updatePostsR9KHashes = function(callback, postsCursor) {
 
   postsCursor = postsCursor || cachedPosts.find({}, {
-    message : 1
+    projection : {
+      message : 1
+    }
   });
 
   postsCursor.next(function gotPost(error, post) {
@@ -512,7 +526,9 @@ exports.updatePostsR9KHashes = function(callback, postsCursor) {
 exports.createR9KHashes = function(callback, threadsCursor) {
 
   threadsCursor = threadsCursor || cachedThreads.find({}, {
-    message : 1
+    projection : {
+      message : 1
+    }
   });
 
   threadsCursor.next(function gotThread(error, thread) {
@@ -556,9 +572,11 @@ exports.aggregateVolunteeredBoards = function(callback) {
       $exists : true
     }
   }, {
-    _id : 0,
-    volunteers : 1,
-    boardUri : 1
+    projection : {
+      _id : 0,
+      volunteers : 1,
+      boardUri : 1
+    }
   }).toArray(function gotBoards(error, boards) {
 
     if (error) {
@@ -794,7 +812,9 @@ exports.addMissingMd5 = function(callback, foundPostings, collectionToUse) {
         $exists : false
       }
     }, {
-      files : 1
+      projection : {
+        files : 1
+      }
     }).toArray(function gotThreads(error, foundPostings) {
 
       if (error) {
@@ -831,9 +851,11 @@ exports.addMissingMd5 = function(callback, foundPostings, collectionToUse) {
       $in : filesToFind
     }
   }, {
-    md5 : 1,
-    filename : 1,
-    _id : 0
+    projection : {
+      md5 : 1,
+      filename : 1,
+      _id : 0
+    }
   }).toArray(function gotFiles(error, files) {
 
     if (error) {

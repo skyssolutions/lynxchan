@@ -297,8 +297,10 @@ exports.findPosts = function(newBoard, userData, originalThread, newThreadId,
     boardUri : originalThread.boardUri,
     threadId : originalThread.threadId
   }, {
-    postId : 1,
-    files : 1
+    projection : {
+      postId : 1,
+      files : 1
+    }
   }).sort({
     postId : 1
   }).toArray(
@@ -482,11 +484,13 @@ exports.transfer = function(userData, parameters, language, callback) {
     threadId : parameters.threadId,
     boardUri : parameters.boardUri
   }, {
-    postCount : 1,
-    files : 1,
-    latestPosts : 1,
-    boardUri : 1,
-    threadId : 1
+    projection : {
+      postCount : 1,
+      files : 1,
+      latestPosts : 1,
+      boardUri : 1,
+      threadId : 1
+    }
   }, function gotThread(error, thread) {
     if (error) {
       callback(error);

@@ -211,12 +211,14 @@ exports.getAppealedBans = function(userRole, users, reports, callback) {
     }
 
     bans.find(query, {
-      reason : 1,
-      appeal : 1,
-      boardUri : 1,
-      denied : 1,
-      expiration : 1,
-      appliedBy : 1
+      projection : {
+        reason : 1,
+        appeal : 1,
+        boardUri : 1,
+        denied : 1,
+        expiration : 1,
+        appliedBy : 1
+      }
     }).toArray(function gotBans(error, foundBans) {
       callback(error, users, reports, foundBans);
     });
@@ -260,9 +262,11 @@ exports.getManagementData = function(userRole, language, userLogin,
         $lte : MAX_STAFF_ROLE
       }
     }, {
-      _id : 0,
-      login : 1,
-      globalRole : 1
+      projection : {
+        _id : 0,
+        login : 1,
+        globalRole : 1
+      }
     }).sort({
       login : 1
     }).toArray(
@@ -284,11 +288,13 @@ exports.getManagementData = function(userRole, language, userLogin,
 
             // style exception, too simple
             reports.find(query, {
-              boardUri : 1,
-              reason : 1,
-              threadId : 1,
-              creation : 1,
-              postId : 1
+              projection : {
+                boardUri : 1,
+                reason : 1,
+                threadId : 1,
+                creation : 1,
+                postId : 1
+              }
             }).sort({
               creation : -1
             }).toArray(

@@ -418,7 +418,9 @@ exports.prune = function(callback, lastId) {
       $gt : lastId
     }
   } : {}, {
-    identifier : 1
+    projection : {
+      identifier : 1
+    }
   }, function gotReference(error, reference) {
 
     if (error) {
@@ -489,10 +491,12 @@ exports.getMedia = function(userData, parameters, language, callback) {
 
       // style exception, too simple
       references.find(queryBlock, {
-        _id : 0,
-        references : 1,
-        identifier : 1,
-        extension : 1
+        projection : {
+          _id : 0,
+          references : 1,
+          identifier : 1,
+          extension : 1
+        }
       }).sort({
         _id : -1
       }).skip((page - 1) * maxFilesToDisplay).limit(maxFilesToDisplay).toArray(
@@ -613,10 +617,12 @@ exports.getPostsForMediaDetails = function(media, path, foundThreads, cb) {
   posts.find({
     'files.path' : path
   }, {
-    boardUri : 1,
-    threadId : 1,
-    postId : 1,
-    _id : 0
+    projection : {
+      boardUri : 1,
+      threadId : 1,
+      postId : 1,
+      _id : 0
+    }
   }).toArray(
       function gotPosts(error, foundPosts) {
 
@@ -668,9 +674,11 @@ exports.getMediaDetails = function(userData, parameters, language, callback) {
       threads.find({
         'files.path' : path
       }, {
-        boardUri : 1,
-        threadId : 1,
-        _id : 0
+        projection : {
+          boardUri : 1,
+          threadId : 1,
+          _id : 0
+        }
       }).toArray(function gotThreads(error, foundThreads) {
 
         if (error) {

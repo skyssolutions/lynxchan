@@ -66,7 +66,9 @@ exports.generateBoardCache = function(lockData, callback) {
 
   boards.findOne({
     boardUri : lockData.boardUri
-  }, generator.board.boardProjection,
+  }, {
+    projection : generator.board.boardProjection
+  },
       function gotBoard(error, board) {
 
         if (error || !board) {

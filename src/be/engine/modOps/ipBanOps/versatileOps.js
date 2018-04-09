@@ -71,12 +71,14 @@ exports.readBans = function(parameters, callback) {
   }
 
   bans.find(queryBlock, {
-    reason : 1,
-    appeal : 1,
-    denied : 1,
-    boardUri : 1,
-    expiration : 1,
-    appliedBy : 1
+    projection : {
+      reason : 1,
+      appeal : 1,
+      denied : 1,
+      boardUri : 1,
+      expiration : 1,
+      appliedBy : 1
+    }
   }).sort({
     creation : -1
   }).toArray(function gotBans(error, bans) {

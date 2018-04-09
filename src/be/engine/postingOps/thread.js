@@ -494,28 +494,30 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
   boards.findOne({
     boardUri : parameters.boardUri
   }, {
-    _id : 0,
-    owner : 1,
-    volunteers : 1,
-    boardUri : 1,
-    autoCaptchaThreshold : 1,
-    autoCaptchaCount : 1,
-    autoCaptchaStartTime : 1,
-    hourlyThreadLimit : 1,
-    maxFiles : 1,
-    locationFlagMode : 1,
-    maxFileSizeMB : 1,
-    usesCustomSpoiler : 1,
-    specialSettings : 1,
-    maxThreadCount : 1,
-    captchaMode : 1,
-    lockedUntil : 1,
-    acceptedMimes : 1,
-    lockCountStart : 1,
-    filters : 1,
-    threadLockCount : 1,
-    anonymousName : 1,
-    settings : 1
+    projection : {
+      _id : 0,
+      owner : 1,
+      volunteers : 1,
+      boardUri : 1,
+      autoCaptchaThreshold : 1,
+      autoCaptchaCount : 1,
+      autoCaptchaStartTime : 1,
+      hourlyThreadLimit : 1,
+      maxFiles : 1,
+      locationFlagMode : 1,
+      maxFileSizeMB : 1,
+      usesCustomSpoiler : 1,
+      specialSettings : 1,
+      maxThreadCount : 1,
+      captchaMode : 1,
+      lockedUntil : 1,
+      acceptedMimes : 1,
+      lockCountStart : 1,
+      filters : 1,
+      threadLockCount : 1,
+      anonymousName : 1,
+      settings : 1
+    }
   }, function gotBoard(error, board) {
 
     var boardLimitError = common.checkBoardFileLimits(parameters.files, board,

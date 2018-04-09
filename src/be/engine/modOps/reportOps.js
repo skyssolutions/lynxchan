@@ -79,12 +79,14 @@ exports.readClosedReports = function(parameters, callback) {
   }
 
   reports.find(queryBlock, {
-    boardUri : 1,
-    threadId : 1,
-    closedBy : 1,
-    postId : 1,
-    reason : 1,
-    closing : 1
+    projection : {
+      boardUri : 1,
+      threadId : 1,
+      closedBy : 1,
+      postId : 1,
+      reason : 1,
+      closing : 1
+    }
   }).sort({
     creation : -1
   }).toArray(callback);
@@ -225,9 +227,11 @@ exports.notifyReport = function(req, report, callback) {
   boards.findOne({
     boardUri : report.boardUri
   }, {
-    owner : 1,
-    _id : 0,
-    volunteers : 1
+    projection : {
+      owner : 1,
+      _id : 0,
+      volunteers : 1
+    }
   }, function gotBoard(error, board) {
 
     if (error) {
@@ -653,7 +657,9 @@ exports.associatePostsContent = function(reports, postsOrArray, callback) {
 
   posts.find({
     $or : postsOrArray
-  }, generator.postProjection).toArray(function gotPosts(error, foundPosts) {
+  }, {
+    projection : generator.postProjection
+  }).toArray(function gotPosts(error, foundPosts) {
 
     if (error) {
       callback(error);
@@ -696,20 +702,21 @@ exports.associateContent = function(reports, callback) {
 
     threads.find({
       $or : threadsOrArray
-    }, generator.threadProjection).toArray(
-        function gotThreads(error, foundThreads) {
+    }, {
+      projection : generator.threadProjection
+    }).toArray(function gotThreads(error, foundThreads) {
 
-          if (error) {
-            callback(error);
-          } else {
+      if (error) {
+        callback(error);
+      } else {
 
-            exports.associateFoundThreads(reports, foundThreads);
+        exports.associateFoundThreads(reports, foundThreads);
 
-            exports.associatePostsContent(reports, postsOrArray, callback);
+        exports.associatePostsContent(reports, postsOrArray, callback);
 
-          }
+      }
 
-        });
+    });
 
   } else {
     exports.associatePostsContent(reports, postsOrArray, callback);

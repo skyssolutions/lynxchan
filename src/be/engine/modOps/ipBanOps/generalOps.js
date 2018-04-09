@@ -43,7 +43,9 @@ exports.readRangeBans = function(parameters, callback, boardData) {
   };
 
   bans.find(queryBlock, {
-    range : 1
+    projection : {
+      range : 1
+    }
   }).sort({
     creation : -1
   }).toArray(function gotBans(error, rangeBans) {

@@ -417,8 +417,10 @@ exports.transfer = function(userData, parameters, language, callback) {
   boards.findOne({
     boardUri : parameters.boardUri
   }, {
-    _id : 0,
-    owner : 1
+    projection : {
+      _id : 0,
+      owner : 1
+    }
   }, function gotBoard(error, board) {
     if (error) {
       callback(error);
@@ -528,9 +530,11 @@ exports.setVolunteer = function(userData, parameters, language, callback) {
   boards.findOne({
     boardUri : parameters.boardUri
   }, {
-    _id : 0,
-    owner : 1,
-    volunteers : 1
+    projection : {
+      _id : 0,
+      owner : 1,
+      volunteers : 1
+    }
   }, function gotBoard(error, board) {
     if (error) {
       callback(error);
@@ -632,11 +636,13 @@ exports.getAppealedBans = function(boardData, reports, callback) {
       $exists : false
     }
   }, {
-    reason : 1,
-    appeal : 1,
-    denied : 1,
-    expiration : 1,
-    appliedBy : 1
+    projection : {
+      reason : 1,
+      appeal : 1,
+      denied : 1,
+      expiration : 1,
+      appliedBy : 1
+    }
   }).toArray(function gotBans(error, foundBans) {
     callback(error, boardData, reports, foundBans);
   });
@@ -652,11 +658,13 @@ exports.getBoardReports = function(boardData, associatePosts, callback) {
     },
     global : false
   }, {
-    boardUri : 1,
-    threadId : 1,
-    creation : 1,
-    postId : 1,
-    reason : 1
+    projection : {
+      boardUri : 1,
+      threadId : 1,
+      creation : 1,
+      postId : 1,
+      reason : 1
+    }
   }).sort({
     creation : -1
   }).toArray(
@@ -698,27 +706,29 @@ exports.getBoardManagementData = function(userData, board,
   boards.findOne({
     boardUri : board
   }, {
-    _id : 0,
-    tags : 1,
-    owner : 1,
-    settings : 1,
-    maxFiles : 1,
-    boardUri : 1,
-    boardName : 1,
-    volunteers : 1,
-    captchaMode : 1,
-    boardMessage : 1,
-    autoSageLimit : 1,
-    anonymousName : 1,
-    acceptedMimes : 1,
-    maxFileSizeMB : 1,
-    maxBumpAgeDays : 1,
-    maxThreadCount : 1,
-    locationFlagMode : 1,
-    boardDescription : 1,
-    usesCustomSpoiler : 1,
-    hourlyThreadLimit : 1,
-    autoCaptchaThreshold : 1
+    projection : {
+      _id : 0,
+      tags : 1,
+      owner : 1,
+      settings : 1,
+      maxFiles : 1,
+      boardUri : 1,
+      boardName : 1,
+      volunteers : 1,
+      captchaMode : 1,
+      boardMessage : 1,
+      autoSageLimit : 1,
+      anonymousName : 1,
+      acceptedMimes : 1,
+      maxFileSizeMB : 1,
+      maxBumpAgeDays : 1,
+      maxThreadCount : 1,
+      locationFlagMode : 1,
+      boardDescription : 1,
+      usesCustomSpoiler : 1,
+      hourlyThreadLimit : 1,
+      autoCaptchaThreshold : 1
+    }
   }, function(error, boardData) {
     if (error) {
       callback(error);

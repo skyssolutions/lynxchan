@@ -452,8 +452,10 @@ exports.applyNewBump = function(post, board, parentThreads, callback, index) {
       boardUri : board.boardUri,
       threadId : parentThreads[index]
     }, {
-      creation : 1,
-      _id : 0
+      projection : {
+        creation : 1,
+        _id : 0
+      }
     }, function gotThread(error, thread) {
 
       if (error) {
@@ -521,8 +523,10 @@ exports.resetLastBump = function(board, parentThreads, callback, index) {
       $ne : 'sage'
     }
   }, {
-    creation : 1,
-    _id : 0
+    projection : {
+      creation : 1,
+      _id : 0
+    }
   }).sort({
     creation : -1
   }).limit(1).toArray(
@@ -888,11 +892,13 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
   boards.findOne({
     boardUri : foundBoards.shift()
   }, {
-    boardUri : 1,
-    owner : 1,
-    _id : 0,
-    settings : 1,
-    volunteers : 1
+    projection : {
+      boardUri : 1,
+      owner : 1,
+      _id : 0,
+      settings : 1,
+      volunteers : 1
+    }
   }, function gotBoard(error, board) {
 
     if (error) {

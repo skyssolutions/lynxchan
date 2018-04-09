@@ -353,10 +353,12 @@ exports.board = function(userData, parameters, language, callback) {
   boards.findOne({
     boardUri : parameters.boardUri
   }, {
-    _id : 0,
-    boardUri : 1,
-    owner : 1,
-    volunteers : 1
+    projection : {
+      _id : 0,
+      boardUri : 1,
+      owner : 1,
+      volunteers : 1
+    }
   }, function gotBoard(error, board) {
     if (error) {
       callback(error);
