@@ -507,6 +507,30 @@ exports.setSharedHideableElements = function(posting, removable, postingCell,
 
 };
 
+exports.matchCodeTags = function(markdown) {
+
+  var delta = markdown.split('<code>').length;
+  delta -= markdown.split('</code>').length;
+
+  if (delta < 0) {
+
+    for (delta; delta !== 0; delta++) {
+      markdown = '<code>' + markdown;
+    }
+
+  } else if (delta > 0) {
+
+    for (delta; delta !== 0; delta--) {
+      markdown = markdown + '</code>';
+
+    }
+
+  }
+
+  return markdown;
+
+};
+
 exports.addMessage = function(innerPage, cell, posting, removable) {
 
   var markdown = posting.markdown;
@@ -533,7 +557,7 @@ exports.addMessage = function(innerPage, cell, posting, removable) {
     cell = cell.replace('__contentOmissionIndicator_location__', '');
   }
 
-  return cell.replace('__divMessage_inner__', markdown);
+  return cell.replace('__divMessage_inner__', exports.matchCodeTags(markdown));
 
 };
 
