@@ -110,7 +110,7 @@ Settings files that goes into the settings directory:
 * `disableAccountCreation`(Boolean): disables account creation for users.
 * `boardCreationRequirement`(Number): minimum global role required for board creation.
 * `defaultAnonymousName`: Default anonymous name if none is set for the board. Defaults to the `miscDefaultAnonymous` entry on the language pack.
-* `topBoardsCount`(Number): amount of boards to be listed in the top boards. Defaults to 25. 
+* `topBoardsCount`(Number): amount of boards to be listed in the top boards.
 * `boardsPerPage`(Number): amount of boards to be listed in boards.js. Defaults to 50.
 * `torSource`: url to the list of TOR exit nodes ips. Defaults to `https://check.torproject.org/exit-addresses`.
 * `languagePackPath`: absolute path to an optional language pack.

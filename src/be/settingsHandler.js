@@ -297,10 +297,9 @@ function prepareSettingsForChangeCheck(settings, callback) {
   // these fields won`t be set with the current values if none is provided
   // because we want them to be null when comparing
   var defaultToNull = [ 'siteTitle', 'globalLatestImages', 'languagePackPath',
-      'defaultAnonymousName', 'defaultBanMessage', 'disableTopBoards',
-      'allowBoardCustomJs', 'topBoardsCount', 'globalLatestPosts',
-      'forceCaptcha', 'overboard', 'frontPageStats', 'disableAccountCreation',
-      'disableCatalogPosting' ];
+      'defaultAnonymousName', 'defaultBanMessage', 'allowBoardCustomJs',
+      'topBoardsCount', 'globalLatestPosts', 'forceCaptcha', 'overboard',
+      'frontPageStats', 'disableAccountCreation', 'disableCatalogPosting' ];
 
   // these ones default to the default values
   var defaultToDefault = [ 'pageSize', 'maxFileSizeMB', 'maxFiles', 'fePath',

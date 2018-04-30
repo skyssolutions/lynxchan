@@ -26,7 +26,7 @@ divLatestPosts:
     description: contains the latest posts made on the whole site.
 
 linkEngine:
-    use: have it's innerHTML and href manipulated.
+    use: have its innerHTML and href manipulated.
     description: contains the engine name and version and links to the repository.
 
 divStats:
@@ -34,27 +34,27 @@ divStats:
     description: panel that contains the global stats.
 
 labelTotalPosts:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the total amount of posts in the whole site.
 
 labelTotalIps:
-    use: have it's innerHTML manipualted.
+    use: have its innerHTML manipualted.
     description: label with the total amount of unique ips in the past 24 hours.
 
 labelTotalBoards:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the total amount boards on the site.
 
 labelTotalPPH:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the total PPH of the site for the past hour.
 
 labelTotalFiles:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label iwth the total amount of files saved.
 
 labelTotalSize:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the total size of files saved.
 
 ------------------------------------------------------------------------------------------
@@ -73,11 +73,11 @@ panelMessage:
     description: panel that holds the element containing the board message.
 
 divMessage:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains the board message.
 
 labelName:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains the URI and name of the board.
 
 flagsDiv:
@@ -89,7 +89,7 @@ flagCombobox:
     description: combobox used to select a flag.
 
 labelDescription:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains the description of the board.
 
 divThreads:
@@ -101,19 +101,19 @@ divPages:
     description: contains the listing of available pages in the board.
 
 boardIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to identify the board the page belongs to.
 
 linkManagement:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link to the board management page.
 
 linkModeration:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link to the board moderation page.
 
 bannerImage:
-    use: have it's src manipulated.
+    use: have its src manipulated.
     description: holds the link that displays a banner to the board.
 
 captchaDiv:
@@ -125,23 +125,23 @@ divName:
     description: holds the name input elements.
 
 labelMaxFileSize:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the maximum allowed file size for uploads.
 
 linkPrevious:
-    use: have it's href manipulated and might be removed.
+    use: have its href manipulated and might be removed.
     description: link to the board previous page.
 
 linkNext:
-    use: have it's href manipulated and might be removed.
+    use: have its href manipulated and might be removed.
     description: link to the board next page.
 
 labelMaxFiles:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that displays the maximum amount of files allowed to be posted.
 
 labelMessageLength:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that displays the maximum allowed length of posted messages.
 
 divUpload:
@@ -168,11 +168,11 @@ panelMessage:
     description: panel that holds the element containing the board message.
 
 divMessage:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains the board message.
 
 labelName:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains the URI and name of the board.
 
 flagsDiv:
@@ -184,7 +184,7 @@ flagCombobox:
     description: combobox used to select a flag.
 
 labelDescription:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains the description of the board.
 
 divThreads:
@@ -192,19 +192,19 @@ divThreads:
     description: contains the OP. I decided to keep the same structure of the board page to keep uniformity.
 
 boardIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to identify the board the page belongs to.
 
 threadIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to identify the thread the page belongs to.
 
 linkManagement:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link to the board management page.
 
 linkMod:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link to the moderation page of the thread.
 
 divMod:
@@ -216,11 +216,11 @@ divControls:
     description: div with general controls, like lock and pin.
 
 controlBoardIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input to identify the board for the controls page.
 
 controlThreadIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input to identify the thread for the controls page.
 
 checkboxLock:
@@ -236,7 +236,7 @@ checkboxCyclic:
     description: check-box indicating if the thread is cyclic.
 
 bannerImage:
-    use: have it's src manipulated.
+    use: have its src manipulated.
     description: holds the link that displays a banner to the board.
 
 captchaDiv:
@@ -248,7 +248,7 @@ divName:
     description: holds the name input elements.
 
 labelMaxFileSize:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the maximum allowed file size for uploads.
 
 formTransfer:
@@ -256,19 +256,19 @@ formTransfer:
     description: form used to transfer the thread to a different board.
 
 transferBoardIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden identifier that identifies the origin board of the thread when transferring it.
 
 transferThreadIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden identifier that identifies the thread being transferred.
 
 labelMaxFiles:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that displays the maximum amount of files allowed to be posted.
 
 labelMessageLength:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that displays the maximum allowed length of posted messages.
 
 divUpload:
@@ -283,11 +283,11 @@ messagePage: generic message page used by the form api.
 
 Elements:
 labelMessage:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: displays the message itself.
 
 linkRedirect:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link to the redirection of the page.
 
 ------------------------------------------------------------------------------------------
@@ -305,11 +305,11 @@ contentOmissionIndicator:
     description: element indicating the original text was too long to be displayed.
 
 linkFullText:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link to the post if the message is too long and had its original text trimmed.
 
 labelIp:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label used to display the hashed ip of the poster to the staff.
 
 panelRange:
@@ -317,19 +317,19 @@ panelRange:
     description: panel that contains the range of the poster's ip.
 
 linkEdit:
-    use: have it's href manipulated or may be removed.
+    use: have its href manipulated or may be removed.
     description: link that opens the page used to edit the message of the OP.
 
 imgFlag:
-    use: have it's src and title manipulated or may be removed. It might have a second class indicating its country appended to it using the format flag-xx.
+    use: have its src and title manipulated or may be removed. It might have a second class indicating its country appended to it using the format flag-xx.
     description: img used to display the poster's selected flag.
 
 labelLastEdit:
-    use: have it's innerHTML manipulated or may be removed.
+    use: have its innerHTML manipulated or may be removed.
     description: label used to indicate the last time the thread was edited.
 
 labelOmission:
-    use: have it's innerHTML manipulated or might be removed.
+    use: have its innerHTML manipulated or might be removed.
     description: label indicating how many files and posts are being omitted when the thread is listed on a board page.
 
 panelUploads:
@@ -337,7 +337,7 @@ panelUploads:
     description: contains the uploads for the post.
 
 linkName:
-    use: have it's innerHTML manipulated and might have its href manipulated. Will have the class "noEmailName" added if it doesn't have an e-mail to be added to href.
+    use: have its innerHTML manipulated and might have its href manipulated. Will have the class "noEmailName" added if it doesn't have an e-mail to be added to href.
     description: contains the poster's name and links to the poster e-mail.
 
 panelIp:
@@ -345,23 +345,23 @@ panelIp:
     description: object to be removed if the range and ip are not going to be informed.
 
 labelBroadRange:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains the poster's first half of his ip.
 
 labelNarrowRange:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains the poster's first three quarters of his ip.
 
 labelSubject:
-    use: have it's innerHTML manipulated or might be removed.
+    use: have its innerHTML manipulated or might be removed.
     description: contains the thread's subject.
 
 labelCreated:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains the when the thread was created.
 
 divMessage:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains the thread's message.
 
 divPosts:
@@ -369,19 +369,19 @@ divPosts:
     description: contains the thread's posts.
 
 linkReply:
-    use: have it's href manipulated or might be removed.
+    use: have its href manipulated or might be removed.
     description: contains the link to reply the thread.
 
 linkSelf:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: contains the link for the thread itself.
 
 linkQuote:
-    use: have it's href and innerHTML manipulated.
+    use: have its href and innerHTML manipulated.
     description: contains the link for the thread itself to be used for quoting.
 
 deletionCheckBox:
-    use: have it's name manipulated.
+    use: have its name manipulated.
     description: check-box used for deletion or reporting.
 
 lockIndicator:
@@ -405,15 +405,15 @@ spanId:
     description: object that contains the label with the poster id.
 
 labelId:
-    use: have it's innerHTML and style attribute manipulated.
+    use: have its innerHTML and style attribute manipulated.
     description: holds the poster's thread-wise id.
 
 labelRole:
-    use: have it's innerHTML manipulated or might be removed.
+    use: have its innerHTML manipulated or might be removed.
     description: holds the role of the user in the board. If the user doesn't have a role in the board, it will display its global role, if the user is not a regular user.
 
 divBanMessage:
-    use: have it's innerHTML manipulated or might be removed.
+    use: have its innerHTML manipulated or might be removed.
     description: holds the ban message, if the content was used for a ban.
 
 ------------------------------------------------------------------------------------------
@@ -431,27 +431,27 @@ contentOmissionIndicator:
     description: element indicating the original text was too long to be displayed.
 
 linkFullText:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link to the post if the message is too long and had its original text trimmed.
 
 labelIp:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label used to display the hashed ip of the poster to the staff.
 
 divBanMessage:
-    use: have it's innerHTML manipulated or might be removed.
+    use: have its innerHTML manipulated or might be removed.
     description: holds the ban message, if the content was used for a ban.
 
 imgFlag:
-    use: have it's src and title manipulated or may be removed. It might have a second class indicating its country appended to it using the format flag-xx.
+    use: have its src and title manipulated or may be removed. It might have a second class indicating its country appended to it using the format flag-xx.
     description: img used to display the poster's selected flag.
 
 labelLastEdit:
-    use: have it's innerHTML manipulated or may be removed.
+    use: have its innerHTML manipulated or may be removed.
     description: label used to indicate the last time the thread was edited.
 
 linkEdit:
-    use: have it's href manipulated or may be removed.
+    use: have its href manipulated or may be removed.
     description: link that opens the page used to edit the message of the post.
 
 panelIp:
@@ -463,11 +463,11 @@ panelRange:
     description: panel that contains the range of the poster's ip.
 
 labelBroadRange:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains the poster's first half of his ip.
 
 labelNarrowRange:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains the poster's first three quarters of his ip.
 
 panelUploads:
@@ -475,35 +475,35 @@ panelUploads:
     description: contains the uploads for the post.
 
 labelRole:
-    use: have it's innerHTML manipulated or might be removed.
+    use: have its innerHTML manipulated or might be removed.
     description: holds the role of the user in the board. If the user doesn't have a role in the board, it will display its global role, if the user is not a regular user.
 
 linkName:
-    use: have it's innerHTML manipulated and might have its href manipulated. Will have the class "noEmailName" added if it doesn't have an e-mail to be added to href.
+    use: have its innerHTML manipulated and might have its href manipulated. Will have the class "noEmailName" added if it doesn't have an e-mail to be added to href.
     description: contains the poster's name and links to the poster e-mail.
 
 labelSubject:
-    use: have it's innerHTML manipulated or might be removed.
+    use: have its innerHTML manipulated or might be removed.
     description: contains the thread's subject.
 
 labelCreated:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains the when the thread was created.
 
 divMessage:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains the thread's message.
 
 linkSelf:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: contains the link for the post itself.
 
 linkQuote:
-    use: have it's href and innerHTML manipulated.
+    use: have its href and innerHTML manipulated.
     description: contains the link for the post used for quoting.
 
 deletionCheckBox:
-    use: have it's name manipulated.
+    use: have its name manipulated.
     description: check-box used for deletion or reporting.
 
 spanId: 
@@ -511,7 +511,7 @@ spanId:
     description: object that contains the label with the poster id.
 
 labelId:
-    use: have it's innerHTML and style attribute manipulated.
+    use: have its innerHTML and style attribute manipulated.
     description: holds the poster's thread-wise id.
 
 ------------------------------------------------------------------------------------------
@@ -522,7 +522,7 @@ accountPage: page used for user's accounts.
 
 Elements:
 labelLogin:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains the user's login.
 
 checkboxAlwaysSign:
@@ -550,7 +550,7 @@ globalManagementLink:
     description: link that leads to the global management page.
 
 emailField:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that holds the user e-mail.
 
 boardCreationDiv:
@@ -558,7 +558,7 @@ boardCreationDiv:
     description: panel that holds the board creation form.
 
 labelGlobalRole:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the user global role.
 
 ------------------------------------------------------------------------------------------
@@ -569,11 +569,11 @@ recoveryEmail: template used for recovery request e-mails.
 
 Elements:
 linkRecovery:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: contains the link to be used to reset the account's password.
 
 loginLabel:
-  use: have it's innerHTML manipulated.
+  use: have its innerHTML manipulated.
   description: label with the login of the account that requested the password reset.
 
 ------------------------------------------------------------------------------------------
@@ -584,7 +584,7 @@ resetEmail: template used for password reset e-mails.
 
 Elements:
 labelNewPass:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains the new password of the account.
 
 ------------------------------------------------------------------------------------------
@@ -660,11 +660,11 @@ Root element: form
 
 Elements:
 userIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to identify the user of the cell.
 
 userLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: contains general identification of the user of the cell.
 
 roleCombo:
@@ -683,11 +683,11 @@ locationComboBox:
     description: combo box that indicates the status of location flags.
 
 messageLengthLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the maximum size allowed for the board message.
 
 linkSelf:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link that leads to the board front-page.
 
 appealedBansPanel:
@@ -711,19 +711,19 @@ customJsForm:
     description: form used to upload a custom javascript to the board.
 
 tagsField:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the current tags of the board.
 
 maxBumpAgeField:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays for how long a non-cyclic thread can be bumped after created.
 
 customSpoilerIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden identifier used in the custom spoiler form.
 
 customJsIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden identifier used in the custom javascript form.
 
 customSpoilerIndicator:
@@ -731,27 +731,27 @@ customSpoilerIndicator:
     description: element indicating the board has a custom spoiler.
 
 hourlyThreadLimitField:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: used to display the hourly thread limit.
 
 autoCaptchaThresholdField:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: used to display the auto catpcha treshold.
 
 flagManagementLink:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link to the page used to manipulate the board flags.
 
 ruleManagementLink:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link to the page used to manage the board rules.
 
 customCssIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to inform the board when managing the custom css for the board.
 
 boardLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: used to display the board identification.
 
 volunteersDiv:
@@ -763,15 +763,15 @@ ownerControlDiv:
     description: div containing the actions exclusive to the board owner.
 
 addVolunteerBoardIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to identify the board to add a new volunteer.
 
 transferBoardIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to identify the board to transfer it to a new owner.
 
 deletionIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to identify the board to delete it.
 
 reportDiv:
@@ -779,27 +779,27 @@ reportDiv:
     description: div containing the reports of the board.
 
 closedReportsLink:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link to the page that will display closed reports.
 
 bansLink:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link to the bans page.
 
 bannerManagementLink:
-    use: have it's href manipulated and might be removed.
+    use: have its href manipulated and might be removed.
     description: link to the banner management page.
 
 boardNameField:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that holds the board name.
 
 boardDescriptionField:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that holds the board name.
 
 boardSettingsIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input that holds the board identifier to change its settings.
 
 disableIdsCheckbox:
@@ -827,23 +827,23 @@ forceAnonymityCheckbox:
     description: check-box that indicates if the option to force anonymity is turned on.
 
 filterManagementLink:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link to the filter management page of the board.
 
 anonymousNameField:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that holds the anonymous name for the board.
 
 rangeBansLink:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link to the range bans management page.
 
 hashBansLink:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link to the hash bans management page.
 
 boardMessageField:
-    use: have it's defaultValue manipulated.
+    use: have its defaultValue manipulated.
     description: field with the board message.
 
 textBoardCheckbox:
@@ -855,23 +855,23 @@ requireFileCheckbox:
     description: checkbox that indicates if the board requires a file for thread creation.
 
 maxFilesField:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field with the maximum amount of files allowed for this board.
 
 maxFileSizeField:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field with the maximum size allowed for uploaded files.
 
 maxThreadsField:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field with the maximum amount of threads on the board.
 
 autoSageLimitField:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field with the limit of replies a thread can have before it cannot be bumped anymore.
 
 validMimesField:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field with the mimetypes allowed on the board.
 
 ------------------------------------------------------------------------------------------
@@ -884,15 +884,15 @@ Root element: form
 
 Elements:
 boardIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to identify the board to remove the volunteer from.
 
 userIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to identify the user of the cell.
 
 userLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label used to identify the user.
 
 ------------------------------------------------------------------------------------------
@@ -905,19 +905,19 @@ Root element: div
 
 Elements:
 reasonLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the reason of the report.
 
 link:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link to the reported content.
 
 postingDiv:
-    use: have it`s innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: container used to display the reported posting.
 
 closureCheckbox:
-    use: have it's name manipulated.
+    use: have its name manipulated.
     description: checkbox that can be selected to close the report. The value for "name" will be "id-x", with x being the id of the report.
 
 ------------------------------------------------------------------------------------------
@@ -941,19 +941,19 @@ Root element: div
 
 Elements:
 reasonLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the reason of the report.
 
 link:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link to the reported content.
 
 closedByLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the login of the user that closed the report.
 
 closedDateLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the date of when the report was closed.
 
 ------------------------------------------------------------------------------------------
@@ -981,19 +981,19 @@ denyForm:
     description: form used to deny a ban's appeal.
 
 denyIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden identifier to deny the ban's appeal.
 
 idLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the id of the ban.
 
 reasonLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the reason of the ban.
 
 expirationLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the expiration of the ban.
 
 appealPanel:
@@ -1001,19 +1001,19 @@ appealPanel:
     description: panel used to display the appeal, if any.
 
 appealLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the appeal of the ban.
 
 appliedByLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the login of the user that applied the ban.
 
 liftIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden identifier to lift the ban.
 
 boardLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: if necessary, tells which board this ban is from.
 
 boardPanel:
@@ -1030,23 +1030,23 @@ Root element: figure
 
 Elements:
 sizeLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the file size.
 
 dimensionLabel:
-    use: have it's innerHTML manipulated and might be removed.
+    use: have its innerHTML manipulated and might be removed.
     description: holds the file dimensions, if any.
 
 originalNameLink:
-    use: have it's innerHTML, download and href manipulated.
-    description: link used to download the file with it's original name.
+    use: have its innerHTML, download and href manipulated.
+    description: link used to download the file with its original name.
 
 imgLink:
-    use: have it's href, data-filewidth, data-fileheight and data-filemime manipulated and a child appended to it.
+    use: have its href, data-filewidth, data-fileheight and data-filemime manipulated and a child appended to it.
     description: holds the thumbnail of the image and links to the file. Will have the attribute "data-filemime" with the file mime. If the file has dimensions, will have the attributes "data-filewidth" and "data-fileheight" with the dimensions of the file.
 
 nameLink:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: alternative link to the image using the name of the file instead of a thumbnail.
 
 divHash:
@@ -1054,7 +1054,7 @@ divHash:
     description: div that contains the label of the file md5 to be removed in case the page is not being displayed for moderation purposes.
 
 labelHash:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that contains the md5 of the file.
 
 ------------------------------------------------------------------------------------------
@@ -1065,11 +1065,11 @@ errorPage: generic error page used by the form api.
 
 Elements:
 codeLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the error code.
 
 errorLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the error message.
 
 ------------------------------------------------------------------------------------------
@@ -1080,19 +1080,19 @@ banPage: page describing an user's ban.
 
 Elements:
 boardLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the board where the ban took place.
 
 reasonLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the reason of the ban.
 
 expirationLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the expiration of the ban.
 
 idLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the id of the ban.
 
 formAppeal: 
@@ -1100,7 +1100,7 @@ formAppeal:
     description: form used to appeal the ban.
 
 idIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to identify the ban on the appeal.
 
 ------------------------------------------------------------------------------------------
@@ -1115,11 +1115,11 @@ bannersDiv:
     description: holds the existing banners.
 
 maxSizeLabel:
-    use have it's innerHTML manipulated.
+    use have its innerHTML manipulated.
     description: label that displays the maximum size allowed for banners.
 
 boardIdentifier:
-    use: have it's value manipulated or might be removed.
+    use: have its value manipulated or might be removed.
     description: hidden input used to identify the board when creating banners.
 
 ------------------------------------------------------------------------------------------
@@ -1132,11 +1132,11 @@ Root element: form
 
 Elements:
 bannerImage:
-    use: have it's src manipulated.
+    use: have its src manipulated.
     description: holds the link to the banner.
 
 bannerIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input that holds the identifier of the banner.
 
 ------------------------------------------------------------------------------------------
@@ -1159,7 +1159,7 @@ divThreads:
     description: holds the threads in the board.
 
 labelBoard:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the board title.
 
 flagsDiv:
@@ -1171,7 +1171,7 @@ flagCombobox:
     description: combobox used to select a flag.
 
 boardIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to identify the board the page belongs to.
 
 captchaDiv:
@@ -1179,15 +1179,15 @@ captchaDiv:
     description: holds the captcha elements.
 
 labelMaxFileSize:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the maximum allowed file size for uploads.
 
 labelMaxFiles:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that displays the maximum amount of files allowed to be posted.
 
 labelMessageLength:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that displays the maximum allowed length of posted messages.
 
 divUpload:
@@ -1204,19 +1204,19 @@ Root element: div
 
 Elements:
 linkThumb:
-    use: have it's href and innerHTML manipulated.
+    use: have its href and innerHTML manipulated.
     description: holds a link to the thread.
 
 labelReplies:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the number of replies in the thread.
 
 labelImages:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the number of images in the thread.
 
 labelPage:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the page where the thread currently is.
 
 bumpLockIndicator:
@@ -1228,11 +1228,11 @@ cyclicIndicator:
     description: element that indicates the thread is cyclic.
 
 labelSubject:
-    use: have it's innerHTML manipulated or might be removed.
+    use: have its innerHTML manipulated or might be removed.
     description: holds the thread subject.
 
 divMessage:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the message posted by the OP.
 
 lockIndicator:
@@ -1279,23 +1279,23 @@ indicatorGlobal:
     description: indicates of the log is global.
 
 labelUser:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the login of the user related to this log.
 
 labelTime:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the time of when this entry was logged.
 
 labelDescription:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the text describing what happened on this entry.
 
 labelBoard:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the board related to this log entry.
 
 labelType:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the type of this entry.
 
 ------------------------------------------------------------------------------------------
@@ -1310,7 +1310,7 @@ divFilters:
     description: holds the list of current filters.
 
 boardIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input that identifies the board for filter creation.
 
 ------------------------------------------------------------------------------------------
@@ -1323,19 +1323,19 @@ Root element: form
 
 Elements:
 labelOriginal:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds the term to be replaced by this filter.
 
 labelReplacement:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: holds what the original term will be replaced with.
 
 boardIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input that identifies the board for filter deletion.
 
 filterIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input that identifiers the filter for deletion.
 
 labelCaseInsensitive:
@@ -1350,27 +1350,27 @@ boardModerationPage: page used by global staff to moderate boards.
 
 Elements:
 boardTransferIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input that identifies the board for the transfer operation.
 
 boardDeletionIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input that identifies the board for the deletion operation.
 
 specialSettingsIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input that identifies the board for the special settings set operation.
 
 labelTitle:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: header that displays basic board information.
 
 linkOwner:
-    use: have it's innerHTML and href manipulated.
+    use: have its innerHTML and href manipulated.
     description: displays the login of the board owner.
 
 labelLastSeen:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: displays the last time the owner of the board was seen.
 
 checkboxSfw:
@@ -1401,11 +1401,11 @@ divPages:
     description: div that holds the available pages.
 
 linkOverboard:
-    use: have it's src manipulated or might be removed.
+    use: have its src manipulated or might be removed.
     description: link to the overboard.
 
 linkSfwOver:
-    use: have it's src manipulated or might be removed.
+    use: have its src manipulated or might be removed.
     description: link to the sfw overboard.
 
 ------------------------------------------------------------------------------------------
@@ -1427,27 +1427,27 @@ indicatorInactive:
     description: element that is displayed for inactive boards, because their owner didn`t logged in too long.
 
 labelUniqueIps:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that holds how many unique ips posted on the board in the latest 24 hours.
 
 linkBoard:
-    use: have it's href manipulated and innerHTML.
+    use: have its href manipulated and innerHTML.
     description: link to the board.
 
 labelPostsPerHour:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that holds the latest posts per hour count of the board.
 
 labelPostCount:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that holds the total post count of the board.
 
 labelTags:
-    use: have it's innerHTML manipulated or might be removed.
+    use: have its innerHTML manipulated or might be removed.
     description: label that holds the tags for this board.
 
 divDescription:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: div that holds the board description.
 
 ------------------------------------------------------------------------------------------
@@ -1462,15 +1462,15 @@ divSolvedCaptcha:
     description: displays the information about a previously solved captcha.
 
 labelCaptchaId:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: displays the solved captcha id.
 
 inputCaptchaId:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to inform the captcha being solved.
 
 imageCaptcha:
-    use: have it's src manipulated.
+    use: have its src manipulated.
     description: image that will display a captcha with a specific id
 
 ------------------------------------------------------------------------------------------
@@ -1485,7 +1485,7 @@ rangeBansDiv:
     description: div that holds the range bans.
 
 boardIdentifier:
-    use: have it's value manipulated or might be removed.
+    use: have its value manipulated or might be removed.
     description: hidden input that holds the board identification.
 
 ------------------------------------------------------------------------------------------
@@ -1498,11 +1498,11 @@ Root element: form
 
 Elements:
 rangeLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that holds the range of this ban.
 
 idIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input that identifies the ban.
 
 ------------------------------------------------------------------------------------------
@@ -1513,11 +1513,11 @@ rangeBanPage: page used by the form api to inform the user about the range ban t
 
 Elements:
 boardLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that holds the ban of the range ban where the user got caught.
 
 rangeLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that holds the banned range.
 
 ------------------------------------------------------------------------------------------
@@ -1532,7 +1532,7 @@ hashBansDiv:
     description: div that holds the hash bans.
 
 boardIdentifier:
-    use: have it's value manipulated or might be removed.
+    use: have its value manipulated or might be removed.
     description: hidden input that holds the board identification.
 
 ------------------------------------------------------------------------------------------
@@ -1545,11 +1545,11 @@ Root element: form
 
 Elements:
 hashLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that holds banned hash.
 
 idIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input that identifies the ban.
 
 ------------------------------------------------------------------------------------------
@@ -1565,7 +1565,7 @@ divRules:
     description: div that holds the board rules.
 
 boardIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input that identifies the board for rule creation.
 
 ------------------------------------------------------------------------------------------
@@ -1578,15 +1578,15 @@ Root element: form
 
 Elements:
 textLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the text of the rule.
 
 indexIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to identify the rule index for deletion.
 
 boardIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to identify the rule board for deletion.
 
 ------------------------------------------------------------------------------------------
@@ -1597,7 +1597,7 @@ rulesPage: page used to build the one that will list the board rules for users.
 
 Elements:
 boardLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the board uri.
 
 divRules:
@@ -1614,11 +1614,11 @@ Root element: div
 
 Elements:
 indexLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the index of the rule.
 
 textLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the text of the rule.
 
 ------------------------------------------------------------------------------------------
@@ -1641,27 +1641,27 @@ editPage: page used to edit posts.
 
 Elements:
 fieldSubject:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field with the subject of the post.
 
 fieldMessage:
-    use: have it's defaultValue manipulated.
+    use: have its defaultValue manipulated.
     description: text area with the content of the post.
 
 boardIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to identify the board where the post belongs to.
 
 threadIdentifier:
-    use: have it's value manipulated or might be removed.
+    use: have its value manipulated or might be removed.
     description: hidden input used to identify the thread where the post belongs to.
 
 postIdentifier: 
-    use: have it's value manipulated or might be removed.
+    use: have its value manipulated or might be removed.
     description: hidden input used to identify the post being edited. Will be removed if the posting being edited is a thread.
 
 labelMessageLength:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that displays the maximum allowed length of posted messages.
 
 ------------------------------------------------------------------------------------------
@@ -1676,15 +1676,15 @@ flagsDiv:
     description: div with the existing flags.
 
 boardIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to identify the board on flag creation.
 
 maxSizeLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the maximum size allowed for flags.
 
 maxNameLengthLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the maximum name length allowed for flags.
 
 ------------------------------------------------------------------------------------------
@@ -1697,15 +1697,15 @@ Root element: form
 
 Elements:
 flagImg:
-    use: have it's src manipulated.
+    use: have its src manipulated.
     description: img that displays the flag.
 
 nameLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that displays the flag name.
 
 idIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden input used to identify the flag on deletion.
 
 ------------------------------------------------------------------------------------------
@@ -1716,19 +1716,19 @@ globalSettingsPage: page used to change global settings.
 
 Elements:
 fieldClusterPort:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays port to be used for cluster communication.
 
 fieldMaxBoardHashBans:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the limit of hash bans boards can have.
 
 fieldStaticExpiration:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the static expiration that will be informed.
 
 fieldFlagNameLength:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the maximum size allowed for custom flag names.
 
 checkboxUseAlternativeLanguages:
@@ -1740,143 +1740,143 @@ checkboxBlockedReport:
     description: indicates if blocked users are allowed to fill reports.
 
 fieldIpExpiration:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays how many days to wait before removing a posting's ip.
 
 fieldSpamIpsSource:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the url being used to fetch spammer's ips.
 
 fieldAddress:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the address being used.
 
 fieldSslPass:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the ssl key passphrase.
 
 fieldRssDomain:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the domain used for RSS links.
 
 fieldPort:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the port being used.
 
 fieldSfwOverboard:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays sfw overboard uri.
 
 fieldCSP:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the content used for the CSP header.
 
 fieldFePath:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the path used to the front-end.
 
 fieldPageSize:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays page size for boards.
 
 fieldLatestPostsCount:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the amount of posts being displayed for each thread on board pages.
 
 fieldAutoSageLimit:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays how many posts a thread must have so it won't be bumped anymore.
 
 fieldThreadLimit:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays how many threads a board can have.
 
 fieldTempDir:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the directory being used to store temporary files.
 
 fieldSenderEmail:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the e-mail being used as sender of automated e-mails.
 
 fieldCaptchaExpiration:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the expiration of captchas in minutes.
 
 fieldSiteTitle:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the title of the site.
 
 fieldMaxRequestSize:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the maximum size allowed for requests in megabytes.
 
 fieldMaxFileSize:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the maximum size allowed for files.
 
 fieldAcceptedMimes:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the accepted mimes to be uploaded along posts.
 
 fieldMaxFiles:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the maximum amount of files allowed to be uploaded at once.
 
 fieldBanMessage:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the default ban message to be displayed on posts.
 
 fieldAnonymousName:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the name used for anonymous posters by default.
 
 fieldTopBoardsCount:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the amount of boards to be displayed on the top boards list.
 
 fieldBoardsPerPage:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the amount of boards to be displayed on each page of the boards listing.
 
 fieldTorSource:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the url used to fetch the list of TOR exit nodes ips.
 
 fieldLanguagePack:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the path to the language pack being used.
 
 fieldMaxRules:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the maximum amount of allowed rules per board.
 
 fieldThumbSize:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the maximum dimension for thumbnails.
 
 fieldMaxFilters:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the maximum amount of filters per board.
 
 fieldMaxVolunteers:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the maximum amount of volunteers a board can have.
 
 fieldMaxBannerSize:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the maximum size allowed for board banners in kilobytes.
 
 fieldMaxFlagSize:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the maximum size allowed for flags in kilobytes.
 
 fieldFloodInterval:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the amount of seconds an user must wait before posts so it won't be marked as flood.
 
 fieldMaxTags:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the maximum amount allowed of tags a board can have.
 
 checkboxVerbose:
@@ -1944,7 +1944,7 @@ comboSsl:
     description: indicates the ssl mode being used.
 
 fieldThumbExtension:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field used to inform the extension to be used on thumbnails.
 
 checkboxGlobalBoardModeration:
@@ -1956,11 +1956,11 @@ checkboxGlobalBanners:
     description: indicates that boards will use global banners instead of their own banners.
 
 fieldAddons:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the addons that should be loaded.
 
 fieldGlobalLatestPosts:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the amount of global latest posts to be displayed on the front-page.
 
 checkboxAllowCustomJs:
@@ -1972,11 +1972,11 @@ checkboxGlobalCaptcha:
     description: indicates if all boards are forced to use captcha.
 
 fieldOverboard:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: indicates the uri of the overboard.
 
 fieldOverBoardThreads:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: indicates how many threads are to be displayed on the overboard.
 
 comboBypassMode:
@@ -1984,47 +1984,47 @@ comboBypassMode:
     description: indicates the bypass mode selected.
 
 fieldBypassHours:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: indicates how many hours a block bypass lasts.
 
 fieldBypassPosts:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: indicates how many posts a block bypass lasts.
 
 fieldMultiBoardThreadCount:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: indicates how threads should be displayed on the multi-board.
 
 fieldGlobalLatestImages:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the amount of global latest images to be displayed on the front-page.
 
 fieldMaster:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the ip of the master instance of a cluster.
 
 fieldSlaves:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the ips of the slaves instances of a cluster.
 
 fieldTorPort:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays the port that will mark any incoming request through it as TOR.
 
 fieldInactivityThreshold:
-    use: have it's value manipulated.
-    description: field that displays how long one must be inactive until it's account is marked as such.
+    use: have its value manipulated.
+    description: field that displays how long one must be inactive until its account is marked as such.
 
 fieldMediaPageSize:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: field that displays how many files should be displayed at once on the media management page.
 
 fieldMessageLength:
-    use: have it`s value manipulated.
+    use: have its value manipulated.
     description: field that displays the limit for posted messages.
 
 fieldIncrementalSpamIpsSource:
-    use: have it`s value manipulated.
+    use: have its value manipulated.
     description: field that displays the source for incremental spammer ips.
 
 checkboxFfmpegGifs:
@@ -2036,7 +2036,7 @@ comboTorPostingLevel:
     description: combo box with the level of posting permission for TOR users.
 
 fieldBoardMessageLength:
-    use: have it's value manipualted.
+    use: have its value manipualted.
     description: field with the maximum length for board messages.
 
 checkboxAllowTorFiles:
@@ -2088,11 +2088,11 @@ Root element: div
 
 Elements:
 labelFile:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label where the name of the banned file is informed.
 
 labelBoard:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label where the board that applied the ban is informed.
 
 ------------------------------------------------------------------------------------------
@@ -2105,11 +2105,11 @@ Root element: div
 
 Elements:
 labelPreview:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the preview text of the post.
 
 linkPost:
-    use: have it's innerHTML and href manipulated.
+    use: have its innerHTML and href manipulated.
     description: link to the post.
 
 ------------------------------------------------------------------------------------------
@@ -2185,23 +2185,23 @@ Root element: div.
 
 Elements:
 identifierCheckbox:
-    use: have it's name manipulated.
+    use: have its name manipulated.
     description: checkbox used to select the file.
 
 thumbImg:
-    use: have it's src manipulated.
+    use: have its src manipulated.
     description: img element that will display the thumbnail of the file.
 
 fileLink:
-    use: have it's href and innerHTML manipulated.
+    use: have its href and innerHTML manipulated.
     description: link that leads to the file.
 
 referencesLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label that shows how many references this file has.
 
 detailsLink:
-    use: have it's href manipulated.
+    use: have its href manipulated.
     description: link that leads to the page with detail of the file.
 
 ------------------------------------------------------------------------------------------
@@ -2225,19 +2225,19 @@ Root element: form.
 
 Elements:
 languageIdentifier:
-    use: have it's value manipulated.
+    use: have its value manipulated.
     description: hidden identifiers with the language's id.
 
 frontEndLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the language's front-end.
 
 languagePackLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the language's language pack.
 
 headerValuesLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the header values that will cause the language to be used.
 
 ------------------------------------------------------------------------------------------
@@ -2259,15 +2259,15 @@ accountManagementPage: page used to display data for an account.
 
 Elements:
 emailLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label showing the account's e-mail.
 
 lastSeenLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label showing the last time the account was active.
 
 loginLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label showing the account login.
 
 ownedBoardsDiv:
@@ -2279,7 +2279,7 @@ volunteeredBoardsDiv:
     description: panel with the boards this user a volunteer at.
 
 globalRoleLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label showing the account's global role.
 
 deletionForm:
@@ -2287,7 +2287,7 @@ deletionForm:
     description: div containing the account deletion form.
 
 userIdentifier:
-    use: have it's value modified.
+    use: have its value modified.
     description: input used on the account deletion form.
 
 ------------------------------------------------------------------------------------------
@@ -2298,7 +2298,7 @@ socketManagementPage: page used to manage the unix socket.
 
 Elements:
 statusLabel:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the socket status.
 
 ------------------------------------------------------------------------------------------
@@ -2309,15 +2309,15 @@ mediaDetailsPage: page used to display details of a media file.
 
 Elements:
 labelSize:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the media size.
 
 labelUploadDate:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with the date when the media was first uploaded.
 
 labelIdentifier:
-    use: have it's innerHTML manipulated.
+    use: have its innerHTML manipulated.
     description: label with identifier of the media.
 
 panelReferences:
@@ -2328,13 +2328,13 @@ panelReferences:
 
 TEM_ID::65
 
-header: optional header. If any page has an element with the id dynamicHeader, this element will have it's innerHTML set as this template's content.
+header: optional header. If any page has an element with the id dynamicHeader, this element will have its innerHTML set as this template's content.
 
 ------------------------------------------------------------------------------------------
 
 TEM_ID::66
 
-footer: optional footer. If any page has an element with the id dynamicFooter, this element will have it's innerHTML set as this template's content.
+footer: optional footer. If any page has an element with the id dynamicFooter, this element will have its innerHTML set as this template's content.
 
 ------------------------------------------------------------------------------------------
 
@@ -2344,7 +2344,7 @@ confirmationEmail: e-mail used to confirm e-mail accounts.
 
 Elements:
 confirmationLink:
-  use: have it's href manipulated.
+  use: have its href manipulated.
   description: link with the url to confirm the e-mail.
 
 loginLabel:
@@ -2359,7 +2359,7 @@ reportNotificationEmail: e-mail used to send notification of reports.
 
 Elements:
 linkThread:
-  use: have it's href and innerHTML manipulated.
+  use: have its href and innerHTML manipulated.
   description: link to the reported content.
 
 ------------------------------------------------------------------------------------------
