@@ -808,9 +808,7 @@ exports.addMissingMd5 = function(callback, foundPostings, collectionToUse) {
       'files.0' : {
         $exists : true
       },
-      'files.md5' : {
-        $exists : false
-      }
+      'files.md5' : null
     }, {
       projection : {
         files : 1
