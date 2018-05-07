@@ -8,6 +8,7 @@ var overboard;
 var db = require('../db');
 var overboardThreads = db.overboardThreads();
 var threads = db.threads();
+var boards = db.boards();
 var reaggregating;
 
 exports.loadSettings = function() {
@@ -212,11 +213,19 @@ function finishFullAggregation(message, results) {
 
 }
 
-function reaggregateSfw(message, nsfwIds) {
+function reaggregateSfw(message, nsfwIds, boardsToUse) {
 
-  threads.find({
+  var matchBlock = {
     sfw : true
-  }, {
+  };
+
+  if (boardsToUse) {
+    matchBlock.boardUri = {
+      $in : boardsToUse
+    };
+  }
+
+  threads.find(matchBlock, {
     projection : {
       lastBump : 1,
       sfw : 1
@@ -236,19 +245,58 @@ function reaggregateSfw(message, nsfwIds) {
 
 }
 
-function fullReaggregate(message) {
+function fullReaggregate(message, boardsToUse) {
 
   if (reaggregating) {
     return;
   }
 
+  if (message.omit && !boardsToUse) {
+
+    boards.aggregate([ {
+      $match : {
+        settings : {
+          $ne : 'unindex'
+        }
+      }
+    }, {
+      $group : {
+        _id : 0,
+        boards : {
+          $push : '$boardUri'
+        }
+      }
+    } ]).toArray(function gotBoards(error, boards) {
+
+      if (error) {
+        console.log(error);
+      } else {
+
+        fullReaggregate(message, boards.length ? boards[0].boards : []);
+      }
+
+    });
+
+    return;
+  }
+
   reaggregating = true;
 
-  threads.find({
+  var matchBlock = {
     sfw : {
       $ne : true
     }
-  }, {
+  };
+
+  if (boardsToUse) {
+
+    matchBlock.boardUri = {
+      $in : boardsToUse
+    };
+
+  }
+
+  threads.find(matchBlock, {
     projection : {
       lastBump : 1,
     }
@@ -260,7 +308,7 @@ function fullReaggregate(message) {
       reaggregating = false;
       console.log(error);
     } else {
-      reaggregateSfw(message, results);
+      reaggregateSfw(message, results, boardsToUse);
     }
 
   });

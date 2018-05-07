@@ -151,7 +151,10 @@ function checkOverboardChanged(settings) {
   var overboardReduced = settings.overBoardThreadCount;
   overboardReduced = overboardReduced < generalSettings.overBoardThreadCount;
 
-  if (!overboardChanged && !overboardReduced) {
+  var changedOmission = settings.omitUnindexedContent
+      ^ generalSettings.omitUnindexedContent;
+
+  if (!overboardChanged && !overboardReduced && !changedOmission) {
     return;
   }
 
@@ -171,7 +174,8 @@ function checkOverboardChanged(settings) {
 
   require('./engine/overboardOps').reaggregate({
     overboard : true,
-    reaggregate : reaggregate
+    reaggregate : reaggregate || changedOmission,
+    omit : settings.omitUnindexedContent
   });
 
 }
@@ -299,7 +303,8 @@ function prepareSettingsForChangeCheck(settings, callback) {
   var defaultToNull = [ 'siteTitle', 'globalLatestImages', 'languagePackPath',
       'defaultAnonymousName', 'defaultBanMessage', 'allowBoardCustomJs',
       'topBoardsCount', 'globalLatestPosts', 'forceCaptcha', 'overboard',
-      'frontPageStats', 'disableAccountCreation', 'disableCatalogPosting' ];
+      'frontPageStats', 'disableAccountCreation', 'disableCatalogPosting',
+      'omitUnindexedContent' ];
 
   // these ones default to the default values
   var defaultToDefault = [ 'pageSize', 'maxFileSizeMB', 'maxFiles', 'fePath',
