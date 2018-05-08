@@ -245,16 +245,6 @@ exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
     });
   }
 
-  if (overboard || sfwOverboard) {
-    overboardOps.reaggregate({
-      overboard : true,
-      _id : thread._id,
-      post : true,
-      bump : bump,
-      sfw : thread.sfw
-    });
-  }
-
   common.addPostToStats(ip, parameters.boardUri, function updatedStats(error) {
     if (error) {
       console.log(error.toString());
@@ -279,6 +269,16 @@ exports.addPostToGlobalLatest = function(omitted, post, thread, parameters,
         thread, cleanPosts, bump, language, callback);
 
   } else {
+
+    if (overboard || sfwOverboard) {
+      overboardOps.reaggregate({
+        overboard : true,
+        _id : thread._id,
+        post : true,
+        bump : bump,
+        sfw : thread.sfw
+      });
+    }
 
     common.addPostToLatestPosts(post, function addedToLatestPosts(error) {
       if (error) {
