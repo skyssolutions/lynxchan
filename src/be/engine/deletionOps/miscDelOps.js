@@ -105,26 +105,10 @@ exports.removePostsFromPrunedThreads = function(boardUri, threadsToDelete,
 
 };
 
-exports.pruneThreadsForQuery = function(matchBlock, limit, boardUri, language,
+exports.pruneThreadsForAggregation = function(aggregation, boardUri, language,
     callback) {
 
-  threads.aggregate([ {
-    $match : matchBlock
-  }, {
-    $sort : {
-      pinned : -1,
-      lastBump : -1
-    }
-  }, {
-    $skip : limit
-  }, {
-    $group : {
-      _id : 0,
-      threads : {
-        $push : '$threadId'
-      }
-    }
-  } ]).toArray(
+  threads.aggregate(aggregation).toArray(
       function gotThreads(error, threadsToRemove) {
 
         if (error) {
@@ -158,14 +142,33 @@ exports.cleanThreads = function(boardUri, early404, limit, language, callback) {
 
   if (early404) {
 
-    exports.pruneThreadsForQuery({
-      boardUri : boardUri,
-      postCount : {
-        $not : {
-          $gte : 5
+    exports.pruneThreadsForAggregation([ {
+      $match : {
+        boardUri : boardUri
+      }
+    }, {
+      $sort : {
+        pinned : -1,
+        lastBump : -1
+      }
+    }, {
+      $skip : Math.floor(limit / 3)
+    }, {
+      $match : {
+        postCount : {
+          $not : {
+            $gte : 5
+          }
         }
       }
-    }, Math.floor(limit / 3), boardUri, language, function cleaned404(error) {
+    }, {
+      $group : {
+        _id : 0,
+        threads : {
+          $push : '$threadId'
+        }
+      }
+    } ], boardUri, language, function cleaned404(error) {
 
       if (error) {
         callback(error);
@@ -178,9 +181,25 @@ exports.cleanThreads = function(boardUri, early404, limit, language, callback) {
     return;
   }
 
-  exports.pruneThreadsForQuery({
-    boardUri : boardUri
-  }, limit, boardUri, language, callback);
+  exports.pruneThreadsForAggregation([ {
+    $match : {
+      boardUri : boardUri
+    }
+  }, {
+    $sort : {
+      pinned : -1,
+      lastBump : -1
+    }
+  }, {
+    $skip : limit
+  }, {
+    $group : {
+      _id : 0,
+      threads : {
+        $push : '$threadId'
+      }
+    }
+  } ], boardUri, language, callback);
 
 };
 // } Section 1: Thread cleanup
