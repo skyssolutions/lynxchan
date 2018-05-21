@@ -24,7 +24,7 @@ if [ "$stable" == "n" ]; then
 fi
 
 if [ "$answerFrontEnd" == "y" ]; then
-  
+
   git clone https://gitgud.io/LynxChan/LynxChanFront-Placeholder.git ../src/fe
   cd ../src/fe
   git checkout master
@@ -36,17 +36,19 @@ fi
 
 if [ "$answerStable" == "y" ]; then
 
-  cd ..
+  git checkout 2.0.x
 
-  git checkout 1.9.x
+  if [ "$answerFrontEnd" == "y" ]; then
 
-  cd src/fe
+    cd ../src/fe
 
-  git checkout 1.9.0
+    git checkout 2.0.0
 
-  cd ../../aux
+    cd ../../aux
 
-  echo "Changed to latest stable version: 1.9.x"
+  fi
+
+  echo "Changed to latest stable version: 2.0.x"
 
 fi
 

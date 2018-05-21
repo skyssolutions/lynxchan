@@ -7,7 +7,6 @@ var crypto = require('crypto');
 var url = require('url');
 var debug = require('../kernel').debug();
 var multiParty = require('multiparty');
-var jsdom = require('jsdom').jsdom;
 var bans = require('../db').bans();
 var verbose;
 var uploadDir;
