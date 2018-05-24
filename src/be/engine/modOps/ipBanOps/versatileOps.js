@@ -151,10 +151,19 @@ exports.getActiveBan = function(ip, boardUri, callback) {
     } ]
   };
 
-  bans.findOne(finalCondition, function gotBan(error, ban) {
+  bans.find(finalCondition).toArray(function gotBans(error, bans) {
     if (error) {
       callback(error);
     } else {
+
+      var ban;
+
+      for (var i = 0; i < bans.length; i++) {
+        if (!ban || (ban.range && !bans[i].range)) {
+          ban = bans[i];
+        }
+      }
+
       callback(null, ban, bypassAllowed && ban && ban.range);
     }
 
