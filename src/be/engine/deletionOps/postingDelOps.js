@@ -444,46 +444,28 @@ exports.removeGlobalLatestPosts = function(userData, board, parameters, cb,
 
 };
 
-exports.applyNewBump = function(post, board, parentThreads, callback, index) {
+exports.applyNewBump = function(post, board, thread, parentThreads, callback,
+    index) {
 
   if (!post) {
 
-    threads.findOne({
+    threads.updateOne({
       boardUri : board.boardUri,
       threadId : parentThreads[index]
     }, {
-      projection : {
-        creation : 1,
-        _id : 0
+      $set : {
+        lastBump : thread.creation
       }
-    }, function gotThread(error, thread) {
+    }, function updated(error) {
 
       if (error) {
         callback(error);
       } else {
-
-        // style exception, too simple
-        threads.updateOne({
-          boardUri : board.boardUri,
-          threadId : parentThreads[index]
-        }, {
-          $set : {
-            lastBump : thread.creation
-          }
-        }, function updated(error) {
-
-          if (error) {
-            callback(error);
-          } else {
-            exports.resetLastBump(board, parentThreads, callback, ++index);
-          }
-
-        });
-        // style exception, too simple
-
+        exports.resetLastBump(board, parentThreads, callback, ++index);
       }
 
     });
+
   } else {
 
     threads.updateOne({
@@ -516,32 +498,64 @@ exports.resetLastBump = function(board, parentThreads, callback, index) {
     return;
   }
 
-  posts.find({
+  threads.findOne({
     boardUri : board.boardUri,
-    threadId : parentThreads[index],
-    email : {
-      $ne : 'sage'
-    }
+    threadId : parentThreads[index]
   }, {
     projection : {
       creation : 1,
       _id : 0
     }
-  }).sort({
-    creation : -1
-  }).limit(1).toArray(
-      function gotLastPost(error, foundPosts) {
+  }, function gotThread(error, thread) {
 
-        if (error) {
-          callback(error);
-        } else {
+    if (error) {
+      callback(error);
+    } else {
 
-          exports.applyNewBump(foundPosts[0], board, parentThreads, callback,
-              index);
-
+      var matchBlock = {
+        boardUri : board.boardUri,
+        threadId : parentThreads[index],
+        email : {
+          $ne : 'sage'
         }
+      };
 
-      });
+      if (board.maxBumpAgeDays) {
+
+        var maxAge = thread.creation;
+
+        maxAge.setUTCDate(maxAge.getUTCDate() + board.maxBumpAgeDays);
+        matchBlock.creation = {
+          $lte : maxAge
+        };
+
+      }
+
+      // style exception, too simple
+      posts.find(matchBlock, {
+        projection : {
+          creation : 1,
+          _id : 0
+        }
+      }).sort({
+        creation : -1
+      }).limit(1).toArray(
+          function gotLastPost(error, foundPosts) {
+
+            if (error) {
+              callback(error);
+            } else {
+
+              exports.applyNewBump(foundPosts[0], board, thread, parentThreads,
+                  callback, index);
+
+            }
+
+          });
+      // style exception, too simple
+
+    }
+  });
 
 };
 
@@ -897,7 +911,8 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
       owner : 1,
       _id : 0,
       settings : 1,
-      volunteers : 1
+      volunteers : 1,
+      maxBumpAgeDays : 1
     }
   }, function gotBoard(error, board) {
 
