@@ -272,7 +272,7 @@ exports.isBoardSfw = function(boardData) {
 exports.updatePostingFiles = function(boardData, threadId, postId, file,
     callback, updatedFileCount, updatedLatestImages) {
 
-  var image = file.mime.indexOf('image/') > -1;
+  var image = file.mime.indexOf('image/') > -1 && !miscOps.omitted(boardData);
 
   // add image to latest images before proceeding
   if (latestImages && !updatedLatestImages && image) {
