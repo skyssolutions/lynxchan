@@ -13,6 +13,7 @@ var miscOps;
 var blockBypass;
 var boardCreationRequirement;
 var messageLength;
+var disabledLatestPostings;
 
 exports.optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
 
@@ -30,6 +31,7 @@ exports.loadSettings = function() {
   overboard = settings.overboard;
   sfwOverboard = settings.sfwOverboard;
   boardCreationRequirement = settings.boardCreationRequirement;
+  disabledLatestPostings = settings.disableLatestPostings;
 
 };
 
@@ -138,6 +140,14 @@ exports.setAccountHideableElements = function(userData, document, removable) {
   } else {
     document = document.replace('__boardCreationDiv_location__',
         removable.boardCreationDiv);
+  }
+
+  if (disabledLatestPostings) {
+    document = document.replace('__latestPostingsLink_location__', '');
+  } else {
+
+    document = document.replace('__latestPostingsLink_location__',
+        removable.latestPostingsLink);
   }
 
   if (userData.confirmed || !userData.email) {

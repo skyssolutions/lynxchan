@@ -11,6 +11,7 @@ var bans = db.bans();
 var users = db.users();
 var boards = db.boards();
 var threads = db.threads();
+var posts = db.posts();
 var captchaOps;
 var logOps;
 var postingOps;
@@ -26,6 +27,7 @@ var boardCreationRequirement;
 var maxVolunteers;
 var allowedMimes;
 var rangeSettings;
+var disableLatestPostings;
 
 exports.defaultSettings = [ 'disableIds' ];
 
@@ -66,6 +68,9 @@ exports.loadSettings = function() {
   overboard = settings.overboard;
   sfwOverboard = settings.sfwOverboard;
   allowedMimes = settings.acceptedMimes;
+
+  disableLatestPostings = settings.disableLatestPostings;
+
   exports.boardParameters[4].length = settings.boardMessageLength;
 
 };
@@ -743,6 +748,156 @@ exports.getBoardManagementData = function(userData, board,
 
 };
 // } Section 5: Board management
+
+// Section 6: Latest postings {
+exports.setDates = function(parameters) {
+
+  var startDate = parameters.date;
+
+  if (!startDate) {
+    startDate = new Date();
+
+    startDate.setUTCHours(0);
+    startDate.setUTCMinutes(0);
+    startDate.setUTCSeconds(0);
+    startDate.setUTCMilliseconds(0);
+  } else {
+    startDate = new Date(startDate);
+  }
+
+  parameters.date = startDate;
+
+};
+
+exports.getBoardsToShow = function(parameters, userData) {
+
+  parameters.boards = (parameters.boards || '').split(',').map(
+      function(element) {
+        return element.trim();
+      });
+
+  for (var i = parameters.boards.length; i >= 0; i--) {
+    if (!parameters.boards[i]) {
+      parameters.boards.splice(i, 1);
+    }
+  }
+
+  if (userData.globalRole <= miscOps.getMaxStaffRole()) {
+    return parameters.boards.length ? parameters.boards : null;
+  } else {
+
+    var allowedBoards = userData.ownedBoards || [];
+
+    allowedBoards = allowedBoards.concat(userData.volunteeredBoards || []);
+
+    var boardsToShow = [];
+
+    for (i = 0; i < parameters.boards.length; i++) {
+
+      if (allowedBoards.indexOf(parameters.boards[i]) >= 0) {
+        boardsToShow.push(parameters.boards[i]);
+      }
+    }
+
+    return boardsToShow.length ? boardsToShow : allowedBoards;
+
+  }
+
+};
+
+exports.getMatchBlock = function(parameters, userData) {
+
+  exports.setDates(parameters);
+
+  var boardsToShow = exports.getBoardsToShow(parameters, userData);
+
+  var endDate = new Date(parameters.date);
+  endDate.setUTCDate(endDate.getUTCDate() + 1);
+
+  var matchBlock = {
+    creation : {
+      $gte : parameters.date,
+      $lt : endDate
+    }
+  };
+
+  if (boardsToShow) {
+    matchBlock.boardUri = {
+      $in : boardsToShow
+    };
+  }
+
+  return matchBlock;
+
+};
+
+exports.getLatestPostings = function(userData, parameters, language, callback) {
+
+  if (disableLatestPostings) {
+    callback(lang(language).errDisabledLatestPostings);
+    return;
+  }
+
+  var matchBlock = exports.getMatchBlock(parameters, userData);
+
+  var projectionBlock = {
+    projection : {
+      _id : 0,
+      id : 1,
+      name : 1,
+      flag : 1,
+      files : 1,
+      email : 1,
+      postId : 1,
+      message : 1,
+      subject : 1,
+      boardUri : 1,
+      markdown : 1,
+      creation : 1,
+      threadId : 1,
+      flagName : 1,
+      flagCode : 1,
+      signedRole : 1,
+      innerCache : 1,
+      banMessage : 1,
+      lastEditTime : 1,
+      lastEditLogin : 1,
+      alternativeCaches : 1
+    }
+  };
+
+  posts.find(matchBlock, projectionBlock).sort({
+    creation : -1
+  }).toArray(function gotPosts(error, foundPosts) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      threads.find(matchBlock, projectionBlock).sort({
+        creation : -1
+      }).toArray(function(error, foundThreads) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          callback(null, foundPosts.concat(foundThreads).sort(function(a, b) {
+            return b.creation - a.creation;
+          }));
+
+        }
+
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+// } Section 6: Latest postings
 
 exports.getBoardModerationData = function(userData, boardUri, language,
     callback) {

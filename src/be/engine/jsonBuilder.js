@@ -18,6 +18,7 @@ var maxFileSizeMB;
 var domManipulator;
 var messageLength;
 var globalCaptcha;
+var disabledLatestPostings;
 
 exports.loadSettings = function() {
 
@@ -32,6 +33,7 @@ exports.loadSettings = function() {
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
   boardCreationRequirement = settings.boardCreationRequirement;
+  disabledLatestPostings = settings.disableLatestPostings;
 
   displayMaxSize = domManipulator.formatFileSize(settings.maxFileSizeB);
 
@@ -467,6 +469,7 @@ exports.account = function(userData) {
     ownedBoards : userData.ownedBoards || [],
     settings : userData.settings || [],
     volunteeredBoards : userData.volunteeredBoards || [],
+    disabledLatestPostings : disabledLatestPostings || false,
     boardCreationAllowed : allowed,
     globalRole : isNaN(userData.globalRole) ? 4 : userData.globalRole
   });
@@ -695,4 +698,8 @@ exports.blockBypass = function(valid) {
 
 exports.mediaDetails = function(details) {
   return JSON.stringify(details);
+};
+
+exports.latestPostings = function(postings) {
+  return JSON.stringify(postings);
 };

@@ -321,6 +321,11 @@
   },
   {
     "type": "boolean",
+    "setting": "disableLatestPostings",
+    "element": "checkboxDisableLatestPostings"
+  },
+  {
+    "type": "boolean",
     "setting": "verboseCache",
     "element": "checkboxVerboseCache"
   },

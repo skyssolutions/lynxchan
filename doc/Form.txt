@@ -62,6 +62,7 @@ Json output(Object): object with the account data. Contains the following fields
     login: login of the user.
     email: e-mail of the user.
     globalRole(Number): global role of the user.
+    disabledLatestPostings(Boolean): indicates if the viewing of latest postings is disabled.
     volunteeredBoards(Array): array with the boards where this user is a volunteer.
     boardCreationAllowed(Boolean): indicates if the user is allowed to create boards.
     ownedBoards(Array): array with the list of uri of boards owned by the user.
@@ -1232,6 +1233,43 @@ Description: confirms the specified account's e-mail. Uses get parameters.
 Parameters:
   login: login of the account to be confirmed.
   hash: token required to confirm the account.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::81
+
+Name: latestPostings
+
+Description: displays all latest postings made on the site. Requires authentication.
+
+Parameters:
+  date(Date): date to start the listing. Will default to the start of the current day. The end date is 24 hours after it.
+  boards: list of boards to be read from. Will default to every board where the user can moderate.
+
+JSON output(Array): array where each element is an object with the following fields:
+    signedRole: role of the user that posted the thread.
+    banMessage: message to be displayed indicating this message was a cause to a ban.
+    id: thread-wise id of the poster.
+    email: email of the poster.
+    markdown: message with html markdown applied.
+    flag: url of the used flag.
+    flagName: name of the used flag.
+    flagCode: location code of the flag.
+    threadId(Number): unique id of the thread inside the board.
+    subject: subject of the thread.
+    lastEditTime(Date): date of the last time the message of the thread message was edited.
+    lastEditLogin: Login of the last user to edit the thread message.
+    message: text of the post.
+    name: name of the poster.
+    files(Array): files uploaded with the thread. Each object contains the following fields:
+        originalName: original name of the upload.
+        path: path for the file.
+        md5: md5 hash of the file.
+        thumb: path for the file's thumbnail.
+        size(Number) size in bytes of the file.
+        mime: mime of the file.
+        width(Number): width of the file, if image.
+        height(Number): size of the file, if image.
 
 ------------------------------------------------------------------------------------------
 

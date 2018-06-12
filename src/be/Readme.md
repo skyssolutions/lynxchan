@@ -176,6 +176,7 @@ Settings files that goes into the settings directory:
 * `staticExpiration`(Number): amount of minutes that static files served from cache will inform as expiration when requested. Defaults to 60.
 * `maxBoardHashBans`(Number): limit for board hash bans boards can have. Defaults to 128.
 * `omitUnindexedContent`(Boolean): causes content from unindexes boards to not be displayed on the front-page or overboards.
+* `disableLatestPostings`(Boolean): disables the setting that allows staff to see the latest postings of boards they can moderate and removes the link to this feature from the account page.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

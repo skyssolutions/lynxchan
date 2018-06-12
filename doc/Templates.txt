@@ -561,6 +561,10 @@ labelGlobalRole:
     use: have its innerHTML manipulated.
     description: label with the user global role.
 
+latestPostingsLink:
+    use: might be removed.
+    description: link that leads to the latest postings page.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::08
@@ -1887,6 +1891,10 @@ checkboxDisable304:
     use: might be turned on.
     description: indicates the server has http response 304 disabled.
 
+checkboxDisableLatestPostings:
+    use: might be turned on.
+    description: indicates the feature to see latest postings on boards is disabled.
+
 checkboxFrontPageStats:
     use: might be turned on.
     description: indicates if total posts on existing boards and total unique ip count should be displayed on the front-page.
@@ -2361,6 +2369,33 @@ Elements:
 linkThread:
   use: have its href and innerHTML manipulated.
   description: link to the reported content.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::69
+
+latestPostingsPage: page that displays the latest postings the user can moderate.
+
+Elements:
+fieldDate:
+  use: have it's value manipulated.
+  description: input with the date to set the search.
+
+divPostings:
+  use: have children appended to it.
+  description: div with the postings.
+
+fieldBoards:
+  use: have it's value manipulated.
+  description: field with the searched boards.
+
+linkPrevious:
+  use: have it's href manipulated.
+  description: link to the next day.
+
+linkNext:
+  use: have it's href manipulated.
+  description: link to the previous day.
 
 ------------------------------------------------------------------------------------------
 

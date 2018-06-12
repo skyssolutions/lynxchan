@@ -11,6 +11,7 @@ tit: page titles.
 
 The structure of this json is as follows:
 
+errDisabledLatestPostings: error thrown when the latest postings feature is disabled.
 errExpiredCaptcha: error thrown when the attempted captcha is expired.
 errLockedBoard: error thrown when the user tries to post on a locked board.
 errWrongCaptcha: error thrown when the attempted captcha is wrong.
@@ -302,3 +303,4 @@ titAccounts: title for the accounts page.
 titAccountManagement: title for the account management page. Replaces: {$account}.
 titSocketManagement: title for the socket management page.
 titMediaDetails: title for the media details page.
+titLatestPostings: title for the latest postings page.

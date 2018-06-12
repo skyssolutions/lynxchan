@@ -455,6 +455,10 @@
         "uses": "removal"
       },
       {
+        "name": "latestPostingsLink",
+        "uses": "removal"
+      },
+      {
         "name": "labelLogin",
         "uses": "inner"
       },
@@ -1313,6 +1317,10 @@
         "uses": "checked"
       },
       {
+        "name": "checkboxDisableLatestPostings",
+        "uses": "checked"
+      },
+      {
         "name": "checkboxOmitUnindexedContent",
         "uses": "checked"
       },
@@ -1566,6 +1574,31 @@
       {
         "name": "labelIdentifier",
         "uses": "inner"
+      }
+    ]
+  },
+  {
+    "template": "latestPostingsPage",
+    "prebuiltFields": [
+      {
+        "name": "divPostings",
+        "uses": "children"
+      },
+      {
+        "name": "fieldDate",
+        "uses": "value"
+      },
+      {
+        "name": "fieldBoards",
+        "uses": "value"
+      },
+      {
+        "name": "linkPrevious",
+        "uses": "href"
+      },
+      {
+        "name": "linkNext",
+        "uses": "href"
       }
     ]
   }

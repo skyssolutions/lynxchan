@@ -244,3 +244,30 @@ exports.boardModeration = function(boardData, ownerData, language) {
 
 };
 // } Section 3: Board moderation
+
+exports.latestPostings = function(postings, parameters, language) {
+
+  var document = templateHandler(language).latestPostingsPage.template.replace(
+      '__title__', lang(language).titLatestPostings);
+
+  var previousDay = new Date(parameters.date);
+  previousDay.setUTCDate(previousDay.getUTCDate() - 1);
+  previousDay = encodeURIComponent(previousDay.toUTCString());
+
+  var nextDay = new Date(parameters.date);
+  nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+  nextDay = encodeURIComponent(nextDay.toUTCString());
+
+  var boiler = '/latestPostings.js?boards=' + parameters.boards + '&date=';
+
+  document = document.replace('__linkPrevious_href__', boiler + previousDay);
+  document = document.replace('__linkNext_href__', boiler + nextDay);
+
+  document = document.replace('__fieldBoards_value__',
+      parameters.boards.join(', ')).replace('__fieldDate_value__',
+      parameters.date.toUTCString());
+
+  return document.replace('__divPostings_children__', common.getPosts(postings,
+      false, null, null, true, language));
+
+};

@@ -4,13 +4,13 @@ var formOps = require('../engine/formOps');
 var url = require('url');
 var jsonBuilder = require('../engine/jsonBuilder');
 var miscOps = require('../engine/miscOps');
-var dom = require('../engine/domManipulator').dynamicPages.managementPages;
-var languageOps = require('../engine/langOps');
+var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
+var boardOps = require('../engine/boardOps').meta;
 
-exports.getLanguages = function(auth, parameters, userData, res, language) {
+exports.latestPostings = function(auth, parameters, userData, res, language) {
 
-  languageOps.getLanguagesData(userData.globalRole, language,
-      function gotLanguages(error, languages) {
+  boardOps.getLatestPostings(userData, parameters, language,
+      function gotPostings(error, postings) {
         if (error) {
           formOps.outputError(error, 500, res, language);
         } else {
@@ -20,13 +20,14 @@ exports.getLanguages = function(auth, parameters, userData, res, language) {
               : 'text/html', auth));
 
           if (json) {
-            res.end(jsonBuilder.languages(languages));
+            res.end(jsonBuilder.latestPostings(postings));
           } else {
-            res.end(dom.languages(languages, language));
+            res.end(dom.latestPostings(postings, parameters, language));
           }
 
         }
       });
+
 };
 
 exports.process = function(req, res) {
@@ -35,6 +36,6 @@ exports.process = function(req, res) {
       function gotData(auth, userData) {
         var parameters = url.parse(req.url, true).query;
 
-        exports.getLanguages(auth, parameters, userData, res, req.language);
+        exports.latestPostings(auth, parameters, userData, res, req.language);
       });
 };

@@ -329,5 +329,7 @@
   "msgEmailConfirmed": "Your e-mail has been confirmed.",
   "errInvalidConfirmation": "Invalid confirmation request.",
   "errNotConfirmed": "You haven't confirmed your e-mail yet.",
-  "subReportNotify": "Report notification"
+  "subReportNotify": "Report notification",
+  "errDisabledLatestPostings": "The latest postings feature is disabled.",
+  "titLatestPostings": "Latest postings"
 }
