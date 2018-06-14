@@ -264,21 +264,21 @@ exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
 exports.addPostToGlobalLatest = function(omitted, post, thread, parameters,
     cleanPosts, bump, language, callback) {
 
-  if (omitted || !globalLatestPosts || !post.message.length) {
+  if (!omitted && (overboard || sfwOverboard)) {
+    overboardOps.reaggregate({
+      overboard : true,
+      _id : thread._id,
+      post : true,
+      bump : bump,
+      sfw : thread.sfw
+    });
+  }
+
+  if (omitted || !globalLatestPosts || !post.message) {
     exports.updateBoardForPostCreation(post.ip, parameters, post.postId,
         thread, cleanPosts, bump, language, callback);
 
   } else {
-
-    if (overboard || sfwOverboard) {
-      overboardOps.reaggregate({
-        overboard : true,
-        _id : thread._id,
-        post : true,
-        bump : bump,
-        sfw : thread.sfw
-      });
-    }
 
     common.addPostToLatestPosts(post, function addedToLatestPosts(error) {
       if (error) {
