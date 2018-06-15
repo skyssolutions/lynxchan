@@ -171,7 +171,7 @@ logReportClosure: object containing the pieces for the log used when someone clo
     globalPiece: piece containing the part that indicates the report was global.
     midPiece: piece that comes after either the start or global piece.
     postPiece: piece that might be used if the report was for a post. Replaces: {$post}.
-    finalPiece: final piece of the log. Replaces: {$thread}, {$board}, {$reason}.
+    finalPiece: final piece of the log. Replaces: {$thread}, {$board}.
 logPostingBan: object containing the pieces for the log used when an user bans posters. Contains the following fields:
     startPiece: piece used in the beginning of the message. Replaces: {$login}.
     globalPiece: piece used to indicate the bans were global.

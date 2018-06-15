@@ -123,7 +123,7 @@
     "globalPiece": "global ",
     "midPiece": "report for ",
     "postPiece": "post {$post} on ",
-    "finalPiece": "thread {$thread} on board /{$board}/ with the reason \"{$reason}\""
+    "finalPiece": "thread {$thread} on board /{$board}/."
   },
   "errReportNotFound": "Report not found.",
   "errReportAlreadyClosed": "Report is already closed.",

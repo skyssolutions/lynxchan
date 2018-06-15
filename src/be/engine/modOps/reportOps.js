@@ -404,8 +404,7 @@ exports.logReportClosure = function(foundReports, userData, closureDate,
     }
 
     logMessage += pieces.finalPiece.replace('{$thread}', report.threadId)
-        .replace('{$board}', report.boardUri).replace('{$reason}',
-            report.reason || '');
+        .replace('{$board}', report.boardUri);
 
     logs.push({
       user : userData.login,
