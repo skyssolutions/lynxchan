@@ -522,7 +522,7 @@ exports.resetLastBump = function(board, parentThreads, callback, index) {
 
       if (board.maxBumpAgeDays) {
 
-        var maxAge = thread.creation;
+        var maxAge = new Date(thread.creation);
 
         maxAge.setUTCDate(maxAge.getUTCDate() + board.maxBumpAgeDays);
         matchBlock.creation = {
