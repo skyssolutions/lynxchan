@@ -244,6 +244,8 @@ Name: closeReports
 Description: closes reports. Requires authentication.
 
 Parameters:
+    banReporter(Boolean): if true, the reporters will be banned.
+    duration(String): string with the duration of the ban.
     reports(Array): ids of the reports to be closed.
     deleteContent(Boolean): if true, will delete the reported content after closing the reports.
 

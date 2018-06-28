@@ -8,6 +8,7 @@ var db = require('../../db');
 var boards = db.boards();
 var threads = db.threads();
 var posts = db.posts();
+var bans = db.bans();
 var users = db.users();
 var reports = db.reports();
 var logger = require('../../logger');
@@ -21,6 +22,7 @@ var domManipulator;
 var generator;
 var moduleRoot;
 var ipBan;
+var specificOps;
 var formOps;
 var sender;
 var common;
@@ -54,6 +56,7 @@ exports.loadDependencies = function() {
   generator = require('../generator');
   moduleRoot = require('.');
   ipBan = moduleRoot.ipBan.versatile;
+  specificOps = moduleRoot.ipBan.specific;
   common = moduleRoot.common;
   captchaOps = require('../captchaOps');
   lang = require('../langOps').languagePack;
@@ -257,7 +260,8 @@ exports.createReport = function(req, report, reportedContent, parameters,
     global : parameters.global,
     boardUri : report.board,
     threadId : +report.thread,
-    creation : new Date()
+    creation : new Date(),
+    ip : logger.ip(req)
   };
 
   if (parameters.reason) {
@@ -423,8 +427,63 @@ exports.logReportClosure = function(foundReports, userData, closureDate,
 
 };
 
-exports.deleteClosedContent = function(foundReports, userData, closureDate,
-    language, callback) {
+exports.banReporter = function(parameters, foundReports, userData, closureDate,
+    callback) {
+
+  if (!parameters.banReporter) {
+    exports.logReportClosure(foundReports, userData, closureDate, callback);
+
+    return;
+
+  }
+
+  specificOps.parseExpiration(parameters);
+
+  var bansToAdd = [];
+
+  for (var i = 0; i < foundReports.length; i++) {
+
+    var report = foundReports[i];
+
+    if (!report.ip) {
+      continue;
+    }
+
+    bansToAdd.push({
+      ip : report.ip,
+      expiration : parameters.expiration,
+      boardUri : report.global ? undefined : report.boardUri
+    });
+
+  }
+
+  if (!bansToAdd.length) {
+    exports.logReportClosure(foundReports, userData, closureDate, callback);
+    return;
+  }
+
+  bans.insertMany(bansToAdd, function addedBans(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.logReportClosure(foundReports, userData, closureDate, callback);
+    }
+
+  });
+
+};
+
+exports.deleteClosedContent = function(parameters, foundReports, userData,
+    closureDate, language, callback) {
+
+  if (!parameters.deleteContent) {
+
+    exports.banReporter(parameters, foundReports, userData, closureDate,
+        callback);
+
+    return;
+  }
 
   var postsToDelete = {};
   var threadsToDelete = {};
@@ -449,7 +508,7 @@ exports.deleteClosedContent = function(foundReports, userData, closureDate,
         if (error) {
           callback(error);
         } else {
-          exports.logReportClosure(foundReports, userData, closureDate,
+          exports.banReporter(parameters, foundReports, userData, closureDate,
               callback);
         }
 
@@ -457,8 +516,8 @@ exports.deleteClosedContent = function(foundReports, userData, closureDate,
 
 };
 
-exports.updateReports = function(deleteReportedContent, foundReports, ids,
-    userData, language, callback) {
+exports.updateReports = function(parameters, foundReports, ids, userData,
+    language, callback) {
 
   var closureDate = new Date();
 
@@ -471,27 +530,21 @@ exports.updateReports = function(deleteReportedContent, foundReports, ids,
       closedBy : userData.login,
       closing : closureDate
     }
-  },
-      function closedReports(error) {
-        if (error) {
-          callback(error);
-        } else {
+  }, function closedReports(error) {
+    if (error) {
+      callback(error);
+    } else {
 
-          if (deleteReportedContent) {
-            exports.deleteClosedContent(foundReports, userData, closureDate,
-                language, callback);
-          } else {
-            exports.logReportClosure(foundReports, userData, closureDate,
-                callback);
-          }
+      exports.deleteClosedContent(parameters, foundReports, userData,
+          closureDate, language, callback);
 
-        }
+    }
 
-      });
+  });
 };
 
-exports.closeFoundReports = function(deleteContent, ids, userData,
-    foundReports, language, callback) {
+exports.closeFoundReports = function(parameters, ids, userData, foundReports,
+    language, callback) {
 
   var foundBoardsUris = [];
 
@@ -537,7 +590,7 @@ exports.closeFoundReports = function(deleteContent, ids, userData,
 
           }
 
-          exports.updateReports(deleteContent, foundReports, ids, userData,
+          exports.updateReports(parameters, foundReports, ids, userData,
               language, callback);
 
         }
@@ -579,8 +632,8 @@ exports.closeReports = function(userData, parameters, language, callback) {
         } else if (foundReports.length < ids.length) {
           callback(lang(language).errReportNotFound);
         } else {
-          exports.closeFoundReports(parameters.deleteContent, ids, userData,
-              foundReports, language, callback);
+          exports.closeFoundReports(parameters, ids, userData, foundReports,
+              language, callback);
         }
 
       });

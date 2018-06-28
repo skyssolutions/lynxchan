@@ -139,9 +139,7 @@ exports.getActiveBan = function(ip, boardUri, callback) {
     $or : [ {
       boardUri : boardUri
     }, {
-      boardUri : {
-        $exists : false
-      }
+      boardUri : null
     } ]
   };
 
