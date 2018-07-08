@@ -510,6 +510,8 @@ exports.resetLastBump = function(board, parentThreads, callback, index) {
 
     if (error) {
       callback(error);
+    } else if(!thread){
+      exports.resetLastBump(board, parentThreads, callback, ++index);
     } else {
 
       var matchBlock = {
