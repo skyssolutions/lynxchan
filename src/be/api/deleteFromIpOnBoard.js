@@ -5,8 +5,9 @@ var delOps = require('../engine/deletionOps');
 
 exports.deleteFromIp = function(auth, userData, parameters, res, language) {
 
-  delOps.deleteFromIpOnBoard(parameters.postings || [], userData, language,
-      function spoiledFiles(error) {
+  delOps.deleteFromIpOnBoard(parameters.confirmation,
+      parameters.postings || [], userData, language, function spoiledFiles(
+          error) {
 
         if (error) {
           apiOps.outputError(error, res);

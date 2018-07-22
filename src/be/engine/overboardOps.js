@@ -81,7 +81,7 @@ function checkAmount(message) {
     }
   };
 
-  overboardThreads.count(queryBlock, function gotCount(error, count) {
+  overboardThreads.countDocuments(queryBlock, function gotCount(error, count) {
 
     if (error) {
       console.log(error);

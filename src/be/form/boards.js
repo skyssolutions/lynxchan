@@ -128,7 +128,7 @@ exports.process = function(req, res) {
 
   var pageSize = settingsHandler.getGeneralSettings().boardsPerPage;
 
-  boards.count(queryBlock, function(error, count) {
+  boards.countDocuments(queryBlock, function(error, count) {
     if (error) {
       formOps.outputError(error, 500, res, req.language);
     } else {

@@ -331,5 +331,6 @@
   "errNotConfirmed": "You haven't confirmed your e-mail yet.",
   "subReportNotify": "Report notification",
   "errDisabledLatestPostings": "The latest postings feature is disabled.",
-  "titLatestPostings": "Latest postings"
+  "titLatestPostings": "Latest postings",
+  "errNoIpDeletionConfirmation": "You must confirm that you wish to perform this deletion by IP."
 }

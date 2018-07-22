@@ -477,7 +477,7 @@ exports.getMedia = function(userData, parameters, language, callback) {
     queryBlock.identifier = new RegExp(parameters.filter.toLowerCase());
   }
 
-  references.count(queryBlock, function counted(error, count) {
+  references.countDocuments(queryBlock, function counted(error, count) {
 
     if (error) {
       callback(error);

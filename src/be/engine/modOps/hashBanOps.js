@@ -118,7 +118,7 @@ exports.placeHashBan = function(userData, parameters, language, callback,
     if (!checkedHashCount) {
       parameters.boardUri = parameters.boardUri.toString();
 
-      hashBans.count({
+      hashBans.countDocuments({
         boardUri : parameters.boardUri
       }, function gotCount(error, count) {
 

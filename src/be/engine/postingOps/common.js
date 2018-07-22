@@ -698,7 +698,7 @@ exports.addPostToLatestPosts = function(posting, callback) {
     } else {
 
       // style exception, too simple
-      latestPosts.count({}, function counted(error, count) {
+      latestPosts.countDocuments({}, function counted(error, count) {
         if (error) {
           callback(error);
         } else if (count > maxGlobalLatestPosts) {

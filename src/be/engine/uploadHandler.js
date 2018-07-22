@@ -216,7 +216,7 @@ exports.updateLatestImages = function(boardData, threadId, postId, file,
     } else {
 
       // style exception, too simple
-      globalLatestImages.count(function counted(error, count) {
+      globalLatestImages.countDocuments(function counted(error, count) {
 
         if (error) {
           callback(error);

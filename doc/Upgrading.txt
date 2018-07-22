@@ -1,6 +1,6 @@
 Upgrading a server is not hard, but there might be a couple of gotchas. What I am going to write here is for how to upgrade a major version of LynxChan on a small server.
 
-Note: when upgrading to node 8 from 6, you have to manually delete your previous npm install before installing the new version, otherwise you will get an error about internal/fs. 
+Note: when upgrading to node 8 from 6 and to node 10 from 8, you have to manually delete your previous npm install before installing the new version, otherwise you will get an error about internal/fs. 
 Tested with node 8.4.0, build from source. 
 Npm location was /usr/local/lib/node_modules
 

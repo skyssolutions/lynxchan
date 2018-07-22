@@ -181,8 +181,8 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
 
   case 'ip-deletion': {
 
-    deleteOps.deleteFromIpOnBoard(reportedObjects, userData, req.language,
-        function deleted(error) {
+    deleteOps.deleteFromIpOnBoard(parameters.confirmation, reportedObjects,
+        userData, req.language, function deleted(error) {
 
           if (error) {
             formOps.outputError(error, 500, res, req.language);

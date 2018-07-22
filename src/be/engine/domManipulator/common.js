@@ -509,6 +509,10 @@ exports.setSharedHideableElements = function(posting, removable, postingCell,
 
 exports.matchCodeTags = function(markdown) {
 
+  if (markdown.indexOf('</code>') < markdown.indexOf('<code>')) {
+    markdown = '<code>' + markdown;
+  }
+
   var delta = markdown.split('<code>').length;
   delta -= markdown.split('</code>').length;
 

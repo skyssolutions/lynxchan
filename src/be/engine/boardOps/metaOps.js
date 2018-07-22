@@ -960,7 +960,7 @@ exports.setSpecialSettings = function(userData, parameters, language, cb) {
 
 exports.aggregateThreadCount = function(boardUri, callback) {
 
-  threads.count({
+  threads.countDocuments({
     boardUri : boardUri
   }, function gotCount(error, count) {
 

@@ -909,7 +909,9 @@ function connect(connectString, dbToUse, callback, attempts) {
 
   attempts = attempts || 0;
 
-  mongo.MongoClient.connect(connectString, function connectedDb(error, client) {
+  mongo.MongoClient.connect(connectString, {
+    useNewUrlParser : true
+  }, function connectedDb(error, client) {
 
     if (error) {
 

@@ -689,6 +689,7 @@ Parameters:
         board: board to which the content belongs.
         thread: thread with the selected ip.
         post: post with the selected ip.
+        confirmation(Boolean): if not informed, the operation will not be performed.
 
 ------------------------------------------------------------------------------------------
 

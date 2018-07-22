@@ -284,6 +284,7 @@ Parameters:
     duration: duration of the ban. Defaults to 5 years. See the back-end readme for details.
     captcha: captcha input. Used for banning and reporting. Ignored for bans when the user is part of the global staff.
     deleteUploads: if informed, only the uploads and not the posts and threads will be deleted.
+    confirmation: must be informed when using 'ip-deletion' as the action.
 
 ------------------------------------------------------------------------------------------
 

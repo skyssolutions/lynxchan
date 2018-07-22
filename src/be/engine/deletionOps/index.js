@@ -212,8 +212,13 @@ exports.gatherIpsToDelete = function(objects, userData, language, callback) {
 
 };
 
-exports.deleteFromIpOnBoard = function(objects, userData, language, callback,
-    cleared) {
+exports.deleteFromIpOnBoard = function(confirmation, objects, userData,
+    language, callback, cleared) {
+
+  if (!confirmation) {
+    callback(lang(language).errNoIpDeletionConfirmation);
+    return;
+  }
 
   if (!objects.length) {
     callback();
@@ -223,7 +228,8 @@ exports.deleteFromIpOnBoard = function(objects, userData, language, callback,
   if (!cleared) {
 
     if (userData.globalRole <= miscOps.getMaxStaffRole()) {
-      exports.deleteFromIpOnBoard(objects, userData, language, callback, true);
+      exports.deleteFromIpOnBoard(confirmation, objects, userData, language,
+          callback, true);
       return;
 
     }
@@ -249,8 +255,8 @@ exports.deleteFromIpOnBoard = function(objects, userData, language, callback,
         var volunteer = board.volunteers.indexOf(userData.login) > -1;
 
         if (owner || volunteer) {
-          exports.deleteFromIpOnBoard(objects, userData, language, callback,
-              true);
+          exports.deleteFromIpOnBoard(confirmation, objects, userData,
+              language, callback, true);
         } else {
           callback(lang(language).errDeniedBoardIpDeletion);
         }
