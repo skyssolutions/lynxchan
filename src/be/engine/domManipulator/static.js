@@ -437,7 +437,8 @@ exports.getCatalogCell = function(boardUri, document, thread, language) {
 
   cell = exports.setCatalogCellIndicators(thread, cell, removable);
 
-  cell = cell.replace('__divMessage_inner__', thread.markdown);
+  cell = cell.replace('__divMessage_inner__', common
+      .matchCodeTags(thread.markdown));
 
   return '<div class="catalogCell">' + cell + '</div>';
 

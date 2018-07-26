@@ -923,7 +923,7 @@ function connect(connectString, dbToUse, callback, attempts) {
         console.log('Retrying in 10 seconds');
 
         setTimeout(function() {
-          connect(connectString, callback, ++attempts);
+          connect(connectString, dbToUse, callback, ++attempts);
         }, 10000);
       }
 
