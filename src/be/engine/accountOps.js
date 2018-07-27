@@ -7,7 +7,6 @@ var users = db.users();
 var boards = db.boards();
 var requests = db.recoveryRequests();
 var confirmations = db.confirmations();
-var bcrypt = require('bcrypt');
 var crypto = require('crypto');
 var mailer = require('../logger').mailer;
 var sender;
@@ -20,6 +19,7 @@ var domManipulator;
 var lang;
 
 var iterations = 4096;
+var iterationsV2 = 16384;
 var keyLength = 256;
 var hashDigest = 'sha512';
 
@@ -611,8 +611,8 @@ exports.changePassword = function(userData, parameters, language, callback,
 exports.passwordMatches = function(userData, password, callback) {
 
   switch (userData.passwordMethod) {
-  case 'pbkdf2':
-    crypto.pbkdf2(password, userData.passwordSalt, iterations, keyLength,
+  case 'pbkdf2V2':
+    crypto.pbkdf2(password, userData.passwordSalt, iterationsV2, keyLength,
         hashDigest, function hashed(error, hash) {
 
           if (error || !hash) {
@@ -625,24 +625,29 @@ exports.passwordMatches = function(userData, password, callback) {
 
     break;
 
-  default:
-    bcrypt.compare(password, userData.password, function compared(error,
-        matches) {
+  case 'pbkdf2':
+    crypto.pbkdf2(password, userData.passwordSalt, iterations, keyLength,
+        hashDigest, function hashed(error, hash) {
 
-      if (matches) {
+          if (hash && userData.password === hash.toString('base64')) {
 
-        // style exception, too simple
-        exports.setUserPassword(userData.login, password, function passwordSet(
-            error) {
-          callback(error, true);
+            // style exception, too simple
+            exports.setUserPassword(userData.login, password,
+                function passwordSet(error) {
+                  callback(error, true);
+                });
+            // style exception, too simple
+
+          } else {
+            callback(error);
+          }
+
         });
-        // style exception, too simple
 
-      } else {
-        callback(error);
-      }
+    break;
 
-    });
+  default:
+    callback();
   }
 
 };
@@ -657,7 +662,7 @@ exports.setUserPassword = function(login, password, callback) {
       var salt = buffer.toString('base64');
 
       // style exception, too simple
-      crypto.pbkdf2(password, salt, iterations, keyLength, hashDigest,
+      crypto.pbkdf2(password, salt, iterationsV2, keyLength, hashDigest,
           function hashed(error, hash) {
 
             if (error) {
@@ -668,7 +673,7 @@ exports.setUserPassword = function(login, password, callback) {
                 login : login
               }, {
                 $set : {
-                  passwordMethod : 'pbkdf2',
+                  passwordMethod : 'pbkdf2V2',
                   passwordSalt : salt,
                   password : hash.toString('base64')
                 }

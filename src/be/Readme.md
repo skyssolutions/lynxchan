@@ -3,10 +3,10 @@ Required modules:
 * mongodb: database driver.
 * jsdom: used for handling DOM to create HTML from the templates.
 * multiparty: used when parsing requests to the form api.
-* bcrypt: used for encrypting passwords.
 * nodemailer: used to send e-mails for people resetting account passwords.
 * jsbn: used on ipv6 conversion.
 * http-proxy: used on sharding so the master server can act as a reverse-proxy and pass the request to slaves.
+* nodemailer-direct-transport: used by nodemailer to send e-mails directly from the engine.
 
 The version of each one is specified on the package.json file.
 
