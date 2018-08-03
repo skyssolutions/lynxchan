@@ -2,39 +2,21 @@
 
 var settingsHandler = require('../settingsHandler');
 var debug = require('../kernel').debug();
-var fs = require('fs');
 var captchaOps = require('../engine/captchaOps');
 var formOps = require('../engine/formOps');
-var gridFsHandler = require('../engine/gridFsHandler');
 
-exports.showCaptcha = function(req, captchaData, res) {
+exports.showCaptcha = function(captchaData, res) {
 
-  var cookies = [ {
-    field : 'captchaid',
-    value : captchaData._id,
-    path : '/'
-  }, {
-    field : 'captchaexpiration',
-    value : captchaData.expiration.toUTCString(),
-    path : '/'
-  } ];
+  var expirationCookie = 'captchaexpiration=';
+  expirationCookie += captchaData.expiration.toUTCString() + ';path=/';
 
-  gridFsHandler.outputFile(captchaData._id + '.jpg', req, res,
-      function streamedFile(error) {
-        if (error) {
+  var header = [ [ 'Location', '/.global/captchas/' + captchaData._id ],
+      [ 'Set-Cookie', 'captchaid=' + captchaData._id + ';path=/' ],
+      [ 'Set-Cookie', expirationCookie ] ];
 
-          var settings = settingsHandler.getGeneralSettings();
+  res.writeHead(302, header);
+  res.end();
 
-          if (debug) {
-            throw error;
-          } else if (settings.verboseMisc || settings.verbose) {
-            console.log(error);
-          }
-
-          formOps.outputError(error, 500, res, req.language);
-
-        }
-      }, cookies);
 };
 
 exports.process = function(req, res) {
@@ -71,11 +53,11 @@ exports.process = function(req, res) {
 
           formOps.outputError(error, 500, res, req.language);
         } else {
-          exports.showCaptcha(req, captchaData, res);
+          exports.showCaptcha(captchaData, res);
         }
       });
     } else {
-      exports.showCaptcha(req, captchaData, res);
+      exports.showCaptcha(captchaData, res);
     }
   });
 };

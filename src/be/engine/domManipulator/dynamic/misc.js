@@ -527,7 +527,7 @@ exports.noCookieCaptcha = function(parameters, captchaId, language) {
 
   }
 
-  var captchaUrl = '/captcha.js?captchaId=' + captchaId;
+  var captchaUrl = '/.global/captchas/' + captchaId;
   document = document.replace('__imageCaptcha_src__', captchaUrl);
 
   return document.replace('__inputCaptchaId_value__', captchaId);

@@ -18,7 +18,6 @@ var formOps;
 var gridFsHandler;
 
 // captcha settings
-var fontSize = 70;
 var height = 100;
 var width = 300;
 
@@ -172,7 +171,9 @@ exports.transferToGfs = function(result, id, callback) {
   var expiration = new Date();
   expiration.setUTCMinutes(expiration.getUTCMinutes() + captchaExpiration);
 
-  gridFsHandler.writeData(Buffer.from(result, 'binary'), id + '.jpg',
+  var finalPath = '/.global/captchas/' + id;
+
+  gridFsHandler.writeData(Buffer.from(result, 'binary'), finalPath,
       'image/jpeg', {
         type : 'captcha',
         expiration : expiration
@@ -274,13 +275,7 @@ exports.checkForCaptcha = function(req, callback) {
 
   var cookies = formOps.getCookies(req);
 
-  var parameters = url.parse(req.url, true).query;
-
-  if (parameters.captchaId) {
-    cookies.captchaid = parameters.captchaId;
-  }
-
-  if (!cookies.captchaid || !cookies.captchaid.length) {
+  if (!cookies.captchaid) {
     callback();
     return;
   }
@@ -296,6 +291,7 @@ exports.checkForCaptcha = function(req, callback) {
   } catch (error) {
     callback(error);
   }
+
 };
 
 // Section 2: Captcha consumption {
