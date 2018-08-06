@@ -23,9 +23,13 @@ exports.loadDependencies = function() {
 
 };
 
-exports.getSanitizedMessage = function(message) {
+exports.getSanitizedSubject = function(thread) {
 
-  return '<![CDATA[ ' + message.substring(0, 256) + ' ]]>';
+  if (thread.subject) {
+    return thread.subject.replace(/&/g, '&amp;');
+  } else {
+    return '<![CDATA[ ' + thread.message.substring(0, 256) + ' ]]>';
+  }
 
 };
 
@@ -39,7 +43,7 @@ exports.getThreads = function(threads) {
 
     rssContent += '<item><title>';
 
-    rssContent += thread.subject || exports.getSanitizedMessage(thread.message);
+    rssContent += exports.getSanitizedSubject(thread);
 
     rssContent += '</title><link>' + rssDomain + '/';
     rssContent += thread.boardUri + '/res/' + thread.threadId + '.html</link>';
