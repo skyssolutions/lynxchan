@@ -164,8 +164,6 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
 
   case 'ban': {
 
-    parameters.banType = +parameters.banType;
-
     modOps.ipBan.specific.ban(userData, reportedObjects, parameters, captchaId,
         req.language, function(error) {
           if (error) {

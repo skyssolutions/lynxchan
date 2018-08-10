@@ -284,7 +284,7 @@ exports.createBans = function(foundIps, parentThreads, pages, board, userData,
     };
 
     if (parameters.banType) {
-      ban.range = miscOps.getRange(foundIps[i], +parameters.banType > 1);
+      ban.range = miscOps.getRange(foundIps[i], parameters.banType > 1);
     } else {
       ban.ip = foundIps[i];
       ban.reason = parameters.reason;
@@ -523,6 +523,8 @@ exports.isolateBoards = function(userData, reportedObjects, parameters,
     language, callback) {
 
   miscOps.sanitizeStrings(parameters, exports.banArguments);
+
+  parameters.banType = +parameters.banType;
 
   if (!parameters.banType) {
     exports.parseExpiration(parameters);
