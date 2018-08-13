@@ -9,12 +9,12 @@ var modOps = require('../engine/modOps').ipBan.versatile;
 
 exports.getBans = function(userData, parameters, res, auth, language) {
 
+  var json = parameters.json;
+
   modOps.getBans(userData, parameters, language, function gotBans(error, bans) {
     if (error) {
-      formOps.outputError(error, 500, res, language);
+      formOps.outputError(error, 500, res, language, json);
     } else {
-
-      var json = parameters.json;
 
       res.writeHead(200, miscOps.getHeader(json ? 'application/json'
           : 'text/html', auth));

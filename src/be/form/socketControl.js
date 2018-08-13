@@ -12,7 +12,7 @@ exports.getSocketData = function(userData, json, res, auth, language) {
   socket.getSocketStatus(userData, language, function gotSocketStatus(error,
       statusData) {
     if (error) {
-      formOps.outputError(error, 500, res, language);
+      formOps.outputError(error, 500, res, language, json);
     } else {
 
       res.writeHead(200, miscOps.getHeader(json ? 'application/json'

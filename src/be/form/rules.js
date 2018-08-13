@@ -9,12 +9,13 @@ var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 
 exports.getRulesData = function(parameters, userData, res, auth, language) {
 
+  var json = parameters.json;
+
   boardOps.boardRules(parameters.boardUri, userData, language,
       function gotRules(error, rules) {
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, json);
         } else {
-          var json = parameters.json;
 
           res.writeHead(200, miscOps.getHeader(json ? 'application/json'
               : 'text/html', auth));

@@ -377,7 +377,7 @@ exports.outputResponse = function(message, redirect, res, cookies, authBlock,
 
 };
 
-exports.outputError = function(error, code, res, language) {
+exports.outputError = function(error, code, res, language, json) {
 
   if (debug) {
     throw error;
@@ -390,9 +390,11 @@ exports.outputError = function(error, code, res, language) {
     code = 500;
   }
 
-  res.writeHead(code, miscOps.getHeader('text/html'));
+  res.writeHead(code, miscOps
+      .getHeader(json ? 'application/json' : 'text/html'));
 
-  res.end(domManipulator.error(code, error.toString(), language));
+  res.end(json ? JSON.stringify(error.toString()) : domManipulator.error(code,
+      error.toString(), language));
 
 };
 

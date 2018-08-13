@@ -9,12 +9,13 @@ var modOps = require('../engine/modOps').report;
 
 exports.getClosedReports = function(userData, parameters, res, auth, language) {
 
+  var json = parameters.json;
+
   modOps.getClosedReports(userData, parameters, language,
       function gotClosedReports(error, reports) {
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, json);
         } else {
-          var json = parameters.json;
 
           res.writeHead(200, miscOps.getHeader(json ? 'application/json'
               : 'text/html', auth));

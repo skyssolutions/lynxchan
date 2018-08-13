@@ -66,7 +66,7 @@ exports.process = function(req, res) {
       function gotDates(error, results) {
 
         if (error) {
-          formOps.outputError(error, 500, res, req.language);
+          formOps.outputError(error, 500, res, req.language, json);
         } else {
 
           var dates = results.length ? results[0].dates : [];

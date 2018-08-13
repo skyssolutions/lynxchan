@@ -10,14 +10,14 @@ domManipulator = domManipulator.dynamicPages.managementPages;
 
 exports.getMediaDetails = function(auth, userData, parameters, res, language) {
 
+  var json = parameters.json;
+
   mediaHandler.getMediaDetails(userData, parameters, language,
       function gotMediaDetails(error, details) {
 
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, json);
         } else {
-
-          var json = parameters.json;
 
           res.writeHead(200, miscOps.getHeader(json ? 'application/json'
               : 'text/html', auth));

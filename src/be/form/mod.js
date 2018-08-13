@@ -34,7 +34,7 @@ exports.outputModData = function(bData, flagData, thread, posts, res, json,
     domManipulator.thread(bData, flagData, thread, posts,
         function gotThreadContent(error, content) {
           if (error) {
-            formOps.outputError(error, 500, res, language);
+            formOps.outputError(error, 500, res, language, json);
           } else {
 
             res.end(content);
@@ -79,62 +79,61 @@ exports.getPostingData = function(boardData, flagData, parameters, res, json,
       message : 1,
       markdown : 1
     }
-  },
-      function gotThread(error, thread) {
-        if (error) {
-          formOps.outputError(error, 500, res, language);
-        } else if (!thread) {
-          formOps.outputError(lang(language).errThreadNotFound, 500, res,
-              language);
-        } else {
+  }, function gotThread(error, thread) {
+    if (error) {
+      formOps.outputError(error, 500, res, language, json);
+    } else if (!thread) {
+      formOps.outputError(lang(language).errThreadNotFound, 500, res, language,
+          json);
+    } else {
 
-          // style exception, too simple
-          posts.find({
-            threadId : +parameters.threadId,
-            boardUri : boardData.boardUri
-          }, {
-            projection : {
-              _id : 0,
-              signedRole : 1,
-              subject : 1,
-              ip : 1,
-              flagCode : 1,
-              creation : 1,
-              boardUri : 1,
-              flagName : 1,
-              clearCache : 1,
-              hashedCache : 1,
-              flag : 1,
-              alternativeCaches : 1,
-              threadId : 1,
-              lastEditTime : 1,
-              lastEditLogin : 1,
-              id : 1,
-              postId : 1,
-              message : 1,
-              name : 1,
-              files : 1,
-              email : 1,
-              banMessage : 1,
-              markdown : 1
-            }
-          }).sort({
-            creation : 1
-          }).toArray(
-              function gotPosts(error, posts) {
-                if (error) {
-                  formOps.outputError(error, 500, res, language);
-                } else {
-                  exports.outputModData(boardData, flagData, thread, posts,
-                      res, json, userRole, auth, language);
-                }
-
-              });
-
-          // style exception, too simple
+      // style exception, too simple
+      posts.find({
+        threadId : +parameters.threadId,
+        boardUri : boardData.boardUri
+      }, {
+        projection : {
+          _id : 0,
+          signedRole : 1,
+          subject : 1,
+          ip : 1,
+          flagCode : 1,
+          creation : 1,
+          boardUri : 1,
+          flagName : 1,
+          clearCache : 1,
+          hashedCache : 1,
+          flag : 1,
+          alternativeCaches : 1,
+          threadId : 1,
+          lastEditTime : 1,
+          lastEditLogin : 1,
+          id : 1,
+          postId : 1,
+          message : 1,
+          name : 1,
+          files : 1,
+          email : 1,
+          banMessage : 1,
+          markdown : 1
         }
+      }).sort({
+        creation : 1
+      }).toArray(
+          function gotPosts(error, posts) {
+            if (error) {
+              formOps.outputError(error, 500, res, language, json);
+            } else {
+              exports.outputModData(boardData, flagData, thread, posts, res,
+                  json, userRole, auth, language);
+            }
 
-      });
+          });
+
+      // style exception, too simple
+    }
+
+  });
 
 };
 
@@ -152,7 +151,7 @@ exports.getFlags = function(board, parameters, res, json, userRole, auth,
   }).toArray(
       function gotFlags(error, flagData) {
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, json);
         } else {
           exports.getPostingData(board, flagData, parameters, res, json,
               userRole, auth, language);
@@ -197,17 +196,20 @@ exports.process = function(req, res) {
             volunteers : 1
           }
         }, function gotBoard(error, board) {
+
+          var json = parameters.json;
+
           if (error) {
-            formOps.outputError(error, 500, res, req.language);
+            formOps.outputError(error, 500, res, req.language, json);
           } else if (!board) {
             formOps.outputError(lang(req.language).errBoardNotFound, 500, res,
-                req.language);
+                req.language, json);
           } else if (!modOps.isInBoardStaff(userData, board) && !globalStaff) {
             formOps.outputError(lang(req.language).errDeniedManageBoard, 500,
-                res, req.language);
+                res, req.language, json);
           } else {
-            exports.getFlags(board, parameters, res, parameters.json,
-                userData.globalRole, auth, req.language);
+            exports.getFlags(board, parameters, res, json, userData.globalRole,
+                auth, req.language);
           }
         });
         // style exception, too simple

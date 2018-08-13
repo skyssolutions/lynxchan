@@ -11,7 +11,7 @@ exports.getGlobalSettings = function(userData, res, json, auth, language) {
   miscOps.getGlobalSettingsData(userData, language, function gotSettingsData(
       error) {
     if (error) {
-      formOps.outputError(error, 500, res, language);
+      formOps.outputError(error, 500, res, language, json);
     } else {
       res.writeHead(200, miscOps.getHeader(json ? 'application/json'
           : 'text/html', auth));

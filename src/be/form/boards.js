@@ -121,16 +121,14 @@ exports.getSortBlock = function(parameters) {
 exports.process = function(req, res) {
 
   var parameters = url.parse(req.url, true).query;
-
   var page = parameters.page || 1;
-
   var queryBlock = exports.getQueryBlock(parameters);
-
   var pageSize = settingsHandler.getGeneralSettings().boardsPerPage;
+  var json = parameters.json;
 
   boards.countDocuments(queryBlock, function(error, count) {
     if (error) {
-      formOps.outputError(error, 500, res, req.language);
+      formOps.outputError(error, 500, res, req.language, json);
     } else {
       var pageCount = Math.ceil(count / pageSize);
 
@@ -156,9 +154,8 @@ exports.process = function(req, res) {
           .toArray(
               function(error, foundBoards) {
                 if (error) {
-                  formOps.outputError(error, 500, res, req.language);
+                  formOps.outputError(error, 500, res, req.language, json);
                 } else {
-                  var json = parameters.json;
 
                   res.writeHead(200, miscOps
                       .getHeader(json ? 'application/json' : 'text/html'));

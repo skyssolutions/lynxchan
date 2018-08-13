@@ -17,7 +17,7 @@ exports.process = function(req, res) {
       error, valid) {
 
     if (error) {
-      formOps.outputError(error, 500, res, req.language);
+      formOps.outputError(error, 500, res, req.language, json);
     } else {
       res.writeHead(200, miscOps.getHeader(json ? 'application/json'
           : 'text/html'));

@@ -9,12 +9,13 @@ var modOps = require('../engine/modOps').ipBan.general;
 
 exports.getRangeBans = function(userData, parameters, res, auth, language) {
 
+  var json = parameters.json;
+
   modOps.getRangeBans(userData, parameters, language, function gotRangeBans(
       error, rangeBans, boardData) {
     if (error) {
-      formOps.outputError(error, 500, res, language);
+      formOps.outputError(error, 500, res, language, json);
     } else {
-      var json = parameters.json;
 
       res.writeHead(200, miscOps.getHeader(json ? 'application/json'
           : 'text/html', auth));

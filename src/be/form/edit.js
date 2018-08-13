@@ -15,12 +15,13 @@ exports.getPostingToEdit = function(userData, parameters, res, auth, language) {
     return;
   }
 
+  var json = parameters.json;
+
   modOps.getPostingToEdit(userData, parameters, language,
       function gotPostingToEdit(error, posting) {
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, json);
         } else {
-          var json = parameters.json;
 
           res.writeHead(200, miscOps.getHeader(json ? 'application/json'
               : 'text/html', auth));

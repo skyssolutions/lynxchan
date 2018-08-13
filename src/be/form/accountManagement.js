@@ -11,19 +11,15 @@ var accountOps = require('../engine/accountOps');
 exports.getAccount = function(auth, userData, res, req) {
 
   var parameters = url.parse(req.url, true).query;
-
   var json = parameters.json;
   var account = parameters.account;
-
   var language = req.language;
 
   accountOps.getAccountData(account, userData, language,
       function gotAccountData(error, accountData) {
 
         if (error) {
-
-          formOps.outputError(error, 500, res, language);
-
+          formOps.outputError(error, 500, res, language, json);
         } else {
 
           res.writeHead(200, miscOps.getHeader(json ? 'application/json'

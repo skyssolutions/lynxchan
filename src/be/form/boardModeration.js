@@ -10,12 +10,13 @@ var formOps = require('../engine/formOps');
 exports.getBoardModerationData = function(parameters, userData, res, auth,
     language) {
 
+  var json = parameters.json;
+
   boardOps.getBoardModerationData(userData, parameters.boardUri, language,
       function gotBoardModerationData(error, boardData, ownerData) {
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, json);
         } else {
-          var json = parameters.json;
 
           res.writeHead(200, miscOps.getHeader(json ? 'application/json'
               : 'text/html', auth));

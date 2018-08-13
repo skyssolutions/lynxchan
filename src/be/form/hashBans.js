@@ -9,12 +9,13 @@ var modOps = require('../engine/modOps').hashBan;
 
 exports.getHashBans = function(userData, parameters, res, auth, language) {
 
+  var json = parameters.json;
+
   modOps.getHashBans(userData, parameters, language, function gotHashBans(
       error, hashBans) {
     if (error) {
-      formOps.outputError(error, 500, res, language);
+      formOps.outputError(error, 500, res, language, json);
     } else {
-      var json = parameters.json;
 
       res.writeHead(200, miscOps.getHeader(json ? 'application/json'
           : 'text/html', auth));

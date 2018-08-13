@@ -34,8 +34,8 @@ exports.getMinDate = function(informedYear) {
 exports.process = function(req, res) {
 
   var parameters = url.parse(req.url, true).query;
-
   var date = exports.getMinDate(parameters.year);
+  var json = parameters.json;
 
   var maxDate = new Date(date);
 
@@ -63,9 +63,8 @@ exports.process = function(req, res) {
       function gotDates(error, results) {
 
         if (error) {
-          formOps.outputError(error, 500, res, req.language);
+          formOps.outputError(error, 500, res, req.language, json);
         } else {
-          var json = parameters.json;
 
           var dates = results.length ? results[0].dates : [];
 

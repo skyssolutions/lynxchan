@@ -9,12 +9,13 @@ var languageOps = require('../engine/langOps');
 
 exports.getLanguages = function(auth, parameters, userData, res, language) {
 
+  var json = parameters.json;
+
   languageOps.getLanguagesData(userData.globalRole, language,
       function gotLanguages(error, languages) {
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, json);
         } else {
-          var json = parameters.json;
 
           res.writeHead(200, miscOps.getHeader(json ? 'application/json'
               : 'text/html', auth));
