@@ -40,6 +40,6 @@ exports.process = function(req, res) {
 
         exports.getFlagData(parameters, userData, res, auth, req.language);
 
-      });
+      }, false, false, true);
 
 };

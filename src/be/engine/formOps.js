@@ -282,9 +282,9 @@ exports.checkReferer = function(req) {
 };
 
 exports.getAuthenticatedPost = function(req, res, getParameters, callback,
-    optionalAuth, exceptionalMimes) {
+    optionalAuth, exceptionalMimes, skipReferer) {
 
-  if (!exports.checkReferer(req)) {
+  if (!skipReferer && !exports.checkReferer(req)) {
 
     if (!optionalAuth) {
       exports.redirectToLogin(res);

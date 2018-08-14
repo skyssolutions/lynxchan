@@ -9,12 +9,13 @@ var boardOps = require('../engine/boardOps').meta;
 
 exports.latestPostings = function(auth, parameters, userData, res, language) {
 
+  var json = parameters.json;
+
   boardOps.getLatestPostings(userData, parameters, language,
       function gotPostings(error, postings) {
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, json);
         } else {
-          var json = parameters.json;
 
           res.writeHead(200, miscOps.getHeader(json ? 'application/json'
               : 'text/html', auth));
@@ -37,5 +38,5 @@ exports.process = function(req, res) {
         var parameters = url.parse(req.url, true).query;
 
         exports.latestPostings(auth, parameters, userData, res, req.language);
-      });
+      }, false, false, true);
 };

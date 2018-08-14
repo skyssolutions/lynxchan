@@ -41,6 +41,6 @@ exports.process = function(req, res) {
 
         exports.getFilterData(parameters, userData, res, auth, req.language);
 
-      });
+      }, false, false, true);
 
 };

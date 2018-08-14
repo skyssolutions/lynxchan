@@ -39,5 +39,5 @@ exports.process = function(req, res) {
 
         exports.getBoardModerationData(parameters, userData, res, auth,
             req.language);
-      });
+      }, false, false, true);
 };

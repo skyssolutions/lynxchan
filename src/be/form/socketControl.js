@@ -35,6 +35,6 @@ exports.process = function(req, res) {
       function gotData(auth, userData) {
         exports.getSocketData(userData, url.parse(req.url, true).query.json,
             res, auth, req.language);
-      });
+      }, false, false, true);
 
 };

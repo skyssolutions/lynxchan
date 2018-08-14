@@ -214,6 +214,6 @@ exports.process = function(req, res) {
         });
         // style exception, too simple
 
-      });
+      }, false, false, true);
 
 };

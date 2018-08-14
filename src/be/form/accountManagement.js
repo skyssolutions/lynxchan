@@ -43,6 +43,6 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, false,
       function gotData(auth, userData) {
         exports.getAccount(auth, userData, res, req);
-      });
+      }, false, false, true);
 
 };

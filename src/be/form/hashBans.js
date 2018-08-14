@@ -40,6 +40,6 @@ exports.process = function(req, res) {
 
         exports.getHashBans(userData, parameters, res, auth, req.language);
 
-      });
+      }, false, false, true);
 
 };

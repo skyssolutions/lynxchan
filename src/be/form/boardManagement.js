@@ -37,5 +37,5 @@ exports.process = function(req, res) {
 
         exports.getBoardManagementData(parameters.boardUri, userData, res,
             parameters.json, auth, req.language);
-      });
+      }, false, false, true);
 };

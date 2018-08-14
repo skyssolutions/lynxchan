@@ -37,5 +37,5 @@ exports.process = function(req, res) {
         var parameters = url.parse(req.url, true).query;
 
         exports.getBans(userData, parameters, res, auth, req.language);
-      });
+      }, false, false, true);
 };

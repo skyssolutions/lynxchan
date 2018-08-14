@@ -22,5 +22,5 @@ exports.process = function(req, res) {
           res.end(domManipulator.account(userData, req.language));
         }
 
-      });
+      }, false, false, true);
 };
