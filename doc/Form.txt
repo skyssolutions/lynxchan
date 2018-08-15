@@ -732,7 +732,6 @@ Name: placeRangeBan
 Description: creates a range ban. Requires authentication. Global range bans are restricted to users with global role lower than 3.
 
 Parameters:
-    captcha: captcha input.
     boardUri: if not informed, the range ban will be global.
     range: range to be banned.
 

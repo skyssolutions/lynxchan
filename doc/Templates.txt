@@ -1727,6 +1727,10 @@ fieldMaxBoardHashBans:
     use: have its value manipulated.
     description: field that displays the limit of hash bans boards can have.
 
+fieldMaxBoardRangeBans:
+    use: have its value manipulated.
+    description: field that displays the limit of range bans boards can have.
+
 fieldStaticExpiration:
     use: have its value manipulated.
     description: field that displays the static expiration that will be informed.

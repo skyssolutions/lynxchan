@@ -1069,6 +1069,10 @@
     "template": "globalSettingsPage",
     "prebuiltFields": [
       {
+        "name": "fieldMaxBoardRangeBans",
+        "uses": "value"
+      },
+      {
         "name": "fieldAddons",
         "uses": "value"
       },

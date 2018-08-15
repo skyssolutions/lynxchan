@@ -201,6 +201,11 @@
   },
   {
     "type": "number",
+    "setting": "maxBoardRangeBans",
+    "element": "fieldMaxBoardRangeBans"
+  },
+  {
+    "type": "number",
     "setting": "maxThreadCount",
     "element": "fieldThreadLimit"
   },

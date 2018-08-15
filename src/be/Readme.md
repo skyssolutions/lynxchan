@@ -177,6 +177,7 @@ Settings files that goes into the settings directory:
 * `maxBoardHashBans`(Number): limit for board hash bans boards can have. Defaults to 128.
 * `omitUnindexedContent`(Boolean): causes content from unindexes boards to not be displayed on the front-page or overboards.
 * `disableLatestPostings`(Boolean): disables the setting that allows staff to see the latest postings of boards they can moderate and removes the link to this feature from the account page.
+* `maxBoardRangeBans`(Number): limit for board range bans boards can have. Defaults to 128. It will be ignored when banning from an existing post.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

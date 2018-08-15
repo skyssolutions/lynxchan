@@ -11,6 +11,7 @@ tit: page titles.
 
 The structure of this json is as follows:
 
+errRangeBanLimit: error thrown when the the board has exceeded it's limit for range bans when trying to create a new one.
 errNoIpDeletionConfirmation: error thrown when the user fails to confirm a deletion by IP from a post.
 errDisabledLatestPostings: error thrown when the latest postings feature is disabled.
 errExpiredCaptcha: error thrown when the attempted captcha is expired.

@@ -11,12 +11,14 @@ var logger;
 var logOps;
 var captchaOps;
 var lang;
+var rangeBanLimit;
 var minClearIpRole;
 
 exports.loadSettings = function() {
 
   var settings = require('../../../settingsHandler').getGeneralSettings();
   minClearIpRole = settings.clearIpMinRole;
+  rangeBanLimit = settings.maxBoardRangeBans;
 
 };
 
@@ -127,48 +129,55 @@ exports.createRangeBan = function(userData, parameters, language, callback) {
 
 };
 
-exports.checkRangeBanPermission = function(userData, parameters, language,
-    callback) {
+exports.placeRangeBan = function(userData, parameters, language, cb,
+    checkedCount) {
 
   var isOnGlobalStaff = userData.globalRole <= minClearIpRole;
 
   if (parameters.boardUri) {
 
-    parameters.boardUri = parameters.boardUri.toString();
+    if (!checkedCount) {
+
+      parameters.boardUri = parameters.boardUri.toString();
+
+      bans.countDocuments({
+        boardUri : parameters.boardUri,
+        range : {
+          $exists : true
+        }
+      }, function gotCount(error, count) {
+
+        if (error) {
+          cb(error);
+        } else if (count >= rangeBanLimit) {
+          cb(lang(language).errRangeBanLimit);
+        } else {
+          exports.placeRangeBan(userData, parameters, language, cb, true);
+        }
+
+      });
+
+      return;
+    }
 
     boards.findOne({
       boardUri : parameters.boardUri
     }, function gotBoard(error, board) {
       if (error) {
-        callback(error);
+        cb(error);
       } else if (!board) {
-        callback(lang(language).errBoardNotFound);
+        cb(lang(language).errBoardNotFound);
       } else if (!common.isInBoardStaff(userData, board, 2)) {
-        callback(lang(language).errDeniedBoardRangeBanManagement);
+        cb(lang(language).errDeniedBoardRangeBanManagement);
       } else {
-        exports.createRangeBan(userData, parameters, language, callback);
+        exports.createRangeBan(userData, parameters, language, cb);
       }
     });
   } else if (!isOnGlobalStaff) {
-    callback(lang(language).errDeniedGlobalRangeBanManagement);
+    cb(lang(language).errDeniedGlobalRangeBanManagement);
   } else {
-    exports.createRangeBan(userData, parameters, language, callback);
+    exports.createRangeBan(userData, parameters, language, cb);
   }
-
-};
-
-exports.placeRangeBan = function(userData, parameters, captchaId, language,
-    callback) {
-
-  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null, language,
-      function solvedCaptcha(error) {
-        if (error) {
-          callback(error);
-        } else {
-          exports.checkRangeBanPermission(userData, parameters, language,
-              callback);
-        }
-      });
 
 };
 // } Section 2: Create range ban

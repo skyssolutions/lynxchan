@@ -9,14 +9,16 @@ Anything else is used to access files saved on mongo.
 
 /.media/ are used to store uploaded files.
 The engine stores global files on the following paths:
+/.global/captcha/ are used to store captcha images.
 /.global/logs/ stores staff logs pages.
 /.global/banners/ stores global banners.
 /.global/graphs/ stores daily graphs.
-/maintenance.html stores the maintenace page.
+/maintenance.html stores the maintenance page.
 /404.html stores the 404 page.
 /login.html stores the login page.
 / stores the front-page.
 /genericThumb.* stores the generic thumb for files.
+/maintenanceImage.* stores the maintenance image.
 /audioGenericThumb.* stores the generic thumb for audio files.
 /defaultBanner.* stores the default banner.
 /spoiler.* stores the default spoiler image.
@@ -30,3 +32,6 @@ Board files are stored on the following paths:
 /{$boardUri}/custom.js stores the board custom js.
 /{$boardUri}/rules.html stores the page with the board rules.
 /{$boardUri}/custom.spoiler stores the board custom spoiler.
+/{$boardUri}/res/{$threadId}.html stores threads.
+/{$boardUri}/catalog.html stores the catalog.
+/{$boardUri}/index.rss stores the rss feed.
