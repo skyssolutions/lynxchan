@@ -1051,15 +1051,7 @@ exports.getReportCell = function(report, language) {
   cell = cell.replace('__reasonLabel_inner__', reason);
   cell = cell.replace('__closureCheckbox_name__', 'report-' + report._id);
 
-  var link = exports.getReportLink(report);
-
-  if (report.postId) {
-    link += report.postId;
-  } else {
-    link += report.threadId;
-  }
-
-  cell = cell.replace('__link_href__', link);
+  cell = cell.replace('__link_href__', exports.getReportLink(report));
 
   if (report.associatedPost) {
     return cell.replace('__postingDiv_inner__', exports.getPostInnerElements(
