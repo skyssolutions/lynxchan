@@ -415,6 +415,7 @@ exports.lookForUserEmailOfRequest = function(domain, login, language, cb) {
   }, {
     projection : {
       email : 1,
+      confirmed : 1,
       _id : 0
     }
   }, function gotUser(error, user) {
