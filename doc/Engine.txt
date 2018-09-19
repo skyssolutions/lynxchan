@@ -144,6 +144,7 @@ CHA_ID::8 - Addons
 		req: request provided by the node.js api.
 		res: response provided by the nde.js. Reference for these two: https://nodejs.org/api/http.html
 	formRequest: same as above, but for the form api.
+  requestAlias: optional alias to be used when handing either api or form requests, instead of the addon name.
 	Addons are expected to overwrite public properties of the engine's modules. For an addon to be used, it must be added to the global setting addons, an array with the name of the addons to be loaded. 
 They will be loaded in the order they appear in the array. First they will be loaded and only after all of them are loaded, the function init() will be executed. Refer to the example addon. To perform 
 requests to be caught by the addon, the path must be formated in the following manner: "/addon.js/addonnamegoeshere" or "/.api/addon.js/addonnamegoeshere". 

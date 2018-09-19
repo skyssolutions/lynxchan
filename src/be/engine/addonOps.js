@@ -7,6 +7,7 @@ var debug = require('../kernel').debug();
 var engineInfo = JSON.parse(fs.readFileSync(__dirname + '/../package.json'));
 var addons;
 var verbose;
+exports.aliases = {};
 
 exports.getEngineInfo = function() {
   return engineInfo;
@@ -114,6 +115,10 @@ exports.testAddons = function(addons) {
     try {
 
       var loadedAddon = require('../addons/' + addon);
+
+      if (loadedAddon.requestAlias) {
+        exports.aliases[loadedAddon.requestAlias] = addon;
+      }
 
       if (verbose || debug) {
 
