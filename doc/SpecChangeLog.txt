@@ -1,3 +1,127 @@
+2.1.0:
+
+**Api.txt**
+
+---------------------------------------
+
+closeReports:
+
+New parameters:
+banReporter
+duration
+
+---------------------------------------
+
+placeRangeBan:
+
+Removed parameters:
+captcha
+
+---------------------------------------
+
+deleteFromIpOnBoard:
+
+
+New parameters:
+confirmation
+
+---------------------------------------
+
+**Addons**
+
+New addon property:
+requestAlias
+
+---------------------------------------
+
+**Form.txt**
+
+Now error pages output errors as a json formatted string when the json format is requested.
+
+---------------------------------------
+
+account:
+
+Added fields on json output:
+disabledLatestPostings
+
+---------------------------------------
+
+contentActions:
+
+New parameters:
+confirmation
+
+---------------------------------------
+
+closeReports:
+
+New parameters:
+banReporter
+duration
+
+---------------------------------------
+
+captcha
+
+Now redirects are used instead of dynamic content.
+
+Removed parameters:
+captchaId
+
+---------------------------------------
+
+placeRangeBan
+
+Removed parameters:
+captcha
+
+---------------------------------------
+
+New pages:
+latestPostings
+
+---------------------------------------
+
+**Language.txt**
+
+New entries:
+errRangeBanLimit
+errNoIpDeletionConfirmation
+errDisabledLatestPostings
+
+New entries:
+titLatestPostings
+
+Changed entries:
+logReportClosure.finalPiece doesn't use the {$reason} token anymore.
+
+---------------------------------------
+
+**Templates.txt**
+
+---------------------------------------
+
+accountPage:
+
+New element:
+latestPostingsLink
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldMaxBoardRangeBans
+checkboxDisableLatestPostings
+
+---------------------------------------
+
+New template:
+latestPostingsPage
+
+---------------------------------------
+
 2.0.0:
 
 **Api.txt**
