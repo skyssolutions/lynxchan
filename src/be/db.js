@@ -21,7 +21,7 @@ var indexesSet;
 var cachedDb;
 var cachedClient;
 
-var maxIndexesSet = 24;
+var maxIndexesSet = 17;
 
 var cachedLanguages;
 var cachedConfirmationRequests;
@@ -266,23 +266,15 @@ function indexSet(callback) {
 // start of index initialization
 function initUploadReferences(callback) {
 
-  cachedUploadReferences.ensureIndex({
-    references : 1
-  }, function setIndex(error, index) {
-    if (error) {
-      if (loading) {
-        loading = false;
-
-        callback(error);
-      }
-    } else {
-      indexSet(callback);
+  cachedUploadReferences.createIndexes([ {
+    key : {
+      references : 1
     }
-  });
-
-  cachedUploadReferences.ensureIndex({
-    identifier : 1
-  }, function setIndex(error, index) {
+  }, {
+    key : {
+      identifier : 1
+    }
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
@@ -298,11 +290,12 @@ function initUploadReferences(callback) {
 
 function initCaptchas(callback) {
 
-  cachedCaptchas.ensureIndex({
-    expiration : 1
-  }, {
+  cachedCaptchas.createIndexes([ {
+    key : {
+      expiration : 1
+    },
     expireAfterSeconds : 0
-  }, function setIndex(error, index) {
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
@@ -317,11 +310,12 @@ function initCaptchas(callback) {
 
 function initFlood(callback) {
 
-  cachedFlood.ensureIndex({
-    expiration : 1
-  }, {
+  cachedFlood.createIndexes([ {
+    key : {
+      expiration : 1
+    },
     expireAfterSeconds : 0
-  }, function setIndex(error, index) {
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
@@ -336,12 +330,13 @@ function initFlood(callback) {
 
 function initFlags(callback) {
 
-  cachedFlags.ensureIndex({
-    boardUri : 1,
-    name : 1
-  }, {
+  cachedFlags.createIndexes([ {
+    key : {
+      boardUri : 1,
+      name : 1
+    },
     unique : true
-  }, function setIndex(error, index) {
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
@@ -357,11 +352,12 @@ function initFlags(callback) {
 
 function initTripcodes(callback) {
 
-  cachedTripcodes.ensureIndex({
-    tripcode : 1
-  }, {
+  cachedTripcodes.createIndexes([ {
+    key : {
+      tripcode : 1
+    },
     unique : 1
-  }, function setIndex(error, index) {
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
@@ -376,12 +372,13 @@ function initTripcodes(callback) {
 
 function initHashBans(callback) {
 
-  cachedHashBans.ensureIndex({
-    md5 : 1,
-    boardUri : 1
-  }, {
+  cachedHashBans.createIndexes([ {
+    key : {
+      md5 : 1,
+      boardUri : 1
+    },
     unique : 1
-  }, function setIndex(error, index) {
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
@@ -396,11 +393,12 @@ function initHashBans(callback) {
 
 function initBans(callback) {
 
-  cachedBans.ensureIndex({
-    expiration : 1
-  }, {
+  cachedBans.createIndexes([ {
+    key : {
+      expiration : 1
+    },
     expireAfterSeconds : 0
-  }, function setIndex(error, index) {
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
@@ -415,14 +413,15 @@ function initBans(callback) {
 
 function initReports(callback) {
 
-  cachedReports.ensureIndex({
-    boardUri : 1,
-    global : 1,
-    threadId : 1,
-    postId : 1
-  }, {
+  cachedReports.createIndexes([ {
+    key : {
+      boardUri : 1,
+      global : 1,
+      threadId : 1,
+      postId : 1
+    },
     unique : true
-  }, function setIndex(error, index) {
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
@@ -437,12 +436,26 @@ function initReports(callback) {
 
 function initPosts(callback) {
 
-  cachedPosts.ensureIndex({
-    boardUri : 1,
-    postId : 1
-  }, {
+  cachedPosts.createIndexes([ {
+    key : {
+      boardUri : 1,
+      postId : 1
+    },
     unique : true
-  }, function setIndex(error, index) {
+  }, {
+    key : {
+      boardUri : 1,
+      threadId : 1
+    }
+  }, {
+    key : {
+      creation : 1
+    }
+  }, {
+    key : {
+      'files.md5' : 1
+    }
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
@@ -454,57 +467,16 @@ function initPosts(callback) {
     }
   });
 
-  cachedPosts.ensureIndex({
-    boardUri : 1,
-    threadId : 1
-  }, function setIndex(error, index) {
-    if (error) {
-      if (loading) {
-        loading = false;
-
-        callback(error);
-      }
-    } else {
-      indexSet(callback);
-    }
-  });
-
-  cachedPosts.ensureIndex({
-    creation : 1
-  }, function setIndex(error, index) {
-    if (error) {
-      if (loading) {
-        loading = false;
-
-        callback(error);
-      }
-    } else {
-      indexSet(callback);
-    }
-  });
-
-  cachedPosts.ensureIndex({
-    'files.md5' : 1
-  }, function setIndex(error, index) {
-    if (error) {
-      if (loading) {
-        loading = false;
-
-        callback(error);
-      }
-    } else {
-      indexSet(callback);
-    }
-  });
 }
 
 function initRecoveryRequests(callback) {
 
-  cachedRecoveryRequests.ensureIndex({
-    expiration : 1
-  }, {
+  cachedRecoveryRequests.createIndexes([ {
+    key : {
+      expiration : 1
+    },
     expireAfterSeconds : 0
-  }, function setIndex(error, index) {
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
@@ -520,11 +492,12 @@ function initRecoveryRequests(callback) {
 
 function initConfirmationRequests(callback) {
 
-  cachedConfirmationRequests.ensureIndex({
-    expiration : 1
-  }, {
+  cachedConfirmationRequests.createIndexes([ {
+    key : {
+      expiration : 1
+    },
     expireAfterSeconds : 0
-  }, function setIndex(error, index) {
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
@@ -540,11 +513,12 @@ function initConfirmationRequests(callback) {
 
 function initUsers(callback) {
 
-  cachedUsers.ensureIndex({
-    login : 1
-  }, {
+  cachedUsers.createIndexes([ {
+    key : {
+      login : 1
+    },
     unique : true
-  }, function setIndex(error, index) {
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
@@ -560,12 +534,22 @@ function initUsers(callback) {
 
 function initThreads(callback) {
 
-  cachedThreads.ensureIndex({
-    boardUri : 1,
-    threadId : 1
-  }, {
+  cachedThreads.createIndexes([ {
+    key : {
+      boardUri : 1,
+      threadId : 1
+    },
     unique : true
-  }, function setIndex(error, index) {
+  }, {
+    key : {
+      pinned : 1,
+      lastBump : 1
+    }
+  }, {
+    key : {
+      'files.md5' : 1
+    }
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
@@ -577,43 +561,16 @@ function initThreads(callback) {
     }
   });
 
-  cachedThreads.ensureIndex({
-    pinned : 1,
-    lastBump : 1
-  }, function setIndex(error, index) {
-    if (error) {
-      if (loading) {
-        loading = false;
-
-        callback(error);
-      }
-    } else {
-      indexSet(callback);
-    }
-  });
-
-  cachedThreads.ensureIndex({
-    'files.md5' : 1
-  }, function setIndex(error, index) {
-    if (error) {
-      if (loading) {
-        loading = false;
-
-        callback(error);
-      }
-    } else {
-      indexSet(callback);
-    }
-  });
 }
 
 function initBoards(callback) {
 
-  cachedBoards.ensureIndex({
-    boardUri : 1
-  }, {
+  cachedBoards.createIndexes([ {
+    key : {
+      boardUri : 1
+    },
     unique : true
-  }, function setIndex(error, index) {
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
@@ -629,11 +586,12 @@ function initBoards(callback) {
 
 function initBypasses(callback) {
 
-  cachedBypasses.ensureIndex({
-    expiration : 1
-  }, {
+  cachedBypasses.createIndexes([ {
+    key : {
+      expiration : 1
+    },
     expireAfterSeconds : 0
-  }, function setIndex(error, index) {
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
@@ -644,13 +602,16 @@ function initBypasses(callback) {
       indexSet(callback);
     }
   });
+
 }
 
 function initStats(callback) {
 
-  cachedStats.ensureIndex({
-    startingTime : 1
-  }, function setIndex(error, index) {
+  cachedStats.createIndexes([ {
+    key : {
+      startingTime : 1
+    }
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
@@ -665,23 +626,15 @@ function initStats(callback) {
 
 function initFiles(callback) {
 
-  cachedFiles.ensureIndex({
-    'metadata.referenceFile' : 1
-  }, function setIndex(error, index) {
-    if (error) {
-      if (loading) {
-        loading = false;
-        callback(error);
-      }
-    } else {
-      indexSet(callback);
+  cachedFiles.createIndexes([ {
+    key : {
+      'metadata.referenceFile' : 1
     }
-
-  });
-
-  cachedFiles.ensureIndex({
-    'metadata.type' : 1
-  }, function setIndex(error, index) {
+  }, {
+    key : {
+      'metadata.type' : 1
+    }
+  } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
         loading = false;
