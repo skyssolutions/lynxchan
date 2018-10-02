@@ -245,6 +245,24 @@ exports.boardModeration = function(boardData, ownerData, language) {
 };
 // } Section 3: Board moderation
 
+// Section 4: Latest postings {
+exports.getPosts = function(postings, language) {
+
+  var postsContent = '';
+
+  for (var i = 0; i < postings.length; i++) {
+
+    var postContent = common.getPostCellBase(postings[i]);
+
+    postContent += common.getPostInnerElements(postings[i], true, language);
+
+    postsContent += postContent + '</div>';
+  }
+
+  return postsContent;
+
+};
+
 exports.latestPostings = function(postings, parameters, language) {
 
   var document = templateHandler(language).latestPostingsPage.template.replace(
@@ -267,7 +285,8 @@ exports.latestPostings = function(postings, parameters, language) {
       parameters.boards.join(', ')).replace('__fieldDate_value__',
       parameters.date.toUTCString());
 
-  return document.replace('__divPostings_children__', common.getPosts(postings,
-      false, null, null, true, language));
+  return document.replace('__divPostings_children__', exports.getPosts(
+      postings, language));
 
 };
+// } Section 4: Latest postings
