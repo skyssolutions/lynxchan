@@ -340,7 +340,7 @@ function iterateFiles(files) {
             console.log('Removing expired tmp file ' + file);
           }
 
-          fs.unlink(file);
+          fs.unlinkSync(file);
         }
 
         iterateFiles(files);

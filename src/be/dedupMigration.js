@@ -80,7 +80,7 @@ function writeFileToMongo(gs, thumbPath, callback) {
 
   gs.writeFile(thumbPath, function wroteFile(error) {
 
-    fs.unlink(thumbPath);
+    fs.unlinkSync(thumbPath);
 
     // style exception, too simple
     gs.close(function closed(closeError, result) {
@@ -255,7 +255,7 @@ function streamToDisk(path, stream, gs, callback) {
     gfsStream.on('error', function(error) {
 
       stream.end(function closedFileStream() {
-        fs.unlink(path);
+        fs.unlinkSync(path);
       });
 
       gs.close();
@@ -307,7 +307,7 @@ function moveThumbNail(postingData, file, identifier, callback) {
           rebuildThumb(extension, tempPath, identifier, file,
               function thumbRebuild(error) {
 
-                fs.unlink(tempPath);
+                fs.unlinkSync(tempPath);
 
                 if (error) {
                   callback(error);
