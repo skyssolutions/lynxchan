@@ -10,7 +10,8 @@ var settingsHandler = require('./settingsHandler');
 var generator;
 
 var reloadDirectories = [ 'engine', 'form', 'api', 'addons' ];
-var reloadIgnore = [ 'index.js', '.ignore', '.git', 'dont-reload' ];
+var reloadIgnore = [ 'index.js', '.ignore', '.git', 'dont-reload',
+    'node_modules' ];
 
 var MINIMUM_WORKER_UPTIME = 5000;
 var forkTime = {};
