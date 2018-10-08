@@ -88,7 +88,7 @@
   "titRangeBans": "Range bans",
   "titHashBans": "Hash bans",
   "titNotFound": "File not found",
-  "titLogin": "Login, register or reset passsword",
+  "titLogin": "Login, register or reset password",
   "titCatalog": "/{$board}/ - Catalog",
   "errBlankParameter": "Blank parameter: {$parameter}, the parameter is {$reason}.",
   "miscReasonNotPresent": "not present",
