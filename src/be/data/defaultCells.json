@@ -746,7 +746,7 @@
       {
         "name": "fileLink",
         "uses": [
-          "src",
+          "href",
           "inner"
         ]
       },
