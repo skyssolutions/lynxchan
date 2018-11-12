@@ -1018,7 +1018,8 @@ exports.getBanCell = function(ban, globalPage, language) {
   if (!globalPage || !globalBoardModeration || !ban.boardUri) {
     cell = cell.replace('__boardPanel_location__', '');
   } else {
-    cell = cell.replace('__boardPanel_location__', '');
+    cell = cell.replace('__boardPanel_location__',
+        template.removable.boardPanel);
 
     cell = cell.replace('__boardLabel_inner__', exports.clean(ban.boardUri));
   }
