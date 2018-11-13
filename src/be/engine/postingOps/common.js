@@ -429,7 +429,7 @@ exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
 
   message = message.replace(/(http|https)\:\/\/\S+/g, function links(match) {
 
-    match = match.replace(/>/g, '&gt').replace(/[_='~*]/g,
+    match = match.replace(/>/g, '&gt;').replace(/[_='~*]/g,
         function sanitization(innerMatch) {
           return exports.linkSanitizationRelation[innerMatch];
         });
@@ -463,7 +463,7 @@ exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
 
     link += quotedThread + '.html#' + quotedPost;
 
-    var toReturn = '<a class="quoteLink" href="' + link + '">&gt&gt&gt';
+    var toReturn = '<a class="quoteLink" href="' + link + '">&gt;&gt;&gt;';
     toReturn += match.substring(3) + '</a>';
 
     return toReturn;
@@ -474,7 +474,7 @@ exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
 
     var quotedBoard = match.substring(3);
 
-    return '<a href="' + quotedBoard + '">&gt&gt&gt' + quotedBoard + '</a>';
+    return '<a href="' + quotedBoard + '">&gt;&gt;&gt;' + quotedBoard + '</a>';
 
   });
 
@@ -490,7 +490,7 @@ exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
 
     link += quotedThread + '.html#' + quotedPost;
 
-    var toReturn = '<a class="quoteLink" href="' + link + '">&gt&gt';
+    var toReturn = '<a class="quoteLink" href="' + link + '">&gt;&gt;';
 
     toReturn += quotedPost + '</a>';
 
@@ -555,7 +555,7 @@ exports.markdownText = function(message, board, replaceCode, callback) {
 
   message = message.replace(/&/g, '&amp;');
 
-  message = message.replace(/</g, '&lt');
+  message = message.replace(/</g, '&lt;');
 
   var postsToFindObject = {};
 
