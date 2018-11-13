@@ -98,10 +98,7 @@ exports.writeNewBanner = function(parameters, callback) {
   };
 
   if (parameters.boardUri) {
-    {
-      metadata.boardUri = parameters.boardUri;
-
-    }
+    metadata.boardUri = parameters.boardUri;
   }
 
   gridFsHandler.writeFile(file.pathInDisk, bannerPath, file.mime, metadata,
@@ -164,6 +161,10 @@ exports.readBannerData = function(boardUri, callback) {
       $exists : false
     },
     'metadata.type' : 'banner'
+  }, {
+    projection : {
+      filename : 1
+    }
   }).sort({
     uploadDate : 1
   }).toArray(function(error, banners) {
