@@ -82,7 +82,7 @@ So if you write "2d 1h" it will create a 49 hour ban. The order of amounts and s
 A file called `templateSettings.json` should be located on the front-end directory pointing the correct templates to be used, located on the templates directory. Inform only the name of the file. Refer to `doc/Templates.txt` for information on how to structure the templates.
 
 # SSL
-To use SSL, enable the setting `ssl` and place the key file named `ssl.key` and the certificate named `ssl.cert` on the src/be directories. After that, restart the engine. Remember to also inform the key passphrase if it requires one.
+To use SSL, enable the setting `ssl` and place the key file named `ssl.key` and the certificate named `ssl.cert` on the src/be directories. Optionally, place the chain file named as `ssl.chain` to be able to provide the whole chain too. After that, restart the engine. Remember to also inform the key passphrase if it requires one.
 
 # Back-end settings
 Settings files that goes into the settings directory:

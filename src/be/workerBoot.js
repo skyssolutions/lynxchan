@@ -80,6 +80,14 @@ function startSSL() {
       passphrase : settings.sslPass
     };
 
+    try {
+      options.ca = fs.readFileSync(__dirname + '/ssl.chain');
+    } catch (error) {
+      if (verbose) {
+        console.log('SSL chain not available.');
+      }
+    }
+
     var server = require('https').createServer(options, function(req, res) {
       main(req, res);
     }).listen(443, settings.address);
