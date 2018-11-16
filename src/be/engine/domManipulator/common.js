@@ -855,7 +855,7 @@ exports.getPostCellBase = function(post) {
 
   var postCell = '<div class="' + classToUse;
   postCell += '" data-boarduri="' + exports.clean(post.boardUri) + '" id="';
-  postCell += post.postId + '">';
+  postCell += (post.postId || post.threadId) + '">';
 
   return postCell;
 
