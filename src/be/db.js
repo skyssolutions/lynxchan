@@ -453,7 +453,7 @@ function initPosts(callback) {
     }
   }, {
     key : {
-      'files.md5' : 1
+      'files.path' : 1
     }
   } ], function setIndex(error, index) {
     if (error) {
@@ -465,6 +465,14 @@ function initPosts(callback) {
     } else {
       indexSet(callback);
     }
+  });
+
+  cachedPosts.dropIndex('files.md5_1', function dropped(error) {
+
+    if (error && error.code !== 27) {
+      console.log(error);
+    }
+
   });
 
 }
@@ -547,7 +555,7 @@ function initThreads(callback) {
     }
   }, {
     key : {
-      'files.md5' : 1
+      'files.path' : 1
     }
   } ], function setIndex(error, index) {
     if (error) {
@@ -559,6 +567,14 @@ function initThreads(callback) {
     } else {
       indexSet(callback);
     }
+  });
+
+  cachedThreads.dropIndex('files.md5_1', function dropped(error) {
+
+    if (error && error.code !== 27) {
+      console.log(error);
+    }
+
   });
 
 }

@@ -356,97 +356,184 @@ exports.getFilesToPrune = function(callback) {
 
 };
 
-exports.getRepliesCount = function(currentCount, query, id, callback) {
+exports.getReferenceUpdate = function(threadResults, postResults, relation) {
 
-  posts.aggregate(query).toArray(function gotFiles(error, results) {
+  var ops = [];
+
+  for (var i = 0; i < threadResults.length; i++) {
+
+    var result = threadResults[i];
+    var entry = relation[result._id];
+
+    entry.aggregatedCount = result.references;
+
+  }
+
+  for (i = 0; i < postResults.length; i++) {
+
+    result = postResults[i];
+    entry = relation[result._id];
+
+    entry.aggregatedCount += result.references;
+
+  }
+
+  for ( var key in relation) {
+
+    var reference = relation[key];
+
+    if (reference.aggregatedCount !== reference.references) {
+
+      ops.push({
+        updateOne : {
+          filter : {
+            identifier : reference.identifier
+          },
+          update : {
+            $set : {
+              references : reference.aggregatedCount
+            }
+          }
+        }
+      });
+
+    }
+
+  }
+
+  return ops;
+
+};
+
+exports.getRepliesCount = function(threadResults, queryData, page, callback) {
+
+  posts.aggregate(queryData.query).toArray(
+      function gotFiles(error, results) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          var bulkOperations = exports.getReferenceUpdate(threadResults,
+              results, queryData.relation);
+
+          if (!bulkOperations.length) {
+            exports.prune(callback, ++page);
+          } else {
+
+            // style exception, too simple
+            references.bulkWrite(bulkOperations,
+                function wroteReferences(error) {
+
+                  if (error) {
+                    callback(error);
+                  } else {
+                    exports.prune(callback, ++page);
+                  }
+
+                });
+            // style exception, too simple
+
+          }
+
+        }
+
+      });
+
+};
+
+exports.getThreadsCount = function(results, page, callback) {
+
+  var queryData = exports.getReferenceCountQuery(results);
+
+  threads.aggregate(queryData.query).toArray(function gotFiles(error, results) {
 
     if (error) {
       callback(error);
     } else {
-
-      currentCount += results.length ? results[0].count : 0;
-
-      // style exception, too simple
-      references.updateOne({
-        _id : id
-      }, {
-        $set : {
-          references : currentCount
-        }
-      }, function updatedCount(error) {
-        if (error) {
-          callback(error);
-        } else {
-          exports.prune(callback, id);
-        }
-      });
-      // style exception, too simple
-
+      exports.getRepliesCount(results, queryData, page, callback);
     }
 
   });
 
 };
 
-exports.getReferenceCountQuery = function(md5) {
+exports.getReferenceCountQuery = function(results) {
 
-  return [ {
-    $match : {
-      'files.md5' : md5
-    }
-  }, {
-    $project : {
-      files : 1,
-      _id : 0
-    }
-  }, {
-    $unwind : '$files'
-  }, {
-    $match : {
-      'files.md5' : md5
-    }
-  }, {
-    $count : 'count'
-  } ];
+  var paths = [];
+  var countRelation = {};
+
+  for (var i = 0; i < results.length; i++) {
+
+    var result = results[i];
+
+    var path = '/.media/' + result.identifier;
+    path += result.extension ? ('.' + result.extension) : '';
+
+    countRelation[path] = {
+      identifier : result.identifier,
+      references : result.references,
+      aggregatedCount : 0
+    };
+
+    paths.push(path);
+
+  }
+
+  return {
+    relation : countRelation,
+    query : [ {
+      $match : {
+        'files.path' : {
+          $in : paths
+        }
+      }
+    }, {
+      $project : {
+        'files.path' : 1,
+        _id : 0
+      }
+    }, {
+      $unwind : '$files'
+    }, {
+      $group : {
+        _id : '$files.path',
+        references : {
+          $sum : 1
+        }
+      }
+    } ]
+  };
 
 };
 
-exports.prune = function(callback, lastId) {
+exports.prune = function(callback, page) {
 
-  references.findOne(lastId ? {
-    _id : {
-      $gt : lastId
+  page = page || 0;
+
+  references.aggregate([ {
+    $sort : {
+      _id : 1
     }
-  } : {}, {
-    projection : {
-      identifier : 1
+  }, {
+    $skip : page * maxFilesToDisplay
+  }, {
+    $limit : maxFilesToDisplay
+  }, {
+    $project : {
+      extension : 1,
+      identifier : 1,
+      references : 1,
+      _id : 0
     }
-  }, function gotReference(error, reference) {
+  } ]).toArray(function gotReferences(error, results) {
 
     if (error) {
       callback(error);
-    } else if (!reference) {
+    } else if (!results.length) {
       exports.getFilesToPrune(callback);
     } else {
-
-      var query = exports.getReferenceCountQuery(reference.identifier
-          .substring(0, 32));
-
-      // style exception, too simple
-      threads.aggregate(query).toArray(
-          function gotFiles(error, results) {
-
-            if (error) {
-              callback(error);
-            } else {
-
-              exports.getRepliesCount(results.length ? results[0].count : 0,
-                  query, reference._id, callback);
-            }
-
-          });
-      // style exception, too simple
-
+      exports.getThreadsCount(results, page, callback);
     }
 
   });
