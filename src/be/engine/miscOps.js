@@ -16,6 +16,7 @@ var omitUnindexed;
 var CSP;
 var globalBoardModeration;
 var lang;
+var ssl;
 var clearIpMinRole;
 var settingsRelation;
 
@@ -29,6 +30,7 @@ exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
 
+  ssl = settings.ssl;
   globalBoardModeration = settings.allowGlobalBoardModeration;
   CSP = settings.CSP;
   clearIpMinRole = settings.clearIpMinRole;
@@ -143,9 +145,32 @@ exports.isPlainText = function(mime) {
 
 };
 
-exports.getHeader = function(contentType, auth) {
+exports.convertHeader = function(header) {
 
-  var header = [];
+  var finalHeader = {};
+
+  for (var i = 0; i < header.length; i++) {
+
+    var key = header[i][0];
+    var value = header[i][1];
+
+    finalHeader[key] = finalHeader[key] || [];
+
+    finalHeader[key].push(value);
+
+  }
+
+  return finalHeader;
+
+};
+
+exports.getHeader = function(contentType, auth, header) {
+
+  header = header || [];
+
+  if (ssl) {
+    header.push([ 'Strict-Transport-Security', 'max-age=31536000' ]);
+  }
 
   if (contentType) {
     var isPlainText = exports.isPlainText(contentType);
@@ -166,7 +191,8 @@ exports.getHeader = function(contentType, auth) {
 
   }
 
-  return header;
+  return exports.convertHeader(header);
+
 };
 
 exports.getGlobalRoleLabel = function(role, language) {

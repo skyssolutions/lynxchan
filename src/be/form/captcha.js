@@ -2,19 +2,26 @@
 
 var settingsHandler = require('../settingsHandler');
 var debug = require('../kernel').debug();
+var miscOps = require('../engine/miscOps');
 var captchaOps = require('../engine/captchaOps');
 var formOps = require('../engine/formOps');
 
 exports.showCaptcha = function(captchaData, res) {
 
-  var expirationCookie = 'captchaexpiration=';
-  expirationCookie += captchaData.expiration.toUTCString() + ';path=/';
+  var header = [ [ 'Location', '/.global/captchas/' + captchaData._id ] ];
 
-  var header = [ [ 'Location', '/.global/captchas/' + captchaData._id ],
-      [ 'Set-Cookie', 'captchaid=' + captchaData._id + ';path=/' ],
-      [ 'Set-Cookie', expirationCookie ] ];
+  formOps.setCookies(header, [ {
+    field : 'captchaid',
+    value : captchaData._id,
+    expiration : captchaData.expiration,
+    path : '/'
+  }, {
+    field : 'captchaexpiration',
+    value : captchaData.expiration.toUTCString(),
+    path : '/'
+  } ]);
 
-  res.writeHead(302, header);
+  res.writeHead(302, miscOps.convertHeader(header));
   res.end();
 
 };

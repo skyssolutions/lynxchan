@@ -16,13 +16,8 @@ var formOps = require('../engine/formOps');
 exports.outputModData = function(bData, flagData, thread, posts, res, json,
     userRole, auth, language) {
 
-  var header = miscOps.getHeader(json ? 'application/json' : 'text/html');
-
-  if (auth && auth.authStatus === 'expired') {
-    header.push([ 'Set-Cookie', 'hash=' + auth.newHash ]);
-  }
-
-  res.writeHead(200, header);
+  res.writeHead(200, miscOps.getHeader(json ? 'application/json' : 'text/html',
+      auth));
 
   if (json) {
 

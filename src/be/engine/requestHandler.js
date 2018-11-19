@@ -554,7 +554,6 @@ exports.decideRouting = function(req, pathName, res, callback) {
       // redirects if we missed the slash on the board front-page
       res.writeHead(302, {
         'Location' : '/' + splitArray[1] + '/'
-
       });
       res.end();
 

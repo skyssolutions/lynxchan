@@ -19,7 +19,9 @@ exports.createPost = function(req, userData, parameters, captchaId, res, auth) {
           redirectLink += '/res/' + parameters.threadId;
           redirectLink += '.html#' + id;
 
-          res.writeHead(302, [ [ 'Location', redirectLink ] ]);
+          res.writeHead(302, {
+            'Location' : redirectLink
+          });
 
           res.end();
 

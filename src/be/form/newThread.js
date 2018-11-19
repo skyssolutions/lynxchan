@@ -18,7 +18,9 @@ exports.createThread = function(req, user, parameters, captchaId, res, auth) {
           var redirectLink = '/' + parameters.boardUri;
           redirectLink += '/res/' + id + '.html';
 
-          res.writeHead(302, [ [ 'Location', redirectLink ] ]);
+          res.writeHead(302, {
+            'Location' : redirectLink
+          });
 
           res.end();
 

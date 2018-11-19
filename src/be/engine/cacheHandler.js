@@ -752,7 +752,7 @@ exports.addHeaderBoilerPlate = function(header, stats, isStatic) {
 
 exports.getResponseHeader = function(stats, length, isStatic) {
 
-  var header = miscOps.getHeader(stats.mime);
+  var header = [];
 
   if (stats.range) {
     var rangeString = 'bytes ' + stats.range.start + '-' + stats.range.end;
@@ -787,8 +787,8 @@ exports.writeResponse = function(stats, data, res, isStatic, callback) {
 
   try {
 
-    res.writeHead(stats.code, exports.getResponseHeader(stats, data.length,
-        isStatic));
+    res.writeHead(stats.code, miscOps.getHeader(stats.mime, null, exports
+        .getResponseHeader(stats, data.length, isStatic)));
 
     res.end(data);
 
@@ -820,7 +820,7 @@ exports.output304 = function(stats, res, isStatic, callback) {
       header.push([ 'expires', expiration.toUTCString() ]);
     }
 
-    res.writeHead(304, header);
+    res.writeHead(304, miscOps.convertHeader(header));
     res.end();
 
     callback();

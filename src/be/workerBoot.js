@@ -77,7 +77,8 @@ function startSSL() {
     var options = {
       key : fs.readFileSync(__dirname + '/ssl.key'),
       cert : fs.readFileSync(__dirname + '/ssl.cert'),
-      passphrase : settings.sslPass
+      passphrase : settings.sslPass,
+      allowHTTP1 : true
     };
 
     try {
@@ -88,9 +89,15 @@ function startSSL() {
       }
     }
 
-    var server = require('https').createServer(options, function(req, res) {
-      main(req, res);
-    }).listen(443, settings.address);
+    var server = require('http2').createSecureServer(options,
+        function(req, res) {
+
+          if (req.headers && !req.headers.host) {
+            req.headers.host = req.headers[':authority'];
+          }
+
+          main(req, res);
+        }).listen(443, settings.address);
 
     servers.push(server);
 
@@ -152,25 +159,23 @@ function startListening() {
     startTorPort();
   }
 
-  var server = require('http').createServer(
-      function(req, res) {
+  var server = require('http').createServer(function(req, res) {
 
-        if (forcedSsl) {
+    if (forcedSsl) {
 
-          var parsedData = url.parse('http://' + req.headers.host);
+      var parsedData = url.parse('http://' + req.headers.host);
 
-          var header = [ [ 'Location',
-              'https://' + parsedData.hostname + req.url ] ];
+      res.writeHead(302, {
+        'Location' : 'https://' + parsedData.hostname + req.url
+      });
 
-          res.writeHead(302, header);
+      res.end();
 
-          res.end();
+      return;
+    }
 
-          return;
-        }
-
-        main(req, res);
-      }).listen(settings.port, settings.address);
+    main(req, res);
+  }).listen(settings.port, settings.address);
 
   servers.push(server);
 

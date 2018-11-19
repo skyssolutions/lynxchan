@@ -331,11 +331,11 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback,
 
 exports.redirectToLogin = function(res) {
 
-  var header = [ [ 'Location', '/login.html' ] ];
-
-  res.writeHead(302, header);
-
+  res.writeHead(302, {
+    Location : '/login.html'
+  });
   res.end();
+
 };
 
 exports.setCookies = function(header, cookies) {
@@ -467,7 +467,7 @@ exports.checkForBan = function(req, boardUri, res, callback, auth) {
         header.push([ 'Set-Cookie', 'hash=' + auth.newHash ]);
       }
 
-      res.writeHead(302, header);
+      res.writeHead(302, miscOps.convertHeader(header));
 
       res.end();
 

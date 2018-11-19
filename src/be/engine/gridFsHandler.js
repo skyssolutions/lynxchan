@@ -278,7 +278,8 @@ exports.setCookies = function(header, cookies) {
 };
 
 exports.getHeader = function(stats, req, cookies) {
-  var header = miscOps.getHeader(stats.contentType);
+
+  var header = [];
   var lastM = stats.metadata.lastModified || stats.uploadDate;
   header.push([ 'last-modified', lastM.toUTCString() ]);
 
@@ -318,7 +319,8 @@ exports.streamFile = function(stream, range, stats, req, res, header, cookies,
             .push([ 'Content-Language', stats.metadata.languages.join(', ') ]);
       }
 
-      res.writeHead(range ? 206 : (stats.metadata.status || 200), header);
+      res.writeHead(range ? 206 : (stats.metadata.status || 200), miscOps
+          .getHeader(stats.contentType, null, header));
     }
 
     res.write(chunk);
@@ -401,7 +403,7 @@ exports.output304 = function(fileStats, res) {
     header.push([ 'Vary', 'Accept-Encoding' ]);
   }
 
-  res.writeHead(304, header);
+  res.writeHead(304, miscOps.convertHeader(header));
   res.end();
 
 };
