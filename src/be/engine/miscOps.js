@@ -396,7 +396,10 @@ exports.sanitizeIp = function(ip) {
 // start of new settings sanitization
 exports.arraysDiff = function(defaultArray, processedArray) {
 
-  if (defaultArray && defaultArray.length === processedArray.length) {
+  defaultArray = defaultArray || [];
+  processedArray = processedArray || [];
+
+  if (defaultArray.length === processedArray.length) {
 
     for (var i = 0; i < defaultArray.length; i++) {
       if (processedArray.indexOf(defaultArray[i]) === -1) {
@@ -419,7 +422,10 @@ exports.processArraySetting = function(item, parameters, newSettings,
 
   if (processedParameter && processedParameter.length) {
 
-    if (exports.arraysDiff(defaultSettings[item.setting], processedParameter)) {
+    var diff = exports.arraysDiff(defaultSettings[item.setting],
+        processedParameter);
+
+    if (!defaultSettings[item.setting] || diff) {
       newSettings[item.setting] = processedParameter;
     }
   }

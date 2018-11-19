@@ -15,7 +15,7 @@ var preBuiltDefault = {};
 var preBuiltAlternative = {};
 
 exports.simpleAttributes = [ 'download', 'style', 'value', 'name', 'checked' ];
-exports.simpleProperties = [ 'href', 'title', 'src', 'defaultValue' ];
+exports.simpleProperties = [ 'href', 'title', 'src', 'defaultValue', 'accept' ];
 exports.dataAttributes = [ 'mime', 'height', 'width' ];
 
 exports.getAlternativeTemplates = function(language) {

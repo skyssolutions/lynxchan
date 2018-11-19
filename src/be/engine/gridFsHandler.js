@@ -255,29 +255,7 @@ exports.setExpiration = function(header, stats) {
   header.push([ 'expires', expiration.toUTCString() ]);
 };
 
-exports.setCookies = function(header, cookies) {
-  if (cookies) {
-
-    for (var i = 0; i < cookies.length; i++) {
-      var cookie = cookies[i];
-
-      var toPush = [ 'Set-Cookie', cookie.field + '=' + cookie.value ];
-
-      if (cookie.expiration) {
-        toPush[1] += '; expires=' + cookie.expiration.toUTCString();
-      }
-
-      if (cookie.path) {
-        toPush[1] += '; path=' + cookie.path;
-      }
-
-      header.push(toPush);
-
-    }
-  }
-};
-
-exports.getHeader = function(stats, req, cookies) {
+exports.getHeader = function(stats, req) {
 
   var header = [];
   var lastM = stats.metadata.lastModified || stats.uploadDate;
@@ -285,13 +263,11 @@ exports.getHeader = function(stats, req, cookies) {
 
   exports.setExpiration(header, stats);
 
-  exports.setCookies(header, cookies);
-
   return header;
 };
 
-exports.streamFile = function(stream, range, stats, req, res, header, cookies,
-    retries, callback) {
+exports.streamFile = function(stream, range, stats, req, res, header, retries,
+    callback) {
 
   var wrote = false;
 
@@ -342,7 +318,7 @@ exports.streamFile = function(stream, range, stats, req, res, header, cookies,
 
       // We failed before writing anything, wait 10ms and try again
       setTimeout(function() {
-        exports.prepareStream(stats, req, callback, cookies, res, ++retries);
+        exports.prepareStream(stats, req, callback, res, ++retries);
       }, 10);
 
     }
@@ -363,9 +339,9 @@ exports.handleRangeSettings = function(options, range, stats, header) {
 
 };
 
-exports.prepareStream = function(stats, req, callback, cookies, res, retries) {
+exports.prepareStream = function(stats, req, callback, res, retries) {
 
-  var header = exports.getHeader(stats, req, cookies);
+  var header = exports.getHeader(stats, req);
 
   var range = requestHandler.readRangeHeader(req.headers.range, stats.length);
   header.push([ 'Accept-Ranges', 'bytes' ]);
@@ -385,7 +361,7 @@ exports.prepareStream = function(stats, req, callback, cookies, res, retries) {
   header.push([ 'Content-Length', length ]);
 
   exports.streamFile(bucket.openDownloadStreamByName(stats.filename, options),
-      range, stats, req, res, header, cookies, retries, callback);
+      range, stats, req, res, header, retries, callback);
 
 };
 
@@ -431,23 +407,22 @@ exports.takeLanguageFile = function(file, req, currentPick) {
 
 };
 
-exports.handlePickedFile = function(finalPick, req, cookies, res, callback) {
+exports.handlePickedFile = function(finalPick, req, res, callback) {
 
   if (!finalPick) {
-    exports.outputFile('/404.html', req, res, callback, cookies);
+    exports.outputFile('/404.html', req, res, callback);
   } else if (exports.shouldOutput304(req, finalPick)) {
     exports.output304(finalPick, res);
   } else {
     if (verbose) {
       console.log('Streaming \'' + finalPick.filename + '\'');
     }
-    exports.prepareStream(finalPick, req, callback, cookies, res);
+    exports.prepareStream(finalPick, req, callback, res);
   }
 
 };
 
-exports.pickFile = function(fileRequested, req, res, cookies, possibleFiles,
-    callback) {
+exports.pickFile = function(fileRequested, req, res, possibleFiles, callback) {
 
   var vanilla;
   var compressed;
@@ -466,12 +441,12 @@ exports.pickFile = function(fileRequested, req, res, cookies, possibleFiles,
     }
   }
 
-  exports.handlePickedFile(language || compressed || vanilla, req, cookies,
-      res, callback);
+  exports.handlePickedFile(language || compressed || vanilla, req, res,
+      callback);
 
 };
 
-exports.outputFile = function(file, req, res, callback, cookies) {
+exports.outputFile = function(file, req, res, callback) {
 
   if (verbose) {
     console.log('Outputting \'' + file + '\' from gridfs');
@@ -512,11 +487,11 @@ exports.outputFile = function(file, req, res, callback, cookies) {
           code : 'ENOENT'
         });
       } else {
-        exports.outputFile('/404.html', req, res, callback, cookies);
+        exports.outputFile('/404.html', req, res, callback);
       }
 
     } else {
-      exports.pickFile(file, req, res, cookies, possibleFiles, callback);
+      exports.pickFile(file, req, res, possibleFiles, callback);
     }
   });
 

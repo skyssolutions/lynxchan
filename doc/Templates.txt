@@ -148,6 +148,10 @@ divUpload:
     use: might be removed.
     description: div removed for textboards.
 
+inputFiles:
+    use: have it's accept manipulated.
+    description: file input for posting.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::03
@@ -274,6 +278,10 @@ labelMessageLength:
 divUpload:
     use: might be removed.
     description: div removed for textboards.
+
+inputFiles:
+    use: have it's accept manipulated.
+    description: file input for posting.cata
 
 ------------------------------------------------------------------------------------------
 
@@ -1197,6 +1205,10 @@ labelMessageLength:
 divUpload:
     use: might be removed.
     description: div removed for textboards.
+
+inputFiles:
+    use: have it's accept manipulated.
+    description: file input for posting.
 
 ------------------------------------------------------------------------------------------
 

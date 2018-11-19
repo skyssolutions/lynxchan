@@ -18,6 +18,7 @@ var clearIpRole;
 var minClearIpRole;
 var maxFileSizeMB;
 var messageLength;
+var validMimes;
 
 exports.indicatorsRelation = {
   pinned : 'pinIndicator',
@@ -43,6 +44,7 @@ exports.loadSettings = function() {
   forceCaptcha = settings.forceCaptcha;
   maxFileSizeMB = settings.maxFileSizeMB;
   displayMaxSize = exports.formatFileSize(settings.maxFileSizeB);
+  validMimes = settings.acceptedMimes;
 
 };
 
@@ -270,6 +272,9 @@ exports.setFileLimits = function(document, bData, language) {
   } else {
     sizeToUse = displayMaxSize;
   }
+
+  document = document.replace('__inputFiles_accept__',
+      (bData.acceptedMimes || validMimes).join(', '));
 
   return document.replace('__labelMaxFileSize_inner__', sizeToUse);
 

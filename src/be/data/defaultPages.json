@@ -58,6 +58,10 @@
       {
         "name": "postingForm",
         "uses": "removal"
+      },
+      {
+        "name": "inputFiles",
+        "uses": "accept"
       }
     ]
   },
@@ -300,6 +304,10 @@
       {
         "name": "divUpload",
         "uses": "removal"
+      },
+      {
+        "name": "inputFiles",
+        "uses": "accept"
       }
     ]
   },
@@ -431,6 +439,10 @@
       {
         "name": "divUpload",
         "uses": "removal"
+      },
+      {
+        "name": "inputFiles",
+        "uses": "accept"
       }
     ]
   },

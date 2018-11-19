@@ -145,6 +145,11 @@ exports.checkBoardRebuild = function(board, params) {
 
   var settingsChanged = exports.captchaTextOrAnonimityChanged(board, params);
 
+  var mimesChanged = miscOps.arraysDiff(board.acceptedMimes,
+      params.acceptedMimes);
+
+  settingsChanged = settingsChanged || mimesChanged;
+
   var fileLimitsChanged = +board.maxFiles !== +params.maxFiles;
 
   if (!fileLimitsChanged) {
@@ -260,6 +265,9 @@ exports.sanitizeBoardMimes = function(mimes) {
 
 exports.saveNewSettings = function(board, parameters, callback) {
 
+  parameters.acceptedMimes = exports
+      .sanitizeBoardMimes(parameters.acceptedMimes);
+
   var newSettings = {
     boardName : parameters.boardName,
     boardDescription : parameters.boardDescription,
@@ -268,7 +276,7 @@ exports.saveNewSettings = function(board, parameters, callback) {
     boardMarkdown : exports.getMessageMarkdown(parameters.boardMessage),
     anonymousName : parameters.anonymousName || '',
     tags : exports.sanitizeBoardTags(parameters.tags),
-    acceptedMimes : exports.sanitizeBoardMimes(parameters.acceptedMimes),
+    acceptedMimes : parameters.acceptedMimes,
     autoSageLimit : +parameters.autoSageLimit,
     maxThreadCount : +parameters.maxThreadCount,
     maxFileSizeMB : +parameters.maxFileSizeMB,

@@ -33,7 +33,8 @@ exports.boardProjection = {
   usesCustomCss : 1,
   settings : 1,
   boardDescription : 1,
-  locationFlagMode : 1
+  locationFlagMode : 1,
+  acceptedMimes : 1
 };
 
 exports.loadSettings = function() {

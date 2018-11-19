@@ -365,13 +365,13 @@ exports.outputResponse = function(message, redirect, res, cookies, authBlock,
     console.log(message);
   }
 
-  var header = miscOps.getHeader('text/html', authBlock);
+  var header = [];
 
   if (cookies) {
     exports.setCookies(header, cookies);
   }
 
-  res.writeHead(200, header);
+  res.writeHead(200, miscOps.getHeader('text/html', authBlock, header));
 
   res.end(domManipulator.message(message, redirect, language));
 
