@@ -11,11 +11,11 @@ exports.placeHashBan = function(auth, userData, parameters, res, language) {
   }
 
   modOps.placeHashBan(userData, parameters, language, function hashBanPlaced(
-      error) {
+      error, id) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
-      apiOps.outputResponse(auth, null, 'ok', res);
+      apiOps.outputResponse(auth, id, 'ok', res);
     }
   });
 };

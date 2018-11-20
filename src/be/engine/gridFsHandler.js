@@ -180,7 +180,9 @@ exports.writeFile = function(path, dest, mime, meta, callback) {
   uploadStream.on('error', callback);
 
   uploadStream.once('finish', function uploaded() {
-    exports.removeDuplicates(uploadStream, callback);
+    exports.removeDuplicates(uploadStream, function(error) {
+      callback(error, uploadStream.id);
+    });
   });
 
   readStream.pipe(uploadStream);

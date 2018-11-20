@@ -121,7 +121,9 @@ exports.createRangeBan = function(userData, parameters, language, callback) {
         rangeBan.boardUri = parameters.boardUri;
       }
 
-      bans.insertOne(rangeBan, callback);
+      bans.insertOne(rangeBan, function(error) {
+        callback(error, rangeBan._id);
+      });
 
     }
 

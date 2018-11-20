@@ -101,7 +101,7 @@ exports.writeHashBan = function(userData, parameters, callback) {
     if (error && error.code !== 11000) {
       callback(error);
     } else {
-      callback();
+      callback(null, hashBan._id);
     }
   });
 };

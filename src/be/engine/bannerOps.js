@@ -102,7 +102,9 @@ exports.writeNewBanner = function(parameters, callback) {
   }
 
   gridFsHandler.writeFile(file.pathInDisk, bannerPath, file.mime, metadata,
-      callback);
+      function(error, id) {
+        callback(error, id, bannerPath);
+      });
 
 };
 

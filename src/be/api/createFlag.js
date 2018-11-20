@@ -11,11 +11,11 @@ exports.createFlag = function(auth, parameters, userData, res, language) {
   }
 
   boardOps.createFlag(userData, parameters, language, function createdFlag(
-      error) {
+      error, id) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
-      apiOps.outputResponse(auth, null, 'ok', res);
+      apiOps.outputResponse(auth, id, 'ok', res);
     }
   });
 };

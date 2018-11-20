@@ -333,6 +333,10 @@ Description: adds a new banner to the board. Accepts files. Requires an image as
 Parameters:
     boardUri: board to add the banner to.
 
+Output(Object): object with the new banner information. Contains the following fields:
+  id: id of the banner.
+  path: path of the banner.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::20
@@ -419,6 +423,8 @@ Parameters:
     boardUri: if not informed, the range ban will be global.
     range: range to be banned.
 
+Output: id of the new range ban.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::25
@@ -441,6 +447,8 @@ Description: Lifts a hash ban. Requires authentication.
 
 Parameters:
     hashBanId: id of the hash ban to be removed.
+
+Output: id of the hash new ban.
 
 ------------------------------------------------------------------------------------------
 
@@ -503,6 +511,8 @@ Description: creates a new flag for the board. Requires authentication, reserved
 Parameters:
     boardUri: URI of the board.
     flagName: name of the new flag. 16 characters.
+
+Output: id of the new flag.
 
 ------------------------------------------------------------------------------------------
 
@@ -702,6 +712,8 @@ Parameters:
     frontEnd: path for the language's front-end.
     languagePack: path for the language's language pack.
     headerValues(Array): values sent on the header that will cause the language to be used.
+
+Output: id of the new language.
 
 ------------------------------------------------------------------------------------------
 

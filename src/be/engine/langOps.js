@@ -185,11 +185,15 @@ exports.addLanguage = function(userRole, parameters, language, callback) {
     return;
   }
 
-  dbLanguages.insertOne({
+  var newLanguage = {
     frontEnd : parameters.frontEnd.trim(),
     languagePack : parameters.languagePack.trim(),
     headerValues : parameters.headerValues
-  }, callback);
+  };
+
+  dbLanguages.insertOne(newLanguage, function(error) {
+    callback(error, newLanguage._id);
+  });
 
 };
 

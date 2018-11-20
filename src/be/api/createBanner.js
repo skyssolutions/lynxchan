@@ -6,11 +6,14 @@ var bannerOps = require('../engine/bannerOps');
 exports.createBanner = function(auth, parameters, userData, res, language) {
 
   bannerOps.addBanner(userData, parameters, language, function createdBanner(
-      error) {
+      error, id, path) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
-      apiOps.outputResponse(auth, null, 'ok', res);
+      apiOps.outputResponse(auth, {
+        id : id,
+        path : path
+      }, 'ok', res);
     }
   });
 };

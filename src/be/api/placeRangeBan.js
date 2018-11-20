@@ -11,11 +11,11 @@ exports.placeRangeBan = function(auth, userData, parameters, res, language) {
   }
 
   modOps.placeRangeBan(userData, parameters, language, function rangeBanPlaced(
-      error) {
+      error, id) {
     if (error) {
       apiOps.outputError(error, res);
     } else {
-      apiOps.outputResponse(auth, null, 'ok', res);
+      apiOps.outputResponse(auth, id, 'ok', res);
     }
   });
 };
