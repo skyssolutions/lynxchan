@@ -156,23 +156,12 @@ exports.processApiRequest = function(req, pathName, res) {
 
 exports.showMaintenance = function(req, pathName, res) {
 
-  if (exports.formImages.indexOf(pathName) >= 0) {
+  res.writeHead(302, {
+    'Location' : exports.formImages.indexOf(pathName) >= 0 ? kernel
+        .maintenanceImage() : '/maintenance.html'
+  });
 
-    res.writeHead(302, {
-      'Location' : kernel.maintenanceImage()
-    });
-
-    res.end();
-
-  } else {
-
-    gridFs.outputFile('/maintenance.html', req, res, function streamedFile(
-        error) {
-      if (error) {
-        exports.outputError(error, res);
-      }
-    });
-  }
+  res.end();
 
 };
 

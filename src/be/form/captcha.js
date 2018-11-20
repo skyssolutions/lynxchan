@@ -8,9 +8,8 @@ var formOps = require('../engine/formOps');
 
 exports.showCaptcha = function(captchaData, res) {
 
-  var header = [ [ 'Location', '/.global/captchas/' + captchaData._id ] ];
-
-  formOps.setCookies(header, [ {
+  res.writeHead(302, miscOps.getHeader(null, null, [ [ 'Location',
+      '/.global/captchas/' + captchaData._id ] ], [ {
     field : 'captchaid',
     value : captchaData._id,
     expiration : captchaData.expiration,
@@ -19,9 +18,8 @@ exports.showCaptcha = function(captchaData, res) {
     field : 'captchaexpiration',
     value : captchaData.expiration.toUTCString(),
     path : '/'
-  } ]);
+  } ]));
 
-  res.writeHead(302, miscOps.convertHeader(header));
   res.end();
 
 };

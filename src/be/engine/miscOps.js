@@ -164,9 +164,34 @@ exports.convertHeader = function(header) {
 
 };
 
-exports.getHeader = function(contentType, auth, header) {
+exports.setCookies = function(header, cookies) {
+
+  for (var i = 0; i < cookies.length; i++) {
+    var cookie = cookies[i];
+
+    var toPush = [ 'Set-Cookie', cookie.field + '=' + cookie.value ];
+
+    if (cookie.expiration) {
+      toPush[1] += '; expires=' + cookie.expiration.toUTCString();
+    }
+
+    if (cookie.path) {
+      toPush[1] += '; path=' + cookie.path;
+    }
+
+    header.push(toPush);
+
+  }
+
+};
+
+exports.getHeader = function(contentType, auth, header, cookies) {
 
   header = header || [];
+
+  if (cookies) {
+    exports.setCookies(header, cookies);
+  }
 
   if (ssl) {
     header.push([ 'Strict-Transport-Security', 'max-age=31536000' ]);

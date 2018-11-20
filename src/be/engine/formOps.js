@@ -338,26 +338,6 @@ exports.redirectToLogin = function(res) {
 
 };
 
-exports.setCookies = function(header, cookies) {
-
-  for (var i = 0; i < cookies.length; i++) {
-    var cookie = cookies[i];
-
-    var toPush = [ 'Set-Cookie', cookie.field + '=' + cookie.value ];
-
-    if (cookie.expiration) {
-      toPush[1] += '; expires=' + cookie.expiration.toUTCString();
-    }
-
-    if (cookie.path) {
-      toPush[1] += '; path=' + cookie.path;
-    }
-
-    header.push(toPush);
-
-  }
-};
-
 exports.outputResponse = function(message, redirect, res, cookies, authBlock,
     language) {
 
@@ -365,13 +345,7 @@ exports.outputResponse = function(message, redirect, res, cookies, authBlock,
     console.log(message);
   }
 
-  var header = [];
-
-  if (cookies) {
-    exports.setCookies(header, cookies);
-  }
-
-  res.writeHead(200, miscOps.getHeader('text/html', authBlock, header));
+  res.writeHead(200, miscOps.getHeader('text/html', authBlock, null, cookies));
 
   res.end(domManipulator.message(message, redirect, language));
 
@@ -461,13 +435,8 @@ exports.checkForBan = function(req, boardUri, res, callback, auth) {
 
     if (bypassable && !req.bypassed) {
 
-      var header = [ [ 'Location', '/blockBypass.js' ] ];
-
-      if (auth && auth.authStatus === 'expired') {
-        header.push([ 'Set-Cookie', 'hash=' + auth.newHash ]);
-      }
-
-      res.writeHead(302, miscOps.convertHeader(header));
+      res.writeHead(302, miscOps.getHeader(null, auth, [ [ 'Location',
+          '/blockBypass.js' ] ]));
 
       res.end();
 
