@@ -8,7 +8,7 @@ exports.deleteLanguage = function(auth, parameters, userData, language, res) {
   langOps.deleteLanguage(userData.globalRole, parameters.languageId, language,
       function deletedLanguage(error) {
         if (error) {
-          apiOps.outputError(error, res);
+          apiOps.outputError(error, res, auth);
         } else {
           apiOps.outputResponse(auth, null, 'ok', res);
         }

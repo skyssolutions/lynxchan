@@ -16,7 +16,7 @@ exports.addAccount = function(auth, parameters, userData, res, language) {
   accountOps.addAccount(userData.globalRole, parameters, language,
       function addedAccount(error) {
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, null, auth);
         } else {
           formOps.outputResponse(lang(language).msgAccountAdded,
               '/accounts.js', res, null, auth, language);

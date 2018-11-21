@@ -16,7 +16,7 @@ exports.transferThread = function(userData, parameters, res, auth, language) {
       function transferredThread(error, newThreadId) {
 
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, null, auth);
         } else {
 
           var redirect = '/' + parameters.boardUriDestination + '/res/';

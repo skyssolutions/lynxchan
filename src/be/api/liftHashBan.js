@@ -8,7 +8,7 @@ exports.liftHashBan = function(auth, userData, parameters, res, language) {
   modOps.liftHashBan(userData, parameters, language, function hashBanLifted(
       error) {
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
       apiOps.outputResponse(auth, null, 'ok', res);
     }

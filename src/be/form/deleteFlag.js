@@ -9,7 +9,7 @@ exports.deleteFlag = function(parameters, userData, res, auth, language) {
   boardOps.deleteFlag(userData, parameters.flagId, language,
       function deletedFlag(error, board) {
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, null, auth);
         } else {
 
           var url = '/flags.js?boardUri=' + board;

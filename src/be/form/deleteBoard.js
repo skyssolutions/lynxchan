@@ -13,7 +13,7 @@ exports.deleteBoard = function(userData, parameters, res, auth, language) {
   deletionOps.board(userData, parameters, language,
       function deletedBoard(error) {
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, null, auth);
         } else {
           formOps.outputResponse(lang(language).msgBoardDeleted, '/', res,
               null, auth, language);

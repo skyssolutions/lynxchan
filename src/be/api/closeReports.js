@@ -8,7 +8,7 @@ exports.closeReports = function(auth, userData, parameters, res, language) {
   modOps.closeReports(userData, parameters, language, function reportClosed(
       error) {
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
       apiOps.outputResponse(auth, null, 'ok', res);
     }

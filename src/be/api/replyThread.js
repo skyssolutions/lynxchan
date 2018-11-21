@@ -10,7 +10,7 @@ exports.createPost = function(req, userData, parameters, captchaId, res, auth) {
   postingOps.newPost(req, userData, parameters, captchaId,
       function postCreated(error, id) {
         if (error) {
-          apiOps.outputError(error, res);
+          apiOps.outputError(error, res, auth);
         } else {
           apiOps.outputResponse(auth, id, 'ok', res);
         }
@@ -26,14 +26,14 @@ exports.checkBans = function(req, res, parameters, userData, captchaId, auth) {
 
   apiOps.checkForBan(req, parameters.boardUri, res, function checkedBan(error) {
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
 
       // style exception, too simple
       apiOps.checkForHashBan(parameters, req, res, function checkedHashBan(
           error) {
         if (error) {
-          apiOps.outputError(error, res);
+          apiOps.outputError(error, res, auth);
         } else {
           exports.createPost(req, userData, parameters, captchaId, res, auth);
         }
@@ -50,7 +50,7 @@ exports.useBypass = function(req, res, parameters, userData, captchaId,
   bypassOps.useBypass(bypassId, req, function usedBypass(error) {
 
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
       exports.checkBans(req, res, parameters, userData, captchaId, auth);
     }

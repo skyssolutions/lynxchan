@@ -8,7 +8,7 @@ exports.restartSocket = function(auth, userData, res, language) {
 
   socket.restartSocket(userData, language, function restartedSocket(error) {
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
       apiOps.outputResponse(auth, null, 'ok', res);
     }

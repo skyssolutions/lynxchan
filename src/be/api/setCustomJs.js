@@ -9,7 +9,7 @@ exports.setCustomJs = function(auth, parameters, userData, res, language) {
     boardOps.setCustomJs(userData, parameters.boardUri, parameters.files[0],
         language, function customJsSet(error, boardUri) {
           if (error) {
-            apiOps.outputError(error, res);
+            apiOps.outputError(error, res, auth);
           } else {
 
             apiOps.outputResponse(auth, null, 'ok', res);
@@ -19,7 +19,7 @@ exports.setCustomJs = function(auth, parameters, userData, res, language) {
     boardOps.deleteCustomJs(userData, parameters.boardUri, language,
         function deletedJs(error) {
           if (error) {
-            apiOps.outputError(error, res);
+            apiOps.outputError(error, res, auth);
           } else {
             apiOps.outputResponse(auth, null, 'ok', res);
           }

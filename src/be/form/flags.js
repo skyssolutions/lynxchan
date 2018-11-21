@@ -14,7 +14,7 @@ exports.getFlagData = function(parameters, userData, res, auth, language) {
   boardOps.getFlagsData(userData, parameters.boardUri, language,
       function gotFlagData(error, flags) {
         if (error) {
-          formOps.outputError(error, 500, res, language, json);
+          formOps.outputError(error, 500, res, language, json, auth);
         } else {
 
           res.writeHead(200, miscOps.getHeader(json ? 'application/json'

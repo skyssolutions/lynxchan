@@ -13,7 +13,7 @@ exports.placeHashBan = function(auth, userData, parameters, res, language) {
   modOps.placeHashBan(userData, parameters, language, function hashBanPlaced(
       error, id) {
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
       apiOps.outputResponse(auth, id, 'ok', res);
     }

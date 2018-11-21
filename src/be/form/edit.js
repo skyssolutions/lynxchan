@@ -20,7 +20,7 @@ exports.getPostingToEdit = function(userData, parameters, res, auth, language) {
   modOps.getPostingToEdit(userData, parameters, language,
       function gotPostingToEdit(error, posting) {
         if (error) {
-          formOps.outputError(error, 500, res, language, json);
+          formOps.outputError(error, 500, res, language, json, auth);
         } else {
 
           res.writeHead(200, miscOps.getHeader(json ? 'application/json'

@@ -13,7 +13,7 @@ exports.addAccount = function(auth, parameters, userData, language, res) {
   accountOps.addAccount(userData.globalRole, parameters, language,
       function addedAccount(error) {
         if (error) {
-          apiOps.outputError(error, res);
+          apiOps.outputError(error, res, auth);
         } else {
           apiOps.outputResponse(auth, null, 'ok', res);
         }

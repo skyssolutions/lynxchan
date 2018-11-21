@@ -13,7 +13,7 @@ exports.setVolunteer = function(auth, userData, parameters, res, language) {
   boardOps.transfer(userData, parameters, language, function transfered(error) {
 
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
       apiOps.outputResponse(auth, null, 'ok', res);
     }

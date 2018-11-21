@@ -53,7 +53,7 @@ exports.processParameters = function(userData, parameters, res, auth, lang) {
       function deletedPostings(error, removedThreads, removedPosts) {
 
         if (error) {
-          apiOps.outputError(error, res);
+          apiOps.outputError(error, res, auth);
         } else {
           apiOps.outputResponse(auth, {
             removedThreads : removedThreads,

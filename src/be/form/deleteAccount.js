@@ -16,7 +16,7 @@ exports.deleteAccount = function(auth, parameters, userData, res, language) {
   accountOps.deleteAccount(userData, parameters, language,
       function accountDeleted(error) {
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, null, auth);
         } else {
           formOps.outputResponse(lang(language).msgAccountDeleted,
               '/accounts.js', res, null, auth, language);

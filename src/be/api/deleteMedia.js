@@ -9,7 +9,7 @@ exports.deleteMedia = function(parameters, userData, auth, res, language) {
       function deletedFiles(error) {
 
         if (error) {
-          apiOps.outputError(error, res);
+          apiOps.outputError(error, res, auth);
         } else {
           apiOps.outputResponse(auth, null, 'ok', res);
         }

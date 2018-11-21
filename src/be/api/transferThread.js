@@ -14,7 +14,7 @@ exports.transferThread = function(auth, userData, parameters, res, language) {
       function transferredThread(error, newThreadId) {
 
         if (error) {
-          apiOps.outputError(error, res);
+          apiOps.outputError(error, res, auth);
         } else {
           apiOps.outputResponse(auth, newThreadId, 'ok', res);
         }

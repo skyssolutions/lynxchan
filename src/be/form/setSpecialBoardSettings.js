@@ -30,7 +30,7 @@ exports.setBoardSpecialSettings = function(userData, parameters, res, auth,
   boardOps.setSpecialSettings(userData, parameters, language,
       function specialSettingsSaved(error) {
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, null, auth);
         } else {
           var redirect = '/boardModeration.js?boardUri=' + parameters.boardUri;
 

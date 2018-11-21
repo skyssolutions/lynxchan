@@ -15,7 +15,7 @@ exports.createFlag = function(parameters, userData, res, auth, language) {
   boardOps.createFlag(userData, parameters, language, function createdFlag(
       error) {
     if (error) {
-      formOps.outputError(error, 500, res, language);
+      formOps.outputError(error, 500, res, language, null, auth);
     } else {
 
       var url = '/flags.js?boardUri=' + parameters.boardUri;

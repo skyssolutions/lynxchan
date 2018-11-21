@@ -18,7 +18,7 @@ exports.setVolunteer = function(userData, parameters, res, auth, language) {
       error) {
 
     if (error) {
-      formOps.outputError(error, 500, res, language);
+      formOps.outputError(error, 500, res, language, null, auth);
     } else {
       var redirect = '/boardManagement.js?boardUri=' + parameters.boardUri;
       formOps.outputResponse(parameters.add ? lang(language).msgVolunteerAdded

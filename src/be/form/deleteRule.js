@@ -15,7 +15,7 @@ exports.deleteRule = function(parameters, userData, res, auth, language) {
   boardOps.deleteRule(parameters, userData, language, function deletedRule(
       error) {
     if (error) {
-      formOps.outputError(error, 500, res, language);
+      formOps.outputError(error, 500, res, language, null, auth);
     } else {
       var redirectLink = '/rules.js?boardUri=' + parameters.boardUri;
 

@@ -14,7 +14,7 @@ exports.latestPostings = function(auth, parameters, userData, res, language) {
   boardOps.getLatestPostings(userData, parameters, language,
       function gotPostings(error, postings) {
         if (error) {
-          formOps.outputError(error, 500, res, language, json);
+          formOps.outputError(error, 500, res, language, json, auth);
         } else {
 
           res.writeHead(200, miscOps.getHeader(json ? 'application/json'

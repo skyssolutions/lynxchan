@@ -13,7 +13,7 @@ exports.addLanguage = function(auth, parameters, userData, language, res) {
   langOps.addLanguage(userData.globalRole, parameters, language,
       function addedLanguage(error, id) {
         if (error) {
-          apiOps.outputError(error, res);
+          apiOps.outputError(error, res, auth);
         } else {
           apiOps.outputResponse(auth, id, 'ok', res);
         }

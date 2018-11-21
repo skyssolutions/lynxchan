@@ -16,7 +16,7 @@ exports.massBan = function(auth, parameters, userData, res, language) {
 
   banOps.massBan(userData, parameters, language, function massBanned(error) {
     if (error) {
-      formOps.outputError(error, 500, res, language);
+      formOps.outputError(error, 500, res, language, null, auth);
     } else {
       formOps.outputResponse(lang(language).msgMassBanned,
           '/globalManagement.js', res, null, auth, language);

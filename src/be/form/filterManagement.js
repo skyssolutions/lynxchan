@@ -14,7 +14,7 @@ exports.getFilterData = function(parameters, userData, res, auth, language) {
   boardOps.getFilterData(userData, parameters.boardUri, language,
       function gotFilterData(error, filters) {
         if (error) {
-          formOps.outputError(error, 500, res, language, json);
+          formOps.outputError(error, 500, res, language, json, auth);
         } else {
 
           res.writeHead(200, miscOps.getHeader(json ? 'application/json'

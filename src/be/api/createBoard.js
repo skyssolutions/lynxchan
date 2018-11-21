@@ -14,7 +14,7 @@ exports.createBoard = function(auth, userData, parameters, res, captchaId,
   boardOps.createBoard(captchaId, parameters, userData, language,
       function boardCreated(error) {
         if (error) {
-          apiOps.outputError(error, res);
+          apiOps.outputError(error, res, auth);
         } else {
           apiOps.outputResponse(auth, {}, 'ok', res);
         }

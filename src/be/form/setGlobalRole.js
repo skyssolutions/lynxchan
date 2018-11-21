@@ -15,7 +15,7 @@ exports.setUserRole = function(userData, parameters, res, auth, language) {
   accountOps.setGlobalRole(userData, parameters, language, function setRole(
       error) {
     if (error) {
-      formOps.outputError(error, 500, res, language);
+      formOps.outputError(error, 500, res, language, null, auth);
     } else {
       formOps.outputResponse(lang(language).msgUserRoleChanged,
           '/globalManagement.js', res, null, auth, language);

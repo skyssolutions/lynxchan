@@ -14,7 +14,7 @@ exports.getRulesData = function(parameters, userData, res, auth, language) {
   boardOps.boardRules(parameters.boardUri, userData, language,
       function gotRules(error, rules) {
         if (error) {
-          formOps.outputError(error, 500, res, language, json);
+          formOps.outputError(error, 500, res, language, json, auth);
         } else {
 
           res.writeHead(200, miscOps.getHeader(json ? 'application/json'

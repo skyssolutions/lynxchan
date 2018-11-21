@@ -20,7 +20,7 @@ exports.addLanguage = function(auth, parameters, userData, res, language) {
   languageOps.addLanguage(userData.globalRole, parameters, language,
       function addedLanguage(error) {
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, null, auth);
         } else {
           formOps.outputResponse(lang(language).msgLanguageAdded,
               '/languages.js', res, null, auth, language);

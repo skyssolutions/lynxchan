@@ -9,7 +9,7 @@ exports.requestConfirmation = function(domain, auth, userData, res, language) {
   accountOps.requestConfirmation(domain, language, userData,
       function confirmationRequested(error) {
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, null, auth);
         } else {
           formOps.outputResponse(lang(language).msgConfirmationSent,
               '/account.js', res, null, auth, language);

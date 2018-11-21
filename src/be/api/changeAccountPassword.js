@@ -3,13 +3,13 @@
 var apiOps = require('../engine/apiOps');
 var accountOps = require('../engine/accountOps');
 
-exports.changePassword = function(userData, parameters, res, language) {
+exports.changePassword = function(userData, parameters, res, language, auth) {
 
   accountOps.changePassword(userData, parameters, language,
       function changedPassword(error, newHash, expiration) {
 
         if (error) {
-          apiOps.outputError(error, res);
+          apiOps.outputError(error, res, auth);
         } else {
           apiOps.outputResponse({
             authStatus : 'expired',
@@ -25,6 +25,6 @@ exports.process = function(req, res) {
   apiOps.getAuthenticatedData(req, res, function gotData(auth, userData,
       parameters) {
 
-    exports.changePassword(userData, parameters, res, req.language);
+    exports.changePassword(userData, parameters, res, req.language, auth);
   });
 };

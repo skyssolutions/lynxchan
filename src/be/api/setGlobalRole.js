@@ -13,7 +13,7 @@ exports.setUserRole = function(auth, userData, parameters, res, language) {
   accountOps.setGlobalRole(userData, parameters, language, function setRole(
       error) {
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
       apiOps.outputResponse(auth, null, 'ok', res);
     }

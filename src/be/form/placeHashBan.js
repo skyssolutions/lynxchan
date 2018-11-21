@@ -15,7 +15,7 @@ exports.placeHashBan = function(userData, parameters, res, auth, language) {
   modOps.placeHashBan(userData, parameters, language, function hashBanPlaced(
       error) {
     if (error) {
-      formOps.outputError(error, 500, res, language);
+      formOps.outputError(error, 500, res, language, null, auth);
     } else {
       var redirectLink = '/hashBans.js';
 

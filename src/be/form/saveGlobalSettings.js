@@ -41,7 +41,7 @@ exports.changeGlobalSettings = function(userData, parameters, res, auth,
       function changedGlobalSettings(error) {
 
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, null, auth);
         } else {
           formOps.outputResponse(lang(language).msgSavedGlobalSettings,
               '/globalSettings.js', res, null, auth, language);

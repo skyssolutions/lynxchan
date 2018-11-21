@@ -10,7 +10,7 @@ exports.setCustomSpoiler = function(auth, parameters, userData, res, language) {
         parameters.files[0], language, function customSpoilerSet(error,
             boardUri) {
           if (error) {
-            apiOps.outputError(error, res);
+            apiOps.outputError(error, res, auth);
           } else {
 
             apiOps.outputResponse(auth, null, 'ok', res);
@@ -20,7 +20,7 @@ exports.setCustomSpoiler = function(auth, parameters, userData, res, language) {
     boardOps.deleteCustomSpoiler(userData, parameters.boardUri, language,
         function deletedSpoiler(error) {
           if (error) {
-            apiOps.outputError(error, res);
+            apiOps.outputError(error, res, auth);
           } else {
             apiOps.outputResponse(auth, null, 'ok', res);
           }

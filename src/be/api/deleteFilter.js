@@ -13,7 +13,7 @@ exports.deleteFilter = function(auth, parameters, userData, res, language) {
   boardOps.deleteFilter(userData, parameters, language, function filterDeleted(
       error) {
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
       apiOps.outputResponse(auth, null, 'ok', res);
     }

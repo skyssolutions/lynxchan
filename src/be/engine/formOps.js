@@ -351,7 +351,7 @@ exports.outputResponse = function(message, redirect, res, cookies, authBlock,
 
 };
 
-exports.outputError = function(error, code, res, language, json) {
+exports.outputError = function(error, code, res, language, json, auth) {
 
   if (debug) {
     throw error;
@@ -364,8 +364,8 @@ exports.outputError = function(error, code, res, language, json) {
     code = 500;
   }
 
-  res.writeHead(code, miscOps
-      .getHeader(json ? 'application/json' : 'text/html'));
+  res.writeHead(code, miscOps.getHeader(
+      json ? 'application/json' : 'text/html', auth));
 
   res.end(json ? JSON.stringify(error.toString()) : domManipulator.error(code,
       error.toString(), language));

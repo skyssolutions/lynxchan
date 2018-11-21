@@ -16,7 +16,7 @@ exports.getMedia = function(auth, userData, parameters, res, language) {
       error, media, pages) {
 
     if (error) {
-      formOps.outputError(error, 500, res, language, json);
+      formOps.outputError(error, 500, res, language, json, auth);
     } else {
 
       res.writeHead(200, miscOps.getHeader(json ? 'application/json'

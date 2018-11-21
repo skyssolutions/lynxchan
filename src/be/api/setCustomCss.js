@@ -9,7 +9,7 @@ exports.setCustomCss = function(auth, parameters, userData, res, language) {
     boardOps.setCustomCss(userData, parameters.boardUri, parameters.files[0],
         language, function customCssSet(error, boardUri) {
           if (error) {
-            apiOps.outputError(error, res);
+            apiOps.outputError(error, res, auth);
           } else {
 
             apiOps.outputResponse(auth, null, 'ok', res);
@@ -19,7 +19,7 @@ exports.setCustomCss = function(auth, parameters, userData, res, language) {
     boardOps.deleteCustomCss(userData, parameters.boardUri, language,
         function deletedCss(error) {
           if (error) {
-            apiOps.outputError(error, res);
+            apiOps.outputError(error, res, auth);
           } else {
             apiOps.outputResponse(auth, null, 'ok', res);
           }

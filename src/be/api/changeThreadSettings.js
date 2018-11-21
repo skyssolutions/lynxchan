@@ -13,7 +13,7 @@ exports.setThreadSettings = function(userData, parameters, res, auth, lang) {
   modOps.setThreadSettings(userData, parameters, lang, function settingsSet(
       error) {
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
       apiOps.outputResponse(auth, null, 'ok', res);
     }

@@ -15,7 +15,7 @@ exports.transferBoard = function(userData, parameters, res, auth, language) {
   boardOps.transfer(userData, parameters, language, function transferedBoard(
       error) {
     if (error) {
-      formOps.outputError(error, 500, res, language);
+      formOps.outputError(error, 500, res, language, null, auth);
     } else {
       var redirect = '/' + parameters.boardUri + '/';
 

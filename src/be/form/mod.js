@@ -29,7 +29,7 @@ exports.outputModData = function(bData, flagData, thread, posts, res, json,
     domManipulator.thread(bData, flagData, thread, posts,
         function gotThreadContent(error, content) {
           if (error) {
-            formOps.outputError(error, 500, res, language, json);
+            formOps.outputError(error, 500, res, language, json, auth);
           } else {
 
             res.end(content);
@@ -76,10 +76,10 @@ exports.getPostingData = function(boardData, flagData, parameters, res, json,
     }
   }, function gotThread(error, thread) {
     if (error) {
-      formOps.outputError(error, 500, res, language, json);
+      formOps.outputError(error, 500, res, language, json, auth);
     } else if (!thread) {
       formOps.outputError(lang(language).errThreadNotFound, 500, res, language,
-          json);
+          json, auth);
     } else {
 
       // style exception, too simple
@@ -117,7 +117,7 @@ exports.getPostingData = function(boardData, flagData, parameters, res, json,
       }).toArray(
           function gotPosts(error, posts) {
             if (error) {
-              formOps.outputError(error, 500, res, language, json);
+              formOps.outputError(error, 500, res, language, json, auth);
             } else {
               exports.outputModData(boardData, flagData, thread, posts, res,
                   json, userRole, auth, language);
@@ -146,7 +146,7 @@ exports.getFlags = function(board, parameters, res, json, userRole, auth,
   }).toArray(
       function gotFlags(error, flagData) {
         if (error) {
-          formOps.outputError(error, 500, res, language, json);
+          formOps.outputError(error, 500, res, language, json, auth);
         } else {
           exports.getPostingData(board, flagData, parameters, res, json,
               userRole, auth, language);
@@ -195,13 +195,13 @@ exports.process = function(req, res) {
           var json = parameters.json;
 
           if (error) {
-            formOps.outputError(error, 500, res, req.language, json);
+            formOps.outputError(error, 500, res, req.language, json, auth);
           } else if (!board) {
             formOps.outputError(lang(req.language).errBoardNotFound, 500, res,
-                req.language, json);
+                req.language, json, auth);
           } else if (!modOps.isInBoardStaff(userData, board) && !globalStaff) {
             formOps.outputError(lang(req.language).errDeniedManageBoard, 500,
-                res, req.language, json);
+                res, req.language, json, auth);
           } else {
             exports.getFlags(board, parameters, res, json, userData.globalRole,
                 auth, req.language);

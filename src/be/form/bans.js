@@ -13,7 +13,7 @@ exports.getBans = function(userData, parameters, res, auth, language) {
 
   modOps.getBans(userData, parameters, language, function gotBans(error, bans) {
     if (error) {
-      formOps.outputError(error, 500, res, language, json);
+      formOps.outputError(error, 500, res, language, json, auth);
     } else {
 
       res.writeHead(200, miscOps.getHeader(json ? 'application/json'

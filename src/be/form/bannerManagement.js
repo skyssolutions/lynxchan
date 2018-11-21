@@ -15,7 +15,7 @@ exports.getBannerData = function(auth, parameters, userData, res, language) {
   bOps.getBannerData(userData, uri, language, function gotBannerData(error,
       banners) {
     if (error) {
-      formOps.outputError(error, 500, res, language, json);
+      formOps.outputError(error, 500, res, language, json, auth);
     } else {
 
       res.writeHead(200, miscOps.getHeader(json ? 'application/json'

@@ -445,7 +445,7 @@ exports.getAnonJsonData = function(req, res, callback, exceptionalMimes) {
 
 // } Section 1: Request handling
 
-exports.outputError = function(error, res) {
+exports.outputError = function(error, res, auth) {
 
   if (debug) {
     throw error;
@@ -453,7 +453,7 @@ exports.outputError = function(error, res) {
     console.log(error);
   }
 
-  exports.outputResponse(null, error.toString(), 'error', res);
+  exports.outputResponse(auth, error.toString(), 'error', res);
 
 };
 

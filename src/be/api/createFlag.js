@@ -13,7 +13,7 @@ exports.createFlag = function(auth, parameters, userData, res, language) {
   boardOps.createFlag(userData, parameters, language, function createdFlag(
       error, id) {
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
       apiOps.outputResponse(auth, id, 'ok', res);
     }

@@ -13,7 +13,7 @@ exports.placeRangeBan = function(auth, userData, parameters, res, language) {
   modOps.placeRangeBan(userData, parameters, language, function rangeBanPlaced(
       error, id) {
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
       apiOps.outputResponse(auth, id, 'ok', res);
     }

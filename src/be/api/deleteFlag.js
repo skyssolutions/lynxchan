@@ -8,7 +8,7 @@ exports.deleteFlag = function(auth, parameters, userData, res, language) {
   boardOps.deleteFlag(userData, parameters.flagId, language,
       function deletedFlag(error) {
         if (error) {
-          apiOps.outputError(error, res);
+          apiOps.outputError(error, res, auth);
         } else {
           apiOps.outputResponse(auth, null, 'ok', res);
         }

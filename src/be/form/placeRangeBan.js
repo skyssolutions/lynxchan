@@ -15,7 +15,7 @@ exports.placeRangeBan = function(userData, parameters, res, auth, language) {
   modOps.placeRangeBan(userData, parameters, language, function rangeBanPlaced(
       error) {
     if (error) {
-      formOps.outputError(error, 500, res, language);
+      formOps.outputError(error, 500, res, language, null, auth);
     } else {
       var redirectLink = '/rangeBans.js';
 

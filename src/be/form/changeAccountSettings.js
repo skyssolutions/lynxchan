@@ -25,7 +25,7 @@ exports.changeSettings = function(userData, parameters, res, auth, language) {
       error) {
 
     if (error) {
-      formOps.outputError(error, 500, res, language);
+      formOps.outputError(error, 500, res, language, null, auth);
     } else {
       formOps.outputResponse(lang(language).msgAccountSettingsSaved,
           '/account.js', res, null, auth, language);

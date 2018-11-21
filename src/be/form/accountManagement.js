@@ -19,7 +19,7 @@ exports.getAccount = function(auth, userData, res, req) {
       function gotAccountData(error, accountData) {
 
         if (error) {
-          formOps.outputError(error, 500, res, language, json);
+          formOps.outputError(error, 500, res, language, json, auth);
         } else {
 
           res.writeHead(200, miscOps.getHeader(json ? 'application/json'

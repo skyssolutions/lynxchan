@@ -9,7 +9,7 @@ exports.requestConfirmation = function(domain, auth, userData, res, language) {
   accountOps.requestConfirmation(domain, language, userData,
       function restartedSocket(error) {
         if (error) {
-          apiOps.outputError(error, res);
+          apiOps.outputError(error, res, auth);
         } else {
           apiOps.outputResponse(auth, null, 'ok', res);
         }

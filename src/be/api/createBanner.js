@@ -8,7 +8,7 @@ exports.createBanner = function(auth, parameters, userData, res, language) {
   bannerOps.addBanner(userData, parameters, language, function createdBanner(
       error, id, path) {
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
       apiOps.outputResponse(auth, {
         id : id,

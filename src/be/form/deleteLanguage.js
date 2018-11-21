@@ -9,7 +9,7 @@ exports.deleteLanguage = function(auth, parameters, userData, res, language) {
   languageOps.deleteLanguage(userData.globalRole, parameters.languageId,
       language, function deletedLanguage(error) {
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, null, auth);
         } else {
           formOps.outputResponse(lang(language).msgLanguageDeleted,
               '/languages.js', res, null, auth, language);

@@ -8,7 +8,7 @@ exports.denyAppeal = function(auth, userData, parameters, res, language) {
   modOps.denyAppeal(userData, parameters.banId, language,
       function reportClosed(error) {
         if (error) {
-          apiOps.outputError(error, res);
+          apiOps.outputError(error, res, auth);
         } else {
           apiOps.outputResponse(auth, null, 'ok', res);
         }

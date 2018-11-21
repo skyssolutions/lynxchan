@@ -12,7 +12,7 @@ exports.massBan = function(auth, parameters, userData, language, res) {
 
   banOps.massBan(userData, parameters, language, function addedAccount(error) {
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
       apiOps.outputResponse(auth, null, 'ok', res);
     }

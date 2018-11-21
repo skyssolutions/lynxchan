@@ -12,7 +12,7 @@ exports.deleteBoard = function(auth, userData, parameters, res, language) {
   deletionOps.board(userData, parameters, language,
       function deletedBoard(error) {
         if (error) {
-          apiOps.outputError(error, res);
+          apiOps.outputError(error, res, auth);
         } else {
           apiOps.outputResponse(auth, null, 'ok', res);
         }

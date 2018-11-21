@@ -30,7 +30,7 @@ exports.setSettings = function(auth, userData, parameters, res, language) {
       error) {
 
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
       apiOps.outputResponse(auth, null, 'ok', res);
     }

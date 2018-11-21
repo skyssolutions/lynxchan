@@ -18,7 +18,7 @@ exports.deleteMedia = function(auth, parameters, userData, res, language) {
       function deletedFiles(error) {
 
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, null, auth);
         } else {
 
           formOps.outputResponse(lang(language).msgMediaDeleted,

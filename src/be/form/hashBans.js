@@ -14,7 +14,7 @@ exports.getHashBans = function(userData, parameters, res, auth, language) {
   modOps.getHashBans(userData, parameters, language, function gotHashBans(
       error, hashBans) {
     if (error) {
-      formOps.outputError(error, 500, res, language, json);
+      formOps.outputError(error, 500, res, language, json, auth);
     } else {
 
       res.writeHead(200, miscOps.getHeader(json ? 'application/json'

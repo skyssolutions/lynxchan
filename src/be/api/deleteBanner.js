@@ -8,7 +8,7 @@ exports.deleteBanner = function(auth, parameters, userData, res, language) {
   bannerOps.deleteBanner(userData, parameters, language,
       function deletedBanner(error) {
         if (error) {
-          apiOps.outputError(error, res);
+          apiOps.outputError(error, res, auth);
         } else {
           apiOps.outputResponse(auth, null, 'ok', res);
         }

@@ -30,7 +30,7 @@ exports.setBoardSpecialSettings = function(auth, userData, parameters, res,
   boardOps.setSpecialSettings(userData, parameters, language,
       function specialSettingsSaved(error) {
         if (error) {
-          apiOps.outputError(error, res);
+          apiOps.outputError(error, res, auth);
         } else {
           apiOps.outputResponse(auth, null, 'ok', res);
         }

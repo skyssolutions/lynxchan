@@ -17,7 +17,7 @@ exports.getAccounts = function(auth, userData, res, req) {
       accounts) {
 
     if (error) {
-      formOps.outputError(error, 500, res, language, json);
+      formOps.outputError(error, 500, res, language, json, auth);
     } else {
 
       res.writeHead(200, miscOps.getHeader(json ? 'application/json'

@@ -129,7 +129,7 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
     modOps.spoiler.spoiler(userData, reportedObjects, req.language, function(
         error) {
       if (error) {
-        formOps.outputError(error, 500, res, req.language);
+        formOps.outputError(error, 500, res, req.language, null, auth);
       } else {
         formOps.outputResponse(lang(req.language).msgContentSpoilered,
             redirectBoard, res, null, auth, req.language);
@@ -144,7 +144,7 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
     modOps.report.report(req, reportedObjects, parameters, captchaId,
         function createdReports(error, ban) {
           if (error) {
-            formOps.outputError(error, 500, res, req.language);
+            formOps.outputError(error, 500, res, req.language, null, auth);
           } else if (ban) {
             res.writeHead(200, miscOps.getHeader('text/html'));
 
@@ -167,7 +167,7 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
     modOps.ipBan.specific.ban(userData, reportedObjects, parameters, captchaId,
         req.language, function(error) {
           if (error) {
-            formOps.outputError(error, 500, res, req.language);
+            formOps.outputError(error, 500, res, req.language, null, auth);
           } else {
             formOps.outputResponse(lang(req.language).msgUsersBanned,
                 redirectBoard, res, null, auth, req.language);
@@ -183,7 +183,7 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
         userData, req.language, function deleted(error) {
 
           if (error) {
-            formOps.outputError(error, 500, res, req.language);
+            formOps.outputError(error, 500, res, req.language, null, auth);
           } else {
             formOps.outputResponse(lang(req.language).msgDeletedFromIp,
                 redirectBoard, res, null, auth, req.language);
@@ -201,7 +201,7 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
             function deletedPostings(error, removedThreads, removedPosts) {
 
               if (error) {
-                formOps.outputError(error, 500, res, req.language);
+                formOps.outputError(error, 500, res, req.language, null, auth);
               } else {
 
                 formOps.outputResponse(lang(req.language).msgContentDeleted

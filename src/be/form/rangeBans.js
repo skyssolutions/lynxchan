@@ -14,7 +14,7 @@ exports.getRangeBans = function(userData, parameters, res, auth, language) {
   modOps.getRangeBans(userData, parameters, language, function gotRangeBans(
       error, rangeBans, boardData) {
     if (error) {
-      formOps.outputError(error, 500, res, language, json);
+      formOps.outputError(error, 500, res, language, json, auth);
     } else {
 
       res.writeHead(200, miscOps.getHeader(json ? 'application/json'

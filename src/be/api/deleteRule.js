@@ -13,7 +13,7 @@ exports.deleteRule = function(auth, parameters, userData, res, language) {
   boardOps.deleteRule(parameters, userData, language, function ruleDeleted(
       error) {
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
       apiOps.outputResponse(auth, null, 'ok', res);
     }

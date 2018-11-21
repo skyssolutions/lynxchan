@@ -13,7 +13,7 @@ exports.addRule = function(auth, parameters, userData, res, language) {
   boardOps.addBoardRule(parameters, userData, language, function ruleAdded(
       error) {
     if (error) {
-      apiOps.outputError(error, res);
+      apiOps.outputError(error, res, auth);
     } else {
       apiOps.outputResponse(auth, null, 'ok', res);
     }

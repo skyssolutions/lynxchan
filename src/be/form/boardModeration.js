@@ -15,7 +15,7 @@ exports.getBoardModerationData = function(parameters, userData, res, auth,
   boardOps.getBoardModerationData(userData, parameters.boardUri, language,
       function gotBoardModerationData(error, boardData, ownerData) {
         if (error) {
-          formOps.outputError(error, 500, res, language, json);
+          formOps.outputError(error, 500, res, language, json, auth);
         } else {
 
           res.writeHead(200, miscOps.getHeader(json ? 'application/json'
