@@ -601,23 +601,22 @@ exports.closeFoundReports = function(parameters, ids, userData, foundReports,
 
 exports.closeReports = function(userData, parameters, language, callback) {
 
-  try {
-    var ids = [];
+  var ids = [];
 
-    var reportList = parameters.reports || [];
+  var reportList = parameters.reports || [];
 
-    if (!reportList.length) {
-      callback(lang(language).errNoReportsInformed);
+  if (!reportList.length) {
+    callback(lang(language).errNoReportsInformed);
+    return;
+  }
+
+  for (var i = 0; i < reportList.length; i++) {
+    try {
+      ids.push(new ObjectID(reportList[i]));
+    } catch (error) {
+      callback(lang(language).errReportNotFound);
       return;
     }
-
-    for (var i = 0; i < reportList.length; i++) {
-      ids.push(new ObjectID(reportList[i]));
-    }
-
-  } catch (error) {
-    callback(error);
-    return;
   }
 
   reports.find({

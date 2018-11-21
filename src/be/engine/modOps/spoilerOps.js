@@ -2,8 +2,6 @@
 
 // handles operations related to spoiling existing files
 
-var mongo = require('mongodb');
-var ObjectID = mongo.ObjectID;
 var spoilerPath = require('../../kernel').spoilerImage();
 var db = require('../../db');
 var boards = db.boards();
@@ -53,7 +51,7 @@ exports.getOperations = function(threadOps, postOps, filesToDelete,
     threadOps.push({
       updateOne : {
         filter : {
-          _id : new ObjectID(thread._id)
+          _id : thread._id
         },
         update : {
           $set : {
@@ -81,7 +79,7 @@ exports.getOperations = function(threadOps, postOps, filesToDelete,
     postOps.push({
       updateOne : {
         filter : {
-          _id : new ObjectID(post._id)
+          _id : post._id
         },
         update : {
           $set : {

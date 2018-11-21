@@ -1,8 +1,6 @@
 'use strict';
 
 var master = require('cluster').isMaster;
-var mongo = require('mongodb');
-var ObjectID = mongo.ObjectID;
 var db = require('../db');
 var aggregatedLogs = db.aggregatedLogs();
 var logs = db.logs();

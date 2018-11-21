@@ -1,14 +1,12 @@
 'use strict';
 
 var crypto = require('crypto');
-var mongo = require('mongodb');
 var graphOps = require('./graphsOps');
 var db = require('./db');
 var aggregatedLogs = db.aggregatedLogs();
 var logs = db.logs();
 var stats = db.stats();
 var cachedFiles = db.files();
-var ObjectID = mongo.ObjectID;
 var cachedPosts = db.posts();
 var cachedThreads = db.threads();
 var cachedBoards = db.boards();
@@ -52,7 +50,7 @@ function setPostingPreAggregatedFileMime(posting, collection, callback) {
       }
 
       collection.updateOne({
-        _id : new ObjectID(posting._id)
+        _id : posting._id
       }, {
         $set : {
           files : posting.files
@@ -233,7 +231,7 @@ function migrateBanIps(callback) {
         operations.push({
           updateOne : {
             filter : {
-              _id : new ObjectID(ban._id)
+              _id : ban._id
             },
             update : {
               $set : setBlock
@@ -276,7 +274,7 @@ function migratePostIps(callback) {
         operations.push({
           updateOne : {
             filter : {
-              _id : new ObjectID(post._id)
+              _id : post._id
             },
             update : {
               $set : {
@@ -328,7 +326,7 @@ exports.migrateThreadIps = function(callback) {
         operations.push({
           updateOne : {
             filter : {
-              _id : new ObjectID(thread._id)
+              _id : thread._id
             },
             update : {
               $set : {

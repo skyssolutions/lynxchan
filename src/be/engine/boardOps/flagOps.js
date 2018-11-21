@@ -56,7 +56,7 @@ exports.processFlagFile = function(toInsert, file, callback) {
 
       // style exception, too simple
       flags.removeOne({
-        _id : new ObjectID(toInsert._id)
+        _id : toInsert._id
       }, function removedFlag(deletionError) {
         callback(deletionError || error);
       });
@@ -176,7 +176,7 @@ exports.cleanFlagFromPostings = function(flagUrl, boardUri, callback) {
 exports.removeFlag = function(flag, callback) {
 
   flags.removeOne({
-    _id : new ObjectID(flag._id)
+    _id : flag._id
   }, function removedFlag(error) {
     if (error) {
       callback(error);
@@ -206,37 +206,39 @@ exports.deleteFlag = function(userData, flagId, language, callback) {
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
   try {
-
-    flags.findOne({
-      _id : new ObjectID(flagId)
-    }, function gotFlag(error, flag) {
-      if (error) {
-        callback(error);
-      } else if (!flag) {
-        callback(lang(language).errFlagNotFound);
-      } else {
-
-        // style exception, too simple
-        boards.findOne({
-          boardUri : flag.boardUri
-        }, function gotBoard(error, board) {
-          if (error) {
-            callback(error);
-          } else if (!board) {
-            callback(lang(language).errBoardNotFound);
-          } else if (board.owner !== userData.login && !globallyAllowed) {
-            callback(lang(language).errDeniedFlagManagement);
-          } else {
-            exports.removeFlag(flag, callback);
-          }
-        });
-        // style exception, too simple
-
-      }
-    });
+    flagId = new ObjectID(flagId);
   } catch (error) {
-    callback(error);
+    callback(lang(language).errFlagNotFound);
+    return;
   }
+
+  flags.findOne({
+    _id : flagId
+  }, function gotFlag(error, flag) {
+    if (error) {
+      callback(error);
+    } else if (!flag) {
+      callback(lang(language).errFlagNotFound);
+    } else {
+
+      // style exception, too simple
+      boards.findOne({
+        boardUri : flag.boardUri
+      }, function gotBoard(error, board) {
+        if (error) {
+          callback(error);
+        } else if (!board) {
+          callback(lang(language).errBoardNotFound);
+        } else if (board.owner !== userData.login && !globallyAllowed) {
+          callback(lang(language).errDeniedFlagManagement);
+        } else {
+          exports.removeFlag(flag, callback);
+        }
+      });
+      // style exception, too simple
+
+    }
+  });
 
 };
 // } Section 2: Flag deletion

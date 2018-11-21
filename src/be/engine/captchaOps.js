@@ -281,16 +281,18 @@ exports.checkForCaptcha = function(req, callback) {
   }
 
   try {
-
-    captchas.findOne({
-      _id : new ObjectID(cookies.captchaid),
-      expiration : {
-        $gt : new Date()
-      }
-    }, callback);
+    cookies.captchaid = new ObjectID(cookies.captchaid);
   } catch (error) {
     callback(error);
+    return;
   }
+
+  captchas.findOne({
+    _id : cookies.captchaid,
+    expiration : {
+      $gt : new Date()
+    }
+  }, callback);
 
 };
 
@@ -345,27 +347,30 @@ exports.attemptCaptcha = function(id, input, board, language, cb, thread) {
   }
 
   try {
-    captchas.findOneAndDelete({
-      _id : new ObjectID(id),
-      expiration : {
-        $gt : new Date()
-      }
-    }, function gotCaptcha(error, captcha) {
-
-      if (error) {
-        cb(error);
-      } else if (exports.isCaptchaSolved(captcha, input)) {
-        cb();
-      } else if (!captcha.value) {
-        cb(lang(language).errExpiredCaptcha);
-      } else {
-        cb(lang(language).errWrongCaptcha);
-      }
-
-    });
+    id = new ObjectID(id);
   } catch (error) {
-    cb(error);
+    cb(lang(language).errExpiredCaptcha);
+    return;
   }
+
+  captchas.findOneAndDelete({
+    _id : id,
+    expiration : {
+      $gt : new Date()
+    }
+  }, function gotCaptcha(error, captcha) {
+
+    if (error) {
+      cb(error);
+    } else if (exports.isCaptchaSolved(captcha, input)) {
+      cb();
+    } else if (!captcha.value) {
+      cb(lang(language).errExpiredCaptcha);
+    } else {
+      cb(lang(language).errWrongCaptcha);
+    }
+
+  });
 
 };
 // } Section 2: Captcha consumption
@@ -374,33 +379,35 @@ exports.attemptCaptcha = function(id, input, board, language, cb, thread) {
 exports.solveCaptcha = function(parameters, language, callback) {
 
   try {
-
-    captchas.findOneAndUpdate({
-      _id : new ObjectID(parameters.captchaId),
-      answer : (parameters.answer || '').toString().trim().toLowerCase(),
-      expiration : {
-        $gt : new Date()
-      }
-    }, {
-      $unset : {
-        answer : true
-      },
-      $set : {
-        expiration : new Date(new Date().getTime() + 1000 * 60 * 60)
-      }
-    }, function gotCaptcha(error, captcha) {
-
-      if (error) {
-        callback(error);
-      } else if (!captcha.value) {
-        callback(lang(language).errExpiredOrWrongCaptcha);
-      } else {
-        callback();
-      }
-
-    });
+    parameters.captchaId = new ObjectID(parameters.captchaId);
   } catch (error) {
-    callback(error);
+    callback(lang(language).errExpiredOrWrongCaptcha);
+    return;
   }
+
+  captchas.findOneAndUpdate({
+    _id : parameters.captchaId,
+    answer : (parameters.answer || '').toString().trim().toLowerCase(),
+    expiration : {
+      $gt : new Date()
+    }
+  }, {
+    $unset : {
+      answer : true
+    },
+    $set : {
+      expiration : new Date(new Date().getTime() + 1000 * 60 * 60)
+    }
+  }, function gotCaptcha(error, captcha) {
+
+    if (error) {
+      callback(error);
+    } else if (!captcha.value) {
+      callback(lang(language).errExpiredOrWrongCaptcha);
+    } else {
+      callback();
+    }
+
+  });
 
 };

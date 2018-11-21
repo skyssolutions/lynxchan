@@ -2,8 +2,6 @@
 
 // handle editing operations
 
-var mongo = require('mongodb');
-var ObjectID = mongo.ObjectID;
 var db = require('../../db');
 var boards = db.boards();
 var threads = db.threads();
@@ -121,7 +119,7 @@ exports.setNewThreadSettings = function(parameters, thread, callback) {
   }
 
   threads.updateOne({
-    _id : new ObjectID(thread._id)
+    _id : thread._id
   }, {
     $set : {
       locked : parameters.lock,

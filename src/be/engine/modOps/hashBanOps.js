@@ -159,8 +159,9 @@ exports.placeHashBan = function(userData, parameters, language, callback,
 
 // Section 3: Lift hash ban {
 exports.removeHashBan = function(hashBan, userData, callback) {
+
   hashBans.deleteOne({
-    _id : new ObjectID(hashBan._id)
+    _id : hashBan._id
   }, function hashBanRemoved(error) {
 
     if (error) {
@@ -196,10 +197,12 @@ exports.removeHashBan = function(hashBan, userData, callback) {
     }
 
   });
+
 };
 
 exports.checkForBoardHashBanLiftPermission = function(hashBan, userData,
     language, callback) {
+
   boards.findOne({
     boardUri : hashBan.boardUri
   }, function gotBoard(error, board) {
@@ -216,33 +219,39 @@ exports.checkForBoardHashBanLiftPermission = function(hashBan, userData,
       }
     }
   });
+
 };
 
 exports.liftHashBan = function(userData, parameters, language, cb) {
+
   try {
-    var globalStaff = userData.globalRole < miscOps.getMaxStaffRole();
-
-    hashBans.findOne({
-      _id : new ObjectID(parameters.hashBanId)
-    }, function gotHashBan(error, hashBan) {
-      if (error) {
-        cb(error);
-      } else if (!hashBan) {
-        cb();
-      } else if (hashBan.boardUri) {
-
-        exports.checkForBoardHashBanLiftPermission(hashBan, userData, language,
-            cb);
-
-      } else if (!globalStaff) {
-        cb(lang(language).errDeniedGlobalHashBansManagement);
-      } else {
-        exports.removeHashBan(hashBan, userData, cb);
-      }
-    });
+    parameters.hashBanId = new ObjectID(parameters.hashBanId);
   } catch (error) {
-    cb(error);
+    cb();
+    return;
   }
+
+  var globalStaff = userData.globalRole < miscOps.getMaxStaffRole();
+
+  hashBans.findOne({
+    _id : parameters.hashBanId
+  }, function gotHashBan(error, hashBan) {
+    if (error) {
+      cb(error);
+    } else if (!hashBan) {
+      cb();
+    } else if (hashBan.boardUri) {
+
+      exports.checkForBoardHashBanLiftPermission(hashBan, userData, language,
+          cb);
+
+    } else if (!globalStaff) {
+      cb(lang(language).errDeniedGlobalHashBansManagement);
+    } else {
+      exports.removeHashBan(hashBan, userData, cb);
+    }
+  });
+
 };
 // } Section 3: Lift hash ban
 

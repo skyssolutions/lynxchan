@@ -69,77 +69,80 @@ exports.renewBypass = function(captchaId, captchaInput, language, callback) {
 
 exports.checkBypass = function(bypassId, callback) {
 
-  if (!bypassId || !bypassId.length || !bypassMode) {
+  if (!bypassId || !bypassMode) {
     callback();
     return;
   }
 
   try {
-
-    bypasses.findOne({
-      _id : new ObjectID(bypassId),
-      usesLeft : {
-        $gt : 0
-      },
-      expiration : {
-        $gt : new Date()
-      }
-    }, callback);
-
+    bypassId = new ObjectID(bypassId);
   } catch (error) {
     callback();
+    return;
   }
+
+  bypasses.findOne({
+    _id : bypassId,
+    usesLeft : {
+      $gt : 0
+    },
+    expiration : {
+      $gt : new Date()
+    }
+  }, callback);
+
 };
 
 exports.useBypass = function(bypassId, req, callback) {
 
-  if (!bypassMode || !bypassId || !bypassId.length) {
+  if (!bypassMode || !bypassId) {
     callback();
     return;
   }
 
   try {
-
-    var nextUse = new Date();
-
-    nextUse.setUTCSeconds(nextUse.getUTCSeconds() + floodExpiration);
-
-    bypasses.findOneAndUpdate({
-      _id : new ObjectID(bypassId),
-      usesLeft : {
-        $gt : 0
-      },
-      expiration : {
-        $gt : new Date()
-      }
-    }, {
-      $inc : {
-        usesLeft : -1
-      },
-      $set : {
-        nextUsage : nextUse
-      }
-    }, function updatedPass(error, result) {
-
-      var errorToReturn;
-
-      if (error) {
-        errorToReturn = error;
-      } else if (!result.value) {
-        callback(null, req);
-        return;
-      } else if (!floodDisabled && result.value.nextUsage > new Date()) {
-        errorToReturn = lang(req.language).errFlood;
-      } else {
-        req.bypassed = true;
-      }
-
-      callback(errorToReturn, req);
-
-    });
-
+    bypassId = new ObjectID(bypassId);
   } catch (error) {
-    callback();
+    callback(null, req);
+    return;
   }
+
+  var nextUse = new Date();
+
+  nextUse.setUTCSeconds(nextUse.getUTCSeconds() + floodExpiration);
+
+  bypasses.findOneAndUpdate({
+    _id : bypassId,
+    usesLeft : {
+      $gt : 0
+    },
+    expiration : {
+      $gt : new Date()
+    }
+  }, {
+    $inc : {
+      usesLeft : -1
+    },
+    $set : {
+      nextUsage : nextUse
+    }
+  }, function updatedPass(error, result) {
+
+    var errorToReturn;
+
+    if (error) {
+      errorToReturn = error;
+    } else if (!result.value) {
+      callback(null, req);
+      return;
+    } else if (!floodDisabled && result.value.nextUsage > new Date()) {
+      errorToReturn = lang(req.language).errFlood;
+    } else {
+      req.bypassed = true;
+    }
+
+    callback(errorToReturn, req);
+
+  });
 
 };

@@ -275,7 +275,7 @@ exports.getLiftedBanLogMessage = function(ban, userData) {
 exports.removeBan = function(ban, userData, callback) {
 
   bans.deleteOne({
-    _id : new ObjectID(ban._id)
+    _id : ban._id
   }, function banRemoved(error) {
 
     if (error) {
@@ -338,27 +338,31 @@ exports.liftBan = function(userData, parameters, language, callback) {
   var allowedToManageRangeBans = userData.globalRole <= minClearIpRole;
 
   try {
-    bans.findOne({
-      _id : new ObjectID(parameters.banId)
-    }, function gotBan(error, ban) {
-      if (error) {
-        callback(error);
-      } else if (!ban) {
-        callback();
-      } else if (ban.boardUri) {
-        exports.checkForBoardBanLiftPermission(ban, userData, language,
-            callback);
-      } else if (!globalStaff) {
-        callback(lang(language).errDeniedGlobalBanManagement);
-      } else if (ban.range && !allowedToManageRangeBans) {
-        callback(lang(language).errDeniedGlobalRangeBanManagement);
-      } else {
-        exports.removeBan(ban, userData, callback);
-      }
-    });
+    parameters.banId = new ObjectID(parameters.banId);
   } catch (error) {
-    callback(error);
+    callback();
+    return;
   }
+
+  bans.findOne({
+    _id : parameters.banId
+  },
+      function gotBan(error, ban) {
+        if (error) {
+          callback(error);
+        } else if (!ban) {
+          callback();
+        } else if (ban.boardUri) {
+          exports.checkForBoardBanLiftPermission(ban, userData, language,
+              callback);
+        } else if (!globalStaff) {
+          callback(lang(language).errDeniedGlobalBanManagement);
+        } else if (ban.range && !allowedToManageRangeBans) {
+          callback(lang(language).errDeniedGlobalRangeBanManagement);
+        } else {
+          exports.removeBan(ban, userData, callback);
+        }
+      });
 
 };
 // } Section 3: Lift ban

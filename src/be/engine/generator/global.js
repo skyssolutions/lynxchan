@@ -3,8 +3,6 @@
 // handles generation of pages not specific to any board
 
 var fs = require('fs');
-var mongo = require('mongodb');
-var ObjectID = mongo.ObjectID;
 var logger = require('../../logger');
 var db = require('../../db');
 var logs = db.logs();
@@ -986,7 +984,7 @@ exports.log = function(date, callback, logData) {
   var toFind = [];
 
   for (var i = 0; i < logData.logs.length; i++) {
-    toFind.push(new ObjectID(logData.logs[i]));
+    toFind.push(logData.logs[i]);
   }
 
   logs.find({

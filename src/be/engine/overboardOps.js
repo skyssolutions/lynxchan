@@ -1,7 +1,5 @@
 'use strict';
 
-var mongo = require('mongodb');
-var ObjectID = mongo.ObjectID;
 var overboardSize;
 var sfwOverboard;
 var overboard;
@@ -126,7 +124,7 @@ function checkAmount(message) {
 function addThread(message) {
 
   overboardThreads.insertOne({
-    thread : new ObjectID(message._id),
+    thread : message._id,
     sfw : message.sfw
   }, function(error) {
 
@@ -144,7 +142,7 @@ function addThread(message) {
 function checkForExistance(message) {
 
   overboardThreads.findOne({
-    thread : new ObjectID(message._id)
+    thread : message._id
   }, function gotThread(error, thread) {
     if (error) {
       console.log(error);

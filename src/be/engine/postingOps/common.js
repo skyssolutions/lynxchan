@@ -843,25 +843,28 @@ exports.getLocationFlagUrl = function(ip, boardData, noFlag, callback) {
 
 exports.getFlagUrl = function(flagId, ip, boardData, noFlag, callback) {
 
-  if (!flagId || !flagId.length) {
+  if (!flagId) {
     exports.getLocationFlagUrl(ip, boardData, noFlag, callback);
     return;
   }
 
   try {
-    flags.findOne({
-      boardUri : boardData.boardUri,
-      _id : new ObjectID(flagId)
-    }, function gotFlagData(error, flag) {
-      if (!flag) {
-        exports.getLocationFlagUrl(ip, boardData, noFlag, callback);
-      } else {
-        callback('/' + boardData.boardUri + '/flags/' + flagId, flag.name);
-      }
-    });
+    flagId = new ObjectID(flagId);
   } catch (error) {
     exports.getLocationFlagUrl(ip, boardData, noFlag, callback);
+    return;
   }
+
+  flags.findOne({
+    boardUri : boardData.boardUri,
+    _id : flagId
+  }, function gotFlagData(error, flag) {
+    if (!flag) {
+      exports.getLocationFlagUrl(ip, boardData, noFlag, callback);
+    } else {
+      callback('/' + boardData.boardUri + '/flags/' + flagId, flag.name);
+    }
+  });
 
 };
 // } Section 4: Flag selection

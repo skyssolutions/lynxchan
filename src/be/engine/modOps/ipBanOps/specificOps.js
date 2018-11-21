@@ -582,34 +582,35 @@ exports.ban = function(userData, reportedObjects, parameters, captchaId,
 exports.appealBan = function(ip, parameters, language, callback) {
 
   try {
-
-    miscOps.sanitizeStrings(parameters, exports.appealArguments);
-
-    bans.findOneAndUpdate({
-      _id : new ObjectID(parameters.banId),
-      ip : ip,
-      appeal : {
-        $exists : false
-      }
-    }, {
-      $set : {
-        appeal : parameters.appeal
-      }
-    }, function gotBan(error, result) {
-
-      if (error) {
-        callback(error);
-      } else if (!result.value) {
-        callback(lang(language).errBanNotFound);
-      } else {
-        callback();
-      }
-
-    });
-
+    parameters.banId = new ObjectID(parameters.banId);
   } catch (error) {
-    callback(error);
+    callback(lang(language).errBanNotFound);
+    return;
   }
+
+  miscOps.sanitizeStrings(parameters, exports.appealArguments);
+
+  bans.findOneAndUpdate({
+    _id : parameters.banId,
+    ip : ip,
+    appeal : {
+      $exists : false
+    }
+  }, {
+    $set : {
+      appeal : parameters.appeal
+    }
+  }, function gotBan(error, result) {
+
+    if (error) {
+      callback(error);
+    } else if (!result.value) {
+      callback(lang(language).errBanNotFound);
+    } else {
+      callback();
+    }
+
+  });
 
 };
 // } Section 2: Appeal
@@ -618,7 +619,7 @@ exports.appealBan = function(ip, parameters, language, callback) {
 exports.writeDeniedAppeal = function(userData, ban, callback) {
 
   bans.updateOne({
-    _id : new ObjectID(ban._id)
+    _id : ban._id
   }, {
     $set : {
       denied : true
@@ -671,32 +672,35 @@ exports.denyAppeal = function(userData, banId, language, callback) {
   var globalStaff = userData.globalRole < miscOps.getMaxStaffRole();
 
   try {
-
-    bans.findOne({
-      _id : new ObjectID(banId),
-      appeal : {
-        $exists : true
-      },
-      denied : {
-        $exists : false
-      }
-    }, function gotBan(error, ban) {
-      if (error) {
-        callback(error);
-      } else if (!ban) {
-        callback(lang(language).errBanNotFound);
-      } else if (!ban.boardUri && !globalStaff) {
-        callback(lang(language).errDeniedGlobalBanManagement);
-      } else if (ban.boardUri) {
-        exports.checkAppealDenyBoardPermission(userData, ban, language,
-            callback);
-      } else {
-        exports.writeDeniedAppeal(userData, ban, callback);
-      }
-    });
+    banId = new ObjectID(banId);
   } catch (error) {
-    callback(error);
+    callback(lang(language).errBanNotFound);
+    return;
   }
+
+  bans.findOne({
+    _id : banId,
+    appeal : {
+      $exists : true
+    },
+    denied : {
+      $exists : false
+    }
+  },
+      function gotBan(error, ban) {
+        if (error) {
+          callback(error);
+        } else if (!ban) {
+          callback(lang(language).errBanNotFound);
+        } else if (!ban.boardUri && !globalStaff) {
+          callback(lang(language).errDeniedGlobalBanManagement);
+        } else if (ban.boardUri) {
+          exports.checkAppealDenyBoardPermission(userData, ban, language,
+              callback);
+        } else {
+          exports.writeDeniedAppeal(userData, ban, callback);
+        }
+      });
 
 };
 // } Section 3: Deny appeal

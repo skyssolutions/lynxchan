@@ -41,47 +41,50 @@ exports.deleteBanner = function(userData, parameters, language, callback) {
   var admin = userData.globalRole <= 1;
 
   try {
+    parameters.bannerId = new ObjectID(parameters.bannerId);
+  } catch (error) {
+    callback(lang(language).errBannerNotFound);
+    return;
+  }
 
-    files.findOne({
-      _id : new ObjectID(parameters.bannerId)
-    }, function gotBanner(error, banner) {
-      if (error) {
-        callback(error);
-      } else if (!banner) {
-        callback(lang(language).errBannerNotFound);
+  files.findOne({
+    _id : parameters.bannerId
+  }, function gotBanner(error, banner) {
+    if (error) {
+      callback(error);
+    } else if (!banner) {
+      callback(lang(language).errBannerNotFound);
+    } else {
+
+      if (!banner.metadata.boardUri && !admin) {
+        callback(lang(language).errDeniedGlobalBannerManagement);
+      } else if (!banner.metadata.boardUri) {
+        exports.removeBanner(banner, callback);
       } else {
+        var globallyAllowed = admin && globalBoardModeration;
 
-        if (!banner.metadata.boardUri && !admin) {
-          callback(lang(language).errDeniedGlobalBannerManagement);
-        } else if (!banner.metadata.boardUri) {
-          exports.removeBanner(banner, callback);
-        } else {
-          var globallyAllowed = admin && globalBoardModeration;
-
-          // style exception, too simple
-          boards.findOne({
-            boardUri : banner.metadata.boardUri
-          }, function gotBoard(error, board) {
-            if (error) {
-              callback(error);
-            } else if (!board) {
-              callback(lang(language).errBoardNotFound);
-            } else if (board.owner !== userData.login && !globallyAllowed) {
-              callback(lang(language).errDeniedChangeBoardSettings);
-            } else {
-              exports.removeBanner(banner, callback);
-            }
-          });
-          // style exception, too simple
-
-        }
+        // style exception, too simple
+        boards.findOne({
+          boardUri : banner.metadata.boardUri
+        }, function gotBoard(error, board) {
+          if (error) {
+            callback(error);
+          } else if (!board) {
+            callback(lang(language).errBoardNotFound);
+          } else if (board.owner !== userData.login && !globallyAllowed) {
+            callback(lang(language).errDeniedChangeBoardSettings);
+          } else {
+            exports.removeBanner(banner, callback);
+          }
+        });
+        // style exception, too simple
 
       }
 
-    });
-  } catch (error) {
-    callback(error);
-  }
+    }
+
+  });
+
 };
 // } Section 1: Banner deletion
 

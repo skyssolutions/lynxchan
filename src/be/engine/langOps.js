@@ -207,14 +207,15 @@ exports.deleteLanguage = function(userRole, languageId, language, callback) {
   }
 
   try {
-
-    dbLanguages.deleteOne({
-      _id : new ObjectID(languageId)
-    }, callback);
-
+    languageId = new ObjectID(languageId);
   } catch (error) {
-    callback(error);
+    callback();
+    return;
   }
+
+  dbLanguages.deleteOne({
+    _id : languageId
+  }, callback);
 
 };
 
