@@ -24,8 +24,7 @@ exports.postProjection = {
   lastEditLogin : 1,
   id : 1,
   signedRole : 1,
-  markdown : 1,
-  archived : 1
+  markdown : 1
 };
 
 exports.threadProjection = {
@@ -59,7 +58,8 @@ exports.threadProjection = {
   latestPosts : 1,
   postCount : 1,
   message : 1,
-  fileCount : 1
+  fileCount : 1,
+  archived : 1
 };
 
 exports.board = require('./board');

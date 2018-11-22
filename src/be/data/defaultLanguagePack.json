@@ -333,5 +333,8 @@
   "errDisabledLatestPostings": "The latest postings feature is disabled.",
   "titLatestPostings": "Latest postings",
   "errNoIpDeletionConfirmation": "You must confirm that you wish to perform this deletion by IP.",
-  "errRangeBanLimit": "This board reached the range ban limit."
+  "errRangeBanLimit": "This board reached the range ban limit.",
+  "msgThreadArchived": "Thread archived.",
+  "errNotAllowedToArchive": "You are not allowed to archive this thread.",
+  "errArchiveConfirmation": "You must confirm that you wish to archive this thread."
 }

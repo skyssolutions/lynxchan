@@ -1272,5 +1272,18 @@ JSON output(Array): array where each element is an object with the following fie
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::82
+
+Name: archiveThread
+
+Description: adds a thread to the archives. Requires authentication.
+
+Parameters:
+  boardUri: board the thread belongs to.
+  threadId(Number): id of the thread.
+  confirmation(Boolean): confirmation of the action.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

@@ -163,6 +163,7 @@ exports.getThreadObject = function(thread, posts, board, modding, userRole) {
     message : thread.message,
     creation : thread.creation,
     locked : thread.locked ? true : false,
+    archived : thread.archived ? true : false,
     pinned : thread.pinned ? true : false,
     cyclic : thread.cyclic ? true : false,
     autoSage : thread.autoSage ? true : false,

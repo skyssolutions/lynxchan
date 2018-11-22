@@ -107,6 +107,8 @@ errInvalidToken: error thrown when the specified unlock token is not valid.
 errBanNotFound: error thrown when the specified ban can't be found.
 errCouldNotMeasureImage: error thrown when the engine can't measure an image's dimensions.
 errFlood: error thrown when flood is detected.
+errArchiveConfirmation: error thrown when the thread archival is not confirmed.
+errNotAllowedToArchive: error thrown when the user is not allowed to archive a thread.
 errMessageAlreadyPosted: error thrown when R9K blocks a message.
 errFileAlreadyPosted: error thrown when R9K blocks a file.
 errDuplicateFileBeingPosted: error thrown when R9K is enforcing file uniqueness and the user tries to post the same file twice.
@@ -240,6 +242,7 @@ msgCssDeleted: message used after a custom CSS is deleted.
 msgRuleCreated: message used after adding a new rule to a board.
 msgRuleDeleted: message used after deleting a rule from a board.
 msgPostingEdited: message used after editing a posting.
+msgThreadArchived: message used after archiving a thread.
 msgFlagCreated: message used after a new flag is created.
 msgFlagDeleted: message used after deleting a flag.
 msgSavedGlobalSettings: message used after saving global settings.
