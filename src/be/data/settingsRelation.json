@@ -458,5 +458,10 @@
     "type": "boolean",
     "setting": "useAlternativeLanguages",
     "element": "checkboxUseAlternativeLanguages"
+  },
+  {
+    "type": "boolean",
+    "setting": "allowBoardStaffArchiving",
+    "element": "checkboxBoardStaffArchiving"
   }
 ]

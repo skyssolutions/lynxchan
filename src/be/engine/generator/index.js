@@ -24,7 +24,8 @@ exports.postProjection = {
   lastEditLogin : 1,
   id : 1,
   signedRole : 1,
-  markdown : 1
+  markdown : 1,
+  archived : 1
 };
 
 exports.threadProjection = {

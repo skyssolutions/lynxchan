@@ -24,7 +24,8 @@ exports.indicatorsRelation = {
   pinned : 'pinIndicator',
   locked : 'lockIndicator',
   cyclic : 'cyclicIndicator',
-  autoSage : 'bumpLockIndicator'
+  autoSage : 'bumpLockIndicator',
+  archived : 'archiveIndicator'
 };
 
 exports.sizeOrders = [ 'B', 'KB', 'MB', 'GB', 'TB' ];

@@ -57,6 +57,7 @@ boards: stores boards.
 ----------------------------------------------------------------------------------------
 
 threads: stores board's threads.
+    archived(Boolean): indicates if the thread is archived.
     name: name of the poster. 32 characters.
     hash: hash of the message used by R9K.
     signedRole: role of the user that posted the thread.

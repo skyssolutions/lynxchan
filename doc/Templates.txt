@@ -159,6 +159,10 @@ TEM_ID::03
 threadPage: thread page, with all replies.
 
 Elements:
+divArchive:
+    use: might be removed.
+    description: div with the option archive the thread.
+
 noFlagDiv:
     use: might be removed.
     description: div with the option to not show the user location flag.
@@ -194,6 +198,14 @@ labelDescription:
 divThreads:
     use: have children appended to it.
     description: contains the OP. I decided to keep the same structure of the board page to keep uniformity.
+
+archiveThreadIdentifier:
+    use: have its value manipulated.
+    description: hidden input used to identify the thread the page belongs to when archiving.
+
+archiveBoardIdentifier:
+    use: have its value manipulated.
+    description: hidden input used to identify the board the page belongs to when archiving.
 
 boardIdentifier:
     use: have its value manipulated.
@@ -399,6 +411,10 @@ lockIndicator:
 bumpLockIndicator:
     use: might be removed.
     description: element that indicates the thread is bumplocked.
+
+archiveIndicator:
+    use: might be removed.
+    description: element that indicates the thread is archived.
 
 cyclicIndicator:
     use: might be removed.
@@ -1754,6 +1770,10 @@ fieldFlagNameLength:
 checkboxUseAlternativeLanguages:
     use: might be turned on.
     description: indicates if the engine should use registered alternative languages.
+
+checkboxBoardStaffArchiving:
+    use: might be turned on.
+    description: indicates if board staff is allowed to archive threads.
 
 checkboxBlockedReport:
     use: might be turned on.

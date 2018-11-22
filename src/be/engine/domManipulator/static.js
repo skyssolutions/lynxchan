@@ -23,6 +23,7 @@ var sfwOverboard;
 var siteTitle;
 var engineInfo;
 var disableCatalogPosting;
+var boardStaffArchiving;
 var cacheHandler;
 
 exports.availableLogTypes = {
@@ -45,6 +46,7 @@ exports.availableLogTypes = {
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  boardStaffArchiving = settings.allowBoardStaffArchiving;
   disableCatalogPosting = settings.disableCatalogPosting;
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
@@ -134,6 +136,11 @@ exports.setModdingInformation = function(document, threadData) {
     document = document.replace('checked="__checkboxCyclic_checked__"', '');
   }
 
+  document = document.replace('__archiveBoardIdentifier_value__', common
+      .clean(threadData.boardUri));
+  document = document.replace('__archiveThreadIdentifier_value__',
+      threadData.threadId);
+
   document = document.replace('__controlBoardIdentifier_value__', common
       .clean(threadData.boardUri));
   document = document.replace('__controlThreadIdentifier_value__',
@@ -161,7 +168,8 @@ exports.setThreadTitle = function(document, threadData) {
 
 };
 
-exports.setModElements = function(modding, document, userRole, removable) {
+exports.setModElements = function(modding, document, userRole, removable,
+    archived) {
 
   var globalStaff = userRole <= miscOps.getMaxStaffRole();
   if (!globalStaff || !modding) {
@@ -178,6 +186,15 @@ exports.setModElements = function(modding, document, userRole, removable) {
   } else {
     document = document.replace('__ipDeletionForm_location__',
         removable.ipDeletionForm);
+  }
+
+  var allowedToArchive = userRole <= 2 || boardStaffArchiving;
+
+  if (archived || !modding || !allowedToArchive) {
+    document = document.replace('__divArchive_location__', '');
+  } else {
+    document = document
+        .replace('__divArchive_location__', removable.divArchive);
   }
 
   return document;
@@ -205,8 +222,8 @@ exports.setThreadCommonInfo = function(template, threadData, boardData,
   document = document
       .replace('__threadIdentifier_value__', threadData.threadId);
 
-  return exports
-      .setModElements(modding, document, userRole, template.removable);
+  return exports.setModElements(modding, document, userRole,
+      template.removable, threadData.archived);
 
 };
 

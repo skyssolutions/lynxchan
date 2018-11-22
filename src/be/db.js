@@ -557,6 +557,10 @@ function initThreads(callback) {
     key : {
       'files.path' : 1
     }
+  }, {
+    key : {
+      archived : 1
+    }
   } ], function setIndex(error, index) {
     if (error) {
       if (loading) {

@@ -325,6 +325,10 @@
         "uses": "removal"
       },
       {
+        "name": "divArchive",
+        "uses": "removal"
+      },
+      {
         "name": "panelMessage",
         "uses": "removal"
       },
@@ -375,6 +379,14 @@
       {
         "name": "divControls",
         "uses": "removal"
+      },
+      {
+        "name": "archiveBoardIdentifier",
+        "uses": "value"
+      },
+      {
+        "name": "archiveThreadIdentifier",
+        "uses": "value"
       },
       {
         "name": "controlBoardIdentifier",
@@ -1366,6 +1378,10 @@
       },
       {
         "name": "checkboxVerboseGridfs",
+        "uses": "checked"
+      },
+      {
+        "name": "checkboxBoardStaffArchiving",
         "uses": "checked"
       },
       {

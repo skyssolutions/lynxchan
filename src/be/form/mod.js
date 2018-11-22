@@ -72,7 +72,8 @@ exports.getPostingData = function(boardData, flagData, parameters, res, json,
       files : 1,
       email : 1,
       message : 1,
-      markdown : 1
+      markdown : 1,
+      archived : 1
     }
   }, function gotThread(error, thread) {
     if (error) {
