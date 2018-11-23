@@ -1633,5 +1633,22 @@
         "uses": "href"
       }
     ]
+  },
+  {
+    "template": "archivePage",
+    "prebuiltFields": [
+      {
+        "name": "divThreads",
+        "uses": "children"
+      },
+      {
+        "name": "divPages",
+        "uses": "children"
+      },
+      {
+        "name": "fieldBoards",
+        "uses": "value"
+      }
+    ]
   }
 ]

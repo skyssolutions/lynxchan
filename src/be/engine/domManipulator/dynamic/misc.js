@@ -444,6 +444,70 @@ exports.ban = function(ban, board, language) {
 };
 // } Section 3: Ban
 
+// Section 4: Archives {
+exports.getArchiveCells = function(threads, language) {
+
+  var content = '';
+
+  var cell = templateHandler(language).archiveCell.template;
+
+  for (var i = 0; i < threads.length; i++) {
+
+    var thread = threads[i];
+
+    var newCell = '<div class="archiveCell">' + cell + '</div>';
+
+    var url = '/' + thread.boardUri + '/res/' + thread.threadId + '.html';
+    newCell = newCell.replace('__theadLink_href__', url);
+
+    var id = thread.boardUri + '/' + thread.threadId;
+    newCell = newCell.replace('__idLabel_inner__', id);
+
+    newCell = newCell.replace('__dateLabel_inner__', common
+        .formatDateToDisplay(thread.creation, true, language));
+
+    if (thread.subject) {
+      var title = common.clean(thread.subject);
+    } else {
+      title = common.clean(thread.message.substring(0, 256));
+    }
+
+    content += newCell.replace('__nameLabel_inner__', title);
+  }
+
+  return content;
+
+};
+
+exports.archives = function(threads, parameters, pages, language) {
+
+  var document = templateHandler(language).archivePage.template.replace(
+      '__title__', lang(language).titArchives);
+
+  document = document.replace('__fieldBoards_value__', parameters.boards || '');
+
+  var url = '/archives.js?';
+
+  if (parameters.boards) {
+    url += 'boards=' + parameters.boards + '&';
+  }
+
+  url += 'page=';
+
+  var pagesContent = '';
+
+  for (var i = 1; i <= pages; i++) {
+    pagesContent += '<a href="' + url + i + '">' + i + '</a>';
+  }
+
+  document = document.replace('__divPages_children__', pagesContent);
+
+  return document.replace('__divThreads_children__', exports.getArchiveCells(
+      threads, language));
+
+};
+// } Section 4: Archives
+
 exports.hashBan = function(hashBans, language) {
 
   var document = templateHandler(language).hashBanPage.template.replace(

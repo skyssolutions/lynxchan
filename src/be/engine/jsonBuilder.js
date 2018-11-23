@@ -704,3 +704,12 @@ exports.mediaDetails = function(details) {
 exports.latestPostings = function(postings) {
   return JSON.stringify(postings);
 };
+
+exports.archives = function(threads, pageCount) {
+
+  return JSON.stringify({
+    threads : threads,
+    pages : pageCount
+  });
+
+};

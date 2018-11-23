@@ -969,7 +969,10 @@ exports.setSpecialSettings = function(userData, parameters, language, cb) {
 exports.aggregateThreadCount = function(boardUri, callback) {
 
   threads.countDocuments({
-    boardUri : boardUri
+    boardUri : boardUri,
+    archived : {
+      $ne : true
+    }
   }, function gotCount(error, count) {
 
     if (error) {

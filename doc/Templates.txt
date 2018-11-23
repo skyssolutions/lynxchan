@@ -2388,12 +2388,12 @@ confirmationEmail: e-mail used to confirm e-mail accounts.
 
 Elements:
 confirmationLink:
-  use: have its href manipulated.
-  description: link with the url to confirm the e-mail.
+    use: have its href manipulated.
+    description: link with the url to confirm the e-mail.
 
 loginLabel:
-  use: have its innerHTML manipulated.
-  description: label with the login of the account that used this e-mail.
+    use: have its innerHTML manipulated.
+    description: label with the login of the account that used this e-mail.
 
 ------------------------------------------------------------------------------------------
 
@@ -2403,8 +2403,8 @@ reportNotificationEmail: e-mail used to send notification of reports.
 
 Elements:
 linkThread:
-  use: have its href and innerHTML manipulated.
-  description: link to the reported content.
+    use: have its href and innerHTML manipulated.
+    description: link to the reported content.
 
 ------------------------------------------------------------------------------------------
 
@@ -2414,24 +2414,68 @@ latestPostingsPage: page that displays the latest postings the user can moderate
 
 Elements:
 fieldDate:
-  use: have it's value manipulated.
-  description: input with the date to set the search.
+    use: have it's value manipulated.
+    description: input with the date to set the search.
 
 divPostings:
-  use: have children appended to it.
-  description: div with the postings.
+    use: have children appended to it.
+    description: div with the postings.
 
 fieldBoards:
-  use: have it's value manipulated.
-  description: field with the searched boards.
+    use: have it's value manipulated.
+    description: field with the searched boards.
 
 linkPrevious:
-  use: have it's href manipulated.
-  description: link to the next day.
+    use: have it's href manipulated.
+    description: link to the next day.
 
 linkNext:
-  use: have it's href manipulated.
-  description: link to the previous day.
+    use: have it's href manipulated.
+    description: link to the previous day.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::70
+
+archivePage: page that displays the archived threads.
+
+Elements:
+fieldBoards:
+    use: have it's value manipulated.
+    description: input with the boards to display archives from.
+
+divThreads:
+    use: have children appended to it.
+    description: div with the threads.
+
+divPages:
+    use: have children appended to it.
+    description: div with the available pages.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::71
+
+archiveCell*: cell that represents an archived board.
+
+Root element: div.
+
+Elements:
+idLabel:
+    use: have it's value manipulated.
+    description: label with the thread id.
+
+dateLabel:
+    use: have it's value manipulated.
+    description: label with the thread creation date.
+
+nameLabel:
+    use: have it's value manipulated.
+    description: label with the thread name.
+
+theadLink:
+    use: have it's href manipulated.
+    description: link to open the thread.
 
 ------------------------------------------------------------------------------------------
 

@@ -289,6 +289,7 @@ titNoCookieCaptcha: title for the no cookie captcha page.
 titRangeBans: title for the range bans page.
 titHashBans: title for hash bans page.
 titNotFound: title for the 404 page.
+titArchives: title for the archives page.
 titLogin: title for the login page.
 titCatalog: title for the board's catalog. Replaces: {$board}.
 titRuleManagement: title for the board rule management page.

@@ -144,7 +144,10 @@ exports.cleanThreads = function(boardUri, early404, limit, language, callback) {
 
     exports.pruneThreadsForAggregation([ {
       $match : {
-        boardUri : boardUri
+        boardUri : boardUri,
+        archived : {
+          $ne : true
+        }
       }
     }, {
       $sort : {
@@ -183,7 +186,10 @@ exports.cleanThreads = function(boardUri, early404, limit, language, callback) {
 
   exports.pruneThreadsForAggregation([ {
     $match : {
-      boardUri : boardUri
+      boardUri : boardUri,
+      archived : {
+        $ne : true
+      }
     }
   }, {
     $sort : {

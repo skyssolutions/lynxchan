@@ -562,6 +562,7 @@ exports.getThread = function(req, parameters, userData, board, callback) {
       locked : 1,
       autoSage : 1,
       creation : 1,
+      archived : 1,
       postCount : 1,
       latestPosts : 1
     }
@@ -570,7 +571,7 @@ exports.getThread = function(req, parameters, userData, board, callback) {
       callback(error);
     } else if (!thread) {
       callback(lang(req.language).errThreadNotFound);
-    } else if (thread.locked) {
+    } else if (thread.locked || thread.archived) {
       callback(lang(req.language).errThreadLocked);
     } else if (thread.postCount >= autoLockLimit) {
       callback(lang(req.language).errThreadAutoLocked);

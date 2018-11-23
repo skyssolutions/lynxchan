@@ -1230,8 +1230,8 @@ Name: confirmEmail
 Description: confirms the specified account's e-mail. Uses get parameters.
 
 Parameters:
-  login: login of the account to be confirmed.
-  hash: token required to confirm the account.
+    login: login of the account to be confirmed.
+    hash: token required to confirm the account.
 
 ------------------------------------------------------------------------------------------
 
@@ -1239,11 +1239,11 @@ PAG_ID::81
 
 Name: latestPostings
 
-Description: displays all latest postings made on the site. Requires authentication.
+Description: displays all latest postings made on the site. Requires authentication. Uses get parameters.
 
 Parameters:
-  date(Date): date to start the listing. Will default to the start of the current day. The end date is 24 hours after it.
-  boards: list of boards to be read from. Will default to every board where the user can moderate.
+    date(Date): date to start the listing. Will default to the start of the current day. The end date is 24 hours after it.
+    boards: list of boards to be read from. Will default to every board where the user can moderate.
 
 JSON output(Array): array where each element is an object with the following fields:
     signedRole: role of the user that posted the thread.
@@ -1279,9 +1279,30 @@ Name: archiveThread
 Description: adds a thread to the archives. Requires authentication.
 
 Parameters:
-  boardUri: board the thread belongs to.
-  threadId(Number): id of the thread.
-  confirmation(Boolean): confirmation of the action.
+    boardUri: board the thread belongs to.
+    threadId(Number): id of the thread.
+    confirmation(Boolean): confirmation of the action.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::83
+
+Name: archives
+
+Description: displays archived threads. Uses get parameters.
+
+Parameters:
+    boards: lists of boards to list from.
+    page(Number): page to be fetched.
+
+Json output(Object): contains the following fields:
+    pages(Number): total amount of pages available.
+    threads(Array): array with the found archived threads. Contains objects each one with the following fields:
+        boardUri: board the thread belongs to.
+        threadId(Number): id of the thread.
+        subject: thread subject.
+        message: thread message.
+        creation(Date): date when the thread was created.
 
 ------------------------------------------------------------------------------------------
 

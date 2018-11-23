@@ -784,5 +784,26 @@
         "uses": "inner"
       }
     ]
+  },
+  {
+    "template": "archiveCell",
+    "prebuiltFields": [
+      {
+        "name": "idLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "dateLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "nameLabel",
+        "uses": "inner"
+      },
+      {
+        "name": "theadLink",
+        "uses": "href"
+      }
+    ]
   }
 ]

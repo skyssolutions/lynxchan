@@ -351,7 +351,10 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
   var toSkip = (page - 1) * pageSize;
 
   threads.find({
-    boardUri : boardUri
+    boardUri : boardUri,
+    archived : {
+      $ne : true
+    }
   }, {
     projection : threadProjection
   }).sort({
@@ -472,7 +475,10 @@ exports.catalog = function(boardUri, callback, boardData, flagData) {
   }
 
   threads.find({
-    boardUri : boardUri
+    boardUri : boardUri,
+    archived : {
+      $ne : true
+    }
   }, {
     projection : threadProjection
   }).sort({
