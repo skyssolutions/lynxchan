@@ -5,6 +5,8 @@ var path = require('path');
 var fs = require('fs');
 var cache = {};
 var staticCache = {};
+var next = {};
+var current = {};
 var gridFsHandler;
 var settingsHandler = require('../settingsHandler');
 var kernel = require('../kernel');
@@ -54,6 +56,17 @@ exports.loadDependencies = function() {
 
 exports.dropStaticCache = function() {
   staticCache = {};
+};
+
+exports.runTTL = function() {
+
+  for ( var entry in current) {
+    delete cache[entry];
+  }
+
+  current = next;
+  next = {};
+
 };
 
 // Section 1: Lock read {
@@ -299,7 +312,12 @@ exports.clearArray = function(object, indexKey) {
   var toClear = object[indexKey];
 
   while (toClear && toClear.length) {
-    delete cache[toClear.pop()];
+
+    var entry = toClear.pop();
+
+    delete current[entry];
+    delete next[entry];
+    delete cache[entry];
   }
 
   delete object[indexKey];
@@ -365,7 +383,9 @@ exports.pushIndex = function(indexToUse, key, dest) {
   var indexList = indexToUse[key] || [];
   indexToUse[key] = indexList;
 
-  indexList.push(dest);
+  if (indexList.indexOf(dest < 0)) {
+    indexList.push(dest);
+  }
 
 };
 
@@ -644,18 +664,23 @@ exports.getStaticFilePath = function(task) {
 exports.getAlternative = function(task, callback) {
 
   if (!task.isStatic) {
-    callback(null, exports.pickAlternative(task, cache[task.file]));
+    callback(null, exports.pickAlternative(task, task.file));
   } else {
     exports.getStaticFile(task, exports.getStaticFilePath(task), callback);
   }
 
 };
 
-exports.pickAlternative = function(task, alternatives) {
+exports.pickAlternative = function(task, file) {
+
+  var alternatives = cache[file];
 
   if (!alternatives) {
     return;
   }
+
+  delete current[file];
+  next[file] = true;
 
   var vanilla;
   var language;

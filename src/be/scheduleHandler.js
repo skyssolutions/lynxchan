@@ -3,13 +3,14 @@
 var fs = require('fs');
 var kernel = require('./kernel');
 var settingsHandler = require('./settingsHandler');
+var graphOps = require('./graphsOps');
 var settings = settingsHandler.getGeneralSettings();
 var verbose = settings.verbose || settings.verboseMisc;
 var ipExpiration = settings.ipExpirationDays;
 var tempDirectory = settings.tempDirectory;
 var captchaExpiration = settings.captchaExpiration;
 var debug = kernel.debug();
-var gridFsHandler = require('./engine/gridFsHandler');
+var gridFsHandler;
 var db = require('./db');
 var boards = db.boards();
 var stats = db.stats();
@@ -18,10 +19,10 @@ var posts = db.posts();
 var uniqueIps = db.uniqueIps();
 var files = db.files();
 var users = db.users();
-var torHandler = require('./engine/torOps');
-var spamOps = require('./engine/spamOps');
-var graphOps = require('./graphsOps');
-var referenceHandler = require('./engine/mediaHandler');
+var cacheHandler;
+var torHandler;
+var spamOps;
+var referenceHandler;
 var schedules = {};
 
 exports.reload = function() {
@@ -32,6 +33,7 @@ exports.reload = function() {
   verbose = settings.verbose || settings.verboseMisc;
   tempDirectory = settings.tempDirectory;
   captchaExpiration = settings.captchaExpiration;
+  cacheHandler = require('./engine/cacheHandler');
   gridFsHandler = require('./engine/gridFsHandler');
   torHandler = require('./engine/torOps');
   spamOps = require('./engine/spamOps');
@@ -201,7 +203,7 @@ function getStats() {
         }
       }
     }
-  } ]).toArray( function gotStats(error, result) {
+  } ]).toArray(function gotStats(error, result) {
 
     if (error) {
 
@@ -308,6 +310,8 @@ function boardsStats() {
       clearIps();
     }
 
+    cacheHandler.runTTL();
+
   }, tickTime.getTime() - current);
 }
 // } Section 2: Board stats recording
@@ -407,7 +411,7 @@ function checkExpiredCaptchas() {
         $push : '$filename'
       }
     }
-  } ]).toArray( function gotExpiredFiles(error, results) {
+  } ]).toArray(function gotExpiredFiles(error, results) {
     if (error) {
 
       if (debug) {
@@ -551,7 +555,7 @@ function updateUniqueIpCount() {
         $size : '$ips'
       }
     }
-  } ]).toArray( function gotCount(error, results) {
+  } ]).toArray(function gotCount(error, results) {
 
     uniqueIps.deleteMany({}, function clearedUniqueIps(deletionError) {
 
