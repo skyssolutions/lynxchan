@@ -16,9 +16,11 @@ var omitUnindexed;
 var CSP;
 var globalBoardModeration;
 var lang;
+var sender;
 var ssl;
 var clearIpMinRole;
 var settingsRelation;
+var mailer;
 
 var MAX_STAFF_ROLE = 3;
 exports.plainTextMimes = [ 'application/x-javascript', 'application/json',
@@ -31,11 +33,16 @@ exports.loadSettings = function() {
   var settings = settingsHandler.getGeneralSettings();
 
   ssl = settings.ssl;
+  sender = settings.emailSender;
   globalBoardModeration = settings.allowGlobalBoardModeration;
   CSP = settings.CSP;
   clearIpMinRole = settings.clearIpMinRole;
   omitUnindexed = settings.omitUnindexedContent;
   verbose = settings.verbose || settings.verboseMisc;
+
+  mailer = require('nodemailer').createTransport(settings.useSendmail ? {
+    sendmail : true
+  } : require('nodemailer-direct-transport')());
 
 };
 
@@ -61,6 +68,24 @@ exports.loadDependencies = function() {
     settingsRelation = data.toString('utf8');
 
   });
+
+};
+
+exports.sendMail = function(subject, content, recipient, callback) {
+
+  var data = {
+    from : sender,
+    subject : subject,
+    html : content
+  };
+
+  if (Array.isArray(recipient)) {
+    data.bcc = recipient.join(', ');
+  } else {
+    data.to = recipient;
+  }
+
+  mailer.sendMail(data, callback);
 
 };
 

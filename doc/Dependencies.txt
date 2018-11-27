@@ -3,11 +3,13 @@ These steps are not mandatory to achieve the dependency status laid out on the r
 
 1: Start out with the latest CentOS release, a minimal install.
 2: Install Mongodb according to these instructions: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-red-hat/ Install all packages through the meta-package, you will eventually need them. If mongo isn't started and enabled right after install, use systemctl enable mongod and systemctl start mongod.
-3: Install devtoolset-6 acoording to these instructions: https://www.softwarecollections.org/en/scls/rhscl/devtoolset-6/ .
+3: Install devtoolset-6 acoording to these instructions: https://www.softwarecollections.org/en/scls/rhscl/devtoolset-6/ . You need to enable it for the node compilation and installation.
 4: Clone Node.js source code from https://github.com/nodejs/node.git and checkout the latest tag for the required version on the readme. You can list tags using git tag -l and filter using grep.
 5: Run ./configure and them make. You can add -jX where X is the amount of cores yours CPU have if you have more than 1 core available. After compiling, run sudo make install.
 6: Install zlib-devel and ImageMagick.
 7: Clone git://source.ffmpeg.org/ffmpeg.git and checkout the latest tag for the required version on the readme.
 8: Compile and install just like node.
+9: If you wish to send e-mails through sendmail, install and configure it. Then enable the setting that will make LynxChan use it instead of sending them directly.
 
 After this you will also have to open the port 25 for smtp, if I am not mistaken, for the sending of e-mails and don't forget the tcp port you wish to provide access through.
+Naturally, if you opt to send e-mails through sendmail you won't necessarily need to open port 25/smtp.

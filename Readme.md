@@ -16,6 +16,7 @@ See other branches named like `1.1.x` for stable versions. They will receive onl
 * [ImageMagick](http://www.imagemagick.org/script/index.php) 6.7.8-9
 * [A front-end](https://gitgud.io/LynxChan/LynxChanFront-Placeholder) that must either be placed on the `src/fe` directory or have it's absolute path set on the general.json file. Read the readme.md on src/be for more information about how to configure the path for the front-end.
 * [ffmpeg](https://www.ffmpeg.org/) (Optional) 4.0 if mediaThumb setting is enabled. Requires zlib-devel on centOS to work properly when compiled from source.
+* [Sendmail](https://www.proofpoint.com/us/open-source-email-solution) (Optional) 8.14.7 if the option to send e-mails through sendmail is enabled.
 
 If you need help installing these, consult doc/Dependencies.txt.
 

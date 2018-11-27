@@ -12,7 +12,6 @@ var bans = db.bans();
 var users = db.users();
 var reports = db.reports();
 var logger = require('../../logger');
-var mailer = logger.mailer;
 var maxStaffRole;
 var multipleReports;
 var logOps;
@@ -24,7 +23,6 @@ var moduleRoot;
 var ipBan;
 var specificOps;
 var formOps;
-var sender;
 var common;
 var captchaOps;
 var globalBoardModeration;
@@ -42,7 +40,6 @@ exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
   multipleReports = settings.multipleReports;
   allowBlockedToReport = settings.allowBlockedToReport;
-  sender = settings.emailSender;
   globalBoardModeration = settings.allowGlobalBoardModeration;
 
 };
@@ -166,12 +163,9 @@ exports.fetchEmails = function(req, report, mods, callback) {
         url += '#' + report.postId;
       }
 
-      mailer.sendMail({
-        from : sender,
-        bcc : results[0].emails.join(', '),
-        subject : subject,
-        html : domManipulator.reportNotificationEmail(url)
-      }, callback);
+      var body = domManipulator.reportNotificationEmail(url);
+
+      miscOps.sendMail(subject, body, results[0].emails, callback);
 
     }
 

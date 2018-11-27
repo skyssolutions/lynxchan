@@ -1771,6 +1771,10 @@ checkboxUseAlternativeLanguages:
     use: might be turned on.
     description: indicates if the engine should use registered alternative languages.
 
+checkboxSendmail:
+    use: might be turned on.
+    description: indicates if the engine will send mails through sendmail.
+
 checkboxBoardStaffArchiving:
     use: might be turned on.
     description: indicates if board staff is allowed to archive threads.

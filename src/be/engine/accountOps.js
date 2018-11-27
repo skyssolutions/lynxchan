@@ -8,7 +8,6 @@ var boards = db.boards();
 var requests = db.recoveryRequests();
 var confirmations = db.confirmations();
 var crypto = require('crypto');
-var mailer = require('../logger').mailer;
 var sender;
 var creationDisabled;
 var logOps;
@@ -396,12 +395,9 @@ exports.generateRequest = function(domain, login, language, email, callback) {
       var recoveryLink = domain + '/recoverAccount.js?hash=' + requestHash;
       recoveryLink += '&login=' + login;
 
-      mailer.sendMail({
-        from : sender,
-        to : email,
-        subject : lang(language).subPasswordRequest,
-        html : domManipulator.recoveryEmail(recoveryLink, login, language)
-      }, callback);
+      miscOps.sendMail(lang(language).subPasswordRequest, domManipulator
+          .recoveryEmail(recoveryLink, login, language), email, callback);
+
     }
 
   });
@@ -497,12 +493,8 @@ exports.generateNewPassword = function(login, callback, language) {
           callback(error);
         } else {
 
-          mailer.sendMail({
-            from : sender,
-            to : user.email,
-            subject : lang(language).subPasswordReset,
-            html : domManipulator.resetEmail(newPass, language)
-          }, callback);
+          miscOps.sendMail(lang(language).subPasswordReset, domManipulator
+              .resetEmail(newPass, language), user.email, callback);
 
         }
 
@@ -882,13 +874,9 @@ exports.generateRequestKey = function(domain, userData, language, callback) {
       var confirmationLink = domain + '/confirmEmail.js?login=';
       confirmationLink += userData.login + '&hash=' + token;
 
-      mailer.sendMail({
-        from : sender,
-        to : userData.email,
-        subject : lang(language).subEmailConfirmation,
-        html : domManipulator.confirmationEmail(confirmationLink,
-            userData.login, language)
-      }, callback);
+      miscOps.sendMail(lang(language).subEmailConfirmation, domManipulator
+          .confirmationEmail(confirmationLink, userData.login, language),
+          userData.email, callback);
 
     }
 

@@ -179,6 +179,7 @@ Settings files that goes into the settings directory:
 * `disableLatestPostings`(Boolean): disables the setting that allows staff to see the latest postings of boards they can moderate and removes the link to this feature from the account page.
 * `allowBoardStaffArchiving`(Boolean): allows board staff to archive threads.
 * `maxBoardRangeBans`(Number): limit for board range bans boards can have. Defaults to 128. It will be ignored when banning from an existing post.
+* `useSendmail`(Boolean): causes e-mails to be sent through your sendmail command instead of directly.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

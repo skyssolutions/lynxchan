@@ -1361,6 +1361,10 @@
         "uses": "checked"
       },
       {
+        "name": "checkboxSendmail",
+        "uses": "checked"
+      },
+      {
         "name": "checkboxDisableSpamCheck",
         "uses": "checked"
       },
