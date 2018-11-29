@@ -1,104 +1,85 @@
 [
   {
     "template": "catalogCell",
-    "prebuiltFields": [
-      {
-        "name": "linkThumb",
+    "prebuiltFields": {
+      "linkThumb": {
         "uses": [
           "inner",
           "href"
         ]
       },
-      {
-        "name": "labelReplies",
+      "labelReplies": {
         "uses": "inner"
       },
-      {
-        "name": "labelImages",
+      "labelImages": {
         "uses": "inner"
       },
-      {
-        "name": "labelPage",
+      "labelPage": {
         "uses": "inner"
       },
-      {
-        "name": "bumpLockIndicator",
+      "bumpLockIndicator": {
         "uses": "removal"
       },
-      {
-        "name": "cyclicIndicator",
+      "cyclicIndicator": {
         "uses": "removal"
       },
-      {
-        "name": "labelSubject",
+      "labelSubject": {
         "uses": [
           "removal",
           "inner"
         ]
       },
-      {
-        "name": "divMessage",
+      "divMessage": {
         "uses": "inner"
       },
-      {
-        "name": "lockIndicator",
+      "lockIndicator": {
         "uses": "removal"
       },
-      {
-        "name": "pinIndicator",
+      "pinIndicator": {
         "uses": "removal"
       }
-    ]
+    }
   },
   {
     "template": "bannerCell",
-    "prebuiltFields": [
-      {
-        "name": "bannerImage",
+    "prebuiltFields": {
+      "bannerImage": {
         "uses": "src"
       },
-      {
-        "name": "bannerIdentifier",
+      "bannerIdentifier": {
         "uses": "value"
       }
-    ]
+    }
   },
   {
     "template": "opCell",
-    "prebuiltFields": [
-      {
-        "name": "contentOmissionIndicator",
+    "prebuiltFields": {
+      "contentOmissionIndicator": {
         "uses": "removal"
       },
-      {
-        "name": "linkName",
+      "linkName": {
         "uses": [
           "inner",
           "href",
           "class"
         ]
       },
-      {
-        "name": "linkFullText",
+      "linkFullText": {
         "uses": "href"
       },
-      {
-        "name": "labelIp",
+      "labelIp": {
         "uses": "inner"
       },
-      {
-        "name": "panelRange",
+      "panelRange": {
         "uses": "removal"
       },
-      {
-        "name": "linkEdit",
+      "linkEdit": {
         "uses": [
           "href",
           "removal"
         ]
       },
-      {
-        "name": "imgFlag",
+      "imgFlag": {
         "uses": [
           "title",
           "src",
@@ -106,161 +87,126 @@
           "class"
         ]
       },
-      {
-        "name": "labelLastEdit",
+      "labelLastEdit": {
         "uses": [
           "inner",
           "removal"
         ]
       },
-      {
-        "name": "labelOmission",
+      "labelOmission": {
         "uses": [
           "inner",
           "removal"
         ]
       },
-      {
-        "name": "panelUploads",
+      "panelUploads": {
         "uses": [
           "removal",
           "children"
         ]
       },
-      {
-        "name": "panelIp",
+      "panelIp": {
         "uses": "removal"
       },
-      {
-        "name": "labelBroadRange",
+      "labelBroadRange": {
         "uses": "inner"
       },
-      {
-        "name": "labelNarrowRange",
+      "labelNarrowRange": {
         "uses": "inner"
       },
-      {
-        "name": "labelSubject",
+      "labelSubject": {
         "uses": [
           "inner",
           "removal"
         ]
       },
-      {
-        "name": "labelCreated",
+      "labelCreated": {
         "uses": "inner"
       },
-      {
-        "name": "divMessage",
+      "divMessage": {
         "uses": "inner"
       },
-      {
-        "name": "divPosts",
+      "divPosts": {
         "uses": "children"
       },
-      {
-        "name": "linkReply",
+      "linkReply": {
         "uses": [
           "href",
           "removal"
         ]
       },
-      {
-        "name": "linkSelf",
+      "linkSelf": {
         "uses": "href"
       },
-      {
-        "name": "linkQuote",
+      "linkQuote": {
         "uses": [
           "href",
           "inner"
         ]
       },
-      {
-        "name": "linkQuote",
-        "uses": [
-          "href",
-          "inner"
-        ]
-      },
-      {
-        "name": "deletionCheckBox",
+      "deletionCheckBox": {
         "uses": [
           "removal",
           "name"
         ]
       },
-      {
-        "name": "lockIndicator",
+      "lockIndicator": {
         "uses": "removal"
       },
-      {
-        "name": "archiveIndicator",
+      "archiveIndicator": {
         "uses": "removal"
       },
-      {
-        "name": "bumpLockIndicator",
+      "bumpLockIndicator": {
         "uses": "removal"
       },
-      {
-        "name": "cyclicIndicator",
+      "cyclicIndicator": {
         "uses": "removal"
       },
-      {
-        "name": "pinIndicator",
+      "pinIndicator": {
         "uses": "removal"
       },
-      {
-        "name": "spanId",
+      "spanId": {
         "uses": "removal"
       },
-      {
-        "name": "labelId",
+      "labelId": {
         "uses": [
           "inner",
           "style"
         ]
       },
-      {
-        "name": "labelRole",
+      "labelRole": {
         "uses": [
           "inner",
           "removal"
         ]
       },
-      {
-        "name": "divBanMessage",
+      "divBanMessage": {
         "uses": [
           "inner",
           "removal"
         ]
       }
-    ]
+    }
   },
   {
     "template": "postCell",
-    "prebuiltFields": [
-      {
-        "name": "contentOmissionIndicator",
+    "prebuiltFields": {
+      "contentOmissionIndicator": {
         "uses": "removal"
       },
-      {
-        "name": "linkFullText",
+      "linkFullText": {
         "uses": "href"
       },
-      {
-        "name": "labelIp",
+      "labelIp": {
         "uses": "inner"
       },
-      {
-        "name": "divBanMessage",
+      "divBanMessage": {
         "uses": [
           "removal",
           "inner"
         ]
       },
-      {
-        "name": "imgFlag",
+      "imgFlag": {
         "uses": [
           "src",
           "removal",
@@ -268,361 +214,294 @@
           "class"
         ]
       },
-      {
-        "name": "labelLastEdit",
+      "labelLastEdit": {
         "uses": [
           "inner",
           "removal"
         ]
       },
-      {
-        "name": "linkEdit",
+      "linkEdit": {
         "uses": [
           "href",
           "removal"
         ]
       },
-      {
-        "name": "panelRange",
+      "panelRange": {
         "uses": "removal"
       },
-      {
-        "name": "panelIp",
+      "panelIp": {
         "uses": "removal"
       },
-      {
-        "name": "labelBroadRange",
+      "labelBroadRange": {
         "uses": "inner"
       },
-      {
-        "name": "labelNarrowRange",
+      "labelNarrowRange": {
         "uses": "inner"
       },
-      {
-        "name": "panelUploads",
+      "panelUploads": {
         "uses": [
           "removal",
           "children"
         ]
       },
-      {
-        "name": "labelRole",
+      "labelRole": {
         "uses": [
           "inner",
           "removal"
         ]
       },
-      {
-        "name": "linkName",
+      "linkName": {
         "uses": [
           "inner",
           "href",
           "class"
         ]
       },
-      {
-        "name": "labelSubject",
+      "labelSubject": {
         "uses": [
           "inner",
           "removal"
         ]
       },
-      {
-        "name": "labelCreated",
+      "labelCreated": {
         "uses": "inner"
       },
-      {
-        "name": "divMessage",
+      "divMessage": {
         "uses": "inner"
       },
-      {
-        "name": "linkSelf",
+      "linkSelf": {
         "uses": "href"
       },
-      {
-        "name": "linkQuote",
+      "linkQuote": {
         "uses": [
           "href",
           "inner"
         ]
       },
-      {
-        "name": "deletionCheckBox",
+      "deletionCheckBox": {
         "uses": [
           "removal",
           "name"
         ]
       },
-      {
-        "name": "spanId",
+      "spanId": {
         "uses": "removal"
       },
-      {
-        "name": "labelId",
+      "labelId": {
         "uses": [
           "inner",
           "style"
         ]
       }
-    ]
+    }
   },
   {
     "template": "staffCell",
-    "prebuiltFields": [
-      {
-        "name": "userIdentifier",
+    "prebuiltFields": {
+      "userIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "userLabel",
+      "userLabel": {
         "uses": "inner"
       },
-      {
-        "name": "roleCombo",
+      "roleCombo": {
         "uses": "children"
       }
-    ]
+    }
   },
   {
     "template": "volunteerCell",
-    "prebuiltFields": [
-      {
-        "name": "boardIdentifier",
+    "prebuiltFields": {
+      "boardIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "userIdentifier",
+      "userIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "userLabel",
+      "userLabel": {
         "uses": "inner"
       }
-    ]
+    }
   },
   {
     "template": "reportCell",
-    "prebuiltFields": [
-      {
-        "name": "reasonLabel",
+    "prebuiltFields": {
+      "reasonLabel": {
         "uses": "inner"
       },
-      {
-        "name": "link",
+      "link": {
         "uses": "href"
       },
-      {
-        "name": "postingDiv",
+      "postingDiv": {
         "uses": "inner"
       },
-      {
-        "name": "closureCheckbox",
+      "closureCheckbox": {
         "uses": "name"
       }
-    ]
+    }
   },
   {
     "template": "closedReportCell",
-    "prebuiltFields": [
-      {
-        "name": "reasonLabel",
+    "prebuiltFields": {
+      "reasonLabel": {
         "uses": "inner"
       },
-      {
-        "name": "link",
+      "link": {
         "uses": "href"
       },
-      {
-        "name": "closedByLabel",
+      "closedByLabel": {
         "uses": "inner"
       },
-      {
-        "name": "closedDateLabel",
+      "closedDateLabel": {
         "uses": "inner"
       }
-    ]
+    }
   },
   {
     "template": "banCell",
-    "prebuiltFields": [
-      {
-        "name": "reasonLabel",
+    "prebuiltFields": {
+      "reasonLabel": {
         "uses": "inner"
       },
-      {
-        "name": "expirationLabel",
+      "expirationLabel": {
         "uses": "inner"
       },
-      {
-        "name": "appliedByLabel",
+      "appliedByLabel": {
         "uses": "inner"
       },
-      {
-        "name": "idLabel",
+      "idLabel": {
         "uses": "inner"
       },
-      {
-        "name": "denyForm",
+      "denyForm": {
         "uses": "removal"
       },
-      {
-        "name": "denyIdentifier",
+      "denyIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "appealPanel",
+      "appealPanel": {
         "uses": "removal"
       },
-      {
-        "name": "appealLabel",
+      "appealLabel": {
         "uses": "inner"
       },
-      {
-        "name": "liftIdentifier",
+      "liftIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "boardLabel",
+      "boardLabel": {
         "uses": "inner"
       },
-      {
-        "name": "boardPanel",
+      "boardPanel": {
         "uses": "removal"
       }
-    ]
+    }
   },
   {
     "template": "logCell",
-    "prebuiltFields": [
-      {
-        "name": "indicatorGlobal",
+    "prebuiltFields": {
+      "indicatorGlobal": {
         "uses": "removal"
       },
-      {
-        "name": "labelUser",
+      "labelUser": {
         "uses": "inner"
       },
-      {
-        "name": "labelTime",
+      "labelTime": {
         "uses": "inner"
       },
-      {
-        "name": "labelDescription",
+      "labelDescription": {
         "uses": "inner"
       },
-      {
-        "name": "labelBoard",
+      "labelBoard": {
         "uses": "inner"
       },
-      {
-        "name": "labelType",
+      "labelType": {
         "uses": "inner"
       }
-    ]
+    }
   },
   {
     "template": "filterCell",
-    "prebuiltFields": [
-      {
-        "name": "labelOriginal",
+    "prebuiltFields": {
+      "labelOriginal": {
         "uses": "inner"
       },
-      {
-        "name": "labelReplacement",
+      "labelReplacement": {
         "uses": "inner"
       },
-      {
-        "name": "boardIdentifier",
+      "boardIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "filterIdentifier",
+      "filterIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "labelCaseInsensitive",
+      "labelCaseInsensitive": {
         "uses": "removal"
       }
-    ]
+    }
   },
   {
     "template": "boardsCell",
-    "prebuiltFields": [
-      {
-        "name": "linkBoard",
+    "prebuiltFields": {
+      "linkBoard": {
         "uses": [
           "href",
           "inner"
         ]
       },
-      {
-        "name": "labelPostsPerHour",
+      "labelPostsPerHour": {
         "uses": "inner"
       },
-      {
-        "name": "labelPostCount",
+      "labelPostCount": {
         "uses": "inner"
       },
-      {
-        "name": "divDescription",
+      "divDescription": {
         "uses": "href"
       },
-      {
-        "name": "labelTags",
+      "labelTags": {
         "uses": [
           "inner",
           "removal"
         ]
       },
-      {
-        "name": "labelUniqueIps",
+      "labelUniqueIps": {
         "uses": "inner"
       },
-      {
-        "name": "indicatorSfw",
+      "indicatorSfw": {
         "uses": "removal"
       },
-      {
-        "name": "indicatorInactive",
+      "indicatorInactive": {
         "uses": "removal"
       }
-    ]
+    }
   },
   {
     "template": "rangeBanCell",
-    "prebuiltFields": [
-      {
-        "name": "rangeLabel",
+    "prebuiltFields": {
+      "rangeLabel": {
         "uses": "inner"
       },
-      {
-        "name": "idIdentifier",
+      "idIdentifier": {
         "uses": "value"
       }
-    ]
+    }
   },
   {
     "template": "hashBanCell",
-    "prebuiltFields": [
-      {
-        "name": "hashLabel",
+    "prebuiltFields": {
+      "hashLabel": {
         "uses": "inner"
       },
-      {
-        "name": "idIdentifier",
+      "idIdentifier": {
         "uses": "value"
       }
-    ]
+    }
   },
   {
     "template": "uploadCell",
-    "prebuiltFields": [
-      {
-        "name": "sizeLabel",
+    "prebuiltFields": {
+      "sizeLabel": {
         "uses": "inner"
       },
-      {
-        "name": "imgLink",
+      "imgLink": {
         "uses": [
           "children",
           "href",
@@ -631,179 +510,149 @@
           "mime"
         ]
       },
-      {
-        "name": "nameLink",
+      "nameLink": {
         "uses": "href"
       },
-      {
-        "name": "divHash",
+      "divHash": {
         "uses": "removal"
       },
-      {
-        "name": "labelHash",
+      "labelHash": {
         "uses": "inner"
       },
-      {
-        "name": "originalNameLink",
+      "originalNameLink": {
         "uses": [
           "inner",
           "href",
           "download"
         ]
       },
-      {
-        "name": "dimensionLabel",
+      "dimensionLabel": {
         "uses": [
           "removal",
           "inner"
         ]
       }
-    ]
+    }
   },
   {
     "template": "ruleManagementCell",
-    "prebuiltFields": [
-      {
-        "name": "indexIdentifier",
+    "prebuiltFields": {
+      "indexIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "boardIdentifier",
+      "boardIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "textLabel",
+      "textLabel": {
         "uses": "inner"
       }
-    ]
+    }
   },
   {
     "template": "ruleCell",
-    "prebuiltFields": [
-      {
-        "name": "indexLabel",
+    "prebuiltFields": {
+      "indexLabel": {
         "uses": "inner"
       },
-      {
-        "name": "textLabel",
+      "textLabel": {
         "uses": "inner"
       }
-    ]
+    }
   },
   {
     "template": "flagCell",
-    "prebuiltFields": [
-      {
-        "name": "flagImg",
+    "prebuiltFields": {
+      "flagImg": {
         "uses": "src"
       },
-      {
-        "name": "nameLabel",
+      "nameLabel": {
         "uses": "inner"
       },
-      {
-        "name": "idIdentifier",
+      "idIdentifier": {
         "uses": "value"
       }
-    ]
+    }
   },
   {
     "template": "hashBanCellDisplay",
-    "prebuiltFields": [
-      {
-        "name": "labelFile",
+    "prebuiltFields": {
+      "labelFile": {
         "uses": "inner"
       },
-      {
-        "name": "labelBoard",
+      "labelBoard": {
         "uses": "inner"
       }
-    ]
+    }
   },
   {
     "template": "latestPostCell",
-    "prebuiltFields": [
-      {
-        "name": "labelPreview",
+    "prebuiltFields": {
+      "labelPreview": {
         "uses": "inner"
       },
-      {
-        "name": "linkPost",
+      "linkPost": {
         "uses": [
           "inner",
           "href"
         ]
       }
-    ]
+    }
   },
   {
     "template": "mediaCell",
-    "prebuiltFields": [
-      {
-        "name": "identifierCheckbox",
+    "prebuiltFields": {
+      "identifierCheckbox": {
         "uses": "name"
       },
-      {
-        "name": "thumbImg",
+      "thumbImg": {
         "uses": "src"
       },
-      {
-        "name": "fileLink",
+      "fileLink": {
         "uses": [
           "href",
           "inner"
         ]
       },
-      {
-        "name": "referencesLabel",
+      "referencesLabel": {
         "uses": "inner"
       },
-      {
-        "name": "detailsLink",
+      "detailsLink": {
         "uses": "href"
       }
-    ]
+    }
   },
   {
     "template": "languageCell",
-    "prebuiltFields": [
-      {
-        "name": "languageIdentifier",
+    "prebuiltFields": {
+      "languageIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "frontEndLabel",
+      "frontEndLabel": {
         "uses": "inner"
       },
-      {
-        "name": "languagePackLabel",
+      "languagePackLabel": {
         "uses": "inner"
       },
-      {
-        "name": "headerValuesLabel",
+      "headerValuesLabel": {
         "uses": "inner"
       }
-    ]
+    }
   },
   {
     "template": "archiveCell",
-    "prebuiltFields": [
-      {
-        "name": "idLabel",
+    "prebuiltFields": {
+      "idLabel": {
         "uses": "inner"
       },
-      {
-        "name": "dateLabel",
+      "dateLabel": {
         "uses": "inner"
       },
-      {
-        "name": "nameLabel",
+      "nameLabel": {
         "uses": "inner"
       },
-      {
-        "name": "theadLink",
+      "theadLink": {
         "uses": "href"
       }
-    ]
+    }
   }
 ]

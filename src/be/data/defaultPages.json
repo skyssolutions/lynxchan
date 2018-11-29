@@ -1,1658 +1,1318 @@
 [
   {
     "template": "loginPage",
-    "prebuiltFields": [
-      {
-        "name": "divCreation",
+    "prebuiltFields": {
+      "divCreation": {
         "uses": "removal"
       }
-    ]
+    }
   },
   {
     "template": "catalogPage",
-    "prebuiltFields": [
-      {
-        "name": "noFlagDiv",
+    "prebuiltFields": {
+      "noFlagDiv": {
         "uses": "removal"
       },
-      {
-        "name": "divThreads",
+      "divThreads": {
         "uses": "children"
       },
-      {
-        "name": "labelBoard",
+      "labelBoard": {
         "uses": "inner"
       },
-      {
-        "name": "flagsDiv",
+      "flagsDiv": {
         "uses": "removal"
       },
-      {
-        "name": "flagCombobox",
+      "flagCombobox": {
         "uses": "children"
       },
-      {
-        "name": "boardIdentifier",
+      "boardIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "captchaDiv",
+      "captchaDiv": {
         "uses": "removal"
       },
-      {
-        "name": "labelMaxFileSize",
+      "labelMaxFileSize": {
         "uses": "inner"
       },
-      {
-        "name": "labelMaxFiles",
+      "labelMaxFiles": {
         "uses": "inner"
       },
-      {
-        "name": "labelMessageLength",
+      "labelMessageLength": {
         "uses": "inner"
       },
-      {
-        "name": "divUpload",
+      "divUpload": {
         "uses": "removal"
       },
-      {
-        "name": "postingForm",
+      "postingForm": {
         "uses": "removal"
       },
-      {
-        "name": "inputFiles",
+      "inputFiles": {
         "uses": "accept"
       }
-    ]
+    }
   },
   {
     "template": "resetEmail",
     "noTitle": true,
-    "prebuiltFields": [
-      {
-        "name": "labelNewPass",
+    "prebuiltFields": {
+      "labelNewPass": {
         "uses": "inner"
       }
-    ]
+    }
   },
   {
     "template": "reportNotificationEmail",
     "noTitle": true,
-    "prebuiltFields": [
-      {
-        "name": "linkThread",
+    "prebuiltFields": {
+      "linkThread": {
         "uses": [
           "href",
           "inner"
         ]
       }
-    ]
+    }
   },
   {
     "template": "confirmationEmail",
     "noTitle": true,
-    "prebuiltFields": [
-      {
-        "name": "loginLabel",
+    "prebuiltFields": {
+      "loginLabel": {
         "uses": "inner"
       },
-      {
-        "name": "confirmationLink",
+      "confirmationLink": {
         "uses": "href"
       }
-    ]
+    }
   },
   {
     "template": "bannerManagementPage",
-    "prebuiltFields": [
-      {
-        "name": "bannersDiv",
+    "prebuiltFields": {
+      "bannersDiv": {
         "uses": "children"
       },
-      {
-        "name": "maxSizeLabel",
+      "maxSizeLabel": {
         "uses": "inner"
       },
-      {
-        "name": "boardIdentifier",
+      "boardIdentifier": {
         "uses": [
           "value",
           "removal"
         ]
       }
-    ]
+    }
   },
   {
     "template": "errorPage",
-    "prebuiltFields": [
-      {
-        "name": "codeLabel",
+    "prebuiltFields": {
+      "codeLabel": {
         "uses": "inner"
       },
-      {
-        "name": "errorLabel",
+      "errorLabel": {
         "uses": "inner"
       }
-    ]
+    }
   },
   {
     "template": "recoveryEmail",
     "noTitle": true,
-    "prebuiltFields": [
-      {
-        "name": "linkRecovery",
+    "prebuiltFields": {
+      "linkRecovery": {
         "uses": "href"
       },
-      {
-        "name": "loginLabel",
+      "loginLabel": {
         "uses": "inner"
       }
-    ]
+    }
   },
   {
     "template": "index",
-    "prebuiltFields": [
-      {
-        "name": "divBoards",
+    "prebuiltFields": {
+      "divBoards": {
         "uses": [
           "removal",
           "children"
         ]
       },
-      {
-        "name": "divLatestImages",
+      "divLatestImages": {
         "uses": [
           "removal",
           "children"
         ]
       },
-      {
-        "name": "divLatestPosts",
+      "divLatestPosts": {
         "uses": [
           "removal",
           "children"
         ]
       },
-      {
-        "name": "linkEngine",
+      "linkEngine": {
         "uses": [
           "href",
           "inner"
         ]
       },
-      {
-        "name": "divStats",
+      "divStats": {
         "uses": "removal"
       },
-      {
-        "name": "labelTotalPosts",
+      "labelTotalPosts": {
         "uses": "inner"
       },
-      {
-        "name": "labelTotalIps",
+      "labelTotalIps": {
         "uses": "inner"
       },
-      {
-        "name": "labelTotalBoards",
+      "labelTotalBoards": {
         "uses": "inner"
       },
-      {
-        "name": "labelTotalPPH",
+      "labelTotalPPH": {
         "uses": "inner"
       },
-      {
-        "name": "labelTotalFiles",
+      "labelTotalFiles": {
         "uses": "inner"
       },
-      {
-        "name": "labelTotalSize",
+      "labelTotalSize": {
         "uses": "inner"
       }
-    ]
+    }
   },
   {
     "template": "boardPage",
     "headChildren": true,
     "bodyChildren": true,
-    "prebuiltFields": [
-      {
-        "name": "labelName",
+    "prebuiltFields": {
+      "labelName": {
         "uses": "inner"
       },
-      {
-        "name": "labelDescription",
+      "labelDescription": {
         "uses": "inner"
       },
-      {
-        "name": "noFlagDiv",
+      "noFlagDiv": {
         "uses": "removal"
       },
-      {
-        "name": "panelMessage",
+      "panelMessage": {
         "uses": "removal"
       },
-      {
-        "name": "divMessage",
+      "divMessage": {
         "uses": "inner"
       },
-      {
-        "name": "flagsDiv",
+      "flagsDiv": {
         "uses": "removal"
       },
-      {
-        "name": "flagCombobox",
+      "flagCombobox": {
         "uses": "children"
       },
-      {
-        "name": "divThreads",
+      "divThreads": {
         "uses": "children"
       },
-      {
-        "name": "divPages",
+      "divPages": {
         "uses": "children"
       },
-      {
-        "name": "boardIdentifier",
+      "boardIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "linkManagement",
+      "linkManagement": {
         "uses": "href"
       },
-      {
-        "name": "linkModeration",
+      "linkModeration": {
         "uses": "href"
       },
-      {
-        "name": "bannerImage",
+      "bannerImage": {
         "uses": "src"
       },
-      {
-        "name": "captchaDiv",
+      "captchaDiv": {
         "uses": "removal"
       },
-      {
-        "name": "divName",
+      "divName": {
         "uses": "removal"
       },
-      {
-        "name": "labelMaxFileSize",
+      "labelMaxFileSize": {
         "uses": "inner"
       },
-      {
-        "name": "linkPrevious",
+      "linkPrevious": {
         "uses": [
           "href",
           "removal"
         ]
       },
-      {
-        "name": "linkNext",
+      "linkNext": {
         "uses": [
           "href",
           "removal"
         ]
       },
-      {
-        "name": "labelMaxFiles",
+      "labelMaxFiles": {
         "uses": "inner"
       },
-      {
-        "name": "labelMessageLength",
+      "labelMessageLength": {
         "uses": "inner"
       },
-      {
-        "name": "divUpload",
+      "divUpload": {
         "uses": "removal"
       },
-      {
-        "name": "inputFiles",
+      "inputFiles": {
         "uses": "accept"
       }
-    ]
+    }
   },
   {
     "template": "threadPage",
     "headChildren": true,
     "bodyChildren": true,
-    "prebuiltFields": [
-      {
-        "name": "noFlagDiv",
+    "prebuiltFields": {
+      "noFlagDiv": {
         "uses": "removal"
       },
-      {
-        "name": "ipDeletionForm",
+      "ipDeletionForm": {
         "uses": "removal"
       },
-      {
-        "name": "divArchive",
+      "divArchive": {
         "uses": "removal"
       },
-      {
-        "name": "panelMessage",
+      "panelMessage": {
         "uses": "removal"
       },
-      {
-        "name": "divMessage",
+      "divMessage": {
         "uses": "inner"
       },
-      {
-        "name": "labelName",
+      "labelName": {
         "uses": "inner"
       },
-      {
-        "name": "flagsDiv",
+      "flagsDiv": {
         "uses": "removal"
       },
-      {
-        "name": "flagCombobox",
+      "flagCombobox": {
         "uses": "children"
       },
-      {
-        "name": "labelDescription",
+      "labelDescription": {
         "uses": "inner"
       },
-      {
-        "name": "divThreads",
+      "divThreads": {
         "uses": "children"
       },
-      {
-        "name": "boardIdentifier",
+      "boardIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "threadIdentifier",
+      "threadIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "linkManagement",
+      "linkManagement": {
         "uses": "href"
       },
-      {
-        "name": "linkMod",
+      "linkMod": {
         "uses": "href"
       },
-      {
-        "name": "divMod",
+      "divMod": {
         "uses": "removal"
       },
-      {
-        "name": "divControls",
+      "divControls": {
         "uses": "removal"
       },
-      {
-        "name": "archiveBoardIdentifier",
+      "archiveBoardIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "archiveThreadIdentifier",
+      "archiveThreadIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "controlBoardIdentifier",
+      "controlBoardIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "controlThreadIdentifier",
+      "controlThreadIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "checkboxLock",
+      "checkboxLock": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxPin",
+      "checkboxPin": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxCyclic",
+      "checkboxCyclic": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxCyclic",
-        "uses": "checked"
-      },
-      {
-        "name": "bannerImage",
+      "bannerImage": {
         "uses": "src"
       },
-      {
-        "name": "captchaDiv",
+      "captchaDiv": {
         "uses": "removal"
       },
-      {
-        "name": "divName",
+      "divName": {
         "uses": "removal"
       },
-      {
-        "name": "labelMaxFileSize",
+      "labelMaxFileSize": {
         "uses": "inner"
       },
-      {
-        "name": "formTransfer",
+      "formTransfer": {
         "uses": "removal"
       },
-      {
-        "name": "transferBoardIdentifier",
+      "transferBoardIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "transferThreadIdentifier",
+      "transferThreadIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "labelMaxFiles",
+      "labelMaxFiles": {
         "uses": "inner"
       },
-      {
-        "name": "labelMessageLength",
+      "labelMessageLength": {
         "uses": "inner"
       },
-      {
-        "name": "divUpload",
+      "divUpload": {
         "uses": "removal"
       },
-      {
-        "name": "inputFiles",
+      "inputFiles": {
         "uses": "accept"
       }
-    ]
+    }
   },
   {
     "template": "messagePage",
-    "prebuiltFields": [
-      {
-        "name": "labelMessage",
+    "prebuiltFields": {
+      "labelMessage": {
         "uses": "inner"
       },
-      {
-        "name": "linkRedirect",
+      "linkRedirect": {
         "uses": "href"
       }
-    ]
+    }
   },
   {
     "template": "accountPage",
-    "prebuiltFields": [
-      {
-        "name": "confirmationForm",
+    "prebuiltFields": {
+      "confirmationForm": {
         "uses": "removal"
       },
-      {
-        "name": "latestPostingsLink",
+      "latestPostingsLink": {
         "uses": "removal"
       },
-      {
-        "name": "labelLogin",
+      "labelLogin": {
         "uses": "inner"
       },
-      {
-        "name": "labelGlobalRole",
+      "labelGlobalRole": {
         "uses": "inner"
       },
-      {
-        "name": "ownedDiv",
+      "ownedDiv": {
         "uses": "children"
       },
-      {
-        "name": "emailField",
+      "emailField": {
         "uses": "value"
       },
-      {
-        "name": "volunteeredDiv",
+      "volunteeredDiv": {
         "uses": "children"
       },
-      {
-        "name": "globalManagementLink",
+      "globalManagementLink": {
         "uses": "removal"
       },
-      {
-        "name": "boardCreationDiv",
+      "boardCreationDiv": {
         "uses": "removal"
       },
-      {
-        "name": "checkboxAlwaysSign",
+      "checkboxAlwaysSign": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxReportNotify",
+      "checkboxReportNotify": {
         "uses": "checked"
       }
-    ]
+    }
   },
   {
     "template": "banPage",
-    "prebuiltFields": [
-      {
-        "name": "boardLabel",
+    "prebuiltFields": {
+      "boardLabel": {
         "uses": "inner"
       },
-      {
-        "name": "reasonLabel",
+      "reasonLabel": {
         "uses": "inner"
       },
-      {
-        "name": "expirationLabel",
+      "expirationLabel": {
         "uses": "inner"
       },
-      {
-        "name": "idLabel",
+      "idLabel": {
         "uses": "inner"
       },
-      {
-        "name": "formAppeal",
+      "formAppeal": {
         "uses": "removal"
       },
-      {
-        "name": "idIdentifier",
+      "idIdentifier": {
         "uses": "value"
       }
-    ]
+    }
   },
   {
     "template": "gManagement",
-    "prebuiltFields": [
-      {
-        "name": "socketLink",
+    "prebuiltFields": {
+      "socketLink": {
         "uses": "removal"
       },
-      {
-        "name": "accountsLink",
+      "accountsLink": {
         "uses": "removal"
       },
-      {
-        "name": "appealedBansPanel",
+      "appealedBansPanel": {
         "uses": [
           "removal",
           "children"
         ]
       },
-      {
-        "name": "globalBannersLink",
+      "globalBannersLink": {
         "uses": "removal"
       },
-      {
-        "name": "languagesLink",
+      "languagesLink": {
         "uses": "removal"
       },
-      {
-        "name": "globalSettingsLink",
+      "globalSettingsLink": {
         "uses": "removal"
       },
-      {
-        "name": "divStaff",
+      "divStaff": {
         "uses": [
           "removal",
           "children"
         ]
       },
-      {
-        "name": "addStaffForm",
+      "addStaffForm": {
         "uses": "removal"
       },
-      {
-        "name": "newStaffCombo",
+      "newStaffCombo": {
         "uses": "children"
       },
-      {
-        "name": "reportDiv",
+      "reportDiv": {
         "uses": "children"
       },
-      {
-        "name": "bansLink",
+      "bansLink": {
         "uses": "removal"
       },
-      {
-        "name": "rangeBansLink",
+      "rangeBansLink": {
         "uses": "removal"
       },
-      {
-        "name": "massBanPanel",
+      "massBanPanel": {
         "uses": "removal"
       },
-      {
-        "name": "hashBansLink",
+      "hashBansLink": {
         "uses": "removal"
       }
-    ]
+    }
   },
   {
     "template": "bManagement",
-    "prebuiltFields": [
-      {
-        "name": "locationComboBox",
+    "prebuiltFields": {
+      "locationComboBox": {
         "uses": "children"
       },
-      {
-        "name": "linkSelf",
+      "linkSelf": {
         "uses": "href"
       },
-      {
-        "name": "appealedBansPanel",
+      "appealedBansPanel": {
         "uses": "children"
       },
-      {
-        "name": "uniqueFilesCheckbox",
+      "uniqueFilesCheckbox": {
         "uses": "checked"
       },
-      {
-        "name": "uniquePostsCheckbox",
+      "uniquePostsCheckbox": {
         "uses": "checked"
       },
-      {
-        "name": "blockDeletionCheckbox",
+      "blockDeletionCheckbox": {
         "uses": "checked"
       },
-      {
-        "name": "customJsForm",
+      "customJsForm": {
         "uses": "removal"
       },
-      {
-        "name": "tagsField",
+      "tagsField": {
         "uses": "value"
       },
-      {
-        "name": "maxBumpAgeField",
+      "maxBumpAgeField": {
         "uses": "value"
       },
-      {
-        "name": "customSpoilerIdentifier",
+      "customSpoilerIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "customJsIdentifier",
+      "customJsIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "customSpoilerIndicator",
+      "customSpoilerIndicator": {
         "uses": "removal"
       },
-      {
-        "name": "hourlyThreadLimitField",
+      "hourlyThreadLimitField": {
         "uses": "value"
       },
-      {
-        "name": "autoCaptchaThresholdField",
+      "autoCaptchaThresholdField": {
         "uses": "value"
       },
-      {
-        "name": "flagManagementLink",
+      "flagManagementLink": {
         "uses": "href"
       },
-      {
-        "name": "ruleManagementLink",
+      "ruleManagementLink": {
         "uses": "href"
       },
-      {
-        "name": "customCssIdentifier",
+      "customCssIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "boardLabel",
+      "boardLabel": {
         "uses": "inner"
       },
-      {
-        "name": "messageLengthLabel",
+      "messageLengthLabel": {
         "uses": "inner"
       },
-      {
-        "name": "volunteersDiv",
+      "volunteersDiv": {
         "uses": "children"
       },
-      {
-        "name": "addVolunteerBoardIdentifier",
+      "addVolunteerBoardIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "transferBoardIdentifier",
+      "transferBoardIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "deletionIdentifier",
+      "deletionIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "reportDiv",
+      "reportDiv": {
         "uses": "children"
       },
-      {
-        "name": "bannerManagementLink",
+      "bannerManagementLink": {
         "uses": [
           "href",
           "removal"
         ]
       },
-      {
-        "name": "ownerControlDiv",
+      "ownerControlDiv": {
         "uses": "removal"
       },
-      {
-        "name": "closedReportsLink",
+      "closedReportsLink": {
         "uses": "href"
       },
-      {
-        "name": "bansLink",
+      "bansLink": {
         "uses": "href"
       },
-      {
-        "name": "boardNameField",
+      "boardNameField": {
         "uses": "value"
       },
-      {
-        "name": "boardDescriptionField",
+      "boardDescriptionField": {
         "uses": "value"
       },
-      {
-        "name": "boardSettingsIdentifier",
+      "boardSettingsIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "disableIdsCheckbox",
+      "disableIdsCheckbox": {
         "uses": "checked"
       },
-      {
-        "name": "allowCodeCheckbox",
+      "allowCodeCheckbox": {
         "uses": "checked"
       },
-      {
-        "name": "early404Checkbox",
+      "early404Checkbox": {
         "uses": "checked"
       },
-      {
-        "name": "captchaModeComboBox",
+      "captchaModeComboBox": {
         "uses": "children"
       },
-      {
-        "name": "unindexCheckbox",
+      "unindexCheckbox": {
         "uses": "checked"
       },
-      {
-        "name": "forceAnonymityCheckbox",
+      "forceAnonymityCheckbox": {
         "uses": "checked"
       },
-      {
-        "name": "filterManagementLink",
+      "filterManagementLink": {
         "uses": "href"
       },
-      {
-        "name": "anonymousNameField",
+      "anonymousNameField": {
         "uses": "value"
       },
-      {
-        "name": "rangeBansLink",
+      "rangeBansLink": {
         "uses": "href"
       },
-      {
-        "name": "hashBansLink",
+      "hashBansLink": {
         "uses": "href"
       },
-      {
-        "name": "boardMessageField",
+      "boardMessageField": {
         "uses": "defaultValue"
       },
-      {
-        "name": "textBoardCheckbox",
+      "textBoardCheckbox": {
         "uses": "checked"
       },
-      {
-        "name": "requireFileCheckbox",
+      "requireFileCheckbox": {
         "uses": "checked"
       },
-      {
-        "name": "maxFilesField",
+      "maxFilesField": {
         "uses": "value"
       },
-      {
-        "name": "maxFileSizeField",
+      "maxFileSizeField": {
         "uses": "value"
       },
-      {
-        "name": "maxThreadsField",
+      "maxThreadsField": {
         "uses": "value"
       },
-      {
-        "name": "autoSageLimitField",
+      "autoSageLimitField": {
         "uses": "value"
       },
-      {
-        "name": "validMimesField",
+      "validMimesField": {
         "uses": "value"
       }
-    ]
+    }
   },
   {
     "template": "closedReportsPage",
-    "prebuiltFields": [
-      {
-        "name": "reportDiv",
+    "prebuiltFields": {
+      "reportDiv": {
         "uses": "children"
       }
-    ]
+    }
   },
   {
     "template": "bansPage",
-    "prebuiltFields": [
-      {
-        "name": "bansDiv",
+    "prebuiltFields": {
+      "bansDiv": {
         "uses": "children"
       }
-    ]
+    }
   },
   {
     "template": "logsPage",
-    "prebuiltFields": [
-      {
-        "name": "divLogs",
+    "prebuiltFields": {
+      "divLogs": {
         "uses": "children"
       }
-    ]
+    }
   },
   {
     "template": "filterManagement",
-    "prebuiltFields": [
-      {
-        "name": "divFilters",
+    "prebuiltFields": {
+      "divFilters": {
         "uses": "children"
       },
-      {
-        "name": "boardIdentifier",
+      "boardIdentifier": {
         "uses": "value"
       }
-    ]
+    }
   },
   {
     "template": "boardModerationPage",
-    "prebuiltFields": [
-      {
-        "name": "boardTransferIdentifier",
+    "prebuiltFields": {
+      "boardTransferIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "boardDeletionIdentifier",
+      "boardDeletionIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "labelTitle",
+      "labelTitle": {
         "uses": "inner"
       },
-      {
-        "name": "linkOwner",
+      "linkOwner": {
         "uses": [
           "inner",
           "href"
         ]
       },
-      {
-        "name": "labelLastSeen",
+      "labelLastSeen": {
         "uses": "inner"
       },
-      {
-        "name": "checkboxSfw",
+      "checkboxSfw": {
         "uses": "checked"
       },
-      {
-        "name": "specialSettingsIdentifier",
+      "specialSettingsIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "checkboxLocked",
+      "checkboxLocked": {
         "uses": "checked"
       },
-      {
-        "name": "divVolunteers",
+      "divVolunteers": {
         "uses": "children"
       }
-    ]
+    }
   },
   {
     "template": "boardsPage",
-    "prebuiltFields": [
-      {
-        "name": "divBoards",
+    "prebuiltFields": {
+      "divBoards": {
         "uses": "children"
       },
-      {
-        "name": "divPages",
+      "divPages": {
         "uses": "children"
       },
-      {
-        "name": "linkOverboard",
+      "linkOverboard": {
         "uses": [
           "href",
           "removal"
         ]
       },
-      {
-        "name": "linkSfwOver",
+      "linkSfwOver": {
         "uses": [
           "href",
           "removal"
         ]
       }
-    ]
+    }
   },
   {
     "template": "noCookieCaptchaPage",
-    "prebuiltFields": [
-      {
-        "name": "divSolvedCaptcha",
+    "prebuiltFields": {
+      "divSolvedCaptcha": {
         "uses": "removal"
       },
-      {
-        "name": "labelCaptchaId",
+      "labelCaptchaId": {
         "uses": "inner"
       },
-      {
-        "name": "inputCaptchaId",
+      "inputCaptchaId": {
         "uses": "value"
       },
-      {
-        "name": "imageCaptcha",
+      "imageCaptcha": {
         "uses": "src"
       }
-    ]
+    }
   },
   {
     "template": "rangeBansPage",
-    "prebuiltFields": [
-      {
-        "name": "rangeBansDiv",
+    "prebuiltFields": {
+      "rangeBansDiv": {
         "uses": "children"
       },
-      {
-        "name": "boardIdentifier",
+      "boardIdentifier": {
         "uses": [
           "value",
           "removal"
         ]
       }
-    ]
+    }
   },
   {
     "template": "rangeBanPage",
-    "prebuiltFields": [
-      {
-        "name": "boardLabel",
+    "prebuiltFields": {
+      "boardLabel": {
         "uses": [
           "inner"
         ]
       },
-      {
-        "name": "rangeLabel",
+      "rangeLabel": {
         "uses": [
           "inner"
         ]
       }
-    ]
+    }
   },
   {
     "template": "hashBansPage",
-    "prebuiltFields": [
-      {
-        "name": "hashBansDiv",
+    "prebuiltFields": {
+      "hashBansDiv": {
         "uses": "children"
       },
-      {
-        "name": "boardIdentifier",
+      "boardIdentifier": {
         "uses": [
           "value",
           "removal"
         ]
       }
-    ]
+    }
   },
   {
-    "template": "notFoundPage"
+    "template": "notFoundPage",
+    "prebuiltFields": {
+    }
   },
   {
     "template": "ruleManagementPage",
-    "prebuiltFields": [
-      {
-        "name": "divRules",
+    "prebuiltFields": {
+      "divRules": {
         "uses": "children"
       },
-      {
-        "name": "boardIdentifier",
+      "boardIdentifier": {
         "uses": "value"
       }
-    ]
+    }
   },
   {
     "template": "rulesPage",
-    "prebuiltFields": [
-      {
-        "name": "boardLabel",
+    "prebuiltFields": {
+      "boardLabel": {
         "uses": "inner"
       },
-      {
-        "name": "divRules",
+      "divRules": {
         "uses": "children"
       }
-    ]
+    }
   },
   {
-    "template": "maintenancePage"
+    "template": "maintenancePage",
+    "prebuiltFields": {
+    }
   },
   {
     "template": "editPage",
-    "prebuiltFields": [
-      {
-        "name": "fieldMessage",
+    "prebuiltFields": {
+      "fieldMessage": {
         "uses": "defaultValue"
       },
-      {
-        "name": "boardIdentifier",
+      "boardIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "threadIdentifier",
+      "threadIdentifier": {
         "uses": [
           "value",
           "removal"
         ]
       },
-      {
-        "name": "postIdentifier",
+      "postIdentifier": {
         "uses": [
           "value",
           "removal"
         ]
       },
-      {
-        "name": "labelMessageLength",
+      "labelMessageLength": {
         "uses": "inner"
       },
-      {
-        "name": "fieldSubject",
+      "fieldSubject": {
         "uses": "value"
       }
-    ]
+    }
   },
   {
     "template": "flagsPage",
-    "prebuiltFields": [
-      {
-        "name": "flagsDiv",
+    "prebuiltFields": {
+      "flagsDiv": {
         "uses": "children"
       },
-      {
-        "name": "boardIdentifier",
+      "boardIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "maxSizeLabel",
+      "maxSizeLabel": {
         "uses": "inner"
       },
-      {
-        "name": "maxNameLengthLabel",
+      "maxNameLengthLabel": {
         "uses": "inner"
       }
-    ]
+    }
   },
   {
     "template": "globalSettingsPage",
-    "prebuiltFields": [
-      {
-        "name": "fieldMaxBoardRangeBans",
+    "prebuiltFields": {
+      "fieldMaxBoardRangeBans": {
         "uses": "value"
       },
-      {
-        "name": "fieldAddons",
+      "fieldAddons": {
         "uses": "value"
       },
-      {
-        "name": "fieldAcceptedMimes",
+      "fieldAcceptedMimes": {
         "uses": "value"
       },
-      {
-        "name": "fieldSlaves",
+      "fieldSlaves": {
         "uses": "value"
       },
-      {
-        "name": "fieldAddress",
+      "fieldAddress": {
         "uses": "value"
       },
-      {
-        "name": "fieldFePath",
+      "fieldFePath": {
         "uses": "value"
       },
-      {
-        "name": "fieldMaster",
+      "fieldMaster": {
         "uses": "value"
       },
-      {
-        "name": "fieldTempDir",
+      "fieldTempDir": {
         "uses": "value"
       },
-      {
-        "name": "fieldRssDomain",
+      "fieldRssDomain": {
         "uses": "value"
       },
-      {
-        "name": "fieldSslPass",
+      "fieldSslPass": {
         "uses": "value"
       },
-      {
-        "name": "fieldSenderEmail",
+      "fieldSenderEmail": {
         "uses": "value"
       },
-      {
-        "name": "fieldSiteTitle",
+      "fieldSiteTitle": {
         "uses": "value"
       },
-      {
-        "name": "fieldBanMessage",
+      "fieldBanMessage": {
         "uses": "value"
       },
-      {
-        "name": "fieldAnonymousName",
+      "fieldAnonymousName": {
         "uses": "value"
       },
-      {
-        "name": "fieldTorSource",
+      "fieldTorSource": {
         "uses": "value"
       },
-      {
-        "name": "fieldCSP",
+      "fieldCSP": {
         "uses": "value"
       },
-      {
-        "name": "fieldIncrementalSpamIpsSource",
+      "fieldIncrementalSpamIpsSource": {
         "uses": "value"
       },
-      {
-        "name": "fieldLanguagePack",
+      "fieldLanguagePack": {
         "uses": "value"
       },
-      {
-        "name": "fieldOverboard",
+      "fieldOverboard": {
         "uses": "value"
       },
-      {
-        "name": "fieldSfwOverboard",
+      "fieldSfwOverboard": {
         "uses": "value"
       },
-      {
-        "name": "fieldSpamIpsSource",
+      "fieldSpamIpsSource": {
         "uses": "value"
       },
-      {
-        "name": "fieldThumbExtension",
+      "fieldThumbExtension": {
         "uses": "value"
       },
-      {
-        "name": "fieldPort",
+      "fieldPort": {
         "uses": "value"
       },
-      {
-        "name": "fieldGlobalLatestImages",
+      "fieldGlobalLatestImages": {
         "uses": "value"
       },
-      {
-        "name": "fieldMessageLength",
+      "fieldMessageLength": {
         "uses": "value"
       },
-      {
-        "name": "fieldIpExpiration",
+      "fieldIpExpiration": {
         "uses": "value"
       },
-      {
-        "name": "fieldInactivityThreshold",
+      "fieldInactivityThreshold": {
         "uses": "value"
       },
-      {
-        "name": "fieldTorPort",
+      "fieldTorPort": {
         "uses": "value"
       },
-      {
-        "name": "fieldCaptchaExpiration",
+      "fieldCaptchaExpiration": {
         "uses": "value"
       },
-      {
-        "name": "fieldOverBoardThreads",
+      "fieldOverBoardThreads": {
         "uses": "value"
       },
-      {
-        "name": "fieldClusterPort",
+      "fieldClusterPort": {
         "uses": "value"
       },
-      {
-        "name": "fieldPageSize",
+      "fieldPageSize": {
         "uses": "value"
       },
-      {
-        "name": "fieldLatestPostsCount",
+      "fieldLatestPostsCount": {
         "uses": "value"
       },
-      {
-        "name": "fieldAutoSageLimit",
+      "fieldAutoSageLimit": {
         "uses": "value"
       },
-      {
-        "name": "fieldMultiBoardThreadCount",
+      "fieldMultiBoardThreadCount": {
         "uses": "value"
       },
-      {
-        "name": "fieldBoardMessageLength",
+      "fieldBoardMessageLength": {
         "uses": "value"
       },
-      {
-        "name": "fieldThreadLimit",
+      "fieldThreadLimit": {
         "uses": "value"
       },
-      {
-        "name": "fieldMaxRequestSize",
+      "fieldMaxRequestSize": {
         "uses": "value"
       },
-      {
-        "name": "fieldMaxFileSize",
+      "fieldMaxFileSize": {
         "uses": "value"
       },
-      {
-        "name": "fieldMaxFiles",
+      "fieldMaxFiles": {
         "uses": "value"
       },
-      {
-        "name": "fieldBypassHours",
+      "fieldBypassHours": {
         "uses": "value"
       },
-      {
-        "name": "fieldBypassPosts",
+      "fieldBypassPosts": {
         "uses": "value"
       },
-      {
-        "name": "fieldTopBoardsCount",
+      "fieldTopBoardsCount": {
         "uses": "value"
       },
-      {
-        "name": "fieldBoardsPerPage",
+      "fieldBoardsPerPage": {
         "uses": "value"
       },
-      {
-        "name": "fieldThumbSize",
+      "fieldThumbSize": {
         "uses": "value"
       },
-      {
-        "name": "fieldMaxRules",
+      "fieldMaxRules": {
         "uses": "value"
       },
-      {
-        "name": "fieldMaxTags",
+      "fieldMaxTags": {
         "uses": "value"
       },
-      {
-        "name": "fieldMaxFilters",
+      "fieldMaxFilters": {
         "uses": "value"
       },
-      {
-        "name": "fieldStaticExpiration",
+      "fieldStaticExpiration": {
         "uses": "value"
       },
-      {
-        "name": "fieldMaxVolunteers",
+      "fieldMaxVolunteers": {
         "uses": "value"
       },
-      {
-        "name": "fieldMaxBannerSize",
+      "fieldMaxBannerSize": {
         "uses": "value"
       },
-      {
-        "name": "fieldMaxFlagSize",
+      "fieldMaxFlagSize": {
         "uses": "value"
       },
-      {
-        "name": "fieldFloodInterval",
+      "fieldFloodInterval": {
         "uses": "value"
       },
-      {
-        "name": "fieldGlobalLatestPosts",
+      "fieldGlobalLatestPosts": {
         "uses": "value"
       },
-      {
-        "name": "fieldMediaPageSize",
+      "fieldMediaPageSize": {
         "uses": "value"
       },
-      {
-        "name": "fieldFlagNameLength",
+      "fieldFlagNameLength": {
         "uses": "value"
       },
-      {
-        "name": "fieldMaxBoardHashBans",
+      "fieldMaxBoardHashBans": {
         "uses": "value"
       },
-      {
-        "name": "checkboxDisable304",
+      "checkboxDisable304": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxVerbose",
+      "checkboxVerbose": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxBlockedReport",
+      "checkboxBlockedReport": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxSFWLatestImages",
+      "checkboxSFWLatestImages": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxFfmpegGifs",
+      "checkboxFfmpegGifs": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxAutoPruneFiles",
+      "checkboxAutoPruneFiles": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxDisableLatestPostings",
+      "checkboxDisableLatestPostings": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxOmitUnindexedContent",
+      "checkboxOmitUnindexedContent": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxGlobalBanners",
+      "checkboxGlobalBanners": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxDisableFloodCheck",
+      "checkboxDisableFloodCheck": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxSendmail",
+      "checkboxSendmail": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxDisableSpamCheck",
+      "checkboxDisableSpamCheck": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxVerboseGenerator",
+      "checkboxVerboseGenerator": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxVerboseMisc",
+      "checkboxVerboseMisc": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxVerboseQueue",
+      "checkboxVerboseQueue": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxVerboseGridfs",
+      "checkboxVerboseGridfs": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxBoardStaffArchiving",
+      "checkboxBoardStaffArchiving": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxVerboseApis",
+      "checkboxVerboseApis": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxMediaThumb",
+      "checkboxMediaThumb": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxGlobalBoardModeration",
+      "checkboxGlobalBoardModeration": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxMaintenance",
+      "checkboxMaintenance": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxVerboseCache",
+      "checkboxVerboseCache": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxDisableAccountCreation",
+      "checkboxDisableAccountCreation": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxAllowCustomJs",
+      "checkboxAllowCustomJs": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxMultipleReports",
+      "checkboxMultipleReports": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxGlobalCaptcha",
+      "checkboxGlobalCaptcha": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxSpamBypass",
+      "checkboxSpamBypass": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxFrontPageStats",
+      "checkboxFrontPageStats": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxDisableCatalogPosting",
+      "checkboxDisableCatalogPosting": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxAllowTorFiles",
+      "checkboxAllowTorFiles": {
         "uses": "checked"
       },
-      {
-        "name": "checkboxUseAlternativeLanguages",
+      "checkboxUseAlternativeLanguages": {
         "uses": "checked"
       },
-      {
-        "name": "comboBypassMode",
+      "comboBypassMode": {
         "uses": "children"
       },
-      {
-        "name": "comboSsl",
+      "comboSsl": {
         "uses": "children"
       },
-      {
-        "name": "comboTorPostingLevel",
+      "comboTorPostingLevel": {
         "uses": "children"
       },
-      {
-        "name": "comboMinClearIpRole",
+      "comboMinClearIpRole": {
         "uses": "children"
       },
-      {
-        "name": "comboBoardCreationRequirement",
+      "comboBoardCreationRequirement": {
         "uses": "children"
       }
-    ]
+    }
   },
   {
     "template": "hashBanPage",
-    "prebuiltFields": [
-      {
-        "name": "hashBansPanel",
+    "prebuiltFields": {
+      "hashBansPanel": {
         "uses": "children"
       }
-    ]
+    }
   },
   {
     "template": "overboard",
-    "prebuiltFields": [
-      {
-        "name": "divThreads",
+    "prebuiltFields": {
+      "divThreads": {
         "uses": "children"
       }
-    ]
+    }
   },
   {
     "template": "bypassPage",
-    "prebuiltFields": [
-      {
-        "name": "indicatorValidBypass",
+    "prebuiltFields": {
+      "indicatorValidBypass": {
         "uses": "removal"
       },
-      {
-        "name": "renewForm",
+      "renewForm": {
         "uses": "removal"
       }
-    ]
+    }
   },
   {
     "template": "logIndexPage",
-    "prebuiltFields": [
-      {
-        "name": "divDates",
+    "prebuiltFields": {
+      "divDates": {
         "uses": "children"
       }
-    ]
+    }
   },
   {
     "template": "graphsIndexPage",
-    "prebuiltFields": [
-      {
-        "name": "divDates",
+    "prebuiltFields": {
+      "divDates": {
         "uses": "children"
       }
-    ]
+    }
   },
   {
     "template": "mediaManagementPage",
-    "prebuiltFields": [
-      {
-        "name": "filesDiv",
+    "prebuiltFields": {
+      "filesDiv": {
         "uses": "children"
       },
-      {
-        "name": "pagesDiv",
+      "pagesDiv": {
         "uses": "children"
       }
-    ]
+    }
   },
   {
     "template": "languagesManagementPage",
-    "prebuiltFields": [
-      {
-        "name": "languagesDiv",
+    "prebuiltFields": {
+      "languagesDiv": {
         "uses": "children"
       }
-    ]
+    }
   },
   {
     "template": "accountsPage",
-    "prebuiltFields": [
-      {
-        "name": "divAccounts",
+    "prebuiltFields": {
+      "divAccounts": {
         "uses": "children"
       }
-    ]
+    }
   },
   {
     "template": "socketManagementPage",
-    "prebuiltFields": [
-      {
-        "name": "statusLabel",
+    "prebuiltFields": {
+      "statusLabel": {
         "uses": "inner"
       }
-    ]
+    }
   },
   {
     "template": "accountManagementPage",
-    "prebuiltFields": [
-      {
-        "name": "emailLabel",
+    "prebuiltFields": {
+      "emailLabel": {
         "uses": "inner"
       },
-      {
-        "name": "lastSeenLabel",
+      "lastSeenLabel": {
         "uses": "inner"
       },
-      {
-        "name": "ownedBoardsDiv",
+      "ownedBoardsDiv": {
         "uses": "children"
       },
-      {
-        "name": "volunteeredBoardsDiv",
+      "volunteeredBoardsDiv": {
         "uses": "children"
       },
-      {
-        "name": "globalRoleLabel",
+      "globalRoleLabel": {
         "uses": "inner"
       },
-      {
-        "name": "deletionForm",
+      "deletionForm": {
         "uses": "removal"
       },
-      {
-        "name": "userIdentifier",
+      "userIdentifier": {
         "uses": "value"
       },
-      {
-        "name": "loginLabel",
+      "loginLabel": {
         "uses": "inner"
       }
-    ]
+    }
   },
   {
     "template": "mediaDetailsPage",
-    "prebuiltFields": [
-      {
-        "name": "labelSize",
+    "prebuiltFields": {
+      "labelSize": {
         "uses": "inner"
       },
-      {
-        "name": "labelUploadDate",
+      "labelUploadDate": {
         "uses": "inner"
       },
-      {
-        "name": "panelReferences",
+      "panelReferences": {
         "uses": "children"
       },
-      {
-        "name": "labelIdentifier",
+      "labelIdentifier": {
         "uses": "inner"
       }
-    ]
+    }
   },
   {
     "template": "latestPostingsPage",
-    "prebuiltFields": [
-      {
-        "name": "divPostings",
+    "prebuiltFields": {
+      "divPostings": {
         "uses": "children"
       },
-      {
-        "name": "fieldDate",
+      "fieldDate": {
         "uses": "value"
       },
-      {
-        "name": "fieldBoards",
+      "fieldBoards": {
         "uses": "value"
       },
-      {
-        "name": "linkPrevious",
+      "linkPrevious": {
         "uses": "href"
       },
-      {
-        "name": "linkNext",
+      "linkNext": {
         "uses": "href"
       }
-    ]
+    }
   },
   {
     "template": "archivePage",
-    "prebuiltFields": [
-      {
-        "name": "divThreads",
+    "prebuiltFields": {
+      "divThreads": {
         "uses": "children"
       },
-      {
-        "name": "divPages",
+      "divPages": {
         "uses": "children"
       },
-      {
-        "name": "fieldBoards",
+      "fieldBoards": {
         "uses": "value"
       }
-    ]
+    }
   }
 ]

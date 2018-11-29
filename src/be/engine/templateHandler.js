@@ -10,13 +10,34 @@ exports.pageTests = JSON.parse(fs.readFileSync(pagesLocation, 'utf8'));
 var debug = require('../kernel').debug();
 var settingsHandler = require('../settingsHandler');
 var verbose;
-var JSDOM = require('jsdom').JSDOM;
+var parser = require('parse5');
 var preBuiltDefault = {};
 var preBuiltAlternative = {};
 
-exports.simpleAttributes = [ 'download', 'style', 'value', 'name', 'checked' ];
-exports.simpleProperties = [ 'href', 'title', 'src', 'defaultValue', 'accept' ];
-exports.dataAttributes = [ 'mime', 'height', 'width' ];
+exports.simpleAttributes = {
+  'download' : true,
+  'style' : true,
+  'value' : true,
+  'name' : true,
+  'checked' : true,
+  'href' : true,
+  'title' : true,
+  'src' : true,
+  'defaultValue' : true,
+  'accept' : true
+};
+
+exports.dataAttributes = {
+  'mime' : true,
+  'height' : true,
+  'width' : true
+};
+
+exports.mappedTags = {
+  'body' : true,
+  'head' : true,
+  'title' : true
+};
 
 exports.getAlternativeTemplates = function(language) {
 
@@ -56,74 +77,412 @@ exports.loadSettings = function() {
 
 };
 
-exports.checkMainChildren = function(page, document) {
+exports.setInner = function(element, text) {
+
+  if (!element) {
+    return;
+  }
+
+  var fragment = parser.parseFragment(element, text);
+
+  element.childNodes = [];
+
+  for (var i = 0; i < fragment.childNodes.length; i++) {
+    var childElement = fragment.childNodes[i];
+
+    childElement.parentNode = element;
+
+    element.childNodes.push(childElement);
+
+  }
+
+};
+
+exports.setAttribute = function(element, name, value, append) {
+
+  element.attrs = element.attrs || [];
+
+  var foundAttr;
+
+  for (var i = 0; i < element.attrs.length; i++) {
+
+    if (element.attrs[i].name === name) {
+      foundAttr = element.attrs[i];
+      break;
+    }
+
+  }
+
+  if (!foundAttr) {
+    foundAttr = {
+      name : name
+    };
+    element.attrs.push(foundAttr);
+  }
+
+  if (append && foundAttr.value) {
+    foundAttr.value += value;
+  } else {
+    foundAttr.value = value;
+  }
+
+};
+
+exports.processAttributes = function(element, field, use) {
+
+  if (exports.simpleAttributes[use]) {
+    exports.setAttribute(element, use, '__' + field + '_' + use + '__');
+  } else if (exports.dataAttributes[use]) {
+
+    var value = '__' + field + '_' + use + '__';
+    exports.setAttribute(element, 'data-file' + use, value);
+
+  } else {
+    console.log('Unknown use ' + use);
+  }
+
+};
+
+exports.processFieldUses = function(field, uses, removed, element) {
+
+  if (typeof (uses) === 'string') {
+    uses = [ uses ];
+  }
+
+  for (var i = 0; i < uses.length; i++) {
+
+    var use = uses[i];
+
+    switch (use) {
+
+    case 'removal': {
+      removed.push(field);
+      break;
+    }
+
+    case 'children': {
+
+      element.childNodes.push({
+        nodeName : '#text',
+        value : '__' + field + '_children__',
+        parentNode : element
+      });
+
+      break;
+    }
+
+    case 'inner': {
+      exports.setInner(element, '__' + field + '_inner__');
+      break;
+    }
+
+    case 'class': {
+      exports.setAttribute(element, 'class', ' __' + field + '_class__', true);
+      break;
+    }
+
+    default: {
+      exports.processAttributes(element, field, use);
+    }
+
+    }
+
+  }
+
+};
+
+exports.handleRemovableFields = function(removed, map) {
+
+  var removable = {};
+
+  for (var i = 0; i < removed.length; i++) {
+
+    var element = map[removed[i]];
+
+    if (!element) {
+      console.log('Warning: ' + removed[i] + ' could not be removed');
+      continue;
+    }
+
+    var parent = element.parentNode;
+    var index = parent.childNodes.indexOf(element);
+
+    removable[removed[i]] = parser.serialize({
+      childNodes : [ element ]
+    });
+
+    parent.childNodes.splice(index, 1, {
+      nodeName : '#text',
+      value : '__' + removed[i] + '_location__',
+      parentNode : parent
+    });
+
+  }
+
+  return removable;
+
+};
+
+exports.iteratePrebuiltFields = function(uses, removed, map) {
+
+  var errors = '';
+
+  for ( var field in uses) {
+
+    var element = map[field];
+
+    if (element) {
+      exports.processFieldUses(field, uses[field].uses, removed, element);
+    } else if (!uses[field].optional) {
+      errors += '\nError, missing element ' + field;
+    }
+
+  }
+
+  return errors;
+
+};
+
+exports.loadPrebuiltFields = function(dom, object, page, map) {
+
+  var removed = [];
+
+  var error = page.prebuiltFields ? exports.iteratePrebuiltFields(
+      page.prebuiltFields, removed, map) : '';
+
+  var removable = exports.handleRemovableFields(removed, map);
+
+  var toInsert = {
+    template : parser.serialize(dom),
+    removable : removable
+  };
+
+  object[page.template] = toInsert;
+
+  return error;
+
+};
+
+exports.testCell = function(cell, fePath, templateSettings, prebuiltObj) {
+
+  var fullPath = fePath + '/templates/' + templateSettings[cell.template];
+
+  try {
+    var template = fs.readFileSync(fullPath);
+  } catch (thrownError) {
+    return '\nError loading ' + cell.template + '.\n' + thrownError;
+  }
+
+  var dom = parser.parse(template.toString('utf8'));
+
+  var map = {};
+  exports.mapElement(dom.childNodes, map, cell.prebuiltFields, true);
+
+  var error = exports.loadPrebuiltFields(dom, prebuiltObj, cell, map);
+
+  return error;
+};
+
+exports.loadCells = function(errors, fePath, templateSettings, prebuiltObject) {
+
+  for (var i = 0; i < exports.cellTests.length; i++) {
+
+    var cell = exports.cellTests[i];
+
+    if (!templateSettings[cell.template]) {
+      errors.push('\nTemplate ' + cell.template + ' is not defined.');
+
+      continue;
+    }
+
+    var error = exports
+        .testCell(cell, fePath, templateSettings, prebuiltObject);
+
+    if (error.length) {
+      errors.push('\nCell ' + cell.template + error);
+    }
+
+  }
+
+};
+
+exports.handleLoadingErrors = function(errors) {
+
+  if (!errors.length) {
+    return;
+  }
+
+  console.log('Were found issues with templates.');
+
+  for (var i = 0; i < errors.length; i++) {
+
+    var error = errors[i];
+
+    console.log(error);
+
+  }
+
+  if (debug) {
+    throw 'Fix the issues on the templates or run without debug mode';
+  }
+
+};
+
+exports.cellMap = function(value, element, map, uses) {
+
+  value.split(' ').map(function(className) {
+
+    className = className.trim();
+
+    if (uses[className]) {
+      map[className] = element;
+    }
+  });
+
+};
+
+exports.mapElement = function(childNodes, map, uses, cell) {
+
+  if (!childNodes) {
+    return;
+  }
+
+  for (var i = 0; i < childNodes.length; i++) {
+
+    var element = childNodes[i];
+
+    if (!cell && exports.mappedTags[element.nodeName]) {
+      map[element.nodeName] = element;
+    }
+
+    var attrs = element.attrs || [];
+
+    for (var j = 0; j < attrs.length; j++) {
+
+      var attr = attrs[j];
+
+      if (cell && attr.name === 'class') {
+        exports.cellMap(attr.value, element, map, uses);
+      } else if (attr.name === 'id' && uses[attr.value]) {
+        map[attr.value] = element;
+      }
+
+    }
+
+    exports.mapElement(element.childNodes, map, uses, cell);
+
+  }
+
+};
+
+exports.checkMainChildren = function(page, document, map) {
 
   var error = '';
 
   if (page.headChildren) {
-    var head = document.getElementsByTagName('head')[0];
+
+    var head = map.head;
 
     if (!head) {
       error += '\nError, missing head';
     } else {
-      head.appendChild(document.createTextNode('__head_children__'));
+
+      map.head.childNodes.push({
+        nodeName : '#text',
+        value : '__head_children__',
+        parentNode : map.head
+      });
+
     }
   }
 
   if (page.bodyChildren) {
 
-    var body = document.getElementsByTagName('body')[0];
+    var body = map.body;
 
     if (!body) {
       error += '\nError, missing body';
     } else {
-      document.getElementsByTagName('body')[0].appendChild(document
-          .createTextNode('__body_children__'));
-    }
 
+      map.body.childNodes.push({
+        nodeName : '#text',
+        value : '__body_children__',
+        parentNode : map.body
+      });
+
+    }
   }
 
   return error;
 
 };
 
-exports.testPagePrebuiltFields = function(dom, page, prebuiltObject) {
+exports.setTitleToken = function(map, page) {
 
-  var document = dom.window.document;
-
-  if (!page.noTitle) {
-    document.title = '__title__';
+  if (page.noTitle || !map.head) {
+    return;
   }
 
-  var error = exports.checkMainChildren(page, document);
+  if (!map.title) {
 
-  error += exports.loadPrebuiltFields(dom, document, prebuiltObject, page);
+    var titleElement = {
+      nodeName : 'title',
+      tagName : 'title',
+      attrs : [],
+      childNodes : [],
+      parentNode : map.head
+    };
 
-  return error;
+    map.head.childNodes.push(titleElement);
+
+    map.title = titleElement;
+
+  }
+
+  exports.setInner(map.title, '__title__');
 
 };
 
-exports.getPageDom = function(template, headerContent, footerContent) {
+exports.testPagePrebuiltFields = function(template, headerContent,
+    footerContent, page, prebuiltObject) {
 
-  var dom = new JSDOM(template);
+  var map = {};
 
-  if (headerContent) {
-    var headerElement = dom.window.document.getElementById('dynamicHeader');
+  var document = parser.parse(template.toString('utf8'));
 
-    if (headerElement) {
-      headerElement.innerHTML = headerContent;
-    }
+  page.prebuiltFields = page.prebuiltFields || {};
+
+  page.prebuiltFields.dynamicHeader = {
+    optional : true,
+    uses : 'inner'
+  };
+
+  page.prebuiltFields.dynamicFooter = {
+    optional : true,
+    uses : 'inner'
+  };
+
+  exports.mapElement(document.childNodes, map, page.prebuiltFields);
+
+  exports.setInner(map.dynamicHeader, headerContent);
+  exports.setInner(map.dynamicFooter, footerContent);
+
+  exports.setTitleToken(map, page);
+
+  var error = exports.checkMainChildren(page, document, map);
+
+  error += exports.loadPrebuiltFields(document, prebuiltObject, page, map);
+
+  if (prebuiltObject[page.template]) {
+
+    var entry = prebuiltObject[page.template];
+
+    entry.template = entry.template.replace('__dynamicHeader_inner__',
+        headerContent).replace('__dynamicFooter_inner__', footerContent);
+
   }
 
-  if (footerContent) {
-    var footerElement = dom.window.document.getElementById('dynamicFooter');
-
-    if (footerElement) {
-      footerElement.innerHTML = footerContent;
-    }
-  }
-
-  return dom;
+  return error;
 
 };
 
@@ -142,8 +501,8 @@ exports.processPage = function(errors, page, fePath, templateSettings,
     return;
   }
 
-  var error = exports.testPagePrebuiltFields(exports.getPageDom(template,
-      headerContent, footerContent), page, prebuiltObject);
+  var error = exports.testPagePrebuiltFields(template, headerContent,
+      footerContent, page, prebuiltObject);
 
   if (error) {
     errors.push('\nPage ' + page.template + error);
@@ -186,230 +545,6 @@ exports.loadPages = function(errors, fePath, templateSettings, prebuiltObject) {
     exports.processPage(errors, page, fePath, templateSettings, prebuiltObject,
         headerContent, footerContent);
 
-  }
-};
-
-exports.processComplexUses = function(document, element, field, use, removed) {
-
-  switch (use) {
-
-  case 'removal': {
-    removed.push(field);
-    break;
-  }
-
-  case 'children': {
-    var text = '__' + field + '_children__';
-
-    element.appendChild(document.createTextNode(text));
-    break;
-  }
-
-  case 'inner': {
-    element.innerHTML = '__' + field + '_inner__';
-    break;
-  }
-
-  case 'class': {
-    element.className += ' __' + field + '_class__';
-    break;
-  }
-
-  default: {
-    console.log('Unknown use ' + use);
-  }
-
-  }
-
-};
-
-exports.processFieldUses = function(field, removed, element, document) {
-
-  if (typeof field.uses === 'string') {
-    field.uses = [ field.uses ];
-  }
-
-  var name = field.name;
-
-  for (var i = 0; i < field.uses.length; i++) {
-
-    var use = field.uses[i];
-
-    if (exports.simpleProperties.indexOf(use) > -1) {
-
-      var value = '__' + name + '_' + use + '__';
-
-      element[use] = value;
-
-    } else if (exports.simpleAttributes.indexOf(use) > -1) {
-
-      value = '__' + name + '_' + use + '__';
-
-      element.setAttribute(use, value);
-
-    } else if (exports.dataAttributes.indexOf(use) > -1) {
-
-      value = '__' + name + '_' + use + '__';
-
-      element.setAttribute('data-file' + use, value);
-
-    } else {
-      exports.processComplexUses(document, element, name, use, removed);
-    }
-
-  }
-
-};
-
-exports.handleRemovableFields = function(removed, cell, document, base) {
-
-  var removable = {};
-
-  for (var i = 0; i < removed.length; i++) {
-
-    var element = cell ? base.getElementsByClassName(removed[i])[0] : document
-        .getElementById(removed[i]);
-
-    if (!element) {
-
-      console.log('Warning: ' + removed[i] + ' could not be removed');
-
-      continue;
-
-    }
-
-    var textNode = document.createTextNode('__' + removed[i] + '_location__');
-
-    element.parentNode.insertBefore(textNode, element);
-
-    removable[removed[i]] = element.outerHTML;
-
-    element.remove();
-
-  }
-
-  return removable;
-
-};
-
-exports.iteratePrebuiltFields = function(template, base, document, removed,
-    cell) {
-
-  var errors = '';
-
-  for (var j = 0; j < template.prebuiltFields.length; j++) {
-
-    var field = template.prebuiltFields[j];
-
-    var element = null;
-
-    if (cell) {
-      element = base.getElementsByClassName(field.name)[0];
-    } else {
-      element = document.getElementById(field.name);
-    }
-
-    if (element) {
-      exports.processFieldUses(field, removed, element, document);
-    } else {
-      errors += '\nError, missing element ' + field.name;
-    }
-
-  }
-
-  return errors;
-
-};
-
-exports.loadPrebuiltFields = function(dom, base, object, template, cell) {
-
-  var removed = [];
-
-  var document = dom.window.document;
-
-  var error = template.prebuiltFields ? exports.iteratePrebuiltFields(template,
-      base, document, removed, cell) : '';
-
-  var removable = exports.handleRemovableFields(removed, cell, document, base);
-
-  var toInsert = {
-    template : cell ? base.innerHTML : dom.serialize(),
-    removable : removable
-  };
-
-  object[template.template] = toInsert;
-
-  return error;
-
-};
-
-exports.testCell = function(dom, cell, fePath, templateSettings, prebuiltObj) {
-
-  var document = dom.window.document;
-
-  var cellElement = document.createElement('div');
-
-  var fullPath = fePath + '/templates/' + templateSettings[cell.template];
-
-  try {
-    var template = fs.readFileSync(fullPath);
-  } catch (thrownError) {
-    return '\nError loading ' + cell.template + '.\n' + thrownError;
-  }
-
-  cellElement.innerHTML = template;
-
-  if (cell.prebuiltFields) {
-    var error = exports.loadPrebuiltFields(dom, cellElement, prebuiltObj, cell,
-        true);
-  }
-
-  cellElement.remove();
-
-  return error;
-};
-
-exports.loadCells = function(errors, fePath, templateSettings, prebuiltObject) {
-
-  var dom = new JSDOM('<html></html>');
-
-  for (var i = 0; i < exports.cellTests.length; i++) {
-
-    var cell = exports.cellTests[i];
-
-    if (!templateSettings[cell.template]) {
-      errors.push('\nTemplate ' + cell.template + ' is not defined.');
-
-      continue;
-    }
-
-    var error = exports.testCell(dom, cell, fePath, templateSettings,
-        prebuiltObject);
-
-    if (error.length) {
-      errors.push('\nCell ' + cell.template + error);
-    }
-  }
-};
-
-exports.handleLoadingErrors = function(errors) {
-
-  if (!errors.length) {
-    return;
-  }
-
-  console.log('Were found issues with templates.');
-
-  for (var i = 0; i < errors.length; i++) {
-
-    var error = errors[i];
-
-    console.log(error);
-
-  }
-
-  if (debug) {
-    throw 'Fix the issues on the templates or run without debug mode';
   }
 
 };
