@@ -6,6 +6,10 @@ thumb: used as generic thumb.
 audioThumb: used as generic thumb for audio files.
 maintenanceImage: displayed when a dynamic image is requested while the engine is in maintenance mode.
 
+Optional elements can be declared on the "optional" key. On this key, put an object. This object will have each key being the element on both cells and pages, identified by id on pages and classes on cells.
+
+The value of every entry, both optionals and specified is the relative path of the file inside the templates directory.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::01
@@ -2376,18 +2380,6 @@ panelReferences:
 
 TEM_ID::65
 
-header: optional header. If any page has an element with the id dynamicHeader, this element will have its innerHTML set as this template's content.
-
-------------------------------------------------------------------------------------------
-
-TEM_ID::66
-
-footer: optional footer. If any page has an element with the id dynamicFooter, this element will have its innerHTML set as this template's content.
-
-------------------------------------------------------------------------------------------
-
-TEM_ID::67
-
 confirmationEmail: e-mail used to confirm e-mail accounts.
 
 Elements:
@@ -2401,7 +2393,7 @@ loginLabel:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::68
+TEM_ID::66
 
 reportNotificationEmail: e-mail used to send notification of reports.
 
@@ -2412,7 +2404,7 @@ linkThread:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::69
+TEM_ID::67
 
 latestPostingsPage: page that displays the latest postings the user can moderate.
 
@@ -2439,7 +2431,7 @@ linkNext:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::70
+TEM_ID::69
 
 archivePage: page that displays the archived threads.
 
@@ -2458,7 +2450,7 @@ divPages:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::71
+TEM_ID::70
 
 archiveCell*: cell that represents an archived board.
 

@@ -333,35 +333,49 @@ exports.pickFromPossibleLanguages = function(languages, returnedLanguages) {
 
 };
 
+exports.processLanguages = function(languages) {
+
+  var newLanguages = [];
+
+  for (var i = 0; i < languages.length; i++) {
+
+    var element = languages[i];
+
+    element = element.trim();
+
+    if (element.indexOf(';q=') < 0) {
+
+      newLanguages.push({
+        language : element,
+        priority : 1
+      });
+
+    } else {
+
+      var matches = element.match(/([a-zA-Z-]+);q\=([0-9\.]+)/);
+
+      if (!matches) {
+        continue;
+      }
+
+      newLanguages.push({
+        language : matches[1],
+        priority : +matches[2]
+      });
+
+    }
+
+  }
+
+  return newLanguages;
+
+};
+
 exports.getLanguageToUse = function(req, callback) {
 
-  var languages = req.headers['accept-language'].substring(0, 64).split(',')
-      .map(function(element) {
-        element = element.trim();
+  var languages = req.headers['accept-language'].substring(0, 64).split(',');
 
-        if (element.indexOf(';q=') < 0) {
-          return {
-            language : element,
-            priority : 1
-          };
-        } else {
-
-          var matches = element.match(/([a-zA-Z-]+);q\=([0-9\.]+)/);
-
-          if (!matches) {
-            return {
-              priority : 0
-            };
-          }
-
-          return {
-            language : matches[1],
-            priority : +matches[2]
-          };
-
-        }
-
-      });
+  languages = exports.processLanguages(languages);
 
   languages.sort(function(a, b) {
     return b.priority - a.priority;
@@ -370,12 +384,7 @@ exports.getLanguageToUse = function(req, callback) {
   var acceptableLanguages = [];
 
   for (var i = 0; i < languages.length; i++) {
-
-    var language = languages[i];
-
-    if (language.priority) {
-      acceptableLanguages.push(language.language);
-    }
+    acceptableLanguages.push(languages[i].language);
   }
 
   langs.find({

@@ -85,15 +85,10 @@ exports.setInner = function(element, text) {
 
   var fragment = parser.parseFragment(element, text);
 
-  element.childNodes = [];
+  element.childNodes = fragment.childNodes;
 
-  for (var i = 0; i < fragment.childNodes.length; i++) {
-    var childElement = fragment.childNodes[i];
-
-    childElement.parentNode = element;
-
-    element.childNodes.push(childElement);
-
+  for (var i = 0; i < element.childNodes; i++) {
+    element.childNodes[i].parentNode = element;
   }
 
 };
@@ -232,8 +227,8 @@ exports.iteratePrebuiltFields = function(uses, removed, map) {
     var element = map[field];
 
     if (element) {
-      exports.processFieldUses(field, uses[field].uses, removed, element);
-    } else if (!uses[field].optional) {
+      exports.processFieldUses(field, uses[field], removed, element);
+    } else {
       errors += '\nError, missing element ' + field;
     }
 
@@ -263,20 +258,21 @@ exports.loadPrebuiltFields = function(dom, object, page, map) {
 
 };
 
-exports.testCell = function(cell, fePath, templateSettings, prebuiltObj) {
+exports.processCell = function(cell, fePath, templateSettings, prebuiltObj) {
 
   var fullPath = fePath + '/templates/' + templateSettings[cell.template];
 
   try {
     var template = fs.readFileSync(fullPath);
-  } catch (thrownError) {
-    return '\nError loading ' + cell.template + '.\n' + thrownError;
+  } catch (error) {
+    return '\nError loading ' + cell.template + '.\n' + error;
   }
 
   var dom = parser.parse(template.toString('utf8'));
 
   var map = {};
-  exports.mapElement(dom.childNodes, map, cell.prebuiltFields, true);
+  exports.startMapping(templateSettings.optional, dom.childNodes, map,
+      cell.prebuiltFields, true);
 
   var error = exports.loadPrebuiltFields(dom, prebuiltObj, cell, map);
 
@@ -295,8 +291,8 @@ exports.loadCells = function(errors, fePath, templateSettings, prebuiltObject) {
       continue;
     }
 
-    var error = exports
-        .testCell(cell, fePath, templateSettings, prebuiltObject);
+    var error = exports.processCell(cell, fePath, templateSettings,
+        prebuiltObject);
 
     if (error.length) {
       errors.push('\nCell ' + cell.template + error);
@@ -328,20 +324,20 @@ exports.handleLoadingErrors = function(errors) {
 
 };
 
-exports.cellMap = function(value, element, map, uses) {
+exports.cellMap = function(value, element, map, uses, opt) {
 
   value.split(' ').map(function(className) {
 
     className = className.trim();
 
-    if (uses[className]) {
+    if (uses[className] || opt[className]) {
       map[className] = element;
     }
   });
 
 };
 
-exports.mapElement = function(childNodes, map, uses, cell) {
+exports.mapElements = function(opt, childNodes, map, uses, cell) {
 
   if (!childNodes) {
     return;
@@ -362,14 +358,32 @@ exports.mapElement = function(childNodes, map, uses, cell) {
       var attr = attrs[j];
 
       if (cell && attr.name === 'class') {
-        exports.cellMap(attr.value, element, map, uses);
-      } else if (attr.name === 'id' && uses[attr.value]) {
+        exports.cellMap(attr.value, element, map, uses, opt);
+      } else if (attr.name === 'id' && (uses[attr.value] || opt[attr.value])) {
         map[attr.value] = element;
       }
 
     }
 
-    exports.mapElement(element.childNodes, map, uses, cell);
+    exports.mapElements(opt, element.childNodes, map, uses, cell);
+
+  }
+
+};
+
+exports.startMapping = function(optional, childNodes, map, uses, cell) {
+
+  exports.mapElements(optional, childNodes, map, uses, cell);
+
+  for ( var entry in optional) {
+
+    var element = map[entry];
+
+    if (!element) {
+      continue;
+    }
+
+    exports.setInner(element, optional[entry]);
 
   }
 
@@ -443,8 +457,15 @@ exports.setTitleToken = function(map, page) {
 
 };
 
-exports.testPagePrebuiltFields = function(template, headerContent,
-    footerContent, page, prebuiltObject) {
+exports.processPage = function(page, fePath, templateSettings, prebuiltObject) {
+
+  var fullPath = fePath + '/templates/' + templateSettings[page.template];
+
+  try {
+    var template = fs.readFileSync(fullPath);
+  } catch (error) {
+    return '\nError loading ' + page.template + '.\n' + error;
+  }
 
   var map = {};
 
@@ -452,20 +473,8 @@ exports.testPagePrebuiltFields = function(template, headerContent,
 
   page.prebuiltFields = page.prebuiltFields || {};
 
-  page.prebuiltFields.dynamicHeader = {
-    optional : true,
-    uses : 'inner'
-  };
-
-  page.prebuiltFields.dynamicFooter = {
-    optional : true,
-    uses : 'inner'
-  };
-
-  exports.mapElement(document.childNodes, map, page.prebuiltFields);
-
-  exports.setInner(map.dynamicHeader, headerContent);
-  exports.setInner(map.dynamicFooter, footerContent);
+  exports.startMapping(templateSettings.optional, document.childNodes, map,
+      page.prebuiltFields);
 
   exports.setTitleToken(map, page);
 
@@ -473,64 +482,11 @@ exports.testPagePrebuiltFields = function(template, headerContent,
 
   error += exports.loadPrebuiltFields(document, prebuiltObject, page, map);
 
-  if (prebuiltObject[page.template]) {
-
-    var entry = prebuiltObject[page.template];
-
-    entry.template = entry.template.replace('__dynamicHeader_inner__',
-        headerContent).replace('__dynamicFooter_inner__', footerContent);
-
-  }
-
   return error;
 
 };
 
-exports.processPage = function(errors, page, fePath, templateSettings,
-    prebuiltObject, headerContent, footerContent) {
-
-  var fullPath = fePath + '/templates/';
-  fullPath += templateSettings[page.template];
-
-  try {
-    var template = fs.readFileSync(fullPath);
-  } catch (error) {
-    errors.push('\nError loading ' + page.template + '.');
-    errors.push('\n' + error);
-
-    return;
-  }
-
-  var error = exports.testPagePrebuiltFields(template, headerContent,
-      footerContent, page, prebuiltObject);
-
-  if (error) {
-    errors.push('\nPage ' + page.template + error);
-  }
-
-};
-
 exports.loadPages = function(errors, fePath, templateSettings, prebuiltObject) {
-
-  var headerContent;
-
-  try {
-
-    headerContent = fs.readFileSync(
-        fePath + '/templates/' + templateSettings.header).toString();
-  } catch (error) {
-    headerContent = null;
-  }
-
-  var footerContent;
-
-  try {
-
-    footerContent = fs.readFileSync(
-        fePath + '/templates/' + templateSettings.footer).toString();
-  } catch (error) {
-    footerContent = null;
-  }
 
   for (var i = 0; i < exports.pageTests.length; i++) {
 
@@ -542,8 +498,12 @@ exports.loadPages = function(errors, fePath, templateSettings, prebuiltObject) {
       continue;
     }
 
-    exports.processPage(errors, page, fePath, templateSettings, prebuiltObject,
-        headerContent, footerContent);
+    var error = exports.processPage(page, fePath, templateSettings,
+        prebuiltObject);
+
+    if (error.length) {
+      errors.push('\nPage ' + page.template + error);
+    }
 
   }
 
@@ -553,6 +513,18 @@ exports.runTemplateLoading = function(fePath, templateSettings,
     prebuiltTemplateObject) {
 
   var errors = [];
+
+  var opt = templateSettings.optional || {};
+
+  for ( var entry in opt) {
+
+    try {
+      opt[entry] = fs.readFileSync(fePath + '/templates/' + opt[entry], 'utf8');
+    } catch (error) {
+      errors.push('\nFailed to load ' + entry + '.\n' + error);
+    }
+
+  }
 
   exports.loadCells(errors, fePath, templateSettings, prebuiltTemplateObject);
   exports.loadPages(errors, fePath, templateSettings, prebuiltTemplateObject);
