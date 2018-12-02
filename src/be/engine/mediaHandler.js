@@ -356,16 +356,16 @@ exports.getFilesToPrune = function(callback) {
 
 };
 
-exports.getReferenceUpdate = function(threadResults, postResults, relation) {
-
-  var ops = [];
+exports.combineCount = function(threadResults, postResults, relation) {
 
   for (var i = 0; i < threadResults.length; i++) {
 
     var result = threadResults[i];
     var entry = relation[result._id];
 
-    entry.aggregatedCount = result.references;
+    if (entry) {
+      entry.aggregatedCount = result.references;
+    }
 
   }
 
@@ -374,9 +374,19 @@ exports.getReferenceUpdate = function(threadResults, postResults, relation) {
     result = postResults[i];
     entry = relation[result._id];
 
-    entry.aggregatedCount += result.references;
+    if (entry) {
+      entry.aggregatedCount += result.references;
+    }
 
   }
+
+};
+
+exports.getReferenceUpdate = function(threadResults, postResults, relation) {
+
+  var ops = [];
+
+  exports.combineCount(threadResults, postResults, relation);
 
   for ( var key in relation) {
 
