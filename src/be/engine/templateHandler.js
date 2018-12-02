@@ -285,20 +285,20 @@ exports.loadPrebuiltFields = function(dom, object, page, map) {
 // } Section 2: Tokenizer
 
 // Section 3: Mapping {
-exports.cellMap = function(value, element, map, uses, opt) {
+exports.cellMap = function(value, element, map, uses) {
 
   value.split(' ').map(function(className) {
 
     className = className.trim();
 
-    if (uses[className] || opt[className]) {
+    if (uses[className] && !map[className]) {
       map[className] = element;
     }
   });
 
 };
 
-exports.mapElements = function(opt, childNodes, map, uses, cell) {
+exports.mapElements = function(childNodes, map, uses, cell) {
 
   if (!childNodes) {
     return;
@@ -319,14 +319,14 @@ exports.mapElements = function(opt, childNodes, map, uses, cell) {
       var attr = attrs[j];
 
       if (cell && attr.name === 'class') {
-        exports.cellMap(attr.value, element, map, uses, opt);
-      } else if (attr.name === 'id' && (uses[attr.value] || opt[attr.value])) {
+        exports.cellMap(attr.value, element, map, uses);
+      } else if (attr.name === 'id' && uses[attr.value] && !map[attr.value]) {
         map[attr.value] = element;
       }
 
     }
 
-    exports.mapElements(opt, element.childNodes, map, uses, cell);
+    exports.mapElements(element.childNodes, map, uses, cell);
 
   }
 
@@ -334,7 +334,7 @@ exports.mapElements = function(opt, childNodes, map, uses, cell) {
 
 exports.startMapping = function(optional, childNodes, map, uses, cell) {
 
-  exports.mapElements(optional, childNodes, map, uses, cell);
+  exports.mapElements(childNodes, map, optional, cell);
 
   for ( var entry in optional) {
 
@@ -347,6 +347,8 @@ exports.startMapping = function(optional, childNodes, map, uses, cell) {
     exports.setInner(element, optional[entry]);
 
   }
+
+  exports.mapElements(childNodes, map, uses, cell);
 
 };
 // } Section 3: Mapping
