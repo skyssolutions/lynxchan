@@ -17,6 +17,7 @@ var jitCacheOps;
 var requestHandler;
 var verbose;
 var disable304;
+var templateHandler;
 var alternativeLanguages;
 var defaultFePath;
 var staticExpiration;
@@ -52,6 +53,7 @@ exports.loadDependencies = function() {
   jitCacheOps = require('./jitCacheOps');
   requestHandler = require('./requestHandler');
   gridFsHandler = require('./gridFsHandler');
+  templateHandler = require('./templateHandler').getTemplates;
 };
 
 exports.dropStaticCache = function() {
@@ -578,7 +580,41 @@ exports.compressStaticFile = function(task, finalPath, file, callback) {
 
 };
 
-exports.getStaticFile = function(task, finalPath, callback) {
+exports.processReadFile = function(finalPath, data, stats, task, callback) {
+
+  var mime = logger.getMime(finalPath);
+  var compressable = miscOps.isPlainText(mime);
+
+  var file = {
+    lastModified : stats.mtime.toUTCString(),
+    mime : mime,
+    content : data,
+    compressed : false,
+    compressable : compressable,
+    length : data.length,
+    languages : task.language ? task.language.headerLanguages : null
+  };
+
+  if (!debug) {
+    if (verbose) {
+      console.log('Cached ' + task.file);
+    }
+
+    staticCache[finalPath] = file;
+  }
+
+  if (!compressable) {
+    callback(null, file);
+    return;
+  }
+
+  exports.compressStaticFile(task, finalPath, file, callback);
+
+};
+
+exports.getStaticFile = function(task, callback) {
+
+  var finalPath = exports.getStaticFilePath(task);
 
   if (!finalPath) {
     callback('No path to get static file from');
@@ -596,6 +632,15 @@ exports.getStaticFile = function(task, finalPath, callback) {
     return;
   }
 
+  var templated = templateHandler(task.language).templated[task.file
+      .substring(9)];
+
+  if (templated) {
+    exports.processReadFile(finalPath, templated.data, templated.stats, task,
+        callback);
+    return;
+  }
+
   fs.stat(finalPath, function gotStats(error, stats) {
     if (error) {
       callback(error);
@@ -607,34 +652,7 @@ exports.getStaticFile = function(task, finalPath, callback) {
         if (error) {
           callback(error);
         } else {
-
-          var mime = logger.getMime(finalPath);
-          var compressable = miscOps.isPlainText(mime);
-
-          file = {
-            lastModified : stats.mtime.toUTCString(),
-            mime : mime,
-            content : data,
-            compressed : false,
-            compressable : compressable,
-            length : data.length,
-            languages : task.language ? task.language.headerLanguages : null
-          };
-
-          if (!debug) {
-            if (verbose) {
-              console.log('Cached ' + task.file);
-            }
-
-            staticCache[finalPath] = file;
-          }
-
-          if (!compressable) {
-            callback(null, file);
-            return;
-          }
-
-          exports.compressStaticFile(task, finalPath, file, callback);
+          exports.processReadFile(finalPath, data, stats, task, callback);
         }
 
       });
@@ -666,7 +684,7 @@ exports.getAlternative = function(task, callback) {
   if (!task.isStatic) {
     callback(null, exports.pickAlternative(task, task.file));
   } else {
-    exports.getStaticFile(task, exports.getStaticFilePath(task), callback);
+    exports.getStaticFile(task, callback);
   }
 
 };

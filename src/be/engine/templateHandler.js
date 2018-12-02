@@ -77,6 +77,29 @@ exports.loadSettings = function() {
 
 };
 
+exports.handleLoadingErrors = function(errors) {
+
+  if (!errors.length) {
+    return;
+  }
+
+  console.log('Were found issues with templates.');
+
+  for (var i = 0; i < errors.length; i++) {
+
+    var error = errors[i];
+
+    console.log(error);
+
+  }
+
+  if (debug) {
+    throw 'Fix the issues on the templates or run without debug mode';
+  }
+
+};
+
+// Section 1: DOM manipulation {
 exports.setInner = function(element, text) {
 
   if (!element) {
@@ -122,7 +145,9 @@ exports.setAttribute = function(element, name, value, append) {
   }
 
 };
+// } Section 1: DOM manipulation
 
+// Section 2: Tokenizer {
 exports.processAttributes = function(element, field, use) {
 
   if (exports.simpleAttributes[use]) {
@@ -257,73 +282,9 @@ exports.loadPrebuiltFields = function(dom, object, page, map) {
   return error;
 
 };
+// } Section 2: Tokenizer
 
-exports.processCell = function(cell, fePath, templateSettings, prebuiltObj) {
-
-  var fullPath = fePath + '/templates/' + templateSettings[cell.template];
-
-  try {
-    var template = fs.readFileSync(fullPath);
-  } catch (error) {
-    return '\nError loading ' + cell.template + '.\n' + error;
-  }
-
-  var dom = parser.parse(template.toString('utf8'));
-
-  var map = {};
-  exports.startMapping(templateSettings.optional, dom.childNodes, map,
-      cell.prebuiltFields, true);
-
-  var error = exports.loadPrebuiltFields(dom, prebuiltObj, cell, map);
-
-  return error;
-};
-
-exports.loadCells = function(errors, fePath, templateSettings, prebuiltObject) {
-
-  for (var i = 0; i < exports.cellTests.length; i++) {
-
-    var cell = exports.cellTests[i];
-
-    if (!templateSettings[cell.template]) {
-      errors.push('\nTemplate ' + cell.template + ' is not defined.');
-
-      continue;
-    }
-
-    var error = exports.processCell(cell, fePath, templateSettings,
-        prebuiltObject);
-
-    if (error.length) {
-      errors.push('\nCell ' + cell.template + error);
-    }
-
-  }
-
-};
-
-exports.handleLoadingErrors = function(errors) {
-
-  if (!errors.length) {
-    return;
-  }
-
-  console.log('Were found issues with templates.');
-
-  for (var i = 0; i < errors.length; i++) {
-
-    var error = errors[i];
-
-    console.log(error);
-
-  }
-
-  if (debug) {
-    throw 'Fix the issues on the templates or run without debug mode';
-  }
-
-};
-
+// Section 3: Mapping {
 exports.cellMap = function(value, element, map, uses, opt) {
 
   value.split(' ').map(function(className) {
@@ -388,7 +349,55 @@ exports.startMapping = function(optional, childNodes, map, uses, cell) {
   }
 
 };
+// } Section 3: Mapping
 
+// Section 4: Cells {
+exports.processCell = function(cell, fePath, templateSettings, prebuiltObj) {
+
+  var fullPath = fePath + '/templates/' + templateSettings[cell.template];
+
+  try {
+    var template = fs.readFileSync(fullPath);
+  } catch (error) {
+    return '\nError loading ' + cell.template + '.\n' + error;
+  }
+
+  var dom = parser.parse(template.toString('utf8'));
+
+  var map = {};
+  exports.startMapping(templateSettings.optional, dom.childNodes, map,
+      cell.prebuiltFields, true);
+
+  var error = exports.loadPrebuiltFields(dom, prebuiltObj, cell, map);
+
+  return error;
+};
+
+exports.loadCells = function(errors, fePath, templateSettings, prebuiltObject) {
+
+  for (var i = 0; i < exports.cellTests.length; i++) {
+
+    var cell = exports.cellTests[i];
+
+    if (!templateSettings[cell.template]) {
+      errors.push('\nTemplate ' + cell.template + ' is not defined.');
+
+      continue;
+    }
+
+    var error = exports.processCell(cell, fePath, templateSettings,
+        prebuiltObject);
+
+    if (error.length) {
+      errors.push('\nCell ' + cell.template + error);
+    }
+
+  }
+
+};
+// } Section 4: Cells
+
+// Section 5: Pages {
 exports.checkMainChildren = function(page, document, map) {
 
   var error = '';
@@ -508,13 +517,48 @@ exports.loadPages = function(errors, fePath, templateSettings, prebuiltObject) {
   }
 
 };
+// } Section 5: Pages
 
-exports.runTemplateLoading = function(fePath, templateSettings,
-    prebuiltTemplateObject) {
+exports.loadTemplated = function(fePath, templateSettings, prebuilt) {
+
+  prebuilt.templated = {};
+
+  if (!templateSettings.templated || !require('cluster').isMaster) {
+    return;
+  }
+
+  var templated = templateSettings.templated;
+
+  for (var i = 0; i < templated.length; i++) {
+    var entry = templated[i];
+
+    try {
+      var dom = parser.parse(fs.readFileSync(fePath + '/static/' + entry,
+          'utf8'));
+    } catch (error) {
+      console.log('Failed to load templated file ' + entry);
+      continue;
+    }
+
+    exports.startMapping(templateSettings.optional, dom.childNodes, {}, {});
+
+    prebuilt.templated[entry] = {
+      data : Buffer.from(parser.serialize(dom), 'utf-8'),
+      stats : {
+        mtime : new Date()
+      }
+    };
+
+  }
+
+};
+
+exports.runTemplateLoading = function(fePath, templateSettings, prebuilt) {
 
   var errors = [];
 
   var opt = templateSettings.optional || {};
+  templateSettings.optional = opt;
 
   for ( var entry in opt) {
 
@@ -526,8 +570,9 @@ exports.runTemplateLoading = function(fePath, templateSettings,
 
   }
 
-  exports.loadCells(errors, fePath, templateSettings, prebuiltTemplateObject);
-  exports.loadPages(errors, fePath, templateSettings, prebuiltTemplateObject);
+  exports.loadTemplated(fePath, templateSettings, prebuilt);
+  exports.loadCells(errors, fePath, templateSettings, prebuilt);
+  exports.loadPages(errors, fePath, templateSettings, prebuilt);
 
   exports.handleLoadingErrors(errors);
 
