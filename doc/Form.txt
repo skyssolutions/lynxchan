@@ -9,6 +9,16 @@ Array parameters will be split using commas and spaces will be ignored.
 Boolean parameters will be just checked if they return a true condition on the server using simple js evaluation (if(parameters.X)).
 Pages with optional json output will require the get parameter "json" with any value to output the data in json form. When outputting json data, these pages will output errors as a single json formatted string.
 
+To post files by reference or spoil individual files, inform the following parameters:
+fileMd5
+fileMime
+fileSpoiler
+fileName
+
+You can inform them multiple times. If a file matches the identifier, it will be reused. Individual files will be spoiled if the value of fileSpoiler is anything but an empty string, but you must inform the empty string anyway for them to work.
+You must inform all of them the same amount of times when informing any of them. They will be read in the same order, so the first entry of them represents one file, the second entry of them a second file.
+When no valid entry is informed, just the uploaded files will be used on the post.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::01

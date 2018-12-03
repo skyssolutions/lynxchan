@@ -7,7 +7,9 @@ var crypto = require('crypto');
 var url = require('url');
 var debug = require('../kernel').debug();
 var multiParty = require('multiparty');
-var bans = require('../db').bans();
+var db = require('../db');
+var bans = db.bans();
+var references = db.uploadReferences();
 var verbose;
 var uploadDir;
 var maxRequestSize;
@@ -143,60 +145,178 @@ exports.getFileData = function(file, fields, mime, callback) {
 exports.transferFileInformation = function(files, fields, parsedCookies, cb,
     res, exceptionalMimes, language) {
 
-  if (files.files.length && fields.files.length < maxFiles) {
+  if (!files.length || fields.files.length >= maxFiles) {
 
-    var file = files.files.shift();
-
-    if (!file.headers['content-type']) {
-      exports.transferFileInformation(files, fields, parsedCookies, cb, res,
-          exceptionalMimes, language);
-
-      return;
-    }
-
-    var mime = file.headers['content-type'].toLowerCase().trim();
-
-    var acceptableSize = file.size && file.size < maxFileSize;
-
-    if (validMimes.indexOf(mime) === -1 && !exceptionalMimes && file.size) {
-      exports.outputError(lang(language).errFormatNotAllowed, 500, res,
-          language);
-    } else if (acceptableSize) {
-
-      exports.getFileData(file, fields, mime, function gotFileData(error) {
-        if (error) {
-          if (debug) {
-            throw error;
-          } else if (verbose) {
-            console.log(error);
-          }
-
-        }
-
-        exports.transferFileInformation(files, fields, parsedCookies, cb, res,
-            exceptionalMimes, language);
-
-      });
-    } else if (file.size) {
-      exports.outputError(lang(language).errFileTooLarge, 500, res, language);
-    } else {
-      exports.transferFileInformation(files, fields, parsedCookies, cb, res,
-          exceptionalMimes, language);
-    }
-
-  } else {
     if (verbose) {
       console.log('Form input: ' + JSON.stringify(fields, null, 2));
     }
 
-    cb(parsedCookies, fields);
+    exports.applyMetaData(fields, parsedCookies, cb);
+
+    return;
+  }
+
+  var file = files.shift();
+
+  if (!file.headers['content-type']) {
+    exports.transferFileInformation(files, fields, parsedCookies, cb, res,
+        exceptionalMimes, language);
+
+    return;
+  }
+
+  var mime = file.headers['content-type'].toLowerCase().trim();
+
+  if (validMimes.indexOf(mime) === -1 && !exceptionalMimes && file.size) {
+    exports.outputError(lang(language).errFormatNotAllowed, 500, res, language);
+  } else if (file.size && file.size < maxFileSize) {
+
+    exports.getFileData(file, fields, mime, function gotFileData(error) {
+      if (error) {
+        if (debug) {
+          throw error;
+        } else if (verbose) {
+          console.log(error);
+        }
+
+      }
+
+      exports.transferFileInformation(files, fields, parsedCookies, cb, res,
+          exceptionalMimes, language);
+
+    });
+  } else if (file.size) {
+    exports.outputError(lang(language).errFileTooLarge, 500, res, language);
+  } else {
+    exports.transferFileInformation(files, fields, parsedCookies, cb, res,
+        exceptionalMimes, language);
   }
 
 };
 // } Section 1.1: File processing
 
+exports.getNewFiles = function(newFiles, fields, relation) {
+
+  for (var i = 0; i < fields.metaData.length; i++) {
+
+    var metaData = fields.metaData[i];
+
+    if (metaData.size) {
+      newFiles.push(metaData);
+      continue;
+    }
+
+    var identifier = metaData.md5 + '-' + metaData.mime.replace('/', '');
+
+    var file = relation[identifier];
+
+    if (!file) {
+      continue;
+    }
+
+    metaData.size = file.size;
+    metaData.width = file.width;
+    metaData.height = file.height;
+    metaData.pathInDisk = file.pathInDisk;
+
+    newFiles.push(metaData);
+
+  }
+
+};
+
+exports.applyMetaData = function(fields, parsedCookies, cb) {
+
+  if (fields.metaData.length) {
+
+    var relation = {};
+
+    for (var i = 0; i < fields.files.length; i++) {
+
+      var file = fields.files[i];
+      relation[file.md5 + '-' + file.mime.replace('/', '')] = file;
+
+    }
+
+    var newFiles = [];
+    exports.getNewFiles(newFiles, fields, relation);
+    fields.files = newFiles;
+
+  }
+
+  delete fields.metaData;
+
+  cb(parsedCookies, fields);
+
+};
+
+exports.processReferencedFiles = function(metaData, callback, index) {
+
+  index = index || 0;
+
+  if (index >= metaData.length || index >= maxFiles) {
+    callback();
+    return;
+  }
+
+  var entry = metaData[index];
+
+  references.findOne({
+    identifier : entry.md5 + '-' + entry.mime.replace('/', '')
+  }, function gotEntry(error, reference) {
+
+    if (reference) {
+      entry.width = reference.width;
+      entry.height = reference.height;
+      entry.size = reference.size;
+    }
+
+    exports.processReferencedFiles(metaData, callback, ++index);
+
+  });
+
+};
+
+exports.getMetaData = function(fields) {
+
+  var fileMetaData = [];
+
+  var spoiled = fields.fileSpoiler || [];
+  var md5 = fields.fileMd5 || [];
+  var mime = fields.fileMime || [];
+  var name = fields.fileName || [];
+
+  var min = Math.min(spoiled.length, md5.length);
+  min = Math.min(min, mime.length);
+
+  for (var i = 0; i < Math.min(min, name.length); i++) {
+
+    if (!md5[i] || !mime[i] || !name[i]) {
+      continue;
+    }
+
+    fileMetaData.push({
+      spoiler : spoiled[i],
+      md5 : md5[i],
+      mime : mime[i],
+      title : name[i]
+    });
+
+  }
+
+  return fileMetaData;
+
+};
+
 exports.processParsedRequest = function(res, fields, files, callback,
     parsedCookies, exceptionalMimes, language) {
+
+  var fileMetaData = exports.getMetaData(fields);
+
+  delete fields.fileSpoiler;
+  delete fields.fileMime;
+  delete fields.fileMd5;
+  delete fields.fileName;
 
   for ( var key in fields) {
     if (fields.hasOwnProperty(key)) {
@@ -204,20 +324,21 @@ exports.processParsedRequest = function(res, fields, files, callback,
     }
   }
 
-  fields.files = [];
+  exports.processReferencedFiles(fileMetaData, function(error) {
 
-  if (files.files) {
+    if (error) {
+      callback(error);
+    } else {
 
-    exports.transferFileInformation(files, fields, parsedCookies, callback,
-        res, exceptionalMimes, language);
+      fields.files = [];
+      fields.metaData = fileMetaData;
 
-  } else {
-    if (verbose) {
-      console.log('Form input: ' + JSON.stringify(fields, null, 2));
+      exports.transferFileInformation(files.files || [], fields, parsedCookies,
+          callback, res, exceptionalMimes, language);
+
     }
 
-    callback(parsedCookies, fields);
-  }
+  });
 
 };
 
