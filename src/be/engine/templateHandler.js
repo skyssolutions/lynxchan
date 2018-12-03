@@ -367,7 +367,7 @@ exports.processCell = function(cell, fePath, templateSettings, prebuiltObj) {
   var dom = parser.parse(template.toString('utf8'));
 
   var map = {};
-  exports.startMapping(templateSettings.optional, dom.childNodes, map,
+  exports.startMapping(templateSettings.optionalContent, dom.childNodes, map,
       cell.prebuiltFields, true);
 
   var error = exports.loadPrebuiltFields(dom, prebuiltObj, cell, map);
@@ -484,8 +484,8 @@ exports.processPage = function(page, fePath, templateSettings, prebuiltObject) {
 
   page.prebuiltFields = page.prebuiltFields || {};
 
-  exports.startMapping(templateSettings.optional, document.childNodes, map,
-      page.prebuiltFields);
+  exports.startMapping(templateSettings.optionalContent, document.childNodes,
+      map, page.prebuiltFields);
 
   exports.setTitleToken(map, page);
 
@@ -542,7 +542,8 @@ exports.loadTemplated = function(fePath, templateSettings, prebuilt) {
       continue;
     }
 
-    exports.startMapping(templateSettings.optional, dom.childNodes, {}, {});
+    exports.startMapping(templateSettings.optionalContent, dom.childNodes, {},
+        {});
 
     prebuilt.templated[entry] = {
       data : Buffer.from(parser.serialize(dom), 'utf-8'),
@@ -560,12 +561,14 @@ exports.runTemplateLoading = function(fePath, templateSettings, prebuilt) {
   var errors = [];
 
   var opt = templateSettings.optional || {};
-  templateSettings.optional = opt;
+  var optContent = {};
+  templateSettings.optionalContent = optContent;
 
   for ( var entry in opt) {
 
     try {
-      opt[entry] = fs.readFileSync(fePath + '/templates/' + opt[entry], 'utf8');
+      optContent[entry] = fs.readFileSync(fePath + '/templates/' + opt[entry],
+          'utf8');
     } catch (error) {
       errors.push('\nFailed to load ' + entry + '.\n' + error);
     }
