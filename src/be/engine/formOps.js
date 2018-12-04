@@ -484,16 +484,11 @@ exports.outputError = function(error, code, res, language, json, auth) {
     console.log(error);
   }
 
-  if (!res) {
-    res = code;
-    code = 500;
-  }
-
   res.writeHead(json ? 200 : code, miscOps.getHeader(json ? 'application/json'
       : 'text/html', auth));
 
-  res.end(json ? jsonBuilder.error(error.toString()) : domManipulator.error(
-      code, error.toString(), language));
+  res.end(json ? jsonBuilder.message('error', error.toString())
+      : domManipulator.error(code, error.toString(), language));
 
 };
 
@@ -553,32 +548,66 @@ exports.checkBlankParameters = function(object, params, res, language, json) {
 
 };
 
-exports.checkForBan = function(req, boardUri, res, callback, auth) {
+exports.outputBan = function(ban, req, res, json, callback, auth) {
+
+  if (ban.range && req.bypassed) {
+    callback();
+    return;
+  }
+
+  res.writeHead(200, miscOps.getHeader(json ? 'application/json' : 'text/html',
+      auth));
+
+  if (json) {
+
+    if (ban.range) {
+      ban.range = ban.range.join('.');
+    }
+
+    res.end(jsonBuilder.message('banned', {
+      reason : ban.reason,
+      appealled : !!ban.appeal,
+      range : ban.range,
+      banId : ban._id,
+      expiration : ban.expiration,
+      board : ban.boardUri ? '/' + ban.boardUri + '/'
+          : lang(req.language).miscAllBoards.toLowerCase()
+    }));
+
+  } else {
+
+    var board = ban.boardUri ? '/' + ban.boardUri + '/'
+        : lang(req.language).miscAllBoards.toLowerCase();
+    res.end(domManipulator.ban(ban, board, req.language));
+
+  }
+
+};
+
+exports.checkForBan = function(req, boardUri, res, callback, auth, json) {
 
   modOps.ipBan.versatile.checkForBan(req, boardUri, function gotBan(error, ban,
       bypassable) {
 
     if (bypassable && !req.bypassed) {
 
-      res.writeHead(302, miscOps.getHeader(null, auth, [ [ 'Location',
-          '/blockBypass.js' ] ]));
+      if (json) {
 
-      res.end();
+        res.writeHead(200, miscOps.getHeader('application/json', auth));
+        res.end(jsonBuilder.message('bypassable'));
+
+      } else {
+
+        res.writeHead(302, miscOps.getHeader(null, auth, [ [ 'Location',
+            '/blockBypass.js' ] ]));
+        res.end();
+
+      }
 
     } else if (error) {
       callback(error);
     } else if (ban) {
-      if (ban.range && req.bypassed) {
-        callback();
-        return;
-      }
-
-      res.writeHead(200, miscOps.getHeader('text/html', auth));
-
-      var board = ban.boardUri ? '/' + ban.boardUri + '/'
-          : lang(req.language).miscAllBoards.toLowerCase();
-
-      res.end(domManipulator.ban(ban, board, req.language));
+      exports.outputBan(ban, req, res, json, callback, auth);
     } else {
       callback();
     }
@@ -586,7 +615,7 @@ exports.checkForBan = function(req, boardUri, res, callback, auth) {
 
 };
 
-exports.checkForHashBan = function(parameters, req, res, callback, auth) {
+exports.checkForHashBan = function(parameters, req, res, callback, auth, json) {
 
   modOps.hashBan.checkForHashBans(parameters, req, function gotBans(error,
       hashBans) {
@@ -596,9 +625,11 @@ exports.checkForHashBan = function(parameters, req, res, callback, auth) {
       callback();
     } else {
 
-      res.writeHead(200, miscOps.getHeader('text/html', auth));
+      res.writeHead(200, miscOps.getHeader(json ? 'application/json'
+          : 'text/html', auth));
 
-      res.end(domManipulator.hashBan(hashBans, req.language));
+      res.end(json ? jsonBuilder.message('hashBan', hashBans) : domManipulator
+          .hashBan(hashBans, req.language));
     }
   });
 

@@ -275,8 +275,8 @@ exports.login = function(parameters, language, callback) {
         } else if (!matches) {
           callback(lang(language).errLoginFailed);
         } else {
-          exports.createSession(parameters.login, parameters.remember ? true
-              : false, callback);
+          exports.createSession(parameters.login, !!parameters.remember,
+              callback);
         }
       });
       // style exception, too simple

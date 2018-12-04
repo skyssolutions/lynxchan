@@ -123,7 +123,7 @@ exports.checkIp = function(ip, callback, override) {
     if (error) {
       callback(error);
     } else {
-      callback(null, ip ? true : false);
+      callback(null, !!ip);
     }
 
   });

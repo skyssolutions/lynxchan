@@ -698,10 +698,9 @@ exports.startEngine = function() {
 
 function checkMaintenanceMode() {
 
-  var parsedValue = JSON.parse(informedArguments.maintenance.value) ? true
-      : false;
+  var parsedValue = !!JSON.parse(informedArguments.maintenance.value);
 
-  var current = settingsHandler.getGeneralSettings().maintenance ? true : false;
+  var current = !!settingsHandler.getGeneralSettings().maintenance;
 
   var changed = parsedValue !== current;
 

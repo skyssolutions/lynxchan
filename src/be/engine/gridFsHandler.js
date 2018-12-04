@@ -403,7 +403,8 @@ exports.takeLanguageFile = function(file, req, currentPick) {
 
   var isCompressed = file.filename.indexOf('.gz') === file.filename.length - 3;
 
-  var toRet = (req.compressed ? true : false) === isCompressed;
+  var takesCompressed = !!req.compressed;
+  var toRet = takesCompressed === isCompressed;
 
   return toRet || (!currentPick && !isCompressed);
 

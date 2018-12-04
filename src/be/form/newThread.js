@@ -61,12 +61,12 @@ exports.checkBans = function(json, req, res, parameters, userData, captchaId,
                   exports.createThread(json, req, userData, parameters,
                       captchaId, res, auth);
                 }
-              }, auth);
+              }, auth, json);
           // style exception, too simple
 
         }
 
-      }, auth);
+      }, auth, json);
 
 };
 

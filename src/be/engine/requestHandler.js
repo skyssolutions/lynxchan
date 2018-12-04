@@ -22,6 +22,7 @@ var boards = db.boards();
 var useLanguages;
 var formOps;
 var apiOps;
+var jsonBuilder;
 var miscOps;
 var gridFs;
 var cacheHandler;
@@ -55,6 +56,7 @@ exports.loadDependencies = function() {
   apiOps = require('./apiOps');
   miscOps = require('./miscOps');
   gridFs = require('./gridFsHandler');
+  jsonBuilder = require('./jsonBuilder');
   cacheHandler = require('./cacheHandler');
 
 };
@@ -156,12 +158,20 @@ exports.processApiRequest = function(req, pathName, res) {
 
 exports.showMaintenance = function(req, pathName, res) {
 
-  res.writeHead(302, {
-    'Location' : exports.formImages.indexOf(pathName) >= 0 ? kernel
-        .maintenanceImage() : '/maintenance.html'
-  });
+  if (!!url.parse(req.url, true).query.json) {
 
-  res.end();
+    res.writeHead(200, miscOps.getHeader('application/json'));
+    res.end(jsonBuilder.message('maintenance'));
+
+  } else {
+
+    res.writeHead(302, {
+      'Location' : exports.formImages.indexOf(pathName) >= 0 ? kernel
+          .maintenanceImage() : '/maintenance.html'
+    });
+    res.end();
+
+  }
 
 };
 
@@ -195,7 +205,9 @@ exports.processFormRequest = function(req, pathName, res) {
     }
 
   } catch (error) {
-    formOps.outputError(error, 500, res, req.language);
+
+    formOps.outputError(error, 500, res, req.language, !!url.parse(req.url,
+        true).query.json);
   }
 
 };

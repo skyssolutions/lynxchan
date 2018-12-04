@@ -105,7 +105,7 @@ exports.markAsTor = function(req, callback) {
     if (error) {
       callback(error);
     } else {
-      req.isTor = ip || torDebug ? true : false;
+      req.isTor = ip || !!torDebug;
       callback();
     }
 

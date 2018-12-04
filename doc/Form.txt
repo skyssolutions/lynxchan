@@ -17,7 +17,6 @@ When outputting json data, these pages will output data in the following structu
 The status are:
     bypassable: user has been prevented from posting but its possible for him to use the block bypass to post.
     error: internal server occurred. The error string will be on the data field.
-    denied: user is not allowed to perform the requested operation.
     ok: operation successful.
     maintenance: site is going under maintenance.
     banned: user is banned. In this case, data will contain an object with the following fields: 

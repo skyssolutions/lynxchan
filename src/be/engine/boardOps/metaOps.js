@@ -536,7 +536,7 @@ exports.setVolunteer = function(userData, parameters, language, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
-  parameters.add = parameters.add ? true : false;
+  parameters.add = !!parameters.add;
 
   parameters.boardUri = parameters.boardUri.toString();
 

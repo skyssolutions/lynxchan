@@ -162,11 +162,11 @@ exports.getThreadObject = function(thread, posts, board, modding, userRole) {
     markdown : thread.markdown,
     message : thread.message,
     creation : thread.creation,
-    locked : thread.locked ? true : false,
-    archived : thread.archived ? true : false,
-    pinned : thread.pinned ? true : false,
-    cyclic : thread.cyclic ? true : false,
-    autoSage : thread.autoSage ? true : false,
+    locked : !!thread.locked,
+    archived : !!thread.archived,
+    pinned : !!thread.pinned,
+    cyclic : !!thread.cyclic,
+    autoSage : !!thread.autoSage,
     files : exports.getFilesArray(thread.files, modding),
     posts : exports.buildThreadPosts(posts, board, modding, userRole)
   };
@@ -426,10 +426,10 @@ exports.catalog = function(boardUri, threads, callback) {
       fileCount : thread.fileCount,
       page : thread.page,
       subject : thread.subject,
-      locked : thread.locked ? true : false,
-      pinned : thread.pinned ? true : false,
-      cyclic : thread.cyclic ? true : false,
-      autoSage : thread.autoSage ? true : false,
+      locked : !!thread.locked,
+      pinned : !!thread.pinned,
+      cyclic : !!thread.cyclic,
+      autoSage : !!thread.autoSage,
       lastBump : thread.lastBump,
     };
 
@@ -710,15 +710,6 @@ exports.archives = function(threads, pageCount) {
   return JSON.stringify({
     threads : threads,
     pages : pageCount
-  });
-
-};
-
-exports.error = function(error) {
-
-  return JSON.stringify({
-    status : 'error',
-    data : error
   });
 
 };

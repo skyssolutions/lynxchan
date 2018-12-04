@@ -44,7 +44,7 @@ exports.setFilter = function(board, callback, parameters) {
     if (filter.originalTerm === parameters.originalTerm) {
       found = true;
 
-      filter.caseInsensitive = parameters.caseInsensitive ? true : false;
+      filter.caseInsensitive = !!parameters.caseInsensitive;
       filter.replacementTerm = parameters.replacementTerm;
 
       break;
@@ -56,7 +56,7 @@ exports.setFilter = function(board, callback, parameters) {
     existingFilters.push({
       originalTerm : parameters.originalTerm,
       replacementTerm : parameters.replacementTerm,
-      caseInsensitive : parameters.caseInsensitive ? true : false
+      caseInsensitive : !!parameters.caseInsensitive
     });
 
   }

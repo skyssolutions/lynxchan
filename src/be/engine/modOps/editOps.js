@@ -104,9 +104,9 @@ exports.getPostingToEdit = function(userData, parameters, language, callback) {
 // Section 1: Thread settings {
 exports.setNewThreadSettings = function(parameters, thread, callback) {
 
-  parameters.lock = parameters.lock ? true : false;
-  parameters.pin = parameters.pin ? true : false;
-  parameters.cyclic = parameters.cyclic ? true : false;
+  parameters.lock = !!parameters.lock;
+  parameters.pin = !!parameters.pin;
+  parameters.cyclic = !!parameters.cyclic;
 
   var changePin = parameters.pin !== thread.pinned;
   var changeLock = parameters.lock !== thread.locked;
