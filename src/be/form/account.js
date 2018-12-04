@@ -11,15 +11,14 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, false,
       function gotData(auth, userData) {
 
-        var json = url.parse(req.url, true).query.json;
-
-        res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-            : 'text/html', auth));
-
-        if (json) {
-          res.end(jsonBuilder.account(userData));
+        if (url.parse(req.url, true).query.json) {
+          formOps.outputResponse('ok', jsonBuilder.account(userData), res,
+              null, auth, null, true);
         } else {
+
+          res.writeHead(200, miscOps.getHeader('text/html', auth));
           res.end(domManipulator.account(userData, req.language));
+
         }
 
       }, false, false, true);

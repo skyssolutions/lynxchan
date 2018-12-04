@@ -210,16 +210,16 @@ exports.getNewFiles = function(newFiles, fields, relation) {
 
     var metaData = fields.metaData[i];
 
-    if (metaData.size) {
-      newFiles.push(metaData);
-      continue;
-    }
-
     var identifier = metaData.md5 + '-' + metaData.mime.replace('/', '');
 
     var file = relation[identifier];
 
     if (!file) {
+
+      if (metaData.size) {
+        newFiles.push(metaData);
+      }
+
       continue;
     }
 

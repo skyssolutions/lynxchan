@@ -81,6 +81,8 @@ Parameters:
     spoiler: if anything is sent, indicates the images should be spoilered.
     flag: id of a flag to be used.
 
+Json output(Number): id of the new reply.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::03

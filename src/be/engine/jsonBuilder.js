@@ -464,7 +464,7 @@ exports.account = function(userData) {
 
   allowed = allowed || boardCreationRequirement > miscOps.getMaxStaffRole();
 
-  return JSON.stringify({
+  return {
     login : userData.login,
     email : userData.email || '',
     ownedBoards : userData.ownedBoards || [],
@@ -473,7 +473,7 @@ exports.account = function(userData) {
     disabledLatestPostings : disabledLatestPostings || false,
     boardCreationAllowed : allowed,
     globalRole : isNaN(userData.globalRole) ? 4 : userData.globalRole
-  });
+  };
 
 };
 
