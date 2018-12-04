@@ -158,7 +158,7 @@ exports.processApiRequest = function(req, pathName, res) {
 
 exports.showMaintenance = function(req, pathName, res) {
 
-  if (!!url.parse(req.url, true).query.json) {
+  if (formOps.json(req)) {
 
     res.writeHead(200, miscOps.getHeader('application/json'));
     res.end(jsonBuilder.message('maintenance'));
@@ -206,8 +206,7 @@ exports.processFormRequest = function(req, pathName, res) {
 
   } catch (error) {
 
-    formOps.outputError(error, 500, res, req.language, !!url.parse(req.url,
-        true).query.json);
+    formOps.outputError(error, 500, res, req.language, formOps.json(req));
   }
 
 };

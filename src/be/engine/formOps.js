@@ -80,6 +80,10 @@ exports.getCookies = function(req) {
   return parsedCookies;
 };
 
+exports.json = function(req) {
+  return !!url.parse(req.url, true).query.json;
+};
+
 // Section 1: Request parsing {
 
 // Section 1.1: File processing {
@@ -145,7 +149,7 @@ exports.getFileData = function(file, fields, mime, callback) {
 };
 
 exports.transferFileInformation = function(files, fields, parsedCookies, cb,
-    res, exceptionalMimes, language) {
+    res, exceptionalMimes, language, json) {
 
   if (!files.length || fields.files.length >= maxFiles) {
 
@@ -162,7 +166,7 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
 
   if (!file.headers['content-type']) {
     exports.transferFileInformation(files, fields, parsedCookies, cb, res,
-        exceptionalMimes, language);
+        exceptionalMimes, language, json);
 
     return;
   }
@@ -170,7 +174,8 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
   var mime = file.headers['content-type'].toLowerCase().trim();
 
   if (validMimes.indexOf(mime) === -1 && !exceptionalMimes && file.size) {
-    exports.outputError(lang(language).errFormatNotAllowed, 500, res, language);
+    exports.outputError(lang(language).errFormatNotAllowed, 500, res, language,
+        json);
   } else if (file.size && file.size < maxFileSize) {
 
     exports.getFileData(file, fields, mime, function gotFileData(error) {
@@ -184,14 +189,16 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
       }
 
       exports.transferFileInformation(files, fields, parsedCookies, cb, res,
-          exceptionalMimes, language);
+          exceptionalMimes, language, json);
 
     });
+
   } else if (file.size) {
-    exports.outputError(lang(language).errFileTooLarge, 500, res, language);
+    exports.outputError(lang(language).errFileTooLarge, 500, res, language,
+        json);
   } else {
     exports.transferFileInformation(files, fields, parsedCookies, cb, res,
-        exceptionalMimes, language);
+        exceptionalMimes, language, json);
   }
 
 };
@@ -311,7 +318,7 @@ exports.getMetaData = function(fields) {
 };
 
 exports.processParsedRequest = function(res, fields, files, callback,
-    parsedCookies, exceptionalMimes, language) {
+    parsedCookies, exceptionalMimes, language, json) {
 
   var fileMetaData = exports.getMetaData(fields);
 
@@ -336,7 +343,7 @@ exports.processParsedRequest = function(res, fields, files, callback,
       fields.metaData = fileMetaData;
 
       exports.transferFileInformation(files.files || [], fields, parsedCookies,
-          callback, res, exceptionalMimes, language);
+          callback, res, exceptionalMimes, language, json);
 
     }
 
@@ -363,12 +370,14 @@ exports.getPostData = function(req, res, callback, exceptionalMimes) {
 
   };
 
+  var json = exports.json(req);
+
   res.on('close', endingCb);
 
   res.on('finish', endingCb);
 
   parser.on('error', function(error) {
-    exports.outputError(error, 500, res, req.language);
+    exports.outputError(error, 500, res, req.language, json);
   });
 
   parser.on('file', function(name, file) {
@@ -378,11 +387,10 @@ exports.getPostData = function(req, res, callback, exceptionalMimes) {
   parser.parse(req, function parsed(error, fields, files) {
 
     if (error) {
-      exports.outputError(error, 500, res, req.language);
+      exports.outputError(error, 500, res, req.language, json);
     } else {
       exports.processParsedRequest(res, fields, files, callback, exports
-          .getCookies(req), exceptionalMimes, req.language);
-
+          .getCookies(req), exceptionalMimes, req.language, json);
     }
 
   });
@@ -407,10 +415,19 @@ exports.checkReferer = function(req) {
 exports.getAuthenticatedPost = function(req, res, getParameters, callback,
     optionalAuth, exceptionalMimes, skipReferer) {
 
+  var json = exports.json(req);
+
   if (!skipReferer && !exports.checkReferer(req)) {
 
     if (!optionalAuth) {
-      exports.redirectToLogin(res);
+
+      if (json) {
+        exports.outputError(lang(req.language).errReferralMismatch, null, res,
+            null, true);
+      } else {
+        exports.redirectToLogin(res);
+      }
+
     } else if (getParameters) {
       exports.getPostData(req, res, function(auth, parameters) {
         callback(null, null, parameters);
@@ -429,7 +446,13 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback,
       accountOps.validate(auth, req.language, function validated(error,
           newAuth, userData) {
         if (error && !optionalAuth) {
-          exports.redirectToLogin(res);
+
+          if (json) {
+            exports.outputError(error, null, res, null, true);
+          } else {
+            exports.redirectToLogin(res);
+          }
+
         } else {
           callback(newAuth, userData, parameters);
         }
@@ -442,7 +465,12 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback,
         function validated(error, newAuth, userData) {
 
           if (error && !optionalAuth) {
-            exports.redirectToLogin(res);
+            if (json) {
+              exports.outputError(error, null, res, null, true);
+            } else {
+              exports.redirectToLogin(res);
+            }
+
           } else {
             callback(newAuth, userData);
           }

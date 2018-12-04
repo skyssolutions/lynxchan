@@ -85,7 +85,7 @@ exports.useBypass = function(json, req, res, parameters, userData, captchaId,
 
 exports.process = function(req, res) {
 
-  var json = !!url.parse(req.url, true).query.json;
+  var json = formOps.json(req);
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {

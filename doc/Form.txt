@@ -34,7 +34,7 @@ fileMime
 fileSpoiler
 fileName
 
-You can inform them multiple times. If a file matches the identifier, it will be reused. Individual files will be spoiled if the value of fileSpoiler is anything but an empty string, but you must inform the empty string anyway for them to work.
+You can inform them multiple times. If a file matches the md5 and mime, it will be reused. Individual files will be spoiled if the value of fileSpoiler is anything but an empty string, but you must inform the empty string anyway for them to work.
 You must inform all of them the same amount of times when informing any of them. They will be read in the same order, so the first entry of them represents one file, the second entry of them a second file.
 When no valid entry is informed, just the uploaded files will be used on the post.
 
