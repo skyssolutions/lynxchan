@@ -7,7 +7,27 @@ Files should be sent with an input of type "file" using name "files".
 Pages that require proper validation will redirect the user to /login.html if authentication fails. Validation will require both the login and hash cookies to be set. The hash is the hash created when an account is created or performs login.
 Array parameters will be split using commas and spaces will be ignored.
 Boolean parameters will be just checked if they return a true condition on the server using simple js evaluation (if(parameters.X)).
-Pages with optional json output will require the get parameter "json" with any value to output the data in json form. When outputting json data, these pages will output errors as a single json formatted string.
+Pages with optional json output will require the get parameter "json" with any value to output the data in json form. 
+When outputting json data, these pages will output data in the following structure:
+{
+  status: "status of the operation",
+  data: "any kind of data can be returned on this field".
+}
+
+The status are:
+    bypassable: user has been prevented from posting but its possible for him to use the block bypass to post.
+    error: internal server occurred. The error string will be on the data field.
+    denied: user is not allowed to perform the requested operation.
+    ok: operation successful.
+    maintenance: site is going under maintenance.
+    banned: user is banned. In this case, data will contain an object with the following fields: 
+        reason: the reason of the ban.
+        board: board that this ban applies to. 
+        expiration(Date): when the ban expires.
+        appealled(Boolean): indicates if the ban has been already appealed.
+    hashBan: user tried to upload a banned file. In this case, data will contain an array where each object contains the following fields:
+        file: name provided for the file.
+        boardUri: board uri of the hash ban. If not informed, the file is banned globally.
 
 To post files by reference or spoil individual files, inform the following parameters:
 fileMd5
@@ -38,6 +58,8 @@ Parameters:
     captcha: captcha input.
     spoiler: if anything is sent, indicates the images should be spoilered.
     flag: id of a flag to be used.
+
+Json output(Number): id of the new thread.
 
 ------------------------------------------------------------------------------------------
 

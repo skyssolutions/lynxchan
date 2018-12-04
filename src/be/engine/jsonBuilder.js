@@ -713,3 +713,21 @@ exports.archives = function(threads, pageCount) {
   });
 
 };
+
+exports.error = function(error) {
+
+  return JSON.stringify({
+    status : 'error',
+    data : error
+  });
+
+};
+
+exports.message = function(status, data) {
+
+  return JSON.stringify({
+    status : status,
+    data : data
+  });
+
+};

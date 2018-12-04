@@ -19,6 +19,7 @@ var accountOps;
 var uploadHandler;
 var modOps;
 var miscOps;
+var jsonBuilder;
 var domManipulator;
 var lang;
 var uploadHandler;
@@ -42,6 +43,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  jsonBuilder = require('./jsonBuilder');
   accountOps = require('./accountOps');
   uploadHandler = require('./uploadHandler');
   modOps = require('./modOps');
@@ -460,15 +462,17 @@ exports.redirectToLogin = function(res) {
 };
 
 exports.outputResponse = function(message, redirect, res, cookies, authBlock,
-    language) {
+    language, json) {
 
   if (verbose) {
     console.log(message);
   }
 
-  res.writeHead(200, miscOps.getHeader('text/html', authBlock, null, cookies));
+  res.writeHead(200, miscOps.getHeader(json ? 'application/json' : 'text/html',
+      authBlock, null, cookies));
 
-  res.end(domManipulator.message(message, redirect, language));
+  res.end(json ? jsonBuilder.message(message, redirect) : domManipulator
+      .message(message, redirect, language));
 
 };
 
@@ -485,15 +489,15 @@ exports.outputError = function(error, code, res, language, json, auth) {
     code = 500;
   }
 
-  res.writeHead(code, miscOps.getHeader(
-      json ? 'application/json' : 'text/html', auth));
+  res.writeHead(json ? 200 : code, miscOps.getHeader(json ? 'application/json'
+      : 'text/html', auth));
 
-  res.end(json ? JSON.stringify(error.toString()) : domManipulator.error(code,
-      error.toString(), language));
+  res.end(json ? jsonBuilder.error(error.toString()) : domManipulator.error(
+      code, error.toString(), language));
 
 };
 
-exports.failCheck = function(parameter, reason, res, language) {
+exports.failCheck = function(json, parameter, reason, res, language) {
 
   if (verbose) {
     console.log('Blank reason: ' + reason);
@@ -503,45 +507,45 @@ exports.failCheck = function(parameter, reason, res, language) {
     var message = lang(language).errBlankParameter.replace('{$parameter}',
         parameter).replace('{$reason}', reason);
 
-    exports.outputError(message, 400, res, language);
+    exports.outputError(message, 400, res, language, json);
   }
 
   return true;
 
 };
 
-exports.checkBlankParameters = function(object, parameters, res, language) {
+exports.checkBlankParameters = function(object, params, res, language, json) {
 
   if (!object) {
-    return exports.failCheck(null, null, null, language);
+    return exports.failCheck(json, null, null, null, language);
   }
 
   if (!object.hasOwnProperty) {
     object = JSON.parse(JSON.stringify(object));
   }
 
-  for (var i = 0; i < parameters.length; i++) {
-    var parameter = parameters[i];
+  for (var i = 0; i < params.length; i++) {
+    var parameter = params[i];
 
     if (!object.hasOwnProperty(parameter)) {
-      return exports.failCheck(parameter, lang(language).miscReasonNotPresent,
-          res, language);
+      return exports.failCheck(json, parameter,
+          lang(language).miscReasonNotPresent, res, language);
 
     }
 
     if (object[parameter] === null) {
-      return exports.failCheck(parameter, lang(language).miscReasonNnull, res,
-          language);
+      return exports.failCheck(json, parameter, lang(language).miscReasonNnull,
+          res, language);
     }
 
     if (object[parameter] === undefined) {
-      return exports.failCheck(parameter, lang(language).miscReasonUndefined,
-          res, language);
+      return exports.failCheck(json, parameter,
+          lang(language).miscReasonUndefined, res, language);
     }
 
     if (!object[parameter].trim().length) {
-      return exports.failCheck(parameter, lang(language).miscReasonNoLength,
-          res, language);
+      return exports.failCheck(json, parameter,
+          lang(language).miscReasonNoLength, res, language);
     }
   }
 
