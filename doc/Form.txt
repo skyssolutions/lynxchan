@@ -319,6 +319,10 @@ Parameters:
     deleteUploads: if informed, only the uploads and not the posts and threads will be deleted.
     confirmation: must be informed when using 'ip-deletion' as the action.
 
+Json output(Object): when using regular deletion, it will output an object with the following fields:
+    removedThreads(Number): amount of deleted threads.
+    removedPosts(Number): amount of deleted posts.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::16
@@ -991,6 +995,8 @@ Parameters:
     boardUri: uri of the board that contains the thread to be transferred.
     threadId: id of the thread to be transferred.
     boardUriDestination: uri of the board that will receive the thread.
+
+Json output(Number): new id of the thread.
 
 ------------------------------------------------------------------------------------------
 

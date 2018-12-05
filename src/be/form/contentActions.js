@@ -123,16 +123,19 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
   var redirectBoard = exports.getProcessedObjects(parameters, threads, posts,
       reportedObjects);
 
+  var json = formOps.json(req);
+
   switch (parameters.action) {
   case 'spoil': {
 
     modOps.spoiler.spoiler(userData, reportedObjects, req.language, function(
         error) {
       if (error) {
-        formOps.outputError(error, 500, res, req.language, null, auth);
+        formOps.outputError(error, 500, res, req.language, json, auth);
       } else {
-        formOps.outputResponse(lang(req.language).msgContentSpoilered,
-            redirectBoard, res, null, auth, req.language);
+        formOps.outputResponse(json ? 'ok'
+            : lang(req.language).msgContentSpoilered, json ? null
+            : redirectBoard, res, null, auth, req.language, json);
       }
     });
 
@@ -144,17 +147,15 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
     modOps.report.report(req, reportedObjects, parameters, captchaId,
         function createdReports(error, ban) {
           if (error) {
-            formOps.outputError(error, 500, res, req.language, null, auth);
+            formOps.outputError(error, 500, res, req.language, json, auth);
           } else if (ban) {
-            res.writeHead(200, miscOps.getHeader('text/html'));
-
-            var board = ban.boardUri ? '/' + ban.boardUri + '/'
-                : lang(req.language).miscAllBoards.toLowerCase();
-
-            res.end(domManipulator.ban(ban, board));
+            formOps.outputBan(ban, req, res, json, null, auth);
           } else {
-            formOps.outputResponse(lang(req.language).msgContentReported,
-                redirectBoard, res, null, auth, req.language);
+
+            formOps.outputResponse(json ? 'ok'
+                : lang(req.language).msgContentReported, json ? null
+                : redirectBoard, res, null, auth, req.language, json);
+
           }
 
         });
@@ -167,10 +168,11 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
     modOps.ipBan.specific.ban(userData, reportedObjects, parameters, captchaId,
         req.language, function(error) {
           if (error) {
-            formOps.outputError(error, 500, res, req.language, null, auth);
+            formOps.outputError(error, 500, res, req.language, json, auth);
           } else {
-            formOps.outputResponse(lang(req.language).msgUsersBanned,
-                redirectBoard, res, null, auth, req.language);
+            formOps.outputResponse(json ? 'ok'
+                : lang(req.language).msgUsersBanned, json ? null
+                : redirectBoard, res, null, auth, req.language, json);
           }
         });
 
@@ -183,10 +185,11 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
         userData, req.language, function deleted(error) {
 
           if (error) {
-            formOps.outputError(error, 500, res, req.language, null, auth);
+            formOps.outputError(error, 500, res, req.language, json, auth);
           } else {
-            formOps.outputResponse(lang(req.language).msgDeletedFromIp,
-                redirectBoard, res, null, auth, req.language);
+            formOps.outputResponse(json ? 'ok'
+                : lang(req.language).msgDeletedFromIp, json ? null
+                : redirectBoard, res, null, auth, req.language, json);
           }
 
         });
@@ -196,21 +199,23 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
 
   default: {
 
-    deleteOps.postingDeletions
-        .posting(userData, parameters, threads, posts, req.language,
-            function deletedPostings(error, removedThreads, removedPosts) {
+    deleteOps.postingDeletions.posting(userData, parameters, threads, posts,
+        req.language, function deletedPostings(error, removedThreads,
+            removedPosts) {
 
-              if (error) {
-                formOps.outputError(error, 500, res, req.language, null, auth);
-              } else {
+          if (error) {
+            formOps.outputError(error, 500, res, req.language, json, auth);
+          } else {
 
-                formOps.outputResponse(lang(req.language).msgContentDeleted
-                    .replace('{$threads}', removedThreads).replace('{$posts}',
-                        removedPosts), redirectBoard, res, null, auth,
-                    req.language);
-              }
+            formOps.outputResponse(json ? 'ok'
+                : lang(req.language).msgContentDeleted.replace('{$threads}',
+                    removedThreads).replace('{$posts}', removedPosts), json ? {
+              removedThreads : removedThreads,
+              removedPosts : removedPosts
+            } : redirectBoard, res, null, auth, req.language, json);
+          }
 
-            });
+        });
 
   }
 
