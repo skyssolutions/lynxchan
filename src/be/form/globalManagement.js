@@ -14,13 +14,17 @@ exports.getManagementData = function(userData, res, json, auth, language) {
           formOps.outputError(error, 500, res, language, json, auth);
         } else {
 
-          res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-              : 'text/html', auth));
-
           if (json) {
-            res.end(jsonBuilder.globalManagement(userData.login, globalStaff,
-                globalReports, appealedBans));
+
+            formOps.outputResponse('ok', {
+              login : userData.login,
+              staff : globalStaff || [],
+              appealedBans : appealedBans || [],
+              reports : globalReports || []
+            }, res, null, auth, language, true);
+
           } else {
+            res.writeHead(200, miscOps.getHeader('text/html', auth));
 
             res.end(dom.globalManagement(userData.globalRole, userData.login,
                 globalStaff, globalReports, appealedBans, language));

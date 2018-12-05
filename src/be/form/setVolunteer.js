@@ -5,28 +5,29 @@ var lang = require('../engine/langOps').languagePack;
 var boardOps = require('../engine/boardOps').meta;
 var mandatoryParameters = [ 'boardUri', 'login' ];
 
-exports.setVolunteer = function(userData, parameters, res, auth, language) {
+exports.setVolunteer = function(userData, param, res, auth, language, json) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
-      language)) {
+  if (formOps.checkBlankParameters(param, mandatoryParameters, res, language,
+      json)) {
     return;
   }
 
-  parameters.add = parameters.add === 'true';
+  param.add = param.add === 'true';
 
-  boardOps.setVolunteer(userData, parameters, language, function setVolunteer(
-      error) {
+  boardOps.setVolunteer(userData, param, language,
+      function setVolunteer(error) {
 
-    if (error) {
-      formOps.outputError(error, 500, res, language, null, auth);
-    } else {
-      var redirect = '/boardManagement.js?boardUri=' + parameters.boardUri;
-      formOps.outputResponse(parameters.add ? lang(language).msgVolunteerAdded
-          : lang(language).msgVolunteerRemoved, redirect, res, null, auth,
-          language);
-    }
+        if (error) {
+          formOps.outputError(error, 500, res, language, json, auth);
+        } else {
+          formOps.outputResponse(json ? 'ok'
+              : (param.add ? lang(language).msgVolunteerAdded
+                  : lang(language).msgVolunteerRemoved), json ? null
+              : '/boardManagement.js?boardUri=' + param.boardUri, res, null,
+              auth, language, json);
+        }
 
-  });
+      });
 
 };
 
@@ -34,7 +35,8 @@ exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-    exports.setVolunteer(userData, parameters, res, auth, req.language);
+    exports.setVolunteer(userData, parameters, res, auth, req.language, formOps
+        .json(req));
   });
 
 };

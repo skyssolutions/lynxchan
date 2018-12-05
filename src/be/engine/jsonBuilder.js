@@ -10,7 +10,6 @@ var overboard;
 var minClearIpRole;
 var sfwOverboard;
 var version;
-var boardCreationRequirement;
 var displayMaxSize;
 var bypassMode;
 var maxAllowedFiles;
@@ -18,7 +17,6 @@ var maxFileSizeMB;
 var domManipulator;
 var messageLength;
 var globalCaptcha;
-var disabledLatestPostings;
 
 exports.loadSettings = function() {
 
@@ -32,8 +30,6 @@ exports.loadSettings = function() {
   minClearIpRole = settings.clearIpMinRole;
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
-  boardCreationRequirement = settings.boardCreationRequirement;
-  disabledLatestPostings = settings.disableLatestPostings;
 
   displayMaxSize = domManipulator.formatFileSize(settings.maxFileSizeB);
 
@@ -456,36 +452,6 @@ exports.rules = function(boardUri, rules, callback) {
         boardUri : boardUri,
         type : 'rules'
       }, callback);
-};
-
-exports.account = function(userData) {
-
-  var allowed = userData.globalRole <= boardCreationRequirement;
-
-  allowed = allowed || boardCreationRequirement > miscOps.getMaxStaffRole();
-
-  return {
-    login : userData.login,
-    email : userData.email || '',
-    ownedBoards : userData.ownedBoards || [],
-    settings : userData.settings || [],
-    volunteeredBoards : userData.volunteeredBoards || [],
-    disabledLatestPostings : disabledLatestPostings || false,
-    boardCreationAllowed : allowed,
-    globalRole : isNaN(userData.globalRole) ? 4 : userData.globalRole
-  };
-
-};
-
-exports.globalManagement = function(userLogin, staff, reports, appealedBans) {
-
-  return JSON.stringify({
-    login : userLogin,
-    staff : staff || [],
-    appealedBans : appealedBans || [],
-    reports : reports || []
-  });
-
 };
 
 exports.boardManagement = function(userData, boardData, reports, bans) {
