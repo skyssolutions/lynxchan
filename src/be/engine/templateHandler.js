@@ -23,7 +23,6 @@ exports.simpleAttributes = {
   'href' : true,
   'title' : true,
   'src' : true,
-  'defaultValue' : true,
   'accept' : true
 };
 
@@ -157,6 +156,8 @@ exports.processAttributes = function(element, field, use) {
     var value = '__' + field + '_' + use + '__';
     exports.setAttribute(element, 'data-file' + use, value);
 
+  } else if ('defaultValue' === use) {
+    exports.setInner(element, '__' + field + '_defaultValue__');
   } else {
     console.log('Unknown use ' + use);
   }

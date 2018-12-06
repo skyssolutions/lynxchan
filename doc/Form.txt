@@ -737,6 +737,8 @@ Description: page used for solving captchas with cookies disabled. Uses get para
 Parameters:
     solvedCaptcha: id of a solved captcha to be displayed.
 
+Json output: id of a new captcha.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::38
@@ -776,6 +778,8 @@ Parameters:
     boardUri: if not informed, the range ban will be global.
     range: range to be banned.
 
+Json output: id of the new range ban.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::41
@@ -802,6 +806,8 @@ Description: creates a hash ban that will keep files with this hash to be posted
 Parameters:
     boardUri: if not informed, the hash ban will be global.
     hash: banned MD5 hash. 32 characters.
+
+Json output: id of the new ban.
 
 ------------------------------------------------------------------------------------------
 

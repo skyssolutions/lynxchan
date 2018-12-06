@@ -23,12 +23,13 @@ exports.getPostingToEdit = function(userData, parameters, res, auth, language) {
           formOps.outputError(error, 500, res, language, json, auth);
         } else {
 
-          res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-              : 'text/html', auth));
-
           if (json) {
-            res.end(jsonBuilder.edit(posting));
+            formOps.outputResponse('ok', {
+              message : posting.message,
+              subject : posting.subject
+            }, res, null, auth, null, true);
           } else {
+            res.writeHead(200, miscOps.getHeader('text/html', auth));
             res.end(domManipulator.edit(parameters, posting, language));
           }
 

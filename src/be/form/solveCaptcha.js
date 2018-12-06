@@ -11,14 +11,18 @@ exports.process = function(req, res) {
     // style exception, too simple
     captchaOps.solveCaptcha(parameters, req.language, function solvedCaptcha(
         error) {
+
+      var json = formOps.json(req);
+
       if (error) {
-        formOps.outputError(error, 500, res, req.language);
+        formOps.outputError(error, 500, res, req.language, json);
       } else {
         var redirectLink = '/noCookieCaptcha.js?solvedCaptcha=';
         redirectLink += parameters.captchaId;
 
-        formOps.outputResponse(lang(req.language).msgCaptchaSolved,
-            redirectLink, res, null, null, req.language);
+        formOps.outputResponse(json ? 'ok'
+            : lang(req.language).msgCaptchaSolved, json ? null : redirectLink,
+            res, null, null, req.language, json);
       }
 
     });

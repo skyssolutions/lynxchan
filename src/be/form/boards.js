@@ -157,12 +157,11 @@ exports.process = function(req, res) {
                   formOps.outputError(error, 500, res, req.language, json);
                 } else {
 
-                  res.writeHead(200, miscOps
-                      .getHeader(json ? 'application/json' : 'text/html'));
-
                   if (json) {
-                    res.end(jsonBuilder.boards(pageCount, foundBoards));
+                    formOps.outputResponse('ok', jsonBuilder.boards(pageCount,
+                        foundBoards), res, null, null, null, true);
                   } else {
+                    res.writeHead(200, miscOps.getHeader('text/html'));
                     res.end(domManipulator.boards(parameters, foundBoards,
                         pageCount, req.language));
                   }

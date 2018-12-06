@@ -17,12 +17,10 @@ exports.getRulesData = function(parameters, userData, res, auth, language) {
           formOps.outputError(error, 500, res, language, json, auth);
         } else {
 
-          res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-              : 'text/html', auth));
-
           if (json) {
-            res.end(jsonBuilder.ruleManagement(rules));
+            formOps.outputResponse('ok', rules, res, null, auth, null, true);
           } else {
+            res.writeHead(200, miscOps.getHeader('text/html', auth));
             res.end(dom.ruleManagement(parameters.boardUri, rules, language));
           }
         }

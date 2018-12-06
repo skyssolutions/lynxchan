@@ -485,24 +485,14 @@ exports.closedReports = function(closedReports) {
   return JSON.stringify(closedReports);
 };
 
-exports.boardModeration = function(boardData, ownerData) {
-
-  return JSON.stringify({
-    owner : ownerData.login,
-    specialSettings : boardData.specialSettings || [],
-    lastSeen : ownerData.lastSeen
-  });
-
-};
-
 exports.boards = function(pageCount, boards) {
 
-  return JSON.stringify({
+  return {
     pageCount : pageCount,
     boards : boards,
     overboard : overboard,
     sfwOverboard : sfwOverboard
-  });
+  };
 
 };
 
@@ -520,24 +510,7 @@ exports.rangeBans = function(rangeBans, boardData) {
 
   }
 
-  return JSON.stringify(rangeBans);
-
-};
-
-exports.hashBans = function(hashBans) {
-  return JSON.stringify(hashBans);
-};
-
-exports.ruleManagement = function(rules) {
-  return JSON.stringify(rules);
-};
-
-exports.edit = function(posting) {
-
-  return JSON.stringify({
-    message : posting.message,
-    subject : posting.subject
-  });
+  return rangeBans;
 
 };
 

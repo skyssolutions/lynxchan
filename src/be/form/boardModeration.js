@@ -18,13 +18,19 @@ exports.getBoardModerationData = function(parameters, userData, res, auth,
           formOps.outputError(error, 500, res, language, json, auth);
         } else {
 
-          res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-              : 'text/html', auth));
-
           if (json) {
-            res.end(jsonBuilder.boardModeration(boardData, ownerData));
+
+            formOps.outputResponse('ok', {
+              owner : ownerData.login,
+              specialSettings : boardData.specialSettings || [],
+              lastSeen : ownerData.lastSeen
+            }, res, null, auth, null, true);
+
           } else {
+
+            res.writeHead(200, miscOps.getHeader('text/html', auth));
             res.end(dom.boardModeration(boardData, ownerData, language));
+
           }
 
         }

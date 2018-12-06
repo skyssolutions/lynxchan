@@ -441,6 +441,8 @@ Parameters:
     boardUri: if not informed, the hash ban will be global.
     hash: banned md5 hash. 32 characters.
 
+Output: id of the hash new ban.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::26
@@ -451,8 +453,6 @@ Description: Lifts a hash ban. Requires authentication.
 
 Parameters:
     hashBanId: id of the hash ban to be removed.
-
-Output: id of the hash new ban.
 
 ------------------------------------------------------------------------------------------
 

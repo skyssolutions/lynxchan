@@ -17,12 +17,11 @@ exports.getRangeBans = function(userData, parameters, res, auth, language) {
       formOps.outputError(error, 500, res, language, json, auth);
     } else {
 
-      res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-          : 'text/html', auth));
-
       if (json) {
-        res.end(jsonBuilder.rangeBans(rangeBans, boardData));
+        formOps.outputResponse('ok', jsonBuilder
+            .rangeBans(rangeBans, boardData), res, null, auth, null, json);
       } else {
+        res.writeHead(200, miscOps.getHeader('text/html', auth));
         res.end(dom.rangeBans(rangeBans, boardData, language));
       }
 
