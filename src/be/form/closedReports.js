@@ -17,12 +17,10 @@ exports.getClosedReports = function(userData, parameters, res, auth, language) {
           formOps.outputError(error, 500, res, language, json, auth);
         } else {
 
-          res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-              : 'text/html', auth));
-
           if (json) {
-            res.end(jsonBuilder.closedReports(reports));
+            formOps.outputResponse('ok', reports, res, null, auth, null, true);
           } else {
+            res.writeHead(200, miscOps.getHeader('text/html', auth));
             res.end(dom.closedReports(reports, language));
           }
 

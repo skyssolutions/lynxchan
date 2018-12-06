@@ -456,7 +456,7 @@ exports.rules = function(boardUri, rules, callback) {
 
 exports.boardManagement = function(userData, boardData, reports, bans) {
 
-  return JSON.stringify({
+  return {
     usesCustomSpoiler : boardData.usesCustomSpoiler,
     volunteers : boardData.volunteers || [],
     boardName : boardData.boardName,
@@ -478,7 +478,7 @@ exports.boardManagement = function(userData, boardData, reports, bans) {
     captchaMode : boardData.captchaMode || 0,
     locationFlagMode : boardData.locationFlagMode || 0,
     maxBumpAgeDays : boardData.maxBumpAgeDays
-  });
+  };
 
 };
 

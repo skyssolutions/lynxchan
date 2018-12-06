@@ -15,12 +15,14 @@ exports.getBoardManagementData = function(board, userData, res, json, auth,
         if (error) {
           formOps.outputError(error, 500, res, language, json, auth);
         } else {
-          res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-              : 'text/html', auth));
 
           if (json) {
-            res.end(jsonB.boardManagement(userData, boardData, reports, bans));
+
+            formOps.outputResponse('ok', jsonB.boardManagement(userData,
+                boardData, reports, bans), res, null, auth, null, true);
+
           } else {
+            res.writeHead(200, miscOps.getHeader('text/html', auth));
             res.end(dom.boardManagement(userData, boardData, reports, bans,
                 language));
           }
