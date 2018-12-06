@@ -6,10 +6,11 @@ var lang = require('../engine/langOps').languagePack;
 var mandatoryParameters = [ 'boardUri', 'boardName', 'boardDescription' ];
 var possibleSettings = boardOps.getValidSettings();
 
-exports.setBoardSettings = function(userData, parameters, res, auth, language) {
+exports.setBoardSettings = function(userData, parameters, res, auth, language,
+    json) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
-      language)) {
+      language, json)) {
     return;
   }
 
@@ -38,12 +39,14 @@ exports.setBoardSettings = function(userData, parameters, res, auth, language) {
   boardOps.setSettings(userData, parameters, language, function settingsSaved(
       error) {
     if (error) {
-      formOps.outputError(error, 500, res, language, null, auth);
+      formOps.outputError(error, 500, res, language, json, auth);
     } else {
-      var redirect = '/boardManagement.js?boardUri=' + parameters.boardUri;
 
-      formOps.outputResponse(lang(language).msgBoardSettingsSaved, redirect,
-          res, null, auth, language);
+      formOps.outputResponse(
+          json ? 'ok' : lang(language).msgBoardSettingsSaved, json ? null
+              : '/boardManagement.js?boardUri=' + parameters.boardUri, res,
+          null, auth, language, json);
+
     }
 
   });
@@ -55,7 +58,8 @@ exports.process = function(req, res) {
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
 
-    exports.setBoardSettings(userData, parameters, res, auth, req.language);
+    exports.setBoardSettings(userData, parameters, res, auth, req.language,
+        formOps.json(req));
 
   });
 

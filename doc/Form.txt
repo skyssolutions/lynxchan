@@ -550,6 +550,10 @@ Description: adds a new banner to the board. Accepts files. Requires an image as
 Parameters:
     boardUri: board to add the banner to.
 
+Json output(Object): object with data relevant to the new banner:
+    id: id of the new banner.
+    path: path for the banner file.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::28

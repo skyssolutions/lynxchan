@@ -59,25 +59,22 @@ exports.process = function(req, res) {
         $push : '$date'
       }
     }
-  } ]).toArray(
-      function gotDates(error, results) {
+  } ]).toArray(function gotDates(error, results) {
 
-        if (error) {
-          formOps.outputError(error, 500, res, req.language, json);
-        } else {
+    if (error) {
+      formOps.outputError(error, 500, res, req.language, json);
+    } else {
 
-          var dates = results.length ? results[0].dates : [];
+      var dates = results.length ? results[0].dates : [];
 
-          res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-              : 'text/html'));
+      if (json) {
+        formOps.outputResponse('ok', dates, res, null, null, null, true);
+      } else {
+        res.writeHead(200, miscOps.getHeader('text/html'));
+        res.end(domManipulator.logs(dates, req.language));
+      }
+    }
 
-          if (json) {
-            res.end(jsonBuilder.logs(dates));
-          } else {
-            res.end(domManipulator.logs(dates, req.language));
-          }
-        }
-
-      });
+  });
 
 };

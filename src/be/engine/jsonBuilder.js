@@ -233,8 +233,7 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
   }
 
   if (modding) {
-    return JSON.stringify(threadObject);
-
+    return threadObject;
   } else {
 
     var path = '/' + boardUri + '/res/' + threadData.threadId + '.json';
@@ -484,24 +483,6 @@ exports.boardManagement = function(userData, boardData, reports, bans) {
 
 exports.closedReports = function(closedReports) {
   return JSON.stringify(closedReports);
-};
-
-exports.bans = function(bans) {
-  return JSON.stringify(bans);
-};
-
-exports.bannerManagement = function(boardUri, banners) {
-  return JSON.stringify(banners);
-};
-
-exports.logs = function(dates) {
-  return JSON.stringify(dates);
-};
-
-exports.filterManagement = function(filters) {
-
-  return JSON.stringify(filters);
-
 };
 
 exports.boardModeration = function(boardData, ownerData) {

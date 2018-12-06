@@ -26,6 +26,8 @@ exports.showCaptcha = function(captchaData, res) {
 
 exports.process = function(req, res) {
 
+  var json = formOps.json(req);
+
   var settings = settingsHandler.getGeneralSettings();
 
   var verbose = settings.verbose || settings.verboseMisc;
@@ -40,7 +42,7 @@ exports.process = function(req, res) {
         console.log(error);
       }
 
-      formOps.outputError(error, 500, res, req.language);
+      formOps.outputError(error, 500, res, req.language, json);
     } else if (!captchaData) {
       if (verbose) {
         console.log('No captcha found');
@@ -56,7 +58,7 @@ exports.process = function(req, res) {
             console.log(error);
           }
 
-          formOps.outputError(error, 500, res, req.language);
+          formOps.outputError(error, 500, res, req.language, json);
         } else {
           exports.showCaptcha(captchaData, res);
         }

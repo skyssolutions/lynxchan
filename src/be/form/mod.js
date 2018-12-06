@@ -16,15 +16,15 @@ var formOps = require('../engine/formOps');
 exports.outputModData = function(bData, flagData, thread, posts, res, json,
     userRole, auth, language) {
 
-  res.writeHead(200, miscOps.getHeader(json ? 'application/json' : 'text/html',
-      auth));
-
   if (json) {
 
-    res.end(jsonBuilder.thread(bData.boardUri, bData, thread, posts, null,
-        true, userRole, flagData));
+    formOps.outputResponse('ok', jsonBuilder.thread(bData.boardUri, bData,
+        thread, posts, null, true, userRole, flagData), res, null, auth, null,
+        true);
 
   } else {
+
+    res.writeHead(200, miscOps.getHeader('text/html', auth));
 
     domManipulator.thread(bData, flagData, thread, posts,
         function gotThreadContent(error, content) {

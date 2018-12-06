@@ -18,12 +18,10 @@ exports.getBannerData = function(auth, parameters, userData, res, language) {
       formOps.outputError(error, 500, res, language, json, auth);
     } else {
 
-      res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-          : 'text/html', auth));
-
       if (json) {
-        res.end(jsonBuilder.bannerManagement(parameters.boardUri, banners));
+        formOps.outputResponse('ok', banners, res, null, auth, null, true);
       } else {
+        res.writeHead(200, miscOps.getHeader('text/html', auth));
         res.end(dom.bannerManagement(uri, banners, language));
       }
 
