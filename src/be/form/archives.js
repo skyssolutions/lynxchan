@@ -3,7 +3,6 @@
 var archiveOps = require('../engine/archiveOps');
 var url = require('url');
 var miscOps = require('../engine/miscOps');
-var jsonB = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.miscPages;
 var formOps = require('../engine/formOps');
 
@@ -19,12 +18,15 @@ exports.process = function(req, res) {
       formOps.outputError(error, 500, res, req.language, json);
     } else {
 
-      res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-          : 'text/html'));
-
       if (json) {
-        res.end(jsonB.archives(threads, pageCount));
+
+        formOps.outputResponse('ok', {
+          threads : threads,
+          pages : pageCount
+        }, res, null, null, null, true);
+
       } else {
+        res.writeHead(200, miscOps.getHeader('text/html'));
         res.end(dom.archives(threads, parameters, pageCount, req.language));
       }
 

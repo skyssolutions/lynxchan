@@ -584,23 +584,6 @@ exports.blockBypass = function(valid) {
 
 };
 
-exports.mediaDetails = function(details) {
-  return JSON.stringify(details);
-};
-
-exports.latestPostings = function(postings) {
-  return JSON.stringify(postings);
-};
-
-exports.archives = function(threads, pageCount) {
-
-  return JSON.stringify({
-    threads : threads,
-    pages : pageCount
-  });
-
-};
-
 exports.message = function(status, data) {
 
   return JSON.stringify({

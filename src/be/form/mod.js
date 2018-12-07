@@ -163,8 +163,10 @@ exports.process = function(req, res) {
 
         var parameters = url.parse(req.url, true).query;
 
+        var json = parameters.json;
+
         if (formOps.checkBlankParameters(parameters,
-            [ 'boardUri', 'threadId' ], res, req.language)) {
+            [ 'boardUri', 'threadId' ], res, req.language, json)) {
           return;
         }
 
@@ -192,8 +194,6 @@ exports.process = function(req, res) {
             volunteers : 1
           }
         }, function gotBoard(error, board) {
-
-          var json = parameters.json;
 
           if (error) {
             formOps.outputError(error, 500, res, req.language, json, auth);

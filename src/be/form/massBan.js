@@ -5,10 +5,10 @@ var banOps = require('../engine/modOps').ipBan.specific;
 var lang = require('../engine/langOps').languagePack;
 var mandatoryParameters = [ 'ips' ];
 
-exports.massBan = function(auth, parameters, userData, res, language) {
+exports.massBan = function(auth, parameters, userData, res, language, json) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
-      language)) {
+      language, json)) {
     return;
   }
 
@@ -16,10 +16,12 @@ exports.massBan = function(auth, parameters, userData, res, language) {
 
   banOps.massBan(userData, parameters, language, function massBanned(error) {
     if (error) {
-      formOps.outputError(error, 500, res, language, null, auth);
+      formOps.outputError(error, 500, res, language, json, auth);
     } else {
-      formOps.outputResponse(lang(language).msgMassBanned,
-          '/globalManagement.js', res, null, auth, language);
+      formOps
+          .outputResponse(json ? 'ok' : lang(language).msgMassBanned,
+              json ? null : '/globalManagement.js', res, null, auth, language,
+              json);
 
     }
   });
@@ -29,6 +31,7 @@ exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-    exports.massBan(auth, parameters, userData, res, req.language);
+    exports.massBan(auth, parameters, userData, res, req.language, formOps
+        .json(req));
   });
 };

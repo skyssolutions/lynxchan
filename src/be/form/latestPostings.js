@@ -2,32 +2,29 @@
 
 var formOps = require('../engine/formOps');
 var url = require('url');
-var jsonBuilder = require('../engine/jsonBuilder');
 var miscOps = require('../engine/miscOps');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var boardOps = require('../engine/boardOps').meta;
 
-exports.latestPostings = function(auth, parameters, userData, res, language) {
+exports.latestPostings = function(auth, parameters, user, res, language) {
 
   var json = parameters.json;
 
-  boardOps.getLatestPostings(userData, parameters, language,
-      function gotPostings(error, postings) {
-        if (error) {
-          formOps.outputError(error, 500, res, language, json, auth);
-        } else {
+  boardOps.getLatestPostings(user, parameters, language, function gotPostings(
+      error, postings) {
+    if (error) {
+      formOps.outputError(error, 500, res, language, json, auth);
+    } else {
 
-          res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-              : 'text/html', auth));
+      if (json) {
+        formOps.outputResponse('ok', postings, res, null, auth, null, true);
+      } else {
+        res.writeHead(200, miscOps.getHeader('text/html', auth));
+        res.end(dom.latestPostings(postings, parameters, language));
+      }
 
-          if (json) {
-            res.end(jsonBuilder.latestPostings(postings));
-          } else {
-            res.end(dom.latestPostings(postings, parameters, language));
-          }
-
-        }
-      });
+    }
+  });
 
 };
 

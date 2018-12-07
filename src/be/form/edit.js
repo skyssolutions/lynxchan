@@ -10,7 +10,7 @@ var mandatoryParameters = [ 'boardUri' ];
 exports.getPostingToEdit = function(userData, parameters, res, auth, language) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
-      language)) {
+      language, json)) {
     return;
   }
 

@@ -15,7 +15,7 @@ exports.process = function(req, res) {
 
   if (loadedAddons.indexOf(requestedAddon) === -1) {
     formOps.outputError(lang(req.language).errUnloadedAddon, 500, res,
-        req.language);
+        req.language, formOps.json(req));
   } else {
     require('../addons/' + requestedAddon).formRequest(req, res);
   }

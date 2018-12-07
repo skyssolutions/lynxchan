@@ -4,7 +4,6 @@ var url = require('url');
 var formOps = require('../engine/formOps');
 var mediaHandler = require('../engine/mediaHandler');
 var miscOps = require('../engine/miscOps');
-var jsonBuilder = require('../engine/jsonBuilder');
 var domManipulator = require('../engine/domManipulator');
 domManipulator = domManipulator.dynamicPages.managementPages;
 
@@ -19,12 +18,10 @@ exports.getMediaDetails = function(auth, userData, parameters, res, language) {
           formOps.outputError(error, 500, res, language, json, auth);
         } else {
 
-          res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-              : 'text/html', auth));
-
-          if (parameters.json) {
-            res.end(jsonBuilder.mediaDetails(details));
+          if (json) {
+            formOps.outputResponse('ok', details, res, null, auth, null, true);
           } else {
+            res.writeHead(200, miscOps.getHeader('text/html', auth));
             res.end(domManipulator.mediaDetails(parameters.identifier, details,
                 language));
           }
