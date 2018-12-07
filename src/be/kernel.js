@@ -9,7 +9,7 @@ var fs = require('fs');
 var settingsHandler = require('./settingsHandler');
 var generator;
 
-var reloadDirectories = [ 'engine', 'form', 'api', 'addons' ];
+var reloadDirectories = [ 'engine', 'form', 'addons' ];
 var reloadIgnore = [ 'index.js', '.ignore', '.git', 'dont-reload',
     'node_modules' ];
 

@@ -16,4 +16,4 @@ Here the guidelines for contributions will be laid out:
 
 8: No single file can contain more than 1k LOC.
 
-9: Every single template, language, json api, form api and database spec must be documented on its respective document.
+9: Every single template, language, form api and database spec must be documented on its respective document.

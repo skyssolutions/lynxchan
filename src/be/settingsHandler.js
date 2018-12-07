@@ -42,7 +42,7 @@ function broadCastToSlaves(newSettings, callback, index, attempts) {
   var req = http.request({
     hostname : newSettings.slaves[index],
     port : generalSettings.port,
-    path : '/.api/takeSettings.js',
+    path : '/takeSettings.js',
     method : 'POST'
   }, function gotResponse(res) {
 
@@ -83,9 +83,7 @@ function broadCastToSlaves(newSettings, callback, index, attempts) {
     broadCastToSlaves(newSettings, callback, index, ++attempts);
   });
 
-  req.write(JSON.stringify({
-    parameters : newSettings
-  }));
+  req.write(JSON.stringify(newSettings));
   req.end();
 
 }

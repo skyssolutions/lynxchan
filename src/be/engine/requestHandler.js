@@ -21,7 +21,6 @@ var langs = db.languages();
 var boards = db.boards();
 var useLanguages;
 var formOps;
-var apiOps;
 var jsonBuilder;
 var miscOps;
 var gridFs;
@@ -53,7 +52,6 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   formOps = require('./formOps');
-  apiOps = require('./apiOps');
   miscOps = require('./miscOps');
   gridFs = require('./gridFsHandler');
   jsonBuilder = require('./jsonBuilder');
@@ -124,35 +122,6 @@ exports.outputError = function(error, res) {
   }
 
   res.end();
-
-};
-
-exports.processApiRequest = function(req, pathName, res) {
-
-  if (verboseApis) {
-    console.log('Processing api request: ' + pathName);
-  }
-
-  try {
-    if (maintenance && !req.fromSlave) {
-      apiOps.outputResponse(null, null, 'maintenance', res);
-    } else {
-
-      var modulePath;
-
-      if (pathName.indexOf('/addon.js', 0) !== -1) {
-        modulePath = '../api/addon.js';
-      } else {
-        modulePath = '../api' + pathName;
-      }
-
-      require(modulePath).process(req, res);
-
-    }
-
-  } catch (error) {
-    apiOps.outputError(error, res);
-  }
 
 };
 
@@ -538,10 +507,7 @@ exports.checkMultiBoardRouting = function(splitArray, req, res, callback) {
 
 exports.decideRouting = function(req, pathName, res, callback) {
 
-  if (pathName.indexOf('/.api/') === 0) {
-    exports.processApiRequest(req, pathName.substring(5), res);
-    return;
-  } else if (pathName.indexOf('/.static/') === 0) {
+  if (pathName.indexOf('/.static/') === 0) {
     cacheHandler.outputFile(pathName, req, res, callback, true);
     return;
   }

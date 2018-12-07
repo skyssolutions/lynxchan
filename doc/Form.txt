@@ -1359,5 +1359,13 @@ Json output(Object): contains the following fields:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::84
+
+Name: takeSettings
+
+Description: internal use only, it receives new settings from a master node in raw format bur responds only in json.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

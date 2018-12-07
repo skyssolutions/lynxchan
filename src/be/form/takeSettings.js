@@ -1,6 +1,6 @@
 'use strict';
 
-var apiOps = require('../engine/apiOps');
+var formOps = require('../engine/formOps');
 var settingsHandler = require('../settingsHandler');
 
 exports.saveSettings = function(settings, parameters, res, language) {
@@ -13,9 +13,9 @@ exports.saveSettings = function(settings, parameters, res, language) {
       error) {
 
     if (error) {
-      apiOps.outputError(error, res);
+      formOps.outputError(error, 500, res, null, true);
     } else {
-      apiOps.outputResponse(null, null, 'ok', res);
+      formOps.outputResponse('ok', null, res, null, null, null, true);
     }
 
   });
@@ -34,8 +34,30 @@ exports.process = function(req, res) {
     return;
   }
 
-  apiOps.getAnonJsonData(req, res, function gotData(auth, parameters) {
-    exports.saveSettings(settings, parameters, res, req.language);
+  var ended = false;
+
+  var finalData = '';
+
+  req.on('data', function dataReceived(data) {
+
+    if (ended) {
+      return;
+    }
+
+    finalData += data;
+
+  });
+
+  req.on('end', function dataEnded() {
+
+    ended = true;
+
+    try {
+      exports.saveSettings(settings, JSON.parse(finalData), res, req.language);
+    } catch (error) {
+      formOps.outputError(error, 500, res, null, true);
+    }
+
   });
 
 };

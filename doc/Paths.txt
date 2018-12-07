@@ -1,8 +1,6 @@
 Here are documented the general paths used by the engine to find resources. * means any text.
 
-
 /*.js are used to access the form api.
-/.api/*.js are used to access the json api.
 /.static/* are used to access static files for the front-end.
 
 Anything else is used to access files saved on mongo. 

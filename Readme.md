@@ -1,7 +1,7 @@
 # About
 **LynxChan** is a chan engine designed with the following goals in mind:
 1. Fully support users not using javascript.
-2. Provide every functionality through a json based RPC and make every information available in json format.
+2. Make every information available in json format.
 3. Support the most amount of users with the least hardware power.
 4. Having a modular front-end so people can easily create and use different templates.
 
