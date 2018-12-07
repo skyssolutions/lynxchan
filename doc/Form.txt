@@ -1149,6 +1149,8 @@ Parameters:
     languagePack: path for the language's language pack.
     headerValues(Array): values sent on the header that will cause the language to be used.
 
+Output: id of the new language.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::70

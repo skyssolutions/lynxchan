@@ -5,10 +5,10 @@ var languageOps = require('../engine/langOps');
 var lang = languageOps.languagePack;
 var mandatoryParameters = [ 'frontEnd', 'languagePack', 'headerValues' ];
 
-exports.addLanguage = function(auth, parameters, userData, res, language) {
+exports.addLanguage = function(auth, parameters, user, res, language, json) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
-      language)) {
+      language, json)) {
     return;
   }
 
@@ -17,13 +17,13 @@ exports.addLanguage = function(auth, parameters, userData, res, language) {
         return value.trim();
       });
 
-  languageOps.addLanguage(userData.globalRole, parameters, language,
-      function addedLanguage(error) {
+  languageOps.addLanguage(user.globalRole, parameters, language,
+      function addedLanguage(error, id) {
         if (error) {
-          formOps.outputError(error, 500, res, language, null, auth);
+          formOps.outputError(error, 500, res, language, json, auth);
         } else {
-          formOps.outputResponse(lang(language).msgLanguageAdded,
-              '/languages.js', res, null, auth, language);
+          formOps.outputResponse(json ? 'ok' : lang(language).msgLanguageAdded,
+              json ? id : '/languages.js', res, null, auth, language, json);
 
         }
       });
@@ -33,6 +33,7 @@ exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-    exports.addLanguage(auth, parameters, userData, res, req.language);
+    exports.addLanguage(auth, parameters, userData, res, req.language, formOps
+        .json(req));
   });
 };

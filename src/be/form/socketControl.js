@@ -3,7 +3,6 @@
 var formOps = require('../engine/formOps');
 var url = require('url');
 var miscOps = require('../engine/miscOps');
-var jsonBuilder = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;
 var socket = require('../engine/socketOps');
 
@@ -15,12 +14,10 @@ exports.getSocketData = function(userData, json, res, auth, language) {
       formOps.outputError(error, 500, res, language, json, auth);
     } else {
 
-      res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-          : 'text/html', auth));
-
       if (json) {
-        res.end(jsonBuilder.socketData(statusData));
+        formOps.outputResponse('ok', statusData, res, null, auth, null, true);
       } else {
+        res.writeHead(200, miscOps.getHeader('text/html', auth));
         res.end(dom.socketData(statusData, language));
       }
 

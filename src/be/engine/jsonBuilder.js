@@ -575,31 +575,6 @@ exports.log = function(date, logs, callback) {
 
 };
 
-exports.mediaManagement = function(media, pages) {
-
-  return JSON.stringify({
-    pages : pages,
-    media : media
-  });
-
-};
-
-exports.languages = function(languages) {
-  return JSON.stringify(languages);
-};
-
-exports.accounts = function(accounts) {
-  return JSON.stringify(accounts);
-};
-
-exports.accountManagement = function(accountData) {
-  return JSON.stringify(accountData);
-};
-
-exports.socketData = function(socketData) {
-  return JSON.stringify(socketData);
-};
-
 exports.blockBypass = function(valid) {
 
   return {

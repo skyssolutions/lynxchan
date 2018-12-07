@@ -22,12 +22,11 @@ exports.getAccount = function(auth, userData, res, req) {
           formOps.outputError(error, 500, res, language, json, auth);
         } else {
 
-          res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-              : 'text/html', auth));
-
           if (json) {
-            res.end(jsonBuilder.accountManagement(accountData));
+            formOps.outputResponse('ok', accountData, res, null, auth, null,
+                true);
           } else {
+            res.writeHead(200, miscOps.getHeader('text/html', auth));
             res.end(domManipulator.accountManagement(accountData, account,
                 userData.globalRole, language));
           }
