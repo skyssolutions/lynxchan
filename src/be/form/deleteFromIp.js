@@ -3,23 +3,22 @@
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack;
 var delOps = require('../engine/deletionOps');
-var mandatoryParameters = [ 'ip' ];
 
-exports.deleteFromIp = function(userData, parameters, res, auth, language) {
+exports.deleteFromIp = function(userData, param, res, auth, language, json) {
 
-  if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
-      language)) {
+  if (formOps.checkBlankParameters(param, [ 'ip' ], res, language, json)) {
     return;
   }
 
-  delOps.deleteFromIp(parameters, userData, language, function deletedFromIp(
-      error) {
+  delOps.deleteFromIp(param, userData, language, function deletedFromIp(error) {
 
     if (error) {
-      formOps.outputError(error, 500, res, language, null, auth);
+      formOps.outputError(error, 500, res, language, json, auth);
     } else {
-      formOps.outputResponse(lang(language).msgDeletedFromIp,
-          '/globalManagement.js', res, null, auth, language);
+      formOps
+          .outputResponse(json ? 'ok' : lang(language).msgDeletedFromIp,
+              json ? null : '/globalManagement.js', res, null, auth, language,
+              json);
     }
 
   });
@@ -30,7 +29,8 @@ exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-    exports.deleteFromIp(userData, parameters, res, auth, req.language);
+    exports.deleteFromIp(userData, parameters, res, auth, req.language, formOps
+        .json(req));
   });
 
 };

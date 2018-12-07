@@ -6,22 +6,22 @@ var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var settingsHandler = require('../settingsHandler');
 var lang = require('../engine/langOps').languagePack;
 
-exports.renewBypass = function(auth, parameters, res, language) {
+exports.renewBypass = function(auth, parameters, res, language, json) {
 
   bypassOps.renewBypass(auth.captchaid, parameters.captcha, language,
       function renewedBypass(error, bypass) {
 
         if (error) {
-          formOps.outputError(error, 500, res, language);
+          formOps.outputError(error, 500, res, language, json);
         } else {
 
-          formOps.outputResponse(lang(language).msgBypassRenewed,
-              '/blockBypass.js', res, [ {
+          formOps.outputResponse(json ? 'ok' : lang(language).msgBypassRenewed,
+              json ? null : '/blockBypass.js', res, [ {
                 field : 'bypass',
                 value : bypass._id,
                 path : '/',
                 expiration : bypass.expiration
-              } ], null, language);
+              } ], null, language, json);
         }
 
       });
@@ -29,15 +29,18 @@ exports.renewBypass = function(auth, parameters, res, language) {
 
 exports.process = function(req, res) {
 
+  var json = formOps.json(req);
+
   if (!settingsHandler.getGeneralSettings().bypassMode) {
+
     formOps.outputError(lang(req.language).errDisabledBypass, 500, res,
-        req.language);
+        req.language, json);
 
     return;
   }
 
   formOps.getPostData(req, res, function gotData(auth, parameters) {
-    exports.renewBypass(auth, parameters, res, req.language);
+    exports.renewBypass(auth, parameters, res, req.language, json);
   });
 
 };

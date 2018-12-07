@@ -3,7 +3,6 @@
 var boardOps = require('../engine/boardOps').meta;
 var url = require('url');
 var miscOps = require('../engine/miscOps');
-var jsonBuilder = require('../engine/jsonBuilder');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var formOps = require('../engine/formOps');
 

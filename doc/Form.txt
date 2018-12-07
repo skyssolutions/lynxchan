@@ -927,6 +927,8 @@ Parameters:
     boardUri: URI of the board.
     flagName: name of the new flag. 16 characters.
 
+Output: id of the new flag.
+
 ------------------------------------------------------------------------------------------
 
 PAG_ID::52

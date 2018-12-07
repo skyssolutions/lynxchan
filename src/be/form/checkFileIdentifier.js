@@ -1,5 +1,6 @@
 'use strict';
 
+var formOps = require('../engine/formOps');
 var url = require('url');
 var db = require('../db');
 var references = db.uploadReferences();
@@ -17,11 +18,7 @@ exports.process = function(req, res) {
       _id : 0
     }
   }, function foundReference(error, reference) {
-
-    res.writeHead(200, miscOps.getHeader('application/json'));
-
-    res.end(reference ? 'true' : 'false');
-
+    formOps.outputResponse('ok', !!reference, res, null, null, null, true);
   });
 
 };

@@ -19,12 +19,12 @@ exports.process = function(req, res) {
     if (error) {
       formOps.outputError(error, 500, res, req.language, json);
     } else {
-      res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-          : 'text/html'));
 
       if (json) {
-        res.end(jsonBuilder.blockBypass(valid));
+        formOps.outputResponse('ok', jsonBuilder.blockBypass(valid), res, null,
+            null, null, true);
       } else {
+        res.writeHead(200, miscOps.getHeader('text/html'));
         res.end(domManipulator.blockBypass(valid, req.language));
       }
 

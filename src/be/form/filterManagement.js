@@ -2,7 +2,6 @@
 
 var formOps = require('../engine/formOps');
 var url = require('url');
-var jsonBuilder = require('../engine/jsonBuilder');
 var miscOps = require('../engine/miscOps');
 var boardOps = require('../engine/boardOps').filters;
 var dom = require('../engine/domManipulator').dynamicPages.managementPages;

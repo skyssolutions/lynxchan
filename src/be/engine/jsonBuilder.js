@@ -514,10 +514,6 @@ exports.rangeBans = function(rangeBans, boardData) {
 
 };
 
-exports.flagManagement = function(flags) {
-  return JSON.stringify(flags);
-};
-
 exports.globalSettings = function() {
 
   var toOutput = {};
@@ -529,7 +525,7 @@ exports.globalSettings = function() {
     toOutput[setting.setting] = settings[setting.setting];
   }
 
-  return JSON.stringify(toOutput);
+  return toOutput;
 
 };
 
@@ -579,10 +575,6 @@ exports.log = function(date, logs, callback) {
 
 };
 
-exports.graphs = function(dates) {
-  return JSON.stringify(dates);
-};
-
 exports.mediaManagement = function(media, pages) {
 
   return JSON.stringify({
@@ -610,10 +602,10 @@ exports.socketData = function(socketData) {
 
 exports.blockBypass = function(valid) {
 
-  return JSON.stringify({
+  return {
     valid : valid ? true : false,
     mode : bypassMode
-  });
+  };
 
 };
 

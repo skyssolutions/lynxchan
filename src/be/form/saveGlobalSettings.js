@@ -6,7 +6,7 @@ var miscOps = require('../engine/miscOps');
 var toSanitize = [ 'acceptedMimes', 'addons', 'slaves' ];
 
 exports.changeGlobalSettings = function(userData, parameters, res, auth,
-    language) {
+    language, json) {
 
   for (var i = 0; i < toSanitize.length; i++) {
 
@@ -41,10 +41,11 @@ exports.changeGlobalSettings = function(userData, parameters, res, auth,
       function changedGlobalSettings(error) {
 
         if (error) {
-          formOps.outputError(error, 500, res, language, null, auth);
+          formOps.outputError(error, 500, res, language, json, auth);
         } else {
-          formOps.outputResponse(lang(language).msgSavedGlobalSettings,
-              '/globalSettings.js', res, null, auth, language);
+          formOps.outputResponse(json ? 'ok'
+              : lang(language).msgSavedGlobalSettings, json ? null
+              : '/globalSettings.js', res, null, auth, language, json);
         }
 
       });
@@ -53,10 +54,10 @@ exports.changeGlobalSettings = function(userData, parameters, res, auth,
 
 exports.process = function(req, res) {
 
-  formOps.getAuthenticatedPost(req, res, true,
-      function gotData(auth, userData, parameters) {
-        exports.changeGlobalSettings(userData, parameters, res, auth,
-            req.language);
-      });
+  formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
+      parameters) {
+    exports.changeGlobalSettings(userData, parameters, res, auth, req.language,
+        formOps.json(req));
+  });
 
 };

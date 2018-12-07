@@ -268,11 +268,16 @@ exports.setCustomJs = function(userData, boardUri, file, language, callback) {
 
   if (!customJs) {
     callback(lang(language).errNoCustomJs);
-
     return;
   }
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+
+  var isJS = file.mime === 'application/javascript';
+
+  if (!isJS) {
+    isJS = file.mime === 'application/x-javascript';
+  }
 
   boards.findOne({
     boardUri : boardUri
@@ -283,7 +288,7 @@ exports.setCustomJs = function(userData, boardUri, file, language, callback) {
       callback(lang(language).errBoardNotFound);
     } else if (board.owner !== userData.login && !globallyAllowed) {
       callback(lang(language).errDeniedJsManagement);
-    } else if (file.mime !== 'application/javascript') {
+    } else if (!isJS) {
       callback(lang(language).errOnlyJsAllowed);
     } else {
 

@@ -13,12 +13,12 @@ exports.getGlobalSettings = function(userData, res, json, auth, language) {
     if (error) {
       formOps.outputError(error, 500, res, language, json, auth);
     } else {
-      res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-          : 'text/html', auth));
 
       if (json) {
-        res.end(jsonBuilder.globalSettings());
+        formOps.outputResponse('ok', jsonBuilder.globalSettings(), res, null,
+            auth, null, true);
       } else {
+        res.writeHead(200, miscOps.getHeader('text/html', auth));
         res.end(dom.globalSettings(language));
       }
     }

@@ -3,7 +3,6 @@
 var url = require('url');
 var aggregatedLogs = require('../db').aggregatedLogs();
 var miscOps = require('../engine/miscOps');
-var jsonBuilder = require('../engine/jsonBuilder');
 var formOps = require('../engine/formOps');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 
