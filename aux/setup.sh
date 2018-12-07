@@ -25,7 +25,7 @@ fi
 
 if [ "$answerFrontEnd" == "y" ]; then
 
-  git clone https://gitgud.io/LynxChan/LynxChanFront-Placeholder.git ../src/fe
+  git clone https://gitgud.io/LynxChan/PenumbraLynx.git ../src/fe
   cd ../src/fe
   git checkout master
   cd ../../aux
@@ -42,7 +42,7 @@ if [ "$answerStable" == "y" ]; then
 
     cd ../src/fe
 
-    git checkout 2.1.0
+    git checkout 2.1.x
 
     cd ../../aux
 
