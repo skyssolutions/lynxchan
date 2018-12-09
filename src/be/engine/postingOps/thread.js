@@ -6,7 +6,6 @@ var crypto = require('crypto');
 var db = require('../../db');
 var threads = db.threads();
 var boards = db.boards();
-var debug = require('../../kernel').debug();
 var logger = require('../../logger');
 var common;
 var delOps;

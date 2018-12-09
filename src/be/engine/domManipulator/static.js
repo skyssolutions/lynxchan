@@ -4,8 +4,7 @@
 // page by form/mod.js
 
 var kernel = require('../../kernel');
-var individualCaches = !kernel.debug();
-individualCaches = individualCaches && !kernel.feDebug();
+var individualCaches = !kernel.feDebug();
 var logger = require('../../logger');
 var db = require('../../db');
 var postsCollection = db.posts();

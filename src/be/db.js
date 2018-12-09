@@ -14,7 +14,6 @@ var settings = require('./settingsHandler').getGeneralSettings();
 var verbose = settings.verbose;
 var miscVerbose = settings.verboseMisc;
 var noDaemon = kernel.noDaemon();
-var debug = kernel.debug();
 
 var indexesSet;
 

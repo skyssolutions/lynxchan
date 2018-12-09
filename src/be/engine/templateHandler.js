@@ -7,7 +7,6 @@ var cellsLocation = __dirname + '/../data/defaultCells.json';
 exports.cellTests = JSON.parse(fs.readFileSync(cellsLocation, 'utf8'));
 var pagesLocation = __dirname + '/../data/defaultPages.json';
 exports.pageTests = JSON.parse(fs.readFileSync(pagesLocation, 'utf8'));
-var debug = require('../kernel').debug();
 var settingsHandler = require('../settingsHandler');
 var verbose;
 var parser = require('parse5');
@@ -48,8 +47,8 @@ exports.getAlternativeTemplates = function(language) {
       exports.loadTemplates(language);
       toReturn = preBuiltAlternative[language._id];
     } catch (error) {
-      if (debug) {
-        throw error;
+      if (verbose) {
+        console.log(error);
       }
     }
 
@@ -90,10 +89,6 @@ exports.handleLoadingErrors = function(errors) {
 
     console.log(error);
 
-  }
-
-  if (debug) {
-    throw 'Fix the issues on the templates or run without debug mode';
   }
 
 };

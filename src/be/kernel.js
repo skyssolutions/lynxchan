@@ -148,7 +148,6 @@ var optionalReloads = [ {
   command : informedArguments.reloadGraphs.informed
 } ];
 
-var debug = informedArguments.debug.informed;
 var noDaemon = informedArguments.noDaemon.informed;
 
 var informedLogin = informedArguments.login.value;
@@ -175,10 +174,6 @@ exports.defaultBanner = function() {
 
 exports.maintenanceImage = function() {
   return maintenanceImage;
-};
-
-exports.debug = function() {
-  return debug;
 };
 
 exports.feDebug = function() {
@@ -387,18 +382,6 @@ var workerExitCallback = function(worker, code, signal) {
   delete forkTime[worker.id];
 };
 
-function getWorkerLimit() {
-
-  var coreCount = require('os').cpus().length;
-
-  if (debug && coreCount > 2) {
-    return 2;
-  } else {
-    return coreCount;
-  }
-
-}
-
 // after everything is all right, call this function to start the workers
 function bootWorkers() {
 
@@ -409,7 +392,7 @@ function bootWorkers() {
 
   genQueue = require('./generationQueue');
 
-  var workerLimit = getWorkerLimit();
+  var workerLimit = require('os').cpus().length;
 
   for (var i = 0; i < workerLimit; i++) {
     cluster.fork();
@@ -439,14 +422,9 @@ function bootWorkers() {
 function regenerateAll() {
 
   generator.all(function regeneratedAll(error) {
+
     if (error) {
-
-      if (debug) {
-        throw error;
-      } else {
-        console.log(error);
-      }
-
+      console.log(error);
     }
 
     bootWorkers();
@@ -488,12 +466,7 @@ function iterateOptionalReloads(index) {
               return;
 
             } else {
-
-              if (debug) {
-                throw error;
-              } else {
-                console.log(error);
-              }
+              console.log(error);
             }
 
           }
@@ -523,14 +496,9 @@ function iterateDefaultPages(foundFiles, index) {
   if (foundFiles.indexOf(fileToCheck) === -1 || fileData.command) {
     generator[fileData.generatorModule][fileData.generatorFunction]
         (function generated(error) {
+
           if (error) {
-
-            if (debug) {
-              throw error;
-            } else {
-              console.log(error);
-            }
-
+            console.log(error);
           }
 
           iterateDefaultPages(foundFiles, ++index);
@@ -601,16 +569,9 @@ var createAccountFunction = function() {
   }, function createdUser(error) {
 
     if (error) {
-
-      if (debug) {
-        throw error;
-      } else {
-        console.log(error);
-      }
-
+      console.log(error);
     } else {
       console.log('Account ' + informedLogin + ' created.');
-
     }
 
     checkForDefaultPages();
@@ -627,12 +588,7 @@ var setRoleFunction = function() {
   }, null, function setRole(error) {
 
     if (error) {
-      if (debug) {
-        throw error;
-      } else {
-        console.log(error);
-      }
-
+      console.log(error);
     } else {
       console.log('Set role ' + informedRole + ' for ' + informedLogin + '.');
     }
@@ -649,15 +605,10 @@ function setPassword() {
       informedPassword, function setPassword(error) {
 
         if (error) {
-          if (debug) {
-            throw error;
-          } else {
-            console.log(error);
-          }
-
+          console.log(error);
+        } else {
+          console.log('Password set for ' + informedLogin + '.');
         }
-
-        console.log('Password set for ' + informedLogin + '.');
 
         checkForDefaultPages();
 
@@ -760,13 +711,7 @@ function initSpamData() {
   require('./engine/spamOps').init(function initializedSpamData(error) {
 
     if (error) {
-
-      if (debug) {
-        throw error;
-      } else {
-        console.log(error);
-      }
-
+      console.log(error);
     }
 
     initTorControl();

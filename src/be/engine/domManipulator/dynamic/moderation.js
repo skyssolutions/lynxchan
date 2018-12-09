@@ -3,7 +3,6 @@
 // handles moderation pages. The difference between moderation and management is
 // that moderation is focused on restricting users
 
-var debug = require('../../../kernel').debug();
 var templateHandler;
 var lang;
 var miscOps;

@@ -5,7 +5,6 @@
 var fs = require('fs');
 var crypto = require('crypto');
 var url = require('url');
-var debug = require('../kernel').debug();
 var multiParty = require('multiparty');
 var db = require('../db');
 var bans = db.bans();
@@ -179,13 +178,9 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
   } else if (file.size && file.size < maxFileSize) {
 
     exports.getFileData(file, fields, mime, function gotFileData(error) {
-      if (error) {
-        if (debug) {
-          throw error;
-        } else if (verbose) {
-          console.log(error);
-        }
 
+      if (error && verbose) {
+        console.log(error);
       }
 
       exports.transferFileInformation(files, fields, parsedCookies, cb, res,
@@ -506,9 +501,7 @@ exports.outputResponse = function(message, redirect, res, cookies, authBlock,
 
 exports.outputError = function(error, code, res, language, json, auth) {
 
-  if (debug) {
-    throw error;
-  } else if (verbose) {
+  if (verbose) {
     console.log(error);
   }
 

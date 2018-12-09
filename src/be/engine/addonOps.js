@@ -3,7 +3,6 @@
 // operations regarding addons
 
 var fs = require('fs');
-var debug = require('../kernel').debug();
 var engineInfo = JSON.parse(fs.readFileSync(__dirname + '/../package.json'));
 var addons;
 var verbose;
@@ -37,9 +36,7 @@ exports.loadSettings = function() {
 
       console.log('Could not load settings for addon ' + addons[i]);
 
-      if (debug) {
-        throw error;
-      } else if (verbose) {
+      if (verbose) {
         console.log(error);
       }
 
@@ -71,9 +68,7 @@ exports.testVersion = function(addonName, addonVersion, engineVersion) {
     msg += '\nAddon engine version: ' + addonVersion + '\nEngine version: ';
     msg += engineVersion;
 
-    if (debug) {
-      throw msg;
-    } else if (verbose) {
+    if (verbose) {
       console.log(msg);
     }
 
@@ -93,10 +88,7 @@ exports.initAddons = function(addons) {
     } catch (error) {
 
       console.log('Could not initialize addon ' + addon);
-
-      if (debug) {
-        throw error;
-      } else if (verbose) {
+      if (verbose) {
         console.log(error);
       }
 
@@ -120,7 +112,7 @@ exports.testAddons = function(addons) {
         exports.aliases[loadedAddon.requestAlias] = addon;
       }
 
-      if (verbose || debug) {
+      if (verbose) {
 
         exports.testVersion(addon, loadedAddon.engineVersion,
             engineInfo.version);
@@ -130,9 +122,7 @@ exports.testAddons = function(addons) {
 
       console.log('Could not load addon ' + addon);
 
-      if (debug) {
-        throw error;
-      } else if (verbose) {
+      if (verbose) {
         console.log(error);
       }
 

@@ -12,7 +12,6 @@ socketLocation += '/unix.socket';
 var clusterPort;
 var kernel = require('./kernel');
 var noDaemon = kernel.noDaemon();
-var debug = kernel.debug();
 var server;
 var tcpServer;
 var master;
@@ -405,11 +404,7 @@ exports.start = function(firstBoot) {
 
     server.on('error', function handleError(error) {
 
-      if (debug) {
-        throw error;
-      } else {
-        console.log(error);
-      }
+      console.log(error);
 
       kernel.broadCastTopDownMessage({
         socketStatus : true,

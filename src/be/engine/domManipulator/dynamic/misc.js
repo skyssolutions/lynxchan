@@ -3,7 +3,6 @@
 // handles miscellaneous pages
 
 var logger = require('../../../logger');
-var debug = require('../../../kernel').debug();
 var overboard;
 var sfwOverboard;
 var templateHandler;

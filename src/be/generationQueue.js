@@ -3,7 +3,6 @@
 // handles the page generation queue
 
 var kernel = require('./kernel');
-var debug = kernel.debug();
 var feDebug = kernel.feDebug();
 var degenerator;
 var verbose;
@@ -62,15 +61,7 @@ exports.checkForLogin = function(message) {
 
   if (message.login) {
 
-    if (debug) {
-
-      try {
-        kernel.reload();
-      } catch (error) {
-        throw error;
-      }
-
-    } else if (feDebug) {
+    if (feDebug) {
       var templateHandler = require('./engine/templateHandler');
       templateHandler.dropAlternativeTemplates();
       templateHandler.loadTemplates();
@@ -105,13 +96,7 @@ exports.queue = function(message) {
   exports.deleteCache(message, function(error) {
 
     if (error) {
-
-      if (debug) {
-        throw error;
-      } else {
-        console.log(error);
-      }
-
+      console.log(error);
     }
 
   });

@@ -18,7 +18,6 @@ var stoppedServers = 0;
 
 // kernel variables
 var serverBooted = false;
-var debug = kernel.debug();
 
 exports.reload = function() {
 
@@ -53,20 +52,7 @@ function main(req, res) {
     return;
   }
 
-  if (debug) {
-    try {
-      kernel.reload();
-    } catch (error) {
-      console.log(error);
-      req.connection.destroy();
-      return;
-    }
-
-    require('./engine/requestHandler').handle(req, res);
-
-  } else {
-    requestHandler.handle(req, res);
-  }
+  requestHandler.handle(req, res);
 
 }
 
@@ -103,9 +89,7 @@ function startSSL() {
 
     server.on('error', function handle(error) {
 
-      if (debug) {
-        throw error;
-      } else if (verbose) {
+      if (verbose) {
         console.log(error);
       }
 
@@ -114,11 +98,7 @@ function startSSL() {
 
     console.log('Failed to listen to HTTPS.');
 
-    if (debug) {
-      throw error;
-    } else {
-      console.log(error);
-    }
+    console.log(error);
 
   }
 
@@ -139,11 +119,7 @@ function startTorPort() {
 
     console.log('Failed to listen on the TOR port.');
 
-    if (debug) {
-      throw error;
-    } else {
-      console.log(error);
-    }
+    console.log(error);
 
   });
 
@@ -185,9 +161,7 @@ function startListening() {
     var message = 'Worker ' + cluster.worker.id;
     message += ' booted at ' + new Date().toUTCString();
 
-    if (!debug) {
-      requestHandler = require('./engine/requestHandler');
-    }
+    requestHandler = require('./engine/requestHandler');
 
     console.log(message);
   });
@@ -196,11 +170,7 @@ function startListening() {
 
     console.log('Failed to listen to HTTP.');
 
-    if (debug) {
-      throw error;
-    } else {
-      console.log(error);
-    }
+    console.log(error);
 
   });
 

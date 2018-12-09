@@ -116,13 +116,7 @@ CHA_ID::6 - Memory footprint
 the CPU. This is because of the jsdom library. It not only uses quite some RAM by itself, but it uses a library named parse5 that uses 30mb on a single file. The guys think that using retarded amounts 
 of RAM its A-OK, so its either using something else or forking and reducing it's memory footprint.
 
-CHA_ID::7 - Debug mode
-	Debug mode is meant to help development. It will cause crashes on any error, and will reload the templates and most of the code. It will reload the code on engine, addons, api and form directories 
-as well the settings and templates. It will reload it on every request that incomes to a worker and will reload on the master process on queues page generation. It will not detect changes and reload 
-pages automatically. If you wish for changes on templates to be reflected immediatly on saved HTML on gridfs, the use of -r -nd is required. The following files or directories will not be reloaded 
-(case insensitive): .git, .gitignore, dont-reload, index.js.
-
-CHA_ID::8 - Addons
+CHA_ID::7 - Addons
 	Addons should be written as regular modules and be placed on the /src/be/addons directory. They can be either a single file or a directory. They should have 4 things on their exports:
 	engineVersion: string indicating the engine version the addon is designed for.
 	init: function that is run by the engine after the engine and all addons are loaded.
@@ -136,13 +130,13 @@ They will be loaded in the order they appear in the array. First they will be lo
 requests to be caught by the addon, the path must be formated in the following manner: "/addon.js/addonnamegoeshere". 
     Also, any files of the addons that should not be reloaded as scripts should be put into a directory called 'dont-reload'. Also, it will not reload the .git directory or .ignore files.
 
-CHA_ID::9 - Cluster messaging
+CHA_ID::8 - Cluster messaging
 	Process messages are used to communicate between the worker and the master process. These messages can be used in some different manners.
 	First we have generation queue messages. These messages are the most common and go from a worker to the master thread. They only have the data of the rebuild to be performed.
 	Then we have messages to be broadcast. These messages have a field named "upStream" and will also be broadcast to other workers.
 	Finally we have any other kind of message that have their own unique fields that are interpreted by the master process, like the message informing the master that the overboard threads must be 
 re-aggregated.
 
-CHA_ID::10 - Multi-board
+CHA_ID::9 - Multi-board
 	If any amount is set to how many threads should be displayed on the multi-board, users will be able to format urls like '/a+b/' to see a page with the latest threads of both boards 'a' and 'b'. The 
 final slash is optional and any amount of boards can be selected.

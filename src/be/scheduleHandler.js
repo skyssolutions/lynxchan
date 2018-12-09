@@ -9,7 +9,6 @@ var verbose = settings.verbose || settings.verboseMisc;
 var ipExpiration = settings.ipExpirationDays;
 var tempDirectory = settings.tempDirectory;
 var captchaExpiration = settings.captchaExpiration;
-var debug = kernel.debug();
 var gridFsHandler;
 var db = require('./db');
 var boards = db.boards();
@@ -54,9 +53,7 @@ exports.stop = function() {
 
 exports.start = function() {
 
-  if (debug) {
-    tempFiles(true);
-  }
+  tempFiles(true);
 
   spamIpRefresh();
   incrementalIp();
@@ -85,11 +82,7 @@ function refreshTorEntries() {
   torHandler.updateIps(function updatedTorIps(error) {
     if (error) {
 
-      if (debug) {
-        throw error;
-      } else {
-        console.log(error);
-      }
+      console.log(error);
 
     }
 
@@ -160,11 +153,7 @@ function applyStats(stats) {
 
     if (error) {
 
-      if (debug) {
-        throw error;
-      } else {
-        console.log(error);
-      }
+      console.log(error);
 
     } else if (settings.topBoardsCount || settings.frontPageStats) {
       require('./generationQueue').queue({
@@ -209,11 +198,7 @@ function getStats() {
 
       console.log(error);
 
-      if (debug) {
-        throw error;
-      } else {
-        boardsStats();
-      }
+      boardsStats();
 
     } else if (!result.length) {
       applyStats([]);
@@ -248,11 +233,7 @@ function clearIps() {
   }, function clearedThreadIps(error) {
 
     if (error) {
-      if (debug) {
-        throw error;
-      } else {
-        console.log(error);
-      }
+      console.log(error);
 
     } else {
 
@@ -274,11 +255,7 @@ function clearIps() {
       }, function clearedThreadIps(error) {
 
         if (error) {
-          if (debug) {
-            throw error;
-          } else {
-            console.log(error);
-          }
+          console.log(error);
 
         }
 
@@ -414,12 +391,8 @@ function checkExpiredCaptchas() {
   } ]).toArray(function gotExpiredFiles(error, results) {
     if (error) {
 
-      if (debug) {
-        throw error;
-      } else {
-        console.log(error);
-        expiredCaptcha();
-      }
+      console.log(error);
+      expiredCaptcha();
 
     } else if (results.length) {
 
@@ -435,11 +408,7 @@ function checkExpiredCaptchas() {
       gridFsHandler.removeFiles(expiredFiles, function deletedFiles(error) {
         if (error) {
 
-          if (debug) {
-            throw error;
-          } else {
-            console.log(error);
-          }
+          console.log(error);
 
         }
 
@@ -501,11 +470,7 @@ function setUniqueIpCount(results) {
   boards.bulkWrite(operations, function updatedUniqueIps(error) {
 
     if (error) {
-      if (debug) {
-        throw error;
-      } else {
-        console.log(error);
-      }
+      console.log(error);
 
     }
 
@@ -525,11 +490,7 @@ function setUniqueIpCount(results) {
     graphOps.generate(graphDate, function generated(error) {
 
       if (error) {
-        if (debug) {
-          throw error;
-        } else {
-          console.log(error);
-        }
+        console.log(error);
 
       }
 
@@ -567,12 +528,8 @@ function updateUniqueIpCount() {
 
     if (error) {
 
-      if (debug) {
-        throw error;
-      } else {
-        console.log(error);
-        uniqueIpCount();
-      }
+      console.log(error);
+      uniqueIpCount();
 
     } else {
       setUniqueIpCount(results);
@@ -775,11 +732,7 @@ function refreshSpammerIps() {
   spamOps.updateSpammers(function updatedSpammers(error) {
 
     if (error) {
-      if (debug) {
-        throw error;
-      } else {
-        console.log(error);
-      }
+      console.log(error);
 
     }
 
@@ -810,11 +763,7 @@ function incrementSpammerIps() {
 
   spamOps.incrementSpammers(function incrementedSpammers(error) {
     if (error) {
-      if (debug) {
-        throw error;
-      } else {
-        console.log(error);
-      }
+      console.log(error);
 
     }
 

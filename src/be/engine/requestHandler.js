@@ -15,7 +15,6 @@ var verbose;
 var verboseApis;
 var maintenance;
 var feDebug = kernel.feDebug();
-var debug = kernel.debug();
 var db = require('../db');
 var langs = db.languages();
 var boards = db.boards();
@@ -551,14 +550,8 @@ exports.serve = function(req, pathName, res, callback) {
 
     exports.getLanguageToUse(req, function gotLanguage(error, language) {
 
-      if (error) {
-
-        if (debug) {
-          throw error;
-        } else if (verbose) {
-          console.log(error);
-        }
-
+      if (error && verbose) {
+        console.log(error);
       }
 
       req.language = language;

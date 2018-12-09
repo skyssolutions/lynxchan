@@ -2,7 +2,6 @@
 
 // handles management pages in general
 
-var debug = require('../../../kernel').debug();
 var settings;
 var minClearIpRole;
 var globalBoardModeration;

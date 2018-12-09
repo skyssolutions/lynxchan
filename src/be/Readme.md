@@ -18,7 +18,6 @@ The engine will generate HTML caches for postings and log entries. These caches 
 # Application usage
 `boot.js` is the main file, run it using Node.js to start the system. Keep in mind that if you ran `aux/setup.sh`, you can just run the `lynxchan` command or start the `lynxchan` service.
 It accepts the following arguments:
-* `--debug`, `-d`: for development. Will not cache static files, disable individual HTML caches and reload not only any module besides the ones directly under the be directory but also the front-end templates. It will also cause errors to crash and will clean any file in the temporary directory older than one minute every minute.
 * `--tor-debug`, `-td`: tor debug. Will cause any request to be marked as a if it were coming from a TOR exit node.
 * `--fe-debug`, `-fd`: front-end debug. Will not cache static files, disable individual HTML caches and reload the front-end templates.
 * `--reload`, `-r`: will rebuild all pages on boot.

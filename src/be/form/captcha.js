@@ -1,7 +1,6 @@
 'use strict';
 
 var settingsHandler = require('../settingsHandler');
-var debug = require('../kernel').debug();
 var miscOps = require('../engine/miscOps');
 var captchaOps = require('../engine/captchaOps');
 var formOps = require('../engine/formOps');
@@ -36,9 +35,7 @@ exports.process = function(req, res) {
 
     if (error) {
 
-      if (debug) {
-        throw error;
-      } else if (verbose) {
+      if (verbose) {
         console.log(error);
       }
 
@@ -52,9 +49,7 @@ exports.process = function(req, res) {
 
         if (error) {
 
-          if (debug) {
-            throw error;
-          } else if (verbose) {
+          if (verbose) {
             console.log(error);
           }
 

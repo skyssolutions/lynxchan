@@ -2,7 +2,6 @@
 
 var kernel = require('../kernel');
 var feDebug = kernel.feDebug();
-var debug = kernel.debug();
 var db = require('../db');
 var boards = db.boards();
 var taskListener = require('../taskListener');
@@ -360,7 +359,7 @@ exports.checkCache = function(file, boards, callback) {
       callback(error);
     } else if (!isLocked) {
 
-      if (feDebug && !debug) {
+      if (feDebug) {
         templateHandler.dropAlternativeTemplates();
         templateHandler.loadTemplates();
       }

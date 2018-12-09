@@ -16,7 +16,6 @@ var flags = db.flags();
 var latestPosts = db.latestPosts();
 var tripcodes = db.tripcodes();
 var flood = db.flood();
-var debug = require('../../kernel').debug();
 var lang;
 var locationOps;
 var miscOps;
@@ -156,12 +155,8 @@ exports.recordFlood = function(req) {
     ip : logger.ip(req),
     expiration : new Date(new Date().getTime() + floodTimer)
   }, function addedFloodRecord(error) {
-    if (error) {
-      if (debug) {
-        throw error;
-      } else if (verbose) {
-        console.log(error);
-      }
+    if (error && verbose) {
+      console.log(error);
     }
   });
 

@@ -2,8 +2,7 @@
 
 // contains common operations to the multiple parts of the domManipulator module
 var kernel = require('../../kernel');
-var individualCaches = !kernel.debug();
-individualCaches = individualCaches && !kernel.feDebug();
+var individualCaches = !kernel.feDebug();
 var allowedJs;
 var forceCaptcha;
 var lang;

@@ -18,11 +18,6 @@ var informedArguments = {
     long : '--set-password',
     type : 'boolean'
   },
-  debug : {
-    short : '-d',
-    long : '--debug',
-    type : 'boolean'
-  },
   pruneFiles : {
     short : '-pf',
     long : '--prune-files',

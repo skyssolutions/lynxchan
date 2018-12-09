@@ -5,7 +5,6 @@
 var fs = require('fs');
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
-var debug = require('../kernel').debug();
 var dbLanguages = require('../db').languages();
 var verbose;
 
@@ -31,8 +30,8 @@ exports.getAlternativeLanguagePack = function(language) {
 
       toReturn = alternativeLanguages[language._id];
     } catch (error) {
-      if (debug) {
-        throw error;
+      if (verbose) {
+        console.log(error);
       }
     }
   }
@@ -121,10 +120,6 @@ exports.loadLanguagePack = function(defaultPack, languagePackPath) {
       for (var i = 0; i < missingKeys.length; i++) {
         console.log(missingKeys[i]);
       }
-    }
-
-    if (debug) {
-      throw 'Add these keys or run without debug mode.';
     }
 
   }

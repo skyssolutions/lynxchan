@@ -21,7 +21,7 @@ var templateHandler;
 var alternativeLanguages;
 var defaultFePath;
 var staticExpiration;
-var debug = kernel.debug() || kernel.feDebug();
+var debug = kernel.feDebug();
 var typeIndex = {
   boards : {},
   logs : {},

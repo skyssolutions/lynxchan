@@ -13,7 +13,6 @@ var kernel = require('../kernel');
 var genericThumb = kernel.genericThumb();
 var genericAudioThumb = kernel.genericAudioThumb();
 var spoilerPath = kernel.spoilerImage();
-var debug = kernel.debug();
 var globalLatestImages = db.latestImages();
 var posts = db.posts();
 var files = db.files();
@@ -30,6 +29,7 @@ var gsHandler;
 var thumbExtension;
 var mediaThumb;
 var ffmpegGif;
+var verbose;
 var onlySfwImages;
 var apngThreshold = 25 * 1024;
 
@@ -53,6 +53,8 @@ exports.loadSettings = function() {
   latestImages = settings.globalLatestImages;
   mediaThumb = settings.mediaThumb;
   thumbExtension = settings.thumbExtension;
+
+  verbose = settings.verboseMisc;
 };
 
 exports.loadDependencies = function() {
@@ -760,14 +762,8 @@ exports.saveUploads = function(boardData, threadId, postId, parameters,
     exports.processFile(boardData, threadId, postId, file, parameters,
         function processedFile(error) {
 
-          if (error) {
-
-            if (debug) {
-              throw error;
-            } else {
-              console.log(error);
-            }
-
+          if (error && verbose) {
+            console.log(error);
           }
 
           exports.saveUploads(boardData, threadId, postId, parameters,
