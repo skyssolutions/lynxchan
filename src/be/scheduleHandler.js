@@ -60,6 +60,9 @@ exports.start = function() {
   torRefresh();
 
   if (!settings.master) {
+
+    cacheBuffer();
+
     expiredCaptcha(true);
     boardsStats();
     uniqueIpCount();
@@ -789,3 +792,17 @@ function incrementalIp() {
 
 }
 // } Section 9: Spammer ip increment
+
+function cacheBuffer() {
+
+  var nextCleanUp = new Date();
+
+  nextCleanUp.setUTCMilliseconds(0);
+  nextCleanUp.setUTCSeconds(nextCleanUp.getUTCSeconds() + 10);
+
+  schedules.cacheBuffer = setTimeout(function() {
+    cacheHandler.clearBuffer();
+    cacheBuffer();
+  }, nextCleanUp.getTime() - new Date().getTime());
+
+}

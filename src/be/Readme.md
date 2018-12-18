@@ -13,7 +13,7 @@ The version of each one is specified on the package.json file.
 A package.json file is included, so you can install all of them by just running `npm install` on this directory.
 
 # Individual HTML cache
-The engine will generate HTML caches for postings and log entries. These caches are for the whole cell containing the posting. Keep that in mind when developing, since it will be used unless the engine is running on front-end debug or debug mode. You can flush them too, the command for doing so is in the list of arguments below.
+The engine will generate HTML caches for postings and log entries. These caches are for the whole cell containing the posting. Keep that in mind when developing, since it will be used unless the engine is running on front-end debug. You can flush them too, the command for doing so is in the list of arguments below.
 
 # Application usage
 `boot.js` is the main file, run it using Node.js to start the system. Keep in mind that if you ran `aux/setup.sh`, you can just run the `lynxchan` command or start the `lynxchan` service.

@@ -29,30 +29,6 @@ var genericAudioThumb;
 var spoilerImage;
 var genQueue;
 
-function reloadDirectory(directory) {
-
-  var dirListing = fs.readdirSync(directory);
-
-  for (var i = 0; i < dirListing.length; i++) {
-
-    var module = dirListing[i];
-
-    if (reloadIgnore.indexOf(module.toLowerCase()) === -1) {
-
-      var fullPath = directory + '/' + module;
-
-      var stat = fs.statSync(fullPath);
-
-      if (stat.isDirectory()) {
-        reloadDirectory(fullPath);
-      }
-
-      delete require.cache[require.resolve(fullPath)];
-    }
-  }
-
-}
-
 function reloadCore() {
 
   require('./taskListener').reload();
@@ -64,24 +40,6 @@ function reloadCore() {
     require('./workerBoot').reload();
   }
 }
-
-exports.reload = function() {
-
-  for (var i = 0; i < reloadDirectories.length; i++) {
-    reloadDirectory(__dirname + '/' + reloadDirectories[i]);
-  }
-
-  settingsHandler.loadSettings();
-
-  require('./engine/langOps').dropCache();
-
-  checkImagesSet();
-
-  setDefaultImages();
-
-  exports.startEngine();
-
-};
 
 function reloadSettings() {
 
