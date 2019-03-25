@@ -179,6 +179,7 @@ Settings files that goes into the settings directory:
 * `allowBoardStaffArchiving`(Boolean): allows board staff to archive threads.
 * `maxBoardRangeBans`(Number): limit for board range bans boards can have. Defaults to 128. It will be ignored when banning from an existing post.
 * `useSendmail`(Boolean): causes e-mails to be sent through your sendmail command instead of directly.
+* `archiveThreshold`(Number): if set, threads with at least this many replies will be automatically archived instead of being pruned.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

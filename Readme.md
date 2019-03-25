@@ -72,4 +72,4 @@ Infra-structure > features > cosmetic features > polish.
 # Contributing
 I would rather not having other people writing the initial code for the engine, but if you wish to suggest and discuss features or contribute to a default front-end to replace the placeholder ones I am using, you can find me under the name StephenLynx on #lynxchan at Rizon or e-mail me at sergio.a.vianna@gmail.com.
 
-[WHAT IS THE INTERNET? WHAT IS A CHAN?](https://mewch.net)
+[WHAT IS THE INTERNET? WHAT IS A CHAN?](https://8ch.net)

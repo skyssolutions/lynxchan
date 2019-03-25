@@ -136,6 +136,11 @@
   },
   {
     "type": "number",
+    "setting": "archiveThreshold",
+    "element": "fieldArchiveThreshold"
+  },
+  {
+    "type": "number",
     "setting": "port",
     "element": "fieldPort"
   },

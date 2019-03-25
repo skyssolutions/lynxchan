@@ -17,11 +17,13 @@ var posts = db.posts();
 var boards = db.boards();
 var overboard;
 var lang;
+var autoArchive;
 var sfwOverboard;
 var logOps;
 var boardOps;
 var referenceHandler;
 var overboardOps;
+var archiveOps;
 var gridFs;
 
 exports.collectionsToClean = [ reports, posts, threads, flags, hashBans,
@@ -30,12 +32,14 @@ exports.collectionsToClean = [ reports, posts, threads, flags, hashBans,
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  autoArchive = settings.archiveThreshold;
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
 };
 
 exports.loadDependencies = function() {
 
+  archiveOps = require('../archiveOps');
   logOps = require('../logOps');
   overboardOps = require('../overboardOps');
   referenceHandler = require('../mediaHandler');
@@ -109,25 +113,38 @@ exports.pruneThreadsForAggregation = function(aggregation, boardUri, language,
     callback) {
 
   threads.aggregate(aggregation).toArray(
-      function gotThreads(error, threadsToRemove) {
+      function gotThreads(error, prunedThreads) {
 
         if (error) {
           callback(error);
-        } else if (!threadsToRemove.length) {
+        } else if (!prunedThreads.length) {
           callback();
         } else {
 
-          var prunedThreads = threadsToRemove[0].threads;
+          var prunedIds = [];
+          var archivedIds = [];
+
+          for (var i = 0; i < prunedThreads.length; i++) {
+
+            var thread = prunedThreads[i];
+
+            if (thread.postCount >= autoArchive) {
+              archivedIds.push(thread.threadId);
+            } else {
+              prunedIds.push(thread.threadId);
+            }
+          }
+
+          archiveOps.autoArchive(archivedIds, boardUri);
 
           // style exception, too simple
-          referenceHandler.clearPostingReferences(boardUri, prunedThreads,
-              null, false, false, null, language, function removedReferences(
-                  error) {
+          referenceHandler.clearPostingReferences(boardUri, prunedIds, null,
+              false, false, null, language, function removedReferences(error) {
 
                 if (error) {
                   callback(error);
                 } else {
-                  exports.removePostsFromPrunedThreads(boardUri, prunedThreads,
+                  exports.removePostsFromPrunedThreads(boardUri, prunedIds,
                       callback);
                 }
               });
@@ -164,13 +181,6 @@ exports.cleanThreads = function(boardUri, early404, limit, language, callback) {
           }
         }
       }
-    }, {
-      $group : {
-        _id : 0,
-        threads : {
-          $push : '$threadId'
-        }
-      }
     } ], boardUri, language, function cleaned404(error) {
 
       if (error) {
@@ -198,13 +208,6 @@ exports.cleanThreads = function(boardUri, early404, limit, language, callback) {
     }
   }, {
     $skip : limit
-  }, {
-    $group : {
-      _id : 0,
-      threads : {
-        $push : '$threadId'
-      }
-    }
   } ], boardUri, language, callback);
 
 };

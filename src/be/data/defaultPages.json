@@ -494,6 +494,7 @@
       "fieldMaxFilters": "value",
       "fieldStaticExpiration": "value",
       "fieldMaxVolunteers": "value",
+      "fieldArchiveThreshold": "value",
       "fieldMaxBannerSize": "value",
       "fieldMaxFlagSize": "value",
       "fieldFloodInterval": "value",

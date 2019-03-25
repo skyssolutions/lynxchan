@@ -196,3 +196,47 @@ exports.getArchives = function(parameters, callback) {
   });
 
 };
+
+exports.autoArchive = function(ids, board) {
+
+  if (!ids.length) {
+    return;
+  }
+
+  threads.updateMany({
+    boardUri : board,
+    threadId : {
+      $in : ids
+    }
+  }, {
+    $set : {
+      archived : true
+    },
+    $unset : {
+      innerCache : 1,
+      outerCache : 1,
+      previewCache : 1,
+      clearCache : 1,
+      alternativeCaches : 1,
+      hashedCache : 1
+    }
+  }, function(error) {
+
+    if (error) {
+      console.log(error);
+    } else {
+
+      for (var i = 0; i < ids; i++) {
+
+        process.send({
+          board : board,
+          thread : ids[i]
+        });
+
+      }
+
+    }
+
+  });
+
+};

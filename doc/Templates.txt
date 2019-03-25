@@ -1757,6 +1757,10 @@ fieldClusterPort:
     use: have its value manipulated.
     description: field that displays port to be used for cluster communication.
 
+fieldArchiveThreshold:
+    use: have its value manipulated.
+    description: field that displays how many replies are required for threads to be automatically archived instead of pruned.
+
 fieldMaxBoardHashBans:
     use: have its value manipulated.
     description: field that displays the limit of hash bans boards can have.
