@@ -1,3 +1,112 @@
+2.2.0:
+
+**Api.txt**
+
+Removed. Output data integrated into Form.txt.
+
+---------------------------------------
+
+**Form.txt**
+
+Now every page and not just some can return data as json.
+When returning data as json, a status will be returned along with the data, on it's own field.
+Spoiling individual files on posts are now supported.
+
+---------------------------------------
+
+New pages:
+archiveThread
+archives
+
+---------------------------------------
+
+**Json.txt**
+
+Threads now have a boolean field named "archived" to inform if they are archived threads.
+
+---------------------------------------
+
+**Language.txt**
+
+New entries:
+errArchiveConfirmation
+errNotAllowedToArchive
+errReferralMismatch
+msgThreadArchived
+titArchives
+
+---------------------------------------
+
+**Model.txt**
+
+---------------------------------------
+
+threads:
+
+New field:
+archived
+
+---------------------------------------
+
+**Paths.txt**
+
+Removed the .api main directory.
+
+---------------------------------------
+
+**Templates.txt**
+
+Optional elements can be declared on templates and on static html files to be filled with the content of another file.
+Removed the dynamic header and footer.
+
+---------------------------------------
+
+boardPage:
+
+New elements:
+inputFiles
+
+---------------------------------------
+
+threadPage
+
+New elements:
+divArchive
+archiveThreadIdentifier
+archiveBoardIdentifier
+inputFiles
+
+---------------------------------------
+
+opCell:
+
+New elements:
+archiveIndicator
+
+---------------------------------------
+
+catalogPage:
+
+New elements:
+inputFiles
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldArchiveThreshold
+checkboxSendmail
+checkboxBoardStaffArchiving
+
+---------------------------------------
+
+New templates:
+archivePage
+archiveCell
+
+---------------------------------------
+
 2.1.0:
 
 **Api.txt**

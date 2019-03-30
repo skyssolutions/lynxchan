@@ -20,20 +20,20 @@ The engine will generate HTML caches for postings and log entries. These caches 
 It accepts the following arguments:
 * `--tor-debug`, `-td`: tor debug. Will cause any request to be marked as a if it were coming from a TOR exit node.
 * `--fe-debug`, `-fd`: front-end debug. Will not cache static files, disable individual HTML caches and reload the front-end templates.
-* `--reload`, `-r`: will rebuild all pages on boot.
+* `--reload`, `-r`: will rebuild all pages on a running instance.
 * `--reload-login`, `-rl`: will rebuild login page on boot.
 * `--reload-banner`, `-rb`: will rebuild default banner on boot.
-* `--reload-front`, `-rf`: will rebuild front-page on boot.
+* `--reload-front`, `-rf`: will rebuild front-page on a running instance.
 * `--reload-notfound`, `-rn`: will rebuild 404 page on boot.
 * `--reload-thumb`, `-rt`: will rebuild generic thumbnail on boot.
 * `--reload-audio`, `-ra`: will rebuild generic audio thumb on boot.
-* `--reload-multiboard`, `-rbm`: will rebuild multiboard pages on boot.
+* `--reload-multiboard`, `-rbm`: will rebuild multiboard pages on a running instance.
 * `--reload-spoiler`, `-rs`: will rebuild spoiler image on boot.
 * `--reload-maintenance`, `-rm`: will rebuild maintenance page on boot.
 * `--reload-maintenance-image`, `-rmi`: will rebuild maintenance image page on boot.
-* `--reload-overboard`, `-ro`: reloads the overboard.
-* `--reload-logs`, `-rlog`: reloads logs.
-* `--reload-boards`, `-rboard`: reloads boards. If a board uri is informed it will start from the informed board.
+* `--reload-overboard`, `-ro`: reloads the overboard on a running instance.
+* `--reload-logs`, `-rlog`: reloads logs on a running instance.
+* `--reload-boards`, `-rboard`: reloads boards on a running instance. If a board uri is informed it will start from the informed board.
 * `--reload-front-end`, `-rfe`: reloads the front-end files on a running instance, including cached static files. Will be ignored if maintenance mode is being changed on the same command or if no daemon was not informed.
 * `--prune-files`, `-pf`: prunes files that no longer contains references to them. Its advisable to turn on maintenance mode before using this command to avoid race conditions.
 * `--reload-graphs`, `-rg`: redraws daily graphs.

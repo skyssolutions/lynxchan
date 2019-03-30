@@ -101,7 +101,7 @@ labelDescription:
 divThreads:
     use: have children appended to it.
     description: contains the list list of threads in the page.
-    
+
 divPages:
     use: have children appended to it.
     description: contains the listing of available pages in the board.
