@@ -95,9 +95,7 @@ exports.getBoardsDiv = function(boardList) {
     var boardUri = common.clean(boardList[i]);
 
     var href = '/boardManagement.js?boardUri=' + boardUri;
-    var link = '<a href="' + href + '">/' + boardUri + '/</a>';
-    children += '<div>' + link + '</div>';
-
+    children += '<a href="' + href + '">/' + boardUri + '/</a>';
   }
 
   return children;

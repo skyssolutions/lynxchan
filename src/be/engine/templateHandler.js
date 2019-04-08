@@ -81,7 +81,7 @@ exports.handleLoadingErrors = function(errors) {
     return;
   }
 
-  console.log('Were found issues with templates.');
+  console.log('Issues were found  with the templates.');
 
   for (var i = 0; i < errors.length; i++) {
 
