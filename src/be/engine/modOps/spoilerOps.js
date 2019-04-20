@@ -9,29 +9,21 @@ var threads = db.threads();
 var posts = db.posts();
 var common;
 var lang;
-var gfsHandler;
 
 exports.loadDependencies = function() {
 
-  gfsHandler = require('../gridFsHandler');
   lang = require('../langOps').languagePack;
   common = require('.').common;
 
 };
 
-exports.getAdaptedFileArray = function(board, files, filesToDelete) {
+exports.getAdaptedFileArray = function(board, files) {
 
   var customSpoilerPath = '/' + board.boardUri + '/custom.spoiler';
 
   for (var i = 0; i < files.length; i++) {
 
     var file = files[i];
-
-    var hasThumb = file.thumb !== file.path;
-
-    if (hasThumb && file.thumb.indexOf('/' + board.boardUri + '/media/') > -1) {
-      filesToDelete.push(file.thumb);
-    }
 
     file.thumb = board.usesCustomSpoiler ? customSpoilerPath : spoilerPath;
 
@@ -41,8 +33,8 @@ exports.getAdaptedFileArray = function(board, files, filesToDelete) {
 
 };
 
-exports.getOperations = function(threadOps, postOps, filesToDelete,
-    foundThreads, foundPosts, board) {
+exports.getOperations = function(threadOps, postOps, foundThreads, foundPosts,
+    board) {
 
   for (var i = 0; i < foundThreads.length; i++) {
 
@@ -55,8 +47,7 @@ exports.getOperations = function(threadOps, postOps, filesToDelete,
         },
         update : {
           $set : {
-            files : exports.getAdaptedFileArray(board, thread.files,
-                filesToDelete)
+            files : exports.getAdaptedFileArray(board, thread.files)
           },
           $unset : {
             innerCache : 1,
@@ -83,8 +74,7 @@ exports.getOperations = function(threadOps, postOps, filesToDelete,
         },
         update : {
           $set : {
-            files : exports.getAdaptedFileArray(board, post.files,
-                filesToDelete)
+            files : exports.getAdaptedFileArray(board, post.files)
           },
           $unset : {
             innerCache : 1,
@@ -131,13 +121,14 @@ exports.getReloadsArray = function(foundThreads, parentThreads, reloadedPages,
 
 };
 
-exports.queueReloads = function(parents, foundThreads, foundPosts, board) {
+exports.queueReloads = function(board, parentThreads, foundThreads, foundPosts,
+    callback) {
 
   var reloadedPages = [];
   var reloadedThreads = [];
 
-  exports
-      .getReloadsArray(foundThreads, parents, reloadedPages, reloadedThreads);
+  exports.getReloadsArray(foundThreads, parentThreads, reloadedPages,
+      reloadedThreads);
 
   for (var i = 0; i < reloadedPages.length; i++) {
 
@@ -157,28 +148,16 @@ exports.queueReloads = function(parents, foundThreads, foundPosts, board) {
 
   }
 
+  callback();
+
 };
 
-exports.queueAndClean = function(board, parentThreads, foundThreads,
-    foundPosts, filesToDelete, callback) {
-
-  exports.queueReloads(parentThreads, foundThreads, foundPosts, board);
-
-  if (!filesToDelete.length) {
-    callback();
-
-    return;
-  }
-
-  gfsHandler.removeFiles(filesToDelete, callback);
-};
-
-exports.spoilPosts = function(board, postOps, filesToDelete, foundThreads,
-    foundPosts, parentThreads, callback) {
+exports.spoilPosts = function(board, postOps, foundThreads, foundPosts,
+    parentThreads, callback) {
 
   if (!postOps.length) {
-    exports.queueAndClean(board, parentThreads, foundThreads, foundPosts,
-        filesToDelete, callback);
+    exports.queueReloads(board, parentThreads, foundThreads, foundPosts,
+        callback);
 
     return;
   }
@@ -189,8 +168,8 @@ exports.spoilPosts = function(board, postOps, filesToDelete, foundThreads,
       callback(error);
     } else {
 
-      exports.queueAndClean(board, parentThreads, foundThreads, foundPosts,
-          filesToDelete, callback);
+      exports.queueReloads(board, parentThreads, foundThreads, foundPosts,
+          callback);
 
     }
   });
@@ -202,14 +181,12 @@ exports.spoilBoardFiles = function(foundThreads, foundPosts, board,
 
   var threadOps = [];
   var postOps = [];
-  var filesToDelete = [];
 
-  exports.getOperations(threadOps, postOps, filesToDelete, foundThreads,
-      foundPosts, board);
+  exports.getOperations(threadOps, postOps, foundThreads, foundPosts, board);
 
   if (!threadOps.length) {
-    exports.spoilPosts(board, postOps, filesToDelete, foundThreads, foundPosts,
-        parentThreads, callback);
+    exports.spoilPosts(board, postOps, foundThreads, foundPosts, parentThreads,
+        callback);
     return;
   }
 
@@ -219,8 +196,8 @@ exports.spoilBoardFiles = function(foundThreads, foundPosts, board,
       callback(error);
     } else {
 
-      exports.spoilPosts(board, postOps, filesToDelete, foundThreads,
-          foundPosts, parentThreads, callback);
+      exports.spoilPosts(board, postOps, foundThreads, foundPosts,
+          parentThreads, callback);
 
     }
 
