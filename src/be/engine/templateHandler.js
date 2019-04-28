@@ -362,6 +362,16 @@ exports.processCell = function(cell, fePath, templateSettings, prebuiltObj) {
 
   var dom = parser.parse(template.toString('utf8'));
 
+  for (var i = 0; i < dom.childNodes[0].childNodes.length; i++) {
+    var child = dom.childNodes[0].childNodes[i];
+
+    if (child.tagName === 'body') {
+      dom = child;
+      break;
+    }
+
+  }
+
   var map = {};
   exports.startMapping(templateSettings.optionalContent, dom.childNodes, map,
       cell.prebuiltFields, true);

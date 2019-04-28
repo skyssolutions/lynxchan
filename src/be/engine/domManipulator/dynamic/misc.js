@@ -219,7 +219,7 @@ exports.setSimpleBoardCellLabels = function(board, cell) {
 
   cell = cell.replace('__labelPostCount_inner__', board.lastPostId || 0);
 
-  cell = cell.replace('__divDescription__', common
+  cell = cell.replace('__divDescription_inner__', common
       .clean(board.boardDescription));
 
   return cell;
