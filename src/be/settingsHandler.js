@@ -5,7 +5,6 @@ var http = require('http');
 var kernel = require('./kernel');
 var dbSettings;
 var generalSettings;
-var templateSettings;
 
 var MAX_ATTEMPTS = 4;
 
@@ -489,10 +488,6 @@ exports.loadSettings = function() {
 
   setMaxSizes();
 
-  var templateSettingsPath = generalSettings.fePath + '/templateSettings.json';
-
-  templateSettings = JSON.parse(fs.readFileSync(templateSettingsPath));
-
 };
 // } Section 2: Load settings
 
@@ -557,7 +552,10 @@ exports.getGeneralSettings = function() {
 };
 
 exports.getTemplateSettings = function() {
-  return templateSettings;
+
+  var templateSettingsPath = generalSettings.fePath + '/templateSettings.json';
+  return JSON.parse(fs.readFileSync(templateSettingsPath));
+
 };
 
 exports.changeMaintenanceMode = function(newMode) {

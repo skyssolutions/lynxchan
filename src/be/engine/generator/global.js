@@ -17,7 +17,6 @@ var latestImagesCol = db.latestImages();
 var rootModule;
 var kernel = require('../../kernel');
 var settingsHandler = require('../../settingsHandler');
-var templateSettings = settingsHandler.getTemplateSettings();
 var topBoardsCount;
 var verbose;
 var multiboardThreadCount;
@@ -155,7 +154,7 @@ exports.audioThumb = function(callback, language) {
 
     var settingsToUse = JSON.parse(fs.readFileSync(settingsPath));
   } else {
-    settingsToUse = templateSettings;
+    settingsToUse = settingsHandler.getTemplateSettings();
   }
 
   filePath += settingsToUse.audioThumb;
@@ -214,7 +213,7 @@ exports.spoiler = function(callback, language) {
 
     var settingsToUse = JSON.parse(fs.readFileSync(settingsPath));
   } else {
-    settingsToUse = templateSettings;
+    settingsToUse = settingsHandler.getTemplateSettings();
   }
 
   filePath += settingsToUse.spoiler;
@@ -273,7 +272,7 @@ exports.defaultBanner = function(callback, language) {
 
     var settingsToUse = JSON.parse(fs.readFileSync(settingsPath));
   } else {
-    settingsToUse = templateSettings;
+    settingsToUse = settingsHandler.getTemplateSettings();
   }
 
   filePath += settingsToUse.defaultBanner;
@@ -332,7 +331,7 @@ exports.maintenanceImage = function(callback, language) {
 
     var settingsToUse = JSON.parse(fs.readFileSync(settingsPath));
   } else {
-    settingsToUse = templateSettings;
+    settingsToUse = settingsHandler.getTemplateSettings();
   }
 
   filePath += settingsToUse.maintenanceImage;
@@ -391,7 +390,7 @@ exports.thumb = function(callback, language) {
 
     var settingsToUse = JSON.parse(fs.readFileSync(settingsPath));
   } else {
-    settingsToUse = templateSettings;
+    settingsToUse = settingsHandler.getTemplateSettings();
   }
 
   filePath += settingsToUse.thumb;
