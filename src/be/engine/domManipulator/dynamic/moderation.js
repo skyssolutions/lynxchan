@@ -70,7 +70,7 @@ exports.closedReports = function(reports, language) {
 };
 
 // Section 1: Range bans {
-exports.getRangeBanCells = function(rangeBans, boardData, language) {
+exports.getRangeBanCells = function(rangeBans, boardData, userRole, language) {
 
   var children = '';
 
@@ -85,7 +85,8 @@ exports.getRangeBanCells = function(rangeBans, boardData, language) {
     var rangeToUse;
 
     if (boardData) {
-      rangeToUse = miscOps.hashIpForDisplay(rangeBan.range, boardData.ipSalt);
+      rangeToUse = miscOps.hashIpForDisplay(rangeBan.range, boardData.ipSalt,
+          userRole);
     } else {
       rangeToUse = rangeBan.range.join('.');
     }
@@ -100,7 +101,7 @@ exports.getRangeBanCells = function(rangeBans, boardData, language) {
 
 };
 
-exports.rangeBans = function(rangeBans, boardData, language) {
+exports.rangeBans = function(rangeBans, boardData, userRole, language) {
 
   var template = templateHandler(language).rangeBansPage;
 
@@ -119,7 +120,7 @@ exports.rangeBans = function(rangeBans, boardData, language) {
   }
 
   return document.replace('__rangeBansDiv_children__', exports
-      .getRangeBanCells(rangeBans, boardData, language));
+      .getRangeBanCells(rangeBans, boardData, userRole, language));
 
 };
 // } Section 1: Range bans

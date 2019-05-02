@@ -18,11 +18,12 @@ exports.getRangeBans = function(userData, parameters, res, auth, language) {
     } else {
 
       if (json) {
-        formOps.outputResponse('ok', jsonBuilder
-            .rangeBans(rangeBans, boardData), res, null, auth, null, json);
+        formOps.outputResponse('ok', jsonBuilder.rangeBans(rangeBans,
+            boardData, userData.globalRole), res, null, auth, null, json);
       } else {
         res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(dom.rangeBans(rangeBans, boardData, language));
+        res.end(dom.rangeBans(rangeBans, boardData, userData.globalRole,
+            language));
       }
 
     }

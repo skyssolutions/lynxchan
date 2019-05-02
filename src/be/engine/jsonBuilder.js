@@ -496,13 +496,13 @@ exports.boards = function(pageCount, boards) {
 
 };
 
-exports.rangeBans = function(rangeBans, boardData) {
+exports.rangeBans = function(rangeBans, boardData, userRole) {
 
   for (var i = 0; i < rangeBans.length; i++) {
 
     if (boardData) {
       rangeBans[i].range = miscOps.hashIpForDisplay(rangeBans[i].range,
-          boardData.ipSalt);
+          boardData.ipSalt, userRole);
     } else {
       rangeBans[i].range = rangeBans[i].range.join('.');
 
