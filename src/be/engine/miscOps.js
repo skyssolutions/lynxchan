@@ -109,10 +109,47 @@ exports.getMaxStaffRole = function() {
   return MAX_STAFF_ROLE;
 };
 
+exports.formatIpv6 = function(ip) {
+
+  var joinedIp = [];
+
+  for (var i = 0; i < ip.length / 2; i++) {
+
+    var index = i * 2;
+
+    if (!ip[index] && !ip[index + 1]) {
+      joinedIp[i] = '0';
+      continue;
+    }
+
+    if (!ip[index]) {
+      joinedIp[i] = ip[index + 1].toString(16);
+    } else if (!ip[index + 1]) {
+      joinedIp[i] = ip[index].toString(16) + '00';
+    } else {
+      var secondPart = (ip[index + 1] > 15 ? '' : '0');
+
+      secondPart += ip[index + 1].toString(16);
+
+      joinedIp[i] = ip[index].toString(16) + secondPart;
+    }
+
+  }
+
+  return joinedIp.join(':').replace(/\b:?(?:0+:?){2,}/, '::');
+
+};
+
 exports.hashIpForDisplay = function(ip, salt, userRole) {
 
   if (userRole <= clearIpMinRole) {
-    return ip.join('.');
+
+    if (ip.length > 4) {
+      return exports.formatIpv6(ip);
+    } else {
+      return ip.join('.');
+    }
+
   }
 
   return crypto.createHash('sha256').update(salt + ip).digest('hex').substring(
