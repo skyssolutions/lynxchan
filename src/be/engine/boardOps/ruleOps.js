@@ -47,7 +47,7 @@ exports.addBoardRule = function(parameters, userData, language, callback) {
         return;
       }
 
-      var rule = parameters.rule.substring(0, 512).replace(/[<>]/g,
+      var rule = parameters.rule.substring(0, 512).replace(/[<>"']/g,
           function replace(match) {
             return miscOps.htmlReplaceTable[match];
           });

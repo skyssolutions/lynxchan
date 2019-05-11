@@ -48,7 +48,9 @@ exports.loadSettings = function() {
 
 exports.htmlReplaceTable = {
   '<' : '&lt;',
-  '>' : '&gt;'
+  '>' : '&gt;',
+  '\"' : '&quot;',
+  '\'' : '&apos;'
 };
 
 exports.loadDependencies = function() {
@@ -177,7 +179,7 @@ exports.sanitizeParameter = function(object, parameter) {
           parameter.length);
 
       if (parameter.removeHTML) {
-        object[parameter.field] = object[parameter.field].replace(/[<>]/g,
+        object[parameter.field] = object[parameter.field].replace(/[<>"']/g,
             function replace(match) {
               return exports.htmlReplaceTable[match];
             });

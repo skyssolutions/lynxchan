@@ -178,7 +178,7 @@ exports.getMessageMarkdown = function(message) {
     return null;
   }
 
-  var ret = message.replace(/[<>]/g, function replace(match) {
+  var ret = message.replace(/[<>"']/g, function replace(match) {
     return miscOps.htmlReplaceTable[match];
   });
 
@@ -228,8 +228,8 @@ exports.sanitizeBoardTags = function(tags) {
   };
 
   for (var i = 0; i < tags.length && toRet.length < maxBoardTags; i++) {
-    var tagToAdd = tags[i].toString().trim().replace(/[<>]/g, replaceFunction)
-        .toLowerCase().substring(0, 32);
+    var tagToAdd = tags[i].toString().trim()
+        .replace(/[<>"']/g, replaceFunction).toLowerCase().substring(0, 32);
 
     if (tagToAdd.length && toRet.indexOf(tagToAdd) === -1) {
       toRet.push(tagToAdd);
