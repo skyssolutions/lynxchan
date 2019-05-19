@@ -323,7 +323,6 @@ TEM_ID::05
 opCell*: cell used for the thread's OP.
 
 Root element: form
-Observation: will have the class "multipleUploads" added to it if contains more than one upload.
 
 Elements:
 contentOmissionIndicator:
@@ -359,7 +358,7 @@ labelOmission:
     description: label indicating how many files and posts are being omitted when the thread is listed on a board page.
 
 panelUploads:
-    use: have children appended to it or might be removed.
+    use: have children appended to it, it's class manipulated or might be removed.
     description: contains the uploads for the post.
 
 linkName:
@@ -453,7 +452,6 @@ TEM_ID::06
 postCell*: cell used for thread replies.
 
 Root element: form
-Observation: will have the class "multipleUploads" added to it if contains more than one upload.
 
 Elements:
 contentOmissionIndicator:
@@ -501,7 +499,7 @@ labelNarrowRange:
     description: contains the poster's first three quarters of his ip.
 
 panelUploads:
-    use: have children appended to it or might be removed.
+    use: have children appended to it, it's class manipulated or might be removed.
     description: contains the uploads for the post.
 
 labelRole:

@@ -594,6 +594,9 @@ exports.setAllSharedPostingElements = function(postingCell, posting, removable,
   postingCell = postingCell.replace('__panelUploads_location__',
       removable.panelUploads);
 
+  postingCell = postingCell.replace(' __panelUploads_class__',
+      posting.files.length > 1 ? ' multipleUploads' : '');
+
   return postingCell.replace('__panelUploads_children__', exports
       .setUploadCell(posting.files, modding, language));
 
@@ -689,10 +692,6 @@ exports.setOmittedInformation = function(thread, posts, innerPage, language) {
 exports.getThreadCellBase = function(thread) {
 
   var classToUse = 'opCell';
-
-  if (thread.files && thread.files.length > 1) {
-    classToUse += ' multipleUploads';
-  }
 
   var threadCell = '<div class="' + classToUse + '" data-boarduri="';
   threadCell += exports.clean(thread.boardUri) + '" id="' + thread.threadId;
@@ -853,10 +852,6 @@ exports.saveCache = function(cacheField, language, innerHTML, collection,
 exports.getPostCellBase = function(post) {
 
   var classToUse = 'postCell';
-
-  if (post.files && post.files.length > 1) {
-    classToUse += ' multipleUploads';
-  }
 
   var postCell = '<div class="' + classToUse;
   postCell += '" data-boarduri="' + exports.clean(post.boardUri) + '" id="';
