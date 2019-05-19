@@ -1,7 +1,6 @@
 'use strict';
 
 var fs = require('fs');
-var BigInteger = require('jsbn').BigInteger;
 
 exports.MIMETYPES = {
   a : 'application/octet-stream',
@@ -198,11 +197,40 @@ exports.parseIpv6 = function(ip) {
     return part;
   });
 
-  var toBig = new BigInteger(parts.join(''), 16);
+  var parsedIp = [];
 
-  return toBig.toByteArray().map(function unsignByte(b) {
-    return b & 0xFF;
-  });
+  for (var i = 0; i < parts.length; i++) {
+
+    var part = parts[i];
+
+    parsedIp.push(parseInt(part.substring(0, 2), 16));
+    parsedIp.push(parseInt(part.substring(2, 4), 16));
+
+  }
+
+  return parsedIp;
+
+};
+
+exports.compareArrays = function(a, b) {
+
+  if (a.length !== b.length) {
+
+    var max = Math.max(a.length, b.length);
+    a = Array(max - a.length).fill(0).concat(a);
+    b = Array(max - b.length).fill(0).concat(b);
+
+  }
+
+  for (var i = 0; i < a.length; i++) {
+
+    if (a[i] !== b[i]) {
+      return a[i] - b[i];
+    }
+
+  }
+
+  return 0;
 
 };
 

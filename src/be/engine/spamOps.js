@@ -25,31 +25,21 @@ exports.loadSettings = function() {
 exports.spamDataPath = __dirname + '/../spamData';
 
 // Section 1: Updating spammer list {
-exports.writeIpToStream = function(ip, fileStream) {
-
-  var buffer = Buffer.alloc(ipLineSize);
-  buffer.writeUInt32BE(ip);
-  fileStream.write(buffer);
-
-};
-
 exports.getSortedIps = function(ips) {
 
   var foundIps = [];
 
   for (var i = 0; i < ips.length; i++) {
-    var ip = ips[i];
+    var ip = ips[i].trim();
 
-    if (!ip.length) {
+    if (!ip) {
       continue;
     }
 
-    foundIps.push(locationOps.ipToInt(logger.convertIpToArray(ip)));
+    foundIps.push(logger.convertIpToArray(ip));
   }
 
-  return foundIps.sort(function(a, b) {
-    return a - b;
-  });
+  return foundIps.sort(logger.compareArrays);
 
 };
 
@@ -70,7 +60,7 @@ exports.processData = function(foundIps, callback) {
       return;
     }
 
-    exports.writeIpToStream(foundIps[i], fileStream);
+    fileStream.write(Buffer.from(foundIps[i]));
 
   }
 
@@ -101,8 +91,14 @@ exports.updateSpammers = function(callback) {
 
 exports.parseIpBuffer = function(buffer) {
 
+  var array = Array(4);
+
+  for (var i = 0; i < 4; i++) {
+    array[i] = buffer[i];
+  }
+
   return {
-    ip : buffer.readUInt32BE(0)
+    ip : array
   };
 
 };
@@ -115,9 +111,9 @@ exports.checkIp = function(ip, callback, override) {
   }
 
   logger.binarySearch({
-    ip : locationOps.ipToInt(ip)
+    ip : ip
   }, exports.spamDataPath, ipLineSize, function compare(a, b) {
-    return a.ip - b.ip;
+    return logger.compareArrays(a.ip, b.ip);
   }, exports.parseIpBuffer, function searched(error, ip) {
 
     if (error) {
@@ -139,10 +135,7 @@ exports.iterateNewIps = function(newIps, currentArray, callback, index,
   if (index >= newIps.length) {
 
     if (inserted) {
-      exports.processData(currentArray.sort(function(a, b) {
-        return a - b;
-      }), callback);
-
+      exports.processData(currentArray.sort(logger.compareArrays), callback);
     } else {
       callback();
     }
@@ -167,7 +160,7 @@ exports.iterateNewIps = function(newIps, currentArray, callback, index,
 
       if (!spammer) {
         inserted = true;
-        currentArray.push(locationOps.ipToInt(ip));
+        currentArray.push(ip);
       }
 
       exports.iterateNewIps(newIps, currentArray, callback, ++index, inserted);
@@ -198,7 +191,17 @@ exports.incrementSpammers = function(callback) {
           var currentArray = [];
 
           for (var i = 0; i < existingData.length / 4; i++) {
-            currentArray.push(existingData.readUInt32BE(i * 4));
+
+            var offset = i * 4;
+
+            var toAdd = Array(4);
+
+            for (var j = 0; j < 4; j++) {
+              toAdd[j] = existingData[j + offset];
+            }
+
+            currentArray.push(toAdd);
+
           }
 
           exports.iterateNewIps(data.split('\n'), currentArray, callback);

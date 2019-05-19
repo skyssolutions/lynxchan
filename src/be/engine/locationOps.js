@@ -3,63 +3,87 @@
 var logger = require('../logger');
 var compiledLocations = __dirname + '/../locationData/compiledLocations';
 var compiledIps = __dirname + '/../locationData/compiledIps';
+var compiledIpsV6 = __dirname + '/../locationData/compiledIpsV6';
 
 var locationLineSize = 60;
 var ipLineSize = 10;
+var ipLineSizeV6 = 22;
 
-exports.ipToInt = function(ip) {
-
-  var toReturn = ip[0] << 24 >>> 0;
-  toReturn += ip[1] << 16 >>> 0;
-  toReturn += ip[2] << 8 >>> 0;
-  toReturn += ip[3];
-
-  return toReturn;
-
-};
+var ipv6Localhost = logger.convertIpToArray('::1');
 
 var localRanges = [ {
-  top : exports.ipToInt([ 10, 0, 0, 0 ]),
-  bottom : exports.ipToInt([ 10, 255, 255, 255 ])
+  top : [ 10, 0, 0, 0 ],
+  bottom : [ 10, 255, 255, 255 ]
 }, {
-  top : exports.ipToInt([ 127, 0, 0, 1 ]),
-  bottom : exports.ipToInt([ 127, 255, 255, 254 ])
+  top : [ 127, 0, 0, 1 ],
+  bottom : [ 127, 255, 255, 254 ]
 }, {
-  top : exports.ipToInt([ 172, 16, 0, 0 ]),
-  bottom : exports.ipToInt([ 172, 31, 255, 255 ])
+  top : [ 172, 16, 0, 0 ],
+  bottom : [ 172, 31, 255, 255 ]
 }, {
-  top : exports.ipToInt([ 192, 168, 0, 0 ]),
-  bottom : exports.ipToInt([ 192, 168, 255, 255 ])
-}
+  top : [ 192, 168, 0, 0 ],
+  bottom : [ 192, 168, 255, 255 ]
+} ];
 
-];
+exports.isLocal = function(ip) {
 
-exports.getLocationInfo = function(ip, callback) {
+  if (ip.length > 4) {
 
-  var convertedIp = exports.ipToInt(ip);
+    var isNotLocalhost = logger.compareArrays(ip, ipv6Localhost);
+
+    if (!isNotLocalhost) {
+      return true;
+    }
+
+    var ULA = ip[0] === 252 || ip[0] === 253;
+
+    var prefix = ip[0] === 1 && !ip[1];
+
+    return ULA || prefix || (ip[0] === 254 && ip[1] === 128);
+  }
 
   for (var i = 0; i < localRanges.length; i++) {
     var range = localRanges[i];
 
-    if (convertedIp >= range.top && convertedIp <= range.bottom) {
-      callback();
-      return;
+    var topComparison = logger.compareArrays(ip, range.top) >= 0;
+
+    if (topComparison && logger.compareArrays(ip, range.bottom) <= 0) {
+      return true;
     }
 
   }
 
+};
+
+exports.getLocationInfo = function(ip, callback) {
+
+  if (exports.isLocal(ip)) {
+    return callback();
+  }
+
+  var v6 = ip.length > 4;
+
+  var length = v6 ? ipLineSizeV6 : ipLineSize;
+  var location = v6 ? compiledIpsV6 : compiledIps;
+
   logger.binarySearch({
-    ip : convertedIp
-  }, compiledIps, ipLineSize, function compare(a, b) {
-    return a.ip - b.ip;
+    ip : ip
+  }, location, length, function compare(a, b) {
+    return logger.compareArrays(a.ip, b.ip);
   }, function parse(buffer) {
 
+    var tempArray = Array(ip.length);
+
+    for (var i = 0; i < tempArray.length; i++) {
+      tempArray[i] = buffer[i];
+    }
+
     return {
-      ip : buffer.readUInt32BE(0),
-      geoId : buffer.readUIntBE(4, 6)
+      ip : tempArray,
+      geoId : buffer.readUIntBE(tempArray.length, 6)
     };
 
-  }, function gotIpInfor(error, info) {
+  }, function gotIpInfo(error, info) {
 
     if (error) {
       callback(error);

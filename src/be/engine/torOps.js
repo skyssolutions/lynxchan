@@ -48,7 +48,7 @@ exports.processData = function(match, callback) {
       return;
     }
 
-    spamOps.writeIpToStream(foundIps[i], fileStream);
+    fileStream.write(Buffer.from(foundIps[i]));
 
   }
 
@@ -97,15 +97,15 @@ exports.markAsTor = function(req, callback) {
   }
 
   logger.binarySearch({
-    ip : locationOps.ipToInt(logger.convertIpToArray(logger.getRawIp(req)))
+    ip : logger.convertIpToArray(logger.getRawIp(req))
   }, compiledTORIps, 4, function compare(a, b) {
-    return a.ip - b.ip;
+    return logger.compareArrays(a.ip, b.ip);
   }, spamOps.parseIpBuffer, function gotIp(error, ip) {
 
     if (error) {
       callback(error);
     } else {
-      req.isTor = ip || !!torDebug;
+      req.isTor = !!ip || !!torDebug;
       callback();
     }
 
