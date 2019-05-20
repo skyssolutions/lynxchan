@@ -6,6 +6,7 @@ var fs = require('fs');
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var crypto = require('crypto');
+var taskListener = require('../../taskListener');
 var logger = require('../../logger');
 var db = require('../../db');
 var posts = db.posts();
@@ -15,7 +16,6 @@ var stats = db.stats();
 var flags = db.flags();
 var latestPosts = db.latestPosts();
 var tripcodes = db.tripcodes();
-var flood = db.flood();
 var lang;
 var locationOps;
 var miscOps;
@@ -151,13 +151,19 @@ exports.recordFlood = function(req) {
     return;
   }
 
-  flood.insertOne({
-    ip : logger.ip(req),
-    expiration : new Date(new Date().getTime() + floodTimer)
-  }, function addedFloodRecord(error) {
-    if (error && verbose) {
+  taskListener.openSocket(function opened(error, socket) {
+
+    if (error) {
       console.log(error);
+      return;
     }
+
+    taskListener.sendToSocket(socket, {
+      type : 'recordFlood',
+      ip : logger.ip(req),
+      expiration : new Date(new Date().getTime() + floodTimer)
+    });
+
   });
 
 };

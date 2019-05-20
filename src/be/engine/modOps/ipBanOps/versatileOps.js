@@ -4,7 +4,7 @@ var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var db = require('../../../db');
 var bans = db.bans();
-var flood = db.flood();
+var taskListener = require('../../../taskListener');
 var boards = db.boards();
 var torLevel;
 var torAllowed;
@@ -22,6 +22,7 @@ var spamOps;
 var common;
 var spamBypass;
 var globalBoardModeration;
+var floodTracking = {};
 
 exports.loadSettings = function() {
   var settings = require('../../../settingsHandler').getGeneralSettings();
@@ -47,6 +48,38 @@ exports.loadDependencies = function() {
   lang = require('../../langOps').languagePack;
   miscOps = require('../../miscOps');
   spamOps = require('../../spamOps');
+
+};
+
+exports.recordFlood = function(task) {
+  floodTracking[task.ip] = new Date(task.expiration);
+};
+
+exports.cleanFloodRecords = function() {
+
+  var now = new Date();
+
+  var keys = Object.keys(floodTracking);
+
+  for (var i = 0; i < keys.length; i++) {
+
+    var key = keys[i];
+
+    if (floodTracking[key] < now) {
+      delete floodTracking[key];
+    }
+
+  }
+
+};
+
+exports.masterFloodCheck = function(ip, socket) {
+
+  var lastEntry = floodTracking[ip];
+
+  taskListener.sendToSocket(socket, {
+    flood : !!(lastEntry && new Date() < lastEntry)
+  });
 
 };
 
@@ -169,49 +202,66 @@ exports.getActiveBan = function(ip, boardUri, callback) {
 
 };
 
+exports.receivedFloodCheckResponse = function(req, ip, boardUri, socket, flood,
+    callback) {
+
+  if (flood && !disableFloodCheck) {
+    callback(lang(req.language).errFlood);
+  } else {
+
+    spamOps.checkIp(logger.ip(req), function checked(error, spammer) {
+
+      if (error) {
+        callback(error);
+      } else if (spammer) {
+
+        if (spamBypass && bypassAllowed) {
+
+          if (!req.bypassed) {
+            callback(null, null, true);
+          } else {
+            exports.getActiveBan(ip, boardUri, callback);
+          }
+
+        } else {
+          callback(lang(req.language).errSpammer);
+        }
+
+      } else {
+        exports.getActiveBan(ip, boardUri, callback);
+      }
+
+    });
+
+  }
+
+};
+
 exports.checkForFlood = function(req, boardUri, callback) {
 
   var ip = logger.ip(req);
 
-  flood.findOne({
-    ip : ip,
-    expiration : {
-      $gt : new Date()
-    }
-  }, function gotFlood(error, flood) {
+  taskListener.openSocket(function opened(error, socket) {
+
     if (error) {
       callback(error);
-    } else if (flood && !disableFloodCheck) {
-      callback(lang(req.language).errFlood);
-    } else {
-
-      // style exception, too simple
-      spamOps.checkIp(logger.ip(req), function checked(error, spammer) {
-
-        if (error) {
-          callback(error);
-        } else if (spammer) {
-
-          if (spamBypass && bypassAllowed) {
-
-            if (!req.bypassed) {
-              callback(null, null, true);
-            } else {
-              exports.getActiveBan(ip, boardUri, callback);
-            }
-
-          } else {
-            callback(lang(req.language).errSpammer);
-          }
-
-        } else {
-          exports.getActiveBan(ip, boardUri, callback);
-        }
-
-      });
-      // style exception, too simple
-
+      return;
     }
+
+    socket.onData = function receivedData(data) {
+
+      exports.receivedFloodCheckResponse(req, ip, boardUri, socket, data.flood,
+          callback);
+
+      taskListener.freeSocket(socket);
+
+    };
+
+    taskListener.sendToSocket(socket, {
+      type : 'floodCheck',
+      ip : ip
+    });
+
   });
 
 };

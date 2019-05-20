@@ -20,7 +20,7 @@ var indexesSet;
 var cachedDb;
 var cachedClient;
 
-var maxIndexesSet = 17;
+var maxIndexesSet = 16;
 
 var cachedLanguages;
 var cachedConfirmationRequests;
@@ -28,7 +28,6 @@ var cachedUploadReferences;
 var cachedLatestImages;
 var cachedAggregatedLogs;
 var cachedBypasses;
-var cachedFlood;
 var cachedVersions;
 var cachedPosts;
 var cachedReports;
@@ -290,26 +289,6 @@ function initUploadReferences(callback) {
 function initCaptchas(callback) {
 
   cachedCaptchas.createIndexes([ {
-    key : {
-      expiration : 1
-    },
-    expireAfterSeconds : 0
-  } ], function setIndex(error, index) {
-    if (error) {
-      if (loading) {
-        loading = false;
-
-        callback(error);
-      }
-    } else {
-      indexSet(callback);
-    }
-  });
-}
-
-function initFlood(callback) {
-
-  cachedFlood.createIndexes([ {
     key : {
       expiration : 1
     },
@@ -761,10 +740,6 @@ exports.flags = function() {
   return cachedFlags;
 };
 
-exports.flood = function() {
-  return cachedFlood;
-};
-
 exports.aggregatedLogs = function() {
   return cachedAggregatedLogs;
 };
@@ -797,8 +772,6 @@ function initGlobalIndexes(callback) {
   initTripcodes(callback);
 
   initHashBans(callback);
-
-  initFlood(callback);
 
   initUploadReferences(callback);
 
@@ -850,7 +823,6 @@ function initGlobalIndexedCollections(callback) {
 
   cachedBypasses = cachedDb.collection('blockBypasses');
   cachedTripcodes = cachedDb.collection('secureTripcodes');
-  cachedFlood = cachedDb.collection('floodRecord');
   cachedCaptchas = cachedDb.collection('captchas');
   cachedRecoveryRequests = cachedDb.collection('recoveryRequests');
   cachedUsers = cachedDb.collection('users');

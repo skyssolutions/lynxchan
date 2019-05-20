@@ -274,12 +274,6 @@ flags: stores board flags.
 
 ----------------------------------------------------------------------------------------
 
-floodRecord: stores the time when ips will be allowed to post again.
-    ip: ip of the entry.
-    expiration: time when the ip will be able to post or report again.
-
-----------------------------------------------------------------------------------------
-
 latestPosts: stores metadata from global latest posts.
     boardUri*: uri of the board where the post was made.
     threadId(Number)*: id of the thread posted or that contains the post.

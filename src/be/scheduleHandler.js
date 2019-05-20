@@ -19,6 +19,7 @@ var uniqueIps = db.uniqueIps();
 var files = db.files();
 var users = db.users();
 var cacheHandler;
+var versatileOps;
 var torHandler;
 var spamOps;
 var referenceHandler;
@@ -33,6 +34,7 @@ exports.reload = function() {
   tempDirectory = settings.tempDirectory;
   captchaExpiration = settings.captchaExpiration;
   cacheHandler = require('./engine/cacheHandler');
+  versatileOps = require('./engine/modOps').ipBan.versatile;
   gridFsHandler = require('./engine/gridFsHandler');
   torHandler = require('./engine/torOps');
   spamOps = require('./engine/spamOps');
@@ -291,6 +293,7 @@ function boardsStats() {
     }
 
     cacheHandler.runTTL();
+    versatileOps.cleanFloodRecords();
 
   }, tickTime.getTime() - current);
 }

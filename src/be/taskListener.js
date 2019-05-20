@@ -17,6 +17,7 @@ var tcpServer;
 var master;
 var slaves;
 var verbose;
+var versatileOps;
 var cacheHandler;
 var generationQueue;
 var Socket = net.Socket;
@@ -34,6 +35,7 @@ exports.reload = function() {
   master = settings.master;
   clusterPort = settings.clusterPort;
   slaves = settings.slaves;
+  versatileOps = require('./engine/modOps').ipBan.versatile;
   generationQueue = require('./generationQueue');
 
 };
@@ -106,6 +108,26 @@ exports.processTask = function(task, socket) {
       shutdown : true
     });
 
+    break;
+  }
+
+  default:
+    exports.processFloodTask(task, socket);
+  }
+
+};
+
+exports.processFloodTask = function(task, socket) {
+
+  switch (task.type) {
+
+  case 'floodCheck': {
+    versatileOps.masterFloodCheck(task.ip, socket);
+    break;
+  }
+
+  case 'recordFlood': {
+    versatileOps.recordFlood(task);
     break;
   }
 
