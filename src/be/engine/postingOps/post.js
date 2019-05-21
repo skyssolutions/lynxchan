@@ -604,6 +604,20 @@ exports.getThread = function(req, parameters, userData, board, callback) {
 
 };
 
+exports.checkFileLimit = function(req, parameters, userData, board, callback) {
+
+  common.checkFileLimit(req, parameters, function checked(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.getThread(req, parameters, userData, board, callback);
+    }
+
+  });
+
+};
+
 exports.checkR9K = function(req, parameters, userData, board, callback) {
 
   r9k.check(parameters, board, req.language, function checked(error) {
@@ -611,7 +625,7 @@ exports.checkR9K = function(req, parameters, userData, board, callback) {
     if (error) {
       callback(error);
     } else {
-      exports.getThread(req, parameters, userData, board, callback);
+      exports.checkFileLimit(req, parameters, userData, board, callback);
     }
 
   });

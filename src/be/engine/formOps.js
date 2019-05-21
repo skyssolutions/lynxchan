@@ -101,6 +101,25 @@ exports.getCheckSum = function(path, callback) {
 
 };
 
+exports.checkNewFileReference = function(file, callback) {
+
+  var identifier = file.md5 + '-' + file.mime.replace('/', '');
+
+  references.findOne({
+    identifier : identifier
+  }, function gotReference(error, reference) {
+
+    if (error) {
+      callback(error);
+    } else {
+      file.referenced = !!reference;
+      callback();
+    }
+
+  });
+
+};
+
 exports.getFileData = function(file, fields, mime, callback) {
 
   exports.getCheckSum(file.path, function gotCheckSum(checkSum) {
@@ -128,21 +147,24 @@ exports.getFileData = function(file, fields, mime, callback) {
 
       // style exception, too simple
       measureFunction(toPush, function gotDimensions(error, width, height) {
-        if (!error) {
+
+        if (error) {
+          callback(error);
+        } else {
           toPush.width = width;
           toPush.height = height;
 
           fields.files.push(toPush);
+          exports.checkNewFileReference(toPush, callback);
         }
 
-        callback(error);
       });
       // style exception, too simple
 
     } else {
       fields.files.push(toPush);
 
-      callback();
+      exports.checkNewFileReference(toPush, callback);
     }
   });
 };
@@ -273,6 +295,7 @@ exports.processReferencedFiles = function(metaData, callback, index) {
       entry.width = reference.width;
       entry.height = reference.height;
       entry.size = reference.size;
+      entry.referenced = true;
     }
 
     exports.processReferencedFiles(metaData, callback, ++index);

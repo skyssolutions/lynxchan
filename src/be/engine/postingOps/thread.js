@@ -446,6 +446,21 @@ exports.checkMarkdownForThread = function(req, userData, parameters, board,
 
 };
 
+exports.checkFileLimit = function(req, userData, parameters, board, callback) {
+
+  common.checkFileLimit(req, parameters, function checked(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports
+          .checkMarkdownForThread(req, userData, parameters, board, callback);
+    }
+
+  });
+
+};
+
 exports.checkR9K = function(req, userData, parameters, board, callback) {
 
   r9k.check(parameters, board, req.language, function checked(error) {
@@ -453,8 +468,7 @@ exports.checkR9K = function(req, userData, parameters, board, callback) {
     if (error) {
       callback(error);
     } else {
-      exports
-          .checkMarkdownForThread(req, userData, parameters, board, callback);
+      exports.checkFileLimit(req, userData, parameters, board, callback);
     }
 
   });

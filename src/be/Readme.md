@@ -86,6 +86,7 @@ To use SSL, enable the setting `ssl` and place the key file named `ssl.key` and 
 # Back-end settings
 Settings files that goes into the settings directory:
 `general.json`: contains general settings for the application. Holds the following settings:
+* `fileLimit`: total limit of uploaded files on the whole site. Defaults to 1000.
 * `verbose`(Boolean): if true, will activate all verbose modes.
 * `disable304`(Boolean): if true, will never use http status 304.
 * `captchaLimit`(Number): maximum amount of new captchas served to the same ip per minute. Ignores tor detection.

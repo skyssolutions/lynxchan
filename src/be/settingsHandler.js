@@ -530,6 +530,7 @@ exports.getDefaultSettings = function() {
     ssl : 0,
     rssDomain : '',
     slaves : [],
+    fileLimit : 1000,
     messageLength : 4096,
     spamIpsSource : 'https://www.stopforumspam.com/downloads/bannedips.zip',
     flagNameLength : 32,

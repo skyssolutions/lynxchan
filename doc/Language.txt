@@ -129,6 +129,7 @@ errHashBanLimit: error thrown when the board already has too many bans.
 errInvalidConfirmation: error thrown when the user tries to confirm his e-mail with an invalid confirmation request.
 errNotConfirmed: error thrown when the user tries to perform an action that requires a confirmed e-mail while not having one.
 errReferralMismatch: error thrown when the user tries to authenticate but his referral doesn't match the host.
+errTotalFileLimitExceeded: error thrown when the user tries to post a new file but the site has reached it's file limit.
 guiTypeBan: label used for logs of bans.
 guiTypeBanLift: label used for logs of ban lifts.
 guiTypeDeletion: label used for logs of deletions.

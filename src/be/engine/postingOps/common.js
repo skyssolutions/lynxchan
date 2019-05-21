@@ -9,6 +9,7 @@ var crypto = require('crypto');
 var taskListener = require('../../taskListener');
 var logger = require('../../logger');
 var db = require('../../db');
+var uploadReferences = db.uploadReferences();
 var posts = db.posts();
 var threads = db.threads();
 var uniqueIps = db.uniqueIps();
@@ -23,6 +24,7 @@ var verbose;
 var maxGlobalLatestPosts;
 var floodTimer;
 var pageSize;
+var fileLimit;
 var globalMaxSizeMB;
 var globalMaxFiles;
 
@@ -69,6 +71,7 @@ exports.loadSettings = function() {
     exports.defaultAnonymousName = lang().miscDefaultAnonymous;
   }
 
+  fileLimit = settings.fileLimit;
   verbose = settings.verbose || settings.verboseMisc;
   maxGlobalLatestPosts = settings.globalLatestPosts;
   pageSize = settings.pageSize;
@@ -913,6 +916,36 @@ exports.setThreadsPage = function(boardUri, callback, page) {
       });
       // style exception, too simple
 
+    }
+
+  });
+
+};
+
+exports.checkFileLimit = function(req, parameters, callback) {
+
+  var newFileCount = 0;
+
+  for (var i = 0; i < parameters.files.length; i++) {
+    var file = parameters.files[i];
+
+    if (!file.referenced) {
+      ++newFileCount;
+    }
+  }
+
+  if (!newFileCount) {
+    return callback();
+  }
+
+  uploadReferences.countDocuments(function gotCount(error, count) {
+
+    if (error) {
+      callback(error);
+    } else if (count + newFileCount > fileLimit) {
+      callback(lang(req.language).errTotalFileLimitExceeded);
+    } else {
+      callback();
     }
 
   });

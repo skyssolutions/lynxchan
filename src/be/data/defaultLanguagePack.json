@@ -339,5 +339,6 @@
   "errArchiveConfirmation": "You must confirm that you wish to archive this thread.",
   "titArchives": "Archives",
   "errReferralMismatch": "Your referral doesn't match the host.",
-  "errCaptchaLimitExceeded": "You have requested too many captchas, wait a minute before trying again."
+  "errCaptchaLimitExceeded": "You have requested too many captchas, wait a minute before trying again.",
+  "errTotalFileLimitExceeded": "The site has reached it's total file capacity."
 }
