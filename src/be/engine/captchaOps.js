@@ -2,20 +2,24 @@
 
 // operations for captcha generation and solving
 
+var url = require('url');
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var exec = require('child_process').exec;
 var captchas = require('../db').captchas();
 var crypto = require('crypto');
+var taskListener = require('../taskListener');
+var logger = require('../logger');
 var verbose;
+var captchaLimit;
 var forceCaptcha;
 var captchaExpiration;
-var url = require('url');
 var miscOps;
 var lang;
 var uploadHandler;
 var formOps;
 var gridFsHandler;
+var captchaControl = {};
 
 // captcha settings
 var height = 100;
@@ -40,6 +44,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  captchaLimit = settings.captchaLimit;
   verbose = settings.verbose || settings.verboseMisc;
   forceCaptcha = settings.forceCaptcha;
   captchaExpiration = settings.captchaExpiration;
@@ -246,7 +251,7 @@ exports.generateImage = function(text, captchaData, callback) {
 
 };
 
-exports.generateCaptcha = function(callback) {
+exports.createCaptcha = function(callback) {
 
   var text = crypto.createHash('sha256').update(Math.random() + new Date())
       .digest('hex').substring(0, 6);
@@ -269,7 +274,91 @@ exports.generateCaptcha = function(callback) {
   });
 
 };
+
+exports.generateCaptcha = function(req, callback) {
+
+  taskListener.openSocket(function opened(error, socket) {
+
+    if (error) {
+      callback(error);
+      return;
+    }
+
+    socket.onData = function receivedData(data) {
+
+      if (data.exceeded) {
+        callback(lang(req.language).errCaptchaLimitExceeded);
+      } else {
+        exports.createCaptcha(callback);
+      }
+
+      taskListener.freeSocket(socket);
+    };
+
+    taskListener.sendToSocket(socket, {
+      type : 'checkCaptchaLimit',
+      ip : logger.getRawIp(req)
+    });
+
+  });
+
+};
 // } Section 1: Captcha generation
+
+exports.checkCaptchaLimit = function(ip, socket) {
+
+  var now = new Date();
+
+  var expiration = new Date();
+  expiration.setUTCMinutes(expiration.getUTCMinutes() + 1);
+
+  var newData = {
+    count : 0,
+    expiration : expiration
+  };
+
+  var data = captchaControl[ip] || newData;
+
+  captchaControl[ip] = data;
+
+  if (data.count < captchaLimit || data.expiration < now) {
+    data.count++;
+
+    if (data.expiration < now) {
+      captchaControl[ip] = newData;
+    }
+
+    taskListener.sendToSocket(socket, {
+      exceeded : false
+    });
+
+  } else {
+
+    taskListener.sendToSocket(socket, {
+      exceeded : true
+    });
+
+  }
+
+};
+
+exports.cleanCaptchaControl = function() {
+
+  var now = new Date();
+
+  var keys = Object.keys(captchaControl);
+
+  for (var i = 0; i < keys.length; i++) {
+
+    var key = keys[i];
+
+    if (captchaControl[key].expiration < now) {
+      delete captchaControl[key];
+    }
+
+  }
+
+};
 
 exports.checkForCaptcha = function(req, callback) {
 

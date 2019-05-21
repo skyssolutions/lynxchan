@@ -10,21 +10,22 @@ exports.process = function(req, res) {
 
   var parameters = url.parse(req.url, true).query;
 
-  captchaOps.generateCaptcha(function generatedCaptcha(error, captchaData) {
-    if (error) {
-      formOps.outputError(error, 500, res, req.language, parameters.json);
-    } else {
+  captchaOps.generateCaptcha(req,
+      function generatedCaptcha(error, captchaData) {
+        if (error) {
+          formOps.outputError(error, 500, res, req.language, parameters.json);
+        } else {
 
-      if (parameters.json) {
-        formOps.outputResponse('ok', captchaData._id, res, null, null, null,
-            true);
-      } else {
-        res.writeHead(200, miscOps.getHeader('text/html'));
-        res.end(domManipulator.noCookieCaptcha(parameters, captchaData._id,
-            req.language));
-      }
-    }
+          if (parameters.json) {
+            formOps.outputResponse('ok', captchaData._id, res, null, null,
+                null, true);
+          } else {
+            res.writeHead(200, miscOps.getHeader('text/html'));
+            res.end(domManipulator.noCookieCaptcha(parameters, captchaData._id,
+                req.language));
+          }
+        }
 
-  });
+      });
 
 };

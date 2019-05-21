@@ -444,6 +444,7 @@
   {
     "template": "globalSettingsPage",
     "prebuiltFields": {
+      "fieldCaptchaLimit": "value",
       "fieldMaxBoardRangeBans": "value",
       "fieldAddons": "value",
       "fieldAcceptedMimes": "value",

@@ -88,6 +88,7 @@ Settings files that goes into the settings directory:
 `general.json`: contains general settings for the application. Holds the following settings:
 * `verbose`(Boolean): if true, will activate all verbose modes.
 * `disable304`(Boolean): if true, will never use http status 304.
+* `captchaLimit`(Number): maximum amount of new captchas served to the same ip per minute. Ignores tor detection.
 * `address`: ip to bind the server on. Defaults to `0.0.0.0`.
 * `port`(Number): port to listen for http. Defaults to 80.
 * `ssl`(Number): SSL mode. If 0 it won`t be used, if 1 it will be used, if 2 all plain HTTP requests will be redirected to their HTTPS equivalent.

@@ -151,19 +151,10 @@ exports.recordFlood = function(req) {
     return;
   }
 
-  taskListener.openSocket(function opened(error, socket) {
-
-    if (error) {
-      console.log(error);
-      return;
-    }
-
-    taskListener.sendToSocket(socket, {
-      type : 'recordFlood',
-      ip : logger.ip(req),
-      expiration : new Date(new Date().getTime() + floodTimer)
-    });
-
+  taskListener.sendToSocket(null, {
+    type : 'recordFlood',
+    ip : logger.ip(req),
+    expiration : new Date(new Date().getTime() + floodTimer)
   });
 
 };

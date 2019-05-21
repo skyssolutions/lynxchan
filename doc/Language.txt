@@ -71,6 +71,7 @@ errOnlyCssAllowed: error thrown on custom CSS selection when the user tries to u
 errDeniedCssManagement: error thrown when the user is not allowed to manage CSS for a board.
 errFileTooLarge: error thrown when a file sent is too large.
 errDeniedRuleManagement: error thrown when the user is not allowed to manage rules for a board.
+errCaptchaLimitExceeded: error thrown when the user requests too many captchas.
 errRuleLimitReached: error thrown when the user tries to add a rule to a board that has already reached the maximum amount of rules allowed.
 errInvalidIndex: error thrown when the index of a specified rule is invalid.
 errDeniedMultipleReports: error thrown when the user is not allowed to report multiple postings at once.

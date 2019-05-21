@@ -338,5 +338,6 @@
   "errNotAllowedToArchive": "You are not allowed to archive this thread.",
   "errArchiveConfirmation": "You must confirm that you wish to archive this thread.",
   "titArchives": "Archives",
-  "errReferralMismatch": "Your referral doesn't match the host."
+  "errReferralMismatch": "Your referral doesn't match the host.",
+  "errCaptchaLimitExceeded": "You have requested too many captchas, wait a minute before trying again."
 }

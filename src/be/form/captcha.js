@@ -45,7 +45,7 @@ exports.process = function(req, res) {
         console.log('No captcha found');
       }
 
-      captchaOps.generateCaptcha(function(error, captchaData) {
+      captchaOps.generateCaptcha(req, function(error, captchaData) {
 
         if (error) {
 

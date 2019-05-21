@@ -15,6 +15,7 @@ var noDaemon = kernel.noDaemon();
 var server;
 var tcpServer;
 var master;
+var captchaOps;
 var slaves;
 var verbose;
 var versatileOps;
@@ -35,6 +36,7 @@ exports.reload = function() {
   master = settings.master;
   clusterPort = settings.clusterPort;
   slaves = settings.slaves;
+  captchaOps = require('./engine/captchaOps');
   versatileOps = require('./engine/modOps').ipBan.versatile;
   generationQueue = require('./generationQueue');
 
@@ -128,6 +130,11 @@ exports.processFloodTask = function(task, socket) {
 
   case 'recordFlood': {
     versatileOps.recordFlood(task);
+    break;
+  }
+
+  case 'checkCaptchaLimit': {
+    captchaOps.checkCaptchaLimit(task.ip, socket);
     break;
   }
 
