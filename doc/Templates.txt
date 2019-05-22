@@ -1795,6 +1795,10 @@ checkboxBoardStaffArchiving:
     use: might be turned on.
     description: indicates if board staff is allowed to archive threads.
 
+checkboxDontProcessLinks:
+    use: might be turned on.
+    description: checkbox that indicates if links on posts are not being turned into hyperlinks.
+
 checkboxBlockedReport:
     use: might be turned on.
     description: indicates if blocked users are allowed to fill reports.

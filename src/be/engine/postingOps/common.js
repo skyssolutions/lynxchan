@@ -25,6 +25,7 @@ var maxGlobalLatestPosts;
 var floodTimer;
 var pageSize;
 var fileLimit;
+var dontProcessLinks;
 var globalMaxSizeMB;
 var globalMaxFiles;
 
@@ -71,6 +72,7 @@ exports.loadSettings = function() {
     exports.defaultAnonymousName = lang().miscDefaultAnonymous;
   }
 
+  dontProcessLinks = settings.dontProcessLinks;
   fileLimit = settings.fileLimit;
   verbose = settings.verbose || settings.verboseMisc;
   maxGlobalLatestPosts = settings.globalLatestPosts;
@@ -422,16 +424,19 @@ exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
 
   var postObject = {};
 
-  message = message.replace(/(http|https)\:\/\/\S+/g, function links(match) {
+  if (!dontProcessLinks) {
 
-    match = match.replace(/>/g, '&gt;').replace(/[_='~*]/g,
-        function sanitization(innerMatch) {
-          return exports.linkSanitizationRelation[innerMatch];
-        });
+    message = message.replace(/(http|https)\:\/\/\S+/g, function links(match) {
 
-    return '<a target="blank" href="' + match + '">' + match + '</a>';
+      match = miscOps.cleanHTML(match).replace(/[_='~*]/g,
+          function sanitization(innerMatch) {
+            return exports.linkSanitizationRelation[innerMatch];
+          });
 
-  });
+      return '<a target="blank" href="' + match + '">' + match + '</a>';
+
+    });
+  }
 
   for (var i = 0; i < posts.length; i++) {
     var post = posts[i];

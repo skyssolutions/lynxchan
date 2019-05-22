@@ -86,6 +86,7 @@ To use SSL, enable the setting `ssl` and place the key file named `ssl.key` and 
 # Back-end settings
 Settings files that goes into the settings directory:
 `general.json`: contains general settings for the application. Holds the following settings:
+* `dontProcessLinks`(Boolean): when set to true, links on posts won't be processed into hyperlinks.
 * `fileLimit`: total limit of uploaded files on the whole site. Defaults to 1000.
 * `verbose`(Boolean): if true, will activate all verbose modes.
 * `disable304`(Boolean): if true, will never use http status 304.

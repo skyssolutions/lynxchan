@@ -396,6 +396,11 @@
   },
   {
     "type": "boolean",
+    "setting": "dontProcessLinks",
+    "element": "checkboxDontProcessLinks"
+  },
+  {
+    "type": "boolean",
     "setting": "verboseMisc",
     "element": "checkboxVerboseMisc"
   },

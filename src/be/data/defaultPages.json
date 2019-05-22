@@ -508,6 +508,7 @@
       "checkboxVerbose": "checked",
       "checkboxBlockedReport": "checked",
       "checkboxSFWLatestImages": "checked",
+      "checkboxDontProcessLinks": "checked",
       "checkboxFfmpegGifs": "checked",
       "checkboxAutoPruneFiles": "checked",
       "checkboxDisableLatestPostings": "checked",
