@@ -12,6 +12,7 @@ var miscOps = require('../engine/miscOps');
 var jsonBuilder = require('../engine/jsonBuilder');
 var modOps = require('../engine/modOps').common;
 var formOps = require('../engine/formOps');
+var generator = require('../engine/generator');
 
 exports.outputModData = function(bData, flagData, thread, posts, res, json,
     userRole, auth, language) {
@@ -46,35 +47,7 @@ exports.getPostingData = function(boardData, flagData, parameters, res, json,
     threadId : +parameters.threadId,
     boardUri : boardData.boardUri
   }, {
-    projection : {
-      _id : 0,
-      subject : 1,
-      threadId : 1,
-      flag : 1,
-      boardUri : 1,
-      locked : 1,
-      cyclic : 1,
-      clearCache : 1,
-      hashedCache : 1,
-      alternativeCaches : 1,
-      flagCode : 1,
-      flagName : 1,
-      pinned : 1,
-      lastEditTime : 1,
-      lastEditLogin : 1,
-      autoSage : 1,
-      creation : 1,
-      id : 1,
-      banMessage : 1,
-      ip : 1,
-      name : 1,
-      signedRole : 1,
-      files : 1,
-      email : 1,
-      message : 1,
-      markdown : 1,
-      archived : 1
-    }
+    projection : generator.threadModProjection
   }, function gotThread(error, thread) {
     if (error) {
       formOps.outputError(error, 500, res, language, json, auth);
@@ -88,31 +61,7 @@ exports.getPostingData = function(boardData, flagData, parameters, res, json,
         threadId : +parameters.threadId,
         boardUri : boardData.boardUri
       }, {
-        projection : {
-          _id : 0,
-          signedRole : 1,
-          subject : 1,
-          ip : 1,
-          flagCode : 1,
-          creation : 1,
-          boardUri : 1,
-          flagName : 1,
-          clearCache : 1,
-          hashedCache : 1,
-          flag : 1,
-          alternativeCaches : 1,
-          threadId : 1,
-          lastEditTime : 1,
-          lastEditLogin : 1,
-          id : 1,
-          postId : 1,
-          message : 1,
-          name : 1,
-          files : 1,
-          email : 1,
-          banMessage : 1,
-          markdown : 1
-        }
+        projection : generator.postModProjection
       }).sort({
         creation : 1
       }).toArray(
@@ -120,6 +69,7 @@ exports.getPostingData = function(boardData, flagData, parameters, res, json,
             if (error) {
               formOps.outputError(error, 500, res, language, json, auth);
             } else {
+
               exports.outputModData(boardData, flagData, thread, posts, res,
                   json, userRole, auth, language);
             }

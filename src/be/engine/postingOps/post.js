@@ -433,8 +433,8 @@ exports.updateThread = function(boardData, parameters, postId, thread,
 
 };
 
-exports.createPost = function(req, parameters, userData, postId, thread, board,
-    wishesToSign, cb) {
+exports.getNewPost = function(req, parameters, userData, postId, thread, board,
+    wishesToSign) {
 
   var ip = logger.ip(req);
 
@@ -471,6 +471,16 @@ exports.createPost = function(req, parameters, userData, postId, thread, board,
   if (parameters.password) {
     postToAdd.password = parameters.password;
   }
+
+  return postToAdd;
+
+};
+
+exports.createPost = function(req, parameters, userData, postId, thread, board,
+    wishesToSign, cb) {
+
+  var postToAdd = exports.getNewPost(req, parameters, userData, postId, thread,
+      board, wishesToSign);
 
   posts.insertOne(postToAdd, function createdPost(error) {
     if (error) {

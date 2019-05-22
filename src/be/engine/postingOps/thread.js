@@ -170,8 +170,8 @@ exports.updateBoardForThreadCreation = function(boardData, threadId,
   });
 };
 
-exports.createThread = function(req, userData, parameters, board, threadId,
-    wishesToSign, enabledCaptcha, callback) {
+exports.getNewThread = function(req, userData, parameters, board, threadId,
+    wishesToSign) {
 
   var salt = crypto.createHash('sha256').update(
       threadId + parameters.toString() + Math.random() + new Date()).digest(
@@ -217,6 +217,16 @@ exports.createThread = function(req, userData, parameters, board, threadId,
   if (parameters.password) {
     threadToAdd.password = parameters.password;
   }
+
+  return threadToAdd;
+
+};
+
+exports.createThread = function(req, userData, parameters, board, threadId,
+    wishesToSign, enabledCaptcha, callback) {
+
+  var threadToAdd = exports.getNewThread(req, userData, parameters, board,
+      threadId, wishesToSign);
 
   threads.insertOne(threadToAdd, function createdThread(error) {
     if (error && error.code === 11000) {

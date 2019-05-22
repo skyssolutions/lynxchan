@@ -62,6 +62,17 @@ exports.threadProjection = {
   archived : 1
 };
 
+exports.threadModProjection = JSON.parse(JSON
+    .stringify(exports.threadProjection));
+exports.postModProjection = JSON.parse(JSON.stringify(exports.postProjection));
+
+var extra = [ 'clearCache', 'hashedCache', 'ip' ];
+
+for (var i = 0; i < extra.length; i++) {
+  exports.threadModProjection[extra[i]] = 1;
+  exports.postModProjection[extra[i]] = 1;
+}
+
 exports.board = require('./board');
 exports.global = require('./global');
 
