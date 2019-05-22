@@ -5,7 +5,7 @@ var accountOps = require('../engine/accountOps');
 var mandatoryParameters = [ 'login' ];
 var lang = require('../engine/langOps').languagePack;
 
-exports.login = function(res, parameters, language, json) {
+exports.login = function(req, res, parameters, language, json) {
 
   if (formOps.checkBlankParameters(parameters, mandatoryParameters, res,
       language, json)) {
@@ -22,10 +22,15 @@ exports.login = function(res, parameters, language, json) {
       loginExpiration.setUTCFullYear(loginExpiration.getUTCFullYear() + 1);
 
       formOps.outputResponse(json ? 'ok' : lang(language).msgLoginSuccessful,
-          json ? null : '/account.js', res, [ {
+          json ? null : formOps.getCookies(req).loginredirect || '/account.js',
+          res, [ {
             field : 'login',
             value : parameters.login,
             expiration : loginExpiration
+          }, {
+            field : 'loginredirect',
+            value : '',
+            expiration : new Date()
           } ], {
             authStatus : 'expired',
             newHash : hash,
@@ -39,7 +44,7 @@ exports.login = function(res, parameters, language, json) {
 exports.process = function(req, res) {
 
   formOps.getPostData(req, res, function gotData(auth, parameters) {
-    exports.login(res, parameters, req.language, formOps.json(req));
+    exports.login(req, res, parameters, req.language, formOps.json(req));
   });
 
 };

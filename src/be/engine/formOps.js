@@ -468,7 +468,7 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback,
           if (json) {
             exports.outputError(error, null, res, null, true);
           } else {
-            exports.redirectToLogin(res);
+            exports.redirectToLogin(res, skipReferer, req);
           }
 
         } else {
@@ -486,7 +486,7 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback,
             if (json) {
               exports.outputError(error, null, res, null, true);
             } else {
-              exports.redirectToLogin(res);
+              exports.redirectToLogin(res, skipReferer, req);
             }
 
           } else {
@@ -498,11 +498,27 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback,
 };
 // } Section 1: Request parsing
 
-exports.redirectToLogin = function(res) {
+exports.redirectToLogin = function(res, skipReferer, req) {
 
-  res.writeHead(302, {
-    Location : '/login.html'
-  });
+  var headers = [ [ 'Location', '/login.html' ] ];
+
+  var cookies;
+
+  if (skipReferer) {
+
+    var now = new Date();
+    now.setUTCMinutes(now.getUTCMinutes() + 10);
+
+    cookies = [ {
+      field : 'loginredirect',
+      value : url.parse(req.url).path,
+      expiration : now,
+      path : '/'
+    } ];
+
+  }
+
+  res.writeHead(302, miscOps.getHeader(null, null, headers, cookies));
   res.end();
 
 };
