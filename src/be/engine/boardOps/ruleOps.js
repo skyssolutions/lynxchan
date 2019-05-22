@@ -9,6 +9,12 @@ var miscOps;
 var maxRulesCount;
 var globalBoardModeration;
 
+var newRuleParameters = [ {
+  field : 'rule',
+  length : 512,
+  removeHTML : true
+} ];
+
 exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
@@ -47,17 +53,14 @@ exports.addBoardRule = function(parameters, userData, language, callback) {
         return;
       }
 
-      var rule = parameters.rule.substring(0, 512).replace(/[<>"']/g,
-          function replace(match) {
-            return miscOps.htmlReplaceTable[match];
-          });
+      miscOps.sanitizeStrings(parameters, newRuleParameters);
 
       // style exception, too simple
       boards.updateOne({
         boardUri : parameters.boardUri
       }, {
         $push : {
-          rules : rule
+          rules : parameters.rule
         }
       }, function updatedRules(error) {
         if (error) {

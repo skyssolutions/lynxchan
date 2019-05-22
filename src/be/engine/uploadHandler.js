@@ -317,9 +317,7 @@ exports.updatePostingFiles = function(boardData, threadId, postId, file,
     },
     $push : {
       files : {
-        originalName : file.title.replace(/[<>"']/g, function replace(match) {
-          return miscOps.htmlReplaceTable[match];
-        }),
+        originalName : miscOps.cleanHTML(file.title),
         path : file.path,
         mime : file.mime,
         thumb : file.thumbPath,

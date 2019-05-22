@@ -22,6 +22,14 @@ var clearIpMinRole;
 var settingsRelation;
 var mailer;
 
+var htmlReplaceTable = {
+  '<' : '&lt;',
+  '>' : '&gt;',
+  '\"' : '&quot;',
+  '\'' : '&apos;'
+};
+var htmlReplaceRegex = new RegExp(/[<>'"]/g);
+
 var MAX_STAFF_ROLE = 3;
 exports.plainTextMimes = [ 'application/x-javascript', 'application/json',
     'application/rss+xml' ];
@@ -46,13 +54,6 @@ exports.loadSettings = function() {
 
 };
 
-exports.htmlReplaceTable = {
-  '<' : '&lt;',
-  '>' : '&gt;',
-  '\"' : '&quot;',
-  '\'' : '&apos;'
-};
-
 exports.loadDependencies = function() {
 
   formOps = require('./formOps');
@@ -69,6 +70,14 @@ exports.loadDependencies = function() {
 
     settingsRelation = data.toString('utf8');
 
+  });
+
+};
+
+exports.cleanHTML = function(string) {
+
+  return string.replace(htmlReplaceRegex, function(match) {
+    return htmlReplaceTable[match];
   });
 
 };
@@ -171,18 +180,14 @@ exports.sanitizeParameter = function(object, parameter) {
     object[parameter.field] = object[parameter.field].toString().trim();
 
     if (!object[parameter.field].length) {
-
       delete object[parameter.field];
-
     } else if (parameter.length) {
+
       object[parameter.field] = object[parameter.field].substring(0,
           parameter.length);
 
       if (parameter.removeHTML) {
-        object[parameter.field] = object[parameter.field].replace(/[<>"']/g,
-            function replace(match) {
-              return exports.htmlReplaceTable[match];
-            });
+        object[parameter.field] = exports.cleanHTML(object[parameter.field]);
       }
 
     }

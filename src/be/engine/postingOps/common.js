@@ -682,10 +682,7 @@ exports.addPostToLatestPosts = function(posting, callback) {
     threadId : posting.threadId,
     creation : posting.creation,
     postId : posting.postId,
-    previewText : posting.message.substring(0, 128).replace(/[<>"']/g,
-        function replace(match) {
-          return miscOps.htmlReplaceTable[match];
-        })
+    previewText : miscOps.cleanHTML(posting.message.substring(0, 128))
   }, function addedPost(error) {
 
     if (error) {

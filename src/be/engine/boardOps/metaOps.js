@@ -174,19 +174,17 @@ exports.checkBoardRebuild = function(board, params) {
 };
 
 exports.getMessageMarkdown = function(message) {
+
   if (!message) {
     return null;
   }
 
-  var ret = message.replace(/[<>"']/g, function replace(match) {
-    return miscOps.htmlReplaceTable[match];
-  });
+  var ret = miscOps.cleanHTML(message).replace(/\[.+?\]\(.+?\)/g,
+      function prettyLinks(match) {
+        var matchesArray = match.match(/\[(.+)\]\((.+)\)/);
 
-  ret = ret.replace(/\[.+?\]\(.+?\)/g, function prettyLinks(match) {
-    var matchesArray = match.match(/\[(.+)\]\((.+)\)/);
-
-    return '<a href="' + matchesArray[2] + '">' + matchesArray[1] + '</a>';
-  });
+        return '<a href="' + matchesArray[2] + '">' + matchesArray[1] + '</a>';
+      });
 
   ret = postingOps.replaceStyleMarkdown(ret);
 
@@ -223,13 +221,9 @@ exports.sanitizeBoardTags = function(tags) {
 
   var toRet = [];
 
-  var replaceFunction = function replace(match) {
-    return miscOps.htmlReplaceTable[match];
-  };
-
   for (var i = 0; i < tags.length && toRet.length < maxBoardTags; i++) {
-    var tagToAdd = tags[i].toString().trim()
-        .replace(/[<>"']/g, replaceFunction).toLowerCase().substring(0, 32);
+    var tagToAdd = miscOps.cleanHTML(tags[i].toString()).toLowerCase()
+        .substring(0, 32);
 
     if (tagToAdd.length && toRet.indexOf(tagToAdd) === -1) {
       toRet.push(tagToAdd);
