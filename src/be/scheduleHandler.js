@@ -21,6 +21,7 @@ var users = db.users();
 var cacheHandler;
 var captchaOps;
 var versatileOps;
+var accountOps;
 var torHandler;
 var spamOps;
 var referenceHandler;
@@ -38,6 +39,7 @@ exports.reload = function() {
   versatileOps = require('./engine/modOps').ipBan.versatile;
   gridFsHandler = require('./engine/gridFsHandler');
   torHandler = require('./engine/torOps');
+  accountOps = require('./engine/accountOps');
   captchaOps = require('./engine/captchaOps');
   spamOps = require('./engine/spamOps');
   referenceHandler = require('./engine/mediaHandler');
@@ -294,6 +296,7 @@ function boardsStats() {
       clearIps();
     }
 
+    accountOps.cleanAuthControl();
     cacheHandler.runTTL();
     captchaOps.cleanCaptchaControl();
     versatileOps.cleanFloodRecords();

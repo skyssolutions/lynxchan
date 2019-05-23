@@ -340,5 +340,6 @@
   "titArchives": "Archives",
   "errReferralMismatch": "Your referral doesn't match the host.",
   "errCaptchaLimitExceeded": "You have requested too many captchas, wait a minute before trying again.",
-  "errTotalFileLimitExceeded": "The site has reached it's total file capacity."
+  "errTotalFileLimitExceeded": "The site has reached it's total file capacity.",
+  "errAuthLimitExceeded": "You have exceeded the maximum limit of authentications, wait before trying again."
 }

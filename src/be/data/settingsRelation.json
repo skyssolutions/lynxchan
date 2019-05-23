@@ -171,6 +171,11 @@
   },
   {
     "type": "number",
+    "setting": "authenticationLimit",
+    "element": "fieldAuthenticationLimit"
+  },
+  {
+    "type": "number",
     "setting": "captchaLimit",
     "element": "fieldCaptchaLimit"
   },

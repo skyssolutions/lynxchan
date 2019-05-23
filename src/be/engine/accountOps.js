@@ -2,12 +2,13 @@
 
 // operations regarding user accounts
 
+var crypto = require('crypto');
+var taskListener = require('../taskListener');
 var db = require('../db');
 var users = db.users();
 var boards = db.boards();
 var requests = db.recoveryRequests();
 var confirmations = db.confirmations();
-var crypto = require('crypto');
 var sender;
 var creationDisabled;
 var logOps;
@@ -16,7 +17,9 @@ var boardOps;
 var captchaOps;
 var domManipulator;
 var lang;
+var authLimit;
 
+var authLimitControl = {};
 var iterations = 4096;
 var iterationsV2 = 16384;
 var keyLength = 256;
@@ -43,6 +46,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  authLimit = settings.authenticationLimit;
   sender = settings.emailSender;
   creationDisabled = settings.disableAccountCreation;
 
@@ -56,6 +60,61 @@ exports.loadDependencies = function() {
   captchaOps = require('./captchaOps');
   domManipulator = require('./domManipulator').dynamicPages.miscPages;
   lang = require('./langOps').languagePack;
+
+};
+
+exports.masterCheckAuthLimit = function(login, socket) {
+
+  var now = new Date();
+
+  var expiration = new Date();
+  expiration.setUTCMinutes(expiration.getUTCMinutes() + 1);
+
+  var newData = {
+    count : 0,
+    expiration : expiration
+  };
+
+  var data = authLimitControl[login] || newData;
+
+  authLimitControl[login] = data;
+
+  if (data.count < authLimit || data.expiration < now) {
+    data.count++;
+
+    if (data.expiration < now) {
+      authLimitControl[login] = newData;
+    }
+
+    taskListener.sendToSocket(socket, {
+      exceeded : false
+    });
+
+  } else {
+
+    taskListener.sendToSocket(socket, {
+      exceeded : true
+    });
+
+  }
+
+};
+
+exports.cleanAuthControl = function() {
+
+  var now = new Date();
+
+  var keys = Object.keys(authLimitControl);
+
+  for (var i = 0; i < keys.length; i++) {
+
+    var key = keys[i];
+
+    if (authLimitControl[key].expiration < now) {
+      delete authLimitControl[key];
+    }
+
+  }
 
 };
 
@@ -316,6 +375,35 @@ exports.checkExpiration = function(user, now, callback) {
 
 };
 
+exports.checkAuthLimit = function(user, language, now, callback) {
+
+  taskListener.openSocket(function opened(error, socket) {
+
+    if (error) {
+      callback(error);
+      return;
+    }
+
+    socket.onData = function receivedData(data) {
+
+      if (data.exceeded) {
+        callback(lang(language).errAuthLimitExceeded);
+      } else {
+        exports.checkExpiration(user, now, callback);
+      }
+
+      taskListener.freeSocket(socket);
+    };
+
+    taskListener.sendToSocket(socket, {
+      type : 'checkAuthLimit',
+      login : user.login
+    });
+
+  });
+
+};
+
 exports.validate = function(auth, language, callback) {
 
   if (!auth || !auth.hash || !auth.login) {
@@ -359,14 +447,14 @@ exports.validate = function(auth, language, callback) {
           if (error) {
             callback(error);
           } else {
-            exports.checkExpiration(user, now, callback);
+            exports.checkAuthLimit(user, language, now, callback);
           }
 
         });
         // style exception, too simple
 
       } else {
-        exports.checkExpiration(user, now, callback);
+        exports.checkAuthLimit(user, language, now, callback);
       }
 
     }

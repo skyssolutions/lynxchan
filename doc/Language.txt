@@ -118,6 +118,7 @@ errInvalidMimeForBoard: error thrown when a file being uploaded isn't allowed by
 errTextBoard: error thrown when the user tries to post a file to a textboard.
 errDeniedBoardIpDeletion: error thrown when the user is not allowed to delete posts from ips on a specific board.
 errSpammer: error thrown when the user ip was found on the known spammer ip list.
+errAuthLimitExceeded: error thrown when the user exceeded the limit of authentications.
 errNoReportsInformed: error thrown when the user fails to inform any report.
 errDeniedLanguageManagement: error thrown when the user is not allowed to manage alternative languages.
 errDeniedAccountManagement: error thrown when the user is not allowed to manage user accounts.

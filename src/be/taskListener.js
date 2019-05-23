@@ -17,6 +17,7 @@ var tcpServer;
 var master;
 var captchaOps;
 var slaves;
+var accountOps;
 var verbose;
 var versatileOps;
 var cacheHandler;
@@ -39,6 +40,7 @@ exports.reload = function() {
   captchaOps = require('./engine/captchaOps');
   versatileOps = require('./engine/modOps').ipBan.versatile;
   generationQueue = require('./generationQueue');
+  accountOps = require('./engine/accountOps');
 
 };
 
@@ -125,6 +127,11 @@ exports.processFloodTask = function(task, socket) {
 
   case 'floodCheck': {
     versatileOps.masterFloodCheck(task.ip, socket);
+    break;
+  }
+
+  case 'checkAuthLimit': {
+    accountOps.masterCheckAuthLimit(task.login, socket);
     break;
   }
 
