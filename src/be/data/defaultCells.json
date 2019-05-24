@@ -188,6 +188,8 @@
   {
     "template": "reportCell",
     "prebuiltFields": {
+      "boardPanel": "removal",
+      "boardLabel": "inner",
       "reasonLabel": "inner",
       "link": "href",
       "postingDiv": "inner",

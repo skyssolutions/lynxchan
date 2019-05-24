@@ -474,7 +474,7 @@ exports.setGlobalManagementLists = function(document, reports, appealedBans,
     language, removable) {
 
   document = document.replace('__reportDiv_children__', common.getReportList(
-      reports, language));
+      reports, language, true));
 
   if (appealedBans) {
     document = document.replace('__appealedBansPanel_location__',

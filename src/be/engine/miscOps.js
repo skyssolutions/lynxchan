@@ -413,7 +413,8 @@ exports.getManagementData = function(userRole, language, userLogin,
                 reason : 1,
                 threadId : 1,
                 creation : 1,
-                postId : 1
+                postId : 1,
+                global : 1
               }
             }).sort({
               creation : -1

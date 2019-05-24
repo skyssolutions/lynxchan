@@ -936,6 +936,14 @@ reportCell*: cell used to list open reports.
 Root element: div
 
 Elements:
+boardPanel:
+    use: might be removed.
+    description: panel with the board of the report.
+
+boardLabel:
+    use: have it's innerHTML manipulated.
+    description: holds the board of the report.
+
 reasonLabel:
     use: have its innerHTML manipulated.
     description: holds the reason of the report.

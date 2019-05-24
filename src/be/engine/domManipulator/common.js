@@ -1043,16 +1043,26 @@ exports.getBanList = function(bans, globalPage, language) {
 // } Section 4: Ban div
 
 // Setion 5: Open reports {
-exports.getReportCell = function(report, language) {
+exports.getReportCell = function(report, language, globalManagement) {
+
+  var template = templateHandler(language).reportCell;
 
   var cell = '<div class="reportCell">';
-  cell += templateHandler(language).reportCell.template + '</div>';
+  cell += template.template + '</div>';
 
   var reason = exports.clean(report.reason || '');
   cell = cell.replace('__reasonLabel_inner__', reason);
   cell = cell.replace('__closureCheckbox_name__', 'report-' + report._id);
 
   cell = cell.replace('__link_href__', exports.getReportLink(report));
+
+  if (!report.global && globalManagement) {
+    cell = cell.replace('__boardPanel_location__',
+        template.removable.boardPanel).replace('__boardLabel_inner__',
+        report.boardUri);
+  } else {
+    cell = cell.replace('__boardPanel_location__', '');
+  }
 
   if (report.associatedPost) {
     return cell.replace('__postingDiv_inner__', exports.getPostInnerElements(
@@ -1064,12 +1074,12 @@ exports.getReportCell = function(report, language) {
 
 };
 
-exports.getReportList = function(reports, language) {
+exports.getReportList = function(reports, language, globalManagement) {
 
   var children = '';
 
   for (var i = 0; i < reports.length; i++) {
-    children += exports.getReportCell(reports[i], language);
+    children += exports.getReportCell(reports[i], language, globalManagement);
   }
 
   return children;
