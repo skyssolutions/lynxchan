@@ -102,12 +102,11 @@ var redTextFunction = function(match) {
 };
 
 var italicFunction = function(match) {
-
-  return '<em>' + match.substring(2, match.length - 2) + '</em>';
+  return '<em>' + match.substring(12, match.length - 12) + '</em>';
 };
 
 var boldFunction = function(match) {
-  return '<strong>' + match.substring(3, match.length - 3) + '</strong>';
+  return '<strong>' + match.substring(18, match.length - 18) + '</strong>';
 };
 
 var underlineFunction = function(match) {
@@ -389,8 +388,9 @@ exports.processLine = function(split, replaceCode) {
 
   split = split.replace(/^>[^\&].*/g, greenTextFunction);
   split = split.replace(/\=\=.+?\=\=/g, redTextFunction);
-  split = split.replace(/\'\'\'.+?\'\'\'/g, boldFunction);
-  split = split.replace(/\'\'.+?\'\'/g, italicFunction);
+  split = split.replace(/&apos;&apos;&apos;.+?&apos;&apos;&apos;/g,
+      boldFunction);
+  split = split.replace(/&apos;&apos;.+?&apos;&apos;/g, italicFunction);
   split = split.replace(/\_\_.+?\_\_/g, underlineFunction);
   split = split.replace(/\~\~.+?\~\~/g, strikeFunction);
   split = split.replace(/\[spoiler\].+?\[\/spoiler\]/g, spoilerFunction);
@@ -556,6 +556,8 @@ exports.markdownText = function(message, board, replaceCode, callback) {
   message = message.replace(/&/g, '&amp;');
 
   message = message.replace(/</g, '&lt;');
+  message = message.replace(/\"/g, '&quot;');
+  message = message.replace(/\'/g, '&apos;');
 
   var postsToFindObject = {};
 
