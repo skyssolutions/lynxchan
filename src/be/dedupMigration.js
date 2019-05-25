@@ -2,7 +2,12 @@
 
 // This migration gets a whole source file for itself, since its so big.
 
-var mongo = require('mongodb');
+var toPrint = 'WARNING: I made critical changes to file deduplication that I ';
+toPrint += 'couldn\'t test.\nIf you are reading this, be a bro and let me know';
+toPrint += ' how everything went so I can either fix or remove this warning.';
+
+console.log(toPrint);
+
 var exec = require('child_process').exec;
 var fs = require('fs');
 var logger = require('./logger');
@@ -10,9 +15,10 @@ var kernel = require('./kernel');
 var spoilerPath = kernel.spoilerImage();
 var db = require('./db');
 var cachedReferences = db.uploadReferences();
-var conn = db.conn();
+var bucket = new (require('mongodb')).GridFSBucket(db.conn());
 var cachedPosts = db.posts();
 var cachedThreads = db.threads();
+var cachedChunks = db.chunks();
 var cachedFiles = db.files();
 var settings = require('./settingsHandler').getGeneralSettings();
 var thumbSize = settings.thumbSize;
@@ -76,26 +82,12 @@ function moveFile(postingData, file, identifier, callback) {
 
 }
 
-function writeFileToMongo(gs, thumbPath, callback) {
-
-  gs.writeFile(thumbPath, function wroteFile(error) {
-
-    fs.unlinkSync(thumbPath);
-
-    // style exception, too simple
-    gs.close(function closed(closeError, result) {
-      callback(error || closeError);
-    });
-    // style exception, too simple
-
-  });
-
-}
-
 function moveFromDisk(thumbPath, identifier, callback) {
 
-  var gs = mongo.GridStore(conn, '/.media/t_' + identifier, 'w', {
-    'content_type' : logger.getMime(thumbPath),
+  var readStream = fs.createReadStream(thumbPath);
+
+  var uploadStream = bucket.openUploadStream('/.media/t_' + identifier, {
+    contentType : logger.getMime(thumbPath),
     metadata : {
       lastModified : new Date(),
       type : 'media',
@@ -103,14 +95,15 @@ function moveFromDisk(thumbPath, identifier, callback) {
     }
   });
 
-  gs.open(function openedGs(error, gs) {
+  readStream.on('error', callback);
+  uploadStream.on('error', callback);
 
-    if (error) {
-      callback(error);
-    } else {
-      writeFileToMongo(gs, thumbPath, callback);
-    }
+  uploadStream.once('finish', function uploaded() {
+    fs.unlinkSync(thumbPath);
+    callback();
   });
+
+  readStream.pipe(uploadStream);
 
 }
 
@@ -237,37 +230,17 @@ function rebuildThumb(extension, tempPath, identifier, file, callback) {
 
 }
 
-function streamToDisk(path, stream, gs, callback) {
+function streamToDisk(tempPath, sourcePath, callback) {
 
-  gs.open(function openedGs(error, gs) {
+  var readStream = bucket.openDownloadStreamByName(sourcePath);
+  var uploadStream = fs.createWriteStream(tempPath);
 
-    if (error) {
-      callback(error);
-      return;
-    }
+  readStream.on('error', callback);
+  uploadStream.on('error', callback);
 
-    var gfsStream = gs.stream();
+  uploadStream.once('finish', callback);
 
-    gfsStream.on('data', function(data) {
-      stream.write(data);
-    });
-
-    gfsStream.on('error', function(error) {
-
-      stream.end(function closedFileStream() {
-        fs.unlinkSync(path);
-      });
-
-      gs.close();
-      callback(error);
-    });
-
-    gfsStream.on('end', function() {
-      gs.close();
-      stream.end(callback);
-    });
-
-  });
+  readStream.pipe(uploadStream);
 
 }
 
@@ -292,10 +265,7 @@ function moveThumbNail(postingData, file, identifier, callback) {
 
       var tempPath = tempDir + '/' + identifier;
 
-      var gs = mongo.GridStore(conn, file.path, 'r');
-      var stream = fs.createWriteStream(tempPath);
-
-      streamToDisk(tempPath, stream, gs, function streamed(error) {
+      streamToDisk(tempPath, file.path, function streamed(error) {
         if (error) {
           callback(error);
         } else {
@@ -354,7 +324,58 @@ function moveThumbNail(postingData, file, identifier, callback) {
 
 }
 
-function removeDuplicates(file, identifier, postingData, callback) {
+function removeChunks(results, callback) {
+
+  cachedChunks.removeMany({
+    'files_id' : {
+      $in : results[0].ids
+    }
+  }, function removedChunks(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      cachedFiles.removeMany({
+        _id : {
+          $in : results[0].ids
+        }
+      }, callback);
+
+    }
+
+  });
+
+}
+
+function removeFile(name, callback) {
+
+  cachedFiles.aggregate([ {
+    $match : {
+      filename : {
+        $in : name
+      }
+    }
+  }, {
+    $group : {
+      _id : 0,
+      ids : {
+        $push : '$_id'
+      }
+    }
+  } ]).toArray(function gotFiles(error, results) {
+
+    if (error || !results.length) {
+      callback(error);
+    } else {
+      removeChunks(results, callback);
+    }
+
+  });
+
+}
+
+function handleDuplicateFile(file, identifier, postingData, callback) {
 
   var filesToRemove = [ file.path ];
 
@@ -362,7 +383,8 @@ function removeDuplicates(file, identifier, postingData, callback) {
     filesToRemove.push(file.thumb);
   }
 
-  mongo.GridStore.unlink(conn, filesToRemove, function deleted(error) {
+  removeFile(filesToRemove, function removedFiles(error) {
+
     if (error) {
       callback(error);
     } else {
@@ -448,7 +470,7 @@ function deduplicateFilesForPosting(postingData, callback, index) {
     } else {
 
       // style exception, too simple
-      removeDuplicates(file, identifier, postingData,
+      handleDuplicateFile(file, identifier, postingData,
           function removedDuplicate(error) {
 
             if (error) {
