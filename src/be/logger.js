@@ -1,6 +1,7 @@
 'use strict';
 
 var fs = require('fs');
+var kernel = require('./kernel');
 
 exports.MIMETYPES = {
   a : 'application/octet-stream',
@@ -272,11 +273,15 @@ exports.ip = function(req) {
 
 exports.getRawIp = function(req) {
 
+  var toRet;
+
   if (req.headers['x-forwarded-for'] && req.trustedProxy) {
-    return req.headers['x-forwarded-for'];
+    toRet = req.headers['x-forwarded-for'];
   } else {
-    return req.connection.remoteAddress;
+    toRet = req.connection.remoteAddress;
   }
+
+  return kernel.ip() || toRet;
 
 };
 

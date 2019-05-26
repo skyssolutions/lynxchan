@@ -142,6 +142,10 @@ exports.torDebug = function() {
   return informedArguments.torDebug.informed;
 };
 
+exports.ip = function() {
+  return informedArguments.ip.value;
+};
+
 function checkImagesSet() {
 
   var templateSettings = settingsHandler.getTemplateSettings();
