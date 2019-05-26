@@ -290,7 +290,8 @@ exports.descriptorClosingHandler = function(error) {
 };
 
 exports.searchOnDescriptor = function(toMatch, fd, entrySize, comparison,
-    parsing, aproximate, first, last, firstIndex, lastIndex, callback) {
+    parsing, aproximate, first, last, firstIndex, lastIndex, callback,
+    lastSmallest) {
 
   var lineToRead = firstIndex + Math.round((lastIndex - firstIndex) / 2);
 
@@ -306,20 +307,24 @@ exports.searchOnDescriptor = function(toMatch, fd, entrySize, comparison,
 
           var comparisonResult = comparison(toMatch, current);
 
+          if (comparisonResult > 0) {
+            lastSmallest = current;
+          }
+
           if (!comparisonResult) {
             fs.close(fd, exports.descriptorClosingHandler);
             callback(null, current);
           } else if (lastIndex - firstIndex < 3) {
             fs.close(fd, exports.descriptorClosingHandler);
-            callback(null, aproximate ? current : null);
+            callback(null, aproximate ? lastSmallest : null);
           } else if (comparisonResult > 0) {
             exports.searchOnDescriptor(toMatch, fd, entrySize, comparison,
                 parsing, aproximate, current, last, lineToRead, lastIndex,
-                callback);
+                callback, lastSmallest);
           } else if (comparisonResult < 0) {
             exports.searchOnDescriptor(toMatch, fd, entrySize, comparison,
                 parsing, aproximate, first, current, firstIndex, lineToRead,
-                callback);
+                callback, lastSmallest);
           }
 
         }
