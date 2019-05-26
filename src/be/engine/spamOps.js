@@ -1,5 +1,6 @@
 'use strict';
 
+var dns = require('dns');
 var fs = require('fs');
 var exec = require('child_process').exec;
 var logger = require('../logger');
@@ -9,6 +10,7 @@ var ipSource;
 var incrementalIpSource;
 var disabled;
 var locationOps;
+var dnsbl;
 
 exports.loadDependencies = function() {
   locationOps = require('./locationOps');
@@ -17,12 +19,27 @@ exports.loadDependencies = function() {
 exports.loadSettings = function() {
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  dnsbl = settings.dnsbl;
   disabled = settings.disableSpamCheck;
   incrementalIpSource = settings.incSpamIpsSource;
   ipSource = settings.spamIpsSource;
 };
 
 exports.spamDataPath = __dirname + '/../spamData';
+
+exports.parseIpBuffer = function(buffer) {
+
+  var array = Array(4);
+
+  for (var i = 0; i < 4; i++) {
+    array[i] = buffer[i];
+  }
+
+  return {
+    ip : array
+  };
+
+};
 
 // Section 1: Updating spammer list {
 exports.getSortedIps = function(ips) {
@@ -89,20 +106,7 @@ exports.updateSpammers = function(callback) {
 };
 // } Section 1: Updating spammer list
 
-exports.parseIpBuffer = function(buffer) {
-
-  var array = Array(4);
-
-  for (var i = 0; i < 4; i++) {
-    array[i] = buffer[i];
-  }
-
-  return {
-    ip : array
-  };
-
-};
-
+// Section 2: Checking ip {
 exports.checkIp = function(ip, callback, override) {
 
   if (disabled && !override) {
@@ -126,7 +130,46 @@ exports.checkIp = function(ip, callback, override) {
 
 };
 
-// Section 2: Incrementing spammer list {
+exports.checkDnsbl = function(ip, callback) {
+
+  if (!dnsbl) {
+    return exports.checkIp(ip, callback);
+  }
+
+  var address = dnsbl;
+
+  for (var i = 0; i < ip.length; i++) {
+
+    if (ip.length === 4) {
+      address = ip[i] + '.' + address;
+    } else {
+
+      var hex = ip[i].toString(16);
+
+      if (hex.length < 2) {
+        hex = '0' + hex;
+      }
+
+      address = hex[1] + '.' + hex[0] + '.' + address;
+
+    }
+
+  }
+
+  dns.resolve(address, function(error, data) {
+
+    if ((error && error.code !== 'ENOTFOUND') || data) {
+      callback(error, !!data);
+    } else {
+      exports.checkIp(ip, callback);
+    }
+
+  });
+
+};
+// } Section 2: Checking ip
+
+// Section 3: Incrementing spammer list {
 exports.iterateNewIps = function(newIps, currentArray, callback, index,
     inserted) {
 
@@ -214,7 +257,7 @@ exports.incrementSpammers = function(callback) {
   });
 
 };
-// } Section 2: Incrementing spammer list
+// } Section 3: Incrementing spammer list
 
 exports.init = function(callback) {
 

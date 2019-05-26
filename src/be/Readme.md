@@ -115,6 +115,7 @@ Settings files that goes into the settings directory:
 * `defaultAnonymousName`: Default anonymous name if none is set for the board. Defaults to the `miscDefaultAnonymous` entry on the language pack.
 * `topBoardsCount`(Number): amount of boards to be listed in the top boards.
 * `boardsPerPage`(Number): amount of boards to be listed in boards.js. Defaults to 50.
+* `dnsbl`: domain for a dnsbl to be used to check against posts.
 * `torSource`: url to the list of TOR exit nodes ips. Defaults to `https://check.torproject.org/exit-addresses`.
 * `languagePackPath`: absolute path to an optional language pack.
 * `mediaThumb`(Boolean): if true, videos and music will generate thumbs instead of using the generic ones. Requires ffmpeg installed.

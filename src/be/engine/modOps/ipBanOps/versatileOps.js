@@ -209,7 +209,7 @@ exports.receivedFloodCheckResponse = function(req, ip, boardUri, socket, flood,
     callback(lang(req.language).errFlood);
   } else {
 
-    spamOps.checkIp(logger.ip(req), function checked(error, spammer) {
+    spamOps.checkDnsbl(logger.ip(req), function checked(error, spammer) {
 
       if (error) {
         callback(error);

@@ -452,6 +452,7 @@
       "fieldAcceptedMimes": "value",
       "fieldSlaves": "value",
       "fieldAddress": "value",
+      "fieldDnsbl": "value",
       "fieldFePath": "value",
       "fieldMaster": "value",
       "fieldTempDir": "value",
