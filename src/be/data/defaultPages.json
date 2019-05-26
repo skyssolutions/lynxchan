@@ -532,7 +532,7 @@
       "checkboxAllowCustomJs": "checked",
       "checkboxMultipleReports": "checked",
       "checkboxGlobalCaptcha": "checked",
-      "checkboxSpamBypass": "checked",
+      "checkboxVersatileBlockBypass": "checked",
       "checkboxFrontPageStats": "checked",
       "checkboxDisableCatalogPosting": "checked",
       "checkboxAllowTorFiles": "checked",

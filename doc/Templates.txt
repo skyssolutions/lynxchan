@@ -2003,9 +2003,9 @@ checkboxDisableFloodCheck:
     use: might be turned on.
     description: indicates that flood checks are disabled.
 
-checkboxSpamBypass:
+checkboxVersatileBlockBypass:
     use: might be turned on.
-    description: indicates that people caught on the spam list are allowed to use the block bypass.
+    description: indicates that people caught on the spam list or range bans are allowed to use the block bypass to post.
 
 comboBoardCreationRequirement:
     use: have children appended to it.

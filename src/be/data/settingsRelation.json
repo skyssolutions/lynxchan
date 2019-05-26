@@ -466,8 +466,8 @@
   },
   {
     "type": "boolean",
-    "setting": "allowSpamBypass",
-    "element": "checkboxSpamBypass"
+    "setting": "allowVersatileBlockBypass",
+    "element": "checkboxVersatileBlockBypass"
   },
   {
     "type": "boolean",

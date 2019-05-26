@@ -34,7 +34,7 @@ exports.loadSettings = function() {
   torPassAllowed = bypassAllowed && torAllowed;
   bypassMandatory = settings.bypassMode > 1;
   disableFloodCheck = settings.disableFloodCheck;
-  spamBypass = settings.allowSpamBypass;
+  spamBypass = settings.allowVersatileBlockBypass;
   globalBoardModeration = settings.allowGlobalBoardModeration;
 
 };
@@ -195,7 +195,7 @@ exports.getActiveBan = function(ip, boardUri, callback) {
         }
       }
 
-      callback(null, ban, bypassAllowed && ban && ban.range);
+      callback(null, ban, bypassAllowed && spamBypass && ban && ban.range);
     }
 
   });
