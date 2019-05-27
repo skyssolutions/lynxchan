@@ -427,8 +427,10 @@ exports.replaceChunkMarkdown = function(message) {
     finalMessage += exports.getSubChunkMarkdown(message.substring(lastEnding,
         split.start));
 
-    finalMessage += '<span class="aa">';
-    finalMessage += message.substring(split.start + 4, split.end) + '</span>';
+    var aaChunk = message.substring(split.start + 4, split.end).replace(/\n/gm,
+        '<br>');
+
+    finalMessage += '<span class="aa">' + aaChunk + '</span>';
 
     lastEnding = split.end + 5;
 
@@ -497,8 +499,11 @@ exports.replaceStyleMarkdown = function(message, replaceCode) {
 
     finalMessage += exports.replaceChunkMarkdown(message.substring(lastEnding,
         split.start));
-    finalMessage += '<code>' + message.substring(split.start + 6, split.end);
-    finalMessage += '</code>';
+
+    var codeChunk = message.substring(split.start + 6, split.end).replace(
+        /\n/gm, '<br>');
+
+    finalMessage += '<code>' + codeChunk + '</code>';
 
     lastEnding = split.end + 7;
 
