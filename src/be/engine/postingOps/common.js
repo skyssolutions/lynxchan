@@ -386,7 +386,7 @@ exports.checkBoardFileLimits = function(files, boardData, language) {
 // Section 2: Markdown {
 exports.processLine = function(split, replaceCode) {
 
-  split = split.replace(/^>[^\&].*/g, greenTextFunction);
+  split = split.replace(/^&gt;[^\&].*/g, greenTextFunction);
   split = split.replace(/\=\=.+?\=\=/g, redTextFunction);
   split = split.replace(/&apos;&apos;&apos;.+?&apos;&apos;&apos;/g,
       boldFunction);
@@ -395,28 +395,118 @@ exports.processLine = function(split, replaceCode) {
   split = split.replace(/\~\~.+?\~\~/g, strikeFunction);
   split = split.replace(/\[spoiler\].+?\[\/spoiler\]/g, spoilerFunction);
   split = split.replace(/\*\*.+?\*\*/g, altSpoilerFunction);
-  split = split.replace(/\[aa\]/g, '<span class="aa">');
-  split = split.replace(/\[\/aa\]/g, '</span>');
-
-  if (replaceCode) {
-    split = split.replace(/\[code\]/g, '<code>');
-    split = split.replace(/\[\/code\]/g, '</code>');
-  }
 
   return split;
 
 };
 
-exports.replaceStyleMarkdown = function(message, replaceCode) {
+exports.getSubChunkMarkdown = function(message) {
 
   var split = message.split('\n');
 
   for (var i = 0; i < split.length; i++) {
-    split[i] = exports.processLine(split[i], replaceCode);
+    split[i] = exports.processLine(split[i]);
   }
 
-  message = split.join('<br>');
-  return message;
+  return split.join('<br>');
+
+};
+
+exports.replaceChunkMarkdown = function(message) {
+
+  var aaSplits = exports.getTagSplits(message, 'aa');
+
+  var lastEnding = 0;
+
+  var finalMessage = '';
+
+  for (var i = 0; i < aaSplits.length; i++) {
+
+    var split = aaSplits[i];
+
+    finalMessage += exports.getSubChunkMarkdown(message.substring(lastEnding,
+        split.start));
+
+    finalMessage += '<span class="aa">';
+    finalMessage += message.substring(split.start + 4, split.end) + '</span>';
+
+    lastEnding = split.end + 5;
+
+  }
+
+  finalMessage += exports.getSubChunkMarkdown(message.substring(lastEnding));
+  return finalMessage;
+};
+
+exports.processPair = function(currentPair, index, tagSplits) {
+
+  if (currentPair) {
+    currentPair.end = index;
+    tagSplits.push(currentPair);
+    currentPair = null;
+  } else {
+    currentPair = {
+      start : index
+    };
+  }
+
+  return currentPair;
+
+};
+
+exports.getTagSplits = function(message, tag) {
+
+  var tagSplits = [];
+
+  var currentPair;
+  var lastIndex;
+
+  var openingTag = '[' + tag + ']';
+  var closingTag = '[/' + tag + ']';
+
+  while (true) {
+
+    var index = message.indexOf(currentPair ? closingTag : openingTag,
+        lastIndex);
+
+    if (index < 0) {
+      break;
+    }
+
+    lastIndex = index + 1;
+
+    currentPair = exports.processPair(currentPair, index, tagSplits);
+
+  }
+
+  return tagSplits;
+
+};
+
+exports.replaceStyleMarkdown = function(message, replaceCode) {
+
+  var codeSplits = replaceCode ? exports.getTagSplits(message, 'code') : [];
+
+  var lastEnding = 0;
+
+  var finalMessage = '';
+
+  for (var i = 0; i < codeSplits.length; i++) {
+
+    var split = codeSplits[i];
+
+    finalMessage += exports.replaceChunkMarkdown(message.substring(lastEnding,
+        split.start));
+    finalMessage += '<code>' + message.substring(split.start + 6, split.end);
+    finalMessage += '</code>';
+
+    lastEnding = split.end + 7;
+
+  }
+
+  finalMessage += exports.replaceChunkMarkdown(message.substring(lastEnding));
+
+  return finalMessage;
 
 };
 
@@ -448,7 +538,10 @@ exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
     postObject[post.boardUri] = boardPosts;
   }
 
-  message = message.replace(/>>>\/\w+\/\d+/g, function crossQuote(match) {
+  message = message.replace(/&gt;&gt;&gt;\/\w+\/\d+/g, function crossQuote(
+      match) {
+
+    match = match.substring(12);
 
     var quoteParts = match.match(/(\w+|\d+)/g);
 
@@ -464,23 +557,19 @@ exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
     link += quotedThread + '.html#' + quotedPost;
 
     var toReturn = '<a class="quoteLink" href="' + link + '">&gt;&gt;&gt;';
-    toReturn += match.substring(3) + '</a>';
 
-    return toReturn;
-
-  });
-
-  message = message.replace(/>>>\/\w+\//g, function board(match) {
-
-    var quotedBoard = match.substring(3);
-
-    return '<a href="' + quotedBoard + '">&gt;&gt;&gt;' + quotedBoard + '</a>';
+    return toReturn + match + '</a>';
 
   });
 
-  message = message.replace(/>>\d+/g, function quote(match) {
+  message = message.replace(/&gt;&gt;&gt;\/\w+\/(?!\d)/g,
+      function board(match) {
+        return '<a href="' + match.substring(12) + '">' + match + '</a>';
+      });
 
-    var quotedPost = match.substring(2);
+  message = message.replace(/&gt;&gt;\d+/g, function quote(match) {
+
+    var quotedPost = match.substring(8);
 
     var boardPosts = postObject[board] || {};
 
@@ -498,19 +587,17 @@ exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
 
   });
 
-  message = exports.replaceStyleMarkdown(message, replaceCode);
-
-  cb(null, message);
+  cb(null, exports.replaceStyleMarkdown(message, replaceCode));
 
 };
 
 exports.getCrossQuotes = function(message, postsToFindObject) {
 
-  var crossQuotes = message.match(/>>>\/\w+\/\d+/g) || [];
+  var crossQuotes = message.match(/&gt;&gt;&gt;\/\w+\/\d+/g) || [];
 
   for (var i = 0; i < crossQuotes.length; i++) {
 
-    var crossQuote = crossQuotes[i];
+    var crossQuote = crossQuotes[i].substring(12);
 
     var quoteParts = crossQuote.match(/(\w+|\d+)/g);
 
@@ -531,13 +618,13 @@ exports.getCrossQuotes = function(message, postsToFindObject) {
 
 exports.getQuotes = function(message, board, postsToFindObject) {
 
-  var quotes = message.match(/>>\d+/g) || [];
+  var quotes = message.match(/&gt;&gt;\d+/g) || [];
 
   for (var i = 0; i < quotes.length; i++) {
 
     var quote = quotes[i];
 
-    var quotedPost = +quote.substring(2);
+    var quotedPost = +quote.substring(8);
 
     var boardPosts = postsToFindObject[board] || [];
 
@@ -553,11 +640,7 @@ exports.getQuotes = function(message, board, postsToFindObject) {
 
 exports.markdownText = function(message, board, replaceCode, callback) {
 
-  message = message.replace(/&/g, '&amp;');
-
-  message = message.replace(/</g, '&lt;');
-  message = message.replace(/\"/g, '&quot;');
-  message = message.replace(/\'/g, '&apos;');
+  message = miscOps.cleanHTML(message.replace(/&/g, '&amp;'));
 
   var postsToFindObject = {};
 
