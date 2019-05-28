@@ -303,7 +303,7 @@ exports.getBoardPageLinkBoilerPlate = function(parameters) {
     href += '&sorting=' + parameters.sorting;
   }
 
-  return common.clean(href);
+  return common.clean(miscOps.cleanHTML(href));
 
 };
 

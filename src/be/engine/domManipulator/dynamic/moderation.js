@@ -274,6 +274,20 @@ exports.getPosts = function(postings, language) {
 exports.setIpSearchFeatures = function(document, removable, parameters,
     userData) {
 
+  for ( var key in parameters) {
+
+    if (typeof (parameters[key]) !== 'string') {
+      continue;
+    }
+
+    parameters[key] = common.clean(miscOps
+        .cleanHTML(parameters[key].toString()));
+  }
+
+  parameters.boards = parameters.boards.map(function(item) {
+    return common.clean(miscOps.cleanHTML(item));
+  });
+
   if (userData.globalRole <= clearIpMinRole) {
     document = document.replace('__panelIp_location__', removable.panelIp)
         .replace('__fieldIp_value__', parameters.ip || '');
@@ -295,11 +309,31 @@ exports.setIpSearchFeatures = function(document, removable, parameters,
     document = document.replace('__inputBoardUri_location__',
         removable.inputBoardUri).replace('__input' + toRemove + '_location__',
         '').replace('__input' + toShow + '_location__',
-        removable['input' + toShow]);
+        removable['input' + toShow]).replace('__inputBoardUri_value__',
+        parameters.boardUri).replace('__input' + toShow + '_value__',
+        parameters.threadId || parameters.postId);
 
   }
 
   return document;
+};
+
+exports.getBoilerLink = function(parameters) {
+
+  var boiler = '/latestPostings.js?boards=' + parameters.boards;
+
+  if (parameters.ip) {
+    boiler += '&ip=' + parameters.ip;
+  }
+
+  if (parameters.boardUri && (parameters.threadId || parameters.postId)) {
+    boiler += '&boardUri=' + parameters.boardUri + '&';
+    boiler += (parameters.threadId ? 'threadId' : 'postId') + '=';
+    boiler += parameters.threadId || parameters.postId;
+  }
+
+  return boiler + '&date=';
+
 };
 
 exports.latestPostings = function(postings, parameters, userData, language) {
@@ -320,7 +354,7 @@ exports.latestPostings = function(postings, parameters, userData, language) {
   nextDay.setUTCDate(nextDay.getUTCDate() + 1);
   nextDay = encodeURIComponent(nextDay.toUTCString());
 
-  var boiler = '/latestPostings.js?boards=' + parameters.boards + '&date=';
+  var boiler = exports.getBoilerLink(parameters);
 
   document = document.replace('__linkPrevious_href__', boiler + previousDay);
   document = document.replace('__linkNext_href__', boiler + nextDay);

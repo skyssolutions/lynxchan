@@ -3,8 +3,7 @@
 // handles board operations on the board themselves
 
 var crypto = require('crypto');
-var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
-var forcedCaptcha;
+var logger = require('../../logger');
 var db = require('../../db');
 var reports = db.reports();
 var bans = db.bans();
@@ -14,6 +13,7 @@ var threads = db.threads();
 var posts = db.posts();
 var captchaOps;
 var logOps;
+var forcedCaptcha;
 var postingOps;
 var reportOps;
 var miscOps;
@@ -26,8 +26,12 @@ var globalBoardModeration;
 var boardCreationRequirement;
 var maxVolunteers;
 var allowedMimes;
+var clearIpMinRole;
+var generator;
 var rangeSettings;
 var disableLatestPostings;
+
+var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
 
 exports.defaultSettings = [ 'disableIds' ];
 
@@ -65,6 +69,7 @@ exports.loadSettings = function() {
   boardCreationRequirement = settings.boardCreationRequirement;
   maxVolunteers = settings.maxBoardVolunteers;
   maxBoardTags = settings.maxBoardTags;
+  clearIpMinRole = settings.clearIpMinRole;
   overboard = settings.overboard;
   sfwOverboard = settings.sfwOverboard;
   allowedMimes = settings.acceptedMimes;
@@ -77,6 +82,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  generator = require('../generator');
   logOps = require('../logOps');
   reportOps = require('../modOps').report;
   captchaOps = require('../captchaOps');
@@ -752,22 +758,97 @@ exports.getBoardManagementData = function(userData, board,
 // } Section 5: Board management
 
 // Section 6: Latest postings {
-exports.setDates = function(parameters) {
+exports.getPosts = function(matchBlock, callback) {
 
-  var startDate = parameters.date;
+  posts.find(matchBlock, {
+    projection : generator.postProjection
+  }).sort({
+    creation : -1
+  }).toArray(function gotPosts(error, foundPosts) {
 
-  if (!startDate) {
-    startDate = new Date();
+    if (error) {
+      callback(error);
+    } else {
 
-    startDate.setUTCHours(0);
-    startDate.setUTCMinutes(0);
-    startDate.setUTCSeconds(0);
-    startDate.setUTCMilliseconds(0);
+      // style exception, too simple
+      threads.find(matchBlock, {
+        projection : generator.postProjection
+      }).sort({
+        creation : -1
+      }).toArray(function(error, foundThreads) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          callback(null, foundPosts.concat(foundThreads).sort(function(a, b) {
+            return b.creation - a.creation;
+          }));
+
+        }
+
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.fetchPostIp = function(matchBlock, parameters, callback) {
+
+  var query = {
+    boardUri : parameters.boardUri
+  };
+
+  var collectionToUse;
+
+  if (parameters.threadId) {
+    collectionToUse = threads;
+    query.threadId = +parameters.threadId;
   } else {
-    startDate = new Date(startDate);
+    collectionToUse = posts;
+    query.postId = +parameters.postId;
   }
 
-  parameters.date = startDate;
+  collectionToUse.findOne(query, {
+    projection : {
+      ip : 1
+    }
+  }, function gotPosting(error, posting) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      if (posting && posting.ip) {
+        matchBlock.ip = posting.ip;
+      }
+
+      callback(null, matchBlock);
+
+    }
+
+  });
+
+};
+
+exports.canSearchPerPost = function(parameters, userData) {
+
+  if (!parameters.boardUri || (!parameters.threadId && !parameters.postId)) {
+    return false;
+  }
+
+  if (userData.globalRole <= miscOps.getMaxStaffRole()) {
+    return true;
+  }
+
+  var allowedBoards = userData.ownedBoards || [];
+
+  allowedBoards = allowedBoards.concat(userData.volunteeredBoards || []);
+
+  return allowedBoards.indexOf(parameters.boardUri) >= 0;
 
 };
 
@@ -807,7 +888,26 @@ exports.getBoardsToShow = function(parameters, userData) {
 
 };
 
-exports.getMatchBlock = function(parameters, userData) {
+exports.setDates = function(parameters) {
+
+  var startDate = parameters.date;
+
+  if (!startDate) {
+    startDate = new Date();
+
+    startDate.setUTCHours(0);
+    startDate.setUTCMinutes(0);
+    startDate.setUTCSeconds(0);
+    startDate.setUTCMilliseconds(0);
+  } else {
+    startDate = new Date(startDate);
+  }
+
+  parameters.date = startDate;
+
+};
+
+exports.getMatchBlock = function(parameters, userData, callback) {
 
   exports.setDates(parameters);
 
@@ -829,7 +929,14 @@ exports.getMatchBlock = function(parameters, userData) {
     };
   }
 
-  return matchBlock;
+  if (parameters.ip && userData.globalRole <= clearIpMinRole) {
+    matchBlock.ip = logger.convertIpToArray(parameters.ip);
+    delete parameters.boardUri;
+  } else if (exports.canSearchPerPost(parameters, userData)) {
+    return exports.fetchPostIp(matchBlock, parameters, callback);
+  }
+
+  callback(null, matchBlock);
 
 };
 
@@ -840,62 +947,9 @@ exports.getLatestPostings = function(userData, parameters, language, callback) {
     return;
   }
 
-  var matchBlock = exports.getMatchBlock(parameters, userData);
-
-  var projectionBlock = {
-    projection : {
-      _id : 0,
-      id : 1,
-      name : 1,
-      flag : 1,
-      files : 1,
-      email : 1,
-      postId : 1,
-      message : 1,
-      subject : 1,
-      boardUri : 1,
-      markdown : 1,
-      creation : 1,
-      threadId : 1,
-      flagName : 1,
-      flagCode : 1,
-      signedRole : 1,
-      innerCache : 1,
-      banMessage : 1,
-      lastEditTime : 1,
-      lastEditLogin : 1,
-      alternativeCaches : 1
-    }
-  };
-
-  posts.find(matchBlock, projectionBlock).sort({
-    creation : -1
-  }).toArray(function gotPosts(error, foundPosts) {
-
-    if (error) {
-      callback(error);
-    } else {
-
-      // style exception, too simple
-      threads.find(matchBlock, projectionBlock).sort({
-        creation : -1
-      }).toArray(function(error, foundThreads) {
-
-        if (error) {
-          callback(error);
-        } else {
-
-          callback(null, foundPosts.concat(foundThreads).sort(function(a, b) {
-            return b.creation - a.creation;
-          }));
-
-        }
-
-      });
-      // style exception, too simple
-
-    }
-
+  exports.getMatchBlock(parameters, userData, function gotMatchBlock(error,
+      matchBlock) {
+    exports.getPosts(matchBlock, callback);
   });
 
 };
