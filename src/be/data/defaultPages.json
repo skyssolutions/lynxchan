@@ -629,6 +629,20 @@
       "divPostings": "children",
       "fieldDate": "value",
       "fieldBoards": "value",
+      "fieldIp": "value",
+      "panelIp": "removal",
+      "inputBoardUri": [
+        "value",
+        "removal"
+      ],
+      "inputThreadId": [
+        "value",
+        "removal"
+      ],
+      "inputPostId": [
+        "value",
+        "removal"
+      ],
       "linkPrevious": "href",
       "linkNext": "href"
     }

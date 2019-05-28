@@ -3,10 +3,12 @@
 // handles moderation pages. The difference between moderation and management is
 // that moderation is focused on restricting users
 
+var settingsHandler = require('../../../settingsHandler');
 var templateHandler;
 var lang;
 var miscOps;
 var common;
+var clearIpMinRole;
 
 exports.boardModerationIdentifiers = [ 'boardTransferIdentifier',
     'boardDeletionIdentifier', 'specialSettingsIdentifier' ];
@@ -14,6 +16,12 @@ exports.boardModerationIdentifiers = [ 'boardTransferIdentifier',
 exports.specialSettingsRelation = {
   sfw : 'checkboxSfw',
   locked : 'checkboxLocked'
+};
+
+exports.loadSettings = function() {
+
+  var settings = settingsHandler.getGeneralSettings();
+  clearIpMinRole = settings.clearIpMinRole;
 };
 
 exports.loadDependencies = function() {
@@ -263,10 +271,46 @@ exports.getPosts = function(postings, language) {
 
 };
 
-exports.latestPostings = function(postings, parameters, language) {
+exports.setIpSearchFeatures = function(document, removable, parameters,
+    userData) {
 
-  var document = templateHandler(language).latestPostingsPage.template.replace(
-      '__title__', lang(language).titLatestPostings);
+  if (userData.globalRole <= clearIpMinRole) {
+    document = document.replace('__panelIp_location__', removable.panelIp)
+        .replace('__fieldIp_value__', parameters.ip || '');
+  } else {
+    document = document.replace('__panelIp_location__', '');
+  }
+
+  if (!parameters.boardUri || (!parameters.threadId && !parameters.postId)) {
+
+    document = document.replace('__inputBoardUri_location__', '').replace(
+        '__inputThreadId_location__', '').replace('__inputPostId_location__',
+        '');
+
+  } else {
+
+    var toRemove = parameters.threadId ? 'PostId' : 'ThreadId';
+    var toShow = parameters.threadId ? 'ThreadId' : 'PostId';
+
+    document = document.replace('__inputBoardUri_location__',
+        removable.inputBoardUri).replace('__input' + toRemove + '_location__',
+        '').replace('__input' + toShow + '_location__',
+        removable['input' + toShow]);
+
+  }
+
+  return document;
+};
+
+exports.latestPostings = function(postings, parameters, userData, language) {
+
+  var dom = templateHandler(language).latestPostingsPage;
+
+  var document = dom.template.replace('__title__',
+      lang(language).titLatestPostings);
+
+  document = exports.setIpSearchFeatures(document, dom.removable, parameters,
+      userData);
 
   var previousDay = new Date(parameters.date);
   previousDay.setUTCDate(previousDay.getUTCDate() - 1);

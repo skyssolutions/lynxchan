@@ -20,7 +20,7 @@ exports.latestPostings = function(auth, parameters, user, res, language) {
         formOps.outputResponse('ok', postings, res, null, auth, null, true);
       } else {
         res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(dom.latestPostings(postings, parameters, language));
+        res.end(dom.latestPostings(postings, parameters, user, language));
       }
 
     }

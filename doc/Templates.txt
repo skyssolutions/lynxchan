@@ -325,6 +325,10 @@ opCell*: cell used for the thread's OP.
 Root element: form
 
 Elements:
+linkHistory:
+    use: have its href manipulated or might be removed.
+    description: link to the post history of the poster's ip.
+
 contentOmissionIndicator:
     use: might be removed.
     description: element indicating the original text was too long to be displayed.
@@ -454,6 +458,10 @@ postCell*: cell used for thread replies.
 Root element: form
 
 Elements:
+linkHistory:
+    use: have its href manipulated or might be removed.
+    description: link to the post history of the poster's ip.
+
 contentOmissionIndicator:
     use: might be removed.
     description: element indicating the original text was too long to be displayed.
@@ -2456,6 +2464,26 @@ linkPrevious:
 linkNext:
     use: have it's href manipulated.
     description: link to the previous day.
+
+fieldIp:
+    use: have it's value manipulated.
+    description: field with the ip to search posts from.
+
+inputBoardUri:
+    use: have it's value manipulated or might be removed.
+    description: hidden input with the board that contains the post to search other posts from the same ip.
+
+inputPostId:
+    use: have it's value manipulated or might be removed.
+    description: hidden input with the postId of the post to search other posts from the same ip.
+
+inputThreadId:
+    use: have it's value manipulated or might be removed.
+    description: hidden input with the threadId of the OP to search other posts from the same ip.
+
+panelIp:
+    use: might be removed.
+    description: panel that contains the fieldIp.
 
 ------------------------------------------------------------------------------------------
 

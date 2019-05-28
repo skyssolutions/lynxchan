@@ -8,6 +8,7 @@ exports.loadSettings = function() {
 
   exports.miscPages.loadSettings();
   exports.managementPages.loadSettings();
+  exports.moderationPages.loadSettings();
 
 };
 

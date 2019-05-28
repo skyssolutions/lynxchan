@@ -107,10 +107,17 @@ exports.setPostingIp = function(cell, postingData, boardData, userRole,
         miscOps.getRange(postingData.ip, true), boardData.ipSalt));
   }
 
-  cell = cell.replace('__labelIp_inner__', miscOps.hashIpForDisplay(
-      postingData.ip, boardData.ipSalt, userRole));
+  var url = '/latestPostings.js?boardUri=' + postingData.boardUri + '&';
 
-  return cell;
+  if (postingData.postId) {
+    url += 'postId=' + postingData.postId;
+  } else {
+    url += 'threadId=' + postingData.threadId;
+  }
+
+  return cell.replace('__labelIp_inner__',
+      miscOps.hashIpForDisplay(postingData.ip, boardData.ipSalt, userRole))
+      .replace('__linkHistory_href__', url);
 
 };
 
@@ -424,10 +431,12 @@ exports.setPostingModdingElements = function(modding, posting, cell, bData,
   }
 
   if (modding && posting.ip) {
-    cell = cell.replace('__panelIp_location__', removable.panelIp);
+    cell = cell.replace('__panelIp_location__', removable.panelIp).replace(
+        '__linkHistory_location__', removable.linkHistory);
     cell = exports.setPostingIp(cell, posting, bData, userRole, removable);
   } else {
-    cell = cell.replace('__panelIp_location__', '');
+    cell = cell.replace('__panelIp_location__', '').replace(
+        '__linkHistory_location__', '');
   }
 
   return cell;

@@ -31,6 +31,10 @@
     "template": "opCell",
     "prebuiltFields": {
       "contentOmissionIndicator": "removal",
+      "linkHistory": [
+        "href",
+        "removal"
+      ],
       "linkName": [
         "inner",
         "href",
@@ -111,6 +115,10 @@
       "contentOmissionIndicator": "removal",
       "linkFullText": "href",
       "labelIp": "inner",
+      "linkHistory": [
+        "href",
+        "removal"
+      ],
       "divBanMessage": [
         "removal",
         "inner"
