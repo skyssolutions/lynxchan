@@ -95,7 +95,7 @@ flagCombobox:
     description: combobox used to select a flag.
 
 labelDescription:
-    use: have its innerHTML manipulated.
+    use: have its innerHTML manipulated or might be removed.
     description: contains the description of the board.
 
 divThreads:
@@ -198,7 +198,7 @@ flagCombobox:
     description: combobox used to select a flag.
 
 labelDescription:
-    use: have its innerHTML manipulated.
+    use: have its innerHTML manipulated or might be removed.
     description: contains the description of the board.
 
 divThreads:
@@ -1499,7 +1499,7 @@ labelTags:
     description: label that holds the tags for this board.
 
 divDescription:
-    use: have its innerHTML manipulated.
+    use: have its innerHTML manipulated or might be removed.
     description: div that holds the board description.
 
 ------------------------------------------------------------------------------------------

@@ -289,8 +289,15 @@ exports.setFileLimits = function(document, bData, language) {
 
 exports.setBoardCustomization = function(document, boardData, removable) {
 
-  document = document.replace('__labelDescription_inner__', exports
-      .clean(boardData.boardDescription));
+  if (boardData.boardDescription) {
+
+    document = document.replace('__labelDescription_location__',
+        removable.labelDescription).replace('__labelDescription_inner__',
+        exports.clean(boardData.boardDescription));
+
+  } else {
+    document = document.replace('__labelDescription_location__', '');
+  }
 
   var boardUri = exports.clean(boardData.boardUri);
 

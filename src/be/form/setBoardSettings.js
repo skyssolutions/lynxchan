@@ -3,7 +3,7 @@
 var formOps = require('../engine/formOps');
 var boardOps = require('../engine/boardOps').meta;
 var lang = require('../engine/langOps').languagePack;
-var mandatoryParameters = [ 'boardUri', 'boardName', 'boardDescription' ];
+var mandatoryParameters = [ 'boardUri', 'boardName' ];
 var possibleSettings = boardOps.getValidSettings();
 
 exports.setBoardSettings = function(userData, parameters, res, auth, language,

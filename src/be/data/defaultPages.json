@@ -108,7 +108,10 @@
     "bodyChildren": true,
     "prebuiltFields": {
       "labelName": "inner",
-      "labelDescription": "inner",
+      "labelDescription": [
+        "inner",
+        "removal"
+      ],
       "noFlagDiv": "removal",
       "panelMessage": "removal",
       "divMessage": "inner",
@@ -150,7 +153,10 @@
       "labelName": "inner",
       "flagsDiv": "removal",
       "flagCombobox": "children",
-      "labelDescription": "inner",
+      "labelDescription": [
+        "inner",
+        "removal"
+      ],
       "divThreads": "children",
       "boardIdentifier": "value",
       "threadIdentifier": "value",

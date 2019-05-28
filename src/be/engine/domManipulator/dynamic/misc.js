@@ -211,7 +211,7 @@ exports.logs = function(dates, language) {
 };
 
 // Section 2: Board listing {
-exports.setSimpleBoardCellLabels = function(board, cell) {
+exports.setSimpleBoardCellLabels = function(board, cell, removable) {
 
   cell = cell.replace('__labelPostsPerHour_inner__', board.postsPerHour || 0);
 
@@ -219,8 +219,16 @@ exports.setSimpleBoardCellLabels = function(board, cell) {
 
   cell = cell.replace('__labelPostCount_inner__', board.lastPostId || 0);
 
-  cell = cell.replace('__divDescription_inner__', common
-      .clean(board.boardDescription));
+  if (board.boardDescription) {
+
+    cell = cell
+        .replace('__divDescription_location__', removable.divDescription)
+        .replace('__divDescription_inner__',
+            common.clean(board.boardDescription));
+
+  } else {
+    cell = cell.replace('__divDescription_location__', '');
+  }
 
   return cell;
 
@@ -261,7 +269,7 @@ exports.getBoardCell = function(board, language) {
   cell = cell.replace('__linkBoard_href__', '/' + boardUri + '/');
   cell = cell.replace('__linkBoard_inner__', linkContent);
 
-  cell = exports.setSimpleBoardCellLabels(board, cell);
+  cell = exports.setSimpleBoardCellLabels(board, cell, cellTemplate.removable);
 
   if (board.tags) {
 

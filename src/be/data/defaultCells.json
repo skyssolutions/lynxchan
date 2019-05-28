@@ -259,7 +259,10 @@
       ],
       "labelPostsPerHour": "inner",
       "labelPostCount": "inner",
-      "divDescription": "inner",
+      "divDescription": [
+        "inner",
+        "removal"
+      ],
       "labelTags": [
         "inner",
         "removal"
