@@ -583,7 +583,7 @@ exports.getThread = function(req, parameters, userData, board, callback) {
       callback(lang(req.language).errThreadNotFound);
     } else if (thread.locked || thread.archived) {
       callback(lang(req.language).errThreadLocked);
-    } else if (thread.postCount >= autoLockLimit) {
+    } else if (thread.postCount >= autoLockLimit && !thread.cyclic) {
       callback(lang(req.language).errThreadAutoLocked);
     } else {
 
