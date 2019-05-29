@@ -14,6 +14,7 @@ var bypassMandatory;
 var disableFloodCheck;
 var logOps;
 var lang;
+var floodTimer;
 var logger;
 var minClearIpRole;
 var miscOps;
@@ -27,6 +28,7 @@ var floodTracking = {};
 exports.loadSettings = function() {
   var settings = require('../../../settingsHandler').getGeneralSettings();
 
+  floodTimer = settings.floodTimerSec * 1000;
   minClearIpRole = settings.clearIpMinRole;
   torLevel = settings.torPostingLevel;
   torAllowed = torLevel > 0;
@@ -73,13 +75,19 @@ exports.cleanFloodRecords = function() {
 
 };
 
-exports.masterFloodCheck = function(ip, socket) {
+exports.masterFloodCheck = function(task, socket) {
 
-  var lastEntry = floodTracking[ip];
+  var lastEntry = floodTracking[task.ip];
+
+  var flood = !!(lastEntry && new Date() < lastEntry);
 
   taskListener.sendToSocket(socket, {
-    flood : !!(lastEntry && new Date() < lastEntry)
+    flood : flood
   });
+
+  if (!flood && task.record) {
+    floodTracking[task.ip] = new Date(new Date().getTime() + floodTimer);
+  }
 
 };
 

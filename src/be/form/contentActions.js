@@ -1,5 +1,9 @@
 'use strict';
 
+var settingHandler = require('../settingsHandler');
+var logger = require('../logger');
+var taskListener = require('../taskListener');
+var lang = require('../engine/langOps').languagePack;
 var formOps = require('../engine/formOps');
 var accountOps = require('../engine/accountOps');
 var modOps = require('../engine/modOps');
@@ -198,28 +202,78 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
   }
 
   default: {
-
-    deleteOps.postingDeletions.posting(userData, parameters, threads, posts,
-        req.language, function deletedPostings(error, removedThreads,
-            removedPosts) {
-
-          if (error) {
-            formOps.outputError(error, 500, res, req.language, json, auth);
-          } else {
-
-            formOps.outputResponse(json ? 'ok'
-                : lang(req.language).msgContentDeleted.replace('{$threads}',
-                    removedThreads).replace('{$posts}', removedPosts), json ? {
-              removedThreads : removedThreads,
-              removedPosts : removedPosts
-            } : redirectBoard, res, null, auth, req.language, json);
-          }
-
-        });
-
+    exports.testDeletionFlood(userData, parameters, threads, posts, req, res,
+        json, auth, redirectBoard);
   }
 
   }
+
+};
+
+exports.testDeletionFlood = function(userData, parameters, threads, posts, req,
+    res, json, auth, redirectBoard) {
+
+  if (userData || settingHandler.getGeneralSettings().disableFloodCheck) {
+    exports.runDeletion(userData, parameters, threads, posts, req.language,
+        res, json, auth, redirectBoard);
+  } else {
+
+    var ip = logger.convertIpToArray(logger.getRawIp(req));
+
+    taskListener.openSocket(function opened(error, socket) {
+
+      if (error) {
+        formOps.outputError(error, 500, res, req.language, json, auth);
+        return;
+      }
+
+      socket.onData = function receivedData(data) {
+
+        if (data.flood) {
+
+          formOps.outputError(lang(req.language).errFlood, 500, res,
+              req.language, json);
+
+        } else {
+          exports.runDeletion(userData, parameters, threads, posts,
+              req.language, res, json, auth, redirectBoard);
+        }
+
+        taskListener.freeSocket(socket);
+
+      };
+
+      taskListener.sendToSocket(socket, {
+        type : 'floodCheck',
+        ip : ip,
+        record : true
+      });
+
+    });
+
+  }
+
+};
+
+exports.runDeletion = function(userData, parameters, threads, posts, language,
+    res, json, auth, redirectBoard) {
+
+  deleteOps.postingDeletions.posting(userData, parameters, threads, posts,
+      language, function deletedPostings(error, removedThreads, removedPosts) {
+
+        if (error) {
+          formOps.outputError(error, 500, res, language, json, auth);
+        } else {
+
+          formOps.outputResponse(json ? 'ok' : lang(language).msgContentDeleted
+              .replace('{$threads}', removedThreads).replace('{$posts}',
+                  removedPosts), json ? {
+            removedThreads : removedThreads,
+            removedPosts : removedPosts
+          } : redirectBoard, res, null, auth, language, json);
+        }
+
+      });
 
 };
 

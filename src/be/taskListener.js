@@ -126,7 +126,7 @@ exports.processFloodTask = function(task, socket) {
   switch (task.type) {
 
   case 'floodCheck': {
-    versatileOps.masterFloodCheck(task.ip, socket);
+    versatileOps.masterFloodCheck(task, socket);
     break;
   }
 
