@@ -17,6 +17,7 @@ var clearIpRole;
 var minClearIpRole;
 var maxFileSizeMB;
 var messageLength;
+var verbose;
 var validMimes;
 
 exports.indicatorsRelation = {
@@ -35,6 +36,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  verbose = settings.verboseMisc || settings.verbose;
   globalBoardModeration = settings.allowGlobalBoardModeration;
   clearIpRole = settings.clearIpMinRole;
   messageLength = settings.messageLength;
@@ -750,8 +752,12 @@ exports.getThread = function(thread, posts, innerPage, modding, boardData,
     threadCell += threadContent;
 
     if (individualCaches) {
-      exports.saveCache(cacheField, language, threadContent, threadsCollection,
-          thread.boardUri, 'threadId', thread.threadId);
+      var operations = [];
+
+      exports.saveCache(cacheField, language, threadContent, thread.boardUri,
+          'threadId', thread.threadId, operations);
+
+      exports.handleOps(operations);
     }
 
   } else {
@@ -767,7 +773,7 @@ exports.getThread = function(thread, posts, innerPage, modding, boardData,
 
 // Section 3.1: Post content {
 exports.generatePostHTML = function(post, language, innerPage, modding,
-    preview, boardData, userRole, cacheField) {
+    preview, boardData, userRole, cacheField, operations) {
 
   var template = templateHandler(language).postCell;
 
@@ -779,9 +785,8 @@ exports.generatePostHTML = function(post, language, innerPage, modding,
 
     var isAThread = post.threadId === post.postId;
 
-    exports.saveCache(cacheField, language, postCell,
-        isAThread ? threadsCollection : postsCollection, post.boardUri,
-        isAThread ? 'threadId' : 'postId', post.postId);
+    exports.saveCache(cacheField, language, postCell, post.boardUri,
+        isAThread ? 'threadId' : 'postId', post.postId, operations);
 
   }
 
@@ -789,8 +794,8 @@ exports.generatePostHTML = function(post, language, innerPage, modding,
 
 };
 
-exports.getPostInnerElements = function(post, preview, language, modding,
-    boardData, userRole, innerPage) {
+exports.getPostInnerElements = function(post, preview, language, operations,
+    modding, boardData, userRole, innerPage) {
 
   var cacheField = exports.getCacheField(preview, innerPage, modding, userRole,
       language);
@@ -802,7 +807,7 @@ exports.getPostInnerElements = function(post, preview, language, modding,
   }
 
   return exports.generatePostHTML(post, language, innerPage, modding, preview,
-      boardData, userRole, cacheField);
+      boardData, userRole, cacheField, operations);
 };
 
 exports.getCacheField = function(preview, innerPage, modding, userRole,
@@ -840,8 +845,8 @@ exports.getPostingCache = function(field, posting, language) {
 
 };
 
-exports.saveCache = function(cacheField, language, innerHTML, collection,
-    boardUri, postingIdField, postingId) {
+exports.saveCache = function(cacheField, language, innerHTML, boardUri,
+    postingIdField, postingId, operations) {
 
   var updateBlock = {
     $set : {}
@@ -861,7 +866,15 @@ exports.saveCache = function(cacheField, language, innerHTML, collection,
 
   queryBlock[postingIdField] = postingId;
 
-  collection.updateOne(queryBlock, updateBlock);
+  operations.push({
+    idField : postingIdField,
+    op : {
+      updateOne : {
+        filter : queryBlock,
+        update : updateBlock
+      }
+    }
+  });
 
 };
 
@@ -877,22 +890,59 @@ exports.getPostCellBase = function(post) {
 
 };
 
+exports.handleOps = function(operations) {
+
+  if (!operations.length) {
+    return;
+  }
+
+  var postsOps = [];
+  var threadOps = [];
+
+  for (var i = 0; i < operations.length; i++) {
+
+    var op = operations[i];
+
+    (op.idField === 'threadId' ? threadOps : postsOps).push(op.op);
+
+  }
+
+  var saveCallback = function(error) {
+    if (error && verbose) {
+      console.log(error);
+    }
+  };
+
+  if (postsOps.length) {
+    postsCollection.bulkWrite(postsOps, saveCallback);
+  }
+
+  if (threadOps.length) {
+    threadsCollection.bulkWrite(threadOps, saveCallback);
+  }
+
+};
+
 exports.getPosts = function(posts, modding, boardData, userRole, innerPage,
     language) {
 
   var children = '';
+
+  var operations = [];
 
   for (var i = 0; posts && i < posts.length; i++) {
     var post = posts[i];
 
     var postCell = exports.getPostCellBase(post);
 
-    postCell += exports.getPostInnerElements(post, false, language, modding,
-        boardData, userRole, innerPage);
+    postCell += exports.getPostInnerElements(post, false, language, operations,
+        modding, boardData, userRole, innerPage);
 
     children += postCell + '</div>';
 
   }
+
+  exports.handleOps(operations);
 
   return children;
 
@@ -1059,7 +1109,7 @@ exports.getBanList = function(bans, globalPage, language) {
 // } Section 4: Ban div
 
 // Setion 5: Open reports {
-exports.getReportCell = function(report, language, globalManagement) {
+exports.getReportCell = function(report, language, globalManagement, ops) {
 
   var template = templateHandler(language).reportCell;
 
@@ -1082,7 +1132,7 @@ exports.getReportCell = function(report, language, globalManagement) {
 
   if (report.associatedPost) {
     return cell.replace('__postingDiv_inner__', exports.getPostInnerElements(
-        report.associatedPost, true, language));
+        report.associatedPost, true, language, ops));
 
   } else {
     return cell.replace('__postingDiv_inner__', '');
@@ -1094,9 +1144,14 @@ exports.getReportList = function(reports, language, globalManagement) {
 
   var children = '';
 
+  var operations = [];
+
   for (var i = 0; i < reports.length; i++) {
-    children += exports.getReportCell(reports[i], language, globalManagement);
+    children += exports.getReportCell(reports[i], language, globalManagement,
+        operations);
   }
+
+  exports.handleOps(operations);
 
   return children;
 

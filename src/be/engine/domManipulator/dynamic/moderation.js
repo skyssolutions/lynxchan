@@ -258,14 +258,23 @@ exports.getPosts = function(postings, language) {
 
   var postsContent = '';
 
+  var operations = [];
+
   for (var i = 0; i < postings.length; i++) {
 
     var postContent = common.getPostCellBase(postings[i]);
 
-    postContent += common.getPostInnerElements(postings[i], true, language);
+    var posting = postings[i];
+
+    posting.postId = posting.postId || posting.threadId;
+
+    postContent += common.getPostInnerElements(posting, true, language,
+        operations);
 
     postsContent += postContent + '</div>';
   }
+
+  common.handleOps(operations);
 
   return postsContent;
 
