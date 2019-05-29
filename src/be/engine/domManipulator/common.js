@@ -439,6 +439,13 @@ exports.setPostingModdingElements = function(modding, posting, cell, bData,
     cell = cell.replace('__linkEdit_location__', '');
   }
 
+  if (modding && posting.asn) {
+    cell = cell.replace('__panelASN_location__', removable.panelASN).replace(
+        '__labelASN_inner__', posting.asn);
+  } else {
+    cell = cell.replace('__panelASN_location__', '');
+  }
+
   if (modding && posting.ip) {
     cell = cell.replace('__panelIp_location__', removable.panelIp).replace(
         '__linkHistory_location__', removable.linkHistory);

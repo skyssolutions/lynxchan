@@ -4,10 +4,14 @@ var logger = require('../logger');
 var compiledLocations = __dirname + '/../locationData/compiledLocations';
 var compiledIps = __dirname + '/../locationData/compiledIps';
 var compiledIpsV6 = __dirname + '/../locationData/compiledIpsV6';
+var compiledASN = __dirname + '/../locationData/compiledASNs';
+var compiledASNV6 = __dirname + '/../locationData/compiledASNsV6';
 
 var locationLineSize = 60;
 var ipLineSize = 10;
 var ipLineSizeV6 = 22;
+var ASNLineSize = 8;
+var ASNLineSizeV6 = 20;
 
 var ipv6Localhost = logger.convertIpToArray('::1');
 
@@ -105,6 +109,48 @@ exports.getLocationInfo = function(ip, callback) {
 
           }, callback);
 
+    }
+
+  }, true);
+
+};
+
+exports.getASN = function(ip, callback) {
+
+  if (exports.isLocal(ip)) {
+    return callback();
+  }
+
+  var v6 = ip.length > 4;
+
+  var length = v6 ? ASNLineSizeV6 : ASNLineSize;
+  var location = v6 ? compiledASNV6 : compiledASN;
+
+  logger.binarySearch({
+    ip : ip
+  }, location, length, function compare(a, b) {
+    return logger.compareArrays(a.ip, b.ip);
+  }, function parse(buffer) {
+
+    var tempArray = Array(ip.length);
+
+    for (var i = 0; i < tempArray.length; i++) {
+      tempArray[i] = buffer[i];
+    }
+
+    var newASN = buffer.readUInt32BE(tempArray.length);
+
+    return {
+      ip : tempArray,
+      asn : newASN
+    };
+
+  }, function gotIpInfo(error, info) {
+
+    if (error || !info) {
+      callback(error);
+    } else {
+      callback(null, info.asn);
     }
 
   }, true);

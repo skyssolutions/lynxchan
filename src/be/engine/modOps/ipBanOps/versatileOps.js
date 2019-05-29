@@ -10,6 +10,7 @@ var torLevel;
 var torAllowed;
 var bypassAllowed;
 var torPassAllowed;
+var locationOps;
 var bypassMandatory;
 var disableFloodCheck;
 var logOps;
@@ -20,6 +21,7 @@ var minClearIpRole;
 var miscOps;
 var torOps;
 var spamOps;
+var verbose;
 var common;
 var spamBypass;
 var globalBoardModeration;
@@ -28,6 +30,7 @@ var floodTracking = {};
 exports.loadSettings = function() {
   var settings = require('../../../settingsHandler').getGeneralSettings();
 
+  verbose = settings.verbose || settings.verboseMisc;
   floodTimer = settings.floodTimerSec * 1000;
   minClearIpRole = settings.clearIpMinRole;
   torLevel = settings.torPostingLevel;
@@ -43,6 +46,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  locationOps = require('../../locationOps');
   logOps = require('../../logOps');
   common = require('..').common;
   torOps = require('../../torOps');
@@ -210,6 +214,24 @@ exports.getActiveBan = function(ip, boardUri, callback) {
 
 };
 
+exports.getASN = function(req, boardUri, callback) {
+
+  var ip = logger.ip(req);
+
+  locationOps.getASN(ip, function gotASN(error, asn) {
+
+    if (error && verbose) {
+      console.log(error);
+    }
+
+    req.asn = asn;
+
+    exports.getActiveBan(ip, boardUri, callback);
+
+  });
+
+};
+
 exports.receivedFloodCheckResponse = function(req, ip, boardUri, socket, flood,
     callback) {
 
@@ -228,7 +250,7 @@ exports.receivedFloodCheckResponse = function(req, ip, boardUri, socket, flood,
           if (!req.bypassed) {
             callback(null, null, true);
           } else {
-            exports.getActiveBan(ip, boardUri, callback);
+            exports.getASN(req, boardUri, callback);
           }
 
         } else {
@@ -236,7 +258,7 @@ exports.receivedFloodCheckResponse = function(req, ip, boardUri, socket, flood,
         }
 
       } else {
-        exports.getActiveBan(ip, boardUri, callback);
+        exports.getASN(req, boardUri, callback);
       }
 
     });

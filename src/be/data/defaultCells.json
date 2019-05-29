@@ -30,6 +30,8 @@
   {
     "template": "opCell",
     "prebuiltFields": {
+      "panelASN": "removal",
+      "labelASN": "inner",
       "contentOmissionIndicator": "removal",
       "linkHistory": [
         "href",
@@ -112,6 +114,8 @@
   {
     "template": "postCell",
     "prebuiltFields": {
+      "panelASN": "removal",
+      "labelASN": "inner",
       "contentOmissionIndicator": "removal",
       "linkFullText": "href",
       "labelIp": "inner",

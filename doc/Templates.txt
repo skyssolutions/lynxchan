@@ -325,6 +325,14 @@ opCell*: cell used for the thread's OP.
 Root element: form
 
 Elements:
+panelASN:
+    use: might be removed.
+    description: panel with the ASN label.
+
+labelASN:
+    use: have it's innerHTML manipulated.
+    description: label with the poster's ASN.
+
 linkHistory:
     use: have its href manipulated or might be removed.
     description: link to the post history of the poster's ip.
@@ -458,6 +466,14 @@ postCell*: cell used for thread replies.
 Root element: form
 
 Elements:
+panelASN:
+    use: might be removed.
+    description: panel with the ASN label.
+
+labelASN:
+    use: have it's innerHTML manipulated.
+    description: label with the poster's ASN.
+
 linkHistory:
     use: have its href manipulated or might be removed.
     description: link to the post history of the poster's ip.

@@ -64,6 +64,7 @@ threads: stores board's threads.
     password: password used to delete the thread. 8 characters.
     ip(Array): ip of the poster. Null if poster used TOR.
     flag: url of this thread's flag.
+    asn(Number): asn of the poster.
     banMessage: message to be displayed indicating this message was a cause to a ban. 128 characters.
     salt: thread's salt used for id generation.
     id: thread-wise id of the poster.
@@ -109,6 +110,7 @@ threads: stores board's threads.
 posts: stores posts.
     name: name of the poster. 32 characters.
     hash: hash of the message used by R9K.
+    asn(Number): asn of the poster.
     signedRole: role of the user that posted the thread.
     password: password used to delete the post. 8 characters.
     email: email of the poster. 64 characters.

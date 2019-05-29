@@ -96,17 +96,26 @@ exports.getPostObject = function(post, preview, boardData, modding, userRole) {
     files : exports.getFilesArray(post.files, modding)
   };
 
-  if (modding && post.ip) {
-    toReturn.ip = miscOps.hashIpForDisplay(post.ip, boardData.ipSalt, userRole);
+  if (modding) {
 
-    var allowedForIps = userRole <= minClearIpRole;
+    if (post.asn) {
+      toReturn.asn = post.asn;
+    }
 
-    if (!allowedForIps) {
-      toReturn.broadRange = miscOps.hashIpForDisplay(miscOps.getRange(post.ip),
-          boardData.ipSalt);
+    if (post.ip) {
 
-      toReturn.narrowRange = miscOps.hashIpForDisplay(miscOps.getRange(post.ip,
-          true), boardData.ipSalt);
+      toReturn.ip = miscOps.hashIpForDisplay(post.ip, boardData.ipSalt,
+          userRole);
+
+      var allowedForIps = userRole <= minClearIpRole;
+
+      if (!allowedForIps) {
+        toReturn.broadRange = miscOps.hashIpForDisplay(miscOps
+            .getRange(post.ip), boardData.ipSalt);
+
+        toReturn.narrowRange = miscOps.hashIpForDisplay(miscOps.getRange(
+            post.ip, true), boardData.ipSalt);
+      }
     }
 
   }
@@ -171,18 +180,27 @@ exports.getThreadObject = function(thread, posts, board, modding, userRole) {
     threadObject.ommitedPosts = thread.postCount - posts.length;
   }
 
-  if (modding && thread.ip) {
-    threadObject.ip = miscOps.hashIpForDisplay(thread.ip, board.ipSalt,
-        userRole);
+  if (modding) {
 
-    var allowedForIps = userRole <= minClearIpRole;
+    if (thread.asn) {
+      threadObject.asn = thread.asn;
+    }
 
-    if (!allowedForIps) {
-      threadObject.broadRange = miscOps.hashIpForDisplay(miscOps
-          .getRange(thread.ip), board.ipSalt);
+    if (thread.ip) {
 
-      threadObject.narrowRange = miscOps.hashIpForDisplay(miscOps.getRange(
-          thread.ip, true), board.ipSalt);
+      threadObject.ip = miscOps.hashIpForDisplay(thread.ip, board.ipSalt,
+          userRole);
+
+      var allowedForIps = userRole <= minClearIpRole;
+
+      if (!allowedForIps) {
+        threadObject.broadRange = miscOps.hashIpForDisplay(miscOps
+            .getRange(thread.ip), board.ipSalt);
+
+        threadObject.narrowRange = miscOps.hashIpForDisplay(miscOps.getRange(
+            thread.ip, true), board.ipSalt);
+      }
+
     }
 
   }
