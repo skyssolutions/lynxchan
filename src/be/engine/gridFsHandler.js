@@ -4,6 +4,7 @@
 
 var fs = require('fs');
 var db = require('../db');
+var redirects = db.redirects();
 var files = db.files();
 var chunks = db.chunks();
 var bucket = new (require('mongodb')).GridFSBucket(db.conn());
@@ -449,6 +450,28 @@ exports.pickFile = function(fileRequested, req, res, possibleFiles, callback) {
 
 };
 
+exports.checkRedirects = function(file, req, res, callback) {
+
+  redirects.findOne({
+    origin : file
+  }, function gotRedirect(error, redirect) {
+
+    if (error) {
+      callback(error);
+    } else if (redirect) {
+
+      res.writeHead(302, miscOps.getHeader(null, null, [ [ 'Location',
+          redirect.destination ] ]));
+      res.end();
+
+    } else {
+      exports.outputFile('/404.html', req, res, callback);
+    }
+
+  });
+
+};
+
 exports.outputFile = function(file, req, res, callback) {
 
   if (verbose) {
@@ -490,7 +513,7 @@ exports.outputFile = function(file, req, res, callback) {
           code : 'ENOENT'
         });
       } else {
-        exports.outputFile('/404.html', req, res, callback);
+        exports.checkRedirects(file, req, res, callback);
       }
 
     } else {

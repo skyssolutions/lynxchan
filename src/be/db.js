@@ -20,8 +20,9 @@ var indexesSet;
 var cachedDb;
 var cachedClient;
 
-var maxIndexesSet = 16;
+var maxIndexesSet = 17;
 
+var cachedRedirects;
 var cachedLanguages;
 var cachedConfirmationRequests;
 var cachedUploadReferences;
@@ -284,6 +285,30 @@ function initUploadReferences(callback) {
     }
   });
 
+}
+
+function initRedirects(callback) {
+
+  cachedRedirects.createIndexes([ {
+    key : {
+      expiration : 1
+    },
+    expireAfterSeconds : 0
+  }, {
+    key : {
+      source : 1
+    }
+  } ], function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
 }
 
 function initCaptchas(callback) {
@@ -648,6 +673,9 @@ function initFiles(callback) {
 // end of index initialization
 
 // start of getters
+exports.redirects = function() {
+  return cachedRedirects;
+};
 exports.languages = function() {
   return cachedLanguages;
 };
@@ -777,6 +805,8 @@ function initGlobalIndexes(callback) {
 
   initFiles(callback);
 
+  initRedirects(callback);
+
 }
 
 function initBoardIndexes(callback) {
@@ -828,6 +858,7 @@ function initGlobalIndexedCollections(callback) {
   cachedUsers = cachedDb.collection('users');
   cachedUploadReferences = cachedDb.collection('uploadReferences');
   cachedFiles = cachedDb.collection('fs.files');
+  cachedRedirects = cachedDb.collection('redirects');
   cachedConfirmationRequests = cachedDb.collection('confirmationRequests');
 
   initBoardIndexedCollections(callback);

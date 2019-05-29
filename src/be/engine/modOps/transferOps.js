@@ -6,6 +6,7 @@ var mongo = require('mongodb');
 var spoilerPath = require('../../kernel').spoilerImage();
 var logger = require('../../logger');
 var db = require('../../db');
+var redirects = db.redirects();
 var boards = db.boards();
 var threads = db.threads();
 var posts = db.posts();
@@ -114,7 +115,40 @@ exports.logTransfer = function(newBoard, userData, newThreadId, originalThread,
     boardUri : originalThread.boardUri,
     global : true,
     description : message
-  }, callback);
+  }, function logged(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      var redirectExpiration = new Date();
+      redirectExpiration.setUTCDate(redirectExpiration.getUTCDate() + 1);
+
+      var newRedirects = [];
+
+      var originBoiler = '/' + originalThread.boardUri + '/res/';
+      originBoiler += originalThread.threadId;
+
+      var destinationBoiler = '/' + newBoard.boardUri + '/res/';
+      destinationBoiler += newThreadId;
+
+      for (var i = 0; i < 2; i++) {
+
+        var extension = [ '.html', '.json' ][i];
+
+        newRedirects.push({
+          origin : originBoiler + extension,
+          expiration : redirectExpiration,
+          destination : destinationBoiler + extension
+        });
+
+      }
+
+      redirects.insertMany(newRedirects, callback);
+
+    }
+
+  });
 
 };
 

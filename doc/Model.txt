@@ -342,6 +342,13 @@ confirmationRequests: stores active e-mail confirmation requests.
 
 ----------------------------------------------------------------------------------------
 
+redirects: stores known redirects.
+    origin: origin for user to be redirected from.
+    destination: destination for user to be redirected to.
+    expiration(Date): time when the redirect will expire.
+
+----------------------------------------------------------------------------------------
+
 *: duplicated data, foreign key.
 **: unique key
 ***: part of a unique key combination.
