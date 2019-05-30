@@ -897,36 +897,52 @@ exports.getPostCellBase = function(post) {
 
 };
 
+exports.runOps = function(operations, postsOps, threadsOps) {
+
+  var toWait = 0;
+
+  var saveCallback = function(error) {
+    if (error && verbose) {
+      console.log(error);
+    }
+
+    toWait--;
+
+    if (!toWait) {
+      exports.handleOps(operations);
+    }
+
+  };
+
+  if (postsOps.length) {
+    toWait++;
+    postsCollection.bulkWrite(postsOps, saveCallback);
+  }
+
+  if (threadsOps.length) {
+    toWait++;
+    threadsCollection.bulkWrite(threadsOps, saveCallback);
+  }
+
+};
+
 exports.handleOps = function(operations) {
 
   if (!operations.length) {
     return;
   }
 
+  var chunk = operations.splice(0, 50);
+
   var postsOps = [];
-  var threadOps = [];
+  var threadsOps = [];
 
-  for (var i = 0; i < operations.length; i++) {
-
-    var op = operations[i];
-
-    (op.idField === 'threadId' ? threadOps : postsOps).push(op.op);
-
+  for (var i = 0; i < chunk.length; i++) {
+    var op = chunk[i];
+    (op.idField === 'threadId' ? threadsOps : postsOps).push(op.op);
   }
 
-  var saveCallback = function(error) {
-    if (error && verbose) {
-      console.log(error);
-    }
-  };
-
-  if (postsOps.length) {
-    postsCollection.bulkWrite(postsOps, saveCallback);
-  }
-
-  if (threadOps.length) {
-    threadsCollection.bulkWrite(threadOps, saveCallback);
-  }
+  exports.runOps(operations, postsOps, threadsOps);
 
 };
 
