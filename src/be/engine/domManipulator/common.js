@@ -36,7 +36,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
-  verbose = settings.verboseMisc || settings.verbose;
+  verbose = settings.verboseCache || settings.verbose;
   globalBoardModeration = settings.allowGlobalBoardModeration;
   clearIpRole = settings.clearIpMinRole;
   messageLength = settings.messageLength;
@@ -933,6 +933,10 @@ exports.handleOps = function(operations) {
   }
 
   var chunk = operations.splice(0, 50);
+
+  if (verbose) {
+    console.log('Writing ' + chunk.length + ' individual caches');
+  }
 
   var postsOps = [];
   var threadsOps = [];

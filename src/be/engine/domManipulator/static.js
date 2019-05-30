@@ -16,6 +16,7 @@ var templateHandler;
 var lang;
 var gridFs;
 var miscOps;
+var verbose;
 var clearIpMinRole;
 var overboard;
 var sfwOverboard;
@@ -45,6 +46,7 @@ exports.availableLogTypes = {
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  verbose = settings.verbose || settings.verboseCache;
   boardStaffArchiving = settings.allowBoardStaffArchiving;
   disableCatalogPosting = settings.disableCatalogPosting;
   sfwOverboard = settings.sfwOverboard;
@@ -872,6 +874,10 @@ exports.getLogCell = function(logEntry, language) {
     logCell += cellContent;
 
     if (individualCaches) {
+
+      if (verbose) {
+        console.log('Writing log individual cache');
+      }
 
       staffLogs.updateOne({
         _id : logEntry._id
