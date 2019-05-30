@@ -7,17 +7,30 @@ var lang = require('../engine/langOps').languagePack;
 exports.liftBan = function(userData, parameters, res, auth, language, json) {
 
   modOps.liftBan(userData, parameters, language, function banLifted(error,
-      rangeBan, boardUri) {
+      banType, boardUri) {
     if (error) {
       formOps.outputError(error, 500, res, language, json, auth);
     } else {
 
       var redirect = '/';
 
-      if (rangeBan) {
+      switch (banType) {
+
+      case 'range': {
         redirect += 'rangeBans.js';
-      } else {
+        break;
+      }
+
+      case 'asn': {
+        redirect += 'asnBans.js';
+        break;
+      }
+
+      default: {
         redirect += 'bans.js';
+        break;
+      }
+
       }
 
       if (boardUri) {

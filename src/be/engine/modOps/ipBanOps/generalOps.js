@@ -9,14 +9,14 @@ var logger;
 var logOps;
 var captchaOps;
 var lang;
-var rangeBanLimit;
+var generalBanLimit;
 var minClearIpRole;
 
 exports.loadSettings = function() {
 
   var settings = require('../../../settingsHandler').getGeneralSettings();
   minClearIpRole = settings.clearIpMinRole;
-  rangeBanLimit = settings.maxBoardRangeBans;
+  generalBanLimit = settings.maxBoardGeneralBans;
 
 };
 
@@ -149,8 +149,8 @@ exports.placeRangeBan = function(userData, parameters, language, cb,
 
         if (error) {
           cb(error);
-        } else if (count >= rangeBanLimit) {
-          cb(lang(language).errRangeBanLimit);
+        } else if (count >= generalBanLimit) {
+          cb(lang(language).errGeneralBanLimit);
         } else {
           exports.placeRangeBan(userData, parameters, language, cb, true);
         }
@@ -181,3 +181,154 @@ exports.placeRangeBan = function(userData, parameters, language, cb,
 
 };
 // } Section 2: Create range ban
+
+// Section 3: Read ASN bans {
+exports.readASNBans = function(parameters, callback, boardData) {
+
+  var queryBlock = {
+    asn : {
+      $exists : true
+    },
+    boardUri : parameters.boardUri ? parameters.boardUri : {
+      $exists : false
+    }
+  };
+
+  bans.find(queryBlock, {
+    projection : {
+      asn : 1
+    }
+  }).sort({
+    creation : -1
+  }).toArray(function gotBans(error, asnBans) {
+    callback(error, asnBans, boardData);
+  });
+
+};
+
+exports.getAsnBans = function(userData, parameters, language, callback) {
+
+  var isOnGlobalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+
+  if (parameters.boardUri) {
+
+    parameters.boardUri = parameters.boardUri.toString();
+
+    boards.findOne({
+      boardUri : parameters.boardUri
+    }, function gotBoard(error, board) {
+      if (error) {
+        callback(error);
+      } else if (!board) {
+        callback(lang(language).errBoardNotFound);
+      } else if (!common.isInBoardStaff(userData, board, 2)) {
+        callback(lang(language).errDeniedBoardASNBanManagement);
+      } else {
+        exports.readASNBans(parameters, callback, board);
+      }
+    });
+  } else if (!isOnGlobalStaff) {
+    callback(lang(language).errDeniedGlobalASNBanManagement);
+  } else {
+    exports.readASNBans(parameters, callback);
+  }
+
+};
+// } Section 3: Read ASN bans
+
+// Section 4: Create ASN ban {
+exports.createASNBan = function(user, parameters, language, callback) {
+
+  parameters.asn = +parameters.asn;
+
+  if (!parameters.asn) {
+    callback(lang(language).errInvalidASN);
+    return;
+  }
+
+  parameters.boardUri = parameters.boardUri ? parameters.boardUri.toString()
+      : null;
+
+  bans.findOne({
+    asn : parameters.asn,
+    boardUri : parameters.boardUri ? parameters.boardUri : {
+      $exists : false
+    }
+  }, function gotBan(error, ban) {
+
+    if (error) {
+      callback(error);
+    } else if (ban) {
+      callback();
+    } else {
+
+      var asnBan = {
+        asn : parameters.asn,
+        appliedBy : user.login,
+      };
+
+      if (parameters.boardUri) {
+        asnBan.boardUri = parameters.boardUri;
+      }
+
+      bans.insertOne(asnBan, function(error) {
+        callback(error, asnBan._id);
+      });
+
+    }
+
+  });
+
+};
+
+exports.placeAsnBan = function(user, parameters, language, cb, checkedCount) {
+
+  var isOnGlobalStaff = user.globalRole <= miscOps.getMaxStaffRole();
+
+  if (parameters.boardUri) {
+
+    if (!checkedCount) {
+
+      parameters.boardUri = parameters.boardUri.toString();
+
+      bans.countDocuments({
+        boardUri : parameters.boardUri,
+        asn : {
+          $exists : true
+        }
+      }, function gotCount(error, count) {
+
+        if (error) {
+          cb(error);
+        } else if (count >= generalBanLimit) {
+          cb(lang(language).errGeneralBanLimit);
+        } else {
+          exports.createASNBan(user, parameters, language, cb, true);
+        }
+
+      });
+
+      return;
+    }
+
+    boards.findOne({
+      boardUri : parameters.boardUri
+    }, function gotBoard(error, board) {
+      if (error) {
+        cb(error);
+      } else if (!board) {
+        cb(lang(language).errBoardNotFound);
+      } else if (!common.isInBoardStaff(user, board, 2)) {
+        cb(lang(language).errDeniedBoardASNBanManagement);
+      } else {
+        exports.createASNBan(user, parameters, language, cb);
+      }
+    });
+  } else if (!isOnGlobalStaff) {
+    cb(lang(language).errDeniedGlobalASNBanManagement);
+  } else {
+    exports.createASNBan(user, parameters, language, cb);
+  }
+
+};
+// } Section 4: Create ASN ban

@@ -397,11 +397,37 @@ exports.boards = function(parameters, boards, pageCount, language) {
 // } Section 2: Board listing
 
 // Section 3: Ban {
+exports.assembleBanPage = function(document, template, ban, language) {
+
+  document = document
+      .replace('__reasonLabel_inner__', common.clean(ban.reason));
+
+  document = document.replace('__idLabel_inner__', ban._id);
+
+  document = document.replace('__expirationLabel_inner__', common
+      .formatDateToDisplay(ban.expiration, null, language));
+
+  if (ban.appeal) {
+    document = document.replace('__formAppeal_location__', '');
+  } else {
+
+    document = document.replace('__formAppeal_location__',
+        template.removable.formAppeal);
+    document = document.replace('__idIdentifier_value__', ban._id);
+
+  }
+
+  return document;
+
+};
+
 exports.getBanPage = function(ban, language) {
 
   var template;
 
-  if (ban.range) {
+  if (ban.asn) {
+    template = templateHandler(language).asnBanPage;
+  } else if (ban.range) {
     template = templateHandler(language).rangeBanPage;
   } else {
     template = templateHandler(language).banPage;
@@ -409,28 +435,12 @@ exports.getBanPage = function(ban, language) {
 
   var document = template.template;
 
-  if (ban.range) {
+  if (ban.asn) {
+    document = document.replace('__asnLabel_inner__', ban.asn);
+  } else if (ban.range) {
     document = document.replace('__rangeLabel_inner__', ban.range.join('.'));
   } else {
-
-    document = document.replace('__reasonLabel_inner__', common
-        .clean(ban.reason));
-
-    document = document.replace('__idLabel_inner__', ban._id);
-
-    document = document.replace('__expirationLabel_inner__', common
-        .formatDateToDisplay(ban.expiration, null, language));
-
-    if (ban.appeal) {
-      document = document.replace('__formAppeal_location__', '');
-    } else {
-
-      document = document.replace('__formAppeal_location__',
-          template.removable.formAppeal);
-      document = document.replace('__idIdentifier_value__', ban._id);
-
-    }
-
+    document = exports.assembleBanPage(document, template, ban, language);
   }
 
   return document;

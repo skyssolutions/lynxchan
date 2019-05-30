@@ -226,8 +226,8 @@
   },
   {
     "type": "number",
-    "setting": "maxBoardRangeBans",
-    "element": "fieldMaxBoardRangeBans"
+    "setting": "maxBoardGeneralBans",
+    "element": "fieldMaxBoardGeneralBans"
   },
   {
     "type": "number",

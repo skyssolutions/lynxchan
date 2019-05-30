@@ -183,7 +183,7 @@ Settings files that goes into the settings directory:
 * `omitUnindexedContent`(Boolean): causes content from unindexes boards to not be displayed on the front-page or overboards.
 * `disableLatestPostings`(Boolean): disables the setting that allows staff to see the latest postings of boards they can moderate and removes the link to this feature from the account page.
 * `allowBoardStaffArchiving`(Boolean): allows board staff to archive threads.
-* `maxBoardRangeBans`(Number): limit for board range bans boards can have. Defaults to 128. It will be ignored when banning from an existing post.
+* `maxBoardGeneralBans`(Number): limit for board range and ASN bans boards can have. Defaults to 128. It will be ignored when banning from an existing post. They are counted separately.
 * `useSendmail`(Boolean): causes e-mails to be sent through your sendmail command instead of directly.
 * `archiveThreshold`(Number): if set, threads with at least this many replies will be automatically archived instead of being pruned.
 

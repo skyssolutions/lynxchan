@@ -113,6 +113,8 @@
   "errDeniedGlobalBanManagement": "You are not allowed to manage global bans.",
   "errDeniedBoardRangeBanManagement": "You are not allowed to manage range bans for this board.",
   "errDeniedGlobalRangeBanManagement": "You are not allowed to manage global range bans.",
+  "errDeniedBoardASNBanManagement": "You are not allowed to manage ASN bans for this board.",
+  "errDeniedGlobalASNBanManagement": "You are not allowed to manage global ASN bans.",
   "errDeniedBoardHashBansManagement": "You are not allowed to manage hash bans for this board.",
   "errDeniedGlobalHashBansManagement": "You are not allowed to manage global hash bans.",
   "errDeniedBoardReportManagement": "You are not allowed to manage reports for this board.",
@@ -333,7 +335,7 @@
   "errDisabledLatestPostings": "The latest postings feature is disabled.",
   "titLatestPostings": "Latest postings",
   "errNoIpDeletionConfirmation": "You must confirm that you wish to perform this deletion by IP.",
-  "errRangeBanLimit": "This board reached the range ban limit.",
+  "errGeneralBanLimit": "This board reached the general ban limit of this type.",
   "msgThreadArchived": "Thread archived.",
   "errNotAllowedToArchive": "You are not allowed to archive this thread.",
   "errArchiveConfirmation": "You must confirm that you wish to archive this thread.",
@@ -341,5 +343,8 @@
   "errReferralMismatch": "Your referral doesn't match the host.",
   "errCaptchaLimitExceeded": "You have requested too many captchas, wait a minute before trying again.",
   "errTotalFileLimitExceeded": "The site has reached it's total file capacity.",
-  "errAuthLimitExceeded": "You have exceeded the maximum limit of authentications, wait before trying again."
+  "errAuthLimitExceeded": "You have exceeded the maximum limit of authentications, wait before trying again.",
+  "titAsnBans": "ASN bans",
+  "msgAsnBanCreated": "ASN ban created.",
+  "errInvalidASN": "Invalid ASN."
 }

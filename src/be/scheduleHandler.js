@@ -322,7 +322,13 @@ function iterateFiles(files) {
     fs.stat(file, function gotStats(error, stats) {
 
       if (error) {
-        throw error;
+
+        if (verbose) {
+          console.log(error);
+        }
+
+        iterateFiles(files);
+
       } else {
 
         var deleteFile = stats.isFile() && !stats.size;
@@ -333,7 +339,14 @@ function iterateFiles(files) {
             console.log('Removing expired tmp file ' + file);
           }
 
-          fs.unlinkSync(file);
+          try {
+            fs.unlinkSync(file);
+          } catch (error) {
+            if (verbose) {
+              console.log(error);
+            }
+          }
+
         }
 
         iterateFiles(files);

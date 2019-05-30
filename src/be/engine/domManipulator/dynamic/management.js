@@ -62,6 +62,9 @@ exports.boardManagementLinks = [ {
   page : 'rangeBans',
   element : 'rangeBansLink'
 }, {
+  page : 'asnBans',
+  element : 'asnBansLink'
+}, {
   page : 'rules',
   element : 'ruleManagementLink'
 }, {
@@ -395,9 +398,12 @@ exports.setGlobalBansLinks = function(document, userRole, removable) {
 
   if (userRole < miscOps.getMaxStaffRole()) {
     document = document.replace('__bansLink_location__', removable.bansLink);
+    document = document.replace('__asnBansLink_location__',
+        removable.asnBansLink);
     document = document.replace('__hashBansLink_location__',
         removable.hashBansLink);
   } else {
+    document = document.replace('__asnBansLink_location__', '');
     document = document.replace('__bansLink_location__', '');
     document = document.replace('__hashBansLink_location__', '');
   }

@@ -385,5 +385,12 @@
       "nameLabel": "inner",
       "theadLink": "href"
     }
+  },
+  {
+    "template": "asnBanCell",
+    "prebuiltFields": {
+      "asnLabel": "inner",
+      "idIdentifier": "value"
+    }
   }
 ]

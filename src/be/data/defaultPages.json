@@ -6,6 +6,13 @@
     }
   },
   {
+    "template": "asnBanPage",
+    "prebuiltFields": {
+      "asnLabel": "inner",
+      "boardLabel": "inner"
+    }
+  },
+  {
     "template": "catalogPage",
     "prebuiltFields": {
       "noFlagDiv": "removal",
@@ -221,6 +228,7 @@
   {
     "template": "gManagement",
     "prebuiltFields": {
+      "asnBansLink": "removal",
       "socketLink": "removal",
       "accountsLink": "removal",
       "appealedBansPanel": [
@@ -289,6 +297,7 @@
       "filterManagementLink": "href",
       "anonymousNameField": "value",
       "rangeBansLink": "href",
+      "asnBansLink": "href",
       "hashBansLink": "href",
       "boardMessageField": "defaultValue",
       "textBoardCheckbox": "checked",
@@ -379,12 +388,8 @@
   {
     "template": "rangeBanPage",
     "prebuiltFields": {
-      "boardLabel": [
-        "inner"
-      ],
-      "rangeLabel": [
-        "inner"
-      ]
+      "boardLabel": "inner",
+      "rangeLabel": "inner"
     }
   },
   {
@@ -453,7 +458,7 @@
       "fieldAuthenticationLimit": "value",
       "fieldFileLimit": "value",
       "fieldCaptchaLimit": "value",
-      "fieldMaxBoardRangeBans": "value",
+      "fieldMaxBoardGeneralBans": "value",
       "fieldAddons": "value",
       "fieldAcceptedMimes": "value",
       "fieldSlaves": "value",
@@ -659,6 +664,16 @@
       "divThreads": "children",
       "divPages": "children",
       "fieldBoards": "value"
+    }
+  },
+  {
+    "template": "asnBansPage",
+    "prebuiltFields": {
+      "asnBansDiv": "children",
+      "boardIdentifier": [
+        "value",
+        "removal"
+      ]
     }
   }
 ]

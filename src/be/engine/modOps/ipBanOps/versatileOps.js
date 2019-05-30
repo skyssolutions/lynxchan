@@ -162,7 +162,7 @@ exports.getBans = function(userData, parameters, language, callback) {
 // } Section 1: Bans
 
 // Section 2: Ban check {
-exports.getActiveBan = function(ip, boardUri, callback) {
+exports.getActiveBan = function(ip, asn, boardUri, callback) {
 
   var singleBanAnd = {
     $and : [ {
@@ -180,6 +180,10 @@ exports.getActiveBan = function(ip, boardUri, callback) {
     }
   };
 
+  var asnBanCondition = {
+    asn : asn
+  };
+
   var globalOrLocalOr = {
     $or : [ {
       boardUri : boardUri
@@ -190,7 +194,7 @@ exports.getActiveBan = function(ip, boardUri, callback) {
 
   var finalCondition = {
     $and : [ globalOrLocalOr, {
-      $or : [ rangeBanCondition, singleBanAnd ]
+      $or : [ rangeBanCondition, singleBanAnd, asnBanCondition ]
     } ]
   };
 
@@ -202,12 +206,18 @@ exports.getActiveBan = function(ip, boardUri, callback) {
       var ban;
 
       for (var i = 0; i < bans.length; i++) {
-        if (!ban || (ban.range && !bans[i].range)) {
-          ban = bans[i];
+
+        var foundBan = bans[i];
+
+        var genericBan = ban && (ban.asn || ban.range);
+
+        if (!ban || (genericBan && (!foundBan.asn || !foundBan.range))) {
+          ban = foundBan;
         }
       }
 
-      callback(null, ban, bypassAllowed && spamBypass && ban && ban.range);
+      var canBypass = bypassAllowed && spamBypass && ban;
+      callback(null, ban, canBypass && (ban.asn || ban.range));
     }
 
   });
@@ -226,7 +236,7 @@ exports.getASN = function(req, boardUri, callback) {
 
     req.asn = asn;
 
-    exports.getActiveBan(ip, boardUri, callback);
+    exports.getActiveBan(ip, asn, boardUri, callback);
 
   });
 
@@ -362,8 +372,8 @@ exports.removeBan = function(ban, userData, callback) {
       callback(error);
     } else {
 
-      if (ban.range) {
-        callback(null, true, ban.boardUri);
+      if (ban.range || ban.asn) {
+        callback(null, ban.asn ? 'asn' : 'range', ban.boardUri);
         return;
       }
 
@@ -379,7 +389,7 @@ exports.removeBan = function(ban, userData, callback) {
         boardUri : ban.boardUri
       }, function insertedLog() {
 
-        callback(null, false, ban.boardUri);
+        callback(null, null, ban.boardUri);
       });
       // style exception, too simple
 

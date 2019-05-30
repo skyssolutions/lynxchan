@@ -645,7 +645,8 @@ exports.outputBan = function(ban, req, res, json, callback, auth) {
     }
 
     res.end(jsonBuilder.message('banned', {
-      reason : ban.reason,
+      reason : ban.reason || '',
+      asn : ban.asn,
       appealled : !!ban.appeal,
       range : ban.range,
       banId : ban._id,

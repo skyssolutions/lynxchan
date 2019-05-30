@@ -11,12 +11,13 @@ tit: page titles.
 
 The structure of this json is as follows:
 
-errRangeBanLimit: error thrown when the the board has exceeded it's limit for range bans when trying to create a new one.
+errGeneralBanLimit: error thrown when the the board has exceeded it's limit for range or ASN bans when trying to create a new one.
 errNoIpDeletionConfirmation: error thrown when the user fails to confirm a deletion by IP from a post.
 errDisabledLatestPostings: error thrown when the latest postings feature is disabled.
 errExpiredCaptcha: error thrown when the attempted captcha is expired.
 errLockedBoard: error thrown when the user tries to post on a locked board.
 errWrongCaptcha: error thrown when the attempted captcha is wrong.
+errInvalidASN: error throw when an invalid asn is informed.
 errExpiredOrWrongCaptcha: error thrown when the attempted captcha might be expired or wrong.
 errInvalidRole: error thrown when an invalid value is provided as a global role for a global role change.
 errDeniedPermissionLevel: error throw when the user tries to give another user a level of permission that isn't lower than his own.
@@ -56,6 +57,8 @@ errThreadNotFound: error thrown when the specified thread of an operation cannot
 errThreadLocked: error thrown when the user tries to reply to a locked thread.
 errDeniedBoardBanManagement: error thrown when the user is not allowed to manage bans for a board.
 errDeniedGlobalBanManagement: error thrown when the user is not allowed to manage global bans.
+errDeniedBoardASNBanManagement: error thrown when the user is not allowed to manage ASN bans for a board.
+errDeniedGlobalASNBanManagement: error thrown when the user is not allowed to manage global ASN bans.
 errDeniedBoardRangeBanManagement: error thrown when the user is not allowed to manage range bans for a board.
 errDeniedGlobalRangeBanManagement: error thrown when the user is not allowed to manage global range bans.
 errDeniedBoardHashBansManagement: error thrown when the user is not allowed to manage hash bans for a board.
@@ -249,6 +252,7 @@ msgPostingEdited: message used after editing a posting.
 msgThreadArchived: message used after archiving a thread.
 msgFlagCreated: message used after a new flag is created.
 msgFlagDeleted: message used after deleting a flag.
+msgAsnBanCreated: message used after placing an ASN ban.
 msgSavedGlobalSettings: message used after saving global settings.
 msgSpoilerSet: message displayed after setting a custom spoiler on a board.
 msgSpoilerDeleted: message displayed after deleting a custom spoiler on a board.
@@ -314,3 +318,4 @@ titAccountManagement: title for the account management page. Replaces: {$account
 titSocketManagement: title for the socket management page.
 titMediaDetails: title for the media details page.
 titLatestPostings: title for the latest postings page.
+titAsnBans: title for the ASN bans management page.

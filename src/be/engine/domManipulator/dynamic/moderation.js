@@ -377,3 +377,50 @@ exports.latestPostings = function(postings, parameters, userData, language) {
 
 };
 // } Section 4: Latest postings
+
+// Section 5: ASN bans {
+exports.getAsnBanCells = function(asnBans, language) {
+
+  var children = '';
+
+  var template = templateHandler(language).asnBanCell;
+
+  for (var i = 0; i < asnBans.length; i++) {
+    var asnBan = asnBans[i];
+
+    var cell = common.getFormCellBoilerPlate(template.template, '/liftBan.js',
+        'asnBanCell');
+
+    cell = cell.replace('__asnLabel_inner__', asnBan.asn);
+    cell = cell.replace('__idIdentifier_value__', asnBan._id);
+
+    children += cell;
+  }
+
+  return children;
+
+};
+
+exports.asnBans = function(asnBans, boardData, language) {
+
+  var template = templateHandler(language).asnBansPage;
+
+  var document = template.template.replace('__title__',
+      lang(language).titAsnBans);
+
+  if (boardData) {
+
+    document = document.replace('__boardIdentifier_location__',
+        template.removable.boardIdentifier);
+    document = document.replace('__boardIdentifier_value__', common
+        .clean(boardData.boardUri));
+
+  } else {
+    document = document.replace('__boardIdentifier_location__', '');
+  }
+
+  return document.replace('__asnBansDiv_children__', exports.getAsnBanCells(
+      asnBans, language));
+
+};
+// } Section 5: ASN bans

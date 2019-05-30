@@ -23,6 +23,9 @@ The status are:
         reason: the reason of the ban.
         board: board that this ban applies to. 
         expiration(Date): when the ban expires.
+        asn(Number): asn banned.
+        range: range banned.
+        banId: id of the ban.
         appealled(Boolean): indicates if the ban has been already appealed.
     hashBan: user tried to upload a banned file. In this case, data will contain an array where each object contains the following fields:
         file: name provided for the file.
@@ -308,7 +311,7 @@ Description: ban, deletes or reports posts and threads. The inputs of the posts 
 
 Parameters:
     deleteMedia: if anything is informed and the user is part of the global staff, when deleting files or postings, the actual media files will be removed from the server.
-    banType: type of ban. 0 bans only the ips of the selected posts and requires a valid expiration. 1 creates range bans off the first half of the ips and 2 creates range bans off the first 3/4 of the ips.
+    banType: type of ban. 0 bans only the ips of the selected posts and requires a valid expiration. 1 creates range bans off the first half of the ips and 2 creates range bans off the first 3/4 of the ips. 3 creates an ASN ban.
     password: password to be used for deletion.
     reason: reason of the report.
     banMessage: message to be displayed in the banned content.
@@ -1368,6 +1371,21 @@ PAG_ID::84
 Name: takeSettings
 
 Description: internal use only, it receives new settings from a master node in raw format but responds only in json.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::85
+
+Name: asnBans
+
+Description: displays the page for management of asn bans. Requires authentication. Uses get parameters.
+
+Parameters: 
+    boardUri: if informed, will display only asn bans for the board.
+
+Json output(Array): array with the asn bans found. Each object contains the following fields:
+    _id: unique id of the range ban.
+    asn: asn of the ban.
 
 ------------------------------------------------------------------------------------------
 
