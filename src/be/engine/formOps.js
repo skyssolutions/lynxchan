@@ -120,6 +120,24 @@ exports.checkNewFileReference = function(file, callback) {
 
 };
 
+exports.updateMetaMime = function(toPush, mime, fields) {
+
+  if (!fields.metaData) {
+    return;
+  }
+
+  for (var i = 0; i < fields.metaData.length; i++) {
+
+    var meta = fields.metaData[i];
+
+    if (meta.mime === mime && meta.md5 === toPush.md5) {
+      meta.mime = toPush.mime;
+    }
+
+  }
+
+};
+
 exports.getFileData = function(file, fields, mime, callback) {
 
   exports.getCheckSum(file.path, function gotCheckSum(checkSum) {
@@ -147,6 +165,8 @@ exports.getFileData = function(file, fields, mime, callback) {
 
       // style exception, too simple
       measureFunction(toPush, function gotDimensions(error, width, height) {
+
+        exports.updateMetaMime(toPush, mime, fields);
 
         if (error) {
           callback(error);
