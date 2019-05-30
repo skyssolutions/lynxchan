@@ -742,7 +742,7 @@ exports.getThreadContent = function(thread, posts, innerPage, modding,
 };
 
 exports.getThread = function(thread, posts, innerPage, modding, boardData,
-    userRole, language) {
+    userRole, language, operations) {
 
   var threadCell = exports.getThreadCellBase(thread, language);
 
@@ -759,12 +759,8 @@ exports.getThread = function(thread, posts, innerPage, modding, boardData,
     threadCell += threadContent;
 
     if (individualCaches) {
-      var operations = [];
-
       exports.saveCache(cacheField, language, threadContent, thread.boardUri,
           'threadId', thread.threadId, operations);
-
-      exports.handleOps(operations);
     }
 
   } else {
@@ -772,7 +768,7 @@ exports.getThread = function(thread, posts, innerPage, modding, boardData,
   }
 
   threadCell = threadCell.replace('__divPosts_children__', exports.getPosts(
-      posts, modding, boardData, userRole, innerPage, language));
+      posts, modding, boardData, userRole, innerPage, language, operations));
 
   return threadCell + '</div>';
 
@@ -951,11 +947,9 @@ exports.handleOps = function(operations) {
 };
 
 exports.getPosts = function(posts, modding, boardData, userRole, innerPage,
-    language) {
+    language, operations) {
 
   var children = '';
-
-  var operations = [];
 
   for (var i = 0; posts && i < posts.length; i++) {
     var post = posts[i];
@@ -968,8 +962,6 @@ exports.getPosts = function(posts, modding, boardData, userRole, innerPage,
     children += postCell + '</div>';
 
   }
-
-  exports.handleOps(operations);
 
   return children;
 

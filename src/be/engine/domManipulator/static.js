@@ -217,8 +217,13 @@ exports.setThreadCommonInfo = function(template, threadData, boardData,
   document = document.replace('__linkManagement_href__',
       '/boardManagement.js?boardUri=' + common.clean(boardData.boardUri));
 
+  var operations = [];
+
   document = document.replace('__divThreads_children__', common.getThread(
-      threadData, posts, true, modding, boardData, userRole, language));
+      threadData, posts, true, modding, boardData, userRole, language,
+      operations));
+
+  common.handleOps(operations);
 
   document = document
       .replace('__threadIdentifier_value__', threadData.threadId);
@@ -297,13 +302,17 @@ exports.getThreadListing = function(latestPosts, threads, language) {
 
   latestPosts = tempLatest;
 
+  var operations = [];
+
   for (i = 0; i < threads.length; i++) {
     var thread = threads[i];
 
     children += common.getThread(thread, latestPosts[thread.threadId], null,
-        null, null, null, language);
+        null, null, null, language, operations);
 
   }
+
+  common.handleOps(operations);
 
   return children;
 
@@ -755,6 +764,8 @@ exports.getOverboardThreads = function(foundThreads, foundPreviews, language) {
 
   var children = '';
 
+  var operations = [];
+
   for (var i = 0; i < foundThreads.length; i++) {
     var thread = foundThreads[i];
 
@@ -765,9 +776,11 @@ exports.getOverboardThreads = function(foundThreads, foundPreviews, language) {
     }
 
     children += common.getThread(thread, previews, null, null, null, null,
-        language);
+        language, operations);
 
   }
+
+  common.handleOps(operations);
 
   var template = templateHandler(language).overboard.template;
   return template.replace('__divThreads_children__', children);
