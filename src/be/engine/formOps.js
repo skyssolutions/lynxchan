@@ -243,7 +243,7 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
 
 exports.getNewFiles = function(newFiles, fields, relation) {
 
-  for (var i = 0; i < fields.metaData.length; i++) {
+  for (var i = 0; i < Math.min(fields.metaData.length, maxFiles); i++) {
 
     var metaData = fields.metaData[i];
 
