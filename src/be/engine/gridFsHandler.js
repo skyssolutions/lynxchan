@@ -15,7 +15,7 @@ var miscOps;
 var requestHandler;
 var zlib = require('zlib');
 
-exports.permanentTypes = [ 'media', 'graph' ];
+exports.permanentTypes = [ 'media', 'graph', 'banner' ];
 
 exports.loadSettings = function() {
 
