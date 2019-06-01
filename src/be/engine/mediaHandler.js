@@ -244,7 +244,7 @@ exports.clearBoardReferences = function(boardUri, language, callback) {
 // } Section 1: Reference decrease
 
 // Section 2: File pruning {
-exports.deletePrunedFiles = function(files, callback) {
+exports.deletePrunedFiles = function(identifiers, files, callback) {
 
   gridFsHandler.removeFiles(files, function deletedFiles(error) {
 
@@ -252,8 +252,8 @@ exports.deletePrunedFiles = function(files, callback) {
       callback(error);
     } else {
       references.removeMany({
-        references : {
-          $lt : 1
+        identifier : {
+          $in : identifiers
         }
       }, callback);
     }
@@ -281,27 +281,23 @@ exports.removePrunedFiles = function(identifiers, callback) {
         $push : '$filename'
       }
     }
-  } ]).toArray(function gotNames(error, results) {
+  } ]).toArray(
+      function gotNames(error, results) {
 
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-
-      references.removeMany({
-        references : {
-          $lt : 1
+        if (error) {
+          callback(error);
+        } else {
+          exports.deletePrunedFiles(identifiers,
+              results.length ? results[0].files : [], callback);
         }
-      }, callback);
 
-    } else {
-      exports.deletePrunedFiles(results[0].files, callback);
-    }
-
-  });
+      });
 
 };
 
-exports.getFilesToPrune = function(callback) {
+exports.getFilesToPrune = function(callback, page) {
+
+  page = page || 0;
 
   references.aggregate([ {
     $match : {
@@ -309,6 +305,12 @@ exports.getFilesToPrune = function(callback) {
         $lt : 1
       }
     }
+  }, {
+    $sort : {
+      _id : 1
+    }
+  }, {
+    $limit : maxFilesToDisplay
   }, {
     $project : {
       identifier : 1,
@@ -345,7 +347,13 @@ exports.getFilesToPrune = function(callback) {
               console.log(error);
             }
 
-            exports.removePrunedFiles(identifiers, callback);
+            exports.removePrunedFiles(identifiers, function(error) {
+              if (error) {
+                callback(error);
+              } else {
+                exports.getFilesToPrune(callback, ++page);
+              }
+            });
 
           });
           // style exception, too simple
