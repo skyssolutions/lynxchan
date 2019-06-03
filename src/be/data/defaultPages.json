@@ -6,13 +6,6 @@
     }
   },
   {
-    "template": "asnBanPage",
-    "prebuiltFields": {
-      "asnLabel": "inner",
-      "boardLabel": "inner"
-    }
-  },
-  {
     "template": "catalogPage",
     "headChildren": true,
     "prebuiltFields": {
@@ -218,7 +211,9 @@
   {
     "template": "banPage",
     "prebuiltFields": {
-      "boardLabel": "inner",
+      "reasonPanel": "removal",
+      "expirationPanel": "removal",
+      "descriptionLabel": "inner",
       "reasonLabel": "inner",
       "expirationLabel": "inner",
       "idLabel": "inner",
@@ -384,13 +379,6 @@
         "value",
         "removal"
       ]
-    }
-  },
-  {
-    "template": "rangeBanPage",
-    "prebuiltFields": {
-      "boardLabel": "inner",
-      "rangeLabel": "inner"
     }
   },
   {

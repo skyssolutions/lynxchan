@@ -8,6 +8,7 @@ var bans = db.bans();
 var posts = db.posts();
 var threads = db.threads();
 var defaultBanMessage;
+var locationOps;
 var logger;
 var logOps;
 var miscOps;
@@ -61,6 +62,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  locationOps = require('../../locationOps');
   captchaOps = require('../../captchaOps');
   logOps = require('../../logOps');
   common = require('..').common;
@@ -279,7 +281,9 @@ exports.processFoundBanData = function(collection, board, parameters, user) {
   for (var i = 0; i < collection.length; i++) {
 
     var ban = {
-      appliedBy : user.login
+      appliedBy : user.login,
+      reason : parameters.reason,
+      expiration : parameters.expiration
     };
 
     if (parameters.banType === 3) {
@@ -288,8 +292,6 @@ exports.processFoundBanData = function(collection, board, parameters, user) {
       ban.range = miscOps.getRange(collection[i], parameters.banType > 1);
     } else {
       ban.ip = collection[i];
-      ban.reason = parameters.reason;
-      ban.expiration = parameters.expiration;
     }
 
     if (!parameters.global) {
@@ -543,11 +545,11 @@ exports.parseExpiration = function(parameters) {
 
   }
 
-  if (!foundDuration) {
-    expiration.setUTCFullYear(expiration.getUTCFullYear() + 5);
+  if (foundDuration) {
+    parameters.expiration = expiration;
+  } else {
+    delete parameters.expiration;
   }
-
-  parameters.expiration = expiration;
 
 };
 
@@ -558,9 +560,7 @@ exports.isolateBoards = function(userData, reportedObjects, parameters,
 
   parameters.banType = +parameters.banType;
 
-  if (!parameters.banType) {
-    exports.parseExpiration(parameters);
-  }
+  exports.parseExpiration(parameters);
 
   var allowedToGlobalBan = userData.globalRole < miscOps.getMaxStaffRole();
 
@@ -611,6 +611,31 @@ exports.ban = function(userData, reportedObjects, parameters, captchaId,
 // } Section 1: Ban
 
 // Section 2: Appeal {
+exports.finishQuery = function(matchBlock, ip, callback) {
+
+  locationOps.getASN(ip, function gotASN(error, asn) {
+
+    if (error) {
+      return callback(error);
+    }
+
+    var orBlock = [ {
+      ip : ip
+    }, {
+      range : {
+        $in : [ miscOps.getRange(ip), miscOps.getRange(ip, true) ]
+      }
+    }, {
+      asn : asn
+    } ];
+
+    matchBlock.$or = orBlock;
+
+    callback();
+  });
+
+};
+
 exports.appealBan = function(ip, parameters, language, callback) {
 
   try {
@@ -622,25 +647,36 @@ exports.appealBan = function(ip, parameters, language, callback) {
 
   miscOps.sanitizeStrings(parameters, exports.appealArguments);
 
-  bans.findOneAndUpdate({
+  var matchBlock = {
     _id : parameters.banId,
-    ip : ip,
     appeal : {
       $exists : false
     }
-  }, {
-    $set : {
-      appeal : parameters.appeal
-    }
-  }, function gotBan(error, result) {
+  };
+
+  exports.finishQuery(matchBlock, ip, function finishedQuery(error) {
 
     if (error) {
-      callback(error);
-    } else if (!result.value) {
-      callback(lang(language).errBanNotFound);
-    } else {
-      callback();
+      return callback(error);
     }
+
+    // style exception, too simple
+    bans.findOneAndUpdate(matchBlock, {
+      $set : {
+        appeal : parameters.appeal
+      }
+    }, function gotBan(error, result) {
+
+      if (error) {
+        callback(error);
+      } else if (!result.value) {
+        callback(lang(language).errBanNotFound);
+      } else {
+        callback();
+      }
+
+    });
+    // style exception, too simple
 
   });
 

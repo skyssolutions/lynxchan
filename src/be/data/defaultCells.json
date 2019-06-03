@@ -220,6 +220,8 @@
   {
     "template": "banCell",
     "prebuiltFields": {
+      "reasonPanel": "removal",
+      "expirationPanel": "removal",
       "reasonLabel": "inner",
       "expirationLabel": "inner",
       "appliedByLabel": "inner",

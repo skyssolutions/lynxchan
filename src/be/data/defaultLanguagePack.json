@@ -346,5 +346,8 @@
   "errAuthLimitExceeded": "You have exceeded the maximum limit of authentications, wait before trying again.",
   "titAsnBans": "ASN bans",
   "msgAsnBanCreated": "ASN ban created.",
-  "errInvalidASN": "Invalid ASN."
+  "errInvalidASN": "Invalid ASN.",
+  "guiBanDescriptionAsn": "Your ASN {$asn} was banned from {$board}.",
+  "guiBanDescriptionRange": "Your range {$range} was banned from {$board}.",
+  "guiBanDescription": "You are banned from {$board}."
 }

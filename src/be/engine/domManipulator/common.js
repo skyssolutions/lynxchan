@@ -1095,10 +1095,24 @@ exports.getBanCell = function(ban, globalPage, language) {
 
   cell = cell.replace('__idLabel_inner__', ban._id);
   cell = cell.replace('__appliedByLabel_inner__', exports.clean(ban.appliedBy));
-  cell = cell.replace('__reasonLabel_inner__', exports.clean(ban.reason));
 
-  cell = cell.replace('__expirationLabel_inner__', exports.formatDateToDisplay(
-      ban.expiration, null, language));
+  if (ban.reason) {
+    cell = cell.replace('__reasonPanel_location__',
+        template.removable.reasonPanel).replace('__reasonLabel_inner__',
+        exports.clean(ban.reason));
+  } else {
+    cell = cell.replace('__reasonPanel_location__', '');
+  }
+
+  if (ban.expiration) {
+
+    cell = cell.replace('__expirationPanel_location__',
+        template.removable.expirationPanel).replace(
+        '__expirationLabel_inner__',
+        exports.formatDateToDisplay(ban.expiration, null, language));
+  } else {
+    cell = cell.replace('__expirationPanel_location__', '');
+  }
 
   if (!globalPage || !globalBoardModeration || !ban.boardUri) {
     cell = cell.replace('__boardPanel_location__', '');

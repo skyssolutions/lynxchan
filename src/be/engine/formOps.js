@@ -630,7 +630,7 @@ exports.checkBlankParameters = function(object, params, res, language, json) {
 
 exports.outputBan = function(ban, req, res, json, callback, auth) {
 
-  if (ban.range && req.bypassed) {
+  if ((ban.range || ban.asn) && req.bypassed) {
     callback();
     return;
   }
@@ -638,14 +638,14 @@ exports.outputBan = function(ban, req, res, json, callback, auth) {
   res.writeHead(200, miscOps.getHeader(json ? 'application/json' : 'text/html',
       auth));
 
+  if (ban.range) {
+    ban.range = ban.range.join('.');
+  }
+
   if (json) {
 
-    if (ban.range) {
-      ban.range = ban.range.join('.');
-    }
-
     res.end(jsonBuilder.message('banned', {
-      reason : ban.reason || '',
+      reason : ban.reason,
       asn : ban.asn,
       appealled : !!ban.appeal,
       range : ban.range,

@@ -164,24 +164,14 @@ exports.getBans = function(userData, parameters, language, callback) {
 // Section 2: Ban check {
 exports.getActiveBan = function(ip, asn, boardUri, callback) {
 
-  var singleBanAnd = {
-    $and : [ {
-      expiration : {
-        $gt : new Date()
-      }
-    }, {
-      ip : ip
-    } ]
+  var singleBanCondition = {
+    ip : ip
   };
 
   var rangeBanCondition = {
     range : {
       $in : [ miscOps.getRange(ip), miscOps.getRange(ip, true) ]
     }
-  };
-
-  var asnBanCondition = {
-    asn : asn
   };
 
   var globalOrLocalOr = {
@@ -192,11 +182,27 @@ exports.getActiveBan = function(ip, asn, boardUri, callback) {
     } ]
   };
 
-  var finalCondition = {
-    $and : [ globalOrLocalOr, {
-      $or : [ rangeBanCondition, singleBanAnd, asnBanCondition ]
+  var expirationOr = {
+    $or : [ {
+      expiration : {
+        $gt : new Date()
+      }
+    }, {
+      expiration : null
     } ]
   };
+
+  var finalCondition = {
+    $and : [ globalOrLocalOr, {
+      $or : [ rangeBanCondition, singleBanCondition ]
+    }, expirationOr ]
+  };
+
+  if (asn) {
+    finalCondition.$and[1].$or.push({
+      asn : asn
+    });
+  }
 
   bans.find(finalCondition).toArray(function gotBans(error, bans) {
     if (error) {

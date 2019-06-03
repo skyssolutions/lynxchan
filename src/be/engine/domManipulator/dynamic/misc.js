@@ -399,13 +399,28 @@ exports.boards = function(parameters, boards, pageCount, language) {
 // Section 3: Ban {
 exports.assembleBanPage = function(document, template, ban, language) {
 
-  document = document
-      .replace('__reasonLabel_inner__', common.clean(ban.reason));
+  if (ban.reason) {
+
+    document = document.replace('__reasonPanel_location__',
+        template.removable.reasonPanel).replace('__reasonLabel_inner__',
+        common.clean(ban.reason));
+
+  } else {
+    document = document.replace('__reasonPanel_location__', '');
+  }
 
   document = document.replace('__idLabel_inner__', ban._id);
 
-  document = document.replace('__expirationLabel_inner__', common
-      .formatDateToDisplay(ban.expiration, null, language));
+  if (ban.expiration) {
+
+    document = document.replace('__expirationPanel_location__',
+        template.removable.expirationPanel).replace(
+        '__expirationLabel_inner__',
+        common.formatDateToDisplay(ban.expiration, null, language));
+
+  } else {
+    document = document.replace('__expirationPanel_location__', '');
+  }
 
   if (ban.appeal) {
     document = document.replace('__formAppeal_location__', '');
@@ -425,23 +440,11 @@ exports.getBanPage = function(ban, language) {
 
   var template;
 
-  if (ban.asn) {
-    template = templateHandler(language).asnBanPage;
-  } else if (ban.range) {
-    template = templateHandler(language).rangeBanPage;
-  } else {
-    template = templateHandler(language).banPage;
-  }
+  template = templateHandler(language).banPage;
 
   var document = template.template;
 
-  if (ban.asn) {
-    document = document.replace('__asnLabel_inner__', ban.asn);
-  } else if (ban.range) {
-    document = document.replace('__rangeLabel_inner__', ban.range.join('.'));
-  } else {
-    document = exports.assembleBanPage(document, template, ban, language);
-  }
+  document = exports.assembleBanPage(document, template, ban, language);
 
   return document;
 
@@ -452,9 +455,20 @@ exports.ban = function(ban, board, language) {
   var document = exports.getBanPage(ban, language).replace('__title__',
       lang(language).titBan);
 
-  document = document.replace('__boardLabel_inner__', common.clean(board));
+  var description;
 
-  return document;
+  if (ban.asn) {
+    description = lang(language).guiBanDescriptionAsn
+        .replace('{$asn}', ban.asn);
+  } else if (ban.range) {
+    description = lang(language).guiBanDescriptionRange.replace('{$range}',
+        ban.range);
+  } else {
+    description = lang(language).guiBanDescription;
+  }
+
+  return document.replace('__descriptionLabel_inner__', description.replace(
+      '{$board}', board));
 
 };
 // } Section 3: Ban

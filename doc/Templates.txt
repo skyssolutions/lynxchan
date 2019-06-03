@@ -1048,6 +1048,14 @@ banCell*: cell used to list bans.
 Root element: div
 
 Elements:
+reasonPanel:
+    use: might be removed.
+    description: panel that contains the reason.
+
+expirationPanel:
+    use: might be removed.
+    description: panel that contains the expiration.
+
 denyForm:
     use: might be removed.
     description: form used to deny a ban's appeal.
@@ -1151,9 +1159,17 @@ TEM_ID::21
 banPage: page describing an user's ban.
 
 Elements:
-boardLabel:
+reasonPanel:
+    use: might be removed.
+    description: panel with the ban reason.
+
+expirationPanel:
+    use: might be removed.
+    description: panel with the ban expiration.
+
+descriptionLabel:
     use: have its innerHTML manipulated.
-    description: holds the board where the ban took place.
+    description: holds the ban description.
 
 reasonLabel:
     use: have its innerHTML manipulated.
@@ -1585,21 +1601,6 @@ idIdentifier:
 
 TEM_ID::37
 
-rangeBanPage: page used by the form api to inform the user about the range ban that blocked him.
-
-Elements:
-boardLabel:
-    use: have its innerHTML manipulated.
-    description: label that holds the ban of the range ban where the user got caught.
-
-rangeLabel:
-    use: have its innerHTML manipulated.
-    description: label that holds the banned range.
-
-------------------------------------------------------------------------------------------
-
-TEM_ID::38
-
 hashBansPage: page used to list hash bans.
 
 Elements:
@@ -1613,7 +1614,7 @@ boardIdentifier:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::39
+TEM_ID::38
 
 hashBanCell*: cell used to list hash bans.
 
@@ -1630,7 +1631,7 @@ idIdentifier:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::40
+TEM_ID::39
 
 ruleManagementPage: page used to manage a board's rules.
 
@@ -1646,7 +1647,7 @@ boardIdentifier:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::41
+TEM_ID::40
 
 ruleManagementCell*: cell used to list existing rules.
 
@@ -1667,7 +1668,7 @@ boardIdentifier:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::42
+TEM_ID::41
 
 rulesPage: page used to build the one that will list the board rules for users.
 
@@ -1682,7 +1683,7 @@ divRules:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::43
+TEM_ID::42
 
 ruleCell*: cell used to list rules for users.
 
@@ -1699,19 +1700,19 @@ textLabel:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::44
+TEM_ID::43
 
 notFoundPage: 404 page.
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::45
+TEM_ID::44
 
 maintenancePage: page used by the form api to indicate the site is under maintenance.
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::46
+TEM_ID::45
 
 editPage: page used to edit posts.
 
@@ -1742,7 +1743,7 @@ labelMessageLength:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::47
+TEM_ID::46
 
 flagsPage: page used to manage flags.
 
@@ -1765,7 +1766,7 @@ maxNameLengthLabel:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::48
+TEM_ID::47
 
 flagCell*: cell used to list flags.
 
@@ -1786,7 +1787,7 @@ idIdentifier:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::49
+TEM_ID::48
 
 globalSettingsPage: page used to change global settings.
 
@@ -2181,7 +2182,7 @@ checkboxVerboseCache:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::50
+TEM_ID::49
 
 hashBanPage: page used to inform an user which files he tried to post were banned.
 
@@ -2192,7 +2193,7 @@ hashBansPanel:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::51
+TEM_ID::50
 
 hashBanCellDisplay*: cell used to list banned files an user tried to post.
 
@@ -2209,7 +2210,7 @@ labelBoard:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::52
+TEM_ID::51
 
 latestPostCell*: cell used to list the latest posts on the whole site on the front-page.
 
@@ -2226,7 +2227,7 @@ linkPost:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::53
+TEM_ID::52
 
 overboard: page used to create the overboard and multi-board.
 
@@ -2237,7 +2238,7 @@ divThreads:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::54
+TEM_ID::53
 
 bypassPage: page used to renew the user's bypass token.
 
@@ -2252,7 +2253,7 @@ renewForm:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::55
+TEM_ID::54
 
 logIndexPage: page that lists the available dates to read logs from.
 
@@ -2263,7 +2264,7 @@ divDates:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::56
+TEM_ID::55
 
 graphsIndexPage: page that lists the available dates that contain daily graphs for a specific year.
 
@@ -2274,7 +2275,7 @@ divDates:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::57
+TEM_ID::56
 
 mediaManagementPage: page that allows the global staff to manage the uploaded media files.
 
@@ -2289,7 +2290,7 @@ pagesDiv:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::58
+TEM_ID::57
 
 mediaCell*: cell that represents a media element for management.
 
@@ -2318,7 +2319,7 @@ detailsLink:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::59
+TEM_ID::58
 
 languagesManagementPage: page used to manage alternative languages.
 
@@ -2329,7 +2330,7 @@ languagesDiv:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::60
+TEM_ID::59
 
 languageCell*: cell that represents an alternative language.
 
@@ -2354,7 +2355,7 @@ headerValuesLabel:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::61
+TEM_ID::60
 
 accountsPage: page that displays all existing accounts.
 
@@ -2365,7 +2366,7 @@ divAccounts:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::62
+TEM_ID::61
 
 accountManagementPage: page used to display data for an account.
 
@@ -2404,7 +2405,7 @@ userIdentifier:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::63
+TEM_ID::62
 
 socketManagementPage: page used to manage the unix socket.
 
@@ -2415,7 +2416,7 @@ statusLabel:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::64
+TEM_ID::63
 
 mediaDetailsPage: page used to display details of a media file.
 
@@ -2438,7 +2439,7 @@ panelReferences:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::65
+TEM_ID::64
 
 confirmationEmail: e-mail used to confirm e-mail accounts.
 
@@ -2453,7 +2454,7 @@ loginLabel:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::66
+TEM_ID::65
 
 reportNotificationEmail: e-mail used to send notification of reports.
 
@@ -2464,7 +2465,7 @@ linkThread:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::67
+TEM_ID::66
 
 latestPostingsPage: page that displays the latest postings the user can moderate.
 
@@ -2511,7 +2512,7 @@ panelIp:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::69
+TEM_ID::67
 
 archivePage: page that displays the archived threads.
 
@@ -2530,7 +2531,7 @@ divPages:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::70
+TEM_ID::68
 
 archiveCell*: cell that represents an archived board.
 
@@ -2555,22 +2556,7 @@ theadLink:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::71
-
-asnBanPage: page that displays the ASN ban that caught the other.
-
-Elements:
-asnLabel:
-    use: have it's innerHTML manipulated.
-    description: label with the blocked ASN.
-
-boardLabel:
-    use: have its innerHTML manipulated.
-    description: label that holds the ban of the asn ban where the user got caught.
-
-------------------------------------------------------------------------------------------
-
-TEM_ID::72
+TEM_ID::69
 
 asnBansPage: page used to list ASN bans.
 
@@ -2585,7 +2571,7 @@ boardIdentifier:
 
 ------------------------------------------------------------------------------------------
 
-TEM_ID::73
+TEM_ID::70
 
 asnBanCell*: cell used to list ASN bans.
 

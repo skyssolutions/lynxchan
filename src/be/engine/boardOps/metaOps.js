@@ -796,7 +796,7 @@ exports.getPosts = function(matchBlock, callback) {
 
 };
 
-exports.fetchPostIp = function(matchBlock, parameters, callback) {
+exports.fetchPostIp = function(matchBlock, clearIps, parameters, callback) {
 
   var query = {
     boardUri : parameters.boardUri
@@ -824,6 +824,10 @@ exports.fetchPostIp = function(matchBlock, parameters, callback) {
 
       if (posting && posting.ip) {
         matchBlock.ip = posting.ip;
+
+        if (!clearIps) {
+          matchBlock.boardUri = posting.boardUri;
+        }
       }
 
       callback(null, matchBlock);
@@ -933,7 +937,8 @@ exports.getMatchBlock = function(parameters, userData, callback) {
     matchBlock.ip = logger.convertIpToArray(parameters.ip);
     delete parameters.boardUri;
   } else if (exports.canSearchPerPost(parameters, userData)) {
-    return exports.fetchPostIp(matchBlock, parameters, callback);
+    return exports.fetchPostIp(matchBlock,
+        userData.globalRole <= clearIpMinRole, parameters, callback);
   }
 
   callback(null, matchBlock);
