@@ -206,6 +206,11 @@
   },
   {
     "type": "number",
+    "setting": "latestPostsAmount",
+    "element": "fieldLatestPostsAmount"
+  },
+  {
+    "type": "number",
     "setting": "pageSize",
     "element": "fieldPageSize"
   },

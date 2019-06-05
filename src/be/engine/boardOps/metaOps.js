@@ -30,7 +30,7 @@ var clearIpMinRole;
 var generator;
 var rangeSettings;
 var disableLatestPostings;
-var latestLimit = 50;
+var latestLimit;
 
 var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
 
@@ -72,6 +72,7 @@ exports.loadSettings = function() {
   maxBoardTags = settings.maxBoardTags;
   clearIpMinRole = settings.clearIpMinRole;
   overboard = settings.overboard;
+  latestLimit = settings.latestPostsAmount;
   sfwOverboard = settings.sfwOverboard;
   allowedMimes = settings.acceptedMimes;
 
@@ -957,7 +958,13 @@ exports.setDate = function(parameters) {
     return;
   }
 
-  var parsedDate = new Date(+parameters.date);
+  var parsedDate = +parameters.date;
+
+  if (parsedDate) {
+    parsedDate = new Date(parsedDate);
+  } else {
+    parsedDate = new Date(parameters.date);
+  }
 
   if (!parsedDate.getDate()) {
     delete parameters.date;

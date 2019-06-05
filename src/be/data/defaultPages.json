@@ -444,6 +444,7 @@
   {
     "template": "globalSettingsPage",
     "prebuiltFields": {
+      "fieldLatestPostsAmount": "value",
       "fieldAuthenticationLimit": "value",
       "fieldFileLimit": "value",
       "fieldCaptchaLimit": "value",

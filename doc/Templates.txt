@@ -1792,6 +1792,10 @@ TEM_ID::48
 globalSettingsPage: page used to change global settings.
 
 Elements:
+fieldLatestPostsAmount:
+    use: have it's value manipulated.
+    description: field that displays the amount of posts to show on latest posts.
+
 fieldFileLimit:
     use: have it's value manipulated.
     description: field that displays the total amount of files the site can have.

@@ -538,6 +538,7 @@ exports.getDefaultSettings = function() {
     staticExpiration : 60,
     maxBoardHashBans : 128,
     maxBoardGeneralBans : 128,
+    latestPostsAmount : 50,
     captchaLimit : 5,
     authenticationLimit : 120,
     incSpamIpsSource : 'https://www.stopforumspam.com/downloads/listed_ip_1.zip'

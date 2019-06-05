@@ -314,6 +314,22 @@ function oldEnoughToDelete(date) {
 
 }
 
+function deleteFile(file) {
+
+  if (verbose) {
+    console.log('Removing expired tmp file ' + file);
+  }
+
+  try {
+    fs.unlinkSync(file);
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
+  }
+
+}
+
 function iterateFiles(files) {
 
   if (files.length) {
@@ -331,22 +347,10 @@ function iterateFiles(files) {
 
       } else {
 
-        var deleteFile = stats.isFile() && !stats.size;
+        var shouldDeleteFile = stats.isFile() && !stats.size;
 
-        if (deleteFile && oldEnoughToDelete(stats.ctime)) {
-
-          if (verbose) {
-            console.log('Removing expired tmp file ' + file);
-          }
-
-          try {
-            fs.unlinkSync(file);
-          } catch (error) {
-            if (verbose) {
-              console.log(error);
-            }
-          }
-
+        if (shouldDeleteFile && oldEnoughToDelete(stats.ctime)) {
+          deleteFile(file);
         }
 
         iterateFiles(files);
