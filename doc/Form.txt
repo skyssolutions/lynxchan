@@ -1302,7 +1302,7 @@ Parameters:
     boardUri: boardUri of a post to search posts from the same ip. Required to use either postId or threadId.
     postId(Number): postId of a post to search posts from the same ip.
     threadId: threadId of an OP to search posts from the same ip. Won't be used if postId is informed.
-    date(Date): date to start the listing. Will default to the start of the current day. The end date is 24 hours after it.
+    date(Number): date time to start the listing from.
     boards: list of boards to be read from. Will default to every board where the user can moderate.
 
 JSON output(Array): array where each element is an object with the following fields:

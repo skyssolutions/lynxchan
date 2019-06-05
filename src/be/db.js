@@ -458,6 +458,10 @@ function initPosts(callback) {
     key : {
       'files.path' : 1
     }
+  }, {
+    key : {
+      ip : 1
+    }
   } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
@@ -563,6 +567,10 @@ function initThreads(callback) {
   }, {
     key : {
       archived : 1
+    }
+  }, {
+    key : {
+      ip : 1
     }
   } ], function setIndex(error, index) {
     if (error) {

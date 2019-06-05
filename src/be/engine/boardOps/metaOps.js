@@ -30,6 +30,7 @@ var clearIpMinRole;
 var generator;
 var rangeSettings;
 var disableLatestPostings;
+var latestLimit = 50;
 
 var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
 
@@ -758,39 +759,97 @@ exports.getBoardManagementData = function(userData, board,
 // } Section 5: Board management
 
 // Section 6: Latest postings {
-exports.getPosts = function(matchBlock, callback) {
+exports.getUpperLimit = function(foundPostings, callback) {
+
+  if (!foundPostings.length) {
+    return callback(null, foundPostings);
+  }
+
+  var match = {
+    creation : {
+      $lt : foundPostings[foundPostings.length - 1].creation
+    }
+  };
+
+  posts.find(match, {
+    projection : generator.postProjection
+  }).sort({
+    creation : -1
+  }).limit(latestLimit).toArray(function gotPosts(error, foundPosts) {
+
+    if (error) {
+      return callback(error);
+    }
+
+    threads.find(match, {
+      projection : generator.postProjection
+    }).sort({
+      creation : -1
+    }).limit(latestLimit).toArray(function gotThreads(error, foundThreads) {
+
+      if (error) {
+        return callback(error);
+      }
+
+      var checkPostings = foundPosts.concat(foundThreads).sort(function(a, b) {
+        return b.creation - a.creation;
+      });
+
+      checkPostings = checkPostings.splice(0, latestLimit + 1);
+
+      callback(null, foundPostings, checkPostings[checkPostings.length - 1]);
+
+    });
+
+  });
+
+};
+
+exports.getPosts = function(hasDate, matchBlock, callback) {
+
+  var sortDirection = hasDate ? 1 : -1;
 
   posts.find(matchBlock, {
     projection : generator.postProjection
   }).sort({
-    creation : -1
-  }).toArray(function gotPosts(error, foundPosts) {
+    creation : sortDirection
+  }).limit(latestLimit).toArray(function gotPosts(error, foundPosts) {
 
     if (error) {
-      callback(error);
-    } else {
-
-      // style exception, too simple
-      threads.find(matchBlock, {
-        projection : generator.postProjection
-      }).sort({
-        creation : -1
-      }).toArray(function(error, foundThreads) {
-
-        if (error) {
-          callback(error);
-        } else {
-
-          callback(null, foundPosts.concat(foundThreads).sort(function(a, b) {
-            return b.creation - a.creation;
-          }));
-
-        }
-
-      });
-      // style exception, too simple
-
+      return callback(error);
     }
+
+    // style exception, too simple
+    threads.find(matchBlock, {
+      projection : generator.postProjection
+    }).sort({
+      creation : sortDirection
+    }).limit(latestLimit).toArray(function gotThreads(error, foundThreads) {
+
+      if (error) {
+        return callback(error);
+      }
+
+      var foundPostings = foundPosts.concat(foundThreads);
+
+      if (hasDate) {
+        foundPostings = foundPostings.sort(function(a, b) {
+          return a.creation - b.creation;
+        }).splice(0, latestLimit);
+      }
+
+      foundPostings = foundPostings.sort(function(a, b) {
+        return b.creation - a.creation;
+      });
+
+      if (!hasDate) {
+        foundPostings = foundPostings.splice(0, latestLimit);
+      }
+
+      exports.getUpperLimit(foundPostings, callback);
+
+    });
+    // style exception, too simple
 
   });
 
@@ -892,40 +951,33 @@ exports.getBoardsToShow = function(parameters, userData) {
 
 };
 
-exports.setDates = function(parameters) {
+exports.setDate = function(parameters) {
 
-  var startDate = parameters.date;
-
-  if (!startDate) {
-    startDate = new Date();
-
-    startDate.setUTCHours(0);
-    startDate.setUTCMinutes(0);
-    startDate.setUTCSeconds(0);
-    startDate.setUTCMilliseconds(0);
-  } else {
-    startDate = new Date(startDate);
+  if (!parameters.date) {
+    return;
   }
 
-  parameters.date = startDate;
+  var parsedDate = new Date(+parameters.date);
+
+  if (!parsedDate.getDate()) {
+    delete parameters.date;
+  } else {
+    parameters.date = parsedDate;
+  }
 
 };
 
 exports.getMatchBlock = function(parameters, userData, callback) {
 
-  exports.setDates(parameters);
+  exports.setDate(parameters);
 
   var boardsToShow = exports.getBoardsToShow(parameters, userData);
 
-  var endDate = new Date(parameters.date);
-  endDate.setUTCDate(endDate.getUTCDate() + 1);
-
-  var matchBlock = {
+  var matchBlock = parameters.date ? {
     creation : {
-      $gte : parameters.date,
-      $lt : endDate
+      $gt : parameters.date
     }
-  };
+  } : {};
 
   if (boardsToShow) {
     matchBlock.boardUri = {
@@ -954,7 +1006,8 @@ exports.getLatestPostings = function(userData, parameters, language, callback) {
 
   exports.getMatchBlock(parameters, userData, function gotMatchBlock(error,
       matchBlock) {
-    exports.getPosts(matchBlock, callback);
+
+    exports.getPosts(!!parameters.date, matchBlock, callback);
   });
 
 };

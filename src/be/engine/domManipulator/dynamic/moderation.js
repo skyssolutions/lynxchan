@@ -345,7 +345,34 @@ exports.getBoilerLink = function(parameters) {
 
 };
 
-exports.latestPostings = function(postings, parameters, userData, language) {
+exports.getDates = function(currentDate, postings, pivotPosting, parameters,
+    document) {
+
+  var previousDay;
+
+  if (pivotPosting) {
+    previousDay = pivotPosting.creation.getTime();
+  } else {
+    previousDay = currentDate.getTime - 1;
+  }
+
+  var nextDay;
+
+  if (postings.length) {
+    nextDay = postings[0].creation.getTime();
+  } else {
+    nextDay = currentDate.getTime();
+  }
+
+  var boiler = exports.getBoilerLink(parameters);
+
+  document = document.replace('__linkPrevious_href__', boiler + previousDay);
+  return document.replace('__linkNext_href__', boiler + nextDay);
+
+};
+
+exports.latestPostings = function(postings, parameters, userData, pivotPosting,
+    language) {
 
   var dom = templateHandler(language).latestPostingsPage;
 
@@ -355,22 +382,17 @@ exports.latestPostings = function(postings, parameters, userData, language) {
   document = exports.setIpSearchFeatures(document, dom.removable, parameters,
       userData);
 
-  var previousDay = new Date(parameters.date);
-  previousDay.setUTCDate(previousDay.getUTCDate() - 1);
-  previousDay = encodeURIComponent(previousDay.toUTCString());
+  var currentDate;
 
-  var nextDay = new Date(parameters.date);
-  nextDay.setUTCDate(nextDay.getUTCDate() + 1);
-  nextDay = encodeURIComponent(nextDay.toUTCString());
+  if (postings.length) {
+    currentDate = postings[postings.length - 1].creation;
+  } else {
+    currentDate = new Date();
+  }
 
-  var boiler = exports.getBoilerLink(parameters);
-
-  document = document.replace('__linkPrevious_href__', boiler + previousDay);
-  document = document.replace('__linkNext_href__', boiler + nextDay);
-
-  document = document.replace('__fieldBoards_value__',
-      parameters.boards.join(', ')).replace('__fieldDate_value__',
-      parameters.date.toUTCString());
+  document = exports.getDates(currentDate, postings, pivotPosting, parameters,
+      document).replace('__fieldBoards_value__', parameters.boards.join(', '))
+      .replace('__fieldDate_value__', currentDate.toUTCString());
 
   return document.replace('__divPostings_children__', exports.getPosts(
       postings, language));

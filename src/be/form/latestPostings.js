@@ -11,7 +11,7 @@ exports.latestPostings = function(auth, parameters, user, res, language) {
   var json = parameters.json;
 
   boardOps.getLatestPostings(user, parameters, language, function gotPostings(
-      error, postings) {
+      error, postings, pivotPosting) {
     if (error) {
       formOps.outputError(error, 500, res, language, json, auth);
     } else {
@@ -20,7 +20,8 @@ exports.latestPostings = function(auth, parameters, user, res, language) {
         formOps.outputResponse('ok', postings, res, null, auth, null, true);
       } else {
         res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(dom.latestPostings(postings, parameters, user, language));
+        res.end(dom.latestPostings(postings, parameters, user, pivotPosting,
+            language));
       }
 
     }
