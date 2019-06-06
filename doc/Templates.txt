@@ -738,6 +738,14 @@ TEM_ID::12
 bManagement: board management page.
 
 Elements:
+resetBoardLockForm:
+    use: might be removed.
+    description: form used to unlock a board that has been automatically locked due to hourly thread limit.
+
+resetLockIdentifier:
+    use: have it's value manipulated.
+    description: identifier for the board on the form used to reset the hourly thread limit's lock.
+
 locationComboBox:
     use: have children appended to it.
     description: combo box that indicates the status of location flags.

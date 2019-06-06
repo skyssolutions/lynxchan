@@ -189,11 +189,14 @@ logReportClosure: object containing the pieces for the log used when someone clo
 logPostingBan: object containing the pieces for the log used when an user bans posters. Contains the following fields:
     startPiece: piece used in the beginning of the message. Replaces: {$login}.
     globalPiece: piece used to indicate the bans were global.
-    midPiece: piece used after either the start of the global piece.
+    midPiece: piece used after either the start or the global piece.
     threadPiece: piece used to indicate the banned threads.
     threadAndPostPiece: piece used to indicate the banned posts if any thred were banned.
     postPiece: piece used to indicate the banned posts.
-    endPiece: finishing piece. Replaces: {$board}, {$expiration}, {$reason}.
+    expirationPiece: piece used to show the ban expiration. Replaces: {$expiration}.
+    permanentExpirationPiece: piece used when the ban is permanent.
+    boardPiece: piece used to display the source board of the banned postings. Replaces: {$board}.
+    endPiece: finishing piece. Replaces: {$reason}.
 logBanLift: object with the pieces used on the log of ban lift. Contains the following fields:
     startPiece: piece used at the beginning. Replaces: {$login}.
     globalBanPiece: piece used to indicate it is a global ban.
@@ -256,6 +259,7 @@ msgThreadArchived: message used after archiving a thread.
 msgFlagCreated: message used after a new flag is created.
 msgFlagDeleted: message used after deleting a flag.
 msgAsnBanCreated: message used after placing an ASN ban.
+msgBoardUnlocked: message used after unlocking a board's auto lock.
 msgSavedGlobalSettings: message used after saving global settings.
 msgSpoilerSet: message displayed after setting a custom spoiler on a board.
 msgSpoilerDeleted: message displayed after deleting a custom spoiler on a board.

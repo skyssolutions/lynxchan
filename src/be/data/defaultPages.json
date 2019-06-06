@@ -250,6 +250,8 @@
   {
     "template": "bManagement",
     "prebuiltFields": {
+      "resetBoardLockForm": "removal",
+      "resetLockIdentifier": "value",
       "locationComboBox": "children",
       "linkSelf": "href",
       "appealedBansPanel": "children",

@@ -1389,5 +1389,16 @@ Json output(Array): array with the asn bans found. Each object contains the foll
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::86
+
+Name: resetBoardLock
+
+Description: allows to unlock a board if it's been locked by the hourly thread limit.
+
+Parameters:
+    boardUri: uri of the board to be unlocked.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

@@ -256,17 +256,8 @@ exports.setBoardManagementLinks = function(document, boardData) {
 
 };
 
-exports.getBoardManagementContent = function(boardData, userData, bans,
-    reports, language) {
-
-  var template = templateHandler(language).bManagement;
-
-  var document = template.template.replace('__boardSettingsIdentifier_value__',
-      common.clean(boardData.boardUri));
-
-  document = exports.setBoardComboBoxes(document, boardData, language);
-  document = exports.setBoardControlCheckBoxes(document, boardData);
-  document = exports.setBoardFields(document, boardData);
+exports.checkOwnership = function(document, userData, boardData, template,
+    language) {
 
   var globallyAllowed = globalBoardModeration && userData.globalRole <= 1;
 
@@ -280,6 +271,33 @@ exports.getBoardManagementContent = function(boardData, userData, bans,
     document = exports.setBoardOwnerControls(document, boardData, language);
   } else {
     document = document.replace('__ownerControlDiv_location__', '');
+  }
+
+  return document;
+
+};
+
+exports.getBoardManagementContent = function(boardData, userData, bans,
+    reports, language) {
+
+  var template = templateHandler(language).bManagement;
+
+  var document = template.template.replace('__boardSettingsIdentifier_value__',
+      common.clean(boardData.boardUri));
+
+  document = exports.setBoardComboBoxes(document, boardData, language);
+  document = exports.setBoardControlCheckBoxes(document, boardData);
+  document = exports.setBoardFields(document, boardData);
+
+  document = exports.checkOwnership(document, userData, boardData, template,
+      language);
+
+  if (boardData.lockedUntil) {
+    document = document.replace('__resetBoardLockForm_location__',
+        template.removable.resetBoardLockForm).replace(
+        '__resetLockIdentifier_value__', boardData.boardUri);
+  } else {
+    document = document.replace('__resetBoardLockForm_location__', '');
   }
 
   document = document.replace('__messageLengthLabel_inner__',

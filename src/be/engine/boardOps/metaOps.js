@@ -730,6 +730,7 @@ exports.getBoardManagementData = function(userData, board,
       boardUri : 1,
       boardName : 1,
       volunteers : 1,
+      lockedUntil : 1,
       captchaMode : 1,
       boardMessage : 1,
       autoSageLimit : 1,
@@ -1101,6 +1102,34 @@ exports.aggregateThreadCount = function(boardUri, callback) {
       }, callback);
 
     }
+
+  });
+
+};
+
+exports.unlockAutoLock = function(userData, params, language, callback) {
+
+  boards.findOne({
+    boardUri : params.boardUri
+  }, function gotBoard(error, boardData) {
+
+    if (error) {
+      return callback(error);
+    } else if (!boardData) {
+      return callback(lang(language).errBoardNotFound);
+    } else if (!modCommonOps.isInBoardStaff(userData, boardData, 2)) {
+      return callback(lang(language).errDeniedChangeBoardSettings);
+    }
+
+    boards.updateOne({
+      boardUri : params.boardUri
+    }, {
+      $unset : {
+        lockedUntil : 1,
+        threadLockCount : 1,
+        lockCountStart : 1
+      }
+    }, callback);
 
   });
 

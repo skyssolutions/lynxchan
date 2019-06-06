@@ -138,9 +138,16 @@ exports.logBans = function(userData, board, informedPosts, informedThreads,
   logMessage += exports.appendPostsToBanLog(informedPosts, informedThreads,
       pieces);
 
-  logMessage += pieces.endPiece.replace('{$board}', board).replace(
-      '{$expiration}', parameters.expiration).replace('{$reason}',
-      parameters.reason || '');
+  logMessage += pieces.boardPiece.replace('{$board}', board);
+
+  if (parameters.expiration) {
+    logMessage += pieces.expirationPiece.replace('{$expiration}',
+        parameters.expiration);
+  } else {
+    logMessage += pieces.permanentExpirationPiece;
+  }
+
+  logMessage += pieces.endPiece.replace('{$reason}', parameters.reason || '');
 
   logOps.insertLog({
     user : userData.login,

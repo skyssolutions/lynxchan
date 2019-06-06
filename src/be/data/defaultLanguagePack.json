@@ -136,7 +136,10 @@
     "threadPiece": "threads: ",
     "threadAndPostPiece": " and the following ",
     "postPiece": "posts: ",
-    "endPiece": " from board /{$board}/ until {$expiration} with reason \"{$reason}\"."
+    "expirationPiece": " until {$expiration}",
+    "permanentExpirationPiece": " permanently",
+    "boardPiece": " from board /{$board}/",
+    "endPiece": " with reason \"{$reason}\"."
   },
   "logBanLift": {
     "startPiece": "User {$login} lifted a ",
@@ -349,5 +352,6 @@
   "errInvalidASN": "Invalid ASN.",
   "guiBanDescriptionAsn": "Your ASN {$asn} was banned from {$board}.",
   "guiBanDescriptionRange": "Your range {$range} was banned from {$board}.",
-  "guiBanDescription": "You are banned from {$board}."
+  "guiBanDescription": "You are banned from {$board}.",
+  "msgBoardUnlocked": "Board auto-lock reset."
 }
