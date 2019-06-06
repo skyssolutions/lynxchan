@@ -1597,6 +1597,14 @@ rangeBanCell*: cell used to list range bans.
 Root element: form
 
 Elements:
+reasonLabel:
+    use: have it's innerHTML manipulated.
+    description: label that holds the ban reason.
+
+expirationLabel:
+    use: have it's innerHTML manipulated.
+    description: label that holds the ban expiration date.
+
 rangeLabel:
     use: have its innerHTML manipulated.
     description: label that holds the range of this ban.
@@ -2590,6 +2598,14 @@ asnBanCell*: cell used to list ASN bans.
 Root element: form
 
 Elements:
+reasonLabel:
+    use: have it's innerHTML manipulated.
+    description: label that holds the ban reason.
+
+expirationLabel:
+    use: have it's innerHTML manipulated.
+    description: label that holds the ban expiration date.
+
 asnLabel:
     use: have its innerHTML manipulated.
     description: label that holds the ASN of this ban.

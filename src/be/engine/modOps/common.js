@@ -5,6 +5,24 @@
 var globalBoardModeration;
 var maxRoleStaff;
 
+exports.regexRelation = {
+  FullYear : new RegExp(/(\d+)y/),
+  Month : new RegExp(/(\d+)M/),
+  Date : new RegExp(/(\d+)d/),
+  Hours : new RegExp(/(\d+)h/),
+  Minutes : new RegExp(/(\d+)m/)
+};
+
+exports.banArguments = [ {
+  field : 'reason',
+  length : 256,
+  removeHTML : true
+}, {
+  field : 'banMessage',
+  length : 128,
+  removeHTML : true
+} ];
+
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
@@ -33,4 +51,31 @@ exports.isInBoardStaff = function(userData, board, requiredGlobalRole) {
   var isVolunteer = volunteers.indexOf(userData.login) > -1;
 
   return isOwner || isVolunteer || allowedByGlobal;
+};
+
+exports.parseExpiration = function(parameters) {
+
+  var expiration = new Date();
+
+  var informedDuration = (parameters.duration || '').toString().trim();
+
+  var foundDuration = false;
+
+  for ( var key in exports.regexRelation) {
+
+    var durationMatch = informedDuration.match(exports.regexRelation[key]);
+
+    if (durationMatch) {
+      foundDuration = true;
+      expiration['set' + key](expiration['get' + key]() + (+durationMatch[1]));
+    }
+
+  }
+
+  if (foundDuration) {
+    parameters.expiration = expiration;
+  } else {
+    delete parameters.expiration;
+  }
+
 };

@@ -33,18 +33,28 @@ exports.loadDependencies = function() {
 
 // Section 1: Read range bans {
 exports.readRangeBans = function(parameters, callback, boardData) {
+
   var queryBlock = {
     range : {
       $exists : true
     },
     boardUri : parameters.boardUri ? parameters.boardUri : {
       $exists : false
-    }
+    },
+    $or : [ {
+      expiration : {
+        $gt : new Date()
+      }
+    }, {
+      expiration : null
+    } ]
   };
 
   bans.find(queryBlock, {
     projection : {
-      range : 1
+      range : 1,
+      reason : 1,
+      expiration : 1
     }
   }).sort({
     creation : -1
@@ -88,6 +98,10 @@ exports.createRangeBan = function(userData, parameters, language, callback) {
 
   parameters.range = miscOps.sanitizeIp(parameters.range);
 
+  miscOps.sanitizeStrings(parameters, common.banArguments);
+
+  common.parseExpiration(parameters);
+
   if (!parameters.range.length) {
     callback(lang(language).errInvalidRange);
 
@@ -111,6 +125,8 @@ exports.createRangeBan = function(userData, parameters, language, callback) {
     } else {
 
       var rangeBan = {
+        reason : parameters.reason,
+        expiration : parameters.expiration,
         range : parameters.range,
         appliedBy : userData.login,
       };
@@ -191,12 +207,21 @@ exports.readASNBans = function(parameters, callback, boardData) {
     },
     boardUri : parameters.boardUri ? parameters.boardUri : {
       $exists : false
-    }
+    },
+    $or : [ {
+      expiration : {
+        $gt : new Date()
+      }
+    }, {
+      expiration : null
+    } ]
   };
 
   bans.find(queryBlock, {
     projection : {
-      asn : 1
+      asn : 1,
+      reason : 1,
+      expiration : 1
     }
   }).sort({
     creation : -1
@@ -246,6 +271,10 @@ exports.createASNBan = function(user, parameters, language, callback) {
     return;
   }
 
+  miscOps.sanitizeStrings(parameters, common.banArguments);
+
+  common.parseExpiration(parameters);
+
   parameters.boardUri = parameters.boardUri ? parameters.boardUri.toString()
       : null;
 
@@ -263,6 +292,8 @@ exports.createASNBan = function(user, parameters, language, callback) {
     } else {
 
       var asnBan = {
+        expiration : parameters.expiration,
+        reason : parameters.reason,
         asn : parameters.asn,
         appliedBy : user.login,
       };

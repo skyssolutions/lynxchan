@@ -102,7 +102,9 @@ exports.getRangeBanCells = function(rangeBans, boardData, userRole, language) {
     cell = cell.replace('__rangeLabel_inner__', rangeToUse);
     cell = cell.replace('__idIdentifier_value__', rangeBan._id);
 
-    children += cell;
+    children += cell.replace('__reasonLabel_inner__', rangeBan.reason || '')
+        .replace('__expirationLabel_inner__',
+            rangeBan.expiration ? rangeBan.expiration.toUTCString() : '');
   }
 
   return children;
@@ -416,7 +418,9 @@ exports.getAsnBanCells = function(asnBans, language) {
     cell = cell.replace('__asnLabel_inner__', asnBan.asn);
     cell = cell.replace('__idIdentifier_value__', asnBan._id);
 
-    children += cell;
+    children += cell.replace('__reasonLabel_inner__', asnBan.reason || '')
+        .replace('__expirationLabel_inner__',
+            asnBan.expiration ? asnBan.expiration.toUTCString() : '');
   }
 
   return children;

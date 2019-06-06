@@ -23,30 +23,6 @@ exports.appealArguments = [ {
   removeHTML : true
 } ];
 
-exports.banArguments = [ {
-  field : 'reason',
-  length : 256,
-  removeHTML : true
-}, {
-  field : 'banMessage',
-  length : 128,
-  removeHTML : true
-} ];
-
-exports.massBanArguments = [ {
-  field : 'reason',
-  length : 256,
-  removeHTML : true
-} ];
-
-exports.regexRelation = {
-  FullYear : new RegExp(/(\d+)y/),
-  Month : new RegExp(/(\d+)M/),
-  Date : new RegExp(/(\d+)d/),
-  Hours : new RegExp(/(\d+)h/),
-  Minutes : new RegExp(/(\d+)m/)
-};
-
 exports.loadSettings = function() {
 
   var settings = require('../../../settingsHandler').getGeneralSettings();
@@ -533,41 +509,14 @@ exports.iterateBoards = function(foundBoards, userData, reportedObjects,
 
 };
 
-exports.parseExpiration = function(parameters) {
-
-  var expiration = new Date();
-
-  var informedDuration = (parameters.duration || '').toString().trim();
-
-  var foundDuration = false;
-
-  for ( var key in exports.regexRelation) {
-
-    var durationMatch = informedDuration.match(exports.regexRelation[key]);
-
-    if (durationMatch) {
-      foundDuration = true;
-      expiration['set' + key](expiration['get' + key]() + (+durationMatch[1]));
-    }
-
-  }
-
-  if (foundDuration) {
-    parameters.expiration = expiration;
-  } else {
-    delete parameters.expiration;
-  }
-
-};
-
 exports.isolateBoards = function(userData, reportedObjects, parameters,
     language, callback) {
 
-  miscOps.sanitizeStrings(parameters, exports.banArguments);
+  miscOps.sanitizeStrings(parameters, common.banArguments);
 
   parameters.banType = +parameters.banType;
 
-  exports.parseExpiration(parameters);
+  common.parseExpiration(parameters);
 
   var allowedToGlobalBan = userData.globalRole < miscOps.getMaxStaffRole();
 
@@ -785,7 +734,7 @@ exports.getMassBans = function(parameters, userLogin) {
 
   var toRet = [];
 
-  exports.parseExpiration(parameters);
+  common.parseExpiration(parameters);
 
   for (var i = 0; i < parameters.ips.length; i++) {
 
@@ -815,7 +764,7 @@ exports.massBan = function(userData, parameters, language, callback) {
     return;
   }
 
-  miscOps.sanitizeStrings(parameters, exports.massBanArguments);
+  miscOps.sanitizeStrings(parameters, common.banArguments);
 
   var banList = exports.getMassBans(parameters, userData.login);
 

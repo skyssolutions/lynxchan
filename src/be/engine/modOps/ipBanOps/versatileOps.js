@@ -102,9 +102,13 @@ exports.readBans = function(parameters, callback) {
     ip : {
       $exists : true
     },
-    expiration : {
-      $gt : new Date()
-    }
+    $or : [ {
+      expiration : {
+        $gt : new Date()
+      }
+    }, {
+      expiration : null
+    } ]
   };
 
   if (parameters.boardUri) {

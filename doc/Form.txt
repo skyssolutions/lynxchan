@@ -778,6 +778,8 @@ Name: placeRangeBan
 Description: creates a range ban. Requires authentication. Global range bans are restricted to users with global role lower than 3.
 
 Parameters:
+    reason: reason of the ban.
+    duration: duration of the ban.
     boardUri: if not informed, the range ban will be global.
     range: range to be banned.
 
@@ -1376,6 +1378,22 @@ Description: internal use only, it receives new settings from a master node in r
 
 PAG_ID::85
 
+Name: placeAsnBan
+
+Description: creates an ASN ban. Requires authentication.
+
+Parameters:
+    reason: reason of the ban.
+    duration: duration of the ban.
+    boardUri: if not informed, the range ban will be global.
+    asn: ASN to be banned.
+
+Json output: id of the new ASN ban.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::86
+
 Name: asnBans
 
 Description: displays the page for management of asn bans. Requires authentication. Uses get parameters.
@@ -1389,7 +1407,7 @@ Json output(Array): array with the asn bans found. Each object contains the foll
 
 ------------------------------------------------------------------------------------------
 
-PAG_ID::86
+PAG_ID::87
 
 Name: resetBoardLock
 
