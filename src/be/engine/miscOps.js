@@ -151,16 +151,20 @@ exports.formatIpv6 = function(ip) {
 
 };
 
-exports.hashIpForDisplay = function(ip, salt, userRole) {
+exports.formatIp = function(ip, ipv6) {
+
+  if (ip.length > 4 || ipv6) {
+    return exports.formatIpv6(ip);
+  } else {
+    return ip.join('.');
+  }
+
+};
+
+exports.hashIpForDisplay = function(ip, salt, userRole, ipv6) {
 
   if (userRole <= clearIpMinRole) {
-
-    if (ip.length > 4) {
-      return exports.formatIpv6(ip);
-    } else {
-      return ip.join('.');
-    }
-
+    return exports.formatIp(ip, ipv6);
   }
 
   return crypto.createHash('sha256').update(salt + ip).digest('hex').substring(

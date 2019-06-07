@@ -768,6 +768,8 @@ Parameters:
 Json output(Array): array with the range bans found. Each object contains the following fields:
     _id: unique id of the range ban.
     range: range of the ban.
+    expiration(Date): expiration date of the ban.
+    reason: reason of the ban.
 
 ------------------------------------------------------------------------------------------
 
@@ -781,7 +783,7 @@ Parameters:
     reason: reason of the ban.
     duration: duration of the ban.
     boardUri: if not informed, the range ban will be global.
-    range: range to be banned.
+    range: range to be banned. The range must use a cidr format and the range size must be in increments of 8. like 1.2.3.4/16 or 2001:db8:85a3::/64.
 
 Json output: id of the new range ban.
 
@@ -1404,6 +1406,8 @@ Parameters:
 Json output(Array): array with the asn bans found. Each object contains the following fields:
     _id: unique id of the range ban.
     asn: asn of the ban.
+    expiration(Date): expiration date of the ban.
+    reason: reason of the ban.
 
 ------------------------------------------------------------------------------------------
 

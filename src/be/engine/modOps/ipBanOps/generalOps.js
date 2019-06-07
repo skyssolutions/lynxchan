@@ -54,7 +54,8 @@ exports.readRangeBans = function(parameters, callback, boardData) {
     projection : {
       range : 1,
       reason : 1,
-      expiration : 1
+      expiration : 1,
+      ipv6 : 1
     }
   }).sort({
     creation : -1
@@ -94,25 +95,74 @@ exports.getRangeBans = function(userData, parameters, language, callback) {
 // } Section 1: Read range bans
 
 // Section 2: Create range ban {
+exports.validRange = function(parsedIp, parsedRange) {
+
+  for (var i = 0; i < parsedIp.length; i++) {
+
+    var part = parsedIp[i];
+
+    if (isNaN(part) || part > 255 || part < 0) {
+      return;
+    }
+
+  }
+
+  if ((parsedRange / 8) > parsedIp.length) {
+    return;
+  }
+
+  if (parsedIp.length !== 4 && parsedIp.length !== 16) {
+    return;
+  }
+
+  return true;
+
+};
+
+exports.parseRange = function(ip) {
+
+  var parts = ip.substring(0, 256).split('/');
+
+  if (!parts[0] || !parts[1]) {
+    return;
+  }
+
+  var parsedRange = +parts[1];
+
+  if (!parsedRange || parsedRange % 8) {
+    return;
+  }
+
+  var parsedIp = logger.convertIpToArray(parts[0].trim());
+
+  if (!exports.validRange(parsedIp, parsedRange)) {
+    return;
+  }
+
+  return {
+    ipv6 : parsedIp.length > 4,
+    range : parsedIp.splice(0, parsedRange / 8)
+  };
+
+};
+
 exports.createRangeBan = function(userData, parameters, language, callback) {
 
-  parameters.range = miscOps.sanitizeIp(parameters.range);
+  var rangeInfo = exports.parseRange(parameters.range);
+
+  if (!rangeInfo) {
+    return callback(lang(language).errInvalidRange);
+  }
 
   miscOps.sanitizeStrings(parameters, common.banArguments);
 
   common.parseExpiration(parameters);
 
-  if (!parameters.range.length) {
-    callback(lang(language).errInvalidRange);
-
-    return;
-  }
-
   parameters.boardUri = parameters.boardUri ? parameters.boardUri.toString()
       : null;
 
   bans.findOne({
-    range : parameters.range,
+    range : rangeInfo.range,
     boardUri : parameters.boardUri ? parameters.boardUri : {
       $exists : false
     }
@@ -120,14 +170,15 @@ exports.createRangeBan = function(userData, parameters, language, callback) {
 
     if (error) {
       callback(error);
-    } else if (ban) {
+    } else if (ban && !(ban.ipv6 ^ rangeInfo.ipv6)) {
       callback();
     } else {
 
       var rangeBan = {
         reason : parameters.reason,
         expiration : parameters.expiration,
-        range : parameters.range,
+        range : rangeInfo.range,
+        ipv6 : rangeInfo.ipv6,
         appliedBy : userData.login,
       };
 

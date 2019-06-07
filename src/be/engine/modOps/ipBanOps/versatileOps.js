@@ -166,6 +166,26 @@ exports.getBans = function(userData, parameters, language, callback) {
 // } Section 1: Bans
 
 // Section 2: Ban check {
+exports.noMatch = function(ip, foundBan) {
+
+  if (!foundBan.range) {
+    return;
+  }
+
+  if (ip.length === 4 && foundBan.ipv6 || foundBan.range.length > ip.length) {
+    return true;
+  }
+
+  for (var i = 0; i < foundBan.range.length; i++) {
+
+    if (foundBan.range[i] !== ip[i]) {
+      return true;
+    }
+
+  }
+
+};
+
 exports.getActiveBan = function(ip, asn, boardUri, callback) {
 
   var singleBanCondition = {
@@ -173,9 +193,7 @@ exports.getActiveBan = function(ip, asn, boardUri, callback) {
   };
 
   var rangeBanCondition = {
-    range : {
-      $in : [ miscOps.getRange(ip), miscOps.getRange(ip, true) ]
-    }
+    'range.0' : ip[0]
   };
 
   var globalOrLocalOr = {
@@ -218,6 +236,10 @@ exports.getActiveBan = function(ip, asn, boardUri, callback) {
       for (var i = 0; i < bans.length; i++) {
 
         var foundBan = bans[i];
+
+        if (exports.noMatch(ip, foundBan)) {
+          continue;
+        }
 
         var genericBan = ban && (ban.asn || ban.range);
 

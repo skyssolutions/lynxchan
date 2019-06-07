@@ -18,8 +18,7 @@ exports.getAsnBans = function(userData, parameters, res, auth, language) {
     } else {
 
       if (json) {
-        formOps.outputResponse('ok', JSON.stringify(asnBans), res, null, auth,
-            null, json);
+        formOps.outputResponse('ok', asnBans, res, null, auth, null, json);
       } else {
         res.writeHead(200, miscOps.getHeader('text/html', auth));
         res.end(dom.asnBans(asnBans, boardData, language));

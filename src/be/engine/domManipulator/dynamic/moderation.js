@@ -94,9 +94,9 @@ exports.getRangeBanCells = function(rangeBans, boardData, userRole, language) {
 
     if (boardData) {
       rangeToUse = miscOps.hashIpForDisplay(rangeBan.range, boardData.ipSalt,
-          userRole);
+          userRole, rangeBan.ipv6);
     } else {
-      rangeToUse = rangeBan.range.join('.');
+      rangeToUse = miscOps.formatIp(rangeBan.range, rangeBan.ipv6);
     }
 
     cell = cell.replace('__rangeLabel_inner__', rangeToUse);

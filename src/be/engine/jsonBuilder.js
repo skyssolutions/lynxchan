@@ -518,11 +518,13 @@ exports.rangeBans = function(rangeBans, boardData, userRole) {
 
   for (var i = 0; i < rangeBans.length; i++) {
 
+    var rangeBan = rangeBans[i];
+
     if (boardData) {
-      rangeBans[i].range = miscOps.hashIpForDisplay(rangeBans[i].range,
-          boardData.ipSalt, userRole);
+      rangeBans[i].range = miscOps.hashIpForDisplay(rangeBan.range,
+          boardData.ipSalt, userRole, rangeBan.ipv6);
     } else {
-      rangeBans[i].range = rangeBans[i].range.join('.');
+      rangeBans[i].range = miscOps.formatIp(rangeBan.range, rangeBan.ipv6);
 
     }
 
