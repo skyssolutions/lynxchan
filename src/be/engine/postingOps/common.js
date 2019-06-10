@@ -511,17 +511,10 @@ exports.replaceStyleMarkdown = function(message, replaceCode) {
 
   finalMessage += exports.replaceChunkMarkdown(message.substring(lastEnding));
 
-  return finalMessage;
-
-};
-
-exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
-
-  var postObject = {};
-
   if (!dontProcessLinks) {
 
-    message = message.replace(/(http|https)\:\/\/\S+/g, function links(match) {
+    message = message.replace(/(http|https)\:\/\/[^<\s]+/g, function links(
+        match) {
 
       match = miscOps.cleanHTML(match).replace(/[_='~*]/g,
           function sanitization(innerMatch) {
@@ -532,6 +525,14 @@ exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
 
     });
   }
+
+  return finalMessage;
+
+};
+
+exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
+
+  var postObject = {};
 
   for (var i = 0; i < posts.length; i++) {
     var post = posts[i];
