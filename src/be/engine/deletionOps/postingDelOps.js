@@ -510,7 +510,7 @@ exports.resetLastBump = function(board, parentThreads, callback, index) {
 
     if (error) {
       callback(error);
-    } else if(!thread){
+    } else if (!thread) {
       exports.resetLastBump(board, parentThreads, callback, ++index);
     } else {
 
@@ -779,9 +779,12 @@ exports.getPostsToDelete = function(userData, board, postsToDelete, parameters,
 
   } else {
 
+    delete queryBlock.password;
+
     var orBlock = [ {
       threadId : queryBlock.threadId
     }, {
+      password : parameters.password,
       postId : {
         $in : postsToDelete[board.boardUri] || []
       }
