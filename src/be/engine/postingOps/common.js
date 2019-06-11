@@ -513,17 +513,18 @@ exports.replaceStyleMarkdown = function(message, replaceCode) {
 
   if (!dontProcessLinks) {
 
-    message = message.replace(/(http|https)\:\/\/[^<\s]+/g, function links(
-        match) {
+    finalMessage = finalMessage.replace(/(http|https)\:\/\/[^<\s]+/g,
+        function links(match) {
 
-      match = miscOps.cleanHTML(match).replace(/[_='~*]/g,
-          function sanitization(innerMatch) {
-            return exports.linkSanitizationRelation[innerMatch];
-          });
+          match = miscOps.cleanHTML(match).replace(/[_='~*]/g,
+              function sanitization(innerMatch) {
+                return exports.linkSanitizationRelation[innerMatch];
+              });
 
-      return '<a target="blank" href="' + match + '">' + match + '</a>';
+          return '<a target="blank" href="' + match + '">' + match + '</a>';
 
-    });
+        });
+
   }
 
   return finalMessage;
