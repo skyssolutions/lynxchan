@@ -13,33 +13,27 @@ var miscOps = require('../engine/miscOps');
 var deleteOps = require('../engine/deletionOps');
 var mandatoryAuth = [ 'spoil', 'ban', 'ip-deletion' ];
 
-exports.processPostForDeletion = function(board, thread, splitKey,
-    threadsToDelete, postsToDelete, onlyFiles) {
-  var threadTestObject = threadsToDelete[board] || [];
+exports.processPostForDeletion = function(board, splitKey, postsToDelete) {
 
-  if (threadTestObject.indexOf(+thread) === -1 || onlyFiles) {
+  var post = splitKey[2];
 
-    var post = splitKey[2];
+  var boardObject = postsToDelete[board] || [];
 
-    var boardObject = postsToDelete[board] || [];
+  postsToDelete[board] = boardObject;
 
-    postsToDelete[board] = boardObject;
+  boardObject.push(+post);
 
-    boardObject.push(+post);
-
-  }
 };
 
 exports.processSplitKeyForDeletion = function(splitKey, threadsToDelete,
-    postsToDelete, onlyFiles) {
+    postsToDelete) {
 
   var board = splitKey[0];
   var thread = splitKey[1];
 
   if (splitKey.length > 2 && !isNaN(splitKey[2])) {
 
-    exports.processPostForDeletion(board, thread, splitKey, threadsToDelete,
-        postsToDelete, onlyFiles);
+    exports.processPostForDeletion(board, splitKey, postsToDelete);
 
   } else {
     var boardObject = threadsToDelete[board] || [];
@@ -75,8 +69,7 @@ exports.decideProcessing = function(parameters, split, threads, posts,
     reportedObjects) {
 
   if (parameters.action === 'delete') {
-    exports.processSplitKeyForDeletion(split, threads, posts,
-        parameters.deleteUploads);
+    exports.processSplitKeyForDeletion(split, threads, posts);
   } else {
     exports.processSplitKeyForGeneralUse(split, reportedObjects);
   }

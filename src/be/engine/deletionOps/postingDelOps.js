@@ -780,7 +780,9 @@ exports.getPostsToDelete = function(userData, board, postsToDelete, parameters,
   } else {
 
     var orBlock = [ {
-      threadId : queryBlock.threadId
+      threadId : {
+        $in : foundThreads
+      }
     }, {
       postId : {
         $in : postsToDelete[board.boardUri] || []
