@@ -194,7 +194,7 @@ exports.getMessageMarkdown = function(message) {
         return '<a href="' + matchesArray[2] + '">' + matchesArray[1] + '</a>';
       });
 
-  ret = postingOps.replaceStyleMarkdown(ret);
+  ret = postingOps.replaceStyleMarkdown(ret, false, true);
 
   return ret;
 

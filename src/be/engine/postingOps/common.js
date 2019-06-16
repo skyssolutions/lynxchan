@@ -485,7 +485,7 @@ exports.getTagSplits = function(message, tag) {
 
 };
 
-exports.replaceStyleMarkdown = function(message, replaceCode) {
+exports.replaceStyleMarkdown = function(message, replaceCode, boardMessage) {
 
   var codeSplits = replaceCode ? exports.getTagSplits(message, 'code') : [];
 
@@ -511,7 +511,7 @@ exports.replaceStyleMarkdown = function(message, replaceCode) {
 
   finalMessage += exports.replaceChunkMarkdown(message.substring(lastEnding));
 
-  if (!dontProcessLinks) {
+  if (!dontProcessLinks && !boardMessage) {
 
     finalMessage = finalMessage.replace(/(http|https)\:\/\/[^<\s]+/g,
         function links(match) {
