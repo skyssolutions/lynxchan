@@ -37,6 +37,10 @@
         "href",
         "removal"
       ],
+      "linkFileHistory": [
+        "href",
+        "removal"
+      ],
       "linkName": [
         "inner",
         "href",
@@ -120,6 +124,10 @@
       "linkFullText": "href",
       "labelIp": "inner",
       "linkHistory": [
+        "href",
+        "removal"
+      ],
+      "linkFileHistory": [
         "href",
         "removal"
       ],

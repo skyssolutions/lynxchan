@@ -109,17 +109,18 @@ exports.setPostingIp = function(cell, postingData, boardData, userRole,
         miscOps.getRange(postingData.ip, true), boardData.ipSalt));
   }
 
-  var url = '/latestPostings.js?boardUri=' + postingData.boardUri + '&';
+  var urlAffix = '?boardUri=' + postingData.boardUri + '&';
 
   if (postingData.postId) {
-    url += 'postId=' + postingData.postId;
+    urlAffix += 'postId=' + postingData.postId;
   } else {
-    url += 'threadId=' + postingData.threadId;
+    urlAffix += 'threadId=' + postingData.threadId;
   }
 
   return cell.replace('__labelIp_inner__',
       miscOps.hashIpForDisplay(postingData.ip, boardData.ipSalt, userRole))
-      .replace('__linkHistory_href__', url);
+      .replace('__linkHistory_href__', '/latestPostings.js' + urlAffix)
+      .replace('__linkFileHistory_href__', '/mediaManagement.js' + urlAffix);
 
 };
 
@@ -446,13 +447,19 @@ exports.setPostingModdingElements = function(modding, posting, cell, bData,
     cell = cell.replace('__panelASN_location__', '');
   }
 
+  // Due to technical limitations regarding individual caches, I decided to show
+  // the link to users that are not in the global staff.
   if (modding && posting.ip) {
     cell = cell.replace('__panelIp_location__', removable.panelIp).replace(
-        '__linkHistory_location__', removable.linkHistory);
+        '__linkHistory_location__', removable.linkHistory).replace(
+        '__linkFileHistory_location__', removable.linkFileHistory);
+
     cell = exports.setPostingIp(cell, posting, bData, userRole, removable);
+
   } else {
     cell = cell.replace('__panelIp_location__', '').replace(
-        '__linkHistory_location__', '');
+        '__linkHistory_location__', '').replace('__linkFileHistory_location__',
+        '');
   }
 
   return cell;

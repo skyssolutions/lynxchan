@@ -559,28 +559,9 @@ exports.prune = function(callback, page) {
 };
 // } Section 2: File pruning
 
-exports.getMedia = function(userData, parameters, language, callback) {
-
-  var globalStaff = userData.globalRole <= maxGlobalStaffRole;
-
-  if (!globalStaff) {
-
-    callback(lang(language).errDeniedMediaManagement);
-
-    return;
-  }
-
-  var queryBlock = {};
-
-  if (parameters.orphaned) {
-    queryBlock.references = {
-      $lt : 1
-    };
-  }
-
-  if (parameters.filter) {
-    queryBlock.identifier = new RegExp(parameters.filter.toLowerCase());
-  }
+// Section 3: Media listing {
+exports.getReferencesFromQuery = function(queryBlock, parameters, language,
+    callback) {
 
   references.countDocuments(queryBlock, function counted(error, count) {
 
@@ -616,7 +597,127 @@ exports.getMedia = function(userData, parameters, language, callback) {
 
 };
 
-// Section 3: File deletion {
+exports.handleFoundResults = function(queryBlock, threadResults, postResults,
+    parameters, language, callback) {
+
+  threadResults = threadResults.length ? threadResults[0].identifiers : [];
+
+  postResults = postResults.length ? postResults[0].identifiers : [];
+
+  queryBlock.identifier = {
+    $in : threadResults.concat(postResults).map(function(element) {
+      return element.replace('/', '');
+    })
+  };
+
+  exports.getReferencesFromQuery(queryBlock, parameters, language, callback);
+
+};
+
+exports.getMediaFromPost = function(query, parameters, language, callback) {
+
+  var postQuery = {
+    boardUri : parameters.boardUri
+  };
+
+  var colToUse;
+
+  if (parameters.threadId) {
+    colToUse = threads;
+    postQuery.threadId = +parameters.threadId;
+    delete parameters.postId;
+  } else {
+    colToUse = posts;
+    postQuery.postId = +parameters.postId;
+  }
+
+  colToUse.findOne(postQuery, function foundPost(error, posting) {
+
+    if (error) {
+      return callback(error);
+    } else if (!posting || !posting.ip) {
+      return callback(lang(language).errPostingNotFound);
+    }
+
+    var pipeLine = [ {
+      $match : {
+        ip : posting.ip,
+        'files.0' : {
+          $exists : true
+        }
+      }
+    }, {
+      $unwind : '$files'
+    }, {
+      $group : {
+        _id : 0,
+        identifiers : {
+          $addToSet : {
+            $concat : [ '$files.md5', '-', '$files.mime' ]
+          }
+        }
+      }
+    } ];
+
+    threads.aggregate(pipeLine).toArray(
+        function(error, threadResults) {
+
+          if (error) {
+            callback(error);
+          } else {
+
+            posts.aggregate(pipeLine).toArray(
+                function(error, postResults) {
+
+                  if (error) {
+                    callback(error);
+                  } else {
+
+                    exports.handleFoundResults(query, threadResults,
+                        postResults, parameters, language, callback);
+                  }
+
+                });
+
+          }
+
+        });
+
+  });
+
+};
+
+exports.getMedia = function(userData, parameters, language, callback) {
+
+  var globalStaff = userData.globalRole <= maxGlobalStaffRole;
+
+  if (!globalStaff) {
+    callback(lang(language).errDeniedMediaManagement);
+    return;
+  }
+
+  var queryBlock = {};
+
+  if (parameters.orphaned) {
+    queryBlock.references = {
+      $lt : 1
+    };
+  }
+
+  if (parameters.filter) {
+    queryBlock.identifier = new RegExp(parameters.filter.toLowerCase());
+  }
+
+  if (parameters.boardUri && (parameters.threadId || parameters.postId)) {
+    exports.getMediaFromPost(queryBlock, parameters, language, callback);
+  } else {
+    exports.getReferencesFromQuery(queryBlock, parameters, language, callback);
+  }
+
+};
+// } Section 3: Media listing
+
+// Section 4: File deletion {
 exports.deleteReferences = function(userData, identifiers, callback) {
 
   references.removeMany({
@@ -702,9 +803,9 @@ exports.deleteFiles = function(identifiers, userData, language, callback,
   });
 
 };
-// } Section 3: File deletion
+// } Section 4: File deletion
 
-// Section 3: Media details {
+// Section 5: Media details {
 exports.postingSorting = function(a, b) {
 
   if (a.boardUri < b.boardUri) {
@@ -800,4 +901,4 @@ exports.getMediaDetails = function(userData, parameters, language, callback) {
   });
 
 };
-// } Section 3: Media details
+// } Section 6: Media details

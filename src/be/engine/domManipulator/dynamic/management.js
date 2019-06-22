@@ -813,9 +813,7 @@ exports.bannerManagement = function(boardUri, banners, language) {
 // } Section 7: Banners
 
 // Section 8: Media management {
-exports.getMediaManagementPages = function(pages, parameters) {
-
-  var children = '';
+exports.getMediaManagementLinkBoilerPlate = function(parameters) {
 
   var boilerPlate = '';
 
@@ -826,6 +824,28 @@ exports.getMediaManagementPages = function(pages, parameters) {
   if (parameters.filter) {
     boilerPlate += '&filter=' + parameters.filter;
   }
+
+  if (parameters.boardUri && (parameters.threadId || parameters.postId)) {
+
+    boilerPlate += '&boardUri=' + parameters.boardUri + '&';
+
+    if (parameters.threadId) {
+      boilerPlate += 'threadId=' + parameters.threadId;
+    } else {
+      boilerPlate += 'postId=' + parameters.postId;
+    }
+
+  }
+
+  return boilerPlate;
+
+};
+
+exports.getMediaManagementPages = function(pages, parameters) {
+
+  var children = '';
+
+  var boilerPlate = exports.getMediaManagementLinkBoilerPlate(parameters);
 
   for (var i = 1; i <= pages; i++) {
 
@@ -887,11 +907,41 @@ exports.getMediaManagementCells = function(media, language) {
 
 exports.mediaManagement = function(media, pages, parameters, language) {
 
-  var document = templateHandler(language).mediaManagementPage.template
-      .replace('__title__', lang(language).titMediaManagement);
+  var template = templateHandler(language).mediaManagementPage;
+
+  var document = template.template.replace('__title__',
+      lang(language).titMediaManagement);
 
   document = document.replace('__pagesDiv_children__', exports
       .getMediaManagementPages(pages, parameters));
+
+  if (parameters.boardUri && (parameters.threadId || parameters.postId)) {
+
+    document = document.replace('__boardUriIdentifier_location__',
+        template.removable.boardUriIdentifier).replace(
+        '__boardUriIdentifier_value__', parameters.boardUri);
+
+    if (parameters.threadId) {
+
+      document = document.replace('__threadIdIdentifier_location__',
+          template.removable.threadIdIdentifier).replace(
+          '__postIdIdentifier_location__', '').replace(
+          '__threadIdIdentifier_value__', parameters.threadId);
+
+    } else {
+
+      document = document.replace('__postIdIdentifier_location__',
+          template.removable.postIdIdentifier).replace(
+          '__threadIdIdentifier_location__', '').replace(
+          '__postIdIdentifier_value__', parameters.postId);
+
+    }
+
+  } else {
+    document = document.replace('__boardUriIdentifier_location__', '').replace(
+        '__threadIdIdentifier_location__', '').replace(
+        '__postIdIdentifier_location__', '');
+  }
 
   return document.replace('__filesDiv_children__', exports
       .getMediaManagementCells(media, language));

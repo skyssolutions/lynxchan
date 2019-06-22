@@ -583,7 +583,19 @@
     "template": "mediaManagementPage",
     "prebuiltFields": {
       "filesDiv": "children",
-      "pagesDiv": "children"
+      "pagesDiv": "children",
+      "boardUriIdentifier": [
+        "removal",
+        "value"
+      ],
+      "threadIdIdentifier": [
+        "removal",
+        "value"
+      ],
+      "postIdIdentifier": [
+        "removal",
+        "value"
+      ]
     }
   },
   {

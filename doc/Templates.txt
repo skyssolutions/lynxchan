@@ -337,6 +337,10 @@ linkHistory:
     use: have its href manipulated or might be removed.
     description: link to the post history of the poster's ip.
 
+linkFileHistory:
+    use: have its href manipulated or might be removed.
+    description: link to the file history of the poster's ip.
+
 contentOmissionIndicator:
     use: might be removed.
     description: element indicating the original text was too long to be displayed.
@@ -469,6 +473,10 @@ Elements:
 panelASN:
     use: might be removed.
     description: panel with the ASN label.
+
+linkFileHistory:
+    use: have its href manipulated or might be removed.
+    description: link to the file history of the poster's ip.
 
 labelASN:
     use: have it's innerHTML manipulated.
@@ -2307,6 +2315,18 @@ filesDiv:
 pagesDiv:
     use: have children appended to it.
     description: div that displays the available pages.
+
+boardUriIdentifier:
+    use: might be removed or have it's value manipulated.
+    description: identifier used to show only posts from a specific poster.
+
+threadIdIdentifier:
+    use: might be removed or have it's value manipulated.
+    description: identifier used to show only posts from a specific poster.
+
+postIdIdentifier:
+    use: might be removed or have it's value manipulated.
+    description: identifier used to show only posts from a specific poster.
 
 ------------------------------------------------------------------------------------------
 
