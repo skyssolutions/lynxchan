@@ -346,7 +346,8 @@ exports.getSetBlock = function(thread, postId) {
 
   if (newOmittedPosts) {
     updateBlock.$unset = {
-      outerCache : 1
+      outerCache : 1,
+      alternativeCaches : 1
     };
   }
 

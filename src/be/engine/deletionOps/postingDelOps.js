@@ -93,7 +93,8 @@ exports.reaggregateLatestPosts = function(countData, board, parentThreads,
           latestPosts : foundPosts
         },
         $unset : {
-          outerCache : 1
+          outerCache : 1,
+          alternativeCaches : 1
         }
       }, function setPosts(error) {
         if (error) {

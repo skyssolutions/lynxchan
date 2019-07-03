@@ -449,7 +449,7 @@ exports.getCatalogCell = function(boardUri, document, thread, language) {
 
   cell = cell.replace('__labelReplies_inner__', thread.postCount || 0);
   cell = cell.replace('__labelImages_inner__', thread.fileCount || 0);
-  cell = cell.replace('__labelPage_inner__', thread.page);
+  cell = cell.replace('__labelPage_inner__', thread.page || 1);
 
   var removable = templateHandler(language).catalogCell.removable;
 
