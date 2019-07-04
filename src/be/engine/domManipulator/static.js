@@ -535,7 +535,7 @@ exports.catalog = function(language, boardData, threads, flagData, callback) {
   };
 
   if (language) {
-    meta.languges = language.headerValues;
+    meta.languages = language.headerValues;
     meta.referenceFile = path;
     path += language.headerValues.join('-');
   }
