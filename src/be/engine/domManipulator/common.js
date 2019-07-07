@@ -598,7 +598,8 @@ exports.addMessage = function(innerPage, cell, posting, removable) {
     cell = cell.replace('__contentOmissionIndicator_location__', '');
   }
 
-  return cell.replace('__divMessage_inner__', exports.matchCodeTags(markdown));
+  return cell.replace('__divMessage_inner__', exports.matchCodeTags(markdown)
+      .replace(/\$&/g, '$ &'));
 
 };
 
