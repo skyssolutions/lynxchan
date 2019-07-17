@@ -423,7 +423,7 @@ exports.pushIndex = function(indexToUse, key, dest) {
   var indexList = indexToUse[key] || [];
   indexToUse[key] = indexList;
 
-  if (indexList.indexOf(dest < 0)) {
+  if (indexList.indexOf(dest) < 0) {
     indexList.push(dest);
   }
 
