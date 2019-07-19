@@ -18,6 +18,7 @@ var rootModule;
 var boardOps;
 var rssBuilder;
 var jsonBuilder;
+var latestLimit;
 var maxThreads;
 var disableCatalogPosting;
 
@@ -41,6 +42,7 @@ exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
   pageSize = settings.pageSize;
+  latestLimit = settings.latestPostsAmount;
   altLanguages = settings.useAlternativeLanguages;
   verbose = settings.verbose || settings.verboseGenerator;
   disableCatalogPosting = settings.disableCatalogPosting;
@@ -61,8 +63,26 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Thread {
+exports.getThreadNextLanguage = function(boardData, flagData, threadData,
+    foundPosts, lastPosts, language, callback) {
+
+  rootModule.nextLanguage(language, function gotNextLanguage(error, language) {
+
+    if (error) {
+      callback(language);
+    } else if (!language) {
+      callback();
+    } else {
+      exports.generateThreadHTML(boardData, flagData, threadData, foundPosts,
+          lastPosts, callback, language);
+    }
+
+  });
+
+};
+
 exports.generateThreadHTML = function(boardData, flagData, threadData,
-    foundPosts, callback, language) {
+    foundPosts, lastPosts, callback, language) {
 
   domManipulator.thread(boardData, flagData, threadData, foundPosts,
       function generatedHTML(error) {
@@ -71,24 +91,17 @@ exports.generateThreadHTML = function(boardData, flagData, threadData,
           callback(error);
         } else {
 
-          if (!altLanguages) {
-            callback();
-            return;
-          }
+          domManipulator.thread(boardData, flagData, threadData, lastPosts,
+              function generatedHTML(error) {
 
-          rootModule.nextLanguage(language, function gotNextLanguage(error,
-              language) {
+                if (!altLanguages) {
+                  return callback();
+                }
 
-            if (error) {
-              callback(language);
-            } else if (!language) {
-              callback();
-            } else {
-              exports.generateThreadHTML(boardData, flagData, threadData,
-                  foundPosts, callback, language);
-            }
+                exports.getThreadNextLanguage(boardData, flagData, threadData,
+                    foundPosts, lastPosts, language, callback);
 
-          });
+              }, null, null, language, true);
 
         }
 
@@ -184,7 +197,7 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
                 } else {
 
                   exports.generateThreadHTML(boardData, flagData, threadData,
-                      foundPosts, callback);
+                      foundPosts, foundPosts.slice(-latestLimit), callback);
 
                 }
 

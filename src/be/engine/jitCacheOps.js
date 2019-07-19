@@ -17,6 +17,7 @@ var overboardPages;
 var overboardAlternativePages = [ '1.json', 'index.rss', '' ];
 var catalogPages = [ 'catalog.html', 'catalog.json', 'index.rss' ];
 var rulesPages = [ 'rules.html', 'rules.json' ];
+var threadPages = [ 'res', 'last' ];
 
 exports.loadSettings = function() {
 
@@ -155,7 +156,7 @@ exports.generateCache = function(lockData, callback) {
 
 exports.getThreadLockData = function(fileParts) {
 
-  if (fileParts[2] !== 'res') {
+  if (threadPages.indexOf(fileParts[2]) < 0) {
     return;
   }
 

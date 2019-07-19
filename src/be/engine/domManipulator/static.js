@@ -233,9 +233,11 @@ exports.setThreadCommonInfo = function(template, threadData, boardData,
 
 };
 
-exports.getThreadPathAndMeta = function(boardUri, language, meta, threadData) {
+exports.getThreadPathAndMeta = function(boardUri, language, meta, threadData,
+    last) {
 
-  var path = '/' + boardUri + '/res/' + threadData.threadId + '.html';
+  var path = '/' + boardUri + (last ? '/last/' : '/res/') + threadData.threadId;
+  path += '.html';
 
   if (language) {
     meta.languages = language.headerValues;
@@ -248,7 +250,7 @@ exports.getThreadPathAndMeta = function(boardUri, language, meta, threadData) {
 };
 
 exports.thread = function(boardData, flagData, threadData, posts, callback,
-    modding, userRole, language) {
+    modding, userRole, language, last) {
 
   var boardUri = boardData.boardUri;
 
@@ -275,12 +277,12 @@ exports.thread = function(boardData, flagData, threadData, posts, callback,
 
     var meta = {
       boardUri : boardUri,
-      type : 'thread',
+      type : last ? 'last' : 'thread',
       threadId : threadData.threadId
     };
 
     var path = exports.getThreadPathAndMeta(boardUri, language, meta,
-        threadData);
+        threadData, last);
 
     cacheHandler.writeData(document, path, 'text/html', meta, callback);
   }

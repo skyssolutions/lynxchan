@@ -647,20 +647,23 @@ exports.setThreadHiddeableElements = function(thread, cell, removable,
       cell = cell.replace(location, '');
     } else {
       cell = cell.replace(location, removable[exports.indicatorsRelation[key]]);
-
     }
   }
 
   if (innerPage) {
-    cell = cell.replace('__linkReply_location__', '');
+    cell = cell.replace('__linkReply_location__', '').replace(
+        '__linkLast_location__', '');
   } else {
 
-    cell = cell.replace('__linkReply_location__', removable.linkReply);
+    cell = cell.replace('__linkReply_location__', removable.linkReply).replace(
+        '__linkLast_location__', removable.linkLast);
 
     var boardUri = thread.boardUri;
     var replyHref = '/' + boardUri + '/res/' + thread.threadId + '.html';
+    var lastHref = '/' + boardUri + '/last/' + thread.threadId + '.html';
 
-    cell = cell.replace('__linkReply_href__', replyHref);
+    cell = cell.replace('__linkReply_href__', replyHref).replace(
+        '__linkLast_href__', lastHref);
 
   }
 

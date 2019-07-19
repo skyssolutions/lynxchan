@@ -229,7 +229,8 @@ exports.getInfoToClear = function(task) {
 
   switch (task.cacheType) {
 
-  case 'thread': {
+  case 'thread':
+  case 'last': {
     return {
       object : boardIndex.threads,
       indexKey : task.threadId
@@ -469,7 +470,8 @@ exports.placeIndex = function(task) {
     return exports.pushIndex(boardIndex, task.meta.type, task.dest);
   }
 
-  case 'thread': {
+  case 'thread':
+  case 'last': {
     return exports.pushIndex(boardIndex.threads, task.meta.threadId, task.dest);
   }
 

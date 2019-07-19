@@ -37,6 +37,10 @@
         "href",
         "removal"
       ],
+      "linkLast": [
+        "removal",
+        "href"
+      ],
       "linkFileHistory": [
         "href",
         "removal"
