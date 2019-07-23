@@ -83,7 +83,8 @@ exports.clean = function(toClean) {
     return toClean;
   }
 
-  return toClean.replace(/__/g, '&#95;&#95;');
+  return toClean.replace(/__/g, '&#95;&#95;').replace(/\$&/g, '$ &').replace(
+      /\$`/g, '$ `');
 };
 
 exports.getFormCellBoilerPlate = function(cell, action, cssClass) {
@@ -598,8 +599,8 @@ exports.addMessage = function(innerPage, cell, posting, removable) {
     cell = cell.replace('__contentOmissionIndicator_location__', '');
   }
 
-  return cell.replace('__divMessage_inner__', exports.matchCodeTags(markdown)
-      .replace(/\$&/g, '$ &'));
+  return cell.replace('__divMessage_inner__', exports.clean(exports
+      .matchCodeTags(markdown)));
 
 };
 
