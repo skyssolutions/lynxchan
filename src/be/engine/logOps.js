@@ -1,6 +1,5 @@
 'use strict';
 
-var master = require('cluster').isMaster;
 var db = require('../db');
 var aggregatedLogs = db.aggregatedLogs();
 var logs = db.logs();
@@ -37,15 +36,7 @@ exports.aggregateLog = function(entryTime, collectedIds, callback) {
       console.log('Failed to aggregate log: ' + error.toString());
     }
 
-    if (!master) {
-      process.send({
-        log : true,
-        date : entryTime
-      });
-      callback();
-    } else {
-      generator.log(entryTime, callback);
-    }
+    generator.log(entryTime, callback);
 
   });
 };
