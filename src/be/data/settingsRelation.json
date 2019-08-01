@@ -401,6 +401,11 @@
   },
   {
     "type": "boolean",
+    "setting": "useHttp2",
+    "element": "checkboxHttp2"
+  },
+  {
+    "type": "boolean",
     "setting": "verboseGenerator",
     "element": "checkboxVerboseGenerator"
   },

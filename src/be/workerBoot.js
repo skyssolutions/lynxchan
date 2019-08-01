@@ -14,6 +14,7 @@ var fs = require('fs');
 var url = require('url');
 var requestHandler;
 var servers = [];
+var http2 = settings.useHttp2;
 var stoppedServers = 0;
 
 // kernel variables
@@ -23,6 +24,7 @@ exports.reload = function() {
 
   settings = settingsHandler.getGeneralSettings();
   verbose = settings.verbose || settings.verboseMisc;
+  http2 = settings.useHttp2;
   requestHandler = require('./engine/requestHandler');
 };
 
@@ -75,15 +77,15 @@ function startSSL() {
       }
     }
 
-    var server = require('http2').createSecureServer(options,
-        function(req, res) {
+    var server = require(http2 ? 'http2' : 'https')[http2 ? 'createSecureServer'
+        : 'createServer'](options, function(req, res) {
 
-          if (req.headers && !req.headers.host) {
-            req.headers.host = req.headers[':authority'];
-          }
+      if (req.headers && !req.headers.host) {
+        req.headers.host = req.headers[':authority'];
+      }
 
-          main(req, res);
-        }).listen(443, settings.address);
+      main(req, res);
+    }).listen(443, settings.address);
 
     servers.push(server);
 
