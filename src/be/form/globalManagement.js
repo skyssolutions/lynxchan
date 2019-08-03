@@ -7,30 +7,33 @@ var miscOps = require('../engine/miscOps');
 
 exports.getManagementData = function(userData, res, json, auth, language) {
 
-  miscOps.getManagementData(userData.globalRole, language, userData.login,
-      !json, function gotData(error, globalStaff, globalReports, appealedBans) {
-        if (error) {
-          formOps.outputError(error, 500, res, language, json, auth);
-        } else {
+  miscOps
+      .getManagementData(userData.globalRole, language, userData.login, !json,
+          function gotData(error, globalStaff, globalReports, boardData,
+              appealedBans) {
+            if (error) {
+              formOps.outputError(error, 500, res, language, json, auth);
+            } else {
 
-          if (json) {
+              if (json) {
 
-            formOps.outputResponse('ok', {
-              login : userData.login,
-              staff : globalStaff || [],
-              appealedBans : appealedBans || [],
-              reports : globalReports || []
-            }, res, null, auth, language, true);
+                formOps.outputResponse('ok', {
+                  login : userData.login,
+                  staff : globalStaff || [],
+                  appealedBans : appealedBans || [],
+                  reports : globalReports || []
+                }, res, null, auth, language, true);
 
-          } else {
-            res.writeHead(200, miscOps.getHeader('text/html', auth));
+              } else {
+                res.writeHead(200, miscOps.getHeader('text/html', auth));
 
-            res.end(dom.globalManagement(userData.globalRole, userData.login,
-                globalStaff, globalReports, appealedBans, language));
-          }
+                res.end(dom.globalManagement(userData.globalRole,
+                    userData.login, globalStaff, globalReports, boardData,
+                    appealedBans, language));
+              }
 
-        }
-      });
+            }
+          });
 
 };
 

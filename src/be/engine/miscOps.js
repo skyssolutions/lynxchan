@@ -6,6 +6,7 @@ var settingsHandler = require('../settingsHandler');
 var verbose;
 var db = require('../db');
 var bans = db.bans();
+var boards = db.boards();
 var crypto = require('crypto');
 var fs = require('fs');
 var users = db.users();
@@ -314,7 +315,8 @@ exports.getGlobalSettingsData = function(userData, language, callback) {
 };
 
 // Section 1: Global management data {
-exports.getAppealedBans = function(userRole, users, reports, callback) {
+exports.getAppealedBans = function(userRole, users, reports, boardData,
+    callback) {
 
   if (userRole < 3) {
 
@@ -348,7 +350,7 @@ exports.getAppealedBans = function(userRole, users, reports, callback) {
     });
 
   } else {
-    callback(null, users, reports);
+    callback(null, users, reports, boardData);
   }
 
 };
@@ -361,7 +363,51 @@ exports.getReportsAssociations = function(userRole, foundUsers, foundReports,
     if (error) {
       callback(error);
     } else {
-      exports.getAppealedBans(userRole, foundUsers, foundReports, callback);
+
+      if (!foundReports.length) {
+        return exports.getAppealedBans(userRole, foundUsers, foundReports, {},
+            callback);
+      }
+
+      var boardList = {};
+
+      for (var i = 0; i < foundReports.length; i++) {
+
+        var associatedPost = foundReports[i].associatedPost;
+
+        if (associatedPost) {
+          boardList[associatedPost.boardUri] = true;
+        }
+
+      }
+
+      boards.find({
+        boardUri : {
+          $in : Object.keys(boardList)
+        }
+      }, {
+        projection : {
+          _id : 0,
+          ipSalt : 1,
+          boardUri : 1
+        }
+      }).toArray(
+          function gotBoards(error, foundBoards) {
+
+            if (error) {
+              return callback(error);
+            }
+
+            for (i = 0; i < foundBoards.length; i++) {
+              var foundBoard = foundBoards[i];
+              boardList[foundBoard.boardUri] = foundBoard;
+            }
+
+            return exports.getAppealedBans(userRole, foundUsers, foundReports,
+                boardList, callback);
+
+          });
+
     }
 
   });

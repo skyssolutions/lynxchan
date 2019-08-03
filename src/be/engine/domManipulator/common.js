@@ -96,7 +96,18 @@ exports.getFormCellBoilerPlate = function(cell, action, cssClass) {
 };
 
 exports.setPostingIp = function(cell, postingData, boardData, userRole,
-    removable) {
+    removable, preview) {
+
+  if (preview) {
+    boardData = boardData[postingData.boardUri];
+  }
+
+  if (!boardData) {
+    console
+        .log('MISSING BOARD DATA ON SET POSTING IP  ' + postingData.boardUri);
+
+    boardData = {};
+  }
 
   if (userRole <= minClearIpRole) {
     cell = cell.replace('__panelRange_location__', '');
@@ -404,11 +415,17 @@ exports.setPostingFlag = function(posting, postingCell, removable) {
 
 };
 
-exports.setPostingLinks = function(postingCell, posting, removable) {
+exports.setPostingLinks = function(postingCell, posting, innerPage, removable) {
 
   var boardUri = exports.clean(posting.boardUri);
 
-  var linkStart = '/' + boardUri + '/res/' + posting.threadId + '.html#';
+  var linkStart = '';
+
+  if (!innerPage) {
+    linkStart = '/' + boardUri + '/res/' + posting.threadId + '.html';
+  }
+
+  linkStart += '#';
 
   var selfId = posting.postId || posting.threadId;
 
@@ -424,9 +441,9 @@ exports.setPostingLinks = function(postingCell, posting, removable) {
 };
 
 exports.setPostingModdingElements = function(modding, posting, cell, bData,
-    userRole, removable) {
+    userRole, removable, preview) {
 
-  if (modding) {
+  if (modding || preview) {
     var editLink = '/edit.js?boardUri=' + exports.clean(posting.boardUri);
 
     if (posting.postId) {
@@ -450,12 +467,13 @@ exports.setPostingModdingElements = function(modding, posting, cell, bData,
 
   // Due to technical limitations regarding individual caches, I decided to show
   // the link to users that are not in the global staff.
-  if (modding && posting.ip) {
+  if ((modding || preview) && posting.ip) {
     cell = cell.replace('__panelIp_location__', removable.panelIp).replace(
         '__linkHistory_location__', removable.linkHistory).replace(
         '__linkFileHistory_location__', removable.linkFileHistory);
 
-    cell = exports.setPostingIp(cell, posting, bData, userRole, removable);
+    cell = exports.setPostingIp(cell, posting, bData, userRole, removable,
+        preview);
 
   } else {
     cell = cell.replace('__panelIp_location__', '').replace(
@@ -608,12 +626,13 @@ exports.setAllSharedPostingElements = function(postingCell, posting, removable,
     language, modding, innerPage, userRole, boardData, preview) {
 
   postingCell = exports.setPostingModdingElements(modding, posting,
-      postingCell, boardData, userRole, removable);
+      postingCell, boardData, userRole, removable, preview);
 
   postingCell = exports.setSharedHideableElements(posting, removable,
       postingCell, language);
 
-  postingCell = exports.setPostingLinks(postingCell, posting, removable);
+  postingCell = exports.setPostingLinks(postingCell, posting, innerPage,
+      removable);
 
   postingCell = exports.setPostingComplexElements(posting, postingCell,
       removable, preview);
@@ -1147,7 +1166,7 @@ exports.getBanCell = function(ban, globalPage, language) {
 
 };
 
-exports.getBanList = function(bans, globalPage, language) {
+exports.getBanList = function(bans, boardData, globalPage, userRole, language) {
 
   var children = '';
 
@@ -1162,7 +1181,8 @@ exports.getBanList = function(bans, globalPage, language) {
 // } Section 4: Ban div
 
 // Setion 5: Open reports {
-exports.getReportCell = function(report, language, globalManagement, ops) {
+exports.getReportCell = function(report, boardData, language, globalManagement,
+    ops, userRole) {
 
   var template = templateHandler(language).reportCell;
 
@@ -1185,7 +1205,7 @@ exports.getReportCell = function(report, language, globalManagement, ops) {
 
   if (report.associatedPost) {
     return cell.replace('__postingDiv_inner__', exports.getPostInnerElements(
-        report.associatedPost, true, language, ops));
+        report.associatedPost, true, language, ops, null, boardData, userRole));
 
   } else {
     return cell.replace('__postingDiv_inner__', '');
@@ -1193,15 +1213,24 @@ exports.getReportCell = function(report, language, globalManagement, ops) {
 
 };
 
-exports.getReportList = function(reports, language, globalManagement) {
+exports.getReportList = function(reports, boardData, language, gManagement,
+    userRole) {
 
   var children = '';
+
+  if (!gManagement) {
+
+    var newBData = {};
+    newBData[boardData.boardUri] = boardData;
+
+    boardData = newBData;
+  }
 
   var operations = [];
 
   for (var i = 0; i < reports.length; i++) {
-    children += exports.getReportCell(reports[i], language, globalManagement,
-        operations);
+    children += exports.getReportCell(reports[i], boardData, language,
+        gManagement, operations, userRole);
   }
 
   exports.handleOps(operations);

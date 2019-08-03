@@ -203,7 +203,7 @@ exports.setModElements = function(modding, document, userRole, removable,
 };
 
 exports.setThreadCommonInfo = function(template, threadData, boardData,
-    language, flagData, posts, modding, userRole) {
+    language, flagData, posts, modding, userRole, last) {
 
   var document = common.setHeader(template, language, boardData, flagData,
       threadData);
@@ -223,7 +223,9 @@ exports.setThreadCommonInfo = function(template, threadData, boardData,
       threadData, posts, true, modding, boardData, userRole, language,
       operations));
 
-  common.handleOps(operations);
+  if (!last) {
+    common.handleOps(operations);
+  }
 
   document = document
       .replace('__threadIdentifier_value__', threadData.threadId);
@@ -257,7 +259,7 @@ exports.thread = function(boardData, flagData, threadData, posts, callback,
   var template = templateHandler(language).threadPage;
 
   var document = exports.setThreadCommonInfo(template, threadData, boardData,
-      language, flagData, posts, modding, userRole);
+      language, flagData, posts, modding, userRole, last);
 
   if (modding) {
 

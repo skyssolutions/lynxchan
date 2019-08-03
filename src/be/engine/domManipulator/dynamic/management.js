@@ -309,7 +309,7 @@ exports.getBoardManagementContent = function(boardData, userData, bans,
       .getBanList(bans, false, language));
 
   return document.replace('__reportDiv_children__', common.getReportList(
-      reports, language));
+      reports, boardData, language, false, userData.globalRole));
 
 };
 
@@ -494,11 +494,11 @@ exports.processHideableElements = function(document, userRole, staff, language,
 
 };
 
-exports.setGlobalManagementLists = function(document, reports, appealedBans,
-    language, removable) {
+exports.setGlobalManagementLists = function(document, reports, boardData,
+    userRole, appealedBans, language, removable) {
 
   document = document.replace('__reportDiv_children__', common.getReportList(
-      reports, language, true));
+      reports, boardData, language, true, userRole));
 
   if (appealedBans) {
     document = document.replace('__appealedBansPanel_location__',
@@ -515,15 +515,15 @@ exports.setGlobalManagementLists = function(document, reports, appealedBans,
 };
 
 exports.globalManagement = function(userRole, userLogin, staff, reports,
-    appealedBans, language) {
+    boardData, appealedBans, language) {
 
   var template = templateHandler(language).gManagement;
 
   var document = template.template.replace('__title__',
       lang(language).titGlobalManagement);
 
-  document = exports.setGlobalManagementLists(document, reports, appealedBans,
-      language, template.removable);
+  document = exports.setGlobalManagementLists(document, reports, boardData,
+      userRole, appealedBans, language, template.removable);
 
   document = exports.setGlobalManagementLinks(userRole, document,
       template.removable);

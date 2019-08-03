@@ -703,7 +703,7 @@ exports.associatePostsContent = function(reports, postsOrArray, callback) {
   posts.find({
     $or : postsOrArray
   }, {
-    projection : generator.postProjection
+    projection : generator.postModProjection
   }).toArray(function gotPosts(error, foundPosts) {
 
     if (error) {
@@ -748,7 +748,7 @@ exports.associateContent = function(reports, callback) {
     threads.find({
       $or : threadsOrArray
     }, {
-      projection : generator.threadProjection
+      projection : generator.postModProjection
     }).toArray(function gotThreads(error, foundThreads) {
 
       if (error) {

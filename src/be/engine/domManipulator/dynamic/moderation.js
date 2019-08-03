@@ -256,7 +256,7 @@ exports.boardModeration = function(boardData, ownerData, language) {
 // } Section 3: Board moderation
 
 // Section 4: Latest postings {
-exports.getPosts = function(postings, language) {
+exports.getPosts = function(postings, boardData, userRole, language) {
 
   var postsContent = '';
 
@@ -271,7 +271,7 @@ exports.getPosts = function(postings, language) {
     posting.postId = posting.postId || posting.threadId;
 
     postContent += common.getPostInnerElements(posting, true, language,
-        operations);
+        operations, null, boardData, userRole);
 
     postsContent += postContent + '</div>';
   }
@@ -374,7 +374,7 @@ exports.getDates = function(currentDate, postings, pivotPosting, parameters,
 };
 
 exports.latestPostings = function(postings, parameters, userData, pivotPosting,
-    language) {
+    boardData, language) {
 
   var dom = templateHandler(language).latestPostingsPage;
 
@@ -397,7 +397,7 @@ exports.latestPostings = function(postings, parameters, userData, pivotPosting,
       .replace('__fieldDate_value__', currentDate.toUTCString());
 
   return document.replace('__divPostings_children__', exports.getPosts(
-      postings, language));
+      postings, boardData, userData.globalRole, language));
 
 };
 // } Section 4: Latest postings

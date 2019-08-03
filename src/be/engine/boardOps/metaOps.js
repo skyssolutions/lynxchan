@@ -725,6 +725,7 @@ exports.getBoardManagementData = function(userData, board,
       _id : 0,
       tags : 1,
       owner : 1,
+      ipSalt : 1,
       settings : 1,
       maxFiles : 1,
       boardUri : 1,
@@ -761,6 +762,50 @@ exports.getBoardManagementData = function(userData, board,
 // } Section 5: Board management
 
 // Section 6: Latest postings {
+
+exports.mergeFoundPostings = function(foundPostings, checkPostings, callback) {
+
+  checkPostings = checkPostings.sort(function(a, b) {
+    return b.creation - a.creation;
+  });
+
+  checkPostings = checkPostings.splice(0, latestLimit + 1);
+
+  var pivotPosting = checkPostings[checkPostings.length - 1];
+
+  var boardList = {};
+
+  for (var i = 0; i < foundPostings.length; i++) {
+    boardList[foundPostings[i].boardUri] = true;
+  }
+
+  boards.find({
+    boardUri : {
+      $in : Object.keys(boardList)
+    }
+  }, {
+    projection : {
+      boardUri : 1,
+      _id : 0,
+      ipSalt : 1
+    }
+  }).toArray(function gotBoards(error, foundBoards) {
+
+    if (error) {
+      return callback(error);
+    }
+
+    for (i = 0; i < foundBoards.length; i++) {
+      var foundBoard = foundBoards[i];
+      boardList[foundBoard.boardUri] = foundBoard;
+    }
+
+    callback(null, foundPostings, pivotPosting, boardList);
+
+  });
+
+};
+
 exports.getUpperLimit = function(foundPostings, callback) {
 
   if (!foundPostings.length) {
@@ -777,33 +822,30 @@ exports.getUpperLimit = function(foundPostings, callback) {
     projection : generator.postProjection
   }).sort({
     creation : -1
-  }).limit(latestLimit).toArray(function gotPosts(error, foundPosts) {
+  }).limit(latestLimit).toArray(
+      function gotPosts(error, foundPosts) {
 
-    if (error) {
-      return callback(error);
-    }
+        if (error) {
+          return callback(error);
+        }
 
-    threads.find(match, {
-      projection : generator.postProjection
-    }).sort({
-      creation : -1
-    }).limit(latestLimit).toArray(function gotThreads(error, foundThreads) {
+        threads.find(match, {
+          projection : generator.postProjection
+        }).sort({
+          creation : -1
+        }).limit(latestLimit).toArray(
+            function gotThreads(error, foundThreads) {
 
-      if (error) {
-        return callback(error);
-      }
+              if (error) {
+                return callback(error);
+              }
 
-      var checkPostings = foundPosts.concat(foundThreads).sort(function(a, b) {
-        return b.creation - a.creation;
+              exports.mergeFoundPostings(foundPostings, foundPosts
+                  .concat(foundThreads), callback);
+
+            });
+
       });
-
-      checkPostings = checkPostings.splice(0, latestLimit + 1);
-
-      callback(null, foundPostings, checkPostings[checkPostings.length - 1]);
-
-    });
-
-  });
 
 };
 
@@ -812,7 +854,7 @@ exports.getPosts = function(hasDate, matchBlock, callback) {
   var sortDirection = hasDate ? 1 : -1;
 
   posts.find(matchBlock, {
-    projection : generator.postProjection
+    projection : generator.postModProjection
   }).sort({
     creation : sortDirection
   }).limit(latestLimit).toArray(function gotPosts(error, foundPosts) {
@@ -823,7 +865,7 @@ exports.getPosts = function(hasDate, matchBlock, callback) {
 
     // style exception, too simple
     threads.find(matchBlock, {
-      projection : generator.postProjection
+      projection : generator.postModProjection
     }).sort({
       creation : sortDirection
     }).limit(latestLimit).toArray(function gotThreads(error, foundThreads) {
