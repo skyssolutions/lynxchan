@@ -607,7 +607,8 @@ exports.removeFoundContent = function(userData, board, parameters, cb,
         previewCache : 1,
         clearCache : 1,
         alternativeCaches : 1,
-        hashedCache : 1
+        hashedCache : 1,
+        previewHashedCache : 1
       }
     }, function removedThreadFiles(error) {
       if (error) {
@@ -630,7 +631,8 @@ exports.removeFoundContent = function(userData, board, parameters, cb,
             previewCache : 1,
             alternativeCaches : 1,
             clearCache : 1,
-            hashedCache : 1
+            hashedCache : 1,
+            previewHashedCache : 1
           }
         }, function removedPostFiles(error) {
           if (error) {

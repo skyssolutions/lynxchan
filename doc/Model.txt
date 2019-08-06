@@ -90,7 +90,8 @@ threads: stores board's threads.
     lastEditLogin: Login of the last user to edit the thread message.
     innerCache: html cache for the version on thread pages.
     outerCache: html cache for the version on board pages.
-    previewCache: html cache for preview.
+    previewCache: html cache for preview using clear ips.
+    previewHashedCache: html cache for preview using hashed ips.
     clearCache: html cache for the mod version with clear ips.
     hashedCache: html cache for the mod version with hashed ips.
     alternativeCaches(Object): object that stores the html caches for alternative languages.

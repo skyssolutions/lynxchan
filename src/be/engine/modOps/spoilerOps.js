@@ -55,7 +55,8 @@ exports.getOperations = function(threadOps, postOps, foundThreads, foundPosts,
             alternativeCaches : 1,
             previewCache : 1,
             clearCache : 1,
-            hashedCache : 1
+            hashedCache : 1,
+            previewHashedCache : 1
           }
         }
       }
@@ -82,7 +83,8 @@ exports.getOperations = function(threadOps, postOps, foundThreads, foundPosts,
             alternativeCaches : 1,
             previewCache : 1,
             clearCache : 1,
-            hashedCache : 1
+            hashedCache : 1,
+            previewHashedCache : 1
           }
         }
       }

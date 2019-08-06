@@ -849,13 +849,17 @@ exports.getCacheField = function(preview, innerPage, modding, userRole,
 
   var toReturn;
 
-  if (preview) {
+  var clearIp = userRole <= clearIpRole;
+
+  if (preview && clearIp) {
     toReturn = 'previewCache';
+  } else if (preview && !clearIp) {
+    toReturn = 'previewHashedCache';
   } else if (!innerPage) {
     toReturn = 'outerCache';
   } else if (!modding) {
     toReturn = 'innerCache';
-  } else if (userRole <= clearIpRole) {
+  } else if (clearIp) {
     toReturn = 'clearCache';
   } else {
     toReturn = 'hashedCache';

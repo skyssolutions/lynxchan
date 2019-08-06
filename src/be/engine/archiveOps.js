@@ -35,7 +35,8 @@ exports.setArchive = function(thread, callback) {
       previewCache : 1,
       clearCache : 1,
       alternativeCaches : 1,
-      hashedCache : 1
+      hashedCache : 1,
+      previewHashedCache : 1
     }
   }, function(error) {
 
@@ -218,7 +219,8 @@ exports.autoArchive = function(ids, board) {
       previewCache : 1,
       clearCache : 1,
       alternativeCaches : 1,
-      hashedCache : 1
+      hashedCache : 1,
+      previewHashedCache : 1
     }
   }, function(error) {
 

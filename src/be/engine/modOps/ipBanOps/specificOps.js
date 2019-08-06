@@ -209,7 +209,8 @@ exports.updateThreadsBanMessage = function(pages, parentThreads, userData,
       previewCache : 1,
       alternativeCaches : 1,
       clearCache : 1,
-      hashedCache : 1
+      hashedCache : 1,
+      previewHashedCache : 1
     }
   }, function setMessage(error) {
 
@@ -233,7 +234,8 @@ exports.updateThreadsBanMessage = function(pages, parentThreads, userData,
           previewCache : 1,
           clearCache : 1,
           alternativeCaches : 1,
-          hashedCache : 1
+          hashedCache : 1,
+          previewHashedCache : 1
         }
       }, function setMessage(error) {
         if (error) {

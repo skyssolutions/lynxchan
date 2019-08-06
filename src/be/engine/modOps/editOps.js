@@ -133,7 +133,8 @@ exports.setNewThreadSettings = function(parameters, thread, callback) {
       previewCache : 1,
       clearCache : 1,
       alternativeCaches : 1,
-      hashedCache : 1
+      hashedCache : 1,
+      previewHashedCache : 1
     }
   }, function updatedThread(error) {
 
@@ -277,7 +278,8 @@ exports.recordEdit = function(parameters, login, language, callback) {
       previewCache : 1,
       clearCache : 1,
       alternativeCaches : 1,
-      hashedCache : 1
+      hashedCache : 1,
+      previewHashedCache : 1
     }
   }, function savedEdit(error, posting) {
     if (error) {

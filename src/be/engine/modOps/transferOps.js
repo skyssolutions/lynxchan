@@ -284,7 +284,8 @@ exports.getPostsOps = function(newPostIdRelation, newBoard, foundPosts,
             alternativeCaches : 1,
             previewCache : 1,
             clearCache : 1,
-            hashedCache : 1
+            hashedCache : 1,
+            previewHashedCache : 1
           }
         }
       }
@@ -476,7 +477,8 @@ exports.updateThread = function(userData, parameters, originalThread, newBoard,
       previewCache : 1,
       alternativeCaches : 1,
       clearCache : 1,
-      hashedCache : 1
+      hashedCache : 1,
+      previewHashedCache : 1
     }
   }, function updatedThread(error) {
     if (error) {
