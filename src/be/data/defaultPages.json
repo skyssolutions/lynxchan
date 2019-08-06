@@ -250,6 +250,7 @@
   {
     "template": "bManagement",
     "prebuiltFields": {
+      "settingsForm": "removal",
       "resetBoardLockForm": "removal",
       "resetLockIdentifier": "value",
       "locationComboBox": "children",
@@ -522,6 +523,7 @@
       "checkboxDisableFloodCheck": "checked",
       "checkboxSendmail": "checked",
       "checkboxDisableSpamCheck": "checked",
+      "checkboxVolunteerSettings": "checked",
       "checkboxVerboseGenerator": "checked",
       "checkboxVerboseMisc": "checked",
       "checkboxVerboseQueue": "checked",

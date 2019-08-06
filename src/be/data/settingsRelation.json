@@ -376,6 +376,11 @@
   },
   {
     "type": "boolean",
+    "setting": "allowVolunteerSettings",
+    "element": "checkboxVolunteerSettings"
+  },
+  {
+    "type": "boolean",
     "setting": "ffmpegGifs",
     "element": "checkboxFfmpegGifs"
   },

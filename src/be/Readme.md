@@ -137,6 +137,7 @@ Settings files that goes into the settings directory:
 * `allowGlobalBoardModeration`(Boolean): if true, global staff will be allowed to act as board moderators too.
 * `addons`(Array): array of addons to be loaded. They will be loaded in the order they appear in this array.
 * `useGlobalBanners`(Boolean): indicates if boards should use global banners. 
+* `allowVolunteerSettings(Boolean)`: indicates if board volunteers are allowed to change board settings.
 * `allowBoardCustomJs`(Boolean): if true, boards are allowed to have custom javascript.
 * `globalLatestPosts`(Number): amount of global latest posts to be displayed on the front-page.
 * `forceCaptcha`(Boolean): makes all boards use captcha.

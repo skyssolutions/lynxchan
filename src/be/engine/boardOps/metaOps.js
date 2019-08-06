@@ -29,6 +29,7 @@ var allowedMimes;
 var clearIpMinRole;
 var generator;
 var rangeSettings;
+var volunteerSettings;
 var disableLatestPostings;
 var latestLimit;
 
@@ -66,6 +67,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
   forcedCaptcha = settings.forceCaptcha;
+  volunteerSettings = settings.allowVolunteerSettings;
   globalBoardModeration = settings.allowGlobalBoardModeration;
   boardCreationRequirement = settings.boardCreationRequirement;
   maxVolunteers = settings.maxBoardVolunteers;
@@ -330,10 +332,21 @@ exports.setSettings = function(userData, parameters, language, callback) {
   }, function(error, board) {
 
     if (error) {
-      callback(error);
+      return callback(error);
     } else if (!board) {
-      callback(lang(language).errBoardNotFound);
-    } else if (!modCommonOps.isInBoardStaff(userData, board, 2)) {
+      return callback(lang(language).errBoardNotFound);
+    }
+
+    var globallyAllowed = globalBoardModeration && userData.globalRole <= 1;
+
+    var allowed = userData.login === board.owner || globallyAllowed;
+
+    var isVolunteer = (board.volunteers || []).indexOf(userData.login) > -1;
+
+    var globalVolunteer = userData.globalRole <= 2 && globalBoardModeration;
+    isVolunteer = isVolunteer || globalVolunteer;
+
+    if (!allowed && !(isVolunteer && volunteerSettings)) {
       callback(lang(language).errDeniedChangeBoardSettings);
     } else {
       miscOps.sanitizeStrings(parameters, exports.boardParameters);

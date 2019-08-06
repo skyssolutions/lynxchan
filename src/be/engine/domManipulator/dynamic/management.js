@@ -10,6 +10,7 @@ var common;
 var templateHandler;
 var lang;
 var miscOps;
+var volunteerSettings;
 var boardMessageLength;
 
 var displayMaxBannerSize;
@@ -79,6 +80,7 @@ exports.loadSettings = function() {
 
   settings = require('../../../settingsHandler').getGeneralSettings();
   globalBoardModeration = settings.allowGlobalBoardModeration;
+  volunteerSettings = settings.allowVolunteerSettings;
   customJs = settings.allowBoardCustomJs;
   boardMessageLength = settings.boardMessageLength;
   displayMaxBannerSize = common.formatFileSize(settings.maxBannerSizeB);
@@ -158,7 +160,10 @@ exports.setBoardComboBoxes = function(document, boardData, language) {
 
 };
 
-exports.setBoardFields = function(document, boardData) {
+exports.setBoardFields = function(document, boardData, language) {
+
+  document = exports.setBoardComboBoxes(document, boardData, language);
+  document = exports.setBoardControlCheckBoxes(document, boardData);
 
   for ( var key in exports.boardFieldsRelation) {
 
@@ -256,12 +261,15 @@ exports.setBoardManagementLinks = function(document, boardData) {
 
 };
 
-exports.checkOwnership = function(document, userData, boardData, template,
-    language) {
+exports.checkOwnership = function(userData, boardData, template, language) {
 
   var globallyAllowed = globalBoardModeration && userData.globalRole <= 1;
 
-  if (userData.login === boardData.owner || globallyAllowed) {
+  var allowed = userData.login === boardData.owner || globallyAllowed;
+
+  var document = template.template;
+
+  if (allowed) {
     document = document.replace('__ownerControlDiv_location__',
         template.removable.ownerControlDiv);
 
@@ -269,8 +277,21 @@ exports.checkOwnership = function(document, userData, boardData, template,
         template.removable.bannerManagementLink);
 
     document = exports.setBoardOwnerControls(document, boardData, language);
+
   } else {
     document = document.replace('__ownerControlDiv_location__', '');
+  }
+
+  if (allowed || volunteerSettings) {
+
+    document = document.replace('__settingsForm_location__',
+        template.removable.settingsForm).replace(
+        '__boardSettingsIdentifier_value__', common.clean(boardData.boardUri));
+
+    document = exports.setBoardFields(document, boardData, language);
+
+  } else {
+    document = document.replace('__settingsForm_location__', '');
   }
 
   return document;
@@ -282,15 +303,8 @@ exports.getBoardManagementContent = function(boardData, userData, bans,
 
   var template = templateHandler(language).bManagement;
 
-  var document = template.template.replace('__boardSettingsIdentifier_value__',
-      common.clean(boardData.boardUri));
-
-  document = exports.setBoardComboBoxes(document, boardData, language);
-  document = exports.setBoardControlCheckBoxes(document, boardData);
-  document = exports.setBoardFields(document, boardData);
-
-  document = exports.checkOwnership(document, userData, boardData, template,
-      language);
+  var document = exports
+      .checkOwnership(userData, boardData, template, language);
 
   if (boardData.lockedUntil) {
     document = document.replace('__resetBoardLockForm_location__',

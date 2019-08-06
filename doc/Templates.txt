@@ -750,6 +750,10 @@ TEM_ID::12
 bManagement: board management page.
 
 Elements:
+settingsForm:
+    use: might be removed.
+    description: settings form.
+
 resetBoardLockForm:
     use: might be removed.
     description: form used to unlock a board that has been automatically locked due to hourly thread limit.
@@ -1823,6 +1827,10 @@ Elements:
 checkboxHttp2:
     use: might be turned on.
     description: indicates if HTTP2 shouldbe used for SSL.
+
+checkboxVolunteerSettings:
+    use: might be turned on.
+    description: indicates if board volunteers are allowed to change board settings.
 
 fieldLatestPostsAmount:
     use: have it's value manipulated.
