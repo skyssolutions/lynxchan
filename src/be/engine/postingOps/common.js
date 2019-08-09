@@ -386,7 +386,7 @@ exports.checkBoardFileLimits = function(files, boardData, language) {
 // Section 2: Markdown {
 exports.processLine = function(split, replaceCode) {
 
-  split = split.replace(/^&gt;[^\&].*/g, greenTextFunction);
+  split = split.replace(/^&gt;.*/g, greenTextFunction);
   split = split.replace(/\=\=.+?\=\=/g, redTextFunction);
   split = split.replace(/&apos;&apos;&apos;.+?&apos;&apos;&apos;/g,
       boldFunction);

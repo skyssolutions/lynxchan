@@ -247,7 +247,7 @@ exports.getBoardLock = function(fileParts) {
 
     var matches = fileParts[2].match(/^(\d+)\.(html|json)$/);
 
-    if (matches) {
+    if (matches && +matches[1]) {
 
       return {
         boardUri : fileParts[1],
