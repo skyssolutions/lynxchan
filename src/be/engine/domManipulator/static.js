@@ -369,8 +369,24 @@ exports.getPagePathAndMeta = function(board, page, meta, language) {
 
 };
 
+exports.writePage = function(boardUri, page, boardData, language, document,
+    callback) {
+
+  var meta = {
+    boardUri : boardUri,
+    type : 'page',
+    page : page
+  };
+
+  var path = exports.getPagePathAndMeta(boardData.boardUri, page, meta,
+      language);
+
+  cacheHandler.writeData(document, path, 'text/html', meta, callback);
+
+};
+
 exports.page = function(page, threads, pageCount, boardData, flagData,
-    latestPosts, language, cb) {
+    latestPosts, language, mod, userRole, cb) {
 
   var template = templateHandler(language).boardPage;
 
@@ -388,22 +404,20 @@ exports.page = function(page, threads, pageCount, boardData, flagData,
   document = document.replace('__linkModeration_href__',
       '/boardModeration.js?boardUri=' + boardUri);
 
+  var modLink = '/mod.js?boardUri=' + boardUri + '&page=' + page;
+  document = document.replace('__linkMod_href__', modLink);
+
   document = exports.addPagesLinks(document, pageCount, page,
       template.removable);
 
   document = document.replace('__divThreads_children__', exports
       .getThreadListing(latestPosts, threads, language));
 
-  var meta = {
-    boardUri : boardUri,
-    type : 'page',
-    page : page
-  };
-
-  var path = exports.getPagePathAndMeta(boardData.boardUri, page, meta,
-      language);
-
-  cacheHandler.writeData(document, path, 'text/html', meta, cb);
+  if (mod) {
+    cb(null, document);
+  } else {
+    exports.writePage(boardUri, page, boardData, language, document, cb);
+  }
 
 };
 // } Section 2: Board

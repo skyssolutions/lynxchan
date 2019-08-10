@@ -168,6 +168,10 @@ exports.hashIpForDisplay = function(ip, salt, userRole, ipv6) {
     return exports.formatIp(ip, ipv6);
   }
 
+  if (!salt) {
+    console.log('WARNING, NO SALT FOR IP HASHING');
+  }
+
   return crypto.createHash('sha256').update(salt + ip).digest('hex').substring(
       0, 48);
 

@@ -74,6 +74,10 @@ noFlagDiv:
     use: might be removed.
     description: div with the option to not show the user location flag.
 
+linkMod:
+    use: have it's href manipulated.
+    description: link to the mod.js version of this board page.
+
 panelMessage:
     use: might be removed.
     description: panel that holds the element containing the board message.

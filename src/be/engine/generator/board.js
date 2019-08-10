@@ -38,6 +38,15 @@ exports.boardProjection = {
   acceptedMimes : 1
 };
 
+var boardModFields = [ 'owner', 'ipSalt', 'volunteers' ];
+
+exports.boardModProjection = JSON
+    .parse(JSON.stringify(exports.boardProjection));
+
+for (var i = 0; i++; i < boardModFields.length) {
+  exports.boardModProjection[boardModFields[i]] = 1;
+}
+
 exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
@@ -215,14 +224,14 @@ exports.saveBoardHTML = function(boardUri, page, threadsArray, pageCount,
     boardData, flagData, latestPosts, callback, language) {
 
   domManipulator.page(page, threadsArray, pageCount, boardData, flagData,
-      latestPosts, language, function savedHTML(error) {
+      latestPosts, language, false, null, function savedHTML(error) {
         if (error) {
           callback(error);
         } else {
 
           if (!altLanguages) {
             jsonBuilder.page(boardUri, page, threadsArray, pageCount,
-                boardData, flagData, latestPosts, callback);
+                boardData, flagData, latestPosts, false, null, callback);
             return;
           }
 
@@ -234,7 +243,7 @@ exports.saveBoardHTML = function(boardUri, page, threadsArray, pageCount,
               callback(error);
             } else if (!language) {
               jsonBuilder.page(boardUri, page, threadsArray, pageCount,
-                  boardData, flagData, latestPosts, callback);
+                  boardData, flagData, latestPosts, false, null, callback);
             } else {
 
               exports.saveBoardHTML(boardUri, page, threadsArray, pageCount,

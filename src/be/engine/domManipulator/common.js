@@ -103,9 +103,6 @@ exports.setPostingIp = function(cell, postingData, boardData, userRole,
   }
 
   if (!boardData) {
-    console
-        .log('MISSING BOARD DATA ON SET POSTING IP  ' + postingData.boardUri);
-
     boardData = {};
   }
 

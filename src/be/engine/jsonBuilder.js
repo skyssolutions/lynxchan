@@ -371,8 +371,32 @@ exports.setFileLimits = function(toWrite, bData) {
 
 };
 
+exports.finalizePageData = function(pageCount, boardData, threadsToAdd,
+    flagData) {
+
+  var toWrite = {
+    pageCount : pageCount,
+    boardName : boardData.boardName,
+    boardDescription : boardData.boardDescription || '',
+    settings : boardData.settings,
+    threads : threadsToAdd,
+    maxMessageLength : messageLength,
+    globalCaptcha : globalCaptcha,
+    captchaMode : boardData.captchaMode
+  };
+
+  exports.setFileLimits(toWrite, boardData);
+
+  if (flagData && flagData.length) {
+    toWrite.flagData = flagData;
+  }
+
+  return toWrite;
+
+};
+
 exports.page = function(boardUri, page, threads, pageCount, boardData,
-    flagData, latestPosts, callback) {
+    flagData, latestPosts, mod, userRole, callback) {
 
   var threadsToAdd = [];
 
@@ -391,29 +415,19 @@ exports.page = function(boardUri, page, threads, pageCount, boardData,
       var thread = threads[i];
 
       threadsToAdd.push(exports.getThreadObject(thread,
-          latestPosts[thread.threadId]));
+          latestPosts[thread.threadId], boardData, mod, userRole));
 
     }
   }
 
-  var ownName = '/' + boardUri + '/' + page + '.json';
+  var toWrite = exports.finalizePageData(pageCount, boardData, threadsToAdd,
+      flagData);
 
-  var toWrite = {
-    pageCount : pageCount,
-    boardName : boardData.boardName,
-    boardDescription : boardData.boardDescription || '',
-    settings : boardData.settings,
-    threads : threadsToAdd,
-    maxMessageLength : messageLength,
-    globalCaptcha : globalCaptcha,
-    captchaMode : boardData.captchaMode
-  };
-
-  exports.setFileLimits(toWrite, boardData);
-
-  if (flagData && flagData.length) {
-    toWrite.flagData = flagData;
+  if (mod) {
+    return callback(null, toWrite);
   }
+
+  var ownName = '/' + boardUri + '/' + page + '.json';
 
   cacheHandler.writeData(JSON.stringify(toWrite), ownName, 'application/json',
       {

@@ -6,6 +6,7 @@ var boards = db.boards();
 var url = require('url');
 var threads = db.threads();
 var flags = db.flags();
+var settingsHandler = require('../settingsHandler');
 var lang = require('../engine/langOps').languagePack;
 var posts = db.posts();
 var miscOps = require('../engine/miscOps');
@@ -36,6 +37,29 @@ exports.outputModData = function(bData, flagData, thread, posts, res, json,
             res.end(content);
           }
         }, true, userRole, language);
+  }
+
+};
+
+exports.outputBoardModData = function(parameters, threadsArray, language, auth,
+    bData, userRole, pCount, flagData, latestPosts, res) {
+
+  if (parameters.json) {
+
+    jsonBuilder.page(bData.boardUri, parameters.page, threadsArray, pCount,
+        bData, flagData, latestPosts, true, userRole, function(error, content) {
+          formOps.outputResponse('ok', content, res, null, auth, null, true);
+        });
+
+  } else {
+
+    res.writeHead(200, miscOps.getHeader('text/html', auth));
+
+    domManipulator.page(parameters.page, threadsArray, pCount, bData, flagData,
+        latestPosts, language, true, userRole, function gotThreadContent(error,
+            content) {
+          res.end(content);
+        });
   }
 
 };
@@ -83,6 +107,107 @@ exports.getPostingData = function(boardData, flagData, parameters, res, json,
 
 };
 
+exports.getLatestPosts = function(parameters, threadsArray, userRole,
+    pageCount, boardData, flagData, auth, res, language) {
+
+  var postsToFetch = [];
+
+  for (var i = 0; i < threadsArray.length; i++) {
+    if (threadsArray[i].latestPosts) {
+      postsToFetch = postsToFetch.concat(threadsArray[i].latestPosts);
+    }
+  }
+
+  posts.aggregate([ {
+    $match : {
+      boardUri : boardData.boardUri,
+      postId : {
+        $in : postsToFetch
+      }
+    }
+  }, {
+    $project : generator.postModProjection
+  }, {
+    $group : {
+      _id : '$threadId',
+      latestPosts : {
+        $push : {
+          boardUri : '$boardUri',
+          threadId : '$threadId',
+          postId : '$postId',
+          banMessage : '$banMessage',
+          flag : '$flag',
+          markdown : '$markdown',
+          alternativeCaches : '$alternativeCaches',
+          files : '$files',
+          outerCache : '$outerCache',
+          flagCode : '$flagCode',
+          flagName : '$flagName',
+          name : '$name',
+          lastEditTime : '$lastEditTime',
+          lastEditLogin : '$lastEditLogin',
+          signedRole : '$signedRole',
+          id : '$id',
+          email : '$email',
+          subject : '$subject',
+          creation : '$creation'
+        }
+      }
+    }
+  } ])
+      .toArray(
+          function gotPosts(error, latestPosts) {
+            if (error) {
+              formOps.outputError(error, 500, res, language, parameters.json,
+                  auth);
+            } else {
+
+              exports.outputBoardModData(parameters, threadsArray, language,
+                  auth, boardData, userRole, pageCount, flagData, latestPosts,
+                  res);
+
+            }
+          });
+
+};
+
+exports.getThreads = function(boardData, parameters, flagData, userRole, res,
+    language, auth) {
+
+  var pageSize = settingsHandler.getGeneralSettings().pageSize;
+
+  var pageCount = Math.ceil(boardData.threadCount / pageSize);
+
+  pageCount = pageCount || 1;
+
+  var toSkip = (parameters.page - 1) * pageSize;
+
+  threads.find({
+    boardUri : boardData.boardUri,
+    archived : {
+      $ne : true
+    }
+  }, {
+    projection : generator.threadModProjection
+  }).sort({
+    pinned : -1,
+    lastBump : -1
+  }).skip(toSkip).limit(pageSize)
+      .toArray(
+          function gotThreads(error, threadsArray) {
+
+            if (error) {
+              formOps.outputError(error, 500, res, language, parameters.json,
+                  auth);
+            } else {
+
+              exports.getLatestPosts(parameters, threadsArray, userRole,
+                  pageCount, boardData, flagData, auth, res, language);
+            }
+          });
+
+};
+
 exports.getFlags = function(board, parameters, res, json, userRole, auth,
     language) {
 
@@ -99,8 +224,16 @@ exports.getFlags = function(board, parameters, res, json, userRole, auth,
         if (error) {
           formOps.outputError(error, 500, res, language, json, auth);
         } else {
-          exports.getPostingData(board, flagData, parameters, res, json,
-              userRole, auth, language);
+
+          if (parameters.threadId) {
+            exports.getPostingData(board, flagData, parameters, res, json,
+                userRole, auth, language);
+          } else {
+
+            exports.getThreads(board, parameters, flagData, userRole, res,
+                language, auth);
+
+          }
         }
       });
 
@@ -115,12 +248,13 @@ exports.process = function(req, res) {
 
         var json = parameters.json;
 
-        if (formOps.checkBlankParameters(parameters,
-            [ 'boardUri', 'threadId' ], res, req.language, json)) {
+        if (formOps.checkBlankParameters(parameters, [ 'boardUri' ], res,
+            req.language, json)) {
           return;
         }
 
-        parameters.boardUri = parameters.boardUri.toString();
+        parameters.page = parameters.page || 1;
+        parameters.page = +parameters.page;
 
         var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
@@ -128,21 +262,7 @@ exports.process = function(req, res) {
         boards.findOne({
           boardUri : parameters.boardUri
         }, {
-          projection : {
-            owner : 1,
-            _id : 0,
-            boardUri : 1,
-            ipSalt : 1,
-            boardName : 1,
-            maxFiles : 1,
-            maxFileSizeMB : 1,
-            settings : 1,
-            captchaMode : 1,
-            boardMarkdown : 1,
-            usesCustomCss : 1,
-            boardDescription : 1,
-            volunteers : 1
-          }
+          projection : generator.board.boardModProjection
         }, function gotBoard(error, board) {
 
           if (error) {

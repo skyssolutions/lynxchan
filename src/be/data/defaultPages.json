@@ -113,6 +113,7 @@
         "inner",
         "removal"
       ],
+      "linkMod": "href",
       "noFlagDiv": "removal",
       "panelMessage": "removal",
       "divMessage": "inner",
