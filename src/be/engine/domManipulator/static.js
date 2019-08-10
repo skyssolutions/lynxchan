@@ -419,7 +419,7 @@ exports.writePage = function(boardUri, page, boardData, language, document,
 };
 
 exports.page = function(page, threads, pageCount, boardData, flagData,
-    latestPosts, language, mod, userRole, cb) {
+    latestPosts, language, mod, userRole, callback) {
 
   var template = templateHandler(language).boardPage;
 
@@ -448,9 +448,11 @@ exports.page = function(page, threads, pageCount, boardData, flagData,
           language));
 
   if (mod) {
-    cb(null, document);
+    callback(null, document.replace('__divMod_location__',
+        template.removable.divMod));
   } else {
-    exports.writePage(boardUri, page, boardData, language, document, cb);
+    exports.writePage(boardUri, page, boardData, language, document.replace(
+        '__divMod_location__', ''), callback);
   }
 
 };

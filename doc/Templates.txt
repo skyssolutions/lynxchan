@@ -70,6 +70,10 @@ TEM_ID::02
 boardPage: board pages, listing threads.
 
 Elements:
+divMod:
+    use: might be removed.
+    description: area that contains moderation specific elements.
+
 noFlagDiv:
     use: might be removed.
     description: div with the option to not show the user location flag.

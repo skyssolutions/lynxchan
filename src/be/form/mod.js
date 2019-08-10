@@ -132,6 +132,8 @@ exports.getLatestPosts = function(parameters, threadsArray, userRole,
       _id : '$threadId',
       latestPosts : {
         $push : {
+          ip : '$ip',
+          asn : '$asn',
           boardUri : '$boardUri',
           threadId : '$threadId',
           postId : '$postId',
