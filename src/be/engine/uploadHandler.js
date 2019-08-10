@@ -307,15 +307,7 @@ exports.updatePostingFiles = function(boardData, threadId, postId, file,
   }
 
   collectionToQuery.updateOne(queryBlock, {
-    $unset : {
-      innerCache : 1,
-      outerCache : 1,
-      previewCache : 1,
-      alternativeCaches : 1,
-      clearCache : 1,
-      hashedCache : 1,
-      previewHashedCache : 1
-    },
+    $unset : miscOps.individualCaches,
     $push : {
       files : {
         originalName : miscOps.cleanHTML(file.title),

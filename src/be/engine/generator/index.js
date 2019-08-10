@@ -17,8 +17,6 @@ exports.postProjection = {
   innerCache : 1,
   outerCache : 1,
   alternativeCaches : 1,
-  previewCache : 1,
-  previewHashedCache : 1,
   message : 1,
   email : 1,
   lastEditTime : 1,
@@ -35,8 +33,6 @@ exports.threadProjection = {
   signedRole : 1,
   innerCache : 1,
   outerCache : 1,
-  previewHashedCache : 1,
-  previewCache : 1,
   alternativeCaches : 1,
   flagCode : 1,
   banMessage : 1,
@@ -68,7 +64,8 @@ exports.threadModProjection = JSON.parse(JSON
     .stringify(exports.threadProjection));
 exports.postModProjection = JSON.parse(JSON.stringify(exports.postProjection));
 
-var extra = [ 'clearCache', 'hashedCache', 'ip', 'asn' ];
+var extra = [ 'clearCache', 'hashedCache', 'outerClearCache',
+    'outerHashedCache', 'previewHashedCache', 'previewCache', 'ip', 'asn' ];
 
 for (var i = 0; i < extra.length; i++) {
   exports.threadModProjection[extra[i]] = 1;

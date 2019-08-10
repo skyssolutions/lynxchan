@@ -307,15 +307,7 @@ exports.setUpdateBlockForAutoSage = function(updateBlock) {
 
   updateBlock.$set.autoSage = true;
 
-  updateBlock.$unset = {
-    innerCache : 1,
-    outerCache : 1,
-    previewCache : 1,
-    alternativeCaches : 1,
-    clearCache : 1,
-    hashedCache : 1,
-    previewHashedCache : 1
-  };
+  updateBlock.$unset = miscOps.individualCaches;
 
 };
 

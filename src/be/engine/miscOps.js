@@ -29,6 +29,7 @@ var htmlReplaceTable = {
   '\"' : '&quot;',
   '\'' : '&apos;'
 };
+
 var htmlReplaceRegex = new RegExp(/[<>'"]/g);
 
 var MAX_STAFF_ROLE = 3;
@@ -36,6 +37,17 @@ exports.plainTextMimes = [ 'application/x-javascript', 'application/json',
     'application/rss+xml' ];
 exports.optionList = [ 'guiBypassModes', 'guiTorPostingLevels', 'miscRoles',
     'miscRoles', 'guiBypassModes' ];
+exports.individualCaches = {
+  innerCache : 1,
+  outerCache : 1,
+  previewCache : 1,
+  clearCache : 1,
+  alternativeCaches : 1,
+  hashedCache : 1,
+  previewHashedCache : 1,
+  outerHashedCache : 1,
+  outerClearCache : 1
+};
 
 exports.loadSettings = function() {
 

@@ -127,15 +127,7 @@ exports.setNewThreadSettings = function(parameters, thread, callback) {
       cyclic : parameters.cyclic,
       autoSage : thread.autoSage && !parameters.cyclic
     },
-    $unset : {
-      innerCache : 1,
-      outerCache : 1,
-      previewCache : 1,
-      clearCache : 1,
-      alternativeCaches : 1,
-      hashedCache : 1,
-      previewHashedCache : 1
-    }
+    $unset : miscOps.individualCaches
   }, function updatedThread(error) {
 
     if (!error) {
@@ -272,15 +264,7 @@ exports.recordEdit = function(parameters, login, language, callback) {
       message : parameters.message,
       subject : parameters.subject
     },
-    $unset : {
-      innerCache : 1,
-      outerCache : 1,
-      previewCache : 1,
-      clearCache : 1,
-      alternativeCaches : 1,
-      hashedCache : 1,
-      previewHashedCache : 1
-    }
+    $unset : miscOps.individualCaches
   }, function savedEdit(error, posting) {
     if (error) {
       callback(error);

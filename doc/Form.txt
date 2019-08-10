@@ -1314,6 +1314,10 @@ Parameters:
 
 JSON output(Array): array where each element is an object with the following fields:
     signedRole: role of the user that posted the thread.
+    ip: posting ip.
+    asn: asn relative to the ip.
+    broadRange: range of 1/2 of the ip.
+    narrowRange: range of 1/4 of the ip.
     banMessage: message to be displayed indicating this message was a cause to a ban.
     id: thread-wise id of the poster.
     email: email of the poster.

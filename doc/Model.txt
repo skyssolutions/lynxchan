@@ -90,6 +90,8 @@ threads: stores board's threads.
     lastEditLogin: Login of the last user to edit the thread message.
     innerCache: html cache for the version on thread pages.
     outerCache: html cache for the version on board pages.
+    outerHashedCache: html cache for the verion on board pages that contains the hashed ip.
+    outerClearCache: html cache for the version on board pages that contains the clear ip.
     previewCache: html cache for preview using clear ips.
     previewHashedCache: html cache for preview using hashed ips.
     clearCache: html cache for the mod version with clear ips.
@@ -132,6 +134,8 @@ posts: stores posts.
     lastEditLogin: Login of the last user to edit the thread message.
     innerCache: html cache for the version on thread pages.
     outerCache: html cache for the version on board pages.
+    outerHashedCache: html cache for the verion on board pages that contains the hashed ip.
+    outerClearCache: html cache for the version on board pages that contains the clear ip.
     previewCache: html cache for preview.
     clearCache: html cache for the mod version with clear ips.
     hashedCache: html cache for the mod version with hashed ips.

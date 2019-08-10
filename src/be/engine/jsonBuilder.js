@@ -45,7 +45,7 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Shared functions {
-exports.getFilesArray = function(fileArray, modding) {
+exports.getFilesArray = function(fileArray, modding, preview) {
 
   var toReturn = [];
 
@@ -63,7 +63,7 @@ exports.getFilesArray = function(fileArray, modding) {
         height : file.height
       };
 
-      if (modding) {
+      if (modding || preview) {
         toPush.md5 = file.md5;
       }
 
@@ -93,10 +93,10 @@ exports.getPostObject = function(post, preview, boardData, modding, userRole) {
     message : post.message,
     banMessage : post.banMessage,
     creation : post.creation,
-    files : exports.getFilesArray(post.files, modding)
+    files : exports.getFilesArray(post.files, modding, preview)
   };
 
-  if (modding) {
+  if (modding || preview) {
 
     if (post.asn) {
       toReturn.asn = post.asn;
@@ -624,5 +624,19 @@ exports.message = function(status, data) {
     status : status,
     data : data
   });
+
+};
+
+exports.latestPostings = function(postings, user, boardData) {
+
+  for (var i = 0; i < postings.length; i++) {
+
+    var posting = postings[i];
+
+    postings[i] = exports.getPostObject(posting, true,
+        boardData[posting.boardUri], false, user.globalRole);
+  }
+
+  return postings;
 
 };

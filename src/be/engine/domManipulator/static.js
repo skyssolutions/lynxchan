@@ -293,7 +293,8 @@ exports.thread = function(boardData, flagData, threadData, posts, callback,
 // } Section 1: Thread
 
 // Section 2: Board {
-exports.getThreadListing = function(latestPosts, threads, language) {
+exports.getThreadListing = function(latestPosts, threads, modding, userRole,
+    boardData, language) {
 
   var children = '';
 
@@ -312,7 +313,7 @@ exports.getThreadListing = function(latestPosts, threads, language) {
     var thread = threads[i];
 
     children += common.getThread(thread, latestPosts[thread.threadId], null,
-        null, null, null, language, operations);
+        modding, boardData, userRole, language, operations);
 
   }
 
@@ -322,36 +323,68 @@ exports.getThreadListing = function(latestPosts, threads, language) {
 
 };
 
-exports.addPagesLinks = function(document, pageCount, currentPage, removable) {
+exports.addPageListing = function(pageCount, modding, boardUri, document) {
 
-  if (currentPage === 1) {
-    document = document.replace('__linkPrevious_location__', '');
-  } else {
-    document = document.replace('__linkPrevious_location__',
-        removable.linkPrevious);
-    document = document.replace('__linkPrevious_href__',
-        currentPage > 2 ? currentPage - 1 + '.html' : 'index.html');
+  var children = '';
+
+  for (var i = 0; i < pageCount; i++) {
+
+    if (!modding) {
+      var pageLink = i ? (i + 1) + '.html' : 'index.html';
+    } else {
+      pageLink = '/mod.js?boardUri=' + boardUri + '&page=' + (i + 1);
+    }
+
+    children += '<a href="' + pageLink + '">' + (i + 1) + '</a>';
   }
+
+  return document.replace('__divPages_children__', children);
+
+};
+
+exports.placeNextLink = function(modPrefix, boardUri, modding, currentPage,
+    pageCount, document, removable) {
 
   if (pageCount === currentPage) {
     document = document.replace('__linkNext_location__', '');
   } else {
     document = document.replace('__linkNext_location__', removable.linkNext);
 
-    var nextPageHref = (currentPage + 1) + '.html';
-    document = document.replace('__linkNext_href__', nextPageHref);
+    if (modding) {
+      var href = modPrefix + (currentPage + 1);
+    } else {
+      href = (currentPage + 1) + '.html';
+    }
+
+    document = document.replace('__linkNext_href__', href);
   }
 
-  var children = '';
+  return exports.addPageListing(pageCount, modding, boardUri, document);
 
-  for (var i = 0; i < pageCount; i++) {
+};
 
-    var pageName = i ? (i + 1) + '.html' : 'index.html';
+exports.addPagesLinks = function(document, pageCount, currentPage, modding,
+    boardUri, removable) {
 
-    children += '<a href="' + pageName + '">' + (i + 1) + '</a>';
+  var modPrefix = '/mod.js?boardUri=' + boardUri + '&page=';
+
+  if (currentPage === 1) {
+    document = document.replace('__linkPrevious_location__', '');
+  } else {
+    document = document.replace('__linkPrevious_location__',
+        removable.linkPrevious);
+
+    if (modding) {
+      var href = modPrefix + (currentPage - 1);
+    } else {
+      href = currentPage > 2 ? currentPage - 1 + '.html' : 'index.html';
+    }
+
+    document = document.replace('__linkPrevious_href__', href);
   }
 
-  return document.replace('__divPages_children__', children);
+  return exports.placeNextLink(modPrefix, boardUri, modding, currentPage,
+      pageCount, document, removable);
 
 };
 
@@ -407,11 +440,12 @@ exports.page = function(page, threads, pageCount, boardData, flagData,
   var modLink = '/mod.js?boardUri=' + boardUri + '&page=' + page;
   document = document.replace('__linkMod_href__', modLink);
 
-  document = exports.addPagesLinks(document, pageCount, page,
-      template.removable);
+  document = exports.addPagesLinks(document, pageCount, page, mod,
+      boardData.boardUri, template.removable);
 
   document = document.replace('__divThreads_children__', exports
-      .getThreadListing(latestPosts, threads, language));
+      .getThreadListing(latestPosts, threads, mod, userRole, boardData,
+          language));
 
   if (mod) {
     cb(null, document);

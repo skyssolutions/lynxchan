@@ -358,7 +358,7 @@ exports.setHeader = function(template, language, bData, flagData, thread) {
 
 // Section 2.1: Shared posting elements {
 exports.setSharedSimpleElements = function(postingCell, posting, innerPage,
-    removable, language) {
+    modding, removable, language) {
 
   var name = exports.clean(posting.name);
 
@@ -379,7 +379,8 @@ exports.setSharedSimpleElements = function(postingCell, posting, innerPage,
   postingCell = postingCell.replace('__labelCreated_inner__', exports
       .formatDateToDisplay(posting.creation, null, language));
 
-  postingCell = exports.addMessage(innerPage, postingCell, posting, removable);
+  postingCell = exports.addMessage(innerPage, modding, postingCell, posting,
+      removable);
 
   return postingCell;
 
@@ -412,14 +413,21 @@ exports.setPostingFlag = function(posting, postingCell, removable) {
 
 };
 
-exports.setPostingLinks = function(postingCell, posting, innerPage, removable) {
+exports.setPostingLinks = function(postingCell, posting, innerPage, modding,
+    removable) {
 
   var boardUri = exports.clean(posting.boardUri);
 
   var linkStart = '';
 
   if (!innerPage) {
-    linkStart = '/' + boardUri + '/res/' + posting.threadId + '.html';
+    if (modding) {
+      linkStart = '/mod.js?boardUri=' + boardUri + '&threadId=';
+      linkStart += posting.threadId;
+    } else {
+      linkStart = '/' + boardUri + '/res/' + posting.threadId + '.html';
+    }
+
   }
 
   linkStart += '#';
@@ -588,7 +596,7 @@ exports.matchCodeTags = function(markdown) {
 
 };
 
-exports.addMessage = function(innerPage, cell, posting, removable) {
+exports.addMessage = function(innerPage, modding, cell, posting, removable) {
 
   var markdown = posting.markdown;
 
@@ -602,11 +610,14 @@ exports.addMessage = function(innerPage, cell, posting, removable) {
     markdown = markdown.split('<br>', exports.maxPreviewBreaks + 1)
         .join('<br>');
 
-    var href = '/' + posting.boardUri + '/res/' + posting.threadId + '.html';
-
-    if (posting.postId) {
-      href += '#' + (posting.postId || posting.threadId);
+    if (!modding) {
+      var href = '/' + posting.boardUri + '/res/' + posting.threadId + '.html';
+    } else {
+      href = '/mod.js?boardUri=' + posting.boardUri + '&threadId=';
+      href += posting.threadId;
     }
+
+    href += '#' + (posting.postId || posting.threadId);
 
     cell = cell.replace('__linkFullText_href__', href);
 
@@ -629,13 +640,13 @@ exports.setAllSharedPostingElements = function(postingCell, posting, removable,
       postingCell, language);
 
   postingCell = exports.setPostingLinks(postingCell, posting, innerPage,
-      removable);
+      modding, removable);
 
   postingCell = exports.setPostingComplexElements(posting, postingCell,
       removable, preview);
 
   postingCell = exports.setSharedSimpleElements(postingCell, posting,
-      innerPage, removable, language);
+      innerPage, modding, removable, language);
 
   if (!posting.files || !posting.files.length) {
     return postingCell.replace('__panelUploads_location__', '');
@@ -654,8 +665,29 @@ exports.setAllSharedPostingElements = function(postingCell, posting, removable,
 // } Section 2.1: Shared posting elements
 
 // Section 3: Thread content {
+exports.setOpLinks = function(cell, removable, thread, modding) {
+
+  cell = cell.replace('__linkReply_location__', removable.linkReply).replace(
+      '__linkLast_location__', removable.linkLast);
+
+  var boardUri = thread.boardUri;
+
+  if (!modding) {
+    var replyHref = '/' + boardUri + '/res/' + thread.threadId + '.html';
+  } else {
+    replyHref = '/mod.js?boardUri=' + boardUri + '&threadId=';
+    replyHref += thread.threadId;
+  }
+
+  var lastHref = '/' + boardUri + '/last/' + thread.threadId + '.html';
+
+  return cell.replace('__linkReply_href__', replyHref).replace(
+      '__linkLast_href__', lastHref);
+
+};
+
 exports.setThreadHiddeableElements = function(thread, cell, removable,
-    innerPage) {
+    innerPage, modding) {
 
   for ( var key in exports.indicatorsRelation) {
     var location = '__' + exports.indicatorsRelation[key] + '_location__';
@@ -668,23 +700,11 @@ exports.setThreadHiddeableElements = function(thread, cell, removable,
   }
 
   if (innerPage) {
-    cell = cell.replace('__linkReply_location__', '').replace(
+    return cell.replace('__linkReply_location__', '').replace(
         '__linkLast_location__', '');
   } else {
-
-    cell = cell.replace('__linkReply_location__', removable.linkReply).replace(
-        '__linkLast_location__', removable.linkLast);
-
-    var boardUri = thread.boardUri;
-    var replyHref = '/' + boardUri + '/res/' + thread.threadId + '.html';
-    var lastHref = '/' + boardUri + '/last/' + thread.threadId + '.html';
-
-    cell = cell.replace('__linkReply_href__', replyHref).replace(
-        '__linkLast_href__', lastHref);
-
+    return exports.setOpLinks(cell, removable, thread, modding);
   }
-
-  return cell;
 
 };
 
@@ -762,7 +782,7 @@ exports.getThreadContent = function(thread, posts, innerPage, modding,
   var removable = templateHandler(language).opCell.removable;
 
   threadCell = exports.setThreadHiddeableElements(thread, threadCell,
-      removable, innerPage);
+      removable, innerPage, modding);
 
   return exports.setAllSharedPostingElements(threadCell, thread, removable,
       language, modding, innerPage, userRole, boardData);
@@ -848,7 +868,11 @@ exports.getCacheField = function(preview, innerPage, modding, userRole,
 
   var clearIp = userRole <= clearIpRole;
 
-  if (preview && clearIp) {
+  if (modding && !innerPage && clearIp) {
+    toReturn = 'outerClearCache';
+  } else if (modding && !innerPage && !clearIp) {
+    toReturn = 'outerHashedCache';
+  } else if (preview && clearIp) {
     toReturn = 'previewCache';
   } else if (preview && !clearIp) {
     toReturn = 'previewHashedCache';

@@ -601,15 +601,7 @@ exports.removeFoundContent = function(userData, board, parameters, cb,
       $set : {
         files : []
       },
-      $unset : {
-        innerCache : 1,
-        outerCache : 1,
-        previewCache : 1,
-        clearCache : 1,
-        alternativeCaches : 1,
-        hashedCache : 1,
-        previewHashedCache : 1
-      }
+      $unset : miscOps.individualCaches
     }, function removedThreadFiles(error) {
       if (error) {
         cb(error);
@@ -625,15 +617,7 @@ exports.removeFoundContent = function(userData, board, parameters, cb,
           $set : {
             files : []
           },
-          $unset : {
-            innerCache : 1,
-            outerCache : 1,
-            previewCache : 1,
-            alternativeCaches : 1,
-            clearCache : 1,
-            hashedCache : 1,
-            previewHashedCache : 1
-          }
+          $unset : miscOps.individualCaches
         }, function removedPostFiles(error) {
           if (error) {
             cb(error);

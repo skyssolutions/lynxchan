@@ -239,7 +239,9 @@ function clearIps() {
       alternativeCaches : 1,
       hashedCache : 1,
       previewCache : 1,
-      previewHashedCache : 1
+      previewHashedCache : 1,
+      outerHashedCache : 1,
+      outerClearCache : 1
     }
   }, function clearedThreadIps(error) {
 
@@ -263,7 +265,9 @@ function clearIps() {
           alternativeCaches : 1,
           hashedCache : 1,
           previewCache : 1,
-          previewHashedCache : 1
+          previewHashedCache : 1,
+          outerHashedCache : 1,
+          outerClearCache : 1
         }
       }, function clearedThreadIps(error) {
 

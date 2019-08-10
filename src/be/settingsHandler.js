@@ -240,7 +240,9 @@ exports.clearIndividualCaches = function(callback) {
       clearCache : 1,
       alternativeCaches : 1,
       hashedCache : 1,
-      previewHashedCache : 1
+      previewHashedCache : 1,
+      outerHashedCache : 1,
+      outerClearCache : 1
     }
   }, function clearedThreads(error) {
 
@@ -257,7 +259,9 @@ exports.clearIndividualCaches = function(callback) {
         alternativeCaches : 1,
         clearCache : 1,
         hashedCache : 1,
-        previewHashedCache : 1
+        previewHashedCache : 1,
+        outerHashedCache : 1,
+        outerClearCache : 1
       }
     }, function clearedPosts(error) {
 

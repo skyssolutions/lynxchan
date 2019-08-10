@@ -8,10 +8,12 @@ var boards = db.boards();
 var threads = db.threads();
 var posts = db.posts();
 var common;
+var miscOps;
 var lang;
 
 exports.loadDependencies = function() {
 
+  miscOps = require('../miscOps');
   lang = require('../langOps').languagePack;
   common = require('.').common;
 
@@ -49,15 +51,7 @@ exports.getOperations = function(threadOps, postOps, foundThreads, foundPosts,
           $set : {
             files : exports.getAdaptedFileArray(board, thread.files)
           },
-          $unset : {
-            innerCache : 1,
-            outerCache : 1,
-            alternativeCaches : 1,
-            previewCache : 1,
-            clearCache : 1,
-            hashedCache : 1,
-            previewHashedCache : 1
-          }
+          $unset : miscOps.individualCaches
         }
       }
     });
@@ -77,15 +71,7 @@ exports.getOperations = function(threadOps, postOps, foundThreads, foundPosts,
           $set : {
             files : exports.getAdaptedFileArray(board, post.files)
           },
-          $unset : {
-            innerCache : 1,
-            outerCache : 1,
-            alternativeCaches : 1,
-            previewCache : 1,
-            clearCache : 1,
-            hashedCache : 1,
-            previewHashedCache : 1
-          }
+          $unset : miscOps.individualCaches
         }
       }
     });

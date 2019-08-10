@@ -43,7 +43,7 @@ var boardModFields = [ 'owner', 'ipSalt', 'volunteers' ];
 exports.boardModProjection = JSON
     .parse(JSON.stringify(exports.boardProjection));
 
-for (var i = 0; i++; i < boardModFields.length) {
+for (var i = 0; i < boardModFields.length; i++) {
   exports.boardModProjection[boardModFields[i]] = 1;
 }
 

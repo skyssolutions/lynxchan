@@ -141,7 +141,9 @@ exports.cleanFlagFromPostings = function(flagUrl, boardUri, callback) {
       clearCache : 1,
       alternativeCaches : 1,
       hashedCache : 1,
-      previewHashedCache : 1
+      previewHashedCache : 1,
+      outerHashedCache : 1,
+      outerClearCache : 1
     }
   }, function cleanedThreads() {
 
@@ -159,7 +161,9 @@ exports.cleanFlagFromPostings = function(flagUrl, boardUri, callback) {
         alternativeCaches : 1,
         clearCache : 1,
         hashedCache : 1,
-        previewHashedCache : 1
+        previewHashedCache : 1,
+        outerHashedCache : 1,
+        outerClearCache : 1
       }
     }, function cleanedPosts() {
       process.send({

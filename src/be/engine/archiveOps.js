@@ -6,6 +6,7 @@ var threads = db.threads();
 var boardAllowedArchives;
 var boardOps;
 var lang;
+var miscOps;
 var pageSize = 50;
 
 exports.loadSettings = function() {
@@ -16,6 +17,7 @@ exports.loadSettings = function() {
 };
 
 exports.loadDependencies = function() {
+  miscOps = require('./miscOps');
   lang = require('./langOps').languagePack;
   boardOps = require('./boardOps').meta;
 };
@@ -29,15 +31,7 @@ exports.setArchive = function(thread, callback) {
     $set : {
       archived : true
     },
-    $unset : {
-      innerCache : 1,
-      outerCache : 1,
-      previewCache : 1,
-      clearCache : 1,
-      alternativeCaches : 1,
-      hashedCache : 1,
-      previewHashedCache : 1
-    }
+    $unset : miscOps.individualCaches
   }, function(error) {
 
     if (error) {
@@ -213,15 +207,7 @@ exports.autoArchive = function(ids, board) {
     $set : {
       archived : true
     },
-    $unset : {
-      innerCache : 1,
-      outerCache : 1,
-      previewCache : 1,
-      clearCache : 1,
-      alternativeCaches : 1,
-      hashedCache : 1,
-      previewHashedCache : 1
-    }
+    $unset : miscOps.individualCaches
   }, function(error) {
 
     if (error) {

@@ -5,6 +5,7 @@ var url = require('url');
 var miscOps = require('../engine/miscOps');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var boardOps = require('../engine/boardOps').meta;
+var jsonBuilder = require('../engine/jsonBuilder');
 
 exports.latestPostings = function(auth, parameters, user, res, language) {
 
@@ -17,7 +18,9 @@ exports.latestPostings = function(auth, parameters, user, res, language) {
     } else {
 
       if (json) {
-        formOps.outputResponse('ok', postings, res, null, auth, null, true);
+
+        formOps.outputResponse('ok', jsonBuilder.latestPostings(postings, user,
+            boardData), res, null, auth, null, true);
       } else {
         res.writeHead(200, miscOps.getHeader('text/html', auth));
         res.end(dom.latestPostings(postings, parameters, user, pivotPosting,
