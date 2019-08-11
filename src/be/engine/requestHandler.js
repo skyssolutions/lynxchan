@@ -27,6 +27,7 @@ var cacheHandler;
 var lastSlaveIndex = 0;
 var slaves;
 var master;
+var trustedProxies;
 var port;
 proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.setHeader('x-forwarded-for', logger.getRawIp(req));
@@ -38,6 +39,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  trustedProxies = settings.trustedProxies || [];
   multiBoardAllowed = settings.multiboardThreadCount;
   verbose = settings.verbose || settings.verboseMisc;
   verboseApis = settings.verbose || settings.verboseApis;
@@ -283,7 +285,8 @@ exports.checkForRedirection = function(req, pathName, res) {
 
   } else if (exports.checkForService(req, pathName, isSlave)) {
 
-    req.trustedProxy = isLocal;
+    req.trustedProxy = isLocal || trustedProxies.indexOf(remote) >= 0;
+
     req.fromSlave = isSlave;
 
     return false;

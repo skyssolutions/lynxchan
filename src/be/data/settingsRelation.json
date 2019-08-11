@@ -45,6 +45,11 @@
     "element": "fieldSlaves"
   },
   {
+    "type": "array",
+    "setting": "trustedProxies",
+    "element": "fieldTrustedProxies"
+  },
+  {
     "type": "string",
     "setting": "address",
     "element": "fieldAddress"

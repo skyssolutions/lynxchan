@@ -1848,6 +1848,10 @@ fieldFileLimit:
     use: have it's value manipulated.
     description: field that displays the total amount of files the site can have.
 
+fieldTrustedProxies:
+    use: have it's value manipulated.
+    description: field that displays the trusted proxies.
+
 fieldCaptchaLimit:
     use: have it's value manipulated.
     description: field that displays the captcha limit for each ip in the span of a minute.
