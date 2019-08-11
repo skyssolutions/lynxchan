@@ -1222,7 +1222,7 @@ Name: deleteAccount
 Description: deletes an account after transfering any owned board to the user deleting the account. Requires authentication. Reserved for users with global role lesser than 2.
 
 Parameters:
-    account*: login of the account to be deleted.
+    account: login of the account to be deleted. If not sent, the user's own account will be deleted. In that case, the account will only be deleted if the user doesn't own any boards.
     confirmation(Boolean): if not informed as a boolean true, the operation will not be executed.
 
 ------------------------------------------------------------------------------------------

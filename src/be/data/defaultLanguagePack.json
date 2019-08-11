@@ -27,7 +27,7 @@
   "errIncorrectPassword": "Incorrect current password.",
   "miscAllBoards": "All boards",
   "errBoardNotFound": "Board not found.",
-  "errDeniedChangeBoardSettings": "You are not allowed to change this board settings.",
+  "errDeniedChangeBoardSettings": "You are not allowed to change this board's settings.",
   "logTransferBoard": "User {$actor} transferred board /{$board}/ to {$login}.",
   "errDeniedBoardTransfer": "You are not allowed to transfer this board.",
   "errOwnerVolunteer": "You cannot set the board owner as a volunteer.",
@@ -353,5 +353,6 @@
   "guiBanDescriptionAsn": "Your ASN {$asn} was banned from {$board}.",
   "guiBanDescriptionRange": "Your range {$range} was banned from {$board}.",
   "guiBanDescription": "You are banned from {$board}.",
-  "msgBoardUnlocked": "Board auto-lock reset."
+  "msgBoardUnlocked": "Board auto-lock reset.",
+  "errOwnsBoards": "You can't delete your own account if you own any boards."
 }

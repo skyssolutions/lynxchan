@@ -5,7 +5,7 @@ var path = require('path');
 var fs = require('fs');
 var cache = {};
 var staticCache = {};
-var buffer = {};
+var buffer = [];
 var next = {};
 var current = {};
 var gridFsHandler;
@@ -74,11 +74,25 @@ exports.runTTL = function() {
 
 exports.clearBuffer = function() {
 
-  for ( var key in buffer) {
-    delete cache[key];
-  }
+  while (buffer.length) {
 
-  buffer = {};
+    var buffered = buffer.pop();
+
+    var toClear = buffered.object[buffered.indexKey];
+
+    while (toClear.length) {
+
+      var entry = toClear.pop();
+
+      delete cache[entry];
+
+      delete current[entry];
+      delete next[entry];
+    }
+
+    delete buffered.object[buffered.indexKey];
+
+  }
 
 };
 
@@ -341,21 +355,27 @@ exports.clearArray = function(object, indexKey) {
 
   var toClear = object[indexKey];
 
-  if (!toClear || !toClear.length) {
+  if (!toClear || !toClear.length || toClear.tagged) {
     return;
   }
 
-  var moveToBuffer = exports.checkForBuffer(toClear);
+  if (exports.checkForBuffer(toClear)) {
+
+    toClear.tagged = true;
+
+    buffer.push({
+      object : object,
+      indexKey : indexKey
+    });
+
+    return;
+  }
 
   while (toClear.length) {
 
     var entry = toClear.pop();
 
-    if (moveToBuffer) {
-      buffer[entry] = true;
-    } else {
-      delete cache[entry];
-    }
+    delete cache[entry];
 
     delete current[entry];
     delete next[entry];

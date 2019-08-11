@@ -908,16 +908,36 @@ exports.transferBoards = function(userData, account, language, cb, index) {
 
 };
 
+exports.deleteOwnAccount = function(userData, language, callback) {
+
+  boards.countDocuments({
+    owner : userData.login
+  }, function gotCount(error, count) {
+
+    if (error) {
+      callback(error);
+    } else if (count) {
+      callback(lang(language).errOwnsBoards);
+    } else {
+      exports.finishAccountDeletion(userData, callback);
+    }
+
+  });
+
+};
+
 exports.deleteAccount = function(userData, parameters, language, callback) {
+
+  if (!parameters.confirmation) {
+    return callback(lang(language).errNoAccountDeletionConfirmation);
+  } else if (!parameters.account || userData.login === parameters.account) {
+    return exports.deleteOwnAccount(userData, language, callback);
+  }
 
   var isAdmin = userData.globalRole < 2;
 
   if (!isAdmin) {
-    callback(lang(language).errDeniedAccountManagement);
-    return;
-  } else if (!parameters.confirmation) {
-    callback(lang(language).errNoAccountDeletionConfirmation);
-    return;
+    return callback(lang(language).errDeniedAccountManagement);
   }
 
   users.findOne({
