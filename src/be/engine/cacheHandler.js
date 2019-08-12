@@ -5,7 +5,7 @@ var path = require('path');
 var fs = require('fs');
 var cache = {};
 var staticCache = {};
-var buffer = [];
+var buffer = {};
 var next = {};
 var current = {};
 var gridFsHandler;
@@ -74,25 +74,11 @@ exports.runTTL = function() {
 
 exports.clearBuffer = function() {
 
-  while (buffer.length) {
-
-    var buffered = buffer.pop();
-
-    var toClear = buffered.object[buffered.indexKey];
-
-    while (toClear.length) {
-
-      var entry = toClear.pop();
-
-      delete cache[entry];
-
-      delete current[entry];
-      delete next[entry];
-    }
-
-    delete buffered.object[buffered.indexKey];
-
+  for ( var key in buffer) {
+    delete cache[key];
   }
+
+  buffer = {};
 
 };
 
@@ -355,27 +341,21 @@ exports.clearArray = function(object, indexKey) {
 
   var toClear = object[indexKey];
 
-  if (!toClear || !toClear.length || toClear.tagged) {
+  if (!toClear || !toClear.length) {
     return;
   }
 
-  if (exports.checkForBuffer(toClear)) {
-
-    toClear.tagged = true;
-
-    buffer.push({
-      object : object,
-      indexKey : indexKey
-    });
-
-    return;
-  }
+  var moveToBuffer = exports.checkForBuffer(toClear);
 
   while (toClear.length) {
 
     var entry = toClear.pop();
 
-    delete cache[entry];
+    if (moveToBuffer) {
+      buffer[entry] = true;
+    } else {
+      delete cache[entry];
+    }
 
     delete current[entry];
     delete next[entry];
@@ -450,7 +430,7 @@ exports.pushIndex = function(indexToUse, key, dest) {
 
 };
 
-exports.pushMultiboardIndex = function(task) {
+exports.pushMultiboardIndex = function(task, dest) {
 
   var key = task.meta.boards.join('_');
 
@@ -461,12 +441,12 @@ exports.pushMultiboardIndex = function(task) {
     var indexList = typeIndex.multiboards[boardUri] || {};
     typeIndex.multiboards[boardUri] = indexList;
 
-    exports.pushIndex(typeIndex.multiboards[boardUri], key, task.dest);
+    exports.pushIndex(typeIndex.multiboards[boardUri], key, dest);
   }
 
 };
 
-exports.placeIndex = function(task) {
+exports.placeIndex = function(task, dest) {
 
   var boardIndex;
   var indexList;
@@ -482,30 +462,29 @@ exports.placeIndex = function(task) {
   switch (task.meta.type) {
 
   case 'multiboard': {
-    return exports.pushMultiboardIndex(task);
+    return exports.pushMultiboardIndex(task, dest);
   }
 
   case 'catalog':
   case 'rules': {
-    return exports.pushIndex(boardIndex, task.meta.type, task.dest);
+    return exports.pushIndex(boardIndex, task.meta.type, dest);
   }
 
-  case 'thread':
-  case 'last': {
-    return exports.pushIndex(boardIndex.threads, task.meta.threadId, task.dest);
+  case 'thread': {
+    return exports.pushIndex(boardIndex.threads, task.meta.threadId, dest);
   }
 
   case 'log': {
-    return exports.pushIndex(typeIndex.logs, task.meta.date, task.dest);
+    return exports.pushIndex(typeIndex.logs, task.meta.date, dest);
   }
 
   case 'page': {
-    return exports.pushIndex(boardIndex.pages, task.meta.page, task.dest);
+    return exports.pushIndex(boardIndex.pages, task.meta.page, dest);
   }
 
   case 'overboard':
   case 'frontPage': {
-    return exports.pushIndex(typeIndex, task.meta.type, task.dest);
+    return exports.pushIndex(typeIndex, task.meta.type, dest);
   }
 
   }
@@ -536,7 +515,7 @@ exports.receiveWriteData = function(task, socket) {
       if (!referenceBlock) {
         referenceBlock = {};
         cache[keyToUse] = referenceBlock;
-        exports.placeIndex(task);
+        exports.placeIndex(task, keyToUse);
       }
 
       referenceBlock[task.dest] = {

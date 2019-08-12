@@ -6,7 +6,7 @@ var logs = db.logs();
 var generator;
 
 exports.loadDependencies = function() {
-  generator = require('./generator').global;
+  generator = require('./degenerator').global;
 };
 
 // Section 1: Log insertion {
