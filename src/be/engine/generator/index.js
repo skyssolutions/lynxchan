@@ -73,10 +73,12 @@ for (var i = 0; i < extra.length; i++) {
 }
 
 exports.board = require('./board');
+exports.frontPage = require('./frontPage');
 exports.global = require('./global');
 
 exports.loadSettings = function() {
 
+  exports.frontPage.loadSettings();
   exports.board.loadSettings();
   exports.global.loadSettings();
 
@@ -84,6 +86,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  exports.frontPage.loadDependencies();
   exports.board.loadDependencies();
   exports.global.loadDependencies();
 
