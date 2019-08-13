@@ -597,14 +597,15 @@ exports.overboard = function(foundThreads, previewRelation, callback,
 
 };
 
-exports.log = function(date, logs, callback) {
+exports.log = function(logData, logs, callback) {
 
-  var path = '/.global/logs/';
-  path += logger.formatedDate(date) + '.json';
+  var path = '/.global/logs/' + (logData.boardUri || '.global');
+  path += '/' + logger.formatedDate(logData.date) + '.json';
 
   cacheHandler.writeData(JSON.stringify(logs), path, 'application/json', {
     type : 'log',
-    date : date.toUTCString()
+    boardUri : logData.boardUri,
+    date : logData.date.toUTCString()
   }, callback);
 
 };

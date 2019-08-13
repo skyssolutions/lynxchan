@@ -4,6 +4,8 @@
 // 1.6 onward will be
 
 var db = require('./db');
+var aggregatedLogs = db.aggregatedLogs();
+var logs = db.logs();
 var files = db.files();
 var settings = require('./settingsHandler').getGeneralSettings();
 var reports = db.reports();
@@ -157,6 +159,118 @@ exports.cleanCache = function(callback) {
       callback(error);
     } else {
       eraseOldCache(callback);
+    }
+
+  });
+
+};
+
+// Added on 2.3
+exports.generateOperation = function(results, date, toInsert) {
+
+  if (!results.length) {
+    return;
+  }
+
+  for (var i = 0; i < results.length; i++) {
+
+    var entry = results[i];
+
+    toInsert.push({
+      boardUri : entry._id,
+      logs : entry.ids,
+      date : date
+    });
+  }
+
+};
+
+exports.iterateDays = function(date, callback, toInsert) {
+
+  toInsert = toInsert || [];
+
+  if (date >= new Date()) {
+    aggregatedLogs.deleteMany({}, function clearedCollection(error) {
+
+      if (error) {
+        callback(error);
+      } else {
+        aggregatedLogs.insertMany(toInsert, callback);
+      }
+
+    });
+
+    return;
+  }
+
+  var next = new Date(date);
+  next.setUTCDate(next.getUTCDate() + 1);
+
+  logs.aggregate([ {
+    $match : {
+      time : {
+        $gte : date,
+        $lt : next
+      }
+    }
+  }, {
+    $project : {
+      time : 1,
+      boardUri : 1
+    }
+  }, {
+    $group : {
+      _id : '$boardUri',
+      ids : {
+        $push : '$_id'
+      }
+    }
+  } ]).toArray(function gotLogs(error, results) {
+
+    if (error) {
+      callback();
+    } else {
+
+      exports.generateOperation(results, date, toInsert);
+
+      exports.iterateDays(next, callback, toInsert);
+
+    }
+
+  });
+
+};
+
+exports.aggregateLogs = function(callback) {
+
+  logs.aggregate([ {
+    $project : {
+      time : 1,
+      _id : 0
+    }
+  }, {
+    $group : {
+      _id : 0,
+      time : {
+        $min : '$time'
+      }
+    }
+  } ]).toArray(function gotOldestLog(error, results) {
+
+    if (error) {
+      callback(error);
+    } else if (!results.length) {
+      callback();
+    } else {
+
+      var earliest = results[0].time;
+
+      earliest.setUTCHours(0);
+      earliest.setUTCMinutes(0);
+      earliest.setUTCSeconds(0);
+      earliest.setUTCMilliseconds(0);
+
+      exports.iterateDays(earliest, callback);
     }
 
   });

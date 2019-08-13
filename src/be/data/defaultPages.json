@@ -113,7 +113,7 @@
         "inner",
         "removal"
       ],
-      "divMod":"removal",
+      "divMod": "removal",
       "linkMod": "href",
       "noFlagDiv": "removal",
       "panelMessage": "removal",
@@ -574,7 +574,7 @@
   {
     "template": "logIndexPage",
     "prebuiltFields": {
-      "divDates": "children"
+      "divBoards": "children"
     }
   },
   {

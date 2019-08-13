@@ -136,7 +136,8 @@ exports.generateCache = function(lockData, callback) {
   case 'log': {
 
     aggregatedLogs.findOne({
-      date : lockData.date
+      date : lockData.date,
+      boardUri : lockData.boardUri
     }, function gotLogData(error, data) {
 
       if (error || !data) {
@@ -176,11 +177,12 @@ exports.getThreadLockData = function(fileParts) {
 
 exports.getLogLockData = function(fileParts) {
 
-  if (fileParts.length !== 4) {
+  if (fileParts.length !== 5) {
     return;
   }
 
-  var matches = fileParts[3].match(/^(\d{4})-(\d{2})-(\d{2})\.(html|json)$/);
+  var boardUri = fileParts[3] === '.global' ? null : fileParts[3];
+  var matches = fileParts[4].match(/^(\d{4})-(\d{2})-(\d{2})\.(html|json)$/);
 
   if (!matches) {
     return;
@@ -197,6 +199,7 @@ exports.getLogLockData = function(fileParts) {
   date.setUTCDate(matches[3]);
 
   return {
+    boardUri : boardUri,
     date : date,
     type : 'log'
   };

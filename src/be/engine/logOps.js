@@ -10,35 +10,61 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Log insertion {
-exports.aggregateLog = function(entryTime, collectedIds, callback) {
+exports.createOperation = function(boardUri, list, entryTime, operations) {
+
+  if (!list.length) {
+    return;
+  }
+
+  operations.push({
+    updateOne : {
+      filter : {
+        date : entryTime,
+        boardUri : boardUri
+      },
+      update : {
+        $push : {
+          logs : {
+            $each : list
+          }
+        },
+        $setOnInsert : {
+          date : entryTime,
+          boardUri : boardUri
+        }
+      },
+      upsert : true
+    }
+  });
+
+};
+
+exports.generateOperations = function(globalList, boardRelation, entry,
+    callback) {
+
+  var operations = [];
+
+  var entryTime = entry[0].time;
 
   entryTime.setUTCHours(0);
   entryTime.setUTCMinutes(0);
   entryTime.setUTCSeconds(0);
   entryTime.setUTCMilliseconds(0);
 
-  aggregatedLogs.updateOne({
-    date : entryTime
-  }, {
-    $push : {
-      logs : {
-        $each : collectedIds
-      }
-    },
-    $setOnInsert : {
-      date : entryTime
-    }
-  }, {
-    upsert : true
-  }, function aggregatedLog(error) {
+  exports.createOperation(null, globalList, entryTime, operations);
 
+  for ( var key in boardRelation) {
+    exports.createOperation(key, boardRelation[key], entryTime, operations);
+  }
+
+  aggregatedLogs.bulkWrite(operations, function(error) {
     if (error) {
       console.log('Failed to aggregate log: ' + error.toString());
     }
 
     generator.log(entryTime, callback);
-
   });
+
 };
 
 exports.insertLog = function(entry, callback) {
@@ -54,13 +80,27 @@ exports.insertLog = function(entry, callback) {
       callback();
     } else {
 
-      var collectedIds = [];
+      var boardRelation = {};
+      var globalList = [];
 
       for (var i = 0; i < entry.length; i++) {
-        collectedIds.push(entry[i]._id);
+
+        var item = entry[i];
+
+        if (item.boardUri) {
+
+          var boardList = boardRelation[item.boardUri] || [];
+          boardRelation[item.boardUri] = boardList;
+          boardList.push(entry[i]._id);
+        } else {
+          globalList.push(entry[i]._id);
+
+        }
+
       }
 
-      exports.aggregateLog(entry[0].time, collectedIds, callback);
+      exports.generateOperations(globalList, boardRelation, entry, callback);
+
     }
 
   });

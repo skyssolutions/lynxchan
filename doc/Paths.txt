@@ -8,7 +8,7 @@ Anything else is used to access files saved on mongo.
 /.media/ are used to store uploaded files.
 The engine stores global files on the following paths:
 /.global/captcha/ are used to store captcha images.
-/.global/logs/ stores staff logs pages.
+/.global/logs/ stores staff logs pages. Global log pages are stored in /.global/logs/.global while board log pages replace the second .global with the board uri.
 /.global/banners/ stores global banners.
 /.global/graphs/ stores daily graphs.
 /maintenance.html stores the maintenance page.

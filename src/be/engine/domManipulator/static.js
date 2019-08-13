@@ -961,26 +961,15 @@ exports.getLogCell = function(logEntry, language) {
 
 };
 
-exports.log = function(language, date, logs, callback) {
+exports.saveLogPage = function(document, logData, language, callback) {
 
-  var document = templateHandler(language).logsPage.template.replace(
-      '__title__', lang(language).titLogPage.replace('{$date}', common
-          .formatDateToDisplay(date, true, language)));
-
-  var children = '';
-
-  for (var i = 0; i < logs.length; i++) {
-    children += exports.getLogCell(logs[i], language);
-  }
-
-  document = document.replace('__divLogs_children__', children);
-
-  var path = '/.global/logs/';
-  path += logger.formatedDate(date) + '.html';
+  var path = '/.global/logs/' + (logData.boardUri || '.global') + '/';
+  path += logger.formatedDate(logData.date) + '.html';
 
   var meta = {
     type : 'log',
-    date : date.toUTCString()
+    boardUri : logData.boardUri,
+    date : logData.date.toUTCString()
   };
 
   if (language) {
@@ -990,6 +979,29 @@ exports.log = function(language, date, logs, callback) {
   }
 
   cacheHandler.writeData(document, path, 'text/html', meta, callback);
+
+};
+
+exports.log = function(language, logData, logs, callback) {
+
+  var title = lang(language).titLogPage.replace('{$date}', common
+      .formatDateToDisplay(logData.date, true, language));
+
+  if (logData.boardUri) {
+    title += ' - /' + common.clean(logData.boardUri) + '/';
+  }
+
+  var document = templateHandler(language).logsPage.template.replace(
+      '__title__', title);
+
+  var children = '';
+
+  for (var i = 0; i < logs.length; i++) {
+    children += exports.getLogCell(logs[i], language);
+  }
+
+  exports.saveLogPage(document.replace('__divLogs_children__', children),
+      logData, language, callback);
 
 };
 // Section 6: Log page {

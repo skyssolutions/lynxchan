@@ -26,11 +26,13 @@ var debug = kernel.feDebug();
 var typeIndex = {
   boards : {},
   logs : {},
+  boardLogs : {},
   multiboards : {}
 };
 var locks = {
   boards : {},
   logs : {},
+  boardLogs : {},
   multiboards : {}
 };
 
@@ -105,12 +107,23 @@ exports.receiveGetLock = function(task, socket) {
   var boardObject;
 
   if (lockData.boardUri) {
-    boardObject = locks.boards[lockData.boardUri] || {
-      pages : {},
-      threads : {}
-    };
 
-    locks.boards[lockData.boardUri] = boardObject;
+    if (lockData.type === 'log') {
+
+      boardObject = locks.boardLogs[lockData.boardUri] || {};
+
+      locks.boardLogs[lockData.boardUri] = boardObject;
+
+    } else {
+
+      boardObject = locks.boards[lockData.boardUri] || {
+        pages : {},
+        threads : {}
+      };
+
+      locks.boards[lockData.boardUri] = boardObject;
+
+    }
   }
 
   switch (lockData.type) {
@@ -126,7 +139,10 @@ exports.receiveGetLock = function(task, socket) {
   }
 
   case 'log': {
-    return exports.returnLock(task, lockData.date, locks.logs, socket);
+
+    return exports.returnLock(task, lockData.date,
+        lockData.boardUri ? locks.boardLogs[lockData.boardUri] : locks.logs,
+        socket);
   }
 
   case 'rules':
@@ -194,7 +210,11 @@ exports.deleteLock = function(task) {
   }
 
   case 'log': {
-    delete locks.logs[lockData.date];
+
+    var target = (lockData.boardUri ? locks.boardLogs[lockData.boardUri]
+        : locks.logs);
+    delete target[lockData.date];
+
     break;
   }
 
@@ -238,8 +258,10 @@ exports.getInfoToClear = function(task) {
   }
 
   case 'log': {
+
     return {
-      object : typeIndex.logs,
+      object : task.boardUri ? typeIndex.boardLogs[task.boardUri]
+          : typeIndex.logs,
       indexKey : task.date
     };
   }
@@ -395,13 +417,7 @@ exports.clearAllBoards = function() {
 
 };
 
-exports.clear = function(task) {
-
-  if (task.cacheType === 'boards') {
-    return exports.clearAllBoards();
-  } else if (task.cacheType === 'multiboard') {
-    return exports.clearMultiBoard(task);
-  }
+exports.runClear = function(task) {
 
   var clearInfo = exports.getInfoToClear(task);
 
@@ -413,6 +429,27 @@ exports.clear = function(task) {
     exports.performFullClear(clearInfo.object);
   } else {
     exports.clearArray(clearInfo.object, clearInfo.indexKey);
+  }
+
+};
+
+exports.clear = function(task) {
+
+  if (task.cacheType === 'boards') {
+    return exports.clearAllBoards();
+  } else if (task.cacheType === 'multiboard') {
+    return exports.clearMultiBoard(task);
+  }
+
+  exports.runClear(task);
+
+  if (task.cacheType !== 'log') {
+    return;
+  }
+
+  for ( var key in typeIndex.boardLogs) {
+    task.boardUri = key;
+    exports.runClear(task);
   }
 
 };
@@ -452,11 +489,21 @@ exports.placeIndex = function(task, dest) {
   var indexList;
 
   if (task.meta.boardUri) {
-    boardIndex = typeIndex.boards[task.meta.boardUri] || {
-      pages : {},
-      threads : {}
-    };
-    typeIndex.boards[task.meta.boardUri] = boardIndex;
+
+    if (task.meta.type === 'log') {
+
+      boardIndex = typeIndex.boardLogs[task.meta.boardUri] || {};
+      typeIndex.boardLogs[task.meta.boardUri] = boardIndex;
+
+    } else {
+
+      boardIndex = typeIndex.boards[task.meta.boardUri] || {
+        pages : {},
+        threads : {}
+      };
+      typeIndex.boards[task.meta.boardUri] = boardIndex;
+
+    }
   }
 
   switch (task.meta.type) {
@@ -475,7 +522,9 @@ exports.placeIndex = function(task, dest) {
   }
 
   case 'log': {
-    return exports.pushIndex(typeIndex.logs, task.meta.date, dest);
+    return exports.pushIndex(
+        task.meta.boardUri ? typeIndex.boardLogs[task.meta.boardUri]
+            : typeIndex.logs, task.meta.date, dest);
   }
 
   case 'page': {

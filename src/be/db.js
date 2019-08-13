@@ -1,6 +1,6 @@
 'use strict';
 
-var dbVersion = 12;
+var dbVersion = 13;
 
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
@@ -131,6 +131,10 @@ function upgrade(version, callback) {
 
   case 11:
     newerMigrations.cleanCache(callback);
+    break;
+
+  case 12:
+    newerMigrations.aggregateLogs(callback);
     break;
 
   default:

@@ -626,7 +626,9 @@ Description: displays available dates for logs. It uses get parameters.
 Parameters:
     year: year in format YYYY to specify a year to fetch available dates. Defaults to current year.
 
-Json output(Array): array with the available dates.
+Json output(Array): array of boards that contain logs for the specified year. Each element is an object with the following fields:
+    boardUri: board uri of the board. For global logs, this is null.
+    dates(Array): array of available dates.
 
 ------------------------------------------------------------------------------------------
 

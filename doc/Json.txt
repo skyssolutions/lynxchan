@@ -214,7 +214,7 @@ Root(Array): array of strings, each one being a rule of the board.
 
 JSO_ID::06
 
-Path:/.global/logs/<yyyy-MM-dd>.json
+Path:/.global/logs/<board>/<yyyy-MM-dd>.json
 
 Root(Array): array with the logs of the day. Each object contains the following fields:
     user: login of the user that performed the action.

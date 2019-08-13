@@ -53,10 +53,14 @@ exports.process = function(req, res) {
     }
   }, {
     $group : {
-      _id : 0,
+      _id : '$boardUri',
       dates : {
         $push : '$date'
       }
+    }
+  }, {
+    $sort : {
+      _id : 1
     }
   } ]).toArray(function gotDates(error, results) {
 
@@ -64,13 +68,15 @@ exports.process = function(req, res) {
       formOps.outputError(error, 500, res, req.language, json);
     } else {
 
-      var dates = results.length ? results[0].dates : [];
-
       if (json) {
-        formOps.outputResponse('ok', dates, res, null, null, null, true);
+        formOps.outputResponse('ok', results.map(function(element) {
+          element.boardUri = element._id;
+          delete element._id;
+          return element;
+        }), res, null, null, null, true);
       } else {
         res.writeHead(200, miscOps.getHeader('text/html'));
-        res.end(domManipulator.logs(dates, req.language));
+        res.end(domManipulator.logs(results, req.language));
       }
     }
 

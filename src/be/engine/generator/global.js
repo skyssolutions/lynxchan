@@ -906,16 +906,16 @@ exports.overboard = function(callback, sfw) {
 // } Section 2: Overboard
 
 // Section 3: Logs {
-exports.createLogPage = function(date, foundLogs, callback, language) {
+exports.createLogPage = function(logData, foundLogs, callback, language) {
 
-  domManipulator.log(language, date, foundLogs, function createdPage(error) {
+  domManipulator.log(language, logData, foundLogs, function createdPage(error) {
 
     if (error) {
       callback(error);
     } else {
 
       if (!altLanguages) {
-        jsonBuilder.log(date, foundLogs, callback);
+        jsonBuilder.log(logData, foundLogs, callback);
         return;
       }
 
@@ -926,9 +926,9 @@ exports.createLogPage = function(date, foundLogs, callback, language) {
         if (error) {
           callback(error);
         } else if (!language) {
-          jsonBuilder.log(date, foundLogs, callback);
+          jsonBuilder.log(logData, foundLogs, callback);
         } else {
-          exports.createLogPage(date, foundLogs, callback, language);
+          exports.createLogPage(logData, foundLogs, callback, language);
         }
 
       });
@@ -1008,7 +1008,7 @@ exports.log = function(date, callback, logData) {
     if (error) {
       callback(error);
     } else {
-      exports.createLogPage(logData.date, foundLogs, callback);
+      exports.createLogPage(logData, foundLogs, callback);
     }
 
   });
