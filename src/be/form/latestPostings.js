@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var url = require('url');
 var miscOps = require('../engine/miscOps');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
-var boardOps = require('../engine/boardOps').meta;
+var boardOps = require('../engine/boardOps').latest;
 var jsonBuilder = require('../engine/jsonBuilder');
 
 exports.latestPostings = function(auth, parameters, user, res, language) {

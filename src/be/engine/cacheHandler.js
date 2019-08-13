@@ -255,9 +255,8 @@ exports.getInfoToClear = function(task) {
   }
 
   case 'log': {
-
     return {
-      object : boardIndex,
+      object : boardIndex || typeIndex.logs,
       indexKey : task.date
     };
   }
@@ -333,7 +332,11 @@ exports.performFullClear = function(object) {
       continue;
     }
 
-    exports.clearArray(object, key);
+    if (Array.isArray(object[key])) {
+      exports.clearArray(object, key);
+    } else {
+      exports.performFullClear(object[key]);
+    }
 
   }
 
@@ -431,7 +434,7 @@ exports.runClear = function(task) {
 
 exports.clear = function(task) {
 
-  if (task.cacheType === 'log') {
+  if (task.cacheType === 'log' && task.date) {
 
     for ( var key in typeIndex.logs) {
       task.boardUri = key;
