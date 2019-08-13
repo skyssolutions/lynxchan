@@ -24,7 +24,6 @@ var globalBoardModeration;
 var boardCreationRequirement;
 var maxVolunteers;
 var allowedMimes;
-var rangeSettings;
 var volunteerSettings;
 
 var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
@@ -85,8 +84,6 @@ exports.loadDependencies = function() {
   modCommonOps = require('../modOps').common;
   lang = require('../langOps').languagePack;
 
-  var dynamicPages = require('../domManipulator').dynamicPages;
-  rangeSettings = dynamicPages.managementPages.boardRangeSettingsRelation;
 };
 
 exports.getValidSettings = function() {

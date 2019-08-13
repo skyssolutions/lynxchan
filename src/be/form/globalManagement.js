@@ -1,6 +1,6 @@
 'use strict';
 
-var dom = require('../engine/domManipulator').dynamicPages.managementPages;
+var dom = require('../engine/domManipulator').dynamicPages.broadManagement;
 var formOps = require('../engine/formOps');
 var url = require('url');
 var miscOps = require('../engine/miscOps');

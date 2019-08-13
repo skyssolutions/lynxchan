@@ -4,7 +4,7 @@ var boardOps = require('../engine/boardOps').meta;
 var url = require('url');
 var miscOps = require('../engine/miscOps');
 var jsonB = require('../engine/jsonBuilder');
-var dom = require('../engine/domManipulator').dynamicPages.managementPages;
+var dom = require('../engine/domManipulator').dynamicPages.broadManagement;
 var formOps = require('../engine/formOps');
 
 exports.getBoardManagementData = function(board, userData, res, json, auth,
