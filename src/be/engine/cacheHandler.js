@@ -26,13 +26,11 @@ var debug = kernel.feDebug();
 var typeIndex = {
   boards : {},
   logs : {},
-  boardLogs : {},
   multiboards : {}
 };
 var locks = {
   boards : {},
   logs : {},
-  boardLogs : {},
   multiboards : {}
 };
 
@@ -110,9 +108,9 @@ exports.receiveGetLock = function(task, socket) {
 
     if (lockData.type === 'log') {
 
-      boardObject = locks.boardLogs[lockData.boardUri] || {};
+      boardObject = locks.logs[lockData.boardUri] || {};
 
-      locks.boardLogs[lockData.boardUri] = boardObject;
+      locks.logs[lockData.boardUri] = boardObject;
 
     } else {
 
@@ -139,10 +137,7 @@ exports.receiveGetLock = function(task, socket) {
   }
 
   case 'log': {
-
-    return exports.returnLock(task, lockData.date,
-        lockData.boardUri ? locks.boardLogs[lockData.boardUri] : locks.logs,
-        socket);
+    return exports.returnLock(task, lockData.date, boardObject, socket);
   }
 
   case 'rules':
@@ -210,11 +205,7 @@ exports.deleteLock = function(task) {
   }
 
   case 'log': {
-
-    var target = (lockData.boardUri ? locks.boardLogs[lockData.boardUri]
-        : locks.logs);
-    delete target[lockData.date];
-
+    delete locks.logs[lockData.boardUri][lockData.date];
     break;
   }
 
@@ -240,11 +231,17 @@ exports.getInfoToClear = function(task) {
   var boardIndex;
 
   if (task.boardUri) {
-    boardIndex = typeIndex.boards[task.boardUri];
+
+    if (task.cacheType === 'log') {
+      boardIndex = typeIndex.logs[task.boardUri];
+    } else {
+      boardIndex = typeIndex.boards[task.boardUri];
+    }
 
     if (!boardIndex) {
       return;
     }
+
   }
 
   switch (task.cacheType) {
@@ -260,8 +257,7 @@ exports.getInfoToClear = function(task) {
   case 'log': {
 
     return {
-      object : task.boardUri ? typeIndex.boardLogs[task.boardUri]
-          : typeIndex.logs,
+      object : boardIndex,
       indexKey : task.date
     };
   }
@@ -435,22 +431,22 @@ exports.runClear = function(task) {
 
 exports.clear = function(task) {
 
-  if (task.cacheType === 'boards') {
+  if (task.cacheType === 'log') {
+
+    for ( var key in typeIndex.logs) {
+      task.boardUri = key;
+      exports.runClear(task);
+    }
+
+    return;
+
+  } else if (task.cacheType === 'boards') {
     return exports.clearAllBoards();
   } else if (task.cacheType === 'multiboard') {
     return exports.clearMultiBoard(task);
   }
 
   exports.runClear(task);
-
-  if (task.cacheType !== 'log') {
-    return;
-  }
-
-  for ( var key in typeIndex.boardLogs) {
-    task.boardUri = key;
-    exports.runClear(task);
-  }
 
 };
 // } Section 2: Cache deletion
@@ -492,8 +488,8 @@ exports.placeIndex = function(task, dest) {
 
     if (task.meta.type === 'log') {
 
-      boardIndex = typeIndex.boardLogs[task.meta.boardUri] || {};
-      typeIndex.boardLogs[task.meta.boardUri] = boardIndex;
+      boardIndex = typeIndex.logs[task.meta.boardUri] || {};
+      typeIndex.logs[task.meta.boardUri] = boardIndex;
 
     } else {
 
@@ -522,9 +518,7 @@ exports.placeIndex = function(task, dest) {
   }
 
   case 'log': {
-    return exports.pushIndex(
-        task.meta.boardUri ? typeIndex.boardLogs[task.meta.boardUri]
-            : typeIndex.logs, task.meta.date, dest);
+    return exports.pushIndex(boardIndex, task.meta.date, dest);
   }
 
   case 'page': {

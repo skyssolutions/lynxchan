@@ -137,7 +137,7 @@ exports.generateCache = function(lockData, callback) {
 
     aggregatedLogs.findOne({
       date : lockData.date,
-      boardUri : lockData.boardUri
+      boardUri : lockData.boardUri === '.global' ? null : lockData.boardUri
     }, function gotLogData(error, data) {
 
       if (error || !data) {
@@ -181,7 +181,7 @@ exports.getLogLockData = function(fileParts) {
     return;
   }
 
-  var boardUri = fileParts[3] === '.global' ? null : fileParts[3];
+  var boardUri = fileParts[3];
   var matches = fileParts[4].match(/^(\d{4})-(\d{2})-(\d{2})\.(html|json)$/);
 
   if (!matches) {

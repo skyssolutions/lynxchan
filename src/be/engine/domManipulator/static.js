@@ -968,7 +968,7 @@ exports.saveLogPage = function(document, logData, language, callback) {
 
   var meta = {
     type : 'log',
-    boardUri : logData.boardUri,
+    boardUri : logData.boardUri || '.global',
     date : logData.date.toUTCString()
   };
 

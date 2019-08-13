@@ -604,7 +604,7 @@ exports.log = function(logData, logs, callback) {
 
   cacheHandler.writeData(JSON.stringify(logs), path, 'application/json', {
     type : 'log',
-    boardUri : logData.boardUri,
+    boardUri : logData.boardUri || '.global',
     date : logData.date.toUTCString()
   }, callback);
 
