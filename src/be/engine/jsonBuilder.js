@@ -221,7 +221,7 @@ exports.addExtraThreadInfo = function(threadObject, boardData) {
 
   exports.setFileLimits(threadObject, boardData);
 
-  if (boardData.captchaMode || globalCaptcha) {
+  if (boardData.captchaMode === 2 || globalCaptcha) {
     threadObject.captcha = true;
   }
 
