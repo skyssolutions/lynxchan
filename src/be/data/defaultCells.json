@@ -21,13 +21,6 @@
     }
   },
   {
-    "template": "logIndexCell",
-    "prebuiltFields": {
-      "divDates": "children",
-      "labelBoard": "inner"
-    }
-  },
-  {
     "template": "bannerCell",
     "prebuiltFields": {
       "bannerImage": "src",

@@ -70,6 +70,10 @@ TEM_ID::02
 boardPage: board pages, listing threads.
 
 Elements:
+linkLogs:
+    use: have it's href manipulated.
+    description: link to the board's logs.
+
 divMod:
     use: might be removed.
     description: area that contains moderation specific elements.
@@ -2314,9 +2318,13 @@ TEM_ID::54
 logIndexPage: page that lists the available dates to read logs from.
 
 Elements:
-divBoards:
+labelBoard:
+  use: have it's innerHTML manipulated.
+  description: label with the boardUri being viewed.
+
+divDates:
     use: have children appended to it.
-    description: div that holds the boards that got logs on them.
+    description: div that holds the days that got logs on them.
 
 ------------------------------------------------------------------------------------------
 
@@ -2661,23 +2669,6 @@ asnLabel:
 idIdentifier:
     use: have it's value manipulated.
     description: hidden input that identifies the ban.
-
-------------------------------------------------------------------------------------------
-
-TEM_ID::71
-
-logIndexCell*: cell used to list dates on the log index.
-
-Root element: div
-
-Elements:
-divDates:
-    use: have children appended to it.
-    description: div with the available dates for this board.
-
-labelBoard:
-    use: have it's innerHTML manipulated.
-    description: label that indicates the board of the logs.
 
 ------------------------------------------------------------------------------------------
 

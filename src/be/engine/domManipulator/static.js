@@ -432,10 +432,9 @@ exports.page = function(page, threads, pageCount, boardData, flagData,
   document = document.replace('__title__', title);
 
   document = document.replace('__linkManagement_href__',
-      '/boardManagement.js?boardUri=' + boardUri);
-
-  document = document.replace('__linkModeration_href__',
-      '/boardModeration.js?boardUri=' + boardUri);
+      '/boardManagement.js?boardUri=' + boardUri).replace(
+      '__linkModeration_href__', '/boardModeration.js?boardUri=' + boardUri)
+      .replace('__linkLogs_href__', '/logs.js?boardUri=' + boardData.boardUri);
 
   var modLink = '/mod.js?boardUri=' + boardUri + '&page=' + page;
   document = document.replace('__linkMod_href__', modLink);

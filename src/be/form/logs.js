@@ -45,7 +45,8 @@ exports.process = function(req, res) {
       date : {
         $gte : date,
         $lt : maxDate
-      }
+      },
+      boardUri : parameters.boardUri || null
     }
   }, {
     $sort : {
@@ -53,14 +54,10 @@ exports.process = function(req, res) {
     }
   }, {
     $group : {
-      _id : '$boardUri',
+      _id : 0,
       dates : {
         $push : '$date'
       }
-    }
-  }, {
-    $sort : {
-      _id : 1
     }
   } ]).toArray(function gotDates(error, results) {
 
@@ -68,15 +65,13 @@ exports.process = function(req, res) {
       formOps.outputError(error, 500, res, req.language, json);
     } else {
 
+      results = results.length ? results[0].dates : [];
+
       if (json) {
-        formOps.outputResponse('ok', results.map(function(element) {
-          element.boardUri = element._id;
-          delete element._id;
-          return element;
-        }), res, null, null, null, true);
+        formOps.outputResponse('ok', results, res, null, null, null, true);
       } else {
         res.writeHead(200, miscOps.getHeader('text/html'));
-        res.end(domManipulator.logs(results, req.language));
+        res.end(domManipulator.logs(results, parameters, req.language));
       }
     }
 

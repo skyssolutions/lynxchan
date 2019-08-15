@@ -189,59 +189,44 @@ exports.account = function(userData, language) {
 };
 // } Section 1: Account
 
-// Section 2: Logs
-exports.getBoardDates = function(dateInfo, language) {
+exports.logs = function(dates, parameters, language) {
 
-  var children = '';
+  var boardUri = parameters.boardUri;
 
-  var days = dateInfo.dates;
+  var title = lang(language).titLogs.replace('{$board}',
+      parameters.boardUri ? ('/' + parameters.boardUri + '/')
+          : lang(language).guiGlobalLogsIndex);
 
-  for (var j = 0; j < days.length; j++) {
+  var label;
 
-    var displayDate = common.formatDateToDisplay(days[j], true, language);
-
-    var cell = '<a href="/.global/logs/' + (dateInfo._id || '.global');
-    cell += '/' + logger.formatedDate(days[j]);
-
-    children += cell + '.html">' + displayDate + '</a>';
-
+  if (!parameters.boardUri) {
+    label = lang(language).titLogs.replace('{$board}',
+        lang(language).guiGlobalLogsIndex);
+  } else {
+    label = '/' + common.clean(parameters.boardUri) + '/';
   }
 
-  return children;
-
-};
-
-exports.logs = function(dates, language) {
-
   var document = templateHandler(language).logIndexPage.template.replace(
-      '__title__', lang(language).titLogs);
+      '__title__', title).replace('__identifierBoard_value__',
+      parameters.boardUri || '').replace('__labelBoard_inner__', label);
 
   var children = '';
 
   for (var i = 0; i < dates.length; i++) {
 
-    var dateInfo = dates[i];
+    var cell = '<a href="/.global/logs/' + (parameters.boardUri || '.global');
+    cell += '/' + logger.formatedDate(dates[i]);
 
-    var label;
-
-    if (!dateInfo._id) {
-      label = lang(language).guiGlobalLogsIndex;
-    } else {
-      label = '/' + common.clean(dateInfo._id) + '/';
-    }
-
-    children += templateHandler(language).logIndexCell.template.replace(
-        '__labelBoard_inner__', label).replace('__divDates_children__',
-        exports.getBoardDates(dateInfo, language));
+    var displayDate = common.formatDateToDisplay(dates[i], true, language);
+    children += cell + '.html">' + displayDate + '</a>';
 
   }
 
-  return document.replace('__divBoards_children__', children);
+  return document.replace('__divDates_children__', children);
 
 };
-// } Section 2: Logs
 
-// Section 3: Board listing {
+// Section 2: Board listing {
 exports.setSimpleBoardCellLabels = function(board, cell, removable) {
 
   cell = cell.replace('__labelPostsPerHour_inner__', board.postsPerHour || 0);
@@ -425,9 +410,9 @@ exports.boards = function(parameters, boards, pageCount, language) {
       pageCount));
 
 };
-// } Section 3: Board listing
+// } Section 2: Board listing
 
-// Section 4: Ban {
+// Section 3: Ban {
 exports.assembleBanPage = function(document, template, ban, language) {
 
   if (ban.reason) {
@@ -502,9 +487,9 @@ exports.ban = function(ban, board, language) {
       '{$board}', board));
 
 };
-// } Section 4: Ban
+// } Section 3: Ban
 
-// Section 5: Archives {
+// Section 4: Archives {
 exports.getArchiveCells = function(threads, language) {
 
   var content = '';
@@ -566,7 +551,7 @@ exports.archives = function(threads, parameters, pages, language) {
       threads, language));
 
 };
-// } Section 5: Archives
+// } Section 4: Archives
 
 exports.hashBan = function(hashBans, language) {
 

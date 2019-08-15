@@ -113,6 +113,7 @@
         "inner",
         "removal"
       ],
+      "linkLogs": "href",
       "divMod": "removal",
       "linkMod": "href",
       "noFlagDiv": "removal",
@@ -574,7 +575,9 @@
   {
     "template": "logIndexPage",
     "prebuiltFields": {
-      "divBoards": "children"
+      "labelBoard": "inner",
+      "divDates": "children",
+      "identifierBoard": "value"
     }
   },
   {

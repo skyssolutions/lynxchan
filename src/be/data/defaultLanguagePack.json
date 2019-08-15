@@ -80,7 +80,7 @@
   "titBoardManagement": "Management of /{$board}/",
   "titGlobalManagement": "Global management",
   "titAccount": "Welcome, {$login}",
-  "titLogs": "Logs",
+  "titLogs": "{$board} logs",
   "titFilters": "Filters for /{$board}/",
   "titBoardModeration": "Board moderation of /{$board}/",
   "titBoards": "Boards",
@@ -355,5 +355,5 @@
   "guiBanDescription": "You are banned from {$board}.",
   "msgBoardUnlocked": "Board auto-lock reset.",
   "errOwnsBoards": "You can't delete your own account if you own any boards.",
-  "guiGlobalLogsIndex": "Global logs"
+  "guiGlobalLogsIndex": "Global"
 }

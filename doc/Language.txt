@@ -298,7 +298,7 @@ titBansManagement: title for the bans management page.
 titClosedReports: title for the closed reports page.
 titGlobalManagement: title for global management page.
 titAccount: title for account page. Replaces: {$login}.
-titLogs: title for logs page.
+titLogs: title for logs page. Replaces: {$board}.
 titFilters: title for filter management page. Replaces: {$board}.
 titBoardModeration: title for board moderation page. Replaces: {$board}.
 titBoards: title for the boards page.
