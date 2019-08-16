@@ -221,7 +221,7 @@ exports.setThreadCommonInfo = function(template, threadData, boardData,
 
   document = document.replace('__divThreads_children__', common.getThread(
       threadData, posts, true, modding, boardData, userRole, language,
-      operations));
+      operations, last));
 
   if (!last) {
     common.handleOps(operations);

@@ -470,7 +470,7 @@ exports.getThreadContent = function(thread, posts, innerPage, modding,
 };
 
 exports.getThread = function(thread, posts, innerPage, modding, boardData,
-    userRole, language, operations) {
+    userRole, language, operations, last) {
 
   var threadCell = exports.getThreadCellBase(thread, language);
 
@@ -479,10 +479,14 @@ exports.getThread = function(thread, posts, innerPage, modding, boardData,
 
   var currentCache = exports.getPostingCache(cacheField, thread, language);
 
-  if (!currentCache || !individualCaches) {
+  if ((!currentCache || !individualCaches) && !thread.tempCache) {
 
     var threadContent = exports.getThreadContent(thread, posts, innerPage,
         modding, userRole, boardData, language);
+
+    if (!last && !modding && innerPage) {
+      thread.tempCache = threadContent;
+    }
 
     threadCell += threadContent;
 
@@ -492,11 +496,12 @@ exports.getThread = function(thread, posts, innerPage, modding, boardData,
     }
 
   } else {
-    threadCell += currentCache;
+    threadCell += currentCache || thread.tempCache;
   }
 
   threadCell = threadCell.replace('__divPosts_children__', exports.getPosts(
-      posts, modding, boardData, userRole, innerPage, language, operations));
+      posts, modding, boardData, userRole, innerPage, language, operations,
+      last));
 
   return threadCell + '</div>';
 
@@ -504,7 +509,7 @@ exports.getThread = function(thread, posts, innerPage, modding, boardData,
 
 // Section 3.1: Post content {
 exports.generatePostHTML = function(post, language, innerPage, modding,
-    preview, boardData, userRole, cacheField, operations) {
+    preview, boardData, userRole, cacheField, operations, last) {
 
   var template = templateHandler(language).postCell;
 
@@ -526,19 +531,25 @@ exports.generatePostHTML = function(post, language, innerPage, modding,
 };
 
 exports.getPostInnerElements = function(post, preview, language, operations,
-    modding, boardData, userRole, innerPage) {
+    modding, boardData, userRole, innerPage, last) {
 
   var cacheField = exports.getCacheField(preview, innerPage, modding, userRole,
       language);
 
   var currentCache = exports.getPostingCache(cacheField, post, language);
 
-  if (individualCaches && currentCache) {
-    return currentCache;
+  if ((individualCaches && currentCache) || post.tempCache) {
+    return currentCache || post.tempCache;
   }
 
-  return exports.generatePostHTML(post, language, innerPage, modding, preview,
-      boardData, userRole, cacheField, operations);
+  var innerContent = exports.generatePostHTML(post, language, innerPage,
+      modding, preview, boardData, userRole, cacheField, operations, last);
+
+  if (!last && !modding && innerPage) {
+    post.tempCache = innerContent;
+  }
+
+  return innerContent;
 };
 
 exports.getCacheField = function(preview, innerPage, modding, userRole,
@@ -585,7 +596,7 @@ exports.getPostingCache = function(field, posting, language) {
 };
 
 exports.saveCache = function(cacheField, language, innerHTML, boardUri,
-    postingIdField, postingId, operations) {
+    postingIdField, postingId, operations, last) {
 
   var updateBlock = {
     $set : {}
@@ -683,7 +694,7 @@ exports.handleOps = function(operations) {
 };
 
 exports.getPosts = function(posts, modding, boardData, userRole, innerPage,
-    language, operations) {
+    language, operations, last) {
 
   var children = '';
 
@@ -693,7 +704,7 @@ exports.getPosts = function(posts, modding, boardData, userRole, innerPage,
     var postCell = exports.getPostCellBase(post);
 
     postCell += exports.getPostInnerElements(post, false, language, operations,
-        modding, boardData, userRole, innerPage);
+        modding, boardData, userRole, innerPage, last);
 
     children += postCell + '</div>';
 
