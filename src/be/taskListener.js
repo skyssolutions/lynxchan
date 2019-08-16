@@ -317,11 +317,81 @@ exports.sendToSocket = function(socket, data, callback) {
 
 };
 
+exports.bootSockets = function() {
+
+  exports.status = null;
+
+  server = net.createServer(function clientConnected(client) {
+
+    activeUnixSocketClients.push(client);
+
+    client.on('end', function() {
+
+      var index = activeUnixSocketClients.indexOf(client);
+
+      if (index >= 0) {
+        activeUnixSocketClients.splice(index, 1);
+      }
+
+    });
+
+    exports.handleSocket(client, exports.processCacheTasks);
+
+  }).listen(socketLocation);
+
+  if (clusterPort) {
+    tcpServer = net.createServer(function clientConnected(client) {
+
+      var remote = client.remoteAddress;
+
+      var isSlave = slaves.indexOf(remote) > -1;
+
+      var isMaster = master === remote;
+
+      // Is up to the webserver to drop unwanted connections.
+      if (remote !== '127.0.0.1' && ((master && !isMaster) || !isSlave)) {
+        client.end();
+        return;
+      }
+
+      activeTCPSocketClients.push(client);
+
+      client.on('end', function() {
+
+        var index = activeTCPSocketClients.indexOf(client);
+
+        if (index >= 0) {
+          activeTCPSocketClients.splice(index, 1);
+        }
+
+      });
+
+      exports.handleSocket(client, exports.processCacheTasks);
+    }).listen(clusterPort, '0.0.0.0');
+  }
+
+  server.on('error', function handleError(error) {
+
+    console.log(error);
+
+    kernel.broadCastTopDownMessage({
+      socketStatus : true,
+      status : error.message
+    });
+
+  });
+
+};
+
 exports.start = function(firstBoot) {
 
   if (firstBoot) {
 
     process.on('exit', function(code) {
+
+      if (exports.noRemoval) {
+        return;
+      }
 
       try {
         fs.unlinkSync(socketLocation);
@@ -372,83 +442,36 @@ exports.start = function(firstBoot) {
     return;
   }
 
-  fs.unlink(socketLocation, function removedFile(error) {
+  exports.openSocket(function opened(error) {
 
-    if (error && error.code !== 'ENOENT') {
+    if (!error) {
+      exports.noRemoval = true;
 
-      console.log(error);
+      var msg = 'There\'s already a daemon running. If there isn\'t,';
+      msg += ' check what software has an open unix socket on ';
+      msg += socketLocation;
 
-      kernel.broadCastTopDownMessage({
-        socketStatus : true,
-        status : error.message
-      });
-
-      return;
-
+      throw msg;
     }
 
-    exports.status = null;
+    fs.unlink(socketLocation, function removedFile(error) {
 
-    // style exception, too simple
-    server = net.createServer(function clientConnected(client) {
+      if (error && error.code !== 'ENOENT') {
 
-      activeUnixSocketClients.push(client);
+        console.log(error);
 
-      client.on('end', function() {
-
-        var index = activeUnixSocketClients.indexOf(client);
-
-        if (index >= 0) {
-          activeUnixSocketClients.splice(index, 1);
-        }
-
-      });
-
-      exports.handleSocket(client, exports.processCacheTasks);
-    }).listen(socketLocation);
-
-    if (clusterPort) {
-      tcpServer = net.createServer(function clientConnected(client) {
-
-        var remote = client.remoteAddress;
-
-        var isSlave = slaves.indexOf(remote) > -1;
-
-        var isMaster = master === remote;
-
-        // Is up to the webserver to drop unwanted connections.
-        if (remote !== '127.0.0.1' && ((master && !isMaster) || !isSlave)) {
-          client.end();
-          return;
-        }
-
-        activeTCPSocketClients.push(client);
-
-        client.on('end', function() {
-
-          var index = activeTCPSocketClients.indexOf(client);
-
-          if (index >= 0) {
-            activeTCPSocketClients.splice(index, 1);
-          }
-
+        kernel.broadCastTopDownMessage({
+          socketStatus : true,
+          status : error.message
         });
 
-        exports.handleSocket(client, exports.processCacheTasks);
-      }).listen(clusterPort, '0.0.0.0');
-    }
+        return;
 
-    server.on('error', function handleError(error) {
+      }
 
-      console.log(error);
-
-      kernel.broadCastTopDownMessage({
-        socketStatus : true,
-        status : error.message
-      });
+      exports.bootSockets();
 
     });
-    // style exception, too simple
 
   });
 
