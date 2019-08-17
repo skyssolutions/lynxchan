@@ -592,52 +592,14 @@ exports.removeFoundContent = function(userData, board, parameters, cb,
     foundThreads, foundPosts, parentThreads) {
 
   if (parameters.deleteUploads) {
-    threads.updateMany({
-      boardUri : board.boardUri,
-      threadId : {
-        $in : foundThreads
-      }
-    }, {
-      $set : {
-        files : []
-      },
-      $unset : miscOps.individualCaches
-    }, function removedThreadFiles(error) {
-      if (error) {
-        cb(error);
-      } else {
 
-        // style exception, too simple
-        posts.updateMany({
-          boardUri : board.boardUri,
-          postId : {
-            $in : foundPosts
-          }
-        }, {
-          $set : {
-            files : []
-          },
-          $unset : miscOps.individualCaches
-        }, function removedPostFiles(error) {
-          if (error) {
-            cb(error);
-          } else {
-            if (userData) {
-
-              exports.logRemoval(userData, board, parameters, cb, foundThreads,
-                  foundPosts, parentThreads);
-
-            } else {
-
-              exports.removeReportsAndGlobalLatestImages(board, parameters, cb,
-                  foundThreads, foundPosts, parentThreads);
-            }
-          }
-        });
-        // style exception, too simple
-
-      }
-    });
+    if (userData) {
+      exports.logRemoval(userData, board, parameters, cb, foundThreads,
+          foundPosts, parentThreads);
+    } else {
+      exports.removeReportsAndGlobalLatestImages(board, parameters, cb,
+          foundThreads, foundPosts, parentThreads);
+    }
 
   } else {
 

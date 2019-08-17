@@ -8,6 +8,12 @@
   {
     "type": "range",
     "limit": 2,
+    "setting": "pruningMode",
+    "element": "comboPruningMode"
+  },
+  {
+    "type": "range",
+    "limit": 2,
     "setting": "torPostingLevel",
     "element": "comboTorPostingLevel"
   },
@@ -388,11 +394,6 @@
     "type": "boolean",
     "setting": "ffmpegGifs",
     "element": "checkboxFfmpegGifs"
-  },
-  {
-    "type": "boolean",
-    "setting": "autoPruneFiles",
-    "element": "checkboxAutoPruneFiles"
   },
   {
     "type": "boolean",

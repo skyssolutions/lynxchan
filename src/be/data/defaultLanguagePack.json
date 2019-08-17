@@ -102,6 +102,11 @@
     "Global janitor",
     "User"
   ],
+  "guiPruningModes": [
+    "No pruning",
+    "Prune orphans",
+    "Weekly pruning"
+  ],
   "errDeniedGlobalManagement": "Your global role does not allow you to retrieve global management data.",
   "miscDefaultBanMessage": "(USER WAS BANNED FOR THIS POST)",
   "miscDefaultAnonymous": "Anonymous",

@@ -153,7 +153,7 @@ Settings files that goes into the settings directory:
 * `master`: ip of the master.
 * `slaves`(Array): ips of the slaves.
 * `frontPageStats`(Boolean): indicates if total posts made on existing boards and total unique ips on the last 24 hours should be displayed on the front-page.
-* `autoPruneFiles`(Boolean): the engine will run a weekly task that will make it enter maintenance mode, prune files that are no longer in use and then come out of maintenance mode.
+* `pruningMode`(Number): The pruning mode to be used. 0 means no pruning at all. 1 means pruning files as soon as they become orphaned. 2 means prune orphaned files weekly.
 * `torPort`(Number): port that when used, will always mark the request as if it came from a TOR ip.
 * `sfwOverboard`: uri to be used for the sfw overboard.
 * `CSP`: Content security policy directives. Example: `default-src 'self'`

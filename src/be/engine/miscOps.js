@@ -35,8 +35,8 @@ var htmlReplaceRegex = new RegExp(/[<>'"]/g);
 var MAX_STAFF_ROLE = 3;
 exports.plainTextMimes = [ 'application/x-javascript', 'application/json',
     'application/rss+xml' ];
-exports.optionList = [ 'guiBypassModes', 'guiTorPostingLevels', 'miscRoles',
-    'miscRoles', 'guiBypassModes' ];
+exports.optionList = [ 'guiBypassModes', 'guiPruningModes',
+    'guiTorPostingLevels', 'miscRoles', 'miscRoles', 'guiBypassModes' ];
 exports.individualCaches = {
   innerCache : 1,
   outerCache : 1,

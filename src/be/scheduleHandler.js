@@ -72,14 +72,8 @@ exports.start = function() {
     expiredCaptcha(true);
     boardsStats();
     uniqueIpCount();
-
-    if (settings.autoPruneFiles) {
-      autoFilePruning();
-    }
-
-    if (settings.inactivityThreshold) {
-      inactivityTagging();
-    }
+    autoFilePruning();
+    inactivityTagging();
 
   }
 
@@ -646,7 +640,13 @@ function autoFilePruning() {
   nextPrune.setUTCDate(nextPrune.getUTCDate() + 7 - nextPrune.getUTCDay());
 
   schedules.filePruning = setTimeout(function() {
-    startPruning();
+
+    if (settings.pruningMode === 2) {
+      startPruning();
+    } else {
+      autoFilePruning();
+    }
+
   }, nextPrune.getTime() - new Date().getTime());
 
 }
@@ -758,7 +758,13 @@ function inactivityTagging() {
   nextCheck.setUTCDate(nextCheck.getUTCDate() + 1);
 
   schedules.inactivityTagging = setTimeout(function() {
-    getInactiveAccounts();
+
+    if (settings.inactivityThreshold) {
+      getInactiveAccounts();
+    } else {
+      inactivityTagging();
+    }
+
   }, nextCheck.getTime() - new Date().getTime());
 }
 // } Section 7: Inactivity check

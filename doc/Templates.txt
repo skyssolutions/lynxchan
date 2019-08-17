@@ -2156,6 +2156,10 @@ comboBypassMode:
     use: have children appended to it.
     description: indicates the bypass mode selected.
 
+comboPruningMode:
+    use: have children appended to it.
+    description: indicates the pruning mode selected.
+
 fieldBypassHours:
     use: have it's value manipulated.
     description: indicates how many hours a block bypass lasts.

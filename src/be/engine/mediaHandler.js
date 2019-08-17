@@ -8,12 +8,15 @@ var references = db.uploadReferences();
 var maxGlobalStaffRole;
 var gridFsHandler;
 var lang;
+var pruningMode;
 var maxFilesToDisplay;
+var miscOps;
 var logOps;
 
 exports.loadDependencies = function() {
 
   logOps = require('./logOps');
+  miscOps = require('./miscOps');
   gridFsHandler = require('./gridFsHandler');
   lang = require('./langOps').languagePack;
 
@@ -24,10 +27,80 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
   maxFilesToDisplay = settings.mediaPageSize;
+  pruningMode = settings.pruningMode;
 
 };
 
 // Section 1: Reference decrease {
+exports.clearNewOrphans = function(identifiers, callback) {
+
+  references.aggregate([ {
+    $match : {
+      identifier : {
+        $in : identifiers
+      },
+      references : {
+        $lt : 1
+      }
+    }
+  }, {
+    $group : {
+      _id : 0,
+      identifiers : {
+        $push : '$identifier'
+      }
+    }
+  } ]).toArray(
+
+  function(error, results) {
+
+    if (error || !results.length) {
+      return callback(error);
+    }
+
+    exports.removePrunedFiles(results[0].identifiers, callback);
+
+  });
+
+};
+
+exports.checkNewOrphans = function(identifiers, callback) {
+
+  references.aggregate([ {
+    $match : {
+      identifier : {
+        $in : identifiers
+      }
+    }
+  }, {
+    $project : {
+      extension : 1,
+      identifier : 1,
+      references : 1,
+      _id : 0
+    }
+  } ]).toArray(function gotReferences(error, results) {
+
+    if (error || !results.length) {
+      return callback(error);
+    }
+
+    // style exception, too simple
+    exports.reaggregateReferences(results, null, function(error) {
+
+      if (error || pruningMode !== 1) {
+        callback(error);
+      } else {
+        exports.clearNewOrphans(identifiers, callback);
+      }
+
+    });
+    // style exception, too simple
+
+  });
+
+};
+
 exports.getAggregationQuery = function(matchQuery) {
 
   return [ {
@@ -104,31 +177,21 @@ exports.getOperations = function(postReferences, threadReferences) {
 exports.updateReferencesCount = function(postReferences, threadReferences,
     deleteMedia, userData, language, callback) {
 
+  var groupedReferences = postReferences.concat(threadReferences);
+
+  var identifiers = [];
+
+  for (var i = 0; i < groupedReferences.length; i++) {
+
+    var reference = groupedReferences[i];
+    identifiers.push(reference._id.replace('/', ''));
+
+  }
+
   if (deleteMedia) {
-
-    var identifiers = [];
-
-    var groupedReferences = postReferences.concat(threadReferences);
-
-    for (var i = 0; i < groupedReferences.length; i++) {
-
-      var reference = groupedReferences[i];
-      identifiers.push(reference._id.replace('/', ''));
-
-    }
-
     exports.deleteFiles(identifiers, userData, language, callback, true);
-
   } else {
-
-    var operations = exports.getOperations(postReferences, threadReferences);
-
-    if (!operations.length) {
-      callback();
-      return;
-    }
-
-    references.bulkWrite(operations, callback);
+    exports.checkNewOrphans(identifiers, callback);
   }
 
 };
@@ -162,8 +225,24 @@ exports.getThreadReferences = function(postReferences, boardUri,
         if (error) {
           callback(error);
         } else {
-          exports.updateReferencesCount(postReferences, results, deleteMedia,
-              userData, language, callback);
+
+          // style exception, too simple
+          threads.updateMany(query, {
+            $set : {
+              files : []
+            },
+            $unset : miscOps.individualCaches
+          }, function(error) {
+            if (error) {
+              return callback(error);
+            }
+
+            exports.updateReferencesCount(postReferences, results, deleteMedia,
+                userData, language, callback);
+
+          });
+          // style exception, too simple
+
         }
 
       });
@@ -213,8 +292,24 @@ exports.clearPostingReferences = function(boardUri, threadsToClear,
           callback(error);
         } else {
 
-          exports.getThreadReferences(results, boardUri, threadsToClear,
-              mediaDeletion, userData, language, callback);
+          // style exception, too simple
+          posts.updateMany(query, {
+            $set : {
+              files : []
+            },
+            $unset : miscOps.individualCaches
+          }, function(error) {
+
+            if (error) {
+              return callback(error);
+            }
+
+            exports.getThreadReferences(results, boardUri, threadsToClear,
+                mediaDeletion, userData, language, callback);
+
+          });
+          // style exception, too simple
+
         }
 
       });
@@ -295,6 +390,34 @@ exports.removePrunedFiles = function(identifiers, callback) {
 
 };
 
+exports.logPruning = function(identifiers, page, callback) {
+
+  logOps.insertLog({
+    type : 'filePruning',
+    time : new Date(),
+    description : lang().logFilePruning.replace('{$identifiers}', identifiers
+        .join(', ')),
+    global : true
+  }, function loggedPruning(error) {
+
+    if (error) {
+      console.log(error);
+    }
+
+    // style exception, too simple
+    exports.removePrunedFiles(identifiers, function(error) {
+      if (error) {
+        callback(error);
+      } else {
+        exports.getFilesToPrune(callback, ++page);
+      }
+    });
+    // style exception, too simple
+
+  });
+
+};
+
 exports.getFilesToPrune = function(callback, page) {
 
   page = page || 0;
@@ -323,44 +446,15 @@ exports.getFilesToPrune = function(callback, page) {
         $push : '$identifier'
       }
     }
-  } ]).toArray(
-      function gotIdentifiers(error, results) {
+  } ]).toArray(function gotIdentifiers(error, results) {
 
-        if (error) {
-          callback(error);
-        } else if (!results.length) {
-          callback();
-        } else {
+    if (error || !results.length) {
+      callback(error);
+    } else {
+      exports.logPruning(results[0].identifiers, page, callback);
+    }
 
-          var identifiers = results[0].identifiers;
-
-          // style exception, too simple
-          logOps.insertLog({
-            type : 'filePruning',
-            time : new Date(),
-            description : lang().logFilePruning.replace('{$identifiers}',
-                identifiers.join(', ')),
-            global : true
-          }, function loggedPruning(error) {
-
-            if (error) {
-              console.log(error);
-            }
-
-            exports.removePrunedFiles(identifiers, function(error) {
-              if (error) {
-                callback(error);
-              } else {
-                exports.getFilesToPrune(callback, ++page);
-              }
-            });
-
-          });
-          // style exception, too simple
-
-        }
-
-      });
+  });
 
 };
 
@@ -423,6 +517,16 @@ exports.getReferenceUpdate = function(threadResults, postResults, relation) {
 
 };
 
+exports.flipPage = function(page, callback) {
+
+  if (null === page) {
+    callback();
+  } else {
+    exports.prune(callback, ++page);
+  }
+
+};
+
 exports.getRepliesCount = function(threadResults, queryData, page, callback) {
 
   posts.aggregate(queryData.query).toArray(
@@ -436,7 +540,7 @@ exports.getRepliesCount = function(threadResults, queryData, page, callback) {
               results, queryData.relation);
 
           if (!bulkOperations.length) {
-            exports.prune(callback, ++page);
+            exports.flipPage(page, callback);
           } else {
 
             // style exception, too simple
@@ -446,7 +550,7 @@ exports.getRepliesCount = function(threadResults, queryData, page, callback) {
                   if (error) {
                     callback(error);
                   } else {
-                    exports.prune(callback, ++page);
+                    exports.flipPage(page, callback);
                   }
 
                 });
@@ -460,7 +564,7 @@ exports.getRepliesCount = function(threadResults, queryData, page, callback) {
 
 };
 
-exports.getThreadsCount = function(results, page, callback) {
+exports.reaggregateReferences = function(results, page, callback) {
 
   var queryData = exports.getReferenceCountQuery(results);
 
@@ -551,7 +655,7 @@ exports.prune = function(callback, page) {
     } else if (!results.length) {
       exports.getFilesToPrune(callback);
     } else {
-      exports.getThreadsCount(results, page, callback);
+      exports.reaggregateReferences(results, page, callback);
     }
 
   });
