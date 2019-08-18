@@ -137,6 +137,7 @@ errReferralMismatch: error thrown when the user tries to authenticate but his re
 errTotalFileLimitExceeded: error thrown when the user tries to post a new file but the site has reached it's file limit.
 guiGlobalLogsIndex: label used on the log index to mark global logs dates.
 guiTypeBan: label used for logs of bans.
+guiRedactedName: string used in place for redacted mod names.
 guiTypeBanLift: label used for logs of ban lifts.
 guiTypeDeletion: label used for logs of deletions.
 guiTypeReportClosure: label used for logs of report closures.

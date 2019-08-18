@@ -17,6 +17,7 @@ var multipleReports;
 var logOps;
 var miscOps;
 var delOps;
+var redactedModNames;
 var domManipulator;
 var generator;
 var moduleRoot;
@@ -39,6 +40,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
   multipleReports = settings.multipleReports;
+  redactedModNames = settings.redactModNames;
   allowBlockedToReport = settings.allowBlockedToReport;
   globalBoardModeration = settings.allowGlobalBoardModeration;
 
@@ -389,7 +391,8 @@ exports.logReportClosure = function(foundReports, userData, closureDate,
 
     var pieces = lang().logReportClosure;
 
-    var logMessage = pieces.startPiece.replace('{$login}', userData.login);
+    var logMessage = pieces.startPiece.replace('{$login}',
+        redactedModNames ? lang().guiRedactedName : userData.login);
 
     if (report.global) {
       logMessage += pieces.globalPiece;

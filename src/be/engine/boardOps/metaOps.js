@@ -16,6 +16,7 @@ var postingOps;
 var reportOps;
 var miscOps;
 var modCommonOps;
+var redactedModNames;
 var lang;
 var maxBoardTags;
 var overboard;
@@ -65,6 +66,7 @@ exports.loadSettings = function() {
   boardCreationRequirement = settings.boardCreationRequirement;
   maxVolunteers = settings.maxBoardVolunteers;
   maxBoardTags = settings.maxBoardTags;
+  redactedModNames = settings.redactModNames;
   overboard = settings.overboard;
 
   sfwOverboard = settings.sfwOverboard;
@@ -380,9 +382,10 @@ exports.updateUsersOwnedBoards = function(oldOwner, parameters, callback) {
 
 exports.logTransfer = function(userData, parameters, oldOwner, callback) {
 
-  var message = lang().logTransferBoard.replace('{$actor}', userData.login)
-      .replace('{$board}', parameters.boardUri).replace('{$login}',
-          parameters.login);
+  var message = lang().logTransferBoard.replace('{$actor}',
+      redactedModNames ? lang().guiRedactedName : userData.login).replace(
+      '{$board}', parameters.boardUri).replace('{$login}',
+      redactedModNames ? lang().guiRedactedName : parameters.login);
 
   logOps.insertLog({
     user : userData.login,

@@ -16,6 +16,7 @@ var latestPosts;
 var common;
 var lang;
 var overboard;
+var redactedModNames;
 var sfwOverboard;
 var referenceHandler;
 var boardOps;
@@ -26,7 +27,7 @@ var logOps;
 exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
-
+  redactedModNames = settings.redactModNames;
   sfwOverboard = settings.sfwOverboard;
   globalLatestPostsCount = settings.globalLatestPosts;
   globalLatestImagesCount = settings.globalLatestImages;
@@ -338,7 +339,8 @@ exports.getLogMessage = function(parameters, foundThreads, foundPosts,
   var startPiece = parameters.deleteUploads ? pieces.uploadStartPiece
       : pieces.startPiece;
 
-  var logMessage = startPiece.replace('{$login}', userData.login);
+  var logMessage = startPiece.replace('{$login}',
+      redactedModNames ? lang().guiRedactedName : userData.login);
 
   var threadList = exports.appendThreadDeletionLog(foundThreads);
 

@@ -4,6 +4,7 @@ var lang;
 var common;
 var minClearIpRole;
 var miscOps;
+var redactedModNames;
 
 exports.maxPreviewBreaks = 16;
 
@@ -11,6 +12,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  redactedModNames = settings.redactModNames;
   minClearIpRole = settings.clearIpMinRole;
 
 };
@@ -234,7 +236,9 @@ exports.setSharedHideableElements = function(posting, removable, postingCell,
         removable.labelLastEdit).replace(
         '__labelLastEdit_inner__',
         lang(language).guiEditInfo.replace('{$date}', formatedDate).replace(
-            '{$login}', common.clean(posting.lastEditLogin)));
+            '{$login}',
+            redactedModNames ? lang(language).guiRedactedName : common
+                .clean(posting.lastEditLogin)));
 
   } else {
     postingCell = postingCell.replace('__labelLastEdit_location__', '');

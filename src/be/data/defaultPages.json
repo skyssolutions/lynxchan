@@ -541,6 +541,7 @@
       "checkboxMultipleReports": "checked",
       "checkboxGlobalCaptcha": "checked",
       "checkboxVersatileBlockBypass": "checked",
+      "checkboxRedactModNames": "checked",
       "checkboxFrontPageStats": "checked",
       "checkboxDisableCatalogPosting": "checked",
       "checkboxAllowTorFiles": "checked",

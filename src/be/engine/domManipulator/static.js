@@ -21,6 +21,7 @@ var clearIpMinRole;
 var overboard;
 var sfwOverboard;
 var siteTitle;
+var redactModNames;
 var engineInfo;
 var disableCatalogPosting;
 var boardStaffArchiving;
@@ -46,6 +47,7 @@ exports.availableLogTypes = {
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  redactModNames = settings.redactModNames;
   verbose = settings.verbose || settings.verboseCache;
   boardStaffArchiving = settings.allowBoardStaffArchiving;
   disableCatalogPosting = settings.disableCatalogPosting;
@@ -892,7 +894,9 @@ exports.getLogEntry = function(template, log, language) {
 
   cell = cell.replace('__labelBoard_inner__', common.clean(log.boardUri || ''));
 
-  cell = cell.replace('__labelUser_inner__', common.clean(log.user || ''));
+  cell = cell.replace('__labelUser_inner__',
+      (redactModNames && log.user) ? lang(language).guiRedactedName : common
+          .clean(log.user || ''));
 
   cell = cell.replace('__labelDescription_inner__', common
       .clean(log.description));

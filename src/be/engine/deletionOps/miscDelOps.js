@@ -18,6 +18,7 @@ var boards = db.boards();
 var overboard;
 var lang;
 var autoArchive;
+var redactedModNames;
 var sfwOverboard;
 var logOps;
 var boardOps;
@@ -31,7 +32,7 @@ exports.collectionsToClean = [ reports, posts, threads, flags, hashBans,
 
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
-
+  redactedModNames = settings.redactModNames;
   autoArchive = settings.archiveThreshold;
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
@@ -294,7 +295,7 @@ exports.deleteBoardFiles = function(board, callback) {
 exports.logBoardDeletion = function(board, user, callback) {
 
   var message = lang().logBoardDeletion.replace('{$board}', board.boardUri)
-      .replace('{$login}', user);
+      .replace('{$login}', redactedModNames ? lang().guiRedactedName : user);
 
   logOps.insertLog({
     type : 'boardDeletion',

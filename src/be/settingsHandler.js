@@ -196,9 +196,19 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
     });
   }
 
-  if (getRebuildBoards(settings)) {
+  var redactChanged = settings.redactModNames ^ generalSettings.redactModNames;
+
+  if (redactChanged) {
     reloadsToMake.push({
-      allBoards : true
+      log : true,
+      clearInner : true
+    });
+  }
+
+  if (redactChanged || getRebuildBoards(settings)) {
+    reloadsToMake.push({
+      allBoards : true,
+      clearInner : redactChanged
     });
   }
 
@@ -307,7 +317,7 @@ function prepareSettingsForChangeCheck(settings, callback) {
       'defaultAnonymousName', 'defaultBanMessage', 'allowBoardCustomJs',
       'topBoardsCount', 'globalLatestPosts', 'forceCaptcha', 'overboard',
       'frontPageStats', 'disableAccountCreation', 'disableCatalogPosting',
-      'omitUnindexedContent' ];
+      'redactModNames', 'omitUnindexedContent' ];
 
   // these ones default to the default values
   var defaultToDefault = [ 'pageSize', 'maxFileSizeMB', 'maxFiles', 'fePath',

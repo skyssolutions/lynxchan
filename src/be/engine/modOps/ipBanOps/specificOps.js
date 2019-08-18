@@ -9,6 +9,7 @@ var posts = db.posts();
 var threads = db.threads();
 var defaultBanMessage;
 var locationOps;
+var redactedModNames;
 var logger;
 var logOps;
 var miscOps;
@@ -29,6 +30,7 @@ exports.loadSettings = function() {
   defaultBanMessage = settings.defaultBanMessage;
 
   minClearIps = settings.clearIpMinRole;
+  redactedModNames = settings.redactModNames;
 
   if (!defaultBanMessage) {
     defaultBanMessage = lang().miscDefaultBanMessage;
@@ -102,7 +104,8 @@ exports.logBans = function(userData, board, informedPosts, informedThreads,
 
   var pieces = lang().logPostingBan;
 
-  var logMessage = pieces.startPiece.replace('{$login}', userData.login);
+  var logMessage = pieces.startPiece.replace('{$login}',
+      redactedModNames ? lang().guiRedactedName : userData.login);
 
   if (parameters.global) {
     logMessage += pieces.globalPiece;
@@ -646,8 +649,9 @@ exports.writeDeniedAppeal = function(userData, ban, callback) {
         time : new Date(),
         boardUri : ban.boardUri,
         global : ban.boardUri ? false : true,
-        description : lang().logAppealDenied
-            .replace('{$login}', userData.login).replace('{$id}', ban._id)
+        description : lang().logAppealDenied.replace('{$login}',
+            redactedModNames ? lang().guiRedactedName : userData.login)
+            .replace('{$id}', ban._id)
       }, function logged() {
         callback(null, ban.boardUri);
       });

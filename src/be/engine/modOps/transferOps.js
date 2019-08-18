@@ -10,6 +10,7 @@ var redirects = db.redirects();
 var boards = db.boards();
 var threads = db.threads();
 var posts = db.posts();
+var redactedModNames;
 var logOps;
 var miscOps;
 var lang;
@@ -20,6 +21,11 @@ exports.loadDependencies = function() {
   miscOps = require('../miscOps');
   lang = require('../langOps').languagePack;
 
+};
+
+exports.loadSettings = function() {
+  var settings = require('../../settingsHandler').getGeneralSettings();
+  redactedModNames = settings.redactModNames;
 };
 
 // Section 1: Posting files update {
@@ -103,10 +109,11 @@ exports.revertThread = function(thread, originalError, callback) {
 exports.logTransfer = function(newBoard, userData, newThreadId, originalThread,
     callback) {
 
-  var message = lang().logThreadTransfer.replace('{$login}', userData.login)
-      .replace('{$thread}', originalThread.threadId).replace('{$board}',
-          originalThread.boardUri).replace('{$boardDestination}',
-          newBoard.boardUri);
+  var message = lang().logThreadTransfer.replace('{$login}',
+      redactedModNames ? lang().guiRedactedName : userData.login).replace(
+      '{$thread}', originalThread.threadId).replace('{$board}',
+      originalThread.boardUri)
+      .replace('{$boardDestination}', newBoard.boardUri);
 
   logOps.insertLog({
     user : userData.login,

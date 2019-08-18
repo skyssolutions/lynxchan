@@ -15,6 +15,7 @@ var logOps;
 var miscOps;
 var boardOps;
 var captchaOps;
+var redactedModNames;
 var domManipulator;
 var lang;
 var authLimit;
@@ -48,6 +49,7 @@ exports.loadSettings = function() {
 
   authLimit = settings.authenticationLimit;
   sender = settings.emailSender;
+  redactedModNames = settings.redactModNames;
   creationDisabled = settings.disableAccountCreation;
 
 };
@@ -125,14 +127,14 @@ exports.logRoleChange = function(operatorData, parameters, callback) {
 
   if (operatorData) {
     logMessage += lang().logGlobalRoleChange.userPiece.replace('{$login}',
-        operatorData.login);
+        redactedModNames ? lang().guiRedactedName : operatorData.login);
   } else {
     logMessage += lang().logGlobalRoleChange.adminPiece;
   }
 
   logMessage += lang().logGlobalRoleChange.mainPiece.replace('{$login}',
-      parameters.login).replace('{$role}',
-      miscOps.getGlobalRoleLabel(parameters.role));
+      redactedModNames ? lang().guiRedactedName : parameters.login).replace(
+      '{$role}', miscOps.getGlobalRoleLabel(parameters.role));
 
   logOps.insertLog({
     user : operatorData ? operatorData.login : null,

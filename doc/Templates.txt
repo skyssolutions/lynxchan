@@ -2152,6 +2152,10 @@ fieldOverBoardThreads:
     use: have it's value manipulated.
     description: indicates how many threads are to be displayed on the overboard.
 
+checkboxRedactModNames:
+    use: might be turned on.
+    description: indicates if mod names should be redacted.
+
 comboBypassMode:
     use: have children appended to it.
     description: indicates the bypass mode selected.

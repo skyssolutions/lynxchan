@@ -360,5 +360,6 @@
   "guiBanDescription": "You are banned from {$board}.",
   "msgBoardUnlocked": "Board auto-lock reset.",
   "errOwnsBoards": "You can't delete your own account if you own any boards.",
-  "guiGlobalLogsIndex": "Global"
+  "guiGlobalLogsIndex": "Global",
+  "guiRedactedName": "REDACTED"
 }

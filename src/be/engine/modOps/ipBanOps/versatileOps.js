@@ -19,6 +19,7 @@ var floodTimer;
 var logger;
 var minClearIpRole;
 var miscOps;
+var redactedModNames;
 var torOps;
 var spamOps;
 var verbose;
@@ -37,6 +38,7 @@ exports.loadSettings = function() {
   torAllowed = torLevel > 0;
   bypassAllowed = settings.bypassMode > 0;
   torPassAllowed = bypassAllowed && torAllowed;
+  redactedModNames = settings.redactModNames;
   bypassMandatory = settings.bypassMode > 1;
   disableFloodCheck = settings.disableFloodCheck;
   spamBypass = settings.allowVersatileBlockBypass;
@@ -375,7 +377,8 @@ exports.getLiftedBanLogMessage = function(ban, userData) {
 
   var pieces = lang().logBanLift;
 
-  var logMessage = pieces.startPiece.replace('{$login}', userData.login);
+  var logMessage = pieces.startPiece.replace('{$login}',
+      redactedModNames ? lang().guiRedactedName : userData.login);
 
   if (ban.ip) {
 
@@ -420,7 +423,6 @@ exports.removeBan = function(ban, userData, callback) {
         type : 'banLift',
         boardUri : ban.boardUri
       }, function insertedLog() {
-
         callback(null, null, ban.boardUri);
       });
       // style exception, too simple

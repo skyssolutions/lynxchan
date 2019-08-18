@@ -4,6 +4,9 @@ var settingsHandler = require('../../settingsHandler');
 var verbose;
 var taskListener = require('../../taskListener');
 var db = require('../../db');
+var posts = db.posts();
+var threads = db.threads();
+var miscOps = require('../miscOps');
 var files = db.files();
 var cacheHandler;
 
@@ -185,7 +188,7 @@ exports.rules = function(boardUri, callback, direct) {
 
 };
 
-exports.boards = function(callback, direct) {
+exports.boards = function(callback, direct, innerCaches) {
 
   if (verbose) {
     console.log('Degenerating boards');
@@ -196,15 +199,41 @@ exports.boards = function(callback, direct) {
     type : 'cacheClear'
   };
 
-  if (direct) {
-    try {
-      cacheHandler.clear(task);
-      callback();
-    } catch (error) {
-      callback(error);
+  var innerCb = function(error) {
+
+    if (error) {
+      return callback(error);
     }
-  } else {
-    taskListener.sendToSocket(null, task, callback);
+
+    if (direct) {
+      try {
+        cacheHandler.clear(task);
+        callback();
+      } catch (error) {
+        callback(error);
+      }
+    } else {
+      taskListener.sendToSocket(null, task, callback);
+    }
+
+  };
+
+  if (!innerCaches) {
+    return innerCb();
   }
+
+  threads.updateMany({}, {
+    $unset : miscOps.individualCaches
+  }, function(error) {
+
+    if (error) {
+      return callback(error);
+    }
+
+    posts.updateMany({}, {
+      $unset : miscOps.individualCaches
+    }, innerCb);
+
+  });
 
 };

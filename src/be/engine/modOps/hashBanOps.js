@@ -13,6 +13,7 @@ var logOps;
 var lang;
 var common;
 var captchaOps;
+var redactedModNames;
 var miscOps;
 var hashBanLimit;
 
@@ -25,6 +26,7 @@ exports.hashBanArguments = [ {
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  redactedModNames = settings.redactModNames;
   allowTor = settings.allowTorFiles;
   hashBanLimit = settings.maxBoardHashBans;
 };
@@ -171,7 +173,8 @@ exports.removeHashBan = function(hashBan, userData, callback) {
       // style exception, too simple
       var pieces = lang().logLiftHashBan;
 
-      var logMessage = pieces.startPiece.replace('{$login}', userData.login);
+      var logMessage = pieces.startPiece.replace('{$login}',
+          redactedModNames ? lang().guiRedactedName : userData.login);
 
       if (hashBan.boardUri) {
         logMessage += pieces.boardPiece.replace('{$board}', hashBan.boardUri);

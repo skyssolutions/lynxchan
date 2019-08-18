@@ -407,6 +407,11 @@
   },
   {
     "type": "boolean",
+    "setting": "redactModNames",
+    "element": "checkboxRedactModNames"
+  },
+  {
+    "type": "boolean",
     "setting": "disableSpamCheck",
     "element": "checkboxDisableSpamCheck"
   },

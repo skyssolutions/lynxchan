@@ -10,6 +10,7 @@ exports.spoiler = require('./spoilerOps');
 
 exports.loadSettings = function() {
 
+  exports.transfer.loadSettings();
   exports.common.loadSettings();
   exports.edit.loadSettings();
   exports.hashBan.loadSettings();

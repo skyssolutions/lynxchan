@@ -6,6 +6,7 @@ var kernel = require('../../kernel');
 var db = require('../../db');
 var logger = require('../../logger');
 var files = db.files();
+var logs = db.logs();
 var overboard;
 var overboardSFW;
 var verbose;
@@ -116,7 +117,7 @@ exports.log = function(date, callback, direct) {
 
 };
 
-exports.logs = function(callback, direct) {
+exports.logs = function(callback, direct, innerCaches) {
 
   if (verbose) {
     console.log('Degenerating logs');
@@ -127,16 +128,36 @@ exports.logs = function(callback, direct) {
     type : 'cacheClear'
   };
 
-  if (direct) {
-    try {
-      cacheHandler.clear(task);
-      callback();
-    } catch (error) {
-      callback(error);
+  var innerCb = function(error) {
+
+    if (error) {
+      console.log(error);
+      return callback(error);
     }
-  } else {
-    taskListener.sendToSocket(null, task, callback);
+
+    if (direct) {
+      try {
+        cacheHandler.clear(task);
+        callback();
+      } catch (error) {
+        callback(error);
+      }
+    } else {
+      taskListener.sendToSocket(null, task, callback);
+    }
+
+  };
+
+  if (!innerCaches) {
+    return innerCb();
   }
+
+  logs.updateMany({}, {
+    $unset : {
+      cache : 1,
+      alternativeCaches : 1
+    }
+  }, innerCb);
 
 };
 

@@ -8,6 +8,7 @@ var references = db.uploadReferences();
 var maxGlobalStaffRole;
 var gridFsHandler;
 var lang;
+var redactedModNames;
 var pruningMode;
 var maxFilesToDisplay;
 var miscOps;
@@ -26,6 +27,7 @@ exports.loadDependencies = function() {
 exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
+  redactedModNames = settings.redactModNames;
   maxFilesToDisplay = settings.mediaPageSize;
   pruningMode = settings.pruningMode;
 
@@ -839,7 +841,8 @@ exports.deleteReferences = function(userData, identifiers, callback) {
         type : 'mediaDeletion',
         time : new Date(),
         description : lang().logMediaDeletion.replace('{$login}',
-            userData.login).replace('{$identifiers}', identifiers.join(', ')),
+            redactedModNames ? lang().guiRedactedName : userData.login)
+            .replace('{$identifiers}', identifiers.join(', ')),
         global : true
       }, callback);
 

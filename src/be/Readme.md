@@ -99,6 +99,7 @@ Settings files that goes into the settings directory:
 * `port`(Number): port to listen for http. Defaults to 80.
 * `ssl`(Number): SSL mode. If 0 it won`t be used, if 1 it will be used, if 2 all plain HTTP requests will be redirected to their HTTPS equivalent.
 * `sslPass`: optional passphrase for the ssl key.
+* `redactModNames`(Boolean): when set to true will redact mod names on logs and edit indicators. 
 * `fePath`: absolute path to the directory containing the fe files. Defaults to the relative path to the src/fe directory. The directory indicated must have the `templateSettings.json` file. If you are using the front-end at the default path, the template settings must be sitting directly inside the `src/fe` directory.
 * `pageSize`(Number): amount of threads on each board page. Defaults to 10.
 * `latestPostCount`(Number): number of latest posts to be displayed on each thread in board pages. Defaults to 5.

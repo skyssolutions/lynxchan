@@ -41,12 +41,14 @@ exports.deleteCache = function(message, callback) {
     degenerator.all(callback, true);
   } else if (message.multiboard && typeof message.multiboard === 'boolean') {
     degenerator.global.multiboard(callback, message.board, true);
-  } else if (message.log) {
+  } else if (message.log && message.date) {
     degenerator.global.log(new Date(message.date), callback, true);
+  } else if (message.log) {
+    degenerator.global.logs(callback, true, message.clearInner);
   } else if (message.overboard) {
     degenerator.global.overboard(callback, true);
   } else if (message.allBoards) {
-    degenerator.board.boards(callback, true);
+    degenerator.board.boards(callback, true, message.clearInner);
   } else if (message.frontPage) {
     degenerator.global.frontPage(callback, true);
   } else if (message.login) {
