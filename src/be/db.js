@@ -189,9 +189,52 @@ function iterateUpgrades(currentVersion, callback) {
 
 }
 
-exports.checkVersion = function(callback) {
+function updateVersions(versions, callback) {
 
-  cachedVersions = cachedDb.collection('witnessedReleases');
+  var version = versions[0];
+
+  if (dbVersion - version.version > 1) {
+
+    var toInsert = [];
+
+    for (var i = version.version + 1; i < dbVersion; i++) {
+      toInsert.push({
+        updateOne : {
+          filter : {
+            version : i
+          },
+          update : {
+            $setOnInsert : {
+              version : i
+            },
+            $set : {
+              upgraded : false,
+              active : false
+            }
+          },
+          upsert : true
+        }
+      });
+    }
+
+    // style exception, too simple
+    cachedVersions.bulkWrite(toInsert, function insertedVersions(error) {
+
+      if (error) {
+        callback(error);
+      } else {
+        iterateUpgrades(version.version, callback);
+      }
+    });
+    // style exception, too simple
+
+  } else {
+    iterateUpgrades(version.version, callback);
+  }
+
+}
+
+function getLowestVersion(callback) {
 
   cachedVersions.find({
     version : {
@@ -207,52 +250,42 @@ exports.checkVersion = function(callback) {
     } else if (!versions.length) {
       registerLatestVersion(callback);
     } else {
+      updateVersions(versions, callback);
+    }
 
-      var version = versions[0];
+  });
 
-      if (dbVersion - version.version > 1) {
+}
 
-        var toInsert = [];
+exports.checkVersion = function(callback) {
 
-        for (var i = version.version + 1; i < dbVersion; i++) {
-          toInsert.push({
-            updateOne : {
-              filter : {
-                version : i
-              },
-              update : {
-                $setOnInsert : {
-                  version : i
-                },
-                $set : {
-                  upgraded : false,
-                  active : false
-                }
-              },
-              upsert : true
-            }
-          });
-        }
+  cachedVersions = cachedDb.collection('witnessedReleases');
 
-        // style exception, too simple
-        cachedVersions.bulkWrite(toInsert, function insertedVersions(error) {
-
-          if (error) {
-            callback(error);
-          } else {
-            iterateUpgrades(version.version, callback);
-          }
-        });
-        // style exception, too simple
-
-      } else {
-        iterateUpgrades(version.version, callback);
+  cachedVersions.findOne({
+    $or : [ {
+      version : {
+        $gt : dbVersion
       }
+    }, {
+      version : dbVersion,
+      upgraded : true
+    } ]
+  }, function(error, result) {
+
+    if (error) {
+      callback(error);
+    } else if (result) {
+      error = 'Your database have been';
+      error += ' upgraded past the current version';
+      callback(error);
+    } else {
+      getLowestVersion(callback);
     }
 
   });
 
 };
+
 // end of version check
 
 function indexSet(callback) {
