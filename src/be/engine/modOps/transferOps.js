@@ -263,10 +263,38 @@ exports.runRebuilds = function(newBoard, newThreadId, originalThread, userData,
 exports.getPostsOps = function(newPostIdRelation, newBoard, foundPosts,
     updateOps, newThreadId, originalThread) {
 
+  var messageReplaceFunction = function(match, id) {
+    return '>>' + newPostIdRelation[id];
+  };
+
+  var markdownReplaceFunction = function(match, id) {
+
+    var toRet = '<a class="quoteLink" href="/' + newBoard.boardUri + '/res/';
+    toRet += newThreadId + '.html#' + newPostIdRelation[id] + '">&gt;&gt;';
+    return toRet + newPostIdRelation[id] + '</a>';
+
+  };
+
   for (var i = 0; i < foundPosts.length; i++) {
+
     var post = foundPosts[i];
 
     var newPostId = newThreadId + 1 + i;
+
+    for ( var key in newPostIdRelation) {
+
+      var matchRegex = '<a class="quoteLink" href="\/';
+      matchRegex += originalThread.boardUri;
+      matchRegex += '\/res\/' + originalThread.threadId + '\.html#(' + key;
+      matchRegex += ')">&gt;&gt;' + key + '<\/a>';
+
+      post.message = post.message.replace(new RegExp('>>(' + key + ')(?!.*\d)',
+          'g'), messageReplaceFunction);
+
+      post.markdown = post.markdown.replace(new RegExp(matchRegex, 'g'),
+          markdownReplaceFunction);
+
+    }
 
     newPostIdRelation[post.postId] = newPostId;
 
@@ -279,6 +307,8 @@ exports.getPostsOps = function(newPostIdRelation, newBoard, foundPosts,
           $set : {
             boardUri : newBoard.boardUri,
             threadId : newThreadId,
+            message : post.message,
+            markdown : post.markdown,
             postId : newPostId,
             files : exports.getAdjustedFiles(newBoard, originalThread,
                 post.files)
@@ -309,6 +339,7 @@ exports.updatePosts = function(newBoard, userData, foundPosts, newThreadId,
 
   var updateOps = [];
   var newPostIdRelation = {};
+  newPostIdRelation[originalThread.threadId] = newThreadId;
 
   exports.getPostsOps(newPostIdRelation, newBoard, foundPosts, updateOps,
       newThreadId, originalThread);
@@ -343,7 +374,9 @@ exports.findPosts = function(newBoard, userData, originalThread, newThreadId,
   }, {
     projection : {
       postId : 1,
-      files : 1
+      files : 1,
+      message : 1,
+      markdown : 1
     }
   }).sort({
     postId : 1
