@@ -6,6 +6,7 @@ var fs = require('fs');
 var cache = {};
 var staticCache = {};
 var buffer = {};
+var lastTtl = new Date();
 var next = {};
 var current = {};
 var gridFsHandler;
@@ -570,12 +571,14 @@ exports.receiveWriteData = function(task, socket) {
         length : task.data.length,
         compressed : false,
         compressable : true,
+        path : task.dest,
         languages : task.meta.languages,
         lastModified : new Date().toUTCString()
       };
 
       referenceBlock[task.dest + '.gz'] = {
         mime : task.mime,
+        path : task.dest + '.gz',
         languages : task.meta.languages,
         lastModified : referenceBlock[task.dest].lastModified,
         compressed : true,
@@ -649,6 +652,7 @@ exports.compressStaticFile = function(task, finalPath, file, callback) {
         mime : file.mime,
         content : data,
         length : data.length,
+        path : finalPath + '.gz',
         lastModified : file.lastModified,
         languages : file.languages
       };
@@ -673,9 +677,10 @@ exports.processReadFile = function(finalPath, data, stats, task, callback) {
   var file = {
     lastModified : stats.mtime.toUTCString(),
     mime : mime,
+    path : finalPath,
     content : data,
     compressed : false,
-    compressable : compressable,
+    compressable : compressable || false,
     length : data.length,
     languages : task.language ? task.language.headerLanguages : null
   };
@@ -785,19 +790,19 @@ exports.pickAlternative = function(task, file) {
   delete current[file];
   next[file] = true;
 
-  var vanilla;
   var language;
 
   for ( var key in alternatives) {
 
     var alternative = alternatives[key];
 
-    if (alternative.compressed !== task.compressed) {
+    var differs = alternative.compressed !== task.compressed;
+    if (differs && alternative.compressable) {
       continue;
     }
 
     if (!alternative.languages) {
-      vanilla = alternative;
+      var vanilla = alternative;
     } else if (!language) {
       language = exports.languageIntersects(task, alternative) ? alternative
           : null;
@@ -822,6 +827,7 @@ exports.returnCacheToSend = function(task, socket, toSend) {
     range : parsedRange,
     compressed : toSend.compressed,
     mime : toSend.mime,
+    path : toSend.path,
     languages : toSend.languages,
     length : toSend.length,
     lastModified : toSend.lastModified,
@@ -969,10 +975,36 @@ exports.handleJit = function(pathName, req, res, callback) {
     } else if (notFound) {
       gridFsHandler.outputFile(pathName, req, res, callback);
     } else {
-      exports.outputFile(pathName, req, res, callback, null, usedJit);
+      exports.fetchCache(pathName, req, res, callback, null, usedJit);
     }
 
   });
+
+};
+
+exports.storeLocalCache = function(stats, content, pathName) {
+
+  if (stats.code !== 200) {
+    return;
+  }
+
+  var referenceBlock = cache[pathName];
+
+  if (!referenceBlock) {
+    referenceBlock = {};
+    cache[pathName] = referenceBlock;
+  }
+
+  referenceBlock[stats.path] = {
+    content : content,
+    mime : stats.mime,
+    length : content.length,
+    compressed : stats.compressed,
+    compressable : stats.compressable,
+    languages : stats.languages,
+    code : 200,
+    lastModified : stats.lastModified
+  };
 
 };
 
@@ -1003,6 +1035,7 @@ exports.handleReceivedData = function(pathName, req, res, stats, content,
   }
 
   default: {
+    exports.storeLocalCache(stats, content, pathName);
     exports.writeResponse(stats, content, res, isStatic, cb);
   }
 
@@ -1010,7 +1043,7 @@ exports.handleReceivedData = function(pathName, req, res, stats, content,
 
 };
 
-exports.outputFile = function(pathName, req, res, callback, isStatic, usedJit) {
+exports.fetchCache = function(pathName, req, res, callback, isStatic, usedJit) {
 
   var stats;
 
@@ -1057,6 +1090,91 @@ exports.outputFile = function(pathName, req, res, callback, isStatic, usedJit) {
     });
 
   });
+
+};
+
+exports.useLocalCache = function(localCache, req, res, isStatic, cb) {
+
+  var notChanged = localCache.lastModified === req.headers['if-modified-since'];
+
+  if (notChanged && !disable304) {
+    exports.output304(localCache, res, isStatic, cb);
+  } else {
+    exports.writeResponse(localCache, localCache.content, res, isStatic, cb);
+  }
+
+};
+
+exports.checkCacheValidity = function(localCache, pathName, req, res, callback,
+    isStatic) {
+
+  var stats;
+
+  taskListener.openSocket(function opened(error, socket) {
+
+    if (error) {
+      exports.fetchCache(pathName, req, res, callback, isStatic);
+      return;
+    }
+
+    socket.onData = function receivedData(data) {
+
+      if (!stats) {
+        stats = data;
+
+        if (stats.code >= 300) {
+          taskListener.freeSocket(socket);
+        }
+
+        if (stats.code >= 400) {
+          exports.handleReceivedData(pathName, req, res, stats, data, isStatic,
+              callback);
+        } else if (stats.code >= 300) {
+          exports.useLocalCache(localCache, req, res, isStatic, callback);
+        }
+
+      } else {
+
+        exports.handleReceivedData(pathName, req, res, stats, data, isStatic,
+            callback);
+
+        taskListener.freeSocket(socket);
+
+      }
+
+    };
+
+    taskListener.sendToSocket(socket, {
+      type : 'cacheRead',
+      range : req.headers.range,
+      lastSeen : localCache.lastModified,
+      file : pathName,
+      compressed : req.compressed,
+      language : req.language,
+      isStatic : isStatic
+    });
+
+  });
+
+};
+
+exports.outputFile = function(pathName, req, res, cb, isStatic) {
+
+  if (new Date() - lastTtl > 1000 * 60) {
+    lastTtl = new Date();
+    exports.runTTL();
+  }
+
+  var localCache = req.headers.range ? null : exports.pickAlternative({
+    compressed : req.compressed,
+    language : req.language
+  }, pathName);
+
+  if (!localCache) {
+    exports.fetchCache(pathName, req, res, cb, isStatic);
+  } else {
+    exports.checkCacheValidity(localCache, pathName, req, res, cb, isStatic);
+  }
 
 };
 // } Section 5: Worker read file
