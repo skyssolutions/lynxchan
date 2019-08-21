@@ -1836,8 +1836,16 @@ TEM_ID::48
 globalSettingsPage: page used to change global settings.
 
 Elements:
+checkboxValidateMimes:
+    use: might be turned on.
+    description: indicates if uploaded file mimes should be validated through 'file'.
+
+fieldFileProcessingLimit:
+    use: have it's value manipulated.
+    description: field that displays the limit of files the engine will process in a single request.
+
 fieldTorDNSL:
-    use: nave it's value manipulated.
+    use: have it's value manipulated.
     description: field that displays the DNSL that should be used to detec tor exit nodes instead of the official list.
 
 checkboxUnboundBoardLimits:

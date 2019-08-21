@@ -454,6 +454,8 @@
       "checkboxUnboundBoardLimits": "checked",
       "fieldLatestPostsAmount": "value",
       "fieldAuthenticationLimit": "value",
+      "fieldFileProcessingLimit": "value",
+      "checkboxValidateMimes": "checked",
       "fieldFileLimit": "value",
       "fieldCaptchaLimit": "value",
       "fieldMaxBoardGeneralBans": "value",

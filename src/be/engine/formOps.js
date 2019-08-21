@@ -6,19 +6,23 @@ var fs = require('fs');
 var crypto = require('crypto');
 var url = require('url');
 var multiParty = require('multiparty');
+var logger = require('../logger');
 var db = require('../db');
 var bans = db.bans();
 var references = db.uploadReferences();
+var exec = require('child_process').exec;
 var verbose;
 var uploadDir;
 var maxRequestSize;
 var maxFileSize;
 var maxFiles;
+var fileProcessingLimit;
 var accountOps;
 var uploadHandler;
 var modOps;
 var miscOps;
 var jsonBuilder;
+var validateMimes;
 var domManipulator;
 var lang;
 var uploadHandler;
@@ -30,6 +34,8 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  fileProcessingLimit = settings.fileProcessingLimit;
+  validateMimes = settings.validateMimes;
   verbose = settings.verbose || settings.verboseApis;
   uploadDir = settings.tempDirectory;
   maxRequestSize = settings.maxRequestSizeB;
@@ -86,21 +92,6 @@ exports.json = function(req) {
 // Section 1: Request parsing {
 
 // Section 1.1: File processing {
-exports.getCheckSum = function(path, callback) {
-
-  var stream = fs.createReadStream(path);
-  var hash = crypto.createHash('md5');
-
-  stream.on('data', function(data) {
-    hash.update(data, 'utf8');
-  });
-
-  stream.on('end', function() {
-    callback(hash.digest('hex'));
-  });
-
-};
-
 exports.checkNewFileReference = function(file, callback) {
 
   var identifier = file.md5 + '-' + file.mime.replace('/', '');
@@ -140,53 +131,51 @@ exports.updateMetaMime = function(toPush, mime, fields) {
 
 exports.getFileData = function(file, fields, mime, callback) {
 
-  exports.getCheckSum(file.path, function gotCheckSum(checkSum) {
+  var toPush = {
+    size : file.size,
+    md5 : file.md5,
+    title : file.originalFilename,
+    pathInDisk : file.path,
+    mime : mime
+  };
 
-    var toPush = {
-      size : file.size,
-      md5 : checkSum,
-      title : file.originalFilename,
-      pathInDisk : file.path,
-      mime : mime
-    };
+  var video = videoMimes.indexOf(toPush.mime) > -1;
+  video = video && mediaThumb;
 
-    var video = videoMimes.indexOf(toPush.mime) > -1;
-    video = video && mediaThumb;
+  var measureFunction;
 
-    var measureFunction;
+  if (toPush.mime.indexOf('image/') > -1) {
+    measureFunction = uploadHandler.getImageBounds;
+  } else if (video) {
+    measureFunction = uploadHandler.getVideoBounds;
+  }
 
-    if (toPush.mime.indexOf('image/') > -1) {
-      measureFunction = uploadHandler.getImageBounds;
-    } else if (video) {
-      measureFunction = uploadHandler.getVideoBounds;
-    }
+  if (measureFunction) {
 
-    if (measureFunction) {
+    // style exception, too simple
+    measureFunction(toPush, function gotDimensions(error, width, height) {
 
-      // style exception, too simple
-      measureFunction(toPush, function gotDimensions(error, width, height) {
+      exports.updateMetaMime(toPush, mime, fields);
 
-        exports.updateMetaMime(toPush, mime, fields);
+      if (error) {
+        callback(error);
+      } else {
+        toPush.width = width;
+        toPush.height = height;
 
-        if (error) {
-          callback(error);
-        } else {
-          toPush.width = width;
-          toPush.height = height;
+        fields.files.push(toPush);
+        exports.checkNewFileReference(toPush, callback);
+      }
 
-          fields.files.push(toPush);
-          exports.checkNewFileReference(toPush, callback);
-        }
+    });
+    // style exception, too simple
 
-      });
-      // style exception, too simple
+  } else {
+    fields.files.push(toPush);
 
-    } else {
-      fields.files.push(toPush);
+    exports.checkNewFileReference(toPush, callback);
+  }
 
-      exports.checkNewFileReference(toPush, callback);
-    }
-  });
 };
 
 exports.transferFileInformation = function(files, fields, parsedCookies, cb,
@@ -205,14 +194,14 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
 
   var file = files.shift();
 
-  if (!file.headers['content-type']) {
+  if (!file.realMime && !file.headers['content-type']) {
     exports.transferFileInformation(files, fields, parsedCookies, cb, res,
         language, json);
 
     return;
   }
 
-  var mime = file.headers['content-type'].toLowerCase().trim();
+  var mime = file.realMime || file.headers['content-type'].toLowerCase().trim();
 
   if (file.size && (unboundLimits || file.size < maxFileSize)) {
 
@@ -322,9 +311,33 @@ exports.processReferencedFiles = function(metaData, callback, index) {
 
 };
 
-exports.getMetaData = function(fields) {
+exports.getRealMimeRelation = function(files) {
+
+  var realMimeRelation = {};
+
+  for (var i = 0; files.files && i < files.files.length; i++) {
+    var file = files.files[i];
+
+    if (!file.realMime || file.headers['content-type'] === file.realMime) {
+      continue;
+    }
+
+    var identifier = file.md5 + '-';
+    identifier += file.headers['content-type'].replace('/', '');
+
+    realMimeRelation[identifier] = file.realMime;
+
+  }
+
+  return realMimeRelation;
+
+};
+
+exports.getMetaData = function(fields, files) {
 
   var fileMetaData = [];
+
+  var realMimeRelation = exports.getRealMimeRelation(files);
 
   var spoiled = fields.fileSpoiler || [];
   var md5 = fields.fileMd5 || [];
@@ -333,17 +346,20 @@ exports.getMetaData = function(fields) {
 
   var min = Math.min(spoiled.length, md5.length);
   min = Math.min(min, mime.length);
+  min = Math.min(min, name.length);
 
-  for (var i = 0; i < Math.min(min, name.length); i++) {
+  for (var i = 0; i < Math.min(min, fileProcessingLimit); i++) {
 
     if (!md5[i] || !mime[i] || !name[i]) {
       continue;
     }
 
+    var realMime = realMimeRelation[md5[i] + '-' + mime[i].replace('/', '')];
+
     fileMetaData.push({
       spoiler : spoiled[i],
       md5 : md5[i],
-      mime : mime[i],
+      mime : realMime || mime[i],
       title : name[i]
     });
 
@@ -356,7 +372,7 @@ exports.getMetaData = function(fields) {
 exports.processParsedRequest = function(res, fields, files, callback,
     parsedCookies, language, json) {
 
-  var fileMetaData = exports.getMetaData(fields);
+  var fileMetaData = exports.getMetaData(fields, files);
 
   delete fields.fileSpoiler;
   delete fields.fileMime;
@@ -383,6 +399,85 @@ exports.processParsedRequest = function(res, fields, files, callback,
 
     }
 
+  });
+
+};
+
+exports.getCheckSums = function(res, fields, files, callback, parsedCookies,
+    language, json, index) {
+
+  if (!files.files) {
+    return exports.processParsedRequest(res, fields, files, callback,
+        parsedCookies, language, json);
+  }
+
+  index = index || 0;
+
+  var file = files.files[index];
+
+  if (!file) {
+    return exports.processParsedRequest(res, fields, files, callback,
+        parsedCookies, language, json);
+  }
+
+  var stream = fs.createReadStream(file.path);
+  var hash = crypto.createHash('md5');
+
+  stream.on('error', callback);
+
+  stream.on('data', function(data) {
+    hash.update(data, 'utf8');
+  });
+
+  stream.on('end', function() {
+
+    file.md5 = hash.digest('hex');
+
+    exports.getCheckSums(res, fields, files, callback, parsedCookies, language,
+        json, ++index);
+  });
+
+};
+
+exports.validateMimes = function(res, fields, files, callback, parsedCookies,
+    language, json, index) {
+
+  if (!validateMimes || !files.files) {
+
+    return exports.getCheckSums(res, fields, files, callback, parsedCookies,
+        language, json);
+  }
+
+  index = index || 0;
+
+  var file = files.files[index];
+
+  if (!file) {
+
+    return exports.getCheckSums(res, fields, files, callback, parsedCookies,
+        language, json);
+  }
+
+  exec('file -b --mime-type ' + file.path, function(error, receivedMime) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      file.realMime = receivedMime.trim();
+
+      if (!file.realMime.indexOf('text/')) {
+        var actualRealMime = logger.getMime(file.originalFilename);
+
+        if (actualRealMime !== 'application/octet-stream') {
+          file.realMime = actualRealMime;
+        }
+
+      }
+
+      exports.validateMimes(res, fields, files, callback, parsedCookies,
+          language, json, ++index);
+    }
   });
 
 };
@@ -425,7 +520,12 @@ exports.getPostData = function(req, res, callback) {
     if (error) {
       exports.outputError(error, 500, res, req.language, json);
     } else {
-      exports.processParsedRequest(res, fields, files, callback, exports
+
+      if (files.files && files.files.length > fileProcessingLimit) {
+        files.files.splice(fileProcessingLimit - files.files.length);
+      }
+
+      exports.validateMimes(res, fields, files, callback, exports
           .getCookies(req), req.language, json);
     }
 

@@ -192,6 +192,11 @@
   },
   {
     "type": "number",
+    "setting": "fileProcessingLimit",
+    "element": "fieldFileProcessingLimit"
+  },
+  {
+    "type": "number",
     "setting": "authenticationLimit",
     "element": "fieldAuthenticationLimit"
   },
@@ -419,6 +424,11 @@
     "type": "boolean",
     "setting": "redactModNames",
     "element": "checkboxRedactModNames"
+  },
+  {
+    "type": "boolean",
+    "setting": "validateMimes",
+    "element": "checkboxValidateMimes"
   },
   {
     "type": "boolean",

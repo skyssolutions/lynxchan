@@ -520,6 +520,7 @@ exports.getDefaultSettings = function() {
     pageSize : 10,
     latestPostCount : 5,
     maxBoardTags : 5,
+    fileProcessingLimit : 10,
     autoSageLimit : 500,
     maxFiles : 3,
     maxThreadCount : 50,
