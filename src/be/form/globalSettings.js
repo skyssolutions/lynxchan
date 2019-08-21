@@ -34,6 +34,6 @@ exports.process = function(req, res) {
         exports.getGlobalSettings(userData, res,
             url.parse(req.url, true).query.json, auth, req.language);
 
-      }, false, false, true);
+      }, false, true);
 
 };

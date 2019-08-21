@@ -40,6 +40,6 @@ exports.process = function(req, res) {
 
     exports.getMediaDetails(auth, user, parameters, res, req.language);
 
-  }, false, false, true);
+  }, false, true);
 
 };

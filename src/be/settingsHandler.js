@@ -108,11 +108,14 @@ function getRebuildBoards(settings) {
   var fileCChanged = generalSettings.maxFiles !== settings.maxFiles;
   var catalogPostingChanged = generalSettings.disableCatalogPosting
       ^ settings.disableCatalogPosting;
+  var unboundChanged = generalSettings.unboundBoardLimits
+      ^ settings.unboundBoardLimits;
   var mLengthChanged = generalSettings.messageLength !== settings.messageLength;
 
-  rebuildBoards = rebuildBoards || catalogPostingChanged || mLengthChanged;
+  rebuildBoards = unboundChanged || rebuildBoards || catalogPostingChanged;
+  rebuildBoards = rebuildBoards || fileCChanged || mLengthChanged;
 
-  return fileCChanged || rebuildBoards || fileSizeDelta || globalCChanged;
+  return rebuildBoards || fileSizeDelta || globalCChanged;
 
 }
 
@@ -317,7 +320,7 @@ function prepareSettingsForChangeCheck(settings, callback) {
       'defaultAnonymousName', 'defaultBanMessage', 'allowBoardCustomJs',
       'topBoardsCount', 'globalLatestPosts', 'forceCaptcha', 'overboard',
       'frontPageStats', 'disableAccountCreation', 'disableCatalogPosting',
-      'redactModNames', 'omitUnindexedContent' ];
+      'redactModNames', 'omitUnindexedContent', 'unboundBoardLimits' ];
 
   // these ones default to the default values
   var defaultToDefault = [ 'pageSize', 'maxFileSizeMB', 'maxFiles', 'fePath',

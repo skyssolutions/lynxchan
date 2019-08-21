@@ -450,6 +450,7 @@
   {
     "template": "globalSettingsPage",
     "prebuiltFields": {
+      "checkboxUnboundBoardLimits": "checked",
       "fieldLatestPostsAmount": "value",
       "fieldAuthenticationLimit": "value",
       "fieldFileLimit": "value",

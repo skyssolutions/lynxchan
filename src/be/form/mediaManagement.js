@@ -44,6 +44,6 @@ exports.process = function(req, res) {
 
         exports.getMedia(auth, userData, parameters, res, req.language);
 
-      }, false, false, true);
+      }, false, true);
 
 };

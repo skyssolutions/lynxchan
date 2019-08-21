@@ -22,7 +22,7 @@ var jsonBuilder;
 var domManipulator;
 var lang;
 var uploadHandler;
-var validMimes;
+var unboundLimits;
 var videoMimes;
 var mediaThumb;
 
@@ -36,7 +36,7 @@ exports.loadSettings = function() {
   maxFileSize = settings.maxFileSizeB;
   maxFiles = settings.maxFiles;
   mediaThumb = settings.mediaThumb;
-  validMimes = settings.acceptedMimes;
+  unboundLimits = settings.unboundBoardLimits;
 
 };
 
@@ -190,9 +190,9 @@ exports.getFileData = function(file, fields, mime, callback) {
 };
 
 exports.transferFileInformation = function(files, fields, parsedCookies, cb,
-    res, exceptionalMimes, language, json) {
+    res, language, json) {
 
-  if (!files.length || fields.files.length >= maxFiles) {
+  if (!files.length || (!unboundLimits && fields.files.length >= maxFiles)) {
 
     if (verbose) {
       console.log('Form input: ' + JSON.stringify(fields, null, 2));
@@ -207,17 +207,14 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
 
   if (!file.headers['content-type']) {
     exports.transferFileInformation(files, fields, parsedCookies, cb, res,
-        exceptionalMimes, language, json);
+        language, json);
 
     return;
   }
 
   var mime = file.headers['content-type'].toLowerCase().trim();
 
-  if (validMimes.indexOf(mime) === -1 && !exceptionalMimes && file.size) {
-    exports.outputError(lang(language).errFormatNotAllowed, 500, res, language,
-        json);
-  } else if (file.size && file.size < maxFileSize) {
+  if (file.size && (unboundLimits || file.size < maxFileSize)) {
 
     exports.getFileData(file, fields, mime, function gotFileData(error) {
 
@@ -226,7 +223,7 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
       }
 
       exports.transferFileInformation(files, fields, parsedCookies, cb, res,
-          exceptionalMimes, language, json);
+          language, json);
 
     });
 
@@ -235,7 +232,7 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
         json);
   } else {
     exports.transferFileInformation(files, fields, parsedCookies, cb, res,
-        exceptionalMimes, language, json);
+        language, json);
   }
 
 };
@@ -243,7 +240,8 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
 
 exports.getNewFiles = function(newFiles, fields, relation) {
 
-  for (var i = 0; i < Math.min(fields.metaData.length, maxFiles); i++) {
+  for (var i = 0; i < Math.min(fields.metaData.length,
+      unboundLimits ? fields.metaData.length : maxFiles); i++) {
 
     var metaData = fields.metaData[i];
 
@@ -300,7 +298,7 @@ exports.processReferencedFiles = function(metaData, callback, index) {
 
   index = index || 0;
 
-  if (index >= metaData.length || index >= maxFiles) {
+  if (index >= metaData.length || (!unboundLimits && index >= maxFiles)) {
     callback();
     return;
   }
@@ -356,7 +354,7 @@ exports.getMetaData = function(fields) {
 };
 
 exports.processParsedRequest = function(res, fields, files, callback,
-    parsedCookies, exceptionalMimes, language, json) {
+    parsedCookies, language, json) {
 
   var fileMetaData = exports.getMetaData(fields);
 
@@ -381,7 +379,7 @@ exports.processParsedRequest = function(res, fields, files, callback,
       fields.metaData = fileMetaData;
 
       exports.transferFileInformation(files.files || [], fields, parsedCookies,
-          callback, res, exceptionalMimes, language, json);
+          callback, res, language, json);
 
     }
 
@@ -389,7 +387,7 @@ exports.processParsedRequest = function(res, fields, files, callback,
 
 };
 
-exports.getPostData = function(req, res, callback, exceptionalMimes) {
+exports.getPostData = function(req, res, callback) {
 
   var parser = new multiParty.Form({
     uploadDir : uploadDir,
@@ -428,7 +426,7 @@ exports.getPostData = function(req, res, callback, exceptionalMimes) {
       exports.outputError(error, 500, res, req.language, json);
     } else {
       exports.processParsedRequest(res, fields, files, callback, exports
-          .getCookies(req), exceptionalMimes, req.language, json);
+          .getCookies(req), req.language, json);
     }
 
   });
@@ -451,7 +449,7 @@ exports.checkReferer = function(req) {
 };
 
 exports.getAuthenticatedPost = function(req, res, getParameters, callback,
-    optionalAuth, exceptionalMimes, skipReferer) {
+    optionalAuth, skipReferer) {
 
   var json = exports.json(req);
 
@@ -469,7 +467,7 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback,
     } else if (getParameters) {
       exports.getPostData(req, res, function(auth, parameters) {
         callback(null, null, parameters);
-      }, exceptionalMimes);
+      });
     } else {
       callback();
     }
@@ -496,7 +494,7 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback,
         }
 
       });
-    }, exceptionalMimes);
+    });
   } else {
 
     accountOps.validate(exports.getCookies(req), req.language,

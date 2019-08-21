@@ -40,6 +40,6 @@ exports.process = function(req, res) {
 
         exports.getRangeBans(userData, parameters, res, auth, req.language);
 
-      }, false, false, true);
+      }, false, true);
 
 };

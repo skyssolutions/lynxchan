@@ -19,6 +19,9 @@ var latestPosts = db.latestPosts();
 var tripcodes = db.tripcodes();
 var lang;
 var locationOps;
+var maxFileSize;
+var globalMimes;
+var unboundBoardSettings;
 var miscOps;
 var verbose;
 var maxGlobalLatestPosts;
@@ -72,6 +75,12 @@ exports.loadSettings = function() {
     exports.defaultAnonymousName = lang().miscDefaultAnonymous;
   }
 
+  exports.loadMoreSettings(settings);
+
+};
+
+exports.loadMoreSettings = function(settings) {
+
   dontProcessLinks = settings.dontProcessLinks;
   fileLimit = settings.fileLimit;
   verbose = settings.verbose || settings.verboseMisc;
@@ -80,6 +89,9 @@ exports.loadSettings = function() {
   floodTimer = settings.floodTimerSec * 1000;
   globalMaxSizeMB = settings.maxFileSizeMB;
   globalMaxFiles = settings.maxFiles;
+  maxFileSize = settings.maxFileSizeB;
+  unboundBoardSettings = settings.unboundBoardLimits;
+  globalMimes = settings.acceptedMimes;
 
 };
 
@@ -350,6 +362,28 @@ exports.applyFilters = function(filters, message) {
 
 };
 
+exports.checkFile = function(language, checkMimes, max, allowedMimes, file) {
+
+  var checkGlobalMimes = !checkMimes || !unboundBoardSettings;
+
+  if (checkGlobalMimes && globalMimes.indexOf(file.mime) < 0) {
+    return lang(language).errFormatNotAllowed;
+  }
+
+  if (checkMimes && allowedMimes.indexOf(file.mime) < 0) {
+    return lang(language).errInvalidMimeForBoard;
+  }
+
+  var useBoardMax = max && (max < maxFileSize || unboundBoardSettings);
+
+  if (useBoardMax && max < file.size) {
+    return lang(language).errFileTooLargeForBoard;
+  } else if (!useBoardMax && file.size > maxFileSize) {
+    return lang(language).errFileTooLarge;
+  }
+
+};
+
 exports.checkBoardFileLimits = function(files, boardData, language) {
 
   if (!boardData) {
@@ -358,27 +392,31 @@ exports.checkBoardFileLimits = function(files, boardData, language) {
 
   var allowedMimes = boardData.acceptedMimes;
 
-  var checkSize = boardData.maxFileSizeMB < globalMaxSizeMB;
-
-  var maxSize = checkSize ? boardData.maxFileSizeMB * 1024 * 1024 : null;
+  var maxSize = boardData.maxFileSizeMB ? boardData.maxFileSizeMB * 1024 * 1024
+      : null;
 
   var checkMimes = allowedMimes && allowedMimes.length;
+
+  var under = boardData.maxFiles && boardData.maxFiles < globalMaxFiles;
+
+  var useBoardLimit = under || (unboundBoardSettings && boardData.maxFiles);
+
+  var limitToUse = useBoardLimit ? boardData.maxFiles : globalMaxFiles;
+
+  if (files.length > limitToUse) {
+    files.splice(-(files.length - limitToUse));
+  }
 
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
 
-    if (checkMimes && allowedMimes.indexOf(file.mime) < 0) {
-      return lang(language).errInvalidMimeForBoard;
+    var foundError = exports.checkFile(language, checkMimes, maxSize,
+        allowedMimes, file);
+
+    if (foundError) {
+      return foundError;
     }
 
-    if (maxSize && maxSize < file.size) {
-      return lang(language).errFileTooLargeForBoard;
-    }
-
-  }
-
-  if (boardData.maxFiles && boardData.maxFiles < globalMaxFiles) {
-    files.splice(boardData.maxFiles, globalMaxFiles - boardData.maxFiles);
   }
 
 };

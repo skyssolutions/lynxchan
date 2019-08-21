@@ -45,6 +45,6 @@ exports.process = function(req, res) {
 
     exports.getPostingToEdit(user, parameters, res, auth, req.language);
 
-  }, false, false, true);
+  }, false, true);
 
 };

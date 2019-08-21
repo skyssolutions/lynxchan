@@ -48,6 +48,6 @@ exports.process = function(req, res) {
       parameters) {
     exports.setCustomJs(userData, parameters, res, auth, req.language, formOps
         .json(req));
-  }, false, true);
+  });
 
 };

@@ -14,6 +14,7 @@ var postingContent;
 var maxAllowedFiles;
 var globalBoardModeration;
 var clearIpRole;
+var unboundBoardLimits;
 var maxFileSizeMB;
 var messageLength;
 var verbose;
@@ -34,6 +35,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  unboundBoardLimits = settings.unboundBoardLimits;
   verbose = settings.verboseCache || settings.verbose;
   globalBoardModeration = settings.allowGlobalBoardModeration;
   clearIpRole = settings.clearIpMinRole;
@@ -263,8 +265,9 @@ exports.setFileLimits = function(document, bData, language) {
   var fileLimitToUse;
 
   if (bData.maxFiles) {
-    fileLimitToUse = bData.maxFiles < maxAllowedFiles ? bData.maxFiles
-        : maxAllowedFiles;
+    var validMaxFiles = bData.maxFiles < maxAllowedFiles || unboundBoardLimits;
+
+    fileLimitToUse = validMaxFiles ? bData.maxFiles : maxAllowedFiles;
   } else {
     fileLimitToUse = maxAllowedFiles;
   }
@@ -273,14 +276,21 @@ exports.setFileLimits = function(document, bData, language) {
 
   var sizeToUse;
 
-  if (bData.maxFileSizeMB && bData.maxFileSizeMB < maxFileSizeMB) {
-    sizeToUse = exports.formatFileSize(bData.maxFileSizeMB * 1048576, language);
+  if (bData.maxFileSizeMB) {
+
+    var validMaxFileSize = bData.maxFileSizeMB < maxFileSizeMB;
+    validMaxFileSize = validMaxFileSize || unboundBoardLimits;
+
+    sizeToUse = validMaxFileSize ? exports.formatFileSize(
+        bData.maxFileSizeMB * 1048576, language) : displayMaxSize;
   } else {
     sizeToUse = displayMaxSize;
   }
 
+  var useMimes = bData.acceptedMimes && unboundBoardLimits;
+
   document = document.replace('__inputFiles_accept__',
-      (bData.acceptedMimes || validMimes).join(', '));
+      (useMimes ? bData.acceptedMimes : validMimes).join(', '));
 
   return document.replace('__labelMaxFileSize_inner__', sizeToUse);
 

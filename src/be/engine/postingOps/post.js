@@ -14,12 +14,12 @@ var referenceHandler;
 var r9k;
 var uploadHandler;
 var lang;
+var unboundBoardSettings;
 var miscOps;
 var captchaOps;
 var overboard;
 var sfwOverboard;
 var pageLimit;
-var autoLockLimit;
 var bumpLimit;
 var latestPostsCount;
 var globalLatestPosts;
@@ -28,12 +28,12 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  unboundBoardSettings = settings.unboundBoardLimits;
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
   bumpLimit = settings.autoSageLimit;
   latestPostsCount = settings.latestPostCount;
   globalLatestPosts = settings.globalLatestPosts;
-  autoLockLimit = bumpLimit * 2;
   pageLimit = Math.ceil(settings.maxThreadCount / settings.pageSize);
 
 };
@@ -294,12 +294,13 @@ exports.addPostToGlobalLatest = function(omitted, post, thread, parameters,
 
 exports.getBumpLimit = function(boardData) {
 
-  // No need to check if the number here is greater than 0, since it will be
-  // used just to check a condition
-  var hasBoardLimit = boardData.autoSageLimit;
-  hasBoardLimit = hasBoardLimit && boardData.autoSageLimit < bumpLimit;
+  var boardLimit = boardData.autoSageLimit;
 
-  return hasBoardLimit ? boardData.autoSageLimit : bumpLimit;
+  var hasBoardLimit = boardLimit && boardLimit < bumpLimit;
+
+  hasBoardLimit = hasBoardLimit || (boardLimit && unboundBoardSettings);
+
+  return hasBoardLimit ? boardLimit : bumpLimit;
 
 };
 
@@ -553,6 +554,8 @@ exports.getPostMarkdown = function(req, parameters, userData, thread, board,
 };
 
 exports.getThread = function(req, parameters, userData, board, callback) {
+
+  var autoLockLimit = exports.getBumpLimit(board) * 2;
 
   threads.findOne({
     boardUri : parameters.boardUri,

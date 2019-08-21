@@ -38,5 +38,5 @@ exports.process = function(req, res) {
 
         }
 
-      }, false, false, true);
+      }, false, true);
 };

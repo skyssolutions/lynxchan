@@ -39,5 +39,5 @@ exports.process = function(req, res) {
         var parameters = url.parse(req.url, true).query;
 
         exports.latestPostings(auth, parameters, userData, res, req.language);
-      }, false, false, true);
+      }, false, true);
 };

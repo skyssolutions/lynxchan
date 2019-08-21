@@ -37,6 +37,6 @@ exports.process = function(req, res) {
 
     exports.getClosedReports(user, parameters, res, auth, req.language);
 
-  }, false, false, true);
+  }, false, true);
 
 };

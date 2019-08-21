@@ -45,6 +45,6 @@ exports.process = function(req, res) {
       parameters) {
     exports.setCustomCss(userData, parameters, res, auth, req.language, formOps
         .json(req));
-  }, false, true);
+  });
 
 };

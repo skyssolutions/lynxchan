@@ -17,6 +17,7 @@ var miscOps;
 var captchaOps;
 var overboard;
 var threadLimit;
+var unboundBoardSettings;
 var globalLatestPosts;
 var sfwOverboard;
 
@@ -24,6 +25,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  unboundBoardSettings = settings.unboundBoardLimits;
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
   threadLimit = settings.maxThreadCount;
@@ -126,10 +128,10 @@ exports.updateBoardForThreadCreation = function(boardData, threadId,
   var boardUri = boardData.boardUri;
   var boardThreadLimit = boardData.maxThreadCount;
 
-  var gotBoardThreadLimit = boardThreadLimit && boardThreadLimit < threadLimit;
-  gotBoardThreadLimit = gotBoardThreadLimit && boardThreadLimit > 0;
+  var boardLimit = boardThreadLimit && boardThreadLimit < threadLimit;
+  boardLimit = boardLimit || (boardThreadLimit && unboundBoardSettings);
 
-  var limitToUse = gotBoardThreadLimit ? boardThreadLimit : threadLimit;
+  var limitToUse = boardLimit ? boardThreadLimit : threadLimit;
 
   boards.findOneAndUpdate({
     boardUri : boardUri

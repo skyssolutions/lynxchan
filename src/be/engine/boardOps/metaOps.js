@@ -24,7 +24,6 @@ var sfwOverboard;
 var globalBoardModeration;
 var boardCreationRequirement;
 var maxVolunteers;
-var allowedMimes;
 var volunteerSettings;
 
 var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
@@ -70,7 +69,6 @@ exports.loadSettings = function() {
   overboard = settings.overboard;
 
   sfwOverboard = settings.sfwOverboard;
-  allowedMimes = settings.acceptedMimes;
 
   exports.boardParameters[4].length = settings.boardMessageLength;
 
@@ -241,18 +239,14 @@ exports.sanitizeBoardMimes = function(mimes) {
   var toRet = [];
 
   for (var i = 0; i < mimes.length; i++) {
-    var tagToAdd = mimes[i].toString().trim().toLowerCase();
+    var mimeToAdd = mimes[i].toString().trim().toLowerCase();
 
-    if (toRet.indexOf(tagToAdd) === -1 && allowedMimes.indexOf(tagToAdd) >= 0) {
-      toRet.push(tagToAdd);
+    if (toRet.indexOf(mimeToAdd) < 0) {
+      toRet.push(mimeToAdd);
     }
   }
 
-  if (toRet.length && miscOps.arraysDiff(allowedMimes, toRet)) {
-    return toRet;
-  } else {
-    return null;
-  }
+  return toRet.length ? toRet : null;
 
 };
 

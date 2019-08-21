@@ -45,6 +45,6 @@ exports.process = function(req, res) {
     exports.getManagementData(userData, res,
         url.parse(req.url, true).query.json, auth, req.language);
 
-  }, false, false, true);
+  }, false, true);
 
 };

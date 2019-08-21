@@ -407,6 +407,11 @@
   },
   {
     "type": "boolean",
+    "setting": "unboundBoardLimits",
+    "element": "checkboxUnboundBoardLimits"
+  },
+  {
+    "type": "boolean",
     "setting": "redactModNames",
     "element": "checkboxRedactModNames"
   },
