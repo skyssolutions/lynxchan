@@ -7,6 +7,7 @@ var logger = require('../logger');
 var torDebug = require('../kernel').torDebug();
 var ipSource;
 var spamOps;
+var torDnsbl;
 var locationOps;
 var https = require('https');
 var http = require('http');
@@ -15,6 +16,7 @@ var compiledTORIps = __dirname + '/../TORIps';
 exports.loadSettings = function() {
   var settings = require('../settingsHandler').getGeneralSettings();
   ipSource = settings.torSource;
+  torDnsbl = settings.torDNSBL;
 };
 
 exports.loadDependencies = function() {
@@ -96,8 +98,25 @@ exports.markAsTor = function(req, callback) {
     return;
   }
 
+  var rawArray = logger.convertIpToArray(logger.getRawIp(req));
+
+  if (torDnsbl) {
+
+    return logger.runDNSBL(rawArray, torDnsbl, function(error, matched) {
+
+      if (error) {
+        callback(error);
+      } else {
+        req.isTor = matched || !!torDebug;
+        callback();
+      }
+
+    });
+
+  }
+
   logger.binarySearch({
-    ip : logger.convertIpToArray(logger.getRawIp(req))
+    ip : rawArray
   }, compiledTORIps, 4, function compare(a, b) {
     return logger.compareArrays(a.ip, b.ip);
   }, spamOps.parseIpBuffer, function gotIp(error, ip) {

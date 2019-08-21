@@ -87,6 +87,11 @@
   },
   {
     "type": "string",
+    "setting": "torDNSBL",
+    "element": "fieldTorDNSL"
+  },
+  {
+    "type": "string",
     "setting": "sslPass",
     "element": "fieldSslPass"
   },

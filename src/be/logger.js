@@ -1,6 +1,7 @@
 'use strict';
 
 var fs = require('fs');
+var dns = require('dns');
 var kernel = require('./kernel');
 
 exports.MIMETYPES = {
@@ -131,6 +132,32 @@ exports.reverseMimes = {};
 for ( var key in exports.MIMETYPES) {
   exports.reverseMimes[exports.MIMETYPES[key]] = key;
 }
+
+exports.runDNSBL = function(ip, domain, callback) {
+
+  for (var i = 0; i < ip.length; i++) {
+
+    if (ip.length === 4) {
+      domain = ip[i] + '.' + domain;
+    } else {
+
+      var hex = ip[i].toString(16);
+
+      if (hex.length < 2) {
+        hex = '0' + hex;
+      }
+
+      domain = hex[1] + '.' + hex[0] + '.' + domain;
+
+    }
+
+  }
+
+  dns.resolve(domain, function(error, data) {
+    callback(error && error.code !== 'ENOTFOUND' ? error : null, !!data);
+  });
+
+};
 
 exports.getMime = function(pathName) {
 

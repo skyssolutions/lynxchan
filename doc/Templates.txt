@@ -1836,6 +1836,10 @@ TEM_ID::48
 globalSettingsPage: page used to change global settings.
 
 Elements:
+fieldTorDNSL:
+    use: nave it's value manipulated.
+    description: field that displays the DNSL that should be used to detec tor exit nodes instead of the official list.
+
 checkboxUnboundBoardLimits:
     use: might be turned on.
     description: indicates if board's limits can surpass the global ones.

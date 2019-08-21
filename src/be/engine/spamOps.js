@@ -1,6 +1,5 @@
 'use strict';
 
-var dns = require('dns');
 var fs = require('fs');
 var exec = require('child_process').exec;
 var logger = require('../logger');
@@ -136,30 +135,10 @@ exports.checkDnsbl = function(ip, callback) {
     return exports.checkIp(ip, callback);
   }
 
-  var address = dnsbl;
+  logger.runDNSBL(ip, dnsbl, function(error, matched) {
 
-  for (var i = 0; i < ip.length; i++) {
-
-    if (ip.length === 4) {
-      address = ip[i] + '.' + address;
-    } else {
-
-      var hex = ip[i].toString(16);
-
-      if (hex.length < 2) {
-        hex = '0' + hex;
-      }
-
-      address = hex[1] + '.' + hex[0] + '.' + address;
-
-    }
-
-  }
-
-  dns.resolve(address, function(error, data) {
-
-    if ((error && error.code !== 'ENOTFOUND') || data) {
-      callback(error, !!data);
+    if (error || matched) {
+      callback(error, matched);
     } else {
       exports.checkIp(ip, callback);
     }
