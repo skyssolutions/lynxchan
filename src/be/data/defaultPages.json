@@ -236,6 +236,7 @@
       ],
       "globalBannersLink": "removal",
       "languagesLink": "removal",
+      "globalFiltersLink": "removal",
       "globalSettingsLink": "removal",
       "divStaff": [
         "removal",
@@ -333,7 +334,10 @@
     "template": "filterManagement",
     "prebuiltFields": {
       "divFilters": "children",
-      "boardIdentifier": "value"
+      "boardIdentifier": [
+        "value",
+        "removal"
+      ]
     }
   },
   {

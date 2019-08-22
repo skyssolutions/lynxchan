@@ -362,7 +362,7 @@ exports.getAppealedBans = function(userRole, users, reports, boardData,
         appliedBy : 1
       }
     }).toArray(function gotBans(error, foundBans) {
-      callback(error, users, reports, foundBans);
+      callback(error, users, reports, boardData, foundBans);
     });
 
   } else {

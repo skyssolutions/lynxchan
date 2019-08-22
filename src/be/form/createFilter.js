@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack;
 var url = require('url');
 var boardOps = require('../engine/boardOps').filters;
-var mandatoryParameters = [ 'boardUri', 'originalTerm', 'replacementTerm' ];
+var mandatoryParameters = [ 'originalTerm', 'replacementTerm' ];
 
 exports.createFilter = function(param, userData, res, auth, language, json) {
 

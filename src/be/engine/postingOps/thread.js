@@ -497,16 +497,27 @@ exports.cleanParameters = function(board, parameters, captchaId, req, cb,
 
   miscOps.sanitizeStrings(parameters, common.postingParameters);
 
-  parameters.message = common.applyFilters(board.filters, parameters.message);
+  common.applyFilters(board.filters, parameters.message, function(error,
+      newMessage) {
 
-  captchaOps.attemptCaptcha(captchaId, parameters.captcha, board, req.language,
-      function solvedCaptcha(error) {
-        if (error) {
-          cb(error);
-        } else {
-          exports.checkR9K(req, userData, parameters, board, cb);
-        }
-      });
+    if (error) {
+      return cb(error);
+    }
+
+    parameters.message = newMessage;
+
+    // style exception, too simple
+    captchaOps.attemptCaptcha(captchaId, parameters.captcha, board,
+        req.language, function solvedCaptcha(error) {
+          if (error) {
+            cb(error);
+          } else {
+            exports.checkR9K(req, userData, parameters, board, cb);
+          }
+        });
+    // style exception, too simple
+
+  });
 
 };
 

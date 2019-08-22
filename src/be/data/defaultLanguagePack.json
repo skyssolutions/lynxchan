@@ -81,7 +81,7 @@
   "titGlobalManagement": "Global management",
   "titAccount": "Welcome, {$login}",
   "titLogs": "{$board} logs",
-  "titFilters": "Filters for /{$board}/",
+  "titBoardFilters": "Filters for /{$board}/",
   "titBoardModeration": "Board moderation of /{$board}/",
   "titBoards": "Boards",
   "titNoCookieCaptcha": "No cookie captcha",
@@ -361,5 +361,6 @@
   "msgBoardUnlocked": "Board auto-lock reset.",
   "errOwnsBoards": "You can't delete your own account if you own any boards.",
   "guiGlobalLogsIndex": "Global",
-  "guiRedactedName": "REDACTED"
+  "guiRedactedName": "REDACTED",
+  "titGlobalFilters": "Global filters"
 }

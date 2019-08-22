@@ -22,6 +22,7 @@ var cachedClient;
 
 var maxIndexesSet = 17;
 
+var cachedFilters;
 var cachedRedirects;
 var cachedLanguages;
 var cachedConfirmationRequests;
@@ -725,6 +726,10 @@ exports.languages = function() {
   return cachedLanguages;
 };
 
+exports.filters = function() {
+  return cachedFilters;
+};
+
 exports.chunks = function() {
   return cachedChunks;
 };
@@ -917,6 +922,7 @@ function initCollections(callback) {
   cachedAggregatedLogs = cachedDb.collection('aggregatedLogs');
   cachedOverboard = cachedDb.collection('overboardThreads');
   cachedLatestPosts = cachedDb.collection('latestPosts');
+  cachedFilters = cachedDb.collection('filters');
   cachedChunks = cachedDb.collection('fs.chunks');
   cachedLanguages = cachedDb.collection('languages');
   cachedLog = cachedDb.collection('staffLogs');

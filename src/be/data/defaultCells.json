@@ -263,7 +263,10 @@
     "prebuiltFields": {
       "labelOriginal": "inner",
       "labelReplacement": "inner",
-      "boardIdentifier": "value",
+      "boardIdentifier": [
+        "value",
+        "removal"
+      ],
       "filterIdentifier": "value",
       "labelCaseInsensitive": "removal"
     }

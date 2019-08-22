@@ -9,6 +9,7 @@ var crypto = require('crypto');
 var taskListener = require('../../taskListener');
 var logger = require('../../logger');
 var db = require('../../db');
+var globalFilters = db.filters();
 var uploadReferences = db.uploadReferences();
 var posts = db.posts();
 var threads = db.threads();
@@ -336,29 +337,38 @@ exports.escapeRegExp = function(string) {
   return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
 };
 
-exports.applyFilters = function(filters, message) {
+exports.applyFilters = function(boardFilters, message, callback) {
 
-  if (!filters || !filters.length) {
-    return message;
-  }
+  boardFilters = boardFilters || [];
 
-  for (var i = 0; i < filters.length; i++) {
+  globalFilters.find({}).toArray(
+      function(error, foundGlobalFilters) {
 
-    var filter = filters[i];
+        if (error) {
+          return callback(error);
+        }
 
-    var parameters = 'g';
+        boardFilters = boardFilters.concat(foundGlobalFilters);
 
-    if (filter.caseInsensitive) {
-      parameters += 'i';
-    }
+        for (var i = 0; i < boardFilters.length; i++) {
 
-    message = message
-        .replace(new RegExp(exports.escapeRegExp(filter.originalTerm),
-            parameters), filter.replacementTerm);
+          var filter = boardFilters[i];
 
-  }
+          var parameters = 'g';
 
-  return message;
+          if (filter.caseInsensitive) {
+            parameters += 'i';
+          }
+
+          message = message.replace(new RegExp(exports
+              .escapeRegExp(filter.originalTerm), parameters),
+              filter.replacementTerm);
+
+        }
+
+        callback(null, message);
+
+      });
 
 };
 

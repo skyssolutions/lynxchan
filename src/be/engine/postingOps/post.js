@@ -517,8 +517,6 @@ exports.getPostFlag = function(req, parameters, userData, postId, thread,
 exports.getPostMarkdown = function(req, parameters, userData, thread, board,
     wishesToSign, callback) {
 
-  parameters.message = common.applyFilters(board.filters, parameters.message);
-
   common.markdownText(parameters.message, parameters.boardUri, board.settings
       .indexOf('allowCode') > -1, function gotMarkdown(error, markdown) {
 
@@ -548,6 +546,25 @@ exports.getPostMarkdown = function(req, parameters, userData, thread, board,
       // style exception, too simple
 
     }
+
+  });
+
+};
+
+exports.applyFilters = function(req, parameters, userData, thread, board,
+    wishesToSign, cb) {
+
+  common.applyFilters(board.filters, parameters.message, function(error,
+      newMessage) {
+
+    if (error) {
+      return cb(error);
+    }
+
+    parameters.message = newMessage;
+
+    exports.getPostMarkdown(req, parameters, userData, thread, board,
+        wishesToSign, cb);
 
   });
 
@@ -601,7 +618,7 @@ exports.getThread = function(req, parameters, userData, board, callback) {
         if (error) {
           callback(error);
         } else {
-          exports.getPostMarkdown(req, parameters, userData, thread, board,
+          exports.applyFilters(req, parameters, userData, thread, board,
               wishesToSign, callback);
         }
       });

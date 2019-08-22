@@ -635,7 +635,7 @@ PAG_ID::32
 
 Name: filterManagement
 
-Description: page used to manage filters of a board. Uses get parameters. Reserved to board owners. Requires authentication.
+Description: page used to manage filters of a board. Uses get parameters. Reserved to board owners or site administrators. Requires authentication.
 
 Parameters:
     boardUri: URI of the board to have its filters managed.
@@ -651,7 +651,7 @@ PAG_ID::33
 
 Name: createFilter
 
-Description: page used to create filters . Uses get parameters. Reserved to board owners. Requires authentication.
+Description: page used to create filters . Uses get parameters. Reserved to board owners or site administrators. Requires authentication.
 
 Parameters:
     boardUri: URI of the board to have its filters managed.
@@ -665,7 +665,7 @@ PAG_ID::34
 
 Name: deleteFilter
 
-Description: page used to delete filters of a board. Uses get parameters. Reserved to board owners. Requires authentication.
+Description: page used to delete filters of a board. Uses get parameters. Reserved to board owners or site administrators. Requires authentication.
 
 Parameters:
     boardUri: uri of the board to have its filter deleted.

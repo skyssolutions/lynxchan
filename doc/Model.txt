@@ -56,6 +56,13 @@ boards: stores boards.
 
 ----------------------------------------------------------------------------------------
 
+filters: stores global word filters.
+    originalTerm: original term to be replaced. 32 characters.
+    replacementTerm: term that will replace the original term. 32 characters.
+    caseInsensitive(Boolean): indicates if the filter is case-insensitive.
+
+----------------------------------------------------------------------------------------
+
 threads: stores board's threads.
     archived(Boolean): indicates if the thread is archived.
     name: name of the poster. 32 characters.

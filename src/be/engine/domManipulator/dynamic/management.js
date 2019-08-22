@@ -43,16 +43,18 @@ exports.getFilterDiv = function(boardUri, filters, language) {
     var originalTerm = common.clean(filter.originalTerm);
 
     var cell = common.getFormCellBoilerPlate(template.template,
-        '/deleteFilter.js', 'filterCell');
+        '/deleteFilter.js', 'filterCell').replace('__labelOriginal_inner__',
+        originalTerm);
 
-    cell = cell.replace('__labelOriginal_inner__', originalTerm);
+    if (boardUri) {
 
-    cell = cell.replace('__labelReplacement_inner__', common
-        .clean(filter.replacementTerm));
+      cell = cell.replace('__boardIdentifier_location__',
+          template.removable.boardIdentifier).replace(
+          '__boardIdentifier_value__', boardUri);
+    } else {
 
-    cell = cell.replace('__boardIdentifier_value__', boardUri);
-
-    cell = cell.replace('__filterIdentifier_value__', originalTerm);
+      cell = cell.replace('__boardIdentifier_location__', '');
+    }
 
     if (!filter.caseInsensitive) {
       cell = cell.replace('__labelCaseInsensitive_location__', '');
@@ -61,7 +63,9 @@ exports.getFilterDiv = function(boardUri, filters, language) {
           template.removable.labelCaseInsensitive);
     }
 
-    children += cell;
+    children += cell.replace('__labelReplacement_inner__',
+        common.clean(filter.replacementTerm)).replace(
+        '__filterIdentifier_value__', originalTerm);
   }
 
   return children;
@@ -71,10 +75,21 @@ exports.filterManagement = function(boardUri, filters, language) {
 
   boardUri = common.clean(boardUri);
 
-  var document = templateHandler(language).filterManagement.template.replace(
-      '__title__', lang(language).titFilters.replace('{$board}', boardUri));
+  var titleToUse = boardUri ? lang(language).titBoardFilters.replace(
+      '{$board}', boardUri) : lang(language).titGlobalFilters;
 
-  document = document.replace('__boardIdentifier_value__', boardUri);
+  var template = templateHandler(language).filterManagement;
+
+  var document = template.template.replace('__title__', titleToUse);
+
+  if (boardUri) {
+
+    document = document.replace('__boardIdentifier_location__',
+        template.removable.boardIdentifier).replace(
+        '__boardIdentifier_value__', boardUri);
+  } else {
+    document = document.replace('__boardIdentifier_location__', '');
+  }
 
   return document.replace('__divFilters_children__', exports.getFilterDiv(
       boardUri, filters, language));

@@ -461,12 +461,15 @@ exports.setGlobalManagementLinks = function(userRole, document, removable) {
 
   if (userRole < 2) {
     document = document.replace('__accountsLink_location__',
-        removable.accountsLink);
-    document = document.replace('__globalBannersLink_location__',
-        removable.globalBannersLink);
+        removable.accountsLink).replace('__globalBannersLink_location__',
+        removable.globalBannersLink).replace('__globalFiltersLink_location__',
+        removable.globalFiltersLink);
+
   } else {
-    document = document.replace('__accountsLink_location__', '');
-    document = document.replace('__globalBannersLink_location__', '');
+    document = document.replace('__accountsLink_location__', '').replace(
+        '__globalBannersLink_location__', '').replace(
+        '__globalFiltersLink_location__', '');
+
   }
 
   return document;

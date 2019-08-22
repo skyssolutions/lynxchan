@@ -4,7 +4,7 @@ var formOps = require('../engine/formOps');
 var url = require('url');
 var lang = require('../engine/langOps').languagePack;
 var boardOps = require('../engine/boardOps').filters;
-var mandatoryParameters = [ 'boardUri', 'filterIdentifier' ];
+var mandatoryParameters = [ 'filterIdentifier' ];
 
 exports.deleteFilter = function(param, userData, res, auth, language, json) {
 

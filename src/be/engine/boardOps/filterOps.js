@@ -4,6 +4,7 @@
 
 var maxFiltersCount;
 var db = require('../../db');
+var filters = db.filters();
 var boards = db.boards();
 var miscOps;
 var lang;
@@ -77,9 +78,28 @@ exports.createFilter = function(userData, parameters, language, callback) {
 
   miscOps.sanitizeStrings(parameters, filterParameters);
 
-  parameters.boardUri = parameters.boardUri.toString();
+  var admin = userData.globalRole <= 1;
 
-  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+  if (!parameters.boardUri) {
+
+    if (!admin) {
+      return callback(lang(language).errDeniedGlobalManagement);
+    }
+
+    return filters.updateOne({
+      originalTerm : parameters.originalTerm
+    }, {
+      $set : {
+        replacementTerm : parameters.replacementTerm,
+        caseInsensitive : !!parameters.caseInsensitive
+      }
+    }, {
+      upsert : 1
+    }, callback);
+
+  }
+
+  var globallyAllowed = admin && globalBoardModeration;
 
   boards.findOne({
     boardUri : parameters.boardUri
@@ -102,9 +122,21 @@ exports.createFilter = function(userData, parameters, language, callback) {
 
 exports.deleteFilter = function(userData, parameters, language, callback) {
 
-  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+  var admin = userData.globalRole <= 1;
 
-  parameters.boardUri = parameters.boardUri.toString();
+  if (!parameters.boardUri) {
+
+    if (!admin) {
+      return callback(lang(language).errDeniedGlobalManagement);
+    }
+
+    return filters.removeOne({
+      originalTerm : parameters.filterIdentifier
+    }, callback);
+
+  }
+
+  var globallyAllowed = admin && globalBoardModeration;
 
   boards.findOne({
     boardUri : parameters.boardUri
@@ -149,7 +181,19 @@ exports.deleteFilter = function(userData, parameters, language, callback) {
 
 exports.getFilterData = function(userData, boardUri, language, callback) {
 
-  var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
+  var admin = userData.globalRole <= 1;
+
+  if (!boardUri) {
+
+    if (!admin) {
+      return callback(lang(language).errDeniedGlobalManagement);
+    } else {
+      return filters.find({}).toArray(callback);
+    }
+
+  }
+
+  var globallyAllowed = admin && globalBoardModeration;
 
   boards.findOne({
     boardUri : boardUri

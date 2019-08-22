@@ -674,6 +674,10 @@ TEM_ID::10
 gManagement: global management page.
 
 Elements:
+globalFiltersLink:
+    use: might be removed.
+    description: link to the global filters management page.
+
 socketLink:
     use: might be removed.
     description: link to the socket management page.
@@ -1438,7 +1442,7 @@ divFilters:
     description: holds the list of current filters.
 
 boardIdentifier:
-    use: have it's value manipulated.
+    use: have it's value manipulated or might be removed.
     description: hidden input that identifies the board for filter creation.
 
 ------------------------------------------------------------------------------------------
@@ -1459,7 +1463,7 @@ labelReplacement:
     description: holds what the original term will be replaced with.
 
 boardIdentifier:
-    use: have it's value manipulated.
+    use: have it's value manipulated or might be removed.
     description: hidden input that identifies the board for filter deletion.
 
 filterIdentifier:
