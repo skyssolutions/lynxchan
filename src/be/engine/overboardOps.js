@@ -8,10 +8,12 @@ var overboardThreads = db.overboardThreads();
 var threads = db.threads();
 var boards = db.boards();
 var reaggregating;
+var omit;
 
 exports.loadSettings = function() {
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  omit = settings.omitUnindexedContent;
   overboard = settings.overboard;
   sfwOverboard = settings.sfwOverboard;
   overboardSize = settings.overBoardThreadCount;
@@ -249,7 +251,7 @@ function fullReaggregate(message, boardsToUse) {
     return;
   }
 
-  if (message.omit && !boardsToUse) {
+  if ((message.omit || omit) && !boardsToUse) {
 
     boards.aggregate([ {
       $match : {
