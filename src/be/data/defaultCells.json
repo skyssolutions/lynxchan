@@ -95,10 +95,7 @@
         "href",
         "inner"
       ],
-      "deletionCheckBox": [
-        "removal",
-        "name"
-      ],
+      "deletionCheckBox": "name",
       "lockIndicator": "removal",
       "archiveIndicator": "removal",
       "bumpLockIndicator": "removal",
@@ -182,10 +179,7 @@
         "href",
         "inner"
       ],
-      "deletionCheckBox": [
-        "removal",
-        "name"
-      ],
+      "deletionCheckBox": "name",
       "spanId": "removal",
       "labelId": [
         "inner",

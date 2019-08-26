@@ -731,7 +731,7 @@ exports.setGlobalStats = function(document, globalStats, language) {
   document = document.replace('__labelTotalBoards_inner__',
       globalStats.totalBoards || 0);
   document = document.replace('__labelTotalFiles_inner__',
-      globalStats.totalFiles);
+      globalStats.totalFiles || 0);
   document = document.replace('__labelTotalSize_inner__',
       globalStats.totalSize || 0);
 

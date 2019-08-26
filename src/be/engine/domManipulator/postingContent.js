@@ -194,8 +194,7 @@ exports.setPostingModdingElements = function(modding, posting, cell, bData,
 
 };
 
-exports.setPostingComplexElements = function(posting, postingCell, removable,
-    preview) {
+exports.setPostingComplexElements = function(posting, postingCell, removable) {
 
   if (posting.signedRole) {
     postingCell = postingCell.replace('__labelRole_location__',
@@ -206,19 +205,11 @@ exports.setPostingComplexElements = function(posting, postingCell, removable,
   }
 
   var checkboxName = common.clean(posting.boardUri) + '-' + posting.threadId;
-  if (posting.postId) {
+  if (posting.postId && posting.postId !== posting.threadId) {
     checkboxName += '-' + posting.postId;
   }
 
-  if (preview) {
-    postingCell = postingCell.replace('__deletionCheckBox_location__', '');
-  } else {
-    postingCell = postingCell.replace('__deletionCheckBox_location__',
-        removable.deletionCheckBox);
-
-    postingCell = postingCell
-        .replace('__deletionCheckBox_name__', checkboxName);
-  }
+  postingCell = postingCell.replace('__deletionCheckBox_name__', checkboxName);
 
   return postingCell;
 
@@ -321,7 +312,7 @@ exports.setAllSharedPostingElements = function(postingCell, posting, removable,
       modding, removable);
 
   postingCell = exports.setPostingComplexElements(posting, postingCell,
-      removable, preview);
+      removable);
 
   postingCell = exports.setSharedSimpleElements(postingCell, posting,
       innerPage, modding, removable, language);
