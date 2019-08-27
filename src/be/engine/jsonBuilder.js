@@ -15,6 +15,7 @@ var bypassMode;
 var maxAllowedFiles;
 var maxFileSizeMB;
 var domManipulator;
+var redactModNames;
 var messageLength;
 var globalCaptcha;
 
@@ -22,6 +23,7 @@ exports.loadSettings = function() {
 
   settings = require('../settingsHandler').getGeneralSettings();
 
+  redactModNames = settings.redactModNames;
   bypassMode = settings.bypassMode;
   globalCaptcha = settings.forceCaptcha;
   messageLength = settings.messageLength;
@@ -598,6 +600,13 @@ exports.overboard = function(foundThreads, previewRelation, callback,
 };
 
 exports.log = function(logData, logs, callback) {
+
+  if (redactModNames) {
+    logs = logs.map(function(element) {
+      delete element.user;
+      return element;
+    });
+  }
 
   var path = '/.global/logs/' + (logData.boardUri || '.global');
   path += '/' + logger.formatedDate(logData.date) + '.json';

@@ -486,6 +486,10 @@ postCell*: cell used for thread replies.
 Root element: form
 
 Elements:
+labelBoard:
+    use: have it's innerHTML manipulated or might be removed.
+    description: label with the board the post belongs to.
+
 panelASN:
     use: might be removed.
     description: panel with the ASN label.

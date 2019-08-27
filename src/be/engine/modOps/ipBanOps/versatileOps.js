@@ -116,9 +116,7 @@ exports.readBans = function(parameters, callback) {
   if (parameters.boardUri) {
     queryBlock.boardUri = parameters.boardUri;
   } else if (!globalBoardModeration) {
-    queryBlock.boardUri = {
-      $exists : false
-    };
+    queryBlock.boardUri = null;
   }
 
   bans.find(queryBlock, {

@@ -215,27 +215,50 @@ exports.setPostingComplexElements = function(posting, postingCell, removable) {
 
 };
 
-exports.setSharedHideableElements = function(posting, removable, postingCell,
-    language) {
+exports.setLabels = function(cell, posting, language, removable, preview) {
+
+  if (!preview) {
+    cell = cell.replace('__labelBoard_location__', '');
+  } else {
+    cell = cell.replace('__labelBoard_location__', removable.labelBoard)
+        .replace('__labelBoard_inner__', '/' + posting.boardUri + '/');
+
+  }
 
   if (posting.lastEditTime) {
 
     var formatedDate = common.formatDateToDisplay(posting.lastEditTime, null,
         language);
 
-    postingCell = postingCell.replace('__labelLastEdit_location__',
-        removable.labelLastEdit).replace(
-        '__labelLastEdit_inner__',
-        lang(language).guiEditInfo.replace('{$date}', formatedDate).replace(
-            '{$login}',
-            redactedModNames ? lang(language).guiRedactedName : common
-                .clean(posting.lastEditLogin)));
+    cell = cell.replace('__labelLastEdit_location__', removable.labelLastEdit)
+        .replace(
+            '__labelLastEdit_inner__',
+            lang(language).guiEditInfo.replace('{$date}', formatedDate)
+                .replace(
+                    '{$login}',
+                    redactedModNames ? lang(language).guiRedactedName : common
+                        .clean(posting.lastEditLogin)));
 
   } else {
-    postingCell = postingCell.replace('__labelLastEdit_location__', '');
+    cell = cell.replace('__labelLastEdit_location__', '');
   }
 
-  postingCell = exports.setPostingFlag(posting, postingCell, removable);
+  if (!posting.banMessage) {
+    cell = cell.replace('__divBanMessage_location__', '');
+  } else {
+    cell = cell.replace('__divBanMessage_location__', removable.divBanMessage)
+        .replace('__divBanMessage_inner__', common.clean(posting.banMessage));
+  }
+
+  return cell;
+
+};
+
+exports.setSharedHideableElements = function(posting, removable, postingCell,
+    preview, language) {
+
+  postingCell = exports.setLabels(exports.setPostingFlag(posting, postingCell,
+      removable), posting, language, removable, preview);
 
   if (posting.subject) {
     postingCell = postingCell.replace('__labelSubject_location__',
@@ -246,22 +269,12 @@ exports.setSharedHideableElements = function(posting, removable, postingCell,
   }
 
   if (posting.id) {
-    postingCell = postingCell.replace('__spanId_location__', removable.spanId)
+    return postingCell.replace('__spanId_location__', removable.spanId)
         .replace('__labelId_inner__', posting.id).replace('__labelId_style__',
             'background-color: #' + posting.id);
   } else {
-    postingCell = postingCell.replace('__spanId_location__', '');
+    return postingCell.replace('__spanId_location__', '');
   }
-
-  if (!posting.banMessage) {
-    postingCell = postingCell.replace('__divBanMessage_location__', '');
-  } else {
-    postingCell = postingCell.replace('__divBanMessage_location__',
-        removable.divBanMessage).replace('__divBanMessage_inner__',
-        common.clean(posting.banMessage));
-  }
-
-  return postingCell;
 
 };
 
@@ -306,7 +319,7 @@ exports.setAllSharedPostingElements = function(postingCell, posting, removable,
       postingCell, boardData, userRole, removable, preview);
 
   postingCell = exports.setSharedHideableElements(posting, removable,
-      postingCell, language);
+      postingCell, preview, language);
 
   postingCell = exports.setPostingLinks(postingCell, posting, innerPage,
       modding, removable);

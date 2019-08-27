@@ -346,10 +346,7 @@ exports.getAppealedBans = function(userRole, users, reports, boardData,
     };
 
     if (!globalBoardModeration) {
-
-      query.boardUri = {
-        $exists : false
-      };
+      query.boardUri = null;
     }
 
     bans.find(query, {

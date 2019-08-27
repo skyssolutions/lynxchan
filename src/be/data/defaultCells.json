@@ -120,6 +120,10 @@
     "template": "postCell",
     "prebuiltFields": {
       "panelASN": "removal",
+      "labelBoard": [
+        "removal",
+        "inner"
+      ],
       "labelASN": "inner",
       "contentOmissionIndicator": "removal",
       "linkFullText": "href",

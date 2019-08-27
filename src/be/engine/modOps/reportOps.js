@@ -428,13 +428,11 @@ exports.banReporter = function(parameters, foundReports, userData, closureDate,
     callback) {
 
   if (!parameters.banReporter) {
-    exports.logReportClosure(foundReports, userData, closureDate, callback);
-
-    return;
-
+    return exports.logReportClosure(foundReports, userData, closureDate,
+        callback);
   }
 
-  specificOps.parseExpiration(parameters);
+  common.parseExpiration(parameters);
 
   var bansToAdd = [];
 
@@ -448,6 +446,7 @@ exports.banReporter = function(parameters, foundReports, userData, closureDate,
 
     bansToAdd.push({
       ip : report.ip,
+      appliedBy : userData.login,
       expiration : parameters.expiration,
       boardUri : report.global ? undefined : report.boardUri
     });
