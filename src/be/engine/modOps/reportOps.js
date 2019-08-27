@@ -36,6 +36,12 @@ exports.reportArguments = [ {
   removeHTML : true
 } ];
 
+exports.closeArguments = [ {
+  field : 'banReason',
+  length : 256,
+  removeHTML : true
+} ];
+
 exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
@@ -432,6 +438,8 @@ exports.banReporter = function(parameters, foundReports, userData, closureDate,
         callback);
   }
 
+  miscOps.sanitizeStrings(parameters, exports.closeArguments);
+
   common.parseExpiration(parameters);
 
   var bansToAdd = [];
@@ -446,6 +454,7 @@ exports.banReporter = function(parameters, foundReports, userData, closureDate,
 
     bansToAdd.push({
       ip : report.ip,
+      reason : parameters.banReason,
       appliedBy : userData.login,
       expiration : parameters.expiration,
       boardUri : report.global ? undefined : report.boardUri

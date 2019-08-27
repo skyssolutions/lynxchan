@@ -221,8 +221,8 @@ exports.setLabels = function(cell, posting, language, removable, preview) {
     cell = cell.replace('__labelBoard_location__', '');
   } else {
     cell = cell.replace('__labelBoard_location__', removable.labelBoard)
-        .replace('__labelBoard_inner__', '/' + posting.boardUri + '/');
-
+        .replace('__labelBoard_inner__',
+            '/' + common.clean(posting.boardUri) + '/');
   }
 
   if (posting.lastEditTime) {

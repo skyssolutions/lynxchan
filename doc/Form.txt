@@ -7,7 +7,7 @@ Files should be sent with an input of type "file" using name "files".
 Pages that require proper validation will redirect the user to /login.html if authentication fails. Validation will require both the login and hash cookies to be set. The hash is the hash created when an account is created or performs login.
 Array parameters will be split using commas and spaces will be ignored.
 Boolean parameters will be just checked if they return a true condition on the server using simple js evaluation (if(parameters.X)).
-Pages with optional json output will require the get parameter "json" with any value to output the data in json form. 
+Pages with optional json output will require the get parameter "json" with any value to output the data in json form.
 When outputting json data, these pages will output data in the following structure:
 {
   status: "status of the operation",
@@ -19,10 +19,11 @@ The status are:
     error: internal server occurred. The error string will be on the data field.
     ok: operation successful.
     maintenance: site is going under maintenance.
-    banned: user is banned. In this case, data will contain an object with the following fields: 
+    banned: user is banned. In this case, data will contain an object with the following fields:
         reason: the reason of the ban.
-        board: board that this ban applies to. 
+        board: board that this ban applies to.
         expiration(Date): when the ban expires.
+        warning(Boolean): if the ban is actually a warning. Warnings are cleared once they are seen.
         asn(Number): asn banned.
         range: range banned.
         banId: id of the ban.
@@ -348,7 +349,8 @@ Description: closes a series of reports. The inputs of the reports will be gener
 
 Parameters:
     banReporter(Boolean): if true, the reporters will be banned.
-    duration(String): string with the duration of the ban.
+    duration: string with the duration of the ban.
+    banReason: reason for the ban.
     deleteContent(Boolean): if true, will delete the reported content after closing the reports.
 
 ------------------------------------------------------------------------------------------

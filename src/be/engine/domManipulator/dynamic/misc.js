@@ -427,7 +427,7 @@ exports.assembleBanPage = function(document, template, ban, language) {
 
   document = document.replace('__idLabel_inner__', ban._id);
 
-  if (ban.expiration) {
+  if (ban.expiration && !ban.warning) {
 
     document = document.replace('__expirationPanel_location__',
         template.removable.expirationPanel).replace(
@@ -438,7 +438,7 @@ exports.assembleBanPage = function(document, template, ban, language) {
     document = document.replace('__expirationPanel_location__', '');
   }
 
-  if (ban.appeal) {
+  if (ban.appeal || ban.warning) {
     document = document.replace('__formAppeal_location__', '');
   } else {
 
@@ -480,7 +480,8 @@ exports.ban = function(ban, board, language) {
     description = lang(language).guiBanDescriptionRange.replace('{$range}',
         ban.range);
   } else {
-    description = lang(language).guiBanDescription;
+    description = lang(language)[ban.warning ? 'guiWarningDescription'
+        : 'guiBanDescription'];
   }
 
   return document.replace('__descriptionLabel_inner__', description.replace(

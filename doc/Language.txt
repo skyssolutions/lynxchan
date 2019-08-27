@@ -161,6 +161,7 @@ guiNoFlag: label used for the first option on a flag combobox.
 guiTorLevels: array containing the posting levels for TOR users. First element indicates no posting, second posting without files, third posting with files.
 guiTypeThreadTransfer: label used for logs of thread transfers.
 guiTypeMediaDeletion: label used for logs of media deletion.
+guiWarningDescription: label used to describe a warning. Replaces: {$boardUri}.
 guiTypeFilePruning: label used for logs of media pruning.
 guiBanDescriptionAsn: label used to describe a ASN ban. Replaces: {$asn}, {$board}.
 guiBanDescriptionRange: label used to describe a range ban. Replaces: {$range}, {$board}.

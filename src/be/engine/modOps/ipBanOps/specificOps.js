@@ -255,15 +255,18 @@ exports.processFoundBanData = function(collection, board, parameters, user) {
     var ban = {
       appliedBy : user.login,
       reason : parameters.reason,
-      expiration : parameters.expiration
+      expiration : parameters.expiration,
+      warning : parameters.banType === 4
     };
 
     if (parameters.banType === 3) {
       ban.asn = collection[i];
-    } else if (parameters.banType) {
-      ban.range = miscOps.getRange(collection[i], parameters.banType > 1);
-    } else {
+    } else if (!parameters.banType || ban.warning) {
       ban.ip = collection[i];
+    } else if (parameters.banType === 1 || parameters.banType === 2) {
+      ban.range = miscOps.getRange(collection[i], parameters.banType === 2);
+    } else {
+      continue;
     }
 
     if (!parameters.global) {

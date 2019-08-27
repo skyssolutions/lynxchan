@@ -747,6 +747,7 @@ exports.outputBan = function(ban, req, res, json, callback, auth) {
       asn : ban.asn,
       appealled : !!ban.appeal,
       range : ban.range,
+      warning : ban.warning,
       banId : ban._id,
       expiration : ban.expiration,
       board : ban.boardUri ? '/' + ban.boardUri + '/'
@@ -760,6 +761,18 @@ exports.outputBan = function(ban, req, res, json, callback, auth) {
     res.end(domManipulator.ban(ban, board, req.language));
 
   }
+
+  if (!ban.warning) {
+    return;
+  }
+
+  bans.removeOne({
+    _id : ban._id
+  }, function removed(error) {
+    if (verbose) {
+      console.log(error);
+    }
+  });
 
 };
 

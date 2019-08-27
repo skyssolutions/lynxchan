@@ -358,6 +358,7 @@
   "guiBanDescriptionAsn": "Your ASN {$asn} was banned from {$board}.",
   "guiBanDescriptionRange": "Your range {$range} was banned from {$board}.",
   "guiBanDescription": "You are banned from {$board}.",
+  "guiWarningDescription": "You have been warned on {$board}.",
   "msgBoardUnlocked": "Board auto-lock reset.",
   "errOwnsBoards": "You can't delete your own account if you own any boards.",
   "guiGlobalLogsIndex": "Global",

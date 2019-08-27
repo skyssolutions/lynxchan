@@ -104,6 +104,9 @@ exports.readBans = function(parameters, callback) {
     ip : {
       $exists : true
     },
+    warning : {
+      $ne : true
+    },
     $or : [ {
       expiration : {
         $gt : new Date()
@@ -243,7 +246,9 @@ exports.getActiveBan = function(ip, asn, boardUri, callback) {
 
         var genericBan = ban && (ban.asn || ban.range);
 
-        if (!ban || (genericBan && (!foundBan.asn || !foundBan.range))) {
+        var noBan = !ban || (ban.warning && !foundBan.warning);
+
+        if (noBan || (genericBan && (!foundBan.asn || !foundBan.range))) {
           ban = foundBan;
         }
       }
