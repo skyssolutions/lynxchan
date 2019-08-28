@@ -479,8 +479,11 @@ exports.createPost = function(req, parameters, userData, postId, thread, board,
       board, wishesToSign);
 
   posts.insertOne(postToAdd, function createdPost(error) {
-    if (error) {
+    if (error && error.code !== 11000) {
       cb(error);
+    } else if (error) {
+      exports.createPost(req, parameters, userData, postId + 1, thread, board,
+          wishesToSign, cb);
     } else {
 
       common.recordFlood(req);

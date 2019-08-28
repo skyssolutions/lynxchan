@@ -351,7 +351,6 @@ exports.setHeader = function(template, language, bData, flagData, thread) {
   return exports.setBoardCustomization(document, bData, template.removable);
 
 };
-
 // } Section 2: Board content
 
 // Section 3: Thread content {

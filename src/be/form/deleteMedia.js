@@ -9,7 +9,7 @@ exports.deleteMedia = function(auth, param, userData, res, language, json) {
   var selectedIdentifiers = [];
 
   for ( var key in param) {
-    if (param.hasOwnProperty(key)) {
+    if (param.hasOwnProperty(key) && key !== 'files') {
       selectedIdentifiers.push(key);
     }
   }
