@@ -119,6 +119,7 @@ errFileAlreadyPosted: error thrown when R9K blocks a file.
 errDuplicateFileBeingPosted: error thrown when R9K is enforcing file uniqueness and the user tries to post the same file twice.
 errFileTooLargeForBoard: error thrown when a file being uploaded is too large for that board in specific.
 errInvalidMimeForBoard: error thrown when a file being uploaded isn't allowed by the board in specific.
+errRequestTooBig: error thrown when the request size exceeds the allowed limit.
 errTextBoard: error thrown when the user tries to post a file to a textboard.
 errDeniedBoardIpDeletion: error thrown when the user is not allowed to delete posts from ips on a specific board.
 errSpammer: error thrown when the user ip was found on the known spammer ip list.

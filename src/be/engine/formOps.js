@@ -508,7 +508,9 @@ exports.getPostData = function(req, res, callback) {
   res.on('finish', endingCb);
 
   parser.on('error', function(error) {
-    exports.outputError(error, 500, res, req.language, json);
+    exports.outputError(
+        error.code === 'ETOOBIG' ? lang(req.language).errRequestTooBig : error,
+        500, res, req.language, json);
   });
 
   parser.on('file', function(name, file) {

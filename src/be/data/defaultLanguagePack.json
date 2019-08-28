@@ -17,6 +17,7 @@
   "errLoginInUse": "Login is already in use.",
   "errLoginFailed": "Login failed.",
   "errInvalidAccount": "Invalid account.",
+  "errRequestTooBig": "Request size limit exceeded.",
   "subPasswordRequest": "Password reset request",
   "errAccountNotFound": "Account not found.",
   "errNoEmailForAccount": "Account doesn't have an email associated to it.",
