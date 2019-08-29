@@ -8,6 +8,7 @@ var db = require('../db');
 var boards = db.boards();
 var files = db.files();
 var gridFsHandler;
+var maxBoardBanners;
 var lang;
 var maxBannerSize;
 var globalBoardModeration;
@@ -15,6 +16,7 @@ var globalBoardModeration;
 exports.loadSettings = function() {
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  maxBoardBanners = settings.maxBoardBanners;
   maxBannerSize = settings.maxBannerSizeB;
   globalBoardModeration = settings.allowGlobalBoardModeration;
 
@@ -89,12 +91,10 @@ exports.deleteBanner = function(userData, parameters, language, callback) {
 // } Section 1: Banner deletion
 
 // Section 2: Banner creation {
-exports.writeNewBanner = function(parameters, callback) {
+exports.writeNewBanner = function(parameters, file, callback) {
 
   var bannerPath = '/' + (parameters.boardUri || '.global') + '/banners/';
   bannerPath += new Date().getTime();
-
-  var file = parameters.files[0];
 
   var metadata = {
     type : 'banner'
@@ -111,49 +111,88 @@ exports.writeNewBanner = function(parameters, callback) {
 
 };
 
-exports.addBanner = function(userData, parameters, language, callback) {
+exports.processBanners = function(parameters, language, ids, callback, index) {
+
+  index = index || 0;
+
+  if (index >= parameters.files.length) {
+    return callback();
+  }
+
+  var file = parameters.files[index];
+
+  if (file.mime.indexOf('image/') === -1) {
+    return callback(lang(language).errNotAnImage);
+  } else if (file.size > maxBannerSize) {
+    return callback(lang(language).errBannerTooLarge);
+  }
+
+  var tempCb = function(error, id, bannerPath) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      ids.push({
+        id : id,
+        path : bannerPath
+      });
+
+      exports.processBanners(parameters, language, ids, callback, ++index);
+    }
+
+  };
+
+  if (!parameters.boardUri) {
+    return exports.writeNewBanner(parameters, parameters.files[index], tempCb);
+  }
+
+  files.countDocuments({
+    'metadata.boardUri' : parameters.boardUri,
+    'metadata.type' : 'banner'
+  }, function(error, count) {
+
+    if (error) {
+      callback(error);
+    } else if (count >= maxBoardBanners) {
+      callback(lang(language).errBoardBannerLimit);
+    } else {
+      exports.writeNewBanner(parameters, parameters.files[index], tempCb);
+    }
+
+  });
+
+};
+
+exports.addBanners = function(userData, parameters, ids, language, callback) {
 
   if (!parameters.files.length) {
-    callback(lang(language).errNoFiles);
-    return;
-  } else if (parameters.files[0].mime.indexOf('image/') === -1) {
-    callback(lang(language).errNotAnImage);
-    return;
-  } else if (parameters.files[0].size > maxBannerSize) {
-    callback(lang(language).errBannerTooLarge);
-    return;
+    return callback(lang(language).errNoFiles);
   }
 
   var admin = userData.globalRole <= 1;
 
+  if (!parameters.boardUri && !admin) {
+    return callback(lang(language).errDeniedGlobalBannerManagement);
+  } else if (!parameters.boardUri) {
+    return exports.processBanners(parameters, language, ids, callback);
+  }
+
   var globallyAllowed = admin && globalBoardModeration;
 
-  if (!parameters.boardUri && !admin) {
-
-    callback(lang(language).errDeniedGlobalBannerManagement);
-
-  } else if (!parameters.boardUri) {
-    exports.writeNewBanner(parameters, callback);
-  } else {
-
-    parameters.boardUri = parameters.boardUri.toString();
-
-    boards.findOne({
-      boardUri : parameters.boardUri
-    }, function gotBoard(error, board) {
-      if (error) {
-        callback(error);
-      } else if (!board) {
-        callback(lang(language).errBoardNotFound);
-      } else if (board.owner !== userData.login && !globallyAllowed) {
-        callback(lang(language).errDeniedChangeBoardSettings);
-      } else {
-        exports.writeNewBanner(parameters, callback);
-
-      }
-    });
-
-  }
+  boards.findOne({
+    boardUri : parameters.boardUri.trim()
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang(language).errBoardNotFound);
+    } else if (board.owner !== userData.login && !globallyAllowed) {
+      callback(lang(language).errDeniedChangeBoardSettings);
+    } else {
+      exports.processBanners(parameters, language, ids, callback);
+    }
+  });
 
 };
 // }Section 2: Banner creation

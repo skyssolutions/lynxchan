@@ -549,6 +549,7 @@ exports.getDefaultSettings = function() {
     bypassMode : 0,
     ssl : 0,
     rssDomain : '',
+    maxBoardBanners : 10,
     slaves : [],
     fileLimit : 1000,
     messageLength : 4096,

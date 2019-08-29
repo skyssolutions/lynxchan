@@ -7,6 +7,7 @@ var common;
 var templateHandler;
 var lang;
 var miscOps;
+var maxBannerLimit;
 var displayMaxBannerSize;
 var displayMaxFlagSize;
 var displayMaxFlagNameLength;
@@ -14,6 +15,7 @@ var displayMaxFlagNameLength;
 exports.loadSettings = function() {
 
   settings = require('../../../settingsHandler').getGeneralSettings();
+  maxBannerLimit = settings.maxBoardBanners;
   displayMaxBannerSize = common.formatFileSize(settings.maxBannerSizeB);
   displayMaxFlagSize = common.formatFileSize(settings.maxFlagSizeB);
   displayMaxFlagNameLength = settings.flagNameLength;
@@ -308,12 +310,17 @@ exports.bannerManagement = function(boardUri, banners, language) {
     document = document.replace('__title__', lang(language).titBanners.replace(
         '{$board}', boardUri));
     document = document.replace('__boardIdentifier_location__',
-        template.removable.boardIdentifier);
-    document = document.replace('__boardIdentifier_value__', boardUri);
+        template.removable.boardIdentifier).replace(
+        '__boardIdentifier_value__', boardUri);
+
+    document = document.replace('__maxBannerDiv_location__',
+        template.removable.maxBannerDiv).replace('__maxBannerLabel_inner__',
+        maxBannerLimit);
 
   } else {
     document = document.replace('__title__', lang(language).titGlobalBanners);
-    document = document.replace('__boardIdentifier_location__', '');
+    document = document.replace('__boardIdentifier_location__', '').replace(
+        '__maxBannerDiv_location__', '');
   }
 
   return document.replace('__bannersDiv_children__', exports.getBannerCells(

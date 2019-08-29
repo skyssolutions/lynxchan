@@ -52,6 +52,8 @@
   {
     "template": "bannerManagementPage",
     "prebuiltFields": {
+      "maxBannerDiv": "removal",
+      "maxBannerLabel": "inner",
       "bannersDiv": "children",
       "maxSizeLabel": "inner",
       "boardIdentifier": [
@@ -457,6 +459,7 @@
       "fieldTorDNSL": "value",
       "checkboxUnboundBoardLimits": "checked",
       "fieldLatestPostsAmount": "value",
+      "fieldMaxBoardBanners": "value",
       "fieldAuthenticationLimit": "value",
       "fieldFileProcessingLimit": "value",
       "checkboxValidateMimes": "checked",

@@ -1242,6 +1242,14 @@ TEM_ID::22
 bannerManagementPage: page used to manage banners.
 
 Elements:
+maxBannerDiv:
+    use: might be removed.
+    description: div that contains the label with the maximum amount of banners allowed per board.
+
+maxBannerLabel:
+    have it's innerHTML manipulated.
+    description: label with the maximum amount of banners allowed per board.
+
 bannersDiv:
     use: have children appended to it.
     description: holds the existing banners.
@@ -1847,6 +1855,10 @@ Elements:
 checkboxValidateMimes:
     use: might be turned on.
     description: indicates if uploaded file mimes should be validated through 'file'.
+
+fieldMaxBoardBanners:
+    use: have it's value manipulated.
+    description: field that displays the limit of banners that boards are allowed to have.
 
 fieldFileProcessingLimit:
     use: have it's value manipulated.

@@ -182,6 +182,11 @@
   },
   {
     "type": "number",
+    "setting": "maxBoardBanners",
+    "element": "fieldMaxBoardBanners"
+  },
+  {
+    "type": "number",
     "setting": "ipExpirationDays",
     "element": "fieldIpExpiration"
   },

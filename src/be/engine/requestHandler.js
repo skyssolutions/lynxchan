@@ -145,38 +145,50 @@ exports.showMaintenance = function(req, pathName, res) {
 
 };
 
-exports.processFormRequest = function(req, pathName, res) {
+exports.runFormProcess = function(pathName, req, res) {
+
+  var modulePath;
+
+  if (pathName.indexOf('/addon.js', 0) !== -1) {
+    modulePath = '../form/addon.js';
+  } else {
+    modulePath = '../form' + pathName;
+  }
+
+  if (feDebug) {
+
+    var templateHandler = require('./templateHandler');
+
+    templateHandler.dropAlternativeTemplates();
+    templateHandler.loadTemplates();
+  }
+
+  require(modulePath).process(req, res);
+
+};
+
+exports.processFormRequest = function(req, pathName, res, callback) {
 
   if (verboseApis) {
     console.log('Processing form request: ' + pathName);
   }
 
   try {
+
     if (maintenance && !req.fromSlave) {
       exports.showMaintenance(req, pathName, res);
     } else {
-      var modulePath;
-
-      if (pathName.indexOf('/addon.js', 0) !== -1) {
-        modulePath = '../form/addon.js';
-      } else {
-        modulePath = '../form' + pathName;
-      }
-
-      if (feDebug) {
-
-        var templateHandler = require('./templateHandler');
-
-        templateHandler.dropAlternativeTemplates();
-        templateHandler.loadTemplates();
-      }
-
-      require(modulePath).process(req, res);
+      exports.runFormProcess(pathName, req, res);
     }
 
   } catch (error) {
 
-    formOps.outputError(error, 500, res, req.language, formOps.json(req));
+    if (error.code === 'MODULE_NOT_FOUND') {
+      gridFs.outputFile('/404.html', req, res, callback);
+    } else {
+      formOps.outputError(error, 500, res, req.language, formOps.json(req));
+    }
+
   }
 
 };
@@ -389,14 +401,14 @@ exports.getLanguageToUse = function(req, callback) {
 
 };
 
-exports.routeToFormApi = function(req, pathName, res, firstPart) {
+exports.routeToFormApi = function(req, pathName, res, firstPart, callback) {
 
   if (firstPart.length < 4) {
     return false;
   }
 
   if (firstPart.lastIndexOf('.js') === firstPart.length - 3) {
-    exports.processFormRequest(req, pathName, res);
+    exports.processFormRequest(req, pathName, res, callback);
     return true;
   }
 
@@ -518,7 +530,7 @@ exports.decideRouting = function(req, pathName, res, callback) {
 
   var splitArray = pathName.split('/');
 
-  if (exports.routeToFormApi(req, pathName, res, splitArray[1])) {
+  if (exports.routeToFormApi(req, pathName, res, splitArray[1], callback)) {
     return;
   }
 

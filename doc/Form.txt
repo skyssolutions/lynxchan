@@ -548,14 +548,14 @@ Json output(Array): array of existing banners for the board. Each object contain
 
 PAG_ID::27
 
-Name: createBanner
+Name: createBanners
 
-Description: adds a new banner to the board. Accepts files. Requires an image as the first image sent. Uses only the first file. Requires authentication. Restricted to the board owner.
+Description: adds new banners. Accepts files. Requires an image as the first image sent. Requires authentication. Restricted to the board owner and global admins.
 
 Parameters:
-    boardUri: board to add the banner to.
+    boardUri(Optional): board to add the banner to.
 
-Json output(Object): object with data relevant to the new banner:
+Json output(Array): array with the information of created banners. Each element is an object with data relevant to the new banner:
     id: id of the new banner.
     path: path for the banner file.
 

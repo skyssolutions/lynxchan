@@ -14,8 +14,6 @@ var exec = require('child_process').exec;
 var verbose;
 var uploadDir;
 var maxRequestSize;
-var maxFileSize;
-var maxFiles;
 var fileProcessingLimit;
 var accountOps;
 var uploadHandler;
@@ -26,7 +24,6 @@ var validateMimes;
 var domManipulator;
 var lang;
 var uploadHandler;
-var unboundLimits;
 var videoMimes;
 var mediaThumb;
 
@@ -39,10 +36,7 @@ exports.loadSettings = function() {
   verbose = settings.verbose || settings.verboseApis;
   uploadDir = settings.tempDirectory;
   maxRequestSize = settings.maxRequestSizeB;
-  maxFileSize = settings.maxFileSizeB;
-  maxFiles = settings.maxFiles;
   mediaThumb = settings.mediaThumb;
-  unboundLimits = settings.unboundBoardLimits;
 
 };
 
@@ -181,7 +175,7 @@ exports.getFileData = function(file, fields, mime, callback) {
 exports.transferFileInformation = function(files, fields, parsedCookies, cb,
     res, language, json) {
 
-  if (!files.length || (!unboundLimits && fields.files.length >= maxFiles)) {
+  if (!files.length) {
 
     if (verbose) {
       console.log('Form input: ' + JSON.stringify(fields, null, 2));
@@ -203,7 +197,7 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
 
   var mime = file.realMime || file.headers['content-type'].toLowerCase().trim();
 
-  if (file.size && (unboundLimits || file.size < maxFileSize)) {
+  if (file.size) {
 
     exports.getFileData(file, fields, mime, function gotFileData(error) {
 
@@ -216,9 +210,6 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
 
     });
 
-  } else if (file.size) {
-    exports.outputError(lang(language).errFileTooLarge, 500, res, language,
-        json);
   } else {
     exports.transferFileInformation(files, fields, parsedCookies, cb, res,
         language, json);
@@ -229,8 +220,7 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
 
 exports.getNewFiles = function(newFiles, fields, relation) {
 
-  for (var i = 0; i < Math.min(fields.metaData.length,
-      unboundLimits ? fields.metaData.length : maxFiles); i++) {
+  for (var i = 0; i < fields.metaData.length; i++) {
 
     var metaData = fields.metaData[i];
 
@@ -287,7 +277,7 @@ exports.processReferencedFiles = function(metaData, callback, index) {
 
   index = index || 0;
 
-  if (index >= metaData.length || (!unboundLimits && index >= maxFiles)) {
+  if (index >= metaData.length) {
     callback();
     return;
   }

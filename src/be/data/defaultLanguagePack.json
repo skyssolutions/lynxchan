@@ -15,6 +15,7 @@
   "errNoNewAccounts": "Account creation is disabled.",
   "errInvalidLogin": "Invalid login.",
   "errLoginInUse": "Login is already in use.",
+  "errBoardBannerLimit": "Banner limit reached.",
   "errLoginFailed": "Login failed.",
   "errInvalidAccount": "Invalid account.",
   "errRequestTooBig": "Request size limit exceeded.",

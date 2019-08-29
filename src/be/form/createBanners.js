@@ -4,10 +4,12 @@ var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack;
 var bannerOps = require('../engine/bannerOps');
 
-exports.createBanner = function(param, userData, res, auth, language, json) {
+exports.createBanners = function(param, userData, res, auth, language, json) {
 
-  bannerOps.addBanner(userData, param, language, function createdBanner(error,
-      id, path) {
+  var ids = [];
+
+  bannerOps.addBanners(userData, param, ids, language, function createdBanner(
+      error) {
     if (error) {
       formOps.outputError(error, 500, res, language, json, auth);
     } else {
@@ -19,10 +21,7 @@ exports.createBanner = function(param, userData, res, auth, language, json) {
       }
 
       formOps.outputResponse(json ? 'ok' : lang(language).msgBannerCreated,
-          json ? {
-            id : id,
-            path : path
-          } : redirectLink, res, null, auth, language, json);
+          json ? ids : redirectLink, res, null, auth, language, json);
     }
   });
 
@@ -32,7 +31,7 @@ exports.process = function(req, res) {
 
   formOps.getAuthenticatedPost(req, res, true, function gotData(auth, userData,
       parameters) {
-    exports.createBanner(parameters, userData, res, auth, req.language, formOps
+    exports.createBanners(parameters, userData, res, auth, req.language, formOps
         .json(req));
   });
 
