@@ -487,11 +487,14 @@ exports.rules = function(boardUri, rules, callback) {
       }, callback);
 };
 
-exports.boardManagement = function(userData, boardData, reports, bans) {
+exports.boardManagement = function(userData, boardData, languages, reports,
+    bans) {
 
   return {
     usesCustomSpoiler : boardData.usesCustomSpoiler,
     volunteers : boardData.volunteers || [],
+    availableLanguages : languages || [],
+    preferredLanguage : boardData.preferredLanguage,
     boardName : boardData.boardName,
     boardDescription : boardData.boardDescription || '',
     anonName : boardData.anonymousName,

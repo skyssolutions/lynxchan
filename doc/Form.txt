@@ -244,6 +244,10 @@ Json output(Object): object with data used to manage the board. Contains the fol
     maxFiles(Number): maximum allowed files to be uploaded on posts.
     boardDescription: description of the board.
     anonName: name used for anonymous users.
+    preferredLanguage: id of the board preferred language.
+    availableLanguages(Array): array with the currently available languages for the board. Each element is an object with the following fields:
+        id: id of the language.
+        label: labe of the language.
     hourlyThreadLimit(Number): how many threads can be created on the board within an hour before it locks thread creation.
     autoCaptchaThreshold(Number): how many threads can be created on the board within an hour before captcha is turned on automatically.
     settings(Array): array of settings being used in the board. May contain the following values:
@@ -590,6 +594,7 @@ Name: setBoardSettings
 Description: changes board settings. Requires authentication.
 
 Parameters:
+    preferredLanguage: the id of the preferred language of the board.
     autoSageLimit(Number): how many times a thread can be replied before it stops being bumped.***
     maxThreadCount(Number): how many threads the board can have.***
     maxFileSizeMB(Number): how large files uploaded to the board can be.***

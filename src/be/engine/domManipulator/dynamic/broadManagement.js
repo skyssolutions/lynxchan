@@ -121,7 +121,33 @@ exports.setBoardControlCheckBoxes = function(document, boardData) {
 
 };
 
-exports.setBoardComboBoxes = function(document, boardData, language) {
+exports.setLanguageCombobox = function(document, boardData, langs, language) {
+
+  var languagesChildren = '<option value="">';
+  languagesChildren += lang(language).guiNoPreferredLanguage;
+  languagesChildren += '</option>';
+
+  for (var i = 0; i < langs.length; i++) {
+
+    var currentLang = langs[i];
+
+    var option = '<option value="' + currentLang.id + '"';
+
+    if (boardData.preferredLanguage === currentLang.id) {
+      option += ' selected="selected"';
+    }
+
+    languagesChildren += option + '>' + currentLang.label + '</option>';
+
+  }
+
+  return document.replace('__languageCombobox_children__', languagesChildren);
+
+};
+
+exports.setBoardComboBoxes = function(document, boardData, langs, language) {
+
+  document = exports.setLanguageCombobox(document, boardData, langs, language);
 
   for (var i = 0; i < exports.boardRangeSettingsRelation.length; i++) {
 
@@ -151,9 +177,10 @@ exports.setBoardComboBoxes = function(document, boardData, language) {
 
 };
 
-exports.setBoardFields = function(document, boardData, language) {
+exports.setBoardFields = function(document, boardData, languages, language) {
 
-  document = exports.setBoardComboBoxes(document, boardData, language);
+  document = exports.setBoardComboBoxes(document, boardData, languages,
+      language);
   document = exports.setBoardControlCheckBoxes(document, boardData);
 
   for ( var key in exports.boardFieldsRelation) {
@@ -252,7 +279,8 @@ exports.setBoardManagementLinks = function(document, boardData) {
 
 };
 
-exports.checkOwnership = function(userData, boardData, template, language) {
+exports.checkOwnership = function(userData, boardData, languages, template,
+    language) {
 
   var globallyAllowed = globalBoardModeration && userData.globalRole <= 1;
 
@@ -279,7 +307,7 @@ exports.checkOwnership = function(userData, boardData, template, language) {
         template.removable.settingsForm).replace(
         '__boardSettingsIdentifier_value__', common.clean(boardData.boardUri));
 
-    document = exports.setBoardFields(document, boardData, language);
+    document = exports.setBoardFields(document, boardData, languages, language);
 
   } else {
     document = document.replace('__settingsForm_location__', '');
@@ -289,13 +317,13 @@ exports.checkOwnership = function(userData, boardData, template, language) {
 
 };
 
-exports.getBoardManagementContent = function(boardData, userData, bans,
-    reports, language) {
+exports.getBoardManagementContent = function(boardData, languages, userData,
+    bans, reports, language) {
 
   var template = templateHandler(language).bManagement;
 
-  var document = exports
-      .checkOwnership(userData, boardData, template, language);
+  var document = exports.checkOwnership(userData, boardData, languages,
+      template, language);
 
   if (boardData.lockedUntil) {
     document = document.replace('__resetBoardLockForm_location__',
@@ -318,10 +346,11 @@ exports.getBoardManagementContent = function(boardData, userData, bans,
 
 };
 
-exports.boardManagement = function(userData, bData, reports, bans, language) {
+exports.boardManagement = function(userData, bData, languages, reports, bans,
+    language) {
 
-  var document = exports.getBoardManagementContent(bData, userData, bans,
-      reports, language);
+  var document = exports.getBoardManagementContent(bData, languages, userData,
+      bans, reports, language);
 
   var boardUri = common.clean(bData.boardUri);
   var selfLink = '/' + boardUri + '/';

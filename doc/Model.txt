@@ -2,6 +2,7 @@
 
 boards: stores boards.
     owner*: login of the board owner.
+    preferredLanguage: the id of an available preferred language.
     uniqueIps(Number): unique ips seen on last day.
     boardUri**: url of the board. 32 characters. Only a-Z, _ and 0-9 allowed.
     usesCustomJs(Boolean): pre-aggreated boolean indicating the board has a custom javascript.

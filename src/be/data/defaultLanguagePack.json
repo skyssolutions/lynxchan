@@ -7,6 +7,7 @@
     "adminPiece": "A sysadmin using the server's terminal",
     "mainPiece": " changed the global role of user {$login} to {$role}."
   },
+  "guiNoPreferredLanguage": "None",
   "errInvalidRole": "Invalid role.",
   "errDeniedPermissionLevel": "You are not allowed to grant this level of permission to users.",
   "errSelfRoleChange": "You cannot change your own role.",

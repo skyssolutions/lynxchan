@@ -237,13 +237,14 @@ exports.setThreadCommonInfo = function(template, threadData, boardData,
 
 };
 
-exports.getThreadPathAndMeta = function(boardUri, language, meta, threadData,
-    last) {
+exports.getThreadPathAndMeta = function(preferredLanguage, boardUri, language,
+    meta, threadData, last) {
 
   var path = '/' + boardUri + (last ? '/last/' : '/res/') + threadData.threadId;
   path += '.html';
 
   if (language) {
+    meta.preferred = preferredLanguage === language._id.toString();
     meta.languages = language.headerValues;
     meta.referenceFile = path;
     path += language.headerValues.join('-');
@@ -285,8 +286,8 @@ exports.thread = function(boardData, flagData, threadData, posts, callback,
       threadId : threadData.threadId
     };
 
-    var path = exports.getThreadPathAndMeta(boardUri, language, meta,
-        threadData, last);
+    var path = exports.getThreadPathAndMeta(boardData.preferredLanguage,
+        boardUri, language, meta, threadData, last);
 
     cacheHandler.writeData(document, path, 'text/html', meta, callback);
   }
@@ -390,11 +391,13 @@ exports.addPagesLinks = function(document, pageCount, currentPage, modding,
 
 };
 
-exports.getPagePathAndMeta = function(board, page, meta, language) {
+exports.getPagePathAndMeta = function(boardData, page, meta, language) {
 
-  var path = '/' + board + '/' + (page === 1 ? '' : page + '.html');
+  var path = '/' + boardData.boardUri + '/';
+  path += (page === 1 ? '' : page + '.html');
 
   if (language) {
+    meta.preferred = boardData.preferredLanguage === language._id.toString();
     meta.languages = language.headerValues;
     meta.referenceFile = path;
     path += language.headerValues.join('-');
@@ -413,8 +416,7 @@ exports.writePage = function(boardUri, page, boardData, language, document,
     page : page
   };
 
-  var path = exports.getPagePathAndMeta(boardData.boardUri, page, meta,
-      language);
+  var path = exports.getPagePathAndMeta(boardData, page, meta, language);
 
   cacheHandler.writeData(document, path, 'text/html', meta, callback);
 
@@ -590,6 +592,7 @@ exports.catalog = function(language, boardData, threads, flagData, callback) {
   };
 
   if (language) {
+    meta.preferred = boardData.preferredLanguage === language._id.toString();
     meta.languages = language.headerValues;
     meta.referenceFile = path;
     path += language.headerValues.join('-');

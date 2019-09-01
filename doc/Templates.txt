@@ -770,6 +770,10 @@ TEM_ID::12
 bManagement: board management page.
 
 Elements:
+languageCombobox:
+    use: have children appended to it.
+    description: combobox indicating the preferred language of the board.
+
 settingsForm:
     use: might be removed.
     description: settings form.

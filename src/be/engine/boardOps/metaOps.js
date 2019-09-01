@@ -6,6 +6,7 @@ var crypto = require('crypto');
 var db = require('../../db');
 var reports = db.reports();
 var bans = db.bans();
+var languages = db.languages();
 var users = db.users();
 var boards = db.boards();
 var threads = db.threads();
@@ -25,6 +26,7 @@ var globalBoardModeration;
 var boardCreationRequirement;
 var maxVolunteers;
 var volunteerSettings;
+var useLanguages;
 
 var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
 
@@ -46,6 +48,10 @@ exports.boardParameters = [ {
   length : 128,
   removeHTML : true
 }, {
+  field : 'preferredLanguage',
+  length : 24,
+  removeHTML : true
+}, {
   field : 'boardMessage'
 } ];
 
@@ -60,6 +66,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
   forcedCaptcha = settings.forceCaptcha;
+  useLanguages = settings.useAlternativeLanguages;
   volunteerSettings = settings.allowVolunteerSettings;
   globalBoardModeration = settings.allowGlobalBoardModeration;
   boardCreationRequirement = settings.boardCreationRequirement;
@@ -259,6 +266,7 @@ exports.saveNewSettings = function(board, parameters, callback) {
     boardName : parameters.boardName,
     boardDescription : parameters.boardDescription,
     settings : parameters.settings,
+    preferredLanguage : parameters.preferredLanguage,
     boardMessage : parameters.boardMessage,
     boardMarkdown : exports.getMessageMarkdown(parameters.boardMessage),
     anonymousName : parameters.anonymousName || '',
@@ -307,8 +315,6 @@ exports.saveNewSettings = function(board, parameters, callback) {
 };
 
 exports.setSettings = function(userData, parameters, language, callback) {
-
-  parameters.boardUri = parameters.boardUri.toString();
 
   boards.findOne({
     boardUri : parameters.boardUri
@@ -637,6 +643,34 @@ exports.createBoard = function(captchaId, parameters, userData, language,
 // } Section 4: Creation
 
 // Section 5: Board management {
+exports.getAvailableLanguages = function(boardData, reports, foundBans,
+    callback) {
+
+  if (!useLanguages) {
+    return callback(null, boardData, [], reports, foundBans);
+  }
+
+  languages.find({}, {
+    projection : {
+      headerValues : 1
+    }
+  }).toArray(function(error, foundLanguages) {
+
+    if (error) {
+      callback(error);
+    } else {
+      callback(null, boardData, foundLanguages.map(function(element) {
+        return {
+          id : element._id.toString(),
+          label : element.headerValues.join(', ')
+        };
+      }), reports, foundBans);
+    }
+
+  });
+
+};
+
 exports.getAppealedBans = function(boardData, reports, callback) {
 
   bans.find({
@@ -656,7 +690,13 @@ exports.getAppealedBans = function(boardData, reports, callback) {
       appliedBy : 1
     }
   }).toArray(function gotBans(error, foundBans) {
-    callback(error, boardData, reports, foundBans);
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.getAvailableLanguages(boardData, reports, foundBans, callback);
+    }
+
   });
 
 };
@@ -741,6 +781,7 @@ exports.getBoardManagementData = function(userData, board,
       boardDescription : 1,
       usesCustomSpoiler : 1,
       hourlyThreadLimit : 1,
+      preferredLanguage : 1,
       autoCaptchaThreshold : 1
     }
   }, function(error, boardData) {

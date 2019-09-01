@@ -257,6 +257,7 @@
     "template": "bManagement",
     "prebuiltFields": {
       "settingsForm": "removal",
+      "languageCombobox": "children",
       "resetBoardLockForm": "removal",
       "resetLockIdentifier": "value",
       "locationComboBox": "children",

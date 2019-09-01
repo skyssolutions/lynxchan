@@ -568,6 +568,7 @@ exports.receiveWriteData = function(task, socket) {
       referenceBlock[task.dest] = {
         content : task.data,
         mime : task.mime,
+        preferred : task.meta.preferred,
         length : task.data.length,
         compressed : false,
         compressable : true,
@@ -579,6 +580,7 @@ exports.receiveWriteData = function(task, socket) {
       referenceBlock[task.dest + '.gz'] = {
         mime : task.mime,
         path : task.dest + '.gz',
+        preferred : task.meta.preferred,
         languages : task.meta.languages,
         lastModified : referenceBlock[task.dest].lastModified,
         compressed : true,
@@ -625,6 +627,10 @@ exports.writeData = function(data, dest, mime, meta, callback) {
 
 // Section 4: Master read file {
 exports.languageIntersects = function(task, alternative) {
+
+  if (alternative.preferred) {
+    return true;
+  }
 
   for (var i = 0; task.language && i < alternative.languages.length; i++) {
 
