@@ -195,6 +195,7 @@ Settings files that goes into the settings directory:
 * `useSendmail`(Boolean): causes e-mails to be sent through your sendmail command instead of directly.
 * `archiveThreshold`(Number): if set, threads with at least this many replies will be automatically archived instead of being pruned.
 * `maxBoardBanners`(Number): maximum amount of banners that boards are allowed to have. Defaults to 16.
+* `stripExif`(Boolean): if set, will remove exit data from files using exiftool.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

@@ -427,6 +427,11 @@
   },
   {
     "type": "boolean",
+    "setting": "stripExif",
+    "element": "checkboxStripExif"
+  },
+  {
+    "type": "boolean",
     "setting": "redactModNames",
     "element": "checkboxRedactModNames"
   },

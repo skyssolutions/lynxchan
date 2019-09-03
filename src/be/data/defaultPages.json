@@ -458,6 +458,7 @@
     "template": "globalSettingsPage",
     "prebuiltFields": {
       "fieldTorDNSL": "value",
+      "checkboxStripExif": "checked",
       "checkboxUnboundBoardLimits": "checked",
       "fieldLatestPostsAmount": "value",
       "fieldMaxBoardBanners": "value",

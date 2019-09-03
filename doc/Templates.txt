@@ -1860,6 +1860,10 @@ checkboxValidateMimes:
     use: might be turned on.
     description: indicates if uploaded file mimes should be validated through 'file'.
 
+checkboxStripExif:
+    use: might be turned on.
+    description: indicates if exif data should be stripped from uploaded files.
+
 fieldMaxBoardBanners:
     use: have it's value manipulated.
     description: field that displays the limit of banners that boards are allowed to have.

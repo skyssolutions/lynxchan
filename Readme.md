@@ -18,6 +18,7 @@ See other branches named like `1.1.x` for stable versions. They will receive onl
 * [ffmpeg](https://www.ffmpeg.org/) (Optional) 4.1 if mediaThumb setting is enabled. Requires zlib-devel on centOS to work properly when compiled from source.
 * [Sendmail](https://www.proofpoint.com/us/open-source-email-solution) (Optional) 8.14.7 if the option to send e-mails through sendmail is enabled.
 * [file](http://www.darwinsys.com/file/) (Optional) 5.11 if the option to validate upload mimetypes is enabled.
+* [exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool/) (Optional) 11.01 if the option to strip exif data is enabled.
 
 If you need help installing these, consult doc/Dependencies.txt.
 

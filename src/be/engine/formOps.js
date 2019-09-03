@@ -20,6 +20,7 @@ var uploadHandler;
 var modOps;
 var miscOps;
 var jsonBuilder;
+var stripExif;
 var validateMimes;
 var domManipulator;
 var lang;
@@ -31,6 +32,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  stripExif = settings.stripExif;
   fileProcessingLimit = settings.fileProcessingLimit;
   validateMimes = settings.validateMimes;
   verbose = settings.verbose || settings.verboseApis;
@@ -269,7 +271,7 @@ exports.applyMetaData = function(fields, parsedCookies, cb) {
 
   delete fields.metaData;
 
-  cb(parsedCookies, fields);
+  cb(null, parsedCookies, fields);
 
 };
 
@@ -393,12 +395,14 @@ exports.processParsedRequest = function(res, fields, files, callback,
 
 };
 
-exports.getCheckSums = function(res, fields, files, callback, parsedCookies,
+exports.stripExifs = function(res, fields, files, callback, parsedCookies,
     language, json, index) {
 
-  if (!files.files) {
+  if (!stripExif || !files.files) {
+
     return exports.processParsedRequest(res, fields, files, callback,
         parsedCookies, language, json);
+
   }
 
   index = index || 0;
@@ -408,6 +412,31 @@ exports.getCheckSums = function(res, fields, files, callback, parsedCookies,
   if (!file) {
     return exports.processParsedRequest(res, fields, files, callback,
         parsedCookies, language, json);
+  }
+
+  exec('exiftool -all= ' + file.path + ' -overwrite_original', function(error) {
+
+    exports.stripExifs(res, fields, files, callback, parsedCookies, language,
+        json, ++index);
+  });
+
+};
+
+exports.getCheckSums = function(res, fields, files, callback, parsedCookies,
+    language, json, index) {
+
+  if (!files.files) {
+    return exports.stripExifs(res, fields, files, callback, parsedCookies,
+        language, json);
+  }
+
+  index = index || 0;
+
+  var file = files.files[index];
+
+  if (!file) {
+    return exports.stripExifs(res, fields, files, callback, parsedCookies,
+        language, json);
   }
 
   var stream = fs.createReadStream(file.path);
@@ -485,7 +514,6 @@ exports.getPostData = function(req, res, callback) {
   var endingCb = function() {
 
     for (var j = 0; j < filesToDelete.length; j++) {
-
       uploadHandler.removeFromDisk(filesToDelete[j]);
     }
 
@@ -517,8 +545,16 @@ exports.getPostData = function(req, res, callback) {
         files.files.splice(fileProcessingLimit - files.files.length);
       }
 
-      exports.validateMimes(res, fields, files, callback, exports
-          .getCookies(req), req.language, json);
+      exports.validateMimes(res, fields, files, function(error, cookies,
+          parameters) {
+
+        if (error) {
+          exports.outputError(error, 500, res, req.language, json);
+        } else {
+          callback(cookies, parameters);
+        }
+
+      }, exports.getCookies(req), req.language, json);
     }
 
   });
