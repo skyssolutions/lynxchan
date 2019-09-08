@@ -8,6 +8,8 @@ var url = require('url');
 var multiParty = require('multiparty');
 var logger = require('../logger');
 var db = require('../db');
+var exifCommand = 'exiftool -all= -tagsfromfile @ -Orientation -ColorSpaceTags';
+exifCommand += ' {$file} -overwrite_original';
 var bans = db.bans();
 var references = db.uploadReferences();
 var exec = require('child_process').exec;
@@ -414,7 +416,7 @@ exports.stripExifs = function(res, fields, files, callback, parsedCookies,
         parsedCookies, language, json);
   }
 
-  exec('exiftool -all= ' + file.path + ' -overwrite_original', function(error) {
+  exec(exifCommand.replace('{$file}', file.path), function(error) {
 
     exports.stripExifs(res, fields, files, callback, parsedCookies, language,
         json, ++index);
