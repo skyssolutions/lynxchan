@@ -66,7 +66,7 @@ exports.checkBans = function(json, req, res, parameters, userData, captchaId,
 
         }
 
-      }, auth, json);
+      }, auth, json, true);
 
 };
 
@@ -80,7 +80,7 @@ exports.useBypass = function(json, req, res, parameters, userData, captchaId,
     } else {
       exports.checkBans(json, req, res, parameters, userData, captchaId, auth);
     }
-  });
+  }, true);
 };
 
 exports.process = function(req, res) {

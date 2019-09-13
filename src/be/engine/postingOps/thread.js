@@ -239,7 +239,7 @@ exports.createThread = function(req, userData, parameters, board, threadId,
       callback(error);
     } else {
 
-      common.recordFlood(req);
+      common.recordFlood(req, true);
 
       // style exception, too simple
       uploadHandler.saveUploads(board, threadId, null, parameters,

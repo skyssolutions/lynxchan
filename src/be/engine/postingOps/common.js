@@ -162,16 +162,19 @@ exports.getSignedRole = function(userData, wishesToSign, board) {
 
 };
 
-exports.recordFlood = function(req) {
+exports.recordFlood = function(req, thread) {
 
   if (req.isTor) {
     return;
   }
 
+  var toAdd = (thread ? 10 : 1) * floodTimer;
+
   taskListener.sendToSocket(null, {
     type : 'recordFlood',
+    thread : thread,
     ip : logger.ip(req),
-    expiration : new Date(new Date().getTime() + floodTimer)
+    expiration : new Date(new Date().getTime() + toAdd)
   });
 
 };

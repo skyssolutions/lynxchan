@@ -806,10 +806,10 @@ exports.outputBan = function(ban, req, res, json, callback, auth) {
 
 };
 
-exports.checkForBan = function(req, boardUri, res, callback, auth, json) {
+exports.checkForBan = function(req, boardUri, res, cb, auth, json, thread) {
 
-  modOps.ipBan.versatile.checkForBan(req, boardUri, function gotBan(error, ban,
-      bypassable) {
+  modOps.ipBan.versatile.checkForBan(req, boardUri, thread, function gotBan(
+      error, ban, bypassable) {
 
     if (bypassable && !req.bypassed) {
 
@@ -827,11 +827,11 @@ exports.checkForBan = function(req, boardUri, res, callback, auth, json) {
       }
 
     } else if (error) {
-      callback(error);
+      cb(error);
     } else if (ban) {
-      exports.outputBan(ban, req, res, json, callback, auth);
+      exports.outputBan(ban, req, res, json, cb, auth);
     } else {
-      callback();
+      cb();
     }
   });
 

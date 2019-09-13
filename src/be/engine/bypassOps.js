@@ -93,7 +93,7 @@ exports.checkBypass = function(bypassId, callback) {
 
 };
 
-exports.useBypass = function(bypassId, req, callback) {
+exports.useBypass = function(bypassId, req, callback, thread) {
 
   if (!bypassMode || !bypassId) {
     callback();
@@ -109,7 +109,14 @@ exports.useBypass = function(bypassId, req, callback) {
 
   var nextUse = new Date();
 
-  nextUse.setUTCSeconds(nextUse.getUTCSeconds() + floodExpiration);
+  var toAdd = (thread ? 10 : 1) * floodExpiration;
+
+  var usageField = thread ? 'nextThreadUsage' : 'nextUsage';
+
+  var setBlock = {};
+  setBlock[usageField] = nextUse;
+
+  nextUse.setUTCSeconds(nextUse.getUTCSeconds() + toAdd);
 
   bypasses.findOneAndUpdate({
     _id : bypassId,
@@ -123,9 +130,7 @@ exports.useBypass = function(bypassId, req, callback) {
     $inc : {
       usesLeft : -1
     },
-    $set : {
-      nextUsage : nextUse
-    }
+    $set : setBlock
   }, function updatedPass(error, result) {
 
     var errorToReturn;
@@ -135,7 +140,7 @@ exports.useBypass = function(bypassId, req, callback) {
     } else if (!result.value) {
       callback(null, req);
       return;
-    } else if (!floodDisabled && result.value.nextUsage > new Date()) {
+    } else if (!floodDisabled && result.value[usageField] > new Date()) {
       errorToReturn = lang(req.language).errFlood;
     } else {
       req.bypassed = true;

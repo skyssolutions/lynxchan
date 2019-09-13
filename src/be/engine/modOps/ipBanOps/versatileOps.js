@@ -27,6 +27,7 @@ var common;
 var spamBypass;
 var globalBoardModeration;
 var floodTracking = {};
+var threadFloodTracking = {};
 
 exports.loadSettings = function() {
   var settings = require('../../../settingsHandler').getGeneralSettings();
@@ -60,7 +61,10 @@ exports.loadDependencies = function() {
 };
 
 exports.recordFlood = function(task) {
-  floodTracking[task.ip] = new Date(task.expiration);
+
+  (task.thread ? threadFloodTracking : floodTracking)[task.ip] = new Date(
+      task.expiration);
+
 };
 
 exports.cleanFloodRecords = function() {
@@ -79,11 +83,25 @@ exports.cleanFloodRecords = function() {
 
   }
 
+  keys = Object.keys(threadFloodTracking);
+
+  for (i = 0; i < keys.length; i++) {
+
+    key = keys[i];
+
+    if (threadFloodTracking[key] < now) {
+      delete threadFloodTracking[key];
+    }
+
+  }
+
 };
 
 exports.masterFloodCheck = function(task, socket) {
 
-  var lastEntry = floodTracking[task.ip];
+  var trackingToUse = task.thread ? threadFloodTracking : floodTracking;
+
+  var lastEntry = trackingToUse[task.ip];
 
   var flood = !!(lastEntry && new Date() < lastEntry);
 
@@ -92,7 +110,9 @@ exports.masterFloodCheck = function(task, socket) {
   });
 
   if (!flood && task.record) {
-    floodTracking[task.ip] = new Date(new Date().getTime() + floodTimer);
+    var toAdd = (task.thread ? 10 : 1) * floodTimer;
+
+    trackingToUse[task.ip] = new Date(new Date().getTime() + toAdd);
   }
 
 };
@@ -314,7 +334,7 @@ exports.receivedFloodCheckResponse = function(req, ip, boardUri, socket, flood,
 
 };
 
-exports.checkForFlood = function(req, boardUri, callback) {
+exports.checkForFlood = function(req, boardUri, thread, callback) {
 
   var ip = logger.ip(req);
 
@@ -336,14 +356,15 @@ exports.checkForFlood = function(req, boardUri, callback) {
 
     taskListener.sendToSocket(socket, {
       type : 'floodCheck',
-      ip : ip
+      ip : ip,
+      thread : thread
     });
 
   });
 
 };
 
-exports.checkForBan = function(req, boardUri, callback) {
+exports.checkForBan = function(req, boardUri, thread, callback) {
 
   if (bypassMandatory && !req.bypassed) {
     callback(null, null, true);
@@ -367,7 +388,7 @@ exports.checkForBan = function(req, boardUri, callback) {
       }
 
     } else {
-      exports.checkForFlood(req, boardUri, callback);
+      exports.checkForFlood(req, boardUri, thread, callback);
     }
 
   });
