@@ -457,9 +457,10 @@ exports.getSubChunkMarkdown = function(message) {
 
   for (var i = 0; i < split.length; i++) {
     split[i] = exports.processLine(split[i]);
+
   }
 
-  return split.join('<br>');
+  return split.join('\n');
 
 };
 
@@ -478,8 +479,7 @@ exports.replaceChunkMarkdown = function(message) {
     finalMessage += exports.getSubChunkMarkdown(message.substring(lastEnding,
         split.start));
 
-    var aaChunk = message.substring(split.start + 4, split.end).replace(/\n/gm,
-        '<br>');
+    var aaChunk = message.substring(split.start + 4, split.end);
 
     finalMessage += '<span class="aa">' + aaChunk + '</span>';
 
@@ -551,8 +551,7 @@ exports.replaceStyleMarkdown = function(message, replaceCode, boardMessage) {
     finalMessage += exports.replaceChunkMarkdown(message.substring(lastEnding,
         split.start));
 
-    var codeChunk = message.substring(split.start + 6, split.end).replace(
-        /\n/gm, '<br>');
+    var codeChunk = message.substring(split.start + 6, split.end);
 
     finalMessage += '<code>' + codeChunk + '</code>';
 
@@ -645,7 +644,8 @@ exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
 
   });
 
-  cb(null, exports.replaceStyleMarkdown(message, replaceCode));
+  cb(null, exports.replaceStyleMarkdown(message.replace(/\r\n/gm, '\n')
+      .replace(/\r/gm, ''), replaceCode));
 
 };
 
