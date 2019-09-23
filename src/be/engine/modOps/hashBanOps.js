@@ -21,6 +21,10 @@ exports.hashBanArguments = [ {
   field : 'hash',
   length : 32,
   removeHTML : true
+}, {
+  field : 'reason',
+  length : 32,
+  removeHTML : true
 } ];
 
 exports.loadSettings = function() {
@@ -50,7 +54,10 @@ exports.readHashBans = function(parameters, callback) {
     }
   }, {
     projection : {
-      md5 : 1
+      md5 : 1,
+      reason : 1,
+      date : 1,
+      user : 1
     }
   }).sort({
     md5 : 1
@@ -92,7 +99,10 @@ exports.getHashBans = function(userData, parameters, language, callback) {
 exports.writeHashBan = function(userData, parameters, callback) {
 
   var hashBan = {
-    md5 : parameters.hash
+    md5 : parameters.hash,
+    reason : parameters.reason,
+    user : userData.login,
+    date : new Date()
   };
 
   if (parameters.boardUri) {

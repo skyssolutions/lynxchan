@@ -149,8 +149,13 @@ exports.getHashBanCells = function(hashBans, language) {
     var banCell = common.getFormCellBoilerPlate(template, '/liftHashBan.js',
         'hashBanCell');
 
-    banCell = banCell.replace('__hashLabel_inner__', common.clean(hashBan.md5));
-    banCell = banCell.replace('__idIdentifier_value__', hashBan._id);
+    banCell = banCell.replace('__hashLabel_inner__', common.clean(hashBan.md5))
+        .replace('__reasonLabel_inner__', common.clean(hashBan.reason || ''))
+        .replace('__userLabel_inner__', common.clean(hashBan.user || ''))
+        .replace(
+            '__dateLabel_inner__',
+            hashBan.date ? common.formatDateToDisplay(hashBan.date, false,
+                language) : '').replace('__idIdentifier_value__', hashBan._id);
 
     children += banCell;
   }

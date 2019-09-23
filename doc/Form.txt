@@ -809,6 +809,9 @@ Parameters:
 Json output(Array): array with the hash bans. Each object contains the following fields:
     _id: unique id of the hash ban.
     md5: banned hash.
+    date(Date): date of the ban.
+    user: user that applied the ban.
+    reason: reason of the ban.
 
 ------------------------------------------------------------------------------------------
 
@@ -819,6 +822,7 @@ Name: placeHashBan
 Description: creates a hash ban that will keep files with this hash to be posted. Requires authentication. Global hash bans require global role lower than 3.
 
 Parameters:
+    reason: reason of the hash ban.
     boardUri: if not informed, the hash ban will be global.
     hash: banned MD5 hash. 32 characters.
 

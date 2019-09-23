@@ -1687,11 +1687,23 @@ Root element: form
 Elements:
 hashLabel:
     use: have it's innerHTML manipulated.
-    description: label that holds banned hash.
+    description: label that holds the banned hash.
 
 idIdentifier:
     use: have it's value manipulated.
     description: hidden input that identifies the ban.
+
+reasonLabel:
+    use: have it's innerHTML manipulated.
+    description: label that holds the ban reason.
+
+userLabel:
+    use: have it's innerHTML manipulated.
+    description: label that holds the user that banned the hash.
+
+dateLabel:
+    use: have it's innerHTML manipulated.
+    description: label that holds the date when the ban was applied.
 
 ------------------------------------------------------------------------------------------
 

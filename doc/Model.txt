@@ -280,6 +280,9 @@ hashBans: stores bans on files.
     _id**: unique identifier of the hash ban.
     boardUri*/***: board of hash ban. If not indicated, the hash ban is global.
     md5***: hash of the file to be banned. 32 characters.
+    reason: reason of the ban. 32 characters.
+    user*: user that applied the ban.
+    date(Date): date when the ban was applied.
 
 ----------------------------------------------------------------------------------------
 
