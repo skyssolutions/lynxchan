@@ -536,6 +536,7 @@ exports.getDefaultSettings = function() {
     torSource : 'https://check.torproject.org/exit-addresses',
     maxBoardRules : 20,
     thumbSize : 128,
+    imageFont : 'DejaVu-Sans-Book',
     maxFilters : 20,
     maxBoardVolunteers : 20,
     maxBannerSizeKB : 200,

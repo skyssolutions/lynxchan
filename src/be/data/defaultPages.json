@@ -463,6 +463,7 @@
       "fieldLatestPostsAmount": "value",
       "fieldMaxBoardBanners": "value",
       "fieldAuthenticationLimit": "value",
+      "fieldImageFont": "value",
       "fieldFileProcessingLimit": "value",
       "checkboxValidateMimes": "checked",
       "fieldFileLimit": "value",

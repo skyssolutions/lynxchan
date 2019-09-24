@@ -87,6 +87,11 @@
   },
   {
     "type": "string",
+    "setting": "imageFont",
+    "element": "fieldImageFont"
+  },
+  {
+    "type": "string",
     "setting": "torDNSBL",
     "element": "fieldTorDNSL"
   },

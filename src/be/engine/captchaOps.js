@@ -15,6 +15,7 @@ var captchaLimit;
 var forceCaptcha;
 var captchaExpiration;
 var miscOps;
+var imageFont;
 var lang;
 var uploadHandler;
 var formOps;
@@ -44,6 +45,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  imageFont = settings.imageFont;
   captchaLimit = settings.captchaLimit;
   verbose = settings.verbose || settings.verboseMisc;
   forceCaptcha = settings.forceCaptcha;
@@ -222,7 +224,7 @@ exports.generateImage = function(text, captchaData, callback) {
 
   var command = exports.createMask();
 
-  command += 'xc: -pointsize 70 -gravity center -draw ';
+  command += 'xc: -pointsize 70 -gravity center -font ' + imageFont + ' -draw ';
   command += '\"text 0,0 \'' + text + '\'\" -write mpr:original +delete ';
 
   command += 'mpr:original -negate -write mpr:negated +delete';

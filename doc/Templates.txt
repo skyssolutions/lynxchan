@@ -1884,6 +1884,10 @@ fieldFileProcessingLimit:
     use: have it's value manipulated.
     description: field that displays the limit of files the engine will process in a single request.
 
+fieldImageFont:
+    use: have it's value manipulated.
+    description: field that displays the font to be used on images.
+
 fieldTorDNSL:
     use: have it's value manipulated.
     description: field that displays the DNSL that should be used to detec tor exit nodes instead of the official list.

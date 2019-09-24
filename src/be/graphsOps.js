@@ -197,8 +197,10 @@ function getCommandStart(date, startX, startY, endX, endY) {
   var formatedDate = date.getUTCDate() + '/' + (date.getUTCMonth() + 1) + '/';
   formatedDate += date.getUTCFullYear();
 
+  var imageFont = require('./settingsHandler').getGeneralSettings().imageFont;
+
   // Drawing title
-  toRet += ' -pointsize 20 -draw \"';
+  toRet += ' -pointsize 20 -font ' + imageFont + ' -draw \"';
   toRet += 'text 400,37 \'Daily stats for ' + formatedDate + '\'';
 
   // Drawing labels
