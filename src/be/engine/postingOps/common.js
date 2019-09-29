@@ -645,7 +645,7 @@ exports.replaceMarkdown = function(message, posts, board, replaceCode, cb) {
   });
 
   cb(null, exports.replaceStyleMarkdown(message.replace(/\r\n/gm, '\n')
-      .replace(/\r/gm, ''), replaceCode));
+      .replace(/\r/gm, '\n'), replaceCode));
 
 };
 

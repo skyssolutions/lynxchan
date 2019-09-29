@@ -59,7 +59,9 @@ exports.loadDependencies = function() {
 
 exports.matchCodeTags = function(markdown) {
 
-  if (markdown.indexOf('</code>') < markdown.indexOf('<code>')) {
+  var closingIndex = markdown.indexOf('</code>');
+
+  if (closingIndex >= 0 && closingIndex < markdown.indexOf('<code>')) {
     markdown = '<code>' + markdown;
   }
 

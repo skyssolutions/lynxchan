@@ -282,15 +282,14 @@ exports.addMessage = function(innerPage, modding, cell, posting, removable) {
 
   var markdown = posting.markdown;
 
-  var arrayToUse = (markdown.match(/<br>/g) || []);
+  var arrayToUse = (markdown.match(/\n/g) || []);
 
   if (!innerPage && arrayToUse.length > exports.maxPreviewBreaks) {
 
     cell = cell.replace('__contentOmissionIndicator_location__',
         removable.contentOmissionIndicator);
 
-    markdown = markdown.split('<br>', exports.maxPreviewBreaks + 1)
-        .join('<br>');
+    markdown = markdown.split('\n', exports.maxPreviewBreaks + 1).join('\n');
 
     if (!modding) {
       var href = '/' + posting.boardUri + '/res/' + posting.threadId + '.html';
