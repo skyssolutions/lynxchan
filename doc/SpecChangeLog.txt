@@ -1,3 +1,466 @@
+2.3.0:
+
+**Form.txt**
+
+New fields returned on json response in case of a ban:
+warning
+asn
+range
+banId
+
+---------------------------------------
+
+createBoard:
+
+boardDescription no longer mandatory.
+
+---------------------------------------
+
+boardManagement:
+
+New fields on json format:
+preferredLanguage
+availableLanguages
+
+---------------------------------------
+
+contentActions:
+
+New value for banType: 3.
+
+---------------------------------------
+
+closeReports:
+
+New parameter:
+banReason
+
+---------------------------------------
+
+createBanner:
+
+renamed to createBanners. Board uri now made optional. Now takes multiple files.
+
+New format on json format.
+
+---------------------------------------
+
+setBoardSettings:
+
+New parameters:
+preferredLanguage
+
+boardDescription now made optional.
+
+---------------------------------------
+
+logs:
+
+New parameter:
+boardUri
+
+---------------------------------------
+
+filterManagement:
+
+boardUri made optional.
+
+---------------------------------------
+
+filterManagement:
+
+boardUri made optional.
+
+---------------------------------------
+
+createFilter:
+
+boardUri made optional.
+
+---------------------------------------
+
+deleteFilter:
+
+boardUri made optional.
+
+---------------------------------------
+
+rangeBans:
+
+New fields on json format:
+expiration
+reason
+
+---------------------------------------
+
+placeRangeBan:
+
+New format on the range.
+
+New parameters:
+reason
+duration
+
+---------------------------------------
+
+hashBans:
+
+New fields on json format:
+date
+user
+reason
+
+---------------------------------------
+
+placeHashBan
+
+New parameter:
+reason
+
+---------------------------------------
+
+mediaManagement:
+
+New parameters:
+boardUri
+threadId
+postId
+
+---------------------------------------
+
+deleteAccount:
+
+account made optional.
+
+---------------------------------------
+
+latestPostings:
+
+New parameters:
+ip
+boardUri
+postId
+threadId
+
+New fields on json format:
+ip
+asn
+broadRange
+narrowRange
+
+---------------------------------------
+
+New pages:
+placeAsnBan
+asnBans
+resetBoardLock
+
+---------------------------------------
+
+**Json.txt**
+
+New format for the log pages uri.
+
+---------------------------------------
+
+**Language.txt**
+
+New entries:
+errOwnsBoards
+errGeneralBanLimit
+errInvalidASN
+errDeniedBoardASNBanManagement
+errDeniedGlobalASNBanManagement
+errCaptchaLimitExceeded
+errBoardBannerLimit
+errRequestTooBig
+errAuthLimitExceeded
+errTotalFileLimitExceeded
+guiGlobalLogsIndex
+guiRedactedName
+guiNoPreferredLanguage
+guiWarningDescription
+guiBanDescriptionAsn
+guiBanDescriptionRange
+guiBanDescription
+guiPruningModes
+logPostingBan.expirationPiece
+logPostingBan.permanentExpirationPiece
+logPostingBan.boardPiece
+msgAsnBanCreated
+msgBoardUnlocked
+titBoardFilters
+titGlobalFilters
+titAsnBans
+
+Removed entries:
+titFilters
+errRangeBanLimit
+
+---------------------------------------
+
+**Model.txt**
+
+New collections:
+filters
+redirects
+
+Removed collection:
+floodRecord
+
+---------------------------------------
+
+boards:
+
+New field: 
+preferredLanguage
+
+---------------------------------------
+
+threads:
+
+New fields:
+asn
+outerHashedCache
+outerClearCache
+previewHashedCache
+
+---------------------------------------
+
+posts:
+
+New fields:
+asn
+outerHashedCache
+outerClearCache
+
+---------------------------------------
+
+hashBans:
+
+New fields:
+reason
+user
+date
+
+---------------------------------------
+
+blockBypasses:
+New field:
+nextThreadUsage
+
+---------------------------------------
+
+**Paths.txt**
+
+Change on how log pages paths are used.
+
+---------------------------------------
+
+**Templates.txt**
+
+New templates:
+asnBansPage
+asnBanCell
+
+Removed template:
+rangeBanPage
+
+---------------------------------------
+
+boardPage:
+
+labelDescription now might be removed.
+
+New elements:
+linkLogs
+divMod
+linkMod
+
+---------------------------------------
+
+threadPage:
+
+labelDescription now might be removed.
+
+---------------------------------------
+
+opCell:
+
+No longer have the class "multipleUploads" added to it.
+panelUploads might have it's class manipulated.
+
+New elements:
+panelASN
+linkLast
+labelASN
+linkHistory
+linkFileHistory
+
+---------------------------------------
+
+postCell:
+
+No longer have the class "multipleUploads" added to it.
+panelUploads might have it's class manipulated.
+
+New elements:
+labelBoard
+panelASN
+linkFileHistory
+labelASN
+linkHistory
+
+---------------------------------------
+
+gManagement:
+
+New elements:
+globalFiltersLink
+asnBansLink
+
+---------------------------------------
+
+bManagement:
+
+New elements:
+languageCombobox
+settingsForm
+resetBoardLockForm
+resetLockIdentifier
+asnBansLink
+
+---------------------------------------
+
+reportCell:
+
+New elements:
+boardPanel
+boardLabel
+
+---------------------------------------
+
+banCell:
+
+New elements:
+reasonPanel
+expirationPanel
+
+---------------------------------------
+
+banPage:
+
+New elements:
+reasonPanel
+expirationPanel
+descriptionLabel
+
+Removed element:
+boardLabel
+
+---------------------------------------
+
+bannerManagementPage:
+
+New elements:
+maxBannerDiv
+maxBannerLabel
+
+---------------------------------------
+
+filterManagement:
+
+boardIdentifier now might be removed.
+
+---------------------------------------
+
+filterCell:
+
+boardIdentifier now might be removed.
+
+---------------------------------------
+
+boardsCell:
+
+divDescription now might be removed.
+
+---------------------------------------
+
+rangeBanCell:
+
+New elements:
+reasonLabel
+expirationLabel
+
+---------------------------------------
+
+hashBanCell:
+
+New elements:
+reasonLabel
+userLabel
+dateLabel
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+checkboxValidateMimes
+checkboxStripExif
+fieldMaxBoardBanners
+fieldFileProcessingLimit
+fieldImageFont
+fieldTorDNSL
+checkboxUnboundBoardLimits
+checkboxHttp2
+checkboxVolunteerSettings
+fieldLatestPostsAmount
+fieldFileLimit
+fieldTrustedProxies
+fieldCaptchaLimit
+fieldMaxBoardGeneralBans
+checkboxDontProcessLinks
+checkboxVersatileBlockBypass
+fieldDnsbl
+checkboxRedactModNames
+comboPruningMode
+
+Removed element:
+fieldMaxBoardRangeBans
+checkboxSpamBypass
+
+---------------------------------------
+
+logIndexPage:
+
+New element:
+labelBoard
+
+---------------------------------------
+
+mediaManagementPage:
+
+New elements:
+boardUriIdentifier
+threadIdIdentifier
+postIdIdentifier
+
+---------------------------------------
+
+latestPostingsPage:
+
+New elements:
+fieldIp
+inputBoardUri
+inputPostId
+inputThreadId
+panelIp
+
+
+
+---------------------------------------
+
 2.2.0:
 
 **Api.txt**
