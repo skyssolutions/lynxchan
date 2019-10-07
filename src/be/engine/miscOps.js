@@ -27,10 +27,11 @@ var htmlReplaceTable = {
   '<' : '&lt;',
   '>' : '&gt;',
   '\"' : '&quot;',
-  '\'' : '&apos;'
+  '\'' : '&apos;',
+  '\u202E' : ''
 };
 
-var htmlReplaceRegex = new RegExp(/[<>'"]/g);
+var htmlReplaceRegex = new RegExp(/[\u202E<>'"]/g);
 
 var MAX_STAFF_ROLE = 3;
 exports.plainTextMimes = [ 'application/x-javascript', 'application/json',
