@@ -427,7 +427,8 @@ exports.generateGifThumb = function(identifier, file, cb) {
   }
 
   file.thumbOnDisk = thumbDestination;
-  file.thumbMime = file.mime;
+  file.thumbMime = thumbExtension ? logger.getMime(thumbDestination)
+      : file.mime;
   file.thumbPath = '/.media/t_' + identifier;
 
   var command = 'convert \'' + file.pathInDisk + '[0]\' -resize ' + thumbSize;
@@ -480,7 +481,8 @@ exports.generateImageThumb = function(identifier, file, callback) {
   }
 
   file.thumbOnDisk = thumbDestination;
-  file.thumbMime = file.mime;
+  file.thumbMime = thumbExtension ? logger.getMime(thumbDestination)
+      : file.mime;
   file.thumbPath = '/.media/t_' + identifier;
 
   exec(command, function(error) {
