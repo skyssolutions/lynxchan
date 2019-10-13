@@ -343,14 +343,15 @@ exports.iterateReports = function(req, reportedContent, parameters, cb) {
   } else {
     var uriToCheck = parameters.global ? null : report.board;
 
-    ipBan.checkForBan(req, uriToCheck, function checkedForBan(error, ban) {
-      if (error || ban) {
-        cb(error, ban);
-      } else {
-        exports.findReportedContent(report, req, reportedContent, parameters,
-            cb);
-      }
-    });
+    ipBan.checkForBan(req, uriToCheck, null,
+        function checkedForBan(error, ban) {
+          if (error || ban) {
+            cb(error, ban);
+          } else {
+            exports.findReportedContent(report, req, reportedContent,
+                parameters, cb);
+          }
+        });
   }
 
 };
