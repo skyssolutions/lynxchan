@@ -450,7 +450,7 @@ exports.getNewPost = function(req, parameters, userData, postId, thread, board,
     asn : req.asn,
     threadId : parameters.threadId,
     signedRole : common.getSignedRole(userData, wishesToSign, board),
-    creation : new Date(),
+    creation : parameters.creationDate,
     subject : parameters.subject,
     name : nameToUse,
     id : id,
@@ -482,6 +482,8 @@ exports.createPost = function(req, parameters, userData, postId, thread, board,
     if (error && error.code !== 11000) {
       cb(error);
     } else if (error) {
+      parameters.creationDate = new Date();
+
       exports.createPost(req, parameters, userData, postId + 1, thread, board,
           wishesToSign, cb);
     } else {
@@ -541,6 +543,9 @@ exports.getPostMarkdown = function(req, parameters, userData, thread, board,
         if (error) {
           callback(error);
         } else {
+
+          parameters.creationDate = new Date();
+
           exports.getPostFlag(req, parameters, userData,
               lastIdData.value.lastPostId, thread, board, wishesToSign,
               callback);

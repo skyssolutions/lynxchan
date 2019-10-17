@@ -197,7 +197,7 @@ exports.getNewThread = function(req, userData, parameters, board, threadId,
     asn : req.asn,
     markdown : parameters.markdown,
     lastBump : new Date(),
-    creation : new Date(),
+    creation : parameters.creationDate,
     subject : parameters.subject,
     pinned : false,
     locked : false,
@@ -233,6 +233,9 @@ exports.createThread = function(req, userData, parameters, board, threadId,
 
   threads.insertOne(threadToAdd, function createdThread(error) {
     if (error && error.code === 11000) {
+
+      parameters.creationDate = new Date();
+
       exports.createThread(req, userData, parameters, board, threadId + 1,
           wishesToSign, enabledCaptcha, callback);
     } else if (error) {
@@ -412,6 +415,8 @@ exports.getNewThreadId = function(req, userData, parameters, board,
     if (error) {
       callback(error);
     } else {
+
+      parameters.creationDate = new Date();
 
       // style exception, too simple
       common.getFlagUrl(parameters.flag, logger.ip(req), board,
