@@ -110,6 +110,7 @@ function startTorPort() {
 
   var server = require('http').createServer(function(req, res) {
     req.isTor = true;
+    req.isOnion = true;
 
     main(req, res);
 

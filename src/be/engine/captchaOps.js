@@ -279,6 +279,10 @@ exports.createCaptcha = function(callback) {
 
 exports.generateCaptcha = function(req, callback) {
 
+  if (req.isOnion) {
+    return exports.createCaptcha(callback);
+  }
+
   taskListener.openSocket(function opened(error, socket) {
 
     if (error) {
