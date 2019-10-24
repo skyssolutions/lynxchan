@@ -109,8 +109,8 @@ exports.masterFloodCheck = function(task, socket) {
     flood : flood
   });
 
-  if (!flood && task.record) {
-    var toAdd = (task.thread ? 10 : 1) * floodTimer;
+  if (!flood) {
+    var toAdd = task.record ? (task.thread ? 10 : 1) * floodTimer : 1000;
 
     trackingToUse[task.ip] = new Date(new Date().getTime() + toAdd);
   }
