@@ -521,12 +521,12 @@ exports.generateThumb = function(identifier, file, callback) {
   var apngCondition = gifCondition && file.size > apngThreshold;
   apngCondition = apngCondition && file.mime === 'image/png';
 
-  var imageCondition = apngCondition || file.mime.indexOf('image/') > -1;
+  var imageCondition = file.mime.indexOf('image/') > -1;
   imageCondition = imageCondition && !tooSmall && file.mime !== 'image/svg+xml';
 
   if (file.mime === 'image/gif' && gifCondition) {
     exports.generateGifThumb(identifier, file, callback);
-  } else if (imageCondition) {
+  } else if (imageCondition || apngCondition) {
     exports.generateImageThumb(identifier, file, callback);
   } else if (exports.videoMimes.indexOf(file.mime) > -1 && mediaThumb) {
     exports.generateVideoThumb(identifier, file, tooSmall, callback);
@@ -701,6 +701,7 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
   }, function updatedReference(error, result) {
 
     if (error) {
+      console.log('error 1');
       callback(error);
     } else if (!result.lastErrorObject.updatedExisting) {
 
