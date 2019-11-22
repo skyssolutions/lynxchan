@@ -457,6 +457,7 @@
   {
     "template": "globalSettingsPage",
     "prebuiltFields": {
+      "checkboxDiskMedia": "checked",
       "fieldTorDNSL": "value",
       "checkboxStripExif": "checked",
       "checkboxUnboundBoardLimits": "checked",

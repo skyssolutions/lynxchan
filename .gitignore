@@ -6,5 +6,6 @@
 /src/fe
 /src/be/addons
 /src/be/spamData
+/src/be/media
 /src/be/TORIps
 !/src/be/addons/example.js

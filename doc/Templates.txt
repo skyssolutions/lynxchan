@@ -1872,6 +1872,10 @@ checkboxValidateMimes:
     use: might be turned on.
     description: indicates if uploaded file mimes should be validated through 'file'.
 
+checkboxDiskMedia:
+    use: might be turned on.
+    description: indicates if media files should be stored in disk.
+
 checkboxStripExif:
     use: might be turned on.
     description: indicates if exif data should be stripped from uploaded files.

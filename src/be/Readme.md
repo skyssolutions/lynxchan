@@ -197,6 +197,7 @@ Settings files that goes into the settings directory:
 * `archiveThreshold`(Number): if set, threads with at least this many replies will be automatically archived instead of being pruned.
 * `maxBoardBanners`(Number): maximum amount of banners that boards are allowed to have. Defaults to 16.
 * `stripExif`(Boolean): if set, will remove exit data from files using exiftool.
+* `diskMedia`(Boolean): if set, media files and thumbs will be stored in disk instead of the database.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.
@@ -211,6 +212,7 @@ Settings files must contain a json object where each key defined here will have 
 
 # GridFS
 Meta-data of files on gridfs will have the following values:
+* `onDisk`: if true, the contents of the file are stored on disk instead of the db.
 * `boardUri`: board to which the file belongs to. If undefined, file is a default site file.
 * `lastModified`(Date): date of the last modification of the file.
 * `boards`(Array): array of boards present on the multi-board page cache.

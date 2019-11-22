@@ -2,6 +2,7 @@
 
 // handles every gridfs operation.
 
+var exec = require('child_process').exec;
 var fs = require('fs');
 var db = require('../db');
 var redirects = db.redirects();
@@ -12,6 +13,7 @@ var disable304;
 var verbose;
 var alternativeLanguages;
 var miscOps;
+var diskMedia;
 var requestHandler;
 var zlib = require('zlib');
 
@@ -24,6 +26,8 @@ exports.loadSettings = function() {
   disable304 = settings.disable304;
   verbose = settings.verbose || settings.verboseGridfs;
   alternativeLanguages = settings.useAlternativeLanguages;
+  diskMedia = settings.diskMedia;
+
 };
 
 exports.loadDependencies = function() {
@@ -58,6 +62,8 @@ exports.removeDuplicates = function(uploadStream, callback) {
     } else if (!results.length) {
       callback();
     } else {
+
+      // TODO remove from disk too
 
       var ids = results[0].ids;
 
@@ -160,6 +166,71 @@ exports.writeData = function(data, dest, mime, meta, callback, compressed) {
 };
 // end of writing data
 
+exports.writeFileToDisk = function(dest, path, fileInfo, callback, data) {
+
+  if (!data) {
+
+    var statCmd = 'ls -l ' + path + ' | cut -d " " -f 5 && md5sum ' + path;
+    statCmd += ' | cut -d " " -f 1';
+
+    return exec(statCmd, function(error, data) {
+
+      if (error) {
+        callback(error);
+      } else {
+        exports.writeFileToDisk(dest, path, fileInfo, callback, data
+            .split('\n'));
+      }
+
+    });
+
+  }
+
+  var newDoc = {
+    filename : dest,
+    onDisk : true,
+    contentType : fileInfo.mime,
+    metadata : fileInfo.metadata,
+    length : +data[0],
+    md5 : data[1]
+  };
+
+  files.insertOne(newDoc, function(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      var newPath = __dirname + '/../media/' + newDoc._id;
+
+      newDoc.id = newDoc._id;
+
+      exec('cp ' + path + ' ' + newPath, function(error) {
+        callback(error, newDoc);
+      });
+
+    }
+
+  });
+
+};
+
+exports.writeFileToGridFs = function(dest, path, fileInfo, callback) {
+
+  var uploadStream = bucket.openUploadStream(dest, fileInfo);
+  var readStream = fs.createReadStream(path);
+
+  readStream.on('error', callback);
+  uploadStream.on('error', callback);
+
+  uploadStream.once('finish', function() {
+    callback(null, uploadStream);
+  });
+
+  readStream.pipe(uploadStream);
+
+};
+
 exports.writeFile = function(path, dest, mime, meta, callback) {
 
   meta.lastModified = new Date();
@@ -170,23 +241,29 @@ exports.writeFile = function(path, dest, mime, meta, callback) {
     console.log(message);
   }
 
-  var readStream = fs.createReadStream(path);
-
-  var uploadStream = bucket.openUploadStream(dest, {
+  var fileInfo = {
     contentType : mime,
     metadata : meta
-  });
+  };
 
-  readStream.on('error', callback);
-  uploadStream.on('error', callback);
+  var writeCallback = function(error, newDoc) {
 
-  uploadStream.once('finish', function uploaded() {
-    exports.removeDuplicates(uploadStream, function(error) {
-      callback(error, uploadStream.id);
-    });
-  });
+    if (error) {
+      callback(error);
+    } else {
 
-  readStream.pipe(uploadStream);
+      exports.removeDuplicates(newDoc, function(error) {
+        callback(error, newDoc.id);
+      });
+    }
+
+  };
+
+  if (meta.type === 'media' && diskMedia) {
+    exports.writeFileToDisk(dest, path, fileInfo, writeCallback);
+  } else {
+    exports.writeFileToGridFs(dest, path, fileInfo, writeCallback);
+  }
 
 };
 
@@ -218,6 +295,8 @@ exports.removeFiles = function(name, callback) {
     } else if (!results.length) {
       callback();
     } else {
+
+      // TODO remove from disk too
 
       // style exception, too simple
       chunks.removeMany({
@@ -363,8 +442,13 @@ exports.prepareStream = function(stats, req, callback, res, retries) {
 
   header.push([ 'Content-Length', length ]);
 
-  exports.streamFile(bucket.openDownloadStreamByName(stats.filename, options),
-      range, stats, req, res, header, retries, callback);
+  if (stats.onDisk) {
+    var diskPath = __dirname + '/../media/' + stats._id;
+  }
+
+  exports.streamFile(stats.onDisk ? fs.createReadStream(diskPath, options)
+      : bucket.openDownloadStreamByName(stats.filename, options), range, stats,
+      req, res, header, retries, callback);
 
 };
 

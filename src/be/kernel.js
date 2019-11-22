@@ -790,17 +790,20 @@ if (cluster.isMaster) {
   try {
 
     fs.statSync(settingsHandler.getGeneralSettings().tempDirectory);
+    fs.statSync(__dirname + '/media');
 
     bootDb();
 
   } catch (error) {
     if (error.code === 'ENOENT') {
-      console.log('Creating temporary directory.');
-      require('child_process').exec(
-          'mkdir -p ' + settingsHandler.getGeneralSettings().tempDirectory,
-          function createdDirectory() {
-            bootDb();
-          });
+      console.log('Creating directories.');
+
+      var command = 'mkdir -p ' + __dirname + '/media ';
+      command += settingsHandler.getGeneralSettings().tempDirectory;
+
+      require('child_process').exec(command, function createdDirectory() {
+        bootDb();
+      });
     } else {
       throw error;
     }
