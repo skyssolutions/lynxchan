@@ -50,45 +50,17 @@ exports.removeDuplicates = function(uploadStream, callback) {
     }
   }, {
     $group : {
-      _id : 0,
+      _id : '$onDisk',
       ids : {
         $push : '$_id'
       }
     }
   } ]).toArray(function gotArray(error, results) {
 
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
+    if (error || !results.length) {
       callback();
     } else {
-
-      // TODO remove from disk too
-
-      var ids = results[0].ids;
-
-      // style exception, too simple
-      chunks.removeMany({
-        'files_id' : {
-          $in : ids
-        }
-      }, function removedChunks(error) {
-
-        if (error) {
-          callback(error);
-        } else {
-
-          files.removeMany({
-            _id : {
-              $in : ids
-            }
-          }, callback);
-
-        }
-
-      });
-      // style exception, too simple
-
+      exports.separateToBeRemoved(results, callback);
     }
   });
 };
@@ -267,6 +239,114 @@ exports.writeFile = function(path, dest, mime, meta, callback) {
 
 };
 
+// Section 1: Removal {
+exports.removeGridFsFiles = function(onDb, callback) {
+
+  if (!onDb || !onDb.ids.length) {
+    return callback();
+  }
+
+  chunks.removeMany({
+    'files_id' : {
+      $in : onDb.ids
+    }
+  }, function removedChunks(error) {
+
+    if (error) {
+      callback();
+    } else {
+
+      // style exception, too simple
+      files.removeMany({
+        _id : {
+          $in : onDb.ids
+        }
+      }, function() {
+        callback();
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.removeDiskFiles = function(onDisk, onDb, callback) {
+
+  if (!onDisk || !onDisk.ids.length) {
+    return exports.removeGridFsFiles(onDb, callback);
+  }
+
+  var toRemove = onDisk.ids.splice(0, 10);
+
+  var cmd = 'rm -f';
+
+  for (var i = 0; i < toRemove.length; i++) {
+    cmd += ' ' + __dirname + '/../media/' + toRemove[i];
+  }
+
+  exec(cmd, function(error) {
+
+    if (error) {
+      exports.removeGridFsFiles(onDb, callback);
+    } else {
+
+      // style exception, too simple
+      files.removeMany({
+        _id : {
+          $in : toRemove
+        }
+      }, function(error) {
+
+        if (error) {
+          exports.removeGridFsFiles(onDb, callback);
+        } else {
+          exports.removeDiskFiles(onDisk, onDb, callback);
+        }
+
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.separateToBeRemoved = function(results, callback) {
+
+  var onDisk;
+  var onDb;
+
+  for (var i = 0; i < results.length; i++) {
+
+    var result = results[i];
+
+    if (result._id) {
+
+      if (!onDisk) {
+        onDisk = result;
+      } else {
+        onDisk.ids = onDisk.ids.concat(result.ids);
+      }
+
+    } else {
+
+      if (!onDb) {
+        onDb = result;
+      } else {
+        onDb.ids = onDb.ids.concat(result.ids);
+      }
+
+    }
+
+  }
+
+  exports.removeDiskFiles(onDisk, onDb, callback);
+
+};
+
 exports.removeFiles = function(name, callback) {
 
   if (typeof (name) === 'string') {
@@ -281,50 +361,23 @@ exports.removeFiles = function(name, callback) {
     }
   }, {
     $group : {
-      _id : 0,
+      _id : '$onDisk',
       ids : {
         $push : '$_id'
       }
     }
   } ]).toArray(function gotFiles(error, results) {
 
-    if (error) {
-      if (callback) {
-        callback();
-      }
-    } else if (!results.length) {
+    if (error || !results.length) {
       callback();
     } else {
-
-      // TODO remove from disk too
-
-      // style exception, too simple
-      chunks.removeMany({
-        'files_id' : {
-          $in : results[0].ids
-        }
-      }, function removedChunks(error) {
-
-        if (error) {
-          callback(error);
-        } else {
-
-          files.removeMany({
-            _id : {
-              $in : results[0].ids
-            }
-          }, callback);
-
-        }
-
-      });
-      // style exception, too simple
-
+      exports.separateToBeRemoved(results, callback);
     }
 
   });
 
 };
+// } Section 1: Removal
 
 // start of outputting file
 exports.setExpiration = function(header, stats) {
