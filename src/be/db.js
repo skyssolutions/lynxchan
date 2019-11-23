@@ -936,7 +936,8 @@ function connect(connectString, dbToUse, callback, attempts) {
   attempts = attempts || 0;
 
   mongo.MongoClient.connect(connectString, {
-    useNewUrlParser : true
+    useNewUrlParser : true,
+    useUnifiedTopology : true
   }, function connectedDb(error, client) {
 
     if (error) {

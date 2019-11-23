@@ -696,6 +696,23 @@ function checkIndividualCacheDeletion() {
 
 }
 
+function checkDiskMediaMoving() {
+
+  if (informedArguments.diskMedia.value) {
+
+    require('./engine/mediaHandler').move(
+        !!JSON.parse(informedArguments.diskMedia.value), function moved() {
+
+          checkIndividualCacheDeletion();
+
+        });
+
+  } else {
+    checkIndividualCacheDeletion();
+  }
+
+}
+
 function checkFilePruning() {
 
   if (informedArguments.pruneFiles.informed) {
@@ -706,12 +723,12 @@ function checkFilePruning() {
         console.log(error);
       }
 
-      checkIndividualCacheDeletion();
+      checkDiskMediaMoving();
 
     });
 
   } else {
-    checkIndividualCacheDeletion();
+    checkDiskMediaMoving();
   }
 
 }

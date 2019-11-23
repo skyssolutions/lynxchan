@@ -6,12 +6,12 @@
     "type": "git",
     "url": "https://gitgud.io/LynxChan/LynxChan.git"
   },
-  "version": "2.3.0",
+  "version": "2.4.0",
   "dependencies": {
-    "http-proxy": "1.17.x",
-    "mongodb": "3.2.x",
+    "http-proxy": "1.18.x",
+    "mongodb": "3.3.x",
     "multiparty": "4.2.x",
-    "nodemailer": "6.1.x",
+    "nodemailer": "6.3.x",
     "nodemailer-direct-transport": "3.3.x",
     "parse5": "5.1.x"
   },

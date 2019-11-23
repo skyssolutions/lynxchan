@@ -161,7 +161,7 @@ exports.writeFileToDisk = function(dest, path, fileInfo, callback, data) {
   var newDoc = {
     filename : dest,
     onDisk : true,
-    contentType : fileInfo.mime,
+    contentType : fileInfo.contentType,
     metadata : fileInfo.metadata,
     length : +data[0],
     md5 : data[1]

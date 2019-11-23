@@ -1,9 +1,12 @@
 'use strict';
 
+var fs = require('fs');
 var db = require('../db');
+var bucket = new (require('mongodb')).GridFSBucket(db.conn());
 var threads = db.threads();
 var posts = db.posts();
 var files = db.files();
+var chunks = db.chunks();
 var references = db.uploadReferences();
 var maxGlobalStaffRole;
 var gridFsHandler;
@@ -1009,3 +1012,148 @@ exports.getMediaDetails = function(userData, parameters, language, callback) {
 
 };
 // } Section 6: Media details
+
+// Section 7: Media moving {
+exports.moveToDisk = function(toMove, callback) {
+
+  var newDoc = {
+    filename : toMove.filename,
+    onDisk : true,
+    contentType : toMove.contentType,
+    metadata : toMove.metadata,
+    length : toMove.length,
+    md5 : toMove.md5
+  };
+
+  files.insertOne(newDoc, function inserted(error) {
+
+    if (error) {
+      return callback(error);
+    }
+
+    var readStream = bucket.openDownloadStream(toMove._id);
+
+    var destinationOnDisk = __dirname + '/../media/' + newDoc._id;
+
+    var uploadStream = fs.createWriteStream(destinationOnDisk);
+
+    readStream.on('error', callback);
+    uploadStream.on('error', callback);
+    uploadStream.once('finish', function() {
+
+      // style exception, too simple
+      chunks.removeMany({
+        'files_id' : toMove._id
+      }, function removedChunks(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          files.deleteOne({
+            _id : toMove._id
+          }, callback);
+
+        }
+
+      });
+      // style exception, too simple
+
+    });
+
+    readStream.pipe(uploadStream);
+
+  });
+
+};
+
+exports.moveToDb = function(toMove, callback) {
+
+  var uploadStream = bucket.openUploadStream(toMove.filename, {
+    metadata : toMove.metadata,
+    contentType : toMove.contentType
+  });
+
+  var readStream = fs.createReadStream(__dirname + '/../media/' + toMove._id);
+
+  readStream.on('error', callback);
+  uploadStream.on('error', callback);
+
+  uploadStream.once('finish', function() {
+
+    // style exception, too simple
+    fs.unlink(__dirname + '/../media/' + toMove._id,
+        function removedFile(error) {
+
+          if (error) {
+            callback(error);
+          } else {
+
+            files.deleteOne({
+              _id : toMove._id
+            }, callback);
+
+          }
+
+        });
+    // style exception, too simple
+
+  });
+
+  readStream.pipe(uploadStream);
+
+};
+
+exports.move = function(toDisk, callback, lastId) {
+
+  var match = {
+    'metadata.type' : 'media'
+  };
+
+  if (lastId) {
+    match._id = {
+      $gt : lastId
+    };
+  }
+
+  if (!toDisk) {
+    match.onDisk = true;
+  } else {
+    match.onDisk = {
+      $ne : true
+    };
+  }
+
+  files.find(match).sort({
+    _id : 1
+  }).limit(1).toArray(
+      function(error, results) {
+
+        if (error || !results.length) {
+
+          if (error) {
+            console.log(error);
+          }
+
+          callback();
+
+        } else {
+
+          // style exception, too simple
+          (toDisk ? exports.moveToDisk : exports.moveToDb)(results[0],
+              function moved(error) {
+
+                if (error) {
+                  console.log(error);
+                }
+
+                exports.move(toDisk, callback, results[0]._id);
+
+              });
+          // style exception, too simple
+
+        }
+      });
+
+};
+// } Section 7: Media moving

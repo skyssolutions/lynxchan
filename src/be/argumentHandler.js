@@ -18,6 +18,11 @@ var informedArguments = {
     long : '--ip',
     type : 'value'
   },
+  diskMedia : {
+    short : '-dm',
+    long : '--disk-media',
+    type : 'value'
+  },
   setPassword : {
     short : '-sp',
     long : '--set-password',

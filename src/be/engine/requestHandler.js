@@ -29,6 +29,9 @@ var slaves;
 var master;
 var trustedProxies;
 var port;
+var masterServePages = [ '/.media', '/.static', '/saveGlobalSettings.js',
+    '/globalSettings.js' ];
+
 proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.setHeader('x-forwarded-for', logger.getRawIp(req));
 });
@@ -265,13 +268,13 @@ exports.checkForService = function(req, pathName, isSlave) {
     return true;
   }
 
-  var toGlobalSettings = pathName.indexOf('/globalSettings') === 0;
-  var setGlobalSettingsApi = pathName.indexOf('/.api/saveGlobalSettings') === 0;
-  var setGlobalSettingsForm = pathName.indexOf('/saveGlobalSettings') === 0;
+  for (var i = 0; i < masterServePages.length; i++) {
 
-  var toRet = setGlobalSettingsForm || maintenance || toGlobalSettings;
+    if (!pathName.indexOf(masterServePages[i])) {
+      return true;
+    }
 
-  return toRet || setGlobalSettingsApi;
+  }
 
 };
 
