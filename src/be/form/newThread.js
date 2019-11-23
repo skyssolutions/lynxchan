@@ -5,7 +5,6 @@ var bypassOps = require('../engine/bypassOps');
 var postingOps = require('../engine/postingOps').thread;
 var captchaOps = require('../engine/captchaOps');
 var lang = require('../engine/langOps').languagePack;
-var url = require('url');
 var mandatoryParameters = [ 'message', 'boardUri' ];
 
 exports.createThread = function(json, req, user, parameters, captchaId, res,

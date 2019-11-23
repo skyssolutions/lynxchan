@@ -2,8 +2,10 @@
 
 // handles every gridfs operation.
 
-var exec = require('child_process').exec;
+var zlib = require('zlib');
 var fs = require('fs');
+var http = require('http');
+var exec = require('child_process').exec;
 var db = require('../db');
 var redirects = db.redirects();
 var files = db.files();
@@ -15,7 +17,8 @@ var alternativeLanguages;
 var miscOps;
 var diskMedia;
 var requestHandler;
-var zlib = require('zlib');
+var masterNode;
+var port;
 
 exports.permanentTypes = [ 'media', 'graph', 'banner' ];
 
@@ -23,6 +26,8 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  port = settings.port;
+  masterNode = settings.master;
   disable304 = settings.disable304;
   verbose = settings.verbose || settings.verboseGridfs;
   alternativeLanguages = settings.useAlternativeLanguages;
@@ -65,7 +70,7 @@ exports.removeDuplicates = function(uploadStream, callback) {
   });
 };
 
-// start of writing data
+// Section 1: Writing data {
 exports.compressData = function(data, dest, mime, meta, callback) {
 
   zlib.gzip(data, function gotCompressedData(error, data) {
@@ -136,7 +141,32 @@ exports.writeData = function(data, dest, mime, meta, callback, compressed) {
   uploadStream.end();
 
 };
-// end of writing data
+// } Section 1: Writing data
+
+// Section 2: Writing file {
+exports.sendFileToMaster = function(newDoc, path, callback, attempts, error) {
+
+  attempts = attempts || 0;
+
+  if (attempts >= 10) {
+    return callback(error);
+  }
+
+  var cmd = 'curl -F "files=@' + path + ';filename=' + newDoc._id + '" http://';
+  cmd += masterNode + '/storeFile.js:' + port;
+
+  exec(cmd, function(error, data) {
+
+    if (error) {
+      return exports
+          .sendFileToMaster(newDoc, path, callback, ++attempts, error);
+    } else {
+      callback(null, newDoc);
+    }
+
+  });
+
+};
 
 exports.writeFileToDisk = function(dest, path, fileInfo, callback, data) {
 
@@ -173,9 +203,13 @@ exports.writeFileToDisk = function(dest, path, fileInfo, callback, data) {
       callback(error);
     } else {
 
-      var newPath = __dirname + '/../media/' + newDoc._id;
-
       newDoc.id = newDoc._id;
+
+      if (masterNode) {
+        return exports.sendFileToMaster(newDoc, path, callback);
+      }
+
+      var newPath = __dirname + '/../media/' + newDoc._id;
 
       exec('cp ' + path + ' ' + newPath, function(error) {
         callback(error, newDoc);
@@ -238,8 +272,9 @@ exports.writeFile = function(path, dest, mime, meta, callback) {
   }
 
 };
+// } Section 2: Writing file
 
-// Section 1: Removal {
+// Section 3: Removal {
 exports.removeGridFsFiles = function(onDb, callback) {
 
   if (!onDb || !onDb.ids.length) {
@@ -377,9 +412,9 @@ exports.removeFiles = function(name, callback) {
   });
 
 };
-// } Section 1: Removal
+// } Section 3: Removal
 
-// start of outputting file
+// Section 4: Reading file {
 exports.setExpiration = function(header, stats) {
   var expiration = new Date();
 
@@ -659,4 +694,4 @@ exports.outputFile = function(file, req, res, callback) {
   });
 
 };
-// end of outputting file
+// } Section 4: Reading file

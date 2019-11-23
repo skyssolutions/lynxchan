@@ -10,12 +10,12 @@ See other branches named like `1.1.x` for stable versions. They will receive onl
 
 # Required software
 * [Node.js](http://nodejs.org) 12.x, I suggest installing from source code. DO NOT build the master's HEAD.
-* [MongoDB](https://www.mongodb.org/) 4.0.x.
+* [MongoDB](https://www.mongodb.org/) 4.2.x.
 * [UnZip](http://www.info-zip.org) 6.00, this is probably already included in your distro, though.
 * [cUrl](http://curl.haxx.se) 7.29.0, this is usually included too.
 * [ImageMagick](http://www.imagemagick.org/script/index.php) 6.7.8-9
 * [A front-end](https://gitgud.io/LynxChan/PenumbraLynx) that must either be placed on the `src/fe` directory or have it's absolute path set on the general.json file. Read the readme.md on src/be for more information about how to configure the path for the front-end.
-* [ffmpeg](https://www.ffmpeg.org/) (Optional) 4.1 if mediaThumb setting is enabled. Requires zlib-devel on centOS to work properly when compiled from source.
+* [ffmpeg](https://www.ffmpeg.org/) (Optional) 4.2 if mediaThumb setting is enabled. Requires zlib-devel on centOS to work properly when compiled from source.
 * [Sendmail](https://www.proofpoint.com/us/open-source-email-solution) (Optional) 8.14.7 if the option to send e-mails through sendmail is enabled.
 * [file](http://www.darwinsys.com/file/) (Optional) 5.11 if the option to validate upload mimetypes is enabled.
 * [exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool/) (Optional) 11.01 if the option to strip exif data is enabled.
