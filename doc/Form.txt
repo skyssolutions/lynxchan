@@ -1449,5 +1449,13 @@ Description: internal use only, it receives a new file to be stored in disk.
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::89
+
+Name: removeFiles
+
+Description: internal use only, it receives removes a list of files from the media directory.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

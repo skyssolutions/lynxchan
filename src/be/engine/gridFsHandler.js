@@ -153,7 +153,7 @@ exports.sendFileToMaster = function(newDoc, path, callback, attempts, error) {
   }
 
   var cmd = 'curl -F "files=@' + path + ';filename=' + newDoc._id + '" http://';
-  cmd += masterNode + '/storeFile.js:' + port;
+  cmd += masterNode + ':' + port + '/storeFile.js';
 
   exec(cmd, function(error, data) {
 
@@ -311,15 +311,30 @@ exports.removeGridFsFiles = function(onDb, callback) {
 
 };
 
-exports.removeDiskFiles = function(onDisk, onDb, callback) {
+exports.removeFilesFromMaster = function(toRemove, callback, attempts, error) {
 
-  if (!onDisk || !onDisk.ids.length) {
-    return exports.removeGridFsFiles(onDb, callback);
+  attempts = attempts || 0;
+
+  if (attempts >= 10) {
+    return callback(error);
   }
 
-  // TODO adapt for cluster
+  var cmd = 'curl http://';
+  cmd += masterNode + ':' + port + '/removeFiles.js?ids=' + toRemove.join(',');
 
-  var toRemove = onDisk.ids.splice(0, 10);
+  exec(cmd, function(error, data) {
+
+    if (error) {
+      return exports.sendFileToMaster(toRemove, callback, ++attempts, error);
+    } else {
+      callback();
+    }
+
+  });
+
+};
+
+exports.removeFilesFromDisk = function(toRemove, callback) {
 
   var cmd = 'rm -f';
 
@@ -331,13 +346,24 @@ exports.removeDiskFiles = function(onDisk, onDb, callback) {
     cmd += idString.substring(idString.length - 3) + '/' + idString;
   }
 
-  exec(cmd, function(error) {
+  exec(cmd, callback);
+
+};
+
+exports.removeDiskFiles = function(onDisk, onDb, callback) {
+
+  if (!onDisk || !onDisk.ids.length) {
+    return exports.removeGridFsFiles(onDb, callback);
+  }
+
+  var toRemove = onDisk.ids.splice(0, 10);
+
+  var removalCallback = function(error) {
 
     if (error) {
       exports.removeGridFsFiles(onDb, callback);
     } else {
 
-      // style exception, too simple
       files.removeMany({
         _id : {
           $in : toRemove
@@ -351,11 +377,16 @@ exports.removeDiskFiles = function(onDisk, onDb, callback) {
         }
 
       });
-      // style exception, too simple
 
     }
 
-  });
+  };
+
+  if (masterNode) {
+    exports.removeFilesFromMaster(toRemove, removalCallback);
+  } else {
+    exports.removeFilesFromDisk(toRemove, removalCallback);
+  }
 
 };
 

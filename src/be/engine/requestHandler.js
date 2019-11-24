@@ -29,8 +29,8 @@ var slaves;
 var master;
 var trustedProxies;
 var port;
-var masterServePages = [ '/.media', '/.static', '/storeFile.js',
-    '/saveGlobalSettings.js', '/globalSettings.js' ];
+var masterServePages = [ '/.media', '/.static', '/removeFiles.js',
+    '/storeFile.js', '/saveGlobalSettings.js', '/globalSettings.js' ];
 
 proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.setHeader('x-forwarded-for', logger.getRawIp(req));
