@@ -209,9 +209,13 @@ exports.writeFileToDisk = function(dest, path, fileInfo, callback, data) {
         return exports.sendFileToMaster(newDoc, path, callback);
       }
 
-      var newPath = __dirname + '/../media/' + newDoc._id;
+      var idString = newDoc._id.toString();
+      var destDir = __dirname + '/../media/';
+      destDir += idString.substring(idString.length - 3);
+      var newPath = destDir + '/' + idString;
 
-      exec('cp ' + path + ' ' + newPath, function(error) {
+      exec('mkdir -p ' + destDir + ' && cp ' + path + ' ' + newPath, function(
+          error) {
         callback(error, newDoc);
       });
 
@@ -313,12 +317,18 @@ exports.removeDiskFiles = function(onDisk, onDb, callback) {
     return exports.removeGridFsFiles(onDb, callback);
   }
 
+  // TODO adapt for cluster
+
   var toRemove = onDisk.ids.splice(0, 10);
 
   var cmd = 'rm -f';
 
   for (var i = 0; i < toRemove.length; i++) {
-    cmd += ' ' + __dirname + '/../media/' + toRemove[i];
+
+    var idString = toRemove[i].toString();
+
+    cmd += ' ' + __dirname + '/../media/';
+    cmd += idString.substring(idString.length - 3) + '/' + idString;
   }
 
   exec(cmd, function(error) {
@@ -531,7 +541,11 @@ exports.prepareStream = function(stats, req, callback, res, retries) {
   header.push([ 'Content-Length', length ]);
 
   if (stats.onDisk) {
-    var diskPath = __dirname + '/../media/' + stats._id;
+
+    var idString = stats._id.toString();
+
+    var diskPath = __dirname + '/../media/';
+    diskPath += idString.substring(idString.length - 3) + '/' + idString;
   }
 
   exports.streamFile(stats.onDisk ? fs.createReadStream(diskPath, options)

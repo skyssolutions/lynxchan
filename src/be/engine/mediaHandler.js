@@ -1031,11 +1031,20 @@ exports.moveToDisk = function(toMove, callback) {
       return callback(error);
     }
 
+    var stringId = newDoc._id.toString();
+    var destDir = __dirname + '/../media/';
+    destDir += stringId.substring(stringId.length - 3) + '/';
+
+    try {
+      fs.mkdirSync(destDir, {
+        recursive : true
+      });
+    } catch (error) {
+      callback(error);
+    }
+
+    var uploadStream = fs.createWriteStream(destDir + stringId);
     var readStream = bucket.openDownloadStream(toMove._id);
-
-    var destinationOnDisk = __dirname + '/../media/' + newDoc._id;
-
-    var uploadStream = fs.createWriteStream(destinationOnDisk);
 
     readStream.on('error', callback);
     uploadStream.on('error', callback);
@@ -1074,7 +1083,11 @@ exports.moveToDb = function(toMove, callback) {
     contentType : toMove.contentType
   });
 
-  var readStream = fs.createReadStream(__dirname + '/../media/' + toMove._id);
+  var stringId = toMove._id.toString();
+  var destDir = __dirname + '/../media/';
+  destDir += stringId.substring(stringId.length - 3) + '/';
+
+  var readStream = fs.createReadStream(destDir + stringId);
 
   readStream.on('error', callback);
   uploadStream.on('error', callback);
@@ -1082,20 +1095,19 @@ exports.moveToDb = function(toMove, callback) {
   uploadStream.once('finish', function() {
 
     // style exception, too simple
-    fs.unlink(__dirname + '/../media/' + toMove._id,
-        function removedFile(error) {
+    fs.unlink(destDir + stringId, function removedFile(error) {
 
-          if (error) {
-            callback(error);
-          } else {
+      if (error) {
+        callback(error);
+      } else {
 
-            files.deleteOne({
-              _id : toMove._id
-            }, callback);
+        files.deleteOne({
+          _id : toMove._id
+        }, callback);
 
-          }
+      }
 
-        });
+    });
     // style exception, too simple
 
   });

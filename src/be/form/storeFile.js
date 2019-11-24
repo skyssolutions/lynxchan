@@ -13,18 +13,21 @@ exports.process = function(req, res) {
 
     var file = parameters.files[0];
 
-    var newPath = __dirname + '/../media/' + file.title;
+    var newDir = __dirname + '/../media/';
+    newDir += file.title.substring(file.title.length - 3);
+    var newPath = newDir + '/' + file.title;
 
     // style exception, too simple
-    exec('cp ' + file.pathInDisk + ' ' + newPath, function(error) {
+    exec('mkdir -p ' + newDir + ' && cp ' + file.pathInDisk + ' ' + newPath,
+        function(error) {
 
-      if (error) {
-        formOps.outputError(error, 500, res);
-      } else {
-        formOps.outputResponse('', '/', res);
-      }
+          if (error) {
+            formOps.outputError(error, 500, res);
+          } else {
+            formOps.outputResponse('', '/', res);
+          }
 
-    });
+        });
     // style exception, too simple
 
   });
