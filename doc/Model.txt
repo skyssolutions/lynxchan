@@ -368,6 +368,16 @@ redirects: stores known redirects.
 
 ----------------------------------------------------------------------------------------
 
+offenseRecords: stores actions taken against users.
+  ip(Array): user ip.
+  reason: reason of the action.
+  global(Boolean): true if the action was global.
+  date(Date): date of the action taken.
+  expiration(Date): expiration of the action taken.
+  mod(String): login of the user that took the action.
+
+----------------------------------------------------------------------------------------
+
 *: duplicated data, foreign key.
 **: unique key
 ***: part of a unique key combination.

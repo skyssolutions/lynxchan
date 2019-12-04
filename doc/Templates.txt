@@ -337,6 +337,10 @@ opCell*: cell used for the thread's OP.
 Root element: form
 
 Elements:
+linkOffenseRecord:
+    use: have it's href manipulated or might be removed.
+    description: link to the offense record of the poster's ip.
+
 panelASN:
     use: might be removed.
     description: panel with the ASN label.
@@ -486,6 +490,10 @@ postCell*: cell used for thread replies.
 Root element: form
 
 Elements:
+linkOffenseRecord:
+    use: have it's href manipulated or might be removed.
+    description: link to the offense record of the poster's ip.
+
 labelBoard:
     use: have it's innerHTML manipulated or might be removed.
     description: label with the board the post belongs to.

@@ -37,6 +37,10 @@
         "href",
         "removal"
       ],
+      "linkOffenseRecord": [
+        "href",
+        "removal"
+      ],
       "linkLast": [
         "removal",
         "href"
@@ -129,6 +133,10 @@
       "linkFullText": "href",
       "labelIp": "inner",
       "linkHistory": [
+        "href",
+        "removal"
+      ],
+      "linkOffenseRecord": [
         "href",
         "removal"
       ],

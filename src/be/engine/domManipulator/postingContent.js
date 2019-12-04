@@ -145,7 +145,8 @@ exports.setPostingIp = function(cell, postingData, boardData, userRole,
   return cell.replace('__labelIp_inner__',
       miscOps.hashIpForDisplay(postingData.ip, boardData.ipSalt, userRole))
       .replace('__linkHistory_href__', '/latestPostings.js' + urlAffix)
-      .replace('__linkFileHistory_href__', '/mediaManagement.js' + urlAffix);
+      .replace('__linkFileHistory_href__', '/mediaManagement.js' + urlAffix)
+      .replace('__linkOffenseRecord_href__', '/offenseRecord.js' + urlAffix);
 
 };
 
@@ -179,7 +180,8 @@ exports.setPostingModdingElements = function(modding, posting, cell, bData,
   if ((modding || preview) && posting.ip) {
     cell = cell.replace('__panelIp_location__', removable.panelIp).replace(
         '__linkHistory_location__', removable.linkHistory).replace(
-        '__linkFileHistory_location__', removable.linkFileHistory);
+        '__linkFileHistory_location__', removable.linkFileHistory).replace(
+        '__linkOffenseRecord_location__', removable.linkOffenseRecord);
 
     cell = exports.setPostingIp(cell, posting, bData, userRole, removable,
         preview);
@@ -187,7 +189,7 @@ exports.setPostingModdingElements = function(modding, posting, cell, bData,
   } else {
     cell = cell.replace('__panelIp_location__', '').replace(
         '__linkHistory_location__', '').replace('__linkFileHistory_location__',
-        '');
+        '').replace('__linkOffenseRecord_location__', '');
   }
 
   return cell;

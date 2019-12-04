@@ -1457,5 +1457,25 @@ Description: internal use only, it receives removes a list of files from the med
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::90
+
+Name: offenseRecord
+
+Description: shows the offense record of a given user.
+
+Parameters:
+    boardUri: uri of the board to check a posting's ip offense record.
+    postId: postId of the posting to check the ip's offense record.
+    threadId: threadId of the posting to check the ip's offense record.
+    ip: ip to check it's offense record.
+
+Json output(Array): array with the offense records founds. Contains objects with the following fields:
+    reason: reason of the action.
+    global(Boolean): true if the action was global.
+    date(Date): date of the action taken.
+    expiration(Date): expiration of the action taken.
+    mod(String): login of the user that took the action.
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.
