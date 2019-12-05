@@ -20,7 +20,7 @@ var indexesSet;
 var cachedDb;
 var cachedClient;
 
-var maxIndexesSet = 17;
+var maxIndexesSet = 18;
 
 var cachedFilters;
 var cachedRedirects;
@@ -49,6 +49,7 @@ var cachedHashBans;
 var cachedFlags;
 var cachedOverboard;
 var cachedIpAggregation;
+var cachedOffenseRecords;
 
 var loading;
 
@@ -301,6 +302,26 @@ function indexSet(callback) {
 }
 
 // start of index initialization
+function initOffenseRecords(callback) {
+
+  cachedOffenseRecords.createIndexes([ {
+    key : {
+      ip : 1
+    }
+  } ], function setIndex(error, index) {
+    if (error) {
+      if (loading) {
+        loading = false;
+
+        callback(error);
+      }
+    } else {
+      indexSet(callback);
+    }
+  });
+
+}
+
 function initUploadReferences(callback) {
 
   cachedUploadReferences.createIndexes([ {
@@ -766,6 +787,10 @@ exports.posts = function() {
   return cachedPosts;
 };
 
+exports.offenseRecords = function() {
+  return cachedOffenseRecords;
+};
+
 exports.boards = function() {
   return cachedBoards;
 };
@@ -857,6 +882,8 @@ function initGlobalIndexes(callback) {
 
   initRedirects(callback);
 
+  initOffenseRecords(callback);
+
 }
 
 function initBoardIndexes(callback) {
@@ -908,6 +935,7 @@ function initGlobalIndexedCollections(callback) {
   cachedUsers = cachedDb.collection('users');
   cachedUploadReferences = cachedDb.collection('uploadReferences');
   cachedFiles = cachedDb.collection('fs.files');
+  cachedOffenseRecords = cachedDb.collection('offenseRecords');
   cachedRedirects = cachedDb.collection('redirects');
   cachedConfirmationRequests = cachedDb.collection('confirmationRequests');
 

@@ -7,6 +7,7 @@ var boards = db.boards();
 var bans = db.bans();
 var posts = db.posts();
 var threads = db.threads();
+var offenseRecords = db.offenseRecords();
 var defaultBanMessage;
 var locationOps;
 var redactedModNames;
@@ -281,6 +282,44 @@ exports.processFoundBanData = function(collection, board, parameters, user) {
 
 };
 
+exports.recordOffenses = function(foundIps, pages, parentThreads, userData,
+    parameters, callback, informedThreads, informedPosts, board) {
+
+  var records = [];
+
+  for (var i = 0; i < foundIps.length; i++) {
+
+    records.push({
+      ip : foundIps[i],
+      global : parameters.global,
+      reason : parameters.reason,
+      date : new Date(),
+      mod : userData.login,
+      expiration : parameters.expiration
+    });
+
+  }
+
+  offenseRecords.insertMany(records, function(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      if (!parameters.banType) {
+
+        exports.updateThreadsBanMessage(pages, parentThreads, userData,
+            parameters, callback, informedThreads, informedPosts, board);
+      } else {
+        callback();
+      }
+
+    }
+
+  });
+
+};
+
 exports.createBans = function(foundIps, foundASNs, parentThreads, pages, board,
     userData, parameters, callback, informedThreads, informedPosts) {
 
@@ -297,13 +336,8 @@ exports.createBans = function(foundIps, foundASNs, parentThreads, pages, board,
     if (error) {
       callback(error);
     } else {
-      if (!parameters.banType) {
-
-        exports.updateThreadsBanMessage(pages, parentThreads, userData,
-            parameters, callback, informedThreads, informedPosts, board);
-      } else {
-        callback();
-      }
+      exports.recordOffenses(foundIps, pages, parentThreads, userData,
+          parameters, callback, informedThreads, informedPosts, board);
     }
   });
 
