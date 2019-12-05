@@ -366,5 +366,7 @@
   "errOwnsBoards": "You can't delete your own account if you own any boards.",
   "guiGlobalLogsIndex": "Global",
   "guiRedactedName": "REDACTED",
-  "titGlobalFilters": "Global filters"
+  "titGlobalFilters": "Global filters",
+  "errDeniedOffenseHistory": "You are not allowed to search for this offense history.",
+  "titOffenseRecord": "Offense record"
 }

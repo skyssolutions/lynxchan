@@ -1475,6 +1475,7 @@ Json output(Array): array with the offense records founds. Contains objects with
     date(Date): date of the action taken.
     expiration(Date): expiration of the action taken.
     mod(String): login of the user that took the action.
+
 ------------------------------------------------------------------------------------------
 
 *: mandatory parameters.

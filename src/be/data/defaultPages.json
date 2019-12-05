@@ -702,5 +702,24 @@
         "removal"
       ]
     }
+  },
+  {
+    "template": "offenseRecordPage",
+    "prebuiltFields": {
+      "offensesDiv": "children",
+      "boardIdentifier": [
+        "value",
+        "removal"
+      ],
+      "threadIdentifier": [
+        "value",
+        "removal"
+      ],
+      "postIdentifier": [
+        "value",
+        "removal"
+      ],
+      "ipField": "value"
+    }
   }
 ]

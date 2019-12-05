@@ -422,5 +422,15 @@
       "reasonLabel": "inner",
       "expirationLabel": "inner"
     }
+  },
+  {
+    "template": "offenseCell",
+    "prebuiltFields": {
+      "reasonLabel": "inner",
+      "globalLabel": "removal",
+      "dateLabel": "inner",
+      "expirationLabel": "inner",
+      "modLabel": "inner"
+    }
   }
 ]

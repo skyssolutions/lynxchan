@@ -641,3 +641,71 @@ exports.mediaDetails = function(identifier, details, language) {
 
 };
 // } Section 8: Media details
+
+// Section 9: Offense records {
+exports.getOffenseList = function(document, offenses, language) {
+
+  var list = '';
+
+  var template = templateHandler(language).offenseCell;
+
+  for (var i = 0; i < offenses.length; i++) {
+
+    var offense = offenses[i];
+
+    var cell = template.template.replace('__reasonLabel_inner__',
+        offense.reason || '').replace('__modLabel_inner__', offense.mod)
+        .replace(
+            '__expirationLabel_inner__',
+            offense.expiration ? common.formatDateToDisplay(offense.expiration,
+                false, language) : '').replace('__dateLabel_inner__',
+            common.formatDateToDisplay(offense.date, false, language)).replace(
+            '__globalLabel_location__',
+            offense.global ? template.removable.globalLabel : '');
+
+    list += '<div>' + cell + '</div>';
+  }
+
+  return document.replace('__offensesDiv_children__', list);
+
+};
+
+exports.offenseRecord = function(offenses, parameters, language) {
+
+  var template = templateHandler(language).offenseRecordPage;
+
+  var document = template.template.replace('__title__',
+      lang(language).titOffenseRecord);
+
+  document = document.replace('__ipField_value__', parameters.ip || '');
+
+  if (parameters.boardUri && (parameters.threadId || parameters.postId)) {
+
+    document = document.replace('__boardIdentifier_location__',
+        template.removable.boardIdentifier).replace(
+        '__boardIdentifier_value__', parameters.boardUri);
+
+    if (parameters.threadId) {
+      document = document.replace('__threadIdentifier_location__',
+          template.removable.threadIdentifier).replace(
+          '__postIdentifier_location__', '').replace(
+          '__threadIdentifier_value__', parameters.threadId);
+    } else {
+      document = document.replace('__postIdentifier_location__',
+          template.removable.postIdentifier).replace(
+          '__threadIdentifier_location__', '').replace(
+          '__postIdentifier_value__', parameters.postId);
+    }
+
+  } else {
+
+    document = document.replace('__boardIdentifier_location__', '').replace(
+        '__threadIdentifier_location__', '').replace(
+        '__postIdentifier_location__', '');
+
+  }
+
+  return exports.getOffenseList(document, offenses, language);
+
+};
+// } Section 9: Offense records
