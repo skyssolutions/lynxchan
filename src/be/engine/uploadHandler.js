@@ -5,16 +5,13 @@
 var fs = require('fs');
 var logger = require('../logger');
 var db = require('../db');
-var threads = db.threads();
 var uploadReferences = db.uploadReferences();
-var boards = db.boards();
 var exec = require('child_process').exec;
 var kernel = require('../kernel');
 var genericThumb = kernel.genericThumb();
 var genericAudioThumb = kernel.genericAudioThumb();
 var spoilerPath = kernel.spoilerImage();
 var globalLatestImages = db.latestImages();
-var posts = db.posts();
 var files = db.files();
 var videoDimensionsCommand = 'ffprobe -v error -show_entries ';
 videoDimensionsCommand += 'stream=width,height ';
@@ -139,189 +136,19 @@ exports.removeFromDisk = function(path, callback) {
 // } Section 1: Utility functions
 
 // Section 2: Upload handling {
-exports.cleanLatestImages = function(boardData, threadId, postId, file,
-    callback) {
+exports.updatePostingFiles = function(file, callback) {
 
-  globalLatestImages.aggregate([ {
-    $sort : {
-      creation : -1
-    }
-  }, {
-    $skip : latestImages
-  }, {
-    $group : {
-      _id : 0,
-      ids : {
-        $push : '$_id'
-      }
-    }
-  } ]).toArray(
-      function gotLatestPostsToClean(error, results) {
-
-        if (error) {
-          callback(error);
-        } else if (!results.length) {
-
-          process.send({
-            frontPage : true
-          });
-
-          exports.updatePostingFiles(boardData, threadId, postId, file,
-              callback, false, true);
-
-        } else {
-
-          // style exception, too simple
-          globalLatestImages.removeMany({
-            _id : {
-              $in : results[0].ids
-            }
-          }, function removedOldImages(error) {
-
-            if (error) {
-              callback(error);
-            } else {
-
-              process.send({
-                frontPage : true
-              });
-
-              exports.updatePostingFiles(boardData, threadId, postId, file,
-                  callback, false, true);
-            }
-          });
-          // style exception, too simple
-
-        }
-
-      });
-
-};
-
-exports.updateLatestImages = function(boardData, threadId, postId, file,
-    callback) {
-
-  var toInsert = {
-    threadId : threadId,
-    creation : new Date(),
-    boardUri : boardData.boardUri,
-    thumb : file.thumbPath
-  };
-
-  if (postId) {
-    toInsert.postId = postId;
-  }
-
-  globalLatestImages.insertOne(toInsert, function insertedLatestImage(error) {
-    if (error) {
-      callback(error);
-    } else {
-
-      // style exception, too simple
-      globalLatestImages.countDocuments(function counted(error, count) {
-
-        if (error) {
-          callback(error);
-        } else if (count <= latestImages) {
-
-          process.send({
-            frontPage : true
-          });
-
-          exports.updatePostingFiles(boardData, threadId, postId, file,
-              callback, false, true);
-        } else {
-          exports
-              .cleanLatestImages(boardData, threadId, postId, file, callback);
-        }
-
-      });
-      // style exception, too simple
-
-    }
-
+  callback(null, {
+    originalName : miscOps.cleanHTML(file.title),
+    path : file.path,
+    mime : file.mime,
+    thumb : file.thumbPath,
+    size : file.size,
+    md5 : file.md5,
+    width : file.width,
+    height : file.height,
+    spoiler : file.spoiler
   });
-
-};
-
-exports.updateFileCount = function(threadId, boardData, cb, postId, file) {
-
-  threads.updateOne({
-    threadId : threadId,
-    boardUri : boardData.boardUri
-  }, {
-    $inc : {
-      fileCount : 1
-    }
-  }, function updatedFileCount(error) {
-    if (error) {
-      cb(error);
-    } else {
-      exports.updatePostingFiles(boardData, threadId, postId, file, cb, true,
-          true);
-    }
-  });
-
-};
-
-exports.isBoardSfw = function(boardData) {
-
-  var specialSettings = boardData.specialSettings || [];
-  return specialSettings.indexOf('sfw') > -1;
-
-};
-
-exports.updatePostingFiles = function(boardData, threadId, postId, file,
-    callback, updatedFileCount, updatedLatestImages) {
-
-  var image = file.mime.indexOf('image/') > -1 && !miscOps.omitted(boardData);
-
-  // add image to latest images before proceeding
-  if (latestImages && !updatedLatestImages && image) {
-
-    if (exports.isBoardSfw(boardData) || !onlySfwImages) {
-      exports.updateLatestImages(boardData, threadId, postId, file, callback);
-      return;
-    }
-
-  }
-
-  // updates thread's file count before proceeding
-  if (postId && !updatedFileCount) {
-
-    exports.updateFileCount(threadId, boardData, callback, postId, file);
-
-    return;
-  }
-
-  var queryBlock = {
-    boardUri : boardData.boardUri,
-    threadId : threadId
-  };
-
-  var collectionToQuery = threads;
-
-  if (postId) {
-    queryBlock.postId = postId;
-    collectionToQuery = posts;
-  }
-
-  collectionToQuery.updateOne(queryBlock, {
-    $unset : miscOps.individualCaches,
-    $push : {
-      files : {
-        originalName : miscOps.cleanHTML(file.title),
-        path : file.path,
-        mime : file.mime,
-        thumb : file.thumbPath,
-        name : file.gfsName,
-        size : file.size,
-        md5 : file.md5,
-        width : file.width,
-        height : file.height
-      }
-    }
-  }, callback);
 
 };
 
@@ -537,64 +364,15 @@ exports.generateThumb = function(identifier, file, callback) {
   }
 
 };
-
-exports.updatePostingWithNewUpload = function(parameters, identifier,
-    boardData, threadId, postId, file, callback) {
-
-  if (parameters.spoiler || file.spoiler) {
-
-    var spoilerToUse;
-
-    if (boardData.usesCustomSpoiler) {
-      spoilerToUse = '/' + boardData.boardUri + '/custom.spoiler';
-    } else {
-      spoilerToUse = spoilerPath;
-    }
-
-    file.thumbPath = spoilerToUse;
-
-  }
-
-  exports.updatePostingFiles(boardData, threadId, postId, file,
-      function updatedPosting(error) {
-
-        if (error) {
-          exports.undoReference(error, identifier, callback);
-        } else {
-          callback();
-        }
-
-      });
-
-};
 // } Section 2.1: New file
 
-exports.checkForThumb = function(reference, identifier, boardData, threadId,
-    postId, file, parameters, callback) {
-
-  if (parameters.spoiler || file.spoiler) {
-
-    var spoilerToUse;
-
-    if (boardData.usesCustomSpoiler) {
-      spoilerToUse = '/' + boardData.boardUri + '/custom.spoiler';
-    } else {
-      spoilerToUse = spoilerPath;
-    }
-
-    file.thumbPath = spoilerToUse;
-
-    exports.updatePostingFiles(boardData, threadId, postId, file, callback);
-
-    return;
-  }
+exports.checkForThumb = function(reference, identifier, file, callback) {
 
   var possibleThumbName = '/.media/t_' + identifier;
 
   if (reference.hasThumb) {
     file.thumbPath = possibleThumbName;
-    exports.updatePostingFiles(boardData, threadId, postId, file, callback);
-    return;
+    return exports.updatePostingFiles(file, callback);
   }
 
   files.findOne({
@@ -617,7 +395,7 @@ exports.checkForThumb = function(reference, identifier, boardData, threadId,
       file.thumbPath = possibleThumbName;
     }
 
-    exports.updatePostingFiles(boardData, threadId, postId, file, callback);
+    exports.updatePostingFiles(file, callback);
 
   });
 
@@ -672,8 +450,7 @@ exports.willRequireThumb = function(file) {
 
 };
 
-exports.processFile = function(boardData, threadId, postId, file, parameters,
-    callback) {
+exports.processFile = function(file, callback) {
 
   var identifier = file.md5 + '-' + file.mime.replace('/', '');
 
@@ -701,7 +478,6 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
   }, function updatedReference(error, result) {
 
     if (error) {
-      console.log('error 1');
       callback(error);
     } else if (!result.lastErrorObject.updatedExisting) {
 
@@ -715,8 +491,7 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
         if (error) {
           exports.undoReference(error, identifier, callback, true);
         } else {
-          exports.updatePostingWithNewUpload(parameters, identifier, boardData,
-              threadId, postId, file, callback);
+          exports.updatePostingFiles(file, callback);
         }
 
       });
@@ -728,13 +503,13 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
         file.path += '.' + result.value.extension;
       }
 
-      exports.checkForThumb(result.value, identifier, boardData, threadId,
-          postId, file, parameters, function updatedPosting(error) {
+      exports.checkForThumb(result.value, identifier, file,
+          function updatedPosting(error, newFile) {
 
             if (error) {
               exports.undoReference(error, identifier, callback);
             } else {
-              callback();
+              callback(null, newFile);
             }
 
           });
@@ -744,8 +519,7 @@ exports.processFile = function(boardData, threadId, postId, file, parameters,
 
 };
 
-exports.saveUploads = function(boardData, threadId, postId, parameters,
-    callback, index) {
+exports.saveUploads = function(parameters, newFiles, callback, index) {
 
   index = index || 0;
 
@@ -753,20 +527,177 @@ exports.saveUploads = function(boardData, threadId, postId, parameters,
 
     var file = parameters.files[index];
 
-    exports.processFile(boardData, threadId, postId, file, parameters,
-        function processedFile(error) {
+    exports.processFile(file, function processedFile(error, newFile) {
 
-          if (error && verbose) {
-            console.log(error);
-          }
+      if (error && verbose) {
+        console.log(error);
+      }
 
-          exports.saveUploads(boardData, threadId, postId, parameters,
-              callback, ++index);
+      if (newFile) {
+        newFiles.push(newFile);
+      }
 
-        });
+      exports.saveUploads(parameters, newFiles, callback, ++index);
+
+    });
 
   } else {
     callback();
   }
 };
 // } Section 2: Upload handling
+
+// Section 3: Latest images handling {
+exports.cleanLatestImages = function(callback) {
+
+  globalLatestImages.aggregate([ {
+    $sort : {
+      creation : -1
+    }
+  }, {
+    $skip : latestImages
+  }, {
+    $group : {
+      _id : 0,
+      ids : {
+        $push : '$_id'
+      }
+    }
+  } ]).toArray(function gotLatestPostsToClean(error, results) {
+
+    if (error) {
+      callback(error);
+    } else if (!results.length) {
+
+      process.send({
+        frontPage : true
+      });
+
+    } else {
+
+      // style exception, too simple
+      globalLatestImages.removeMany({
+        _id : {
+          $in : results[0].ids
+        }
+      }, function removedOldImages(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+
+          process.send({
+            frontPage : true
+          });
+
+          callback();
+        }
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.isBoardSfw = function(boardData) {
+
+  var specialSettings = boardData.specialSettings || [];
+  return specialSettings.indexOf('sfw') > -1;
+
+};
+
+exports.updateLatestImages = function(boardData, threadId, postId, files,
+    callback) {
+
+  if (!files) {
+    return callback();
+  }
+
+  var sfwForbid = !exports.isBoardSfw(boardData) && onlySfwImages;
+
+  if (sfwForbid || !latestImages || miscOps.omitted(boardData)) {
+    return callback();
+  }
+
+  var toInsert = [];
+
+  for (var i = 0; i < files.length; i++) {
+
+    var file = files[i];
+
+    if (file.mime.indexOf('image/') !== 0) {
+      continue;
+    }
+
+    toInsert.push({
+      postId : postId,
+      threadId : threadId,
+      creation : new Date(),
+      boardUri : boardData.boardUri,
+      thumb : file.thumb
+    });
+  }
+
+  if (!toInsert.length) {
+    return callback();
+  }
+
+  globalLatestImages.insertMany(toInsert, function insertedLatestImage(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      globalLatestImages.countDocuments(function counted(error, count) {
+
+        if (error) {
+          callback(error);
+        } else if (count <= latestImages) {
+
+          process.send({
+            frontPage : true
+          });
+
+          callback();
+        } else {
+          exports.cleanLatestImages(callback);
+        }
+
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+// } Section 3: Latest images handling
+
+exports.handleSpoilers = function(boardData, spoiler, files) {
+
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i];
+
+    if (spoiler || file.spoiler) {
+
+      var spoilerToUse;
+
+      if (boardData.usesCustomSpoiler) {
+        spoilerToUse = '/' + boardData.boardUri + '/custom.spoiler';
+      } else {
+        spoilerToUse = spoilerPath;
+      }
+
+      file.thumb = spoilerToUse;
+    }
+
+    delete file.spoiler;
+
+  }
+
+  return files;
+
+};

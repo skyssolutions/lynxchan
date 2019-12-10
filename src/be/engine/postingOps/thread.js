@@ -172,6 +172,23 @@ exports.updateBoardForThreadCreation = function(boardData, threadId,
   });
 };
 
+exports.updateLatest = function(boardData, enabledCaptcha, language, callback,
+    thread) {
+
+  uploadHandler.updateLatestImages(boardData, thread.threadId, null,
+      thread.files, function(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.updateBoardForThreadCreation(boardData, thread.threadId,
+              enabledCaptcha, language, callback, thread);
+        }
+
+      });
+
+};
+
 exports.getNewThread = function(req, userData, parameters, board, threadId,
     wishesToSign) {
 
@@ -228,31 +245,39 @@ exports.getNewThread = function(req, userData, parameters, board, threadId,
 exports.createThread = function(req, userData, parameters, board, threadId,
     wishesToSign, enabledCaptcha, callback) {
 
-  var threadToAdd = exports.getNewThread(req, userData, parameters, board,
-      threadId, wishesToSign);
+  var newFiles = [];
 
-  threads.insertOne(threadToAdd, function createdThread(error) {
-    if (error && error.code === 11000) {
+  uploadHandler.saveUploads(parameters, newFiles, function savedUploads() {
 
-      parameters.creationDate = new Date();
+    var threadToAdd = exports.getNewThread(req, userData, parameters, board,
+        threadId, wishesToSign);
 
-      exports.createThread(req, userData, parameters, board, threadId + 1,
-          wishesToSign, enabledCaptcha, callback);
-    } else if (error) {
-      callback(error);
-    } else {
-
-      common.recordFlood(req, true);
-
-      // style exception, too simple
-      uploadHandler.saveUploads(board, threadId, null, parameters,
-          function savedUploads() {
-            exports.updateBoardForThreadCreation(board, threadId,
-                enabledCaptcha, req.language, callback, threadToAdd);
-          });
-      // style exception, too simple
-
+    if (newFiles.length) {
+      threadToAdd.files = uploadHandler.handleSpoilers(board,
+          parameters.spoiler, newFiles);
     }
+
+    // style exception, too simple
+    threads.insertOne(threadToAdd, function createdThread(error) {
+      if (error && error.code === 11000) {
+
+        parameters.creationDate = new Date();
+
+        exports.createThread(req, userData, parameters, board, threadId + 1,
+            wishesToSign, enabledCaptcha, callback);
+      } else if (error) {
+        callback(error);
+      } else {
+
+        common.recordFlood(req, true);
+
+        exports.updateLatest(board, enabledCaptcha, req.language, callback,
+            threadToAdd);
+
+      }
+    });
+    // style exception, too simple
+
   });
 
 };

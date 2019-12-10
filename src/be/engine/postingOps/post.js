@@ -312,11 +312,11 @@ exports.setUpdateBlockForAutoSage = function(updateBlock) {
 
 };
 
-exports.getSetBlock = function(thread, postId) {
+exports.getSetBlock = function(thread, post) {
 
   var latestPosts = thread.latestPosts || [];
 
-  latestPosts.push(postId);
+  latestPosts.push(post.postId);
 
   latestPosts = latestPosts.sort(function compareNumbers(a, b) {
     return a - b;
@@ -334,7 +334,8 @@ exports.getSetBlock = function(thread, postId) {
       latestPosts : latestPosts
     },
     $inc : {
-      postCount : 1
+      postCount : 1,
+      fileCount : post.files ? post.files.length : 0
     }
   };
 
@@ -363,10 +364,10 @@ exports.youngEnoughToBump = function(boardData, thread) {
 
 };
 
-exports.updateThread = function(boardData, parameters, postId, thread,
-    language, callback, post) {
+exports.updateThread = function(boardData, parameters, thread, language,
+    callback, post) {
 
-  var updateBlock = exports.getSetBlock(thread, postId);
+  var updateBlock = exports.getSetBlock(thread, post);
 
   var cleanPosts = false;
   var saged = parameters.email === 'sage';
@@ -428,6 +429,23 @@ exports.updateThread = function(boardData, parameters, postId, thread,
 
 };
 
+exports.updateLatest = function(boardData, parameters, thread, language,
+    callback, post) {
+
+  uploadHandler.updateLatestImages(boardData, thread.threadId, null,
+      post.files, function(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.updateThread(boardData, parameters, thread, language,
+              callback, post);
+        }
+
+      });
+
+};
+
 exports.getNewPost = function(req, parameters, userData, postId, thread, board,
     wishesToSign) {
 
@@ -475,30 +493,38 @@ exports.getNewPost = function(req, parameters, userData, postId, thread, board,
 exports.createPost = function(req, parameters, userData, postId, thread, board,
     wishesToSign, cb) {
 
-  var postToAdd = exports.getNewPost(req, parameters, userData, postId, thread,
-      board, wishesToSign);
+  var newFiles = [];
 
-  posts.insertOne(postToAdd, function createdPost(error) {
-    if (error && error.code !== 11000) {
-      cb(error);
-    } else if (error) {
-      parameters.creationDate = new Date();
+  uploadHandler.saveUploads(parameters, newFiles, function savedFiles() {
 
-      exports.createPost(req, parameters, userData, postId + 1, thread, board,
-          wishesToSign, cb);
-    } else {
+    var postToAdd = exports.getNewPost(req, parameters, userData, postId,
+        thread, board, wishesToSign);
 
-      common.recordFlood(req);
-
-      // style exception, too simple
-      uploadHandler.saveUploads(board, parameters.threadId, postId, parameters,
-          function savedFiles() {
-            exports.updateThread(board, parameters, postId, thread,
-                req.language, cb, postToAdd);
-          });
-      // style exception, too simple
-
+    if (newFiles.length) {
+      postToAdd.files = uploadHandler.handleSpoilers(board, parameters.spoiler,
+          newFiles);
     }
+
+    // style exception, too simple
+    posts.insertOne(postToAdd, function createdPost(error) {
+      if (error && error.code !== 11000) {
+        cb(error);
+      } else if (error) {
+        parameters.creationDate = new Date();
+
+        exports.createPost(req, parameters, userData, postId + 1, thread,
+            board, wishesToSign, cb);
+      } else {
+
+        common.recordFlood(req);
+
+        exports.updateLatest(board, parameters, thread, req.language, cb,
+            postToAdd);
+
+      }
+    });
+    // style exception, too simple
+
   });
 
 };
