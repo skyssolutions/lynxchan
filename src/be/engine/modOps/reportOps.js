@@ -431,17 +431,77 @@ exports.logReportClosure = function(foundReports, userData, closureDate,
 
 };
 
-exports.banReporter = function(parameters, foundReports, userData, closureDate,
-    callback) {
+exports.applyReportBans = function(parameters, foundReports, userData,
+    closureDate, callback, index) {
 
-  if (!parameters.banReporter) {
+  if (index >= foundReports.length || parameters.banTarget !== 1) {
     return exports.logReportClosure(foundReports, userData, closureDate,
         callback);
   }
 
-  miscOps.sanitizeStrings(parameters, exports.closeArguments);
+  index = index || 0;
 
-  common.parseExpiration(parameters);
+  var report = foundReports[index];
+
+  if (report.global && userData.globalRole > 2) {
+    return exports.applyReportBans(parameters, foundReports, userData,
+        closureDate, callback, ++index);
+  }
+
+  var colToUse = report.postId ? posts : threads;
+
+  var query = {
+    boardUri : report.boardUri,
+    'ip.0' : {
+      $exists : true
+    }
+  };
+
+  var fieldToUse = report.postId ? 'postId' : 'threadId';
+
+  query[fieldToUse] = report[fieldToUse];
+
+  colToUse.findOne(query, function(error, posting) {
+
+    if (error) {
+      return callback(error);
+    } else if (!posting) {
+      return exports.applyReportBans(parameters, foundReports, userData,
+          closureDate, callback, ++index);
+    }
+
+    // style exception, too simple
+    bans.insertOne({
+      ip : posting.ip,
+      reason : parameters.banReason,
+      appliedBy : userData.login,
+      expiration : parameters.expiration,
+      boardUri : report.global ? undefined : posting.boardUri
+    }, function(error) {
+
+      if (error) {
+        callback(error);
+      } else {
+        exports.applyReportBans(parameters, foundReports, userData,
+            closureDate, callback, ++index);
+      }
+
+    });
+    // style exception, too simple
+
+  });
+
+};
+
+exports.applyReporterBans = function(parameters, foundReports, userData,
+    closureDate, callback) {
+
+  if (parameters.banTarget !== 2) {
+    return exports.applyReportBans(parameters, foundReports, userData,
+        closureDate, callback);
+  }
+
+  miscOps.sanitizeStrings(parameters, exports.closeArguments);
 
   var bansToAdd = [];
 
@@ -485,10 +545,8 @@ exports.deleteClosedContent = function(parameters, foundReports, userData,
 
   if (!parameters.deleteContent) {
 
-    exports.banReporter(parameters, foundReports, userData, closureDate,
-        callback);
-
-    return;
+    return exports.applyReporterBans(parameters, foundReports, userData,
+        closureDate, callback);
   }
 
   var postsToDelete = {};
@@ -609,11 +667,14 @@ exports.closeReports = function(userData, parameters, language, callback) {
 
   var ids = [];
 
+  parameters.banTarget = +parameters.banTarget;
+
+  common.parseExpiration(parameters);
+
   var reportList = parameters.reports || [];
 
   if (!reportList.length) {
-    callback(lang(language).errNoReportsInformed);
-    return;
+    return callback(lang(language).errNoReportsInformed);
   }
 
   for (var i = 0; i < reportList.length; i++) {
