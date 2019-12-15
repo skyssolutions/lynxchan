@@ -355,6 +355,7 @@ Parameters:
     banTarget(Number): indicates if a ban will be applied. 0: no bans applied. 1: reported posts are banned. 2: reporters are banned.
     duration: string with the duration of the ban.
     banReason: reason for the ban.
+    closeAllFromReporter(Boolean): if true, will also close all reports from any reporter which are having their reports closed. In the case of global reports, every global report across all boards will be closed. In the case of board reports, only other board reports within the same board will be closed.
     deleteContent(Boolean): if true, will delete the reported content after closing the reports.
 
 ------------------------------------------------------------------------------------------

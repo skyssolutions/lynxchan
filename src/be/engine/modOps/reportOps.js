@@ -607,6 +607,79 @@ exports.updateReports = function(parameters, foundReports, ids, userData,
   });
 };
 
+exports.getQueryForAllReports = function(ids, foundReports) {
+
+  var queryOr = [];
+
+  var seenIps = {};
+
+  for (var i = 0; i < foundReports.length; i++) {
+
+    var report = foundReports[i];
+
+    var array = seenIps[report.boardUri || '.global'] || [];
+    seenIps[report.boardUri || '.global'] = array;
+
+    if (!report.ip || array.indexOf(report.ip.join('.')) >= 0) {
+      continue;
+    }
+
+    array.push(report.ip.join('.'));
+
+    var userQuery = {
+      ip : report.ip
+    };
+
+    userQuery.global = report.global;
+
+    if (!report.global) {
+      userQuery.boardUri = report.boardUri;
+    }
+
+    queryOr.push(userQuery);
+
+  }
+
+  return {
+    _id : {
+      $nin : ids
+    },
+    $or : queryOr
+  };
+
+};
+
+exports.getAllReports = function(parameters, foundReports, ids, userData,
+    language, callback) {
+
+  if (!parameters.closeAllFromReporter) {
+    return exports.updateReports(parameters, foundReports, ids, userData,
+        language, callback);
+  }
+
+  reports.find(exports.getQueryForAllReports(ids, foundReports)).toArray(
+      function(error, newReports) {
+
+        if (error) {
+          return callback(error);
+        } else if (!newReports.length) {
+          return exports.updateReports(parameters, foundReports, ids, userData,
+              language, callback);
+        }
+
+        foundReports = foundReports.concat(newReports);
+
+        for (var i = 0; i < newReports.length; i++) {
+          ids.push(newReports[i]._id);
+        }
+
+        exports.updateReports(parameters, foundReports, ids, userData,
+            language, callback);
+
+      });
+
+};
+
 exports.closeFoundReports = function(parameters, ids, userData, foundReports,
     language, callback) {
 
@@ -648,13 +721,12 @@ exports.closeFoundReports = function(parameters, ids, userData, foundReports,
           for (i = 0; i < foundBoards.length; i++) {
 
             if (!common.isInBoardStaff(userData, foundBoards[i])) {
-              callback(lang(language).errDeniedBoardReportManagement);
-              return;
+              return callback(lang(language).errDeniedBoardReportManagement);
             }
 
           }
 
-          exports.updateReports(parameters, foundReports, ids, userData,
+          exports.getAllReports(parameters, foundReports, ids, userData,
               language, callback);
 
         }
