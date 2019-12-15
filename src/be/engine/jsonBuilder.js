@@ -94,6 +94,7 @@ exports.getPostObject = function(post, preview, boardData, modding, userRole) {
     markdown : post.markdown,
     message : post.message,
     banMessage : post.banMessage,
+    postId : post.postId,
     creation : post.creation,
     files : exports.getFilesArray(post.files, modding, preview)
   };
@@ -122,8 +123,9 @@ exports.getPostObject = function(post, preview, boardData, modding, userRole) {
 
   }
 
-  if (!preview) {
-    toReturn.postId = post.postId;
+  if (preview) {
+    toReturn.boardUri = post.boardUri;
+    toReturn.threadId = post.threadId;
   }
 
   return toReturn;
