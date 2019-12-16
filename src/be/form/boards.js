@@ -56,7 +56,7 @@ exports.getQueryBlock = function(parameters) {
     delete parameters.tags;
   }
 
-  queryBlock.settings = {
+  queryBlock.settings = parameters.unindexed ? 'unindex' : {
     $not : {
       $elemMatch : {
         $in : [ 'unindex' ]
@@ -118,9 +118,8 @@ exports.getSortBlock = function(parameters) {
   }
 };
 
-exports.process = function(req, res) {
+exports.countDocuments = function(userData, auth, parameters, req, res) {
 
-  var parameters = url.parse(req.url, true).query;
   var page = parameters.page || 1;
   var queryBlock = exports.getQueryBlock(parameters);
   var pageSize = settingsHandler.getGeneralSettings().boardsPerPage;
@@ -154,14 +153,15 @@ exports.process = function(req, res) {
           .toArray(
               function(error, foundBoards) {
                 if (error) {
-                  formOps.outputError(error, 500, res, req.language, json);
+                  formOps
+                      .outputError(error, 500, res, req.language, json, auth);
                 } else {
 
                   if (json) {
                     formOps.outputResponse('ok', jsonBuilder.boards(pageCount,
-                        foundBoards), res, null, null, null, true);
+                        foundBoards), res, null, auth, null, true);
                   } else {
-                    res.writeHead(200, miscOps.getHeader('text/html'));
+                    res.writeHead(200, miscOps.getHeader('text/html', auth));
                     res.end(domManipulator.boards(parameters, foundBoards,
                         pageCount, req.language));
                   }
@@ -172,4 +172,32 @@ exports.process = function(req, res) {
 
     }
   });
+
+};
+
+exports.process = function(req, res) {
+
+  var parameters = url.parse(req.url, true).query;
+
+  if (!parameters.unindexed) {
+    return exports.countDocuments(null, null, parameters, req, res);
+  }
+
+  formOps.getAuthenticatedPost(req, res, false,
+      function gotData(auth, userData) {
+
+        if (!userData) {
+          delete parameters.unindexed;
+          return exports.countDocuments(null, null, parameters, req, res);
+        }
+
+        var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+
+        if (!globalStaff) {
+          delete parameters.unindexed;
+        }
+
+        exports.countDocuments(auth, userData, parameters, req, res);
+      }, true, true);
+
 };

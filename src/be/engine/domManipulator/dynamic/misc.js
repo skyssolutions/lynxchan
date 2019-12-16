@@ -315,6 +315,10 @@ exports.getBoardPageLinkBoilerPlate = function(parameters) {
     href += '&sfw=1';
   }
 
+  if (parameters.unindexed) {
+    href += '&unindexed=1';
+  }
+
   if (parameters.tags) {
     href += '&tags=' + parameters.tags;
   }

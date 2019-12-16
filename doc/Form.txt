@@ -706,6 +706,7 @@ Name: boards
 Description: displays all existing boards. Uses get parameters.
 
 Parameters:
+    unindexed: displays only unindexed boards if anything is informed.
     inactive: displays only inactive boards if anything is informed.
     sfw: displays only sfw boards if anything is informed.
     page: page to be viewed.
