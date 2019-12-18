@@ -12,6 +12,7 @@ var taskListener = require('../taskListener');
 var logger = require('../logger');
 var verbose;
 var captchaLimit;
+var spamOps;
 var forceCaptcha;
 var captchaExpiration;
 var miscOps;
@@ -21,6 +22,8 @@ var uploadHandler;
 var formOps;
 var gridFsHandler;
 var captchaControl = {};
+
+var poolIndex = -1;
 
 // captcha settings
 var height = 100;
@@ -55,6 +58,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  spamOps = require('./spamOps');
   miscOps = require('./miscOps');
   lang = require('./langOps').languagePack;
   uploadHandler = require('./uploadHandler');
@@ -253,7 +257,7 @@ exports.generateImage = function(text, captchaData, callback) {
 
 };
 
-exports.createCaptcha = function(callback) {
+exports.createCaptcha = function(callback, pool) {
 
   var text = crypto.createHash('sha256').update(Math.random() + new Date())
       .digest('hex').substring(0, 6);
@@ -263,7 +267,8 @@ exports.createCaptcha = function(callback) {
 
   var toInsert = {
     answer : text,
-    expiration : expiration
+    expiration : expiration,
+    pool : pool
   };
 
   captchas.insertOne(toInsert, function(error) {
@@ -277,11 +282,7 @@ exports.createCaptcha = function(callback) {
 
 };
 
-exports.generateCaptcha = function(req, callback) {
-
-  if (req.isOnion) {
-    return exports.createCaptcha(callback);
-  }
+exports.checkFlood = function(req, callback) {
 
   taskListener.openSocket(function opened(error, socket) {
 
@@ -305,6 +306,82 @@ exports.generateCaptcha = function(req, callback) {
       type : 'checkCaptchaLimit',
       ip : logger.getRawIp(req)
     });
+
+  });
+
+};
+
+exports.getFromPool = function(callback) {
+
+  poolIndex++;
+
+  if (poolIndex > captchaLimit) {
+    poolIndex = 0;
+  }
+
+  captchas.find({
+    pool : true,
+    expiration : {
+      $gt : new Date()
+    },
+    answer : {
+      $ne : null
+    }
+  }).skip(poolIndex).limit(1).toArray(function(error, captcha) {
+
+    if (error) {
+      callback(error);
+    } else if (!captcha.length) {
+      exports.checkPool(callback);
+    } else {
+      callback(null, captcha[0]);
+    }
+
+  });
+
+};
+
+exports.checkPool = function(callback) {
+
+  captchas.countDocuments({
+    pool : true,
+    expiration : {
+      $gt : new Date()
+    },
+    answer : {
+      $ne : null
+    }
+  }, function(error, amount) {
+
+    if (error) {
+      callback(error);
+    } else if (amount < captchaLimit) {
+      exports.createCaptcha(callback, true);
+    } else {
+      exports.getFromPool(callback);
+    }
+
+  });
+
+};
+
+exports.generateCaptcha = function(req, callback) {
+
+  if (req.isOnion) {
+    return exports.checkPool(callback);
+  } else if (req.isTor) {
+    return exports.checkFlood(req, callback);
+  }
+
+  spamOps.checkDnsbl(logger.ip(req), function checked(error, spammer) {
+
+    if (error) {
+      callback(error);
+    } else if (spammer) {
+      exports.checkPool(callback);
+    } else {
+      exports.checkFlood(req, callback);
+    }
 
   });
 
