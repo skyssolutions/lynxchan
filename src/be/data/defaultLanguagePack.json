@@ -368,5 +368,7 @@
   "guiRedactedName": "REDACTED",
   "titGlobalFilters": "Global filters",
   "errDeniedOffenseHistory": "You are not allowed to search for this offense history.",
-  "titOffenseRecord": "Offense record"
+  "titOffenseRecord": "Offense record",
+  "errDeniedSingleDeletion": "You are not allowed to delete single files from this posting.",
+  "msgFileUnlinked": "File unlinked from posting."
 }

@@ -861,14 +861,10 @@ exports.deleteFiles = function(identifiers, userData, language, callback,
   if (!override) {
     var allowed = userData.globalRole <= maxGlobalStaffRole;
     if (!allowed) {
-
-      callback(lang(language).errDeniedMediaManagement);
-
-      return;
+      return callback(lang(language).errDeniedMediaManagement);
     }
   } else if (!identifiers || !identifiers.length) {
-    callback();
-    return;
+    return callback();
   }
 
   files.aggregate([ {

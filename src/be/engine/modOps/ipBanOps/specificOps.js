@@ -164,21 +164,6 @@ exports.reloadPages = function(pages, board, informedThreads, informedPosts,
       thread : informedThreads[i]
     });
 
-    process.send({
-      board : board,
-      thread : informedThreads[i],
-      preview : true
-    });
-  }
-
-  for (i = 0; i < informedPosts.length; i++) {
-
-    process.send({
-      board : board,
-      post : informedPosts[i],
-      preview : true
-    });
-
   }
 
   for (i = 0; i < parentThreads.length; i++) {

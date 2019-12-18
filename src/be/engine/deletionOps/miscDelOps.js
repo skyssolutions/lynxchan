@@ -19,11 +19,13 @@ var overboard;
 var lang;
 var autoArchive;
 var redactedModNames;
+var mediaHandler;
 var sfwOverboard;
 var logOps;
 var boardOps;
 var referenceHandler;
 var overboardOps;
+var miscOps;
 var archiveOps;
 var gridFs;
 
@@ -41,12 +43,14 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   archiveOps = require('../archiveOps');
+  mediaHandler = require('../mediaHandler');
   logOps = require('../logOps');
   overboardOps = require('../overboardOps');
   referenceHandler = require('../mediaHandler');
   lang = require('../langOps').languagePack;
   gridFs = require('../gridFsHandler');
   boardOps = require('../boardOps').meta;
+  miscOps = require('../miscOps');
 };
 
 // Section 1: Thread cleanup {
@@ -372,9 +376,7 @@ exports.deleteBoard = function(board, user, callback) {
 exports.board = function(userData, parameters, language, callback) {
 
   if (!parameters.confirmDeletion) {
-    callback(lang(language).errBoardDelConfirmation);
-
-    return;
+    return callback(lang(language).errBoardDelConfirmation);
   }
 
   var admin = userData.globalRole < 2;
@@ -415,3 +417,159 @@ exports.board = function(userData, parameters, language, callback) {
 
 };
 // } Section 2: Board deletion
+
+// Section 3: Single file delection {
+exports.removeFile = function(userData, parameters, language, posting, cb) {
+
+  var removed = posting.files.splice(parameters.index, 1)[0];
+
+  (parameters.postId ? posts : threads).updateOne({
+    _id : posting._id
+  }, {
+    $set : {
+      files : posting.files
+    },
+    $unset : miscOps.individualCaches
+  }, function(error) {
+
+    var deleteMedia;
+
+    try {
+      deleteMedia = JSON.parse(parameters['delete']);
+    } catch (error) {
+      deleteMedia = false;
+    }
+
+    if (error) {
+      return cb(error);
+    }
+
+    process.send({
+      board : posting.boardUri,
+      thread : posting.threadId
+    });
+
+    process.send({
+      board : posting.boardUri,
+      page : posting.page
+    });
+
+    process.send({
+      multiboard : true,
+      board : posting.boardUri
+    });
+
+    if (!deleteMedia) {
+      return cb();
+    }
+
+    var identifier = removed.md5 + '-' + removed.mime.replace('/', '');
+
+    mediaHandler.deleteFiles([ identifier ], userData, language, cb, true);
+
+  });
+};
+
+exports.checkSingleRemoval = function(parameters, posting, userData, language,
+    callback) {
+
+  parameters.index = +parameters.index || 0;
+
+  if (parameters.index < 0) {
+    parameters.index = 0;
+  }
+
+  if (!posting.files || posting.files.length <= parameters.index) {
+    callback();
+  } else {
+    exports.removeFile(userData, parameters, language, posting, callback);
+  }
+
+};
+
+exports.getThread = function(userData, parameters, language, posting, cb) {
+
+  threads.findOne({
+    threadId : posting.threadId,
+    boardUri : posting.boardUri
+  }, function(error, thread) {
+
+    if (error) {
+      cb(error);
+    } else if (!thread) {
+      cb(lang(language).errPostingNotFound);
+    } else {
+
+      posting.page = thread.page;
+
+      exports.checkSingleRemoval(parameters, posting, userData, language, cb);
+    }
+
+  });
+
+};
+
+exports.getPosting = function(userData, parameters, language, callback) {
+
+  if (!parameters.postId && !parameters.threadId) {
+    return callback(lang(language).errPostingNotFound);
+  }
+
+  var query = {
+    boardUri : parameters.boardUri
+  };
+
+  var key = parameters.postId ? 'postId' : 'threadId';
+
+  query[key] = +parameters.postId || +parameters.threadId;
+
+  (parameters.postId ? posts : threads).findOne(query,
+      function(error, posting) {
+
+        if (error) {
+          return callback(error);
+        } else if (!posting) {
+          return callback(lang(language).errPostingNotFound);
+        }
+
+        if (!parameters.threadId) {
+          exports.getThread(userData, parameters, language, posting, callback);
+        } else {
+          exports.checkSingleRemoval(parameters, posting, userData, language,
+              callback);
+        }
+
+      });
+
+};
+
+exports.singleFile = function(userData, parameters, language, callback) {
+
+  boards.findOne({
+    boardUri : parameters.boardUri
+  }, function(error, board) {
+
+    if (error) {
+      return callback(error);
+    } else if (!board || !parameters.boardUri) {
+      return callback(lang(language).errBoardNotFound);
+    }
+
+    if (userData.globalRole <= miscOps.getMaxStaffRole()) {
+      return exports.getPosting(userData, parameters, language, callback);
+    }
+
+    var volunteers = board.volunteers || [];
+
+    var isVolunteer = volunteers.indexOf(userData.login) >= 0;
+
+    if (userData.login !== board.owner && !isVolunteer) {
+      callback(lang(language).errDeniedSingleDeletion);
+    } else {
+      exports.getPosting(userData, parameters, language, callback);
+    }
+
+  });
+
+};
+// } Section 3: Single file delection

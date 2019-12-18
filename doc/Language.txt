@@ -11,6 +11,7 @@ tit: page titles.
 
 The structure of this json is as follows:
 
+errDeniedSingleDeletion: error thrown when the user is not allowed to perform the deletion of a single file in a post.
 errDeniedOffenseHistory: error thrown when the user tries to access the offense history of a user he is not allowed to.
 errOwnsBoards: error thrown when the user tries to delete his own account but he owns boards.
 errGeneralBanLimit: error thrown when the the board has exceeded it's limit for range or ASN bans when trying to create a new one.
@@ -268,6 +269,7 @@ msgThreadArchived: message used after archiving a thread.
 msgFlagCreated: message used after a new flag is created.
 msgFlagDeleted: message used after deleting a flag.
 msgAsnBanCreated: message used after placing an ASN ban.
+msgFileUnlinked: message used after unlinking a single file.
 msgBoardUnlocked: message used after unlocking a board's auto lock.
 msgSavedGlobalSettings: message used after saving global settings.
 msgSpoilerSet: message displayed after setting a custom spoiler on a board.
