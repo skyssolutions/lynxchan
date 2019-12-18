@@ -1482,5 +1482,20 @@ Json output(Array): array with the offense records founds. Contains objects with
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID::91
+
+Name: unlinkSingle
+
+Description: unlinks a single file from a posting. Requires authentication, uses get parameters.
+
+Parameters:
+    boardUri: uri of the board of the posting.
+    postId(Number): postId of the reply to have it's file deleted.
+    threadId(Number): threadId of the thread have it's file deleted. Ignored if postId is informed.
+    index(Number): index of the file to be delete. 
+    delete(Boolean): if informed, the media will also be wiped from the server after being unlinked. Ignored if the user is not on global staff.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

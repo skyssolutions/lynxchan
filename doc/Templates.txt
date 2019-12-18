@@ -1165,6 +1165,14 @@ uploadCell*: element that contains a post's files.
 Root element: figure
 
 Elements:
+unlinkLink:
+    use: have it's href manipulated and might be removed.
+    description: link to unlink only the individual file.
+
+unlinkAndDeletekLink:
+    use: have it's href manipulated and might be removed.
+    description: link to unlink and then delete only the individual file.
+
 sizeLabel:
     use: have it's innerHTML manipulated.
     description: holds the file size.

@@ -330,6 +330,14 @@
         "mime"
       ],
       "nameLink": "href",
+      "unlinkLink": [
+        "href",
+        "removal"
+      ],
+      "unlinkAndDeleteLink": [
+        "href",
+        "removal"
+      ],
       "divHash": "removal",
       "labelHash": "inner",
       "originalNameLink": [

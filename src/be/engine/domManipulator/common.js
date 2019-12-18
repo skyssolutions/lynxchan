@@ -756,13 +756,27 @@ exports.setUploadLinks = function(cell, file) {
 
 };
 
-exports.setUploadModElements = function(template, modding, cell, file) {
+exports.setUploadModElements = function(template, modding, cell, file, index,
+    posting) {
 
   if (!modding) {
-    cell = cell.replace('__divHash_location__', '');
+    cell = cell.replace('__divHash_location__', '').replace(
+        '__unlinkLink_location__', '').replace(
+        '__unlinkAndDeleteLink_location__', '');
   } else {
-    cell = cell.replace('__divHash_location__', template.removable.divHash);
-    cell = cell.replace('__labelHash_inner__', file.md5);
+
+    var unlinkStart = '/unlinkSingle.js?boardUri=' + posting.boardUri + '&';
+    unlinkStart += (posting.postId ? 'postId' : 'threadId') + '=';
+    unlinkStart += (posting.postId || posting.threadId) + '&index=' + index;
+
+    cell = cell.replace('__unlinkAndDeleteLink_location__',
+        template.removable.unlinkAndDeleteLink).replace(
+        '__unlinkLink_location__', template.removable.unlinkLink).replace(
+        '__divHash_location__', template.removable.divHash).replace(
+        '__labelHash_inner__', file.md5).replace('__unlinkLink_href__',
+        unlinkStart).replace('__unlinkAndDeleteLink_href__',
+        unlinkStart + '&delete=1');
+
   }
 
   return cell;
@@ -786,9 +800,11 @@ exports.setUploadDimensionLabel = function(cell, file, t) {
 
 };
 
-exports.setUploadCell = function(files, modding, language) {
+exports.setUploadCell = function(posting, modding, language) {
 
   var children = '';
+
+  var files = posting.files;
 
   var template = templateHandler(language).uploadCell;
 
@@ -799,7 +815,7 @@ exports.setUploadCell = function(files, modding, language) {
     cell += '</figure>';
 
     cell = exports.setUploadModElements(template, modding, exports
-        .setUploadLinks(cell, file), file);
+        .setUploadLinks(cell, file), file, i, posting);
 
     cell = cell.replace('__sizeLabel_inner__', exports.formatFileSize(
         file.size, language));
