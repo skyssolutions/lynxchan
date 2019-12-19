@@ -1,6 +1,4 @@
 {
-  "errExpiredCaptcha": "Expired captcha.",
-  "errWrongCaptcha": "Wrong captcha.",
   "errExpiredOrWrongCaptcha": "Wrong answer or expired captcha.",
   "logGlobalRoleChange": {
     "userPiece": "User {$login}",

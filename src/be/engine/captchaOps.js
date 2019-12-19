@@ -470,14 +470,6 @@ exports.checkForCaptcha = function(req, callback) {
 
 // Section 2: Captcha consumption {
 // solves and invalidates a captcha
-exports.isCaptchaSolved = function(captcha, input) {
-
-  if (captcha.value) {
-    return !captcha.value.answer || captcha.value.answer === input;
-  }
-
-};
-
 exports.dispensesCaptcha = function(board, thread) {
 
   if (!board || forceCaptcha) {
@@ -500,46 +492,40 @@ exports.dispensesCaptcha = function(board, thread) {
 exports.attemptCaptcha = function(id, input, board, language, cb, thread) {
 
   if (exports.dispensesCaptcha(board, thread)) {
-    cb();
-    return;
+    return cb();
   }
 
   input = (input || '').toString().trim().toLowerCase();
 
-  if (input.length === 24) {
+  var preSolved = input.length === 24;
+
+  if (preSolved) {
     id = input;
     if (verbose) {
       console.log('Using pre-solved captcha ' + id);
     }
-  } else {
-    if (verbose) {
-      console
-          .log('Attempting to solve captcha ' + id + ' with answer ' + input);
-    }
+  } else if (verbose) {
+    console.log('Attempting to solve captcha ' + id + ' with answer ' + input);
   }
 
   try {
     id = new ObjectID(id);
   } catch (error) {
-    cb(lang(language).errExpiredCaptcha);
-    return;
+    return cb(lang(language).errExpiredOrWrongCaptcha);
   }
 
   captchas.findOneAndDelete({
     _id : id,
+    answer : (preSolved ? null : input),
     expiration : {
       $gt : new Date()
     }
   }, function gotCaptcha(error, captcha) {
 
-    if (error) {
+    if (error || captcha.value) {
       cb(error);
-    } else if (exports.isCaptchaSolved(captcha, input)) {
-      cb();
-    } else if (!captcha.value) {
-      cb(lang(language).errExpiredCaptcha);
     } else {
-      cb(lang(language).errWrongCaptcha);
+      cb(lang(language).errExpiredOrWrongCaptcha);
     }
 
   });
@@ -547,7 +533,7 @@ exports.attemptCaptcha = function(id, input, board, language, cb, thread) {
 };
 // } Section 2: Captcha consumption
 
-// solves a captcha without invalidating it
+// solves a captcha extending it's expiration
 exports.solveCaptcha = function(parameters, language, callback) {
 
   try {
@@ -572,12 +558,10 @@ exports.solveCaptcha = function(parameters, language, callback) {
     }
   }, function gotCaptcha(error, captcha) {
 
-    if (error) {
+    if (error || captcha.value) {
       callback(error);
-    } else if (!captcha.value) {
-      callback(lang(language).errExpiredOrWrongCaptcha);
     } else {
-      callback();
+      callback(lang(language).errExpiredOrWrongCaptcha);
     }
 
   });
