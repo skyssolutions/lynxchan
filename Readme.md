@@ -80,4 +80,4 @@ Endchan's staff: early adopters and feedback.
 Megamilk: feedback and testing from 1.8 to 2.1.
 lt_barclay: mobile support for PenumbraLynx.
 
-[WHAT IS THE INTERNET? WHAT IS A CHAN?](https://8ch.net)
+[WHAT IS THE INTERNET? WHAT IS A CHAN?](https://en.wikipedia.org/wiki/Imageboard)
