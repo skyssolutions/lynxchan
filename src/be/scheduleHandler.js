@@ -316,62 +316,80 @@ function oldEnoughToDelete(date) {
 
 }
 
-function deleteFile(file) {
+function processEntry(entry, callback) {
 
-  if (verbose) {
-    console.log('Removing expired tmp file ' + file);
-  }
+  var path = tempDirectory + '/' + entry.name;
 
-  try {
-    fs.unlinkSync(file);
-  } catch (error) {
-    if (verbose) {
-      console.log(error);
+  fs.stat(path, function gotStats(error, stats) {
+
+    if (error) {
+      return callback(error);
     }
-  }
+
+    var shouldDeleteFile = stats.isFile() && !stats.size;
+
+    if (!shouldDeleteFile || !oldEnoughToDelete(stats.ctime)) {
+      return callback();
+    }
+
+    if (verbose) {
+      console.log('Removing expired tmp file ' + path);
+    }
+
+    fs.unlink(path, callback);
+
+  });
 
 }
 
-function iterateFiles(files) {
+function iterateFiles(dirData) {
 
-  if (files.length) {
-    var file = tempDirectory + '/' + files.shift();
+  dirData.read(function(error, entry) {
 
-    fs.stat(file, function gotStats(error, stats) {
+    if (!error && entry) {
 
-      if (error) {
+      // style exception, too simple
+      return processEntry(entry, function(error) {
 
-        if (verbose) {
+        if (error && verbose) {
           console.log(error);
         }
 
-        iterateFiles(files);
+        iterateFiles(dirData);
 
-      } else {
+      });
+      // style exception, too simple
 
-        var shouldDeleteFile = stats.isFile() && !stats.size;
+    }
 
-        if (shouldDeleteFile && oldEnoughToDelete(stats.ctime)) {
-          deleteFile(file);
-        }
+    if (error && verbose) {
+      console.log(error);
+    }
 
-        iterateFiles(files);
+    // style exception, too simple
+    dirData.close(function(error) {
+
+      if (error) {
+        console.log(error);
       }
 
+      tempFiles();
     });
-  } else {
-    tempFiles();
+    // style exception, too simple
 
-  }
+  });
 
 }
 
 function removeExpiredTempFiles() {
-  fs.readdir(tempDirectory, function gotFiles(error, files) {
+
+  fs.opendir(tempDirectory, function gotFiles(error, dirData) {
+
     if (error) {
-      throw error;
+      console.log(error);
+      tempFiles();
     } else {
-      iterateFiles(files);
+      iterateFiles(dirData);
     }
 
   });
