@@ -246,7 +246,6 @@
       ],
       "addStaffForm": "removal",
       "newStaffCombo": "children",
-      "reportDiv": "children",
       "bansLink": "removal",
       "rangeBansLink": "removal",
       "massBanPanel": "removal",
@@ -283,12 +282,12 @@
       "addVolunteerBoardIdentifier": "value",
       "transferBoardIdentifier": "value",
       "deletionIdentifier": "value",
-      "reportDiv": "children",
       "bannerManagementLink": [
         "href",
         "removal"
       ],
       "ownerControlDiv": "removal",
+      "openReportsLink": "href",
       "closedReportsLink": "href",
       "bansLink": "href",
       "boardNameField": "value",
@@ -720,6 +719,12 @@
         "removal"
       ],
       "ipField": "value"
+    }
+  },
+  {
+    "template": "openReportsPage",
+    "prebuiltFields": {
+      "reportDiv": "children"
     }
   }
 ]

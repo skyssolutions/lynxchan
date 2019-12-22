@@ -368,5 +368,6 @@
   "errDeniedOffenseHistory": "You are not allowed to search for this offense history.",
   "titOffenseRecord": "Offense record",
   "errDeniedSingleDeletion": "You are not allowed to delete single files from this posting.",
-  "msgFileUnlinked": "File unlinked from posting."
+  "msgFileUnlinked": "File unlinked from posting.",
+  "titOpenReports": "Open reports"
 }

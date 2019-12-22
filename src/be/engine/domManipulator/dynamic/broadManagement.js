@@ -65,6 +65,9 @@ exports.boardManagementLinks = [ {
   page : 'closedReports',
   element : 'closedReportsLink'
 }, {
+  page : 'openReports',
+  element : 'openReportsLink'
+}, {
   page : 'bans',
   element : 'bansLink'
 }, {
@@ -318,7 +321,7 @@ exports.checkOwnership = function(userData, boardData, languages, template,
 };
 
 exports.getBoardManagementContent = function(boardData, languages, userData,
-    bans, reports, language) {
+    bans, language) {
 
   var template = templateHandler(language).bManagement;
 
@@ -338,19 +341,15 @@ exports.getBoardManagementContent = function(boardData, languages, userData,
 
   document = exports.setBoardManagementLinks(document, boardData);
 
-  document = document.replace('__appealedBansPanel_children__', common
-      .getBanList(bans, false, language));
-
-  return document.replace('__reportDiv_children__', common.getReportList(
-      reports, boardData, language, false, userData.globalRole));
+  return document.replace('__appealedBansPanel_children__', common.getBanList(
+      bans, false, language));
 
 };
 
-exports.boardManagement = function(userData, bData, languages, reports, bans,
-    language) {
+exports.boardManagement = function(userData, bData, languages, bans, language) {
 
   var document = exports.getBoardManagementContent(bData, languages, userData,
-      bans, reports, language);
+      bans, language);
 
   var boardUri = common.clean(bData.boardUri);
   var selfLink = '/' + boardUri + '/';
@@ -531,11 +530,8 @@ exports.processHideableElements = function(document, userRole, staff, language,
 
 };
 
-exports.setGlobalManagementLists = function(document, reports, boardData,
-    userRole, appealedBans, language, removable) {
-
-  document = document.replace('__reportDiv_children__', common.getReportList(
-      reports, boardData, language, true, userRole));
+exports.setGlobalManagementLists = function(document, userRole, appealedBans,
+    language, removable) {
 
   if (appealedBans) {
     document = document.replace('__appealedBansPanel_location__',
@@ -551,16 +547,16 @@ exports.setGlobalManagementLists = function(document, reports, boardData,
 
 };
 
-exports.globalManagement = function(userRole, userLogin, staff, reports,
-    boardData, appealedBans, language) {
+exports.globalManagement = function(userRole, userLogin, staff, appealedBans,
+    language) {
 
   var template = templateHandler(language).gManagement;
 
   var document = template.template.replace('__title__',
       lang(language).titGlobalManagement);
 
-  document = exports.setGlobalManagementLists(document, reports, boardData,
-      userRole, appealedBans, language, template.removable);
+  document = exports.setGlobalManagementLists(document, userRole, appealedBans,
+      language, template.removable);
 
   document = exports.setGlobalManagementLinks(userRole, document,
       template.removable);

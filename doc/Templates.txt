@@ -730,10 +730,6 @@ newStaffCombo:
     use: have children appended to it.
     description: combo-box used in the addStaffForm to define the role of the new staff member.
 
-reportDiv:
-    use: have children appended to it.
-    description: div containing global reports.
-
 bansLink:
     use: might be removed.
     description: link to the bans page.
@@ -890,13 +886,13 @@ deletionIdentifier:
     use: have it's value manipulated.
     description: hidden input used to identify the board to delete it.
 
-reportDiv:
-    use: have children appended to it.
-    description: div containing the reports of the board.
-
 closedReportsLink:
     use: have it's href manipulated.
     description: link to the page that will display closed reports.
+
+openReportsLink:
+    use: have it's href manipulated.
+    description: link to the page that will display open reports.
 
 bansLink:
     use: have it's href manipulated.
@@ -1024,10 +1020,6 @@ reportCell*: cell used to list open reports.
 Root element: div
 
 Elements:
-boardPanel:
-    use: might be removed.
-    description: panel with the board of the report.
-
 boardLabel:
     use: have it's innerHTML manipulated.
     description: holds the board of the report.
@@ -2813,6 +2805,17 @@ expirationLabel:
 modLabel:
     use: havei t's value manipulated.
     description: label that holds the mod that recorded the offense.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::73
+
+openReportsPage: page used to show open reports.
+
+Elements:
+reportsDiv:
+    use: have children appended to it.
+    description: div with the open reports.
 
 ------------------------------------------------------------------------------------------
 

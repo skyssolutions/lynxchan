@@ -337,3 +337,4 @@ titMediaDetails: title for the media details page.
 titLatestPostings: title for the latest postings page.
 titAsnBans: title for the ASN bans management page.
 titOffenseRecord: title for the offense record page.
+titOpenReports: title for the open reports page.

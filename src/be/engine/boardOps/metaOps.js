@@ -643,11 +643,10 @@ exports.createBoard = function(captchaId, parameters, userData, language,
 // } Section 4: Creation
 
 // Section 5: Board management {
-exports.getAvailableLanguages = function(boardData, reports, foundBans,
-    callback) {
+exports.getAvailableLanguages = function(boardData, foundBans, callback) {
 
   if (!useLanguages) {
-    return callback(null, boardData, [], reports, foundBans);
+    return callback(null, boardData, [], foundBans);
   }
 
   languages.find({}, {
@@ -671,7 +670,7 @@ exports.getAvailableLanguages = function(boardData, reports, foundBans,
 
 };
 
-exports.getAppealedBans = function(boardData, reports, callback) {
+exports.getAppealedBans = function(boardData, callback) {
 
   bans.find({
     boardUri : boardData.boardUri,
@@ -694,61 +693,10 @@ exports.getAppealedBans = function(boardData, reports, callback) {
     if (error) {
       callback(error);
     } else {
-      exports.getAvailableLanguages(boardData, reports, foundBans, callback);
+      exports.getAvailableLanguages(boardData, foundBans, callback);
     }
 
   });
-
-};
-
-exports.getBoardReports = function(boardData, associatePosts, callback) {
-
-  reports.find({
-    boardUri : boardData.boardUri,
-    closedBy : {
-      $exists : false
-    },
-    global : false
-  }, {
-    projection : {
-      boardUri : 1,
-      threadId : 1,
-      creation : 1,
-      postId : 1,
-      reason : 1
-    }
-  }).sort({
-    creation : -1
-  }).toArray(
-      function(error, foundReports) {
-
-        if (error) {
-          callback(error);
-        } else {
-
-          if (associatePosts) {
-
-            // style exception, too simple
-            reportOps.associateContent(foundReports,
-                function associatedContent(error) {
-
-                  if (error) {
-                    callback(error);
-                  } else {
-                    exports.getAppealedBans(boardData, foundReports, callback);
-                  }
-
-                });
-            // style exception, too simple
-
-          } else {
-            exports.getAppealedBans(boardData, foundReports, callback);
-
-          }
-
-        }
-
-      });
 
 };
 
@@ -790,7 +738,7 @@ exports.getBoardManagementData = function(userData, board,
     } else if (!boardData) {
       callback(lang(language).errBoardNotFound);
     } else if (modCommonOps.isInBoardStaff(userData, boardData)) {
-      exports.getBoardReports(boardData, associateReportContent, callback);
+      exports.getAppealedBans(boardData, callback);
     } else {
       callback(lang(language).errDeniedManageBoard);
     }

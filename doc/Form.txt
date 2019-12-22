@@ -201,13 +201,6 @@ Json output(Object): object with data used in global management. Contains the fo
         appliedBy: login of the user that applied the ban.
         appeal: appeal of the bans.
         denied(Boolean): indicates if the appeal was denied.
-    reports(Array): array with the global reports. Contains objects each with the following fields:
-        _id: unique id of the report.
-        threadId(Number): id of the thread either reported or containing the reported post.
-        postId(Number): id of the reported post.
-        boardUri: board containing the reported content.
-        reason: reason of why the content was reported.
-        creation: when the content was reported.
 
 ------------------------------------------------------------------------------------------
 
@@ -266,13 +259,6 @@ Json output(Object): object with data used to manage the board. Contains the fol
     boardMessage: message displayed on the board header.
     maxBumpAgeDays(Number): for how many days after its creation that a non-cyclic thread can be bumped.
     isOwner(Boolean): indicates if the user owns the board.
-    openReports(Array): array of open reports. Each object contains the following fields:
-        _id: unique id of the report.
-        boardUri: board of the report.
-        threadId(Number): thread that either contains the reported post or was reported.
-        postId(Number): reported post.
-        reason: reason of the report.
-        creation: when the content was reported.
     appealedBans(Array) array of appealed bans that weren't denied. Each object contains the following fields:
         _id: unique id of the ban.
         reason: reason of the ban.

@@ -455,3 +455,57 @@ exports.asnBans = function(asnBans, boardData, language) {
 
 };
 // } Section 5: ASN bans
+
+// Section 6: Open reports
+exports.getReportCell = function(report, boardData, language, ops, userRole) {
+
+  var template = templateHandler(language).reportCell;
+
+  var cell = '<div class="reportCell">';
+  cell += template.template + '</div>';
+
+  var reason = common.clean(report.reason || '');
+  cell = cell.replace('__reasonLabel_inner__', reason);
+  cell = cell.replace('__closureCheckbox_name__', 'report-' + report._id);
+
+  cell = cell.replace('__link_href__', common.getReportLink(report));
+
+  cell = cell.replace('__boardLabel_inner__', report.boardUri);
+
+  if (report.associatedPost) {
+    return cell.replace('__postingDiv_inner__', common.getPostInnerElements(
+        report.associatedPost, true, language, ops, null, boardData, userRole));
+
+  } else {
+    return cell.replace('__postingDiv_inner__', '');
+  }
+
+};
+
+exports.getReportList = function(reports, boardData, language, userRole) {
+
+  var children = '';
+
+  var operations = [];
+
+  for (var i = 0; i < reports.length; i++) {
+    children += exports.getReportCell(reports[i], boardData, language,
+        operations, userRole);
+  }
+
+  common.handleOps(operations);
+
+  return children;
+
+};
+
+exports.openReports = function(reports, boardData, userData, language) {
+
+  var document = templateHandler(language).openReportsPage.template.replace(
+      '__title__', lang(language).titOpenReports);
+
+  return document.replace('__reportDiv_children__', exports.getReportList(
+      reports, boardData, language, userData.globalRole));
+
+};
+// } Section 6: Open reports

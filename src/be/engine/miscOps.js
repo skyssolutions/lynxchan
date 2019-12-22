@@ -11,7 +11,6 @@ var crypto = require('crypto');
 var fs = require('fs');
 var users = db.users();
 var reports = db.reports();
-var reportOps;
 var formOps;
 var omitUnindexed;
 var CSP;
@@ -71,7 +70,6 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   formOps = require('./formOps');
-  reportOps = require('./modOps').report;
   lang = require('./langOps').languagePack;
 
   fs.readFile(__dirname + '/../data/settingsRelation.json', function read(
@@ -332,8 +330,7 @@ exports.getGlobalSettingsData = function(userData, language, callback) {
 };
 
 // Section 1: Global management data {
-exports.getAppealedBans = function(userRole, users, reports, boardData,
-    callback) {
+exports.getAppealedBans = function(userRole, users, callback) {
 
   if (userRole < 3) {
 
@@ -360,76 +357,16 @@ exports.getAppealedBans = function(userRole, users, reports, boardData,
         appliedBy : 1
       }
     }).toArray(function gotBans(error, foundBans) {
-      callback(error, users, reports, boardData, foundBans);
+      callback(error, users, foundBans);
     });
 
   } else {
-    callback(null, users, reports, boardData);
+    callback(null, users);
   }
 
 };
 
-exports.getReportsAssociations = function(userRole, foundUsers, foundReports,
-    callback) {
-
-  reportOps.associateContent(foundReports, function associatedContent(error) {
-
-    if (error) {
-      callback(error);
-    } else {
-
-      if (!foundReports.length) {
-        return exports.getAppealedBans(userRole, foundUsers, foundReports, {},
-            callback);
-      }
-
-      var boardList = {};
-
-      for (var i = 0; i < foundReports.length; i++) {
-
-        var associatedPost = foundReports[i].associatedPost;
-
-        if (associatedPost) {
-          boardList[associatedPost.boardUri] = true;
-        }
-
-      }
-
-      boards.find({
-        boardUri : {
-          $in : Object.keys(boardList)
-        }
-      }, {
-        projection : {
-          _id : 0,
-          ipSalt : 1,
-          boardUri : 1
-        }
-      }).toArray(
-          function gotBoards(error, foundBoards) {
-
-            if (error) {
-              return callback(error);
-            }
-
-            for (i = 0; i < foundBoards.length; i++) {
-              var foundBoard = foundBoards[i];
-              boardList[foundBoard.boardUri] = foundBoard;
-            }
-
-            return exports.getAppealedBans(userRole, foundUsers, foundReports,
-                boardList, callback);
-
-          });
-
-    }
-
-  });
-
-};
-
-exports.getManagementData = function(userRole, language, userLogin,
-    associateContent, callback) {
+exports.getManagementData = function(userRole, language, userLogin, callback) {
 
   var globalStaff = userRole <= MAX_STAFF_ROLE;
 
@@ -453,56 +390,17 @@ exports.getManagementData = function(userRole, language, userLogin,
       }
     }).sort({
       login : 1
-    }).toArray(
-        function gotUsers(error, foundUsers) {
+    }).toArray(function gotUsers(error, foundUsers) {
 
-          if (error) {
-            callback(error);
-          } else {
+      if (error) {
+        callback(error);
+      } else {
 
-            var query = {
-              closedBy : {
-                $exists : false
-              }
-            };
+        exports.getAppealedBans(userRole, foundUsers, callback);
 
-            if (!globalBoardModeration) {
-              query.global = true;
-            }
+      }
 
-            // style exception, too simple
-            reports.find(query, {
-              projection : {
-                boardUri : 1,
-                reason : 1,
-                threadId : 1,
-                creation : 1,
-                postId : 1,
-                global : 1
-              }
-            }).sort({
-              creation : -1
-            }).toArray(
-                function gotReports(error, foundReports) {
-
-                  if (error) {
-                    callback(error);
-                  } else {
-                    if (!associateContent) {
-                      exports.getAppealedBans(userRole, foundUsers,
-                          foundReports, callback);
-                    } else {
-                      exports.getReportsAssociations(userRole, foundUsers,
-                          foundReports, callback);
-                    }
-                  }
-
-                });
-            // style exception, too simple
-
-          }
-
-        });
+    });
   }
 };
 // } Section 1: Global management data

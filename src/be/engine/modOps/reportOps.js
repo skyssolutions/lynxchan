@@ -779,7 +779,7 @@ exports.closeReports = function(userData, parameters, language, callback) {
 };
 // } Section 3: Close report
 
-// Section 4: Reported content association {
+// Section 4: Open reports {
 exports.associateFoundThreads = function(reports, foundThreads) {
 
   var association = {};
@@ -840,9 +840,7 @@ exports.associateFoundPosts = function(reports, foundPosts) {
 exports.associatePostsContent = function(reports, postsOrArray, callback) {
 
   if (!postsOrArray.length) {
-    callback();
-
-    return;
+    return callback();
   }
 
   posts.find({
@@ -913,4 +911,115 @@ exports.associateContent = function(reports, callback) {
   }
 
 };
-// } Section 4: Reported content association
+
+exports.getReportsAssociations = function(foundReports, callback) {
+
+  exports.associateContent(foundReports, function associatedContent(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      var boardList = {};
+
+      for (var i = 0; i < foundReports.length; i++) {
+
+        var associatedPost = foundReports[i].associatedPost;
+
+        if (associatedPost) {
+          boardList[associatedPost.boardUri] = true;
+        }
+
+      }
+
+      boards.find({
+        boardUri : {
+          $in : Object.keys(boardList)
+        }
+      }, {
+        projection : {
+          _id : 0,
+          ipSalt : 1,
+          boardUri : 1
+        }
+      }).toArray(function gotBoards(error, foundBoards) {
+
+        if (error) {
+          return callback(error);
+        }
+
+        for (i = 0; i < foundBoards.length; i++) {
+          var foundBoard = foundBoards[i];
+          boardList[foundBoard.boardUri] = foundBoard;
+        }
+
+        callback(null, foundReports, boardList);
+
+      });
+
+    }
+
+  });
+
+};
+
+exports.getOpenReports = function(userData, parameters, language, callback) {
+
+  var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+
+  if (!globalStaff && !parameters.boardUri) {
+    return callback(lang(language).errDeniedGlobalReportManagement);
+  } else if (parameters.boardUri) {
+
+    var allowedBoards = userData.ownedBoards || [];
+
+    allowedBoards = allowedBoards.concat(userData.volunteeredBoards || []);
+
+    if (allowedBoards.indexOf(parameters.boardUri) < 0) {
+      return callback(lang(language).errDeniedBoardReportManagement);
+    }
+  }
+
+  var query = {
+    closedBy : {
+      $exists : false
+    }
+  };
+
+  if (!globalBoardModeration && !parameters.boardUri) {
+    query.global = true;
+  }
+
+  if (parameters.boardUri) {
+    query.boardUri = parameters.boardUri;
+  }
+
+  // style exception, too simple
+  reports.find(query, {
+    projection : {
+      boardUri : 1,
+      reason : 1,
+      threadId : 1,
+      creation : 1,
+      postId : 1,
+      global : 1
+    }
+  }).sort({
+    creation : -1
+  }).toArray(function gotReports(error, foundReports) {
+
+    if (error) {
+      return callback(error);
+    }
+
+    if (parameters.json || !foundReports.length) {
+      callback(null, foundReports);
+    } else {
+      exports.getReportsAssociations(foundReports, callback);
+    }
+
+  });
+  // style exception, too simple
+
+};
+// } Section 4: Open reports
