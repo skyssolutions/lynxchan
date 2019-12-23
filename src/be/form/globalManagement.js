@@ -8,27 +8,27 @@ var miscOps = require('../engine/miscOps');
 exports.getManagementData = function(userData, res, json, auth, language) {
 
   miscOps.getManagementData(userData.globalRole, language, userData.login,
-      function gotData(error, globalStaff, appealedBans) {
+      function gotData(error, globalStaff, appealedBans, reportCount) {
         if (error) {
-          formOps.outputError(error, 500, res, language, json, auth);
-        } else {
-
-          if (json) {
-
-            formOps.outputResponse('ok', {
-              login : userData.login,
-              staff : globalStaff || [],
-              appealedBans : appealedBans || []
-            }, res, null, auth, language, true);
-
-          } else {
-            res.writeHead(200, miscOps.getHeader('text/html', auth));
-
-            res.end(dom.globalManagement(userData.globalRole, userData.login,
-                globalStaff, appealedBans, language));
-          }
-
+          return formOps.outputError(error, 500, res, language, json, auth);
         }
+
+        if (json) {
+
+          formOps.outputResponse('ok', {
+            login : userData.login,
+            staff : globalStaff || [],
+            appealedBans : appealedBans || [],
+            openReports : reportCount
+          }, res, null, auth, language, true);
+
+        } else {
+          res.writeHead(200, miscOps.getHeader('text/html', auth));
+
+          res.end(dom.globalManagement(userData.globalRole, userData.login,
+              globalStaff, appealedBans, reportCount, language));
+        }
+
       });
 
 };

@@ -11,23 +11,23 @@ exports.getBoardManagementData = function(board, userData, res, json, auth,
     language) {
 
   boardOps.getBoardManagementData(userData, board, !json, language,
-      function gotManagementData(error, boardData, languages, bans) {
+      function gotManagementData(error, bData, languages, bans, reportCount) {
+
         if (error) {
-          formOps.outputError(error, 500, res, language, json, auth);
-        } else {
-
-          if (json) {
-
-            formOps.outputResponse('ok', jsonB.boardManagement(userData,
-                boardData, languages, bans), res, null, auth, null, true);
-
-          } else {
-            res.writeHead(200, miscOps.getHeader('text/html', auth));
-            res.end(dom.boardManagement(userData, boardData, languages, bans,
-                language));
-          }
-
+          return formOps.outputError(error, 500, res, language, json, auth);
         }
+
+        if (json) {
+
+          formOps.outputResponse('ok', jsonB.boardManagement(userData, bData,
+              languages, bans, reportCount), res, null, auth, null, true);
+
+        } else {
+          res.writeHead(200, miscOps.getHeader('text/html', auth));
+          res.end(dom.boardManagement(userData, bData, languages, bans,
+              reportCount, language));
+        }
+
       });
 };
 

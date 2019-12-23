@@ -346,10 +346,11 @@ exports.getBoardManagementContent = function(boardData, languages, userData,
 
 };
 
-exports.boardManagement = function(userData, bData, languages, bans, language) {
+exports.boardManagement = function(userData, bData, languages, bans,
+    reportCount, language) {
 
   var document = exports.getBoardManagementContent(bData, languages, userData,
-      bans, language);
+      bans, language).replace('__openReportsLabel_inner__', reportCount);
 
   var boardUri = common.clean(bData.boardUri);
   var selfLink = '/' + boardUri + '/';
@@ -548,12 +549,13 @@ exports.setGlobalManagementLists = function(document, userRole, appealedBans,
 };
 
 exports.globalManagement = function(userRole, userLogin, staff, appealedBans,
-    language) {
+    reportCount, language) {
 
   var template = templateHandler(language).gManagement;
 
   var document = template.template.replace('__title__',
-      lang(language).titGlobalManagement);
+      lang(language).titGlobalManagement).replace('__openReportsLabel_inner__',
+      reportCount);
 
   document = exports.setGlobalManagementLists(document, userRole, appealedBans,
       language, template.removable);

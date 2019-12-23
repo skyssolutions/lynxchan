@@ -70,23 +70,29 @@ exports.loadDependencies = function() {
 
 };
 
-// Section 1: Closed reports {
-exports.readClosedReports = function(parameters, callback) {
+exports.getQueryBlock = function(parameters, closed) {
 
-  var queryBlock = {
+  var query = {
     closedBy : {
-      $exists : true
+      $exists : closed || false
     }
   };
 
   if (parameters.boardUri) {
-    queryBlock.boardUri = parameters.boardUri;
-    queryBlock.global = false;
+    query.boardUri = parameters.boardUri;
+    query.global = false;
   } else if (!globalBoardModeration) {
-    queryBlock.global = true;
+    query.global = true;
   }
 
-  reports.find(queryBlock, {
+  return query;
+
+};
+
+// Section 1: Closed reports {
+exports.readClosedReports = function(parameters, callback) {
+
+  reports.find(exports.getQueryBlock(parameters, true), {
     projection : {
       boardUri : 1,
       threadId : 1,
@@ -106,7 +112,7 @@ exports.getClosedReports = function(userData, parameters, language, callback) {
   var isOnGlobalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
   if (parameters.boardUri) {
-    parameters.boardUri = parameters.boardUri.toString();
+    parameters.boardUri = parameters.boardUri;
 
     boards.findOne({
       boardUri : parameters.boardUri
@@ -980,22 +986,8 @@ exports.getOpenReports = function(userData, parameters, language, callback) {
     }
   }
 
-  var query = {
-    closedBy : {
-      $exists : false
-    }
-  };
-
-  if (!globalBoardModeration && !parameters.boardUri) {
-    query.global = true;
-  }
-
-  if (parameters.boardUri) {
-    query.boardUri = parameters.boardUri;
-  }
-
   // style exception, too simple
-  reports.find(query, {
+  reports.find(exports.getQueryBlock(parameters), {
     projection : {
       boardUri : 1,
       reason : 1,

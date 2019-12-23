@@ -12,6 +12,7 @@ var fs = require('fs');
 var users = db.users();
 var reports = db.reports();
 var formOps;
+var reportOps;
 var omitUnindexed;
 var CSP;
 var globalBoardModeration;
@@ -70,6 +71,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   formOps = require('./formOps');
+  reportOps = require('./modOps').report;
   lang = require('./langOps').languagePack;
 
   fs.readFile(__dirname + '/../data/settingsRelation.json', function read(
@@ -330,39 +332,51 @@ exports.getGlobalSettingsData = function(userData, language, callback) {
 };
 
 // Section 1: Global management data {
-exports.getAppealedBans = function(userRole, users, callback) {
+exports.getOpenReportsCount = function(foundUsers, foundBans, callback) {
 
-  if (userRole < 3) {
+  reports.countDocuments(reportOps.getQueryBlock({}), function(error, count) {
+    callback(error, foundUsers, foundBans, count);
+  });
 
-    var query = {
-      appeal : {
-        $exists : true
-      },
-      denied : {
-        $exists : false
-      }
-    };
+};
 
-    if (!globalBoardModeration) {
-      query.boardUri = null;
+exports.getAppealedBans = function(userRole, foundUsers, callback) {
+
+  if (userRole === 3) {
+    return exports.getOpenReportsCount(foundUsers, null, callback);
+  }
+
+  var query = {
+    appeal : {
+      $exists : true
+    },
+    denied : {
+      $exists : false
+    }
+  };
+
+  if (!globalBoardModeration) {
+    query.boardUri = null;
+  }
+
+  bans.find(query, {
+    projection : {
+      reason : 1,
+      appeal : 1,
+      boardUri : 1,
+      denied : 1,
+      expiration : 1,
+      appliedBy : 1
+    }
+  }).toArray(function gotBans(error, foundBans) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.getOpenReportsCount(foundUsers, foundBans, callback);
     }
 
-    bans.find(query, {
-      projection : {
-        reason : 1,
-        appeal : 1,
-        boardUri : 1,
-        denied : 1,
-        expiration : 1,
-        appliedBy : 1
-      }
-    }).toArray(function gotBans(error, foundBans) {
-      callback(error, users, foundBans);
-    });
-
-  } else {
-    callback(null, users);
-  }
+  });
 
 };
 
@@ -395,9 +409,7 @@ exports.getManagementData = function(userRole, language, userLogin, callback) {
       if (error) {
         callback(error);
       } else {
-
         exports.getAppealedBans(userRole, foundUsers, callback);
-
       }
 
     });

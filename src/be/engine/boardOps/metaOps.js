@@ -643,10 +643,21 @@ exports.createBoard = function(captchaId, parameters, userData, language,
 // } Section 4: Creation
 
 // Section 5: Board management {
+exports.getOpenReportCount = function(boardData, foundLanguages, foundBans,
+    callback) {
+
+  reports.countDocuments(reportOps.getQueryBlock({
+    boardUri : boardData.boardUri
+  }), function(error, count) {
+    callback(error, boardData, foundLanguages, foundBans, count);
+  });
+
+};
+
 exports.getAvailableLanguages = function(boardData, foundBans, callback) {
 
   if (!useLanguages) {
-    return callback(null, boardData, [], foundBans);
+    return exports.getOpenReportCount(boardData, [], foundBans, callback);
   }
 
   languages.find({}, {
@@ -656,15 +667,15 @@ exports.getAvailableLanguages = function(boardData, foundBans, callback) {
   }).toArray(function(error, foundLanguages) {
 
     if (error) {
-      callback(error);
-    } else {
-      callback(null, boardData, foundLanguages.map(function(element) {
-        return {
-          id : element._id.toString(),
-          label : element.headerValues.join(', ')
-        };
-      }), reports, foundBans);
+      return callback(error);
     }
+
+    exports.getOpenReportCount(boardData, foundLanguages.map(function(element) {
+      return {
+        id : element._id.toString(),
+        label : element.headerValues.join(', ')
+      };
+    }), foundBans, callback);
 
   });
 

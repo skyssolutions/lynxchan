@@ -232,6 +232,7 @@
       "asnBansLink": "removal",
       "socketLink": "removal",
       "accountsLink": "removal",
+      "openReportsLabel": "inner",
       "appealedBansPanel": [
         "removal",
         "children"
@@ -267,6 +268,7 @@
       "blockDeletionCheckbox": "checked",
       "customJsForm": "removal",
       "tagsField": "value",
+      "openReportsLabel": "inner",
       "maxBumpAgeField": "value",
       "customSpoilerIdentifier": "value",
       "customJsIdentifier": "value",

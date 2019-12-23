@@ -489,7 +489,8 @@ exports.rules = function(boardUri, rules, callback) {
       }, callback);
 };
 
-exports.boardManagement = function(userData, boardData, languages, bans) {
+exports.boardManagement = function(userData, boardData, languages, bans,
+    reportCount) {
 
   return {
     usesCustomSpoiler : boardData.usesCustomSpoiler,
@@ -503,6 +504,7 @@ exports.boardManagement = function(userData, boardData, languages, bans) {
     autoCaptchaThreshold : boardData.autoCaptchaThreshold,
     settings : boardData.settings || [],
     tags : boardData.tags || [],
+    openReports : reportCount,
     boardMessage : boardData.boardMessage,
     isOwner : userData.login === boardData.owner,
     appealedBans : bans || [],
