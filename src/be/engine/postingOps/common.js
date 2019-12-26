@@ -571,7 +571,7 @@ exports.replaceStyleMarkdown = function(message, replaceCode, boardMessage) {
                 return exports.linkSanitizationRelation[innerMatch];
               });
 
-          return '<a target="blank" href="' + match + '">' + match + '</a>';
+          return '<a target="_blank" href="' + match + '">' + match + '</a>';
 
         });
 
