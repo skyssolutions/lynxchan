@@ -497,6 +497,23 @@ exports.createPost = function(req, parameters, userData, postId, thread, board,
 
   uploadHandler.saveUploads(parameters, newFiles, function savedFiles() {
 
+    var textBoard = board ? board.settings.indexOf('textBoard') > -1 : null;
+
+    if (!parameters.message && !newFiles.length) {
+      return common.recordFloodAndError(req,
+          lang(req.language).errNoFileAndMessage, cb);
+    } else if (textBoard && newFiles.length) {
+      return common.recordFloodAndError(req, lang(req.language).errTextBoard,
+          cb);
+    }
+
+    var boardLimitError = common.checkBoardFileLimits(parameters.files, board,
+        req.language);
+
+    if (boardLimitError) {
+      return common.recordFloodAndError(req, boardLimitError, cb);
+    }
+
     var postToAdd = exports.getNewPost(req, parameters, userData, postId,
         thread, board, wishesToSign);
 
@@ -696,11 +713,6 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
   parameters.threadId = +parameters.threadId;
   parameters.hash = r9k.getMessageHash(parameters.message);
 
-  if (!parameters.message && !parameters.files.length) {
-    callback(lang(req.language).errNoFileAndMessage);
-    return;
-  }
-
   parameters.boardUri = parameters.boardUri.toString();
 
   boards.findOne({
@@ -726,11 +738,6 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
     }
   }, function gotBoard(error, board) {
 
-    var boardLimitError = common.checkBoardFileLimits(parameters.files, board,
-        req.language);
-
-    var textBoard = board ? board.settings.indexOf('textBoard') > -1 : null;
-
     var locked = board && board.specialSettings;
     locked = locked && board.specialSettings.indexOf('locked') > -1;
 
@@ -738,12 +745,8 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
       callback(error);
     } else if (!board) {
       callback(lang(req.language).errBoardNotFound);
-    } else if (textBoard && parameters.files.length) {
-      callback(lang(req.language).errTextBoard);
     } else if (locked) {
       callback(lang(req.language).errLockedBoard);
-    } else if (boardLimitError) {
-      callback(boardLimitError);
     } else {
 
       // style exception, too simple

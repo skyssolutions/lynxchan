@@ -301,6 +301,8 @@ exports.getProcessedBans = function(foundBans, files) {
 
 exports.checkForHashBans = function(parameters, req, callback) {
 
+  //TODO
+  
   var files = parameters.files;
   var boardUri = parameters.boardUri;
 

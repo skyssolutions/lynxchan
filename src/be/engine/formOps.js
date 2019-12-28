@@ -176,8 +176,32 @@ exports.getFileData = function(file, fields, mime, callback) {
 
 };
 
-exports.transferFileInformation = function(files, fields, parsedCookies, cb,
-    res, language, json) {
+exports.applyMetaData = function(fields, cb) {
+
+  if (fields.metaData.length) {
+
+    var relation = {};
+
+    for (var i = 0; i < fields.files.length; i++) {
+
+      var file = fields.files[i];
+      relation[file.md5 + '-' + file.mime.replace('/', '')] = file;
+
+    }
+
+    var newFiles = [];
+    exports.getNewFiles(newFiles, fields, relation);
+    fields.files = newFiles;
+
+  }
+
+  delete fields.metaData;
+
+  cb(null, fields);
+
+};
+
+exports.transferFileInformation = function(files, fields, cb) {
 
   if (!files.length) {
 
@@ -185,18 +209,14 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
       console.log('Form input: ' + JSON.stringify(fields, null, 2));
     }
 
-    exports.applyMetaData(fields, parsedCookies, cb);
+    return exports.applyMetaData(fields, cb);
 
-    return;
   }
 
   var file = files.shift();
 
   if (!file.realMime && !file.headers['content-type']) {
-    exports.transferFileInformation(files, fields, parsedCookies, cb, res,
-        language, json);
-
-    return;
+    return exports.transferFileInformation(files, fields, cb);
   }
 
   var mime = file.realMime || file.headers['content-type'].toLowerCase().trim();
@@ -209,14 +229,12 @@ exports.transferFileInformation = function(files, fields, parsedCookies, cb,
         console.log(error);
       }
 
-      exports.transferFileInformation(files, fields, parsedCookies, cb, res,
-          language, json);
+      exports.transferFileInformation(files, fields, cb);
 
     });
 
   } else {
-    exports.transferFileInformation(files, fields, parsedCookies, cb, res,
-        language, json);
+    exports.transferFileInformation(files, fields, cb);
   }
 
 };
@@ -252,41 +270,20 @@ exports.getNewFiles = function(newFiles, fields, relation) {
 
 };
 
-exports.applyMetaData = function(fields, parsedCookies, cb) {
-
-  if (fields.metaData.length) {
-
-    var relation = {};
-
-    for (var i = 0; i < fields.files.length; i++) {
-
-      var file = fields.files[i];
-      relation[file.md5 + '-' + file.mime.replace('/', '')] = file;
-
-    }
-
-    var newFiles = [];
-    exports.getNewFiles(newFiles, fields, relation);
-    fields.files = newFiles;
-
-  }
-
-  delete fields.metaData;
-
-  cb(null, parsedCookies, fields);
-
-};
-
-exports.processReferencedFiles = function(metaData, callback, index) {
+exports.processReferencedFiles = function(fields, files, callback, index) {
 
   index = index || 0;
 
-  if (index >= metaData.length) {
-    callback();
-    return;
+  if (index >= files.metadata.length) {
+
+    fields.files = [];
+    fields.metaData = files.metadata;
+
+    return exports.transferFileInformation(files.files || [], fields, callback);
+
   }
 
-  var entry = metaData[index];
+  var entry = files.metadata[index];
 
   references.findOne({
     identifier : entry.md5 + '-' + entry.mime.replace('/', '')
@@ -299,8 +296,95 @@ exports.processReferencedFiles = function(metaData, callback, index) {
       entry.referenced = true;
     }
 
-    exports.processReferencedFiles(metaData, callback, ++index);
+    exports.processReferencedFiles(fields, files, callback, ++index);
 
+  });
+
+};
+
+exports.stripExifs = function(fields, files, callback, index) {
+
+  if (!stripExif) {
+    return exports.processReferencedFiles(fields, files, callback);
+  }
+
+  index = index || 0;
+
+  var file = files.files[index];
+
+  if (!file) {
+    return exports.processReferencedFiles(fields, files, callback);
+  }
+
+  exec(exifCommand.replace('{$file}', file.path), function(error) {
+    exports.stripExifs(fields, files, callback, ++index);
+  });
+
+};
+
+exports.getCheckSums = function(fields, files, callback, index) {
+
+  index = index || 0;
+
+  var file = files.files[index];
+
+  if (!file) {
+    return exports.stripExifs(fields, files, callback);
+  }
+
+  var stream = fs.createReadStream(file.path);
+  var hash = crypto.createHash('md5');
+
+  stream.on('error', callback);
+
+  stream.on('data', function(data) {
+    hash.update(data, 'utf8');
+  });
+
+  stream.on('end', function() {
+
+    file.md5 = hash.digest('hex');
+    exports.getCheckSums(fields, files, callback, ++index);
+
+  });
+
+};
+
+exports.validateMimes = function(fields, files, callback, index) {
+
+  if (!files.files) {
+    return exports.processReferencedFiles(fields, files, callback);
+  } else if (!validateMimes) {
+    return exports.getCheckSums(fields, files, callback);
+  }
+
+  index = index || 0;
+
+  var file = files.files[index];
+
+  if (!file) {
+    return exports.getCheckSums(fields, files, callback);
+  }
+
+  exec('file -b --mime-type ' + file.path, function(error, receivedMime) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      file.realMime = receivedMime.trim();
+
+      if (!file.realMime.indexOf('text/')) {
+        var actualRealMime = logger.getMime(file.originalFilename);
+
+        if (actualRealMime !== 'application/octet-stream') {
+          file.realMime = actualRealMime;
+        }
+
+      }
+
+      exports.validateMimes(fields, files, callback, ++index);
+    }
   });
 
 };
@@ -363,146 +447,6 @@ exports.getMetaData = function(fields, files) {
 
 };
 
-exports.processParsedRequest = function(res, fields, files, callback,
-    parsedCookies, language, json) {
-
-  var fileMetaData = exports.getMetaData(fields, files);
-
-  delete fields.fileSpoiler;
-  delete fields.fileMime;
-  delete fields.fileMd5;
-  delete fields.fileName;
-
-  for ( var key in fields) {
-    if (fields.hasOwnProperty(key)) {
-      fields[key] = fields[key][0];
-    }
-  }
-
-  exports.processReferencedFiles(fileMetaData, function(error) {
-
-    if (error) {
-      callback(error);
-    } else {
-
-      fields.files = [];
-      fields.metaData = fileMetaData;
-
-      exports.transferFileInformation(files.files || [], fields, parsedCookies,
-          callback, res, language, json);
-
-    }
-
-  });
-
-};
-
-exports.stripExifs = function(res, fields, files, callback, parsedCookies,
-    language, json, index) {
-
-  if (!stripExif || !files.files) {
-
-    return exports.processParsedRequest(res, fields, files, callback,
-        parsedCookies, language, json);
-
-  }
-
-  index = index || 0;
-
-  var file = files.files[index];
-
-  if (!file) {
-    return exports.processParsedRequest(res, fields, files, callback,
-        parsedCookies, language, json);
-  }
-
-  exec(exifCommand.replace('{$file}', file.path), function(error) {
-
-    exports.stripExifs(res, fields, files, callback, parsedCookies, language,
-        json, ++index);
-  });
-
-};
-
-exports.getCheckSums = function(res, fields, files, callback, parsedCookies,
-    language, json, index) {
-
-  if (!files.files) {
-    return exports.stripExifs(res, fields, files, callback, parsedCookies,
-        language, json);
-  }
-
-  index = index || 0;
-
-  var file = files.files[index];
-
-  if (!file) {
-    return exports.stripExifs(res, fields, files, callback, parsedCookies,
-        language, json);
-  }
-
-  var stream = fs.createReadStream(file.path);
-  var hash = crypto.createHash('md5');
-
-  stream.on('error', callback);
-
-  stream.on('data', function(data) {
-    hash.update(data, 'utf8');
-  });
-
-  stream.on('end', function() {
-
-    file.md5 = hash.digest('hex');
-
-    exports.getCheckSums(res, fields, files, callback, parsedCookies, language,
-        json, ++index);
-  });
-
-};
-
-exports.validateMimes = function(res, fields, files, callback, parsedCookies,
-    language, json, index) {
-
-  if (!validateMimes || !files.files) {
-
-    return exports.getCheckSums(res, fields, files, callback, parsedCookies,
-        language, json);
-  }
-
-  index = index || 0;
-
-  var file = files.files[index];
-
-  if (!file) {
-
-    return exports.getCheckSums(res, fields, files, callback, parsedCookies,
-        language, json);
-  }
-
-  exec('file -b --mime-type ' + file.path, function(error, receivedMime) {
-
-    if (error) {
-      callback(error);
-    } else {
-
-      file.realMime = receivedMime.trim();
-
-      if (!file.realMime.indexOf('text/')) {
-        var actualRealMime = logger.getMime(file.originalFilename);
-
-        if (actualRealMime !== 'application/octet-stream') {
-          file.realMime = actualRealMime;
-        }
-
-      }
-
-      exports.validateMimes(res, fields, files, callback, parsedCookies,
-          language, json, ++index);
-    }
-  });
-
-};
-
 exports.getPostData = function(req, res, callback) {
 
   var parser = new multiParty.Form({
@@ -540,24 +484,32 @@ exports.getPostData = function(req, res, callback) {
   parser.parse(req, function parsed(error, fields, files) {
 
     if (error) {
-      exports.outputError(error, 500, res, req.language, json);
-    } else {
-
-      if (files.files && files.files.length > fileProcessingLimit) {
-        files.files.splice(fileProcessingLimit - files.files.length);
-      }
-
-      exports.validateMimes(res, fields, files, function(error, cookies,
-          parameters) {
-
-        if (error) {
-          exports.outputError(error, 500, res, req.language, json);
-        } else {
-          callback(cookies, parameters);
-        }
-
-      }, exports.getCookies(req), req.language, json);
+      return exports.outputError(error, 500, res, req.language, json);
     }
+
+    if (files.files && files.files.length > fileProcessingLimit) {
+      files.files.splice(fileProcessingLimit - files.files.length);
+    }
+
+    var fileMetaData = exports.getMetaData(fields, files);
+
+    delete fields.fileSpoiler;
+    delete fields.fileMime;
+    delete fields.fileMd5;
+    delete fields.fileName;
+
+    for ( var key in fields) {
+      if (fields.hasOwnProperty(key)) {
+        fields[key] = fields[key][0];
+      }
+    }
+
+    fields.files = {
+      files : files.files,
+      metadata : fileMetaData
+    };
+
+    callback(exports.getCookies(req), fields);
 
   });
 

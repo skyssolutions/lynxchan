@@ -249,6 +249,25 @@ exports.createThread = function(req, userData, parameters, board, threadId,
 
   uploadHandler.saveUploads(parameters, newFiles, function savedUploads() {
 
+    var textBoard = board ? board.settings.indexOf('textBoard') > -1 : null;
+    var requireFile = board ? board.settings.indexOf('requireThreadFile') > -1
+        : null;
+
+    if (textBoard && newFiles.length) {
+      return common.recordFloodAndError(req, lang(req.language).errTextBoard,
+          callback, true);
+    } else if (requireFile && !textBoard && !newFiles.length) {
+      return common.recordFloodAndError(req,
+          lang(req.language).msgErrThreadFileRequired, callback, true);
+    }
+
+    var boardLimitError = common.checkBoardFileLimits(parameters.files, board,
+        req.language);
+
+    if (boardLimitError) {
+      return common.recordFloodAndError(req, boardLimitError, callback, true);
+    }
+
     var threadToAdd = exports.getNewThread(req, userData, parameters, board,
         threadId, wishesToSign);
 
@@ -553,8 +572,6 @@ exports.cleanParameters = function(board, parameters, captchaId, req, cb,
 
 exports.newThread = function(req, userData, parameters, captchaId, cb) {
 
-  var noFiles = !parameters.files.length;
-
   parameters.hash = r9k.getMessageHash(parameters.message);
   parameters.boardUri = parameters.boardUri.toString();
 
@@ -587,13 +604,6 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
     }
   }, function gotBoard(error, board) {
 
-    var boardLimitError = common.checkBoardFileLimits(parameters.files, board,
-        req.language);
-
-    var textBoard = board ? board.settings.indexOf('textBoard') > -1 : null;
-    var requireFile = board ? board.settings.indexOf('requireThreadFile') > -1
-        : null;
-
     var locked = board && board.specialSettings;
     locked = locked && board.specialSettings.indexOf('locked') > -1;
 
@@ -603,14 +613,8 @@ exports.newThread = function(req, userData, parameters, captchaId, cb) {
       cb(lang(req.language).errBoardNotFound);
     } else if (board.lockedUntil > new Date()) {
       cb(lang(req.language).errBoardLocked);
-    } else if (textBoard && !noFiles) {
-      cb(lang(req.language).errTextBoard);
-    } else if (requireFile && !textBoard && noFiles) {
-      cb(lang(req.language).msgErrThreadFileRequired);
     } else if (locked) {
       cb(lang(req.language).errLockedBoard);
-    } else if (boardLimitError) {
-      cb(boardLimitError);
     } else {
       exports.cleanParameters(board, parameters, captchaId, req, cb, userData);
     }

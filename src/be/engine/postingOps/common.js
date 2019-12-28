@@ -104,6 +104,11 @@ exports.loadDependencies = function() {
 
 };
 
+exports.recordFloodAndError = function(req, error, callback, thread) {
+  exports.recordFlood(req, thread);
+  callback(error);
+};
+
 var greenTextFunction = function(match) {
   return '<span class="greenText">' + match + '</span>';
 };
@@ -399,7 +404,7 @@ exports.checkFile = function(language, checkMimes, max, allowedMimes, file) {
 
 exports.checkBoardFileLimits = function(files, boardData, language) {
 
-  if (!boardData) {
+  if (!boardData || !files.length) {
     return null;
   }
 
@@ -1069,17 +1074,9 @@ exports.setThreadsPage = function(boardUri, callback, page) {
 
 exports.checkFileLimit = function(req, parameters, callback) {
 
-  var newFileCount = 0;
+  var files = parameters.files.files || [];
 
-  for (var i = 0; i < parameters.files.length; i++) {
-    var file = parameters.files[i];
-
-    if (!file.referenced) {
-      ++newFileCount;
-    }
-  }
-
-  if (!newFileCount) {
+  if (!files.length) {
     return callback();
   }
 
@@ -1087,7 +1084,7 @@ exports.checkFileLimit = function(req, parameters, callback) {
 
     if (error) {
       callback(error);
-    } else if (count + newFileCount > fileLimit) {
+    } else if (count + files.length > fileLimit) {
       callback(lang(req.language).errTotalFileLimitExceeded);
     } else {
       callback();

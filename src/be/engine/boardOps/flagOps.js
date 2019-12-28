@@ -76,6 +76,8 @@ exports.processFlagFile = function(toInsert, file, callback) {
 
 exports.createFlag = function(userData, parameters, language, callback) {
 
+  //TODO
+  
   if (!parameters.files.length) {
     callback(lang(language).errNoFiles);
     return;

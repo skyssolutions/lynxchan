@@ -23,6 +23,7 @@ var thumbSize;
 var latestImages;
 var miscOps;
 var gsHandler;
+var formOps;
 var thumbExtension;
 var mediaThumb;
 var ffmpegGif;
@@ -57,6 +58,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   miscOps = require('./miscOps');
+  formOps = require('./formOps');
   gsHandler = require('./gridFsHandler');
 
 };
@@ -519,7 +521,7 @@ exports.processFile = function(file, callback) {
 
 };
 
-exports.saveUploads = function(parameters, newFiles, callback, index) {
+exports.iterateUploads = function(parameters, newFiles, callback, index) {
 
   index = index || 0;
 
@@ -537,13 +539,28 @@ exports.saveUploads = function(parameters, newFiles, callback, index) {
         newFiles.push(newFile);
       }
 
-      exports.saveUploads(parameters, newFiles, callback, ++index);
+      exports.iterateUploads(parameters, newFiles, callback, ++index);
 
     });
 
   } else {
     callback();
   }
+
+};
+
+exports.saveUploads = function(parameters, newFiles, callback) {
+
+  formOps.validateMimes(parameters, parameters.files, function(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.iterateUploads(parameters, newFiles, callback);
+    }
+
+  });
+
 };
 // } Section 2: Upload handling
 
