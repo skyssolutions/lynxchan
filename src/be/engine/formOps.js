@@ -322,7 +322,13 @@ exports.stripExifs = function(fields, files, callback, index) {
 
 };
 
-exports.getCheckSums = function(fields, files, callback, index) {
+exports.validateMimes = function(fields, files, callback, index) {
+
+  if (!files.files) {
+    return exports.processReferencedFiles(fields, files, callback);
+  } else if (!validateMimes) {
+    return exports.stripExifs(fields, files, callback);
+  }
 
   index = index || 0;
 
@@ -330,40 +336,6 @@ exports.getCheckSums = function(fields, files, callback, index) {
 
   if (!file) {
     return exports.stripExifs(fields, files, callback);
-  }
-
-  var stream = fs.createReadStream(file.path);
-  var hash = crypto.createHash('md5');
-
-  stream.on('error', callback);
-
-  stream.on('data', function(data) {
-    hash.update(data, 'utf8');
-  });
-
-  stream.on('end', function() {
-
-    file.md5 = hash.digest('hex');
-    exports.getCheckSums(fields, files, callback, ++index);
-
-  });
-
-};
-
-exports.validateMimes = function(fields, files, callback, index) {
-
-  if (!files.files) {
-    return exports.processReferencedFiles(fields, files, callback);
-  } else if (!validateMimes) {
-    return exports.getCheckSums(fields, files, callback);
-  }
-
-  index = index || 0;
-
-  var file = files.files[index];
-
-  if (!file) {
-    return exports.getCheckSums(fields, files, callback);
   }
 
   exec('file -b --mime-type ' + file.path, function(error, receivedMime) {
@@ -385,6 +357,38 @@ exports.validateMimes = function(fields, files, callback, index) {
 
       exports.validateMimes(fields, files, callback, ++index);
     }
+  });
+
+};
+
+exports.getCheckSums = function(fields, files, callback, index) {
+
+  if (!files.files) {
+    return callback();
+  }
+
+  index = index || 0;
+
+  var file = files.files[index];
+
+  if (!file) {
+    return callback();
+  }
+
+  var stream = fs.createReadStream(file.path);
+  var hash = crypto.createHash('md5');
+
+  stream.on('error', callback);
+
+  stream.on('data', function(data) {
+    hash.update(data, 'utf8');
+  });
+
+  stream.on('end', function() {
+
+    file.md5 = hash.digest('hex');
+    exports.getCheckSums(fields, files, callback, ++index);
+
   });
 
 };
@@ -509,7 +513,17 @@ exports.getPostData = function(req, res, callback) {
       metadata : fileMetaData
     };
 
-    callback(exports.getCookies(req), fields);
+    // style exception, too simple
+    exports.getCheckSums(fields, files, function(error) {
+
+      if (error) {
+        exports.outputError(error, 500, res, req.language, json);
+      } else {
+        callback(exports.getCookies(req), fields);
+      }
+
+    });
+    // style exception, too simple
 
   });
 

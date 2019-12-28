@@ -299,26 +299,52 @@ exports.getProcessedBans = function(foundBans, files) {
 
 };
 
+exports.getFileData = function(parameters) {
+
+  var metadata = parameters.files.metadata;
+
+  var bareInfo = [];
+
+  if (!metadata.length) {
+
+    var fileData = parameters.files.files || [];
+
+    for (var i = 0; i < fileData.length; i++) {
+      bareInfo.push({
+        title : fileData[i].originalFilename,
+        md5 : fileData[i].md5
+      });
+    }
+
+    return bareInfo;
+
+  }
+
+  for (i = 0; i < metadata.length; i++) {
+    bareInfo.push({
+      title : metadata[i].title,
+      md5 : metadata[i].md5
+    });
+  }
+
+  return bareInfo;
+
+};
+
 exports.checkForHashBans = function(parameters, req, callback) {
 
-  //TODO
-  
-  var files = parameters.files;
-  var boardUri = parameters.boardUri;
+  var fileData = exports.getFileData(parameters);
 
-  if (!files.length) {
-    callback();
-    return;
+  if (!fileData.length) {
+    return callback();
   } else if (!allowTor && req.isTor) {
-
-    callback(lang(req.language).errTorFilesBlocked);
-    return;
+    return callback(lang(req.language).errTorFilesBlocked);
   }
 
   var md5s = [];
 
-  for (var i = 0; i < files.length; i++) {
-    md5s.push(files[i].md5);
+  for (var i = 0; i < fileData.length; i++) {
+    md5s.push(fileData[i].md5);
   }
 
   hashBans.find({
@@ -330,7 +356,7 @@ exports.checkForHashBans = function(parameters, req, callback) {
         $exists : false
       }
     }, {
-      boardUri : boardUri
+      boardUri : parameters.boardUri
     } ]
   }).toArray(function(error, foundBans) {
     if (error) {
@@ -338,7 +364,7 @@ exports.checkForHashBans = function(parameters, req, callback) {
     } else if (!foundBans.length) {
       callback();
     } else {
-      callback(null, exports.getProcessedBans(foundBans, files));
+      callback(null, exports.getProcessedBans(foundBans, fileData));
     }
 
   });
