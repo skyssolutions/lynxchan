@@ -307,7 +307,7 @@ exports.getFileData = function(parameters) {
 
   if (!metadata.length) {
 
-    var fileData = parameters.files.files || [];
+    var fileData = parameters.files.files;
 
     for (var i = 0; i < fileData.length; i++) {
       bareInfo.push({

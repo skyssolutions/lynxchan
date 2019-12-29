@@ -279,7 +279,7 @@ exports.processReferencedFiles = function(fields, files, callback, index) {
     fields.files = [];
     fields.metaData = files.metadata;
 
-    return exports.transferFileInformation(files.files || [], fields, callback);
+    return exports.transferFileInformation(files.files, fields, callback);
 
   }
 
@@ -322,11 +322,48 @@ exports.stripExifs = function(fields, files, callback, index) {
 
 };
 
+exports.getRealMimeRelation = function(files) {
+
+  var realMimeRelation = {};
+
+  for (var i = 0; files.files && i < files.files.length; i++) {
+    var file = files.files[i];
+
+    if (!file.realMime || file.headers['content-type'] === file.realMime) {
+      continue;
+    }
+
+    var identifier = file.md5 + '-';
+    identifier += file.headers['content-type'].replace('/', '');
+
+    realMimeRelation[identifier] = file.realMime;
+
+  }
+
+  return realMimeRelation;
+
+};
+
+exports.applyRealMimes = function(fields, files, callback) {
+
+  var realMimeRelation = exports.getRealMimeRelation(files);
+
+  for (var i = 0; i < files.metadata.length; i++) {
+
+    var metadata = files.metadata[i];
+
+    var key = metadata.md5 + '-' + metadata.mime.replace('/', '');
+
+    metadata.mime = realMimeRelation[key] || metadata.mime;
+  }
+
+  exports.stripExifs(fields, files, callback);
+
+};
+
 exports.validateMimes = function(fields, files, callback, index) {
 
-  if (!files.files) {
-    return exports.processReferencedFiles(fields, files, callback);
-  } else if (!validateMimes) {
+  if (!validateMimes) {
     return exports.stripExifs(fields, files, callback);
   }
 
@@ -335,7 +372,7 @@ exports.validateMimes = function(fields, files, callback, index) {
   var file = files.files[index];
 
   if (!file) {
-    return exports.stripExifs(fields, files, callback);
+    return exports.applyRealMimes(fields, files, callback);
   }
 
   exec('file -b --mime-type ' + file.path, function(error, receivedMime) {
@@ -363,10 +400,6 @@ exports.validateMimes = function(fields, files, callback, index) {
 
 exports.getCheckSums = function(fields, files, callback, index) {
 
-  if (!files.files) {
-    return callback();
-  }
-
   index = index || 0;
 
   var file = files.files[index];
@@ -393,33 +426,9 @@ exports.getCheckSums = function(fields, files, callback, index) {
 
 };
 
-exports.getRealMimeRelation = function(files) {
-
-  var realMimeRelation = {};
-
-  for (var i = 0; files.files && i < files.files.length; i++) {
-    var file = files.files[i];
-
-    if (!file.realMime || file.headers['content-type'] === file.realMime) {
-      continue;
-    }
-
-    var identifier = file.md5 + '-';
-    identifier += file.headers['content-type'].replace('/', '');
-
-    realMimeRelation[identifier] = file.realMime;
-
-  }
-
-  return realMimeRelation;
-
-};
-
 exports.getMetaData = function(fields, files) {
 
   var fileMetaData = [];
-
-  var realMimeRelation = exports.getRealMimeRelation(files);
 
   var spoiled = fields.fileSpoiler || [];
   var md5 = fields.fileMd5 || [];
@@ -436,12 +445,10 @@ exports.getMetaData = function(fields, files) {
       continue;
     }
 
-    var realMime = realMimeRelation[md5[i] + '-' + mime[i].replace('/', '')];
-
     fileMetaData.push({
       spoiler : spoiled[i],
       md5 : md5[i],
-      mime : realMime || mime[i],
+      mime : mime[i],
       title : name[i]
     });
 
@@ -491,7 +498,9 @@ exports.getPostData = function(req, res, callback) {
       return exports.outputError(error, 500, res, req.language, json);
     }
 
-    if (files.files && files.files.length > fileProcessingLimit) {
+    files.files = files.files || [];
+
+    if (files.files.length > fileProcessingLimit) {
       files.files.splice(fileProcessingLimit - files.files.length);
     }
 
