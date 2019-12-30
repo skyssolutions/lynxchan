@@ -350,13 +350,13 @@ function writeNewSettings(settings, callback) {
 
   fs.writeFile(__dirname + '/settings/general.json', Buffer.from(JSON
       .stringify(settings, null, 2), 'utf-8'), function wroteFile(error) {
+
     if (error) {
       callback(error);
     } else if (settings.master) {
-
       broadCastReload([], callback);
-
     } else if (settings.slaves && settings.slaves.length) {
+
       broadCastToSlaves(settings, function broadCastedToSlaves() {
         prepareSettingsForChangeCheck(settings, callback);
       });
@@ -364,57 +364,56 @@ function writeNewSettings(settings, callback) {
     } else {
       prepareSettingsForChangeCheck(settings, callback);
     }
+
   });
 
 }
 
 exports.setNewSettings = function(settings, language, callback) {
 
-  if (settings.overboard || settings.sfwOverboard) {
-
-    var lang = require('./engine/langOps').languagePack(language);
-
-    var boardsToTest = [];
-
-    if (settings.overboard) {
-
-      if (/\W/.test(settings.overboard)) {
-        callback(lang.errInvalidUri);
-        return;
-      }
-
-      boardsToTest.push(settings.overboard);
-
-    }
-
-    if (settings.sfwOverboard) {
-
-      if (/\W/.test(settings.sfwOverboard)) {
-        callback(lang.errInvalidUri);
-        return;
-      }
-
-      boardsToTest.push(settings.sfwOverboard);
-
-    }
-
-    require('./db').boards().findOne({
-      boardUri : {
-        $in : boardsToTest
-      }
-    }, function gotBoard(error, board) {
-      if (error) {
-        callback(error);
-      } else if (board) {
-        callback(lang.errUriInUse);
-      } else {
-        writeNewSettings(settings, callback);
-      }
-    });
-
-  } else {
-    writeNewSettings(settings, callback);
+  if (!settings.overboard && !settings.sfwOverboard) {
+    return writeNewSettings(settings, callback);
   }
+
+  var lang = require('./engine/langOps').languagePack(language);
+
+  var boardsToTest = [];
+
+  if (settings.overboard) {
+
+    if (/\W/.test(settings.overboard)) {
+      callback(lang.errInvalidUri);
+      return;
+    }
+
+    boardsToTest.push(settings.overboard);
+
+  }
+
+  if (settings.sfwOverboard) {
+
+    if (/\W/.test(settings.sfwOverboard)) {
+      callback(lang.errInvalidUri);
+      return;
+    }
+
+    boardsToTest.push(settings.sfwOverboard);
+
+  }
+
+  require('./db').boards().findOne({
+    boardUri : {
+      $in : boardsToTest
+    }
+  }, function gotBoard(error, board) {
+    if (error) {
+      callback(error);
+    } else if (board) {
+      callback(lang.errUriInUse);
+    } else {
+      writeNewSettings(settings, callback);
+    }
+  });
 
 };
 // } Section 1: New settings

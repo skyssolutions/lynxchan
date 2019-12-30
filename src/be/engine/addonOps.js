@@ -3,9 +3,10 @@
 // operations regarding addons
 
 var fs = require('fs');
-var engineInfo = JSON.parse(fs.readFileSync(__dirname + '/../package.json'));
+var engineInfo = require('../package.json');
 var addons;
 var verbose;
+var loaded = [];
 exports.aliases = {};
 
 exports.getEngineInfo = function() {
@@ -18,15 +19,17 @@ exports.loadSettings = function() {
   verbose = settings.verbose || settings.verboseMisc;
   addons = settings.addons;
 
-  if (!addons) {
-    return;
-  }
+  exports.loadAddonSettings();
 
-  for (var i = 0; i < addons.length; i++) {
+};
+
+exports.loadAddonSettings = function() {
+
+  for (var i = 0; i < loaded.length; i++) {
 
     try {
 
-      var addon = require('../addons/' + addons[i]);
+      var addon = require('../addons/' + loaded[i]);
 
       if (addon.hasOwnProperty('loadSettings')) {
         addon.loadSettings();
@@ -34,7 +37,7 @@ exports.loadSettings = function() {
 
     } catch (error) {
 
-      console.log('Could not load settings for addon ' + addons[i]);
+      console.log('Could not load settings for addon ' + loaded[i]);
 
       if (verbose) {
         console.log(error);
@@ -76,18 +79,18 @@ exports.testVersion = function(addonName, addonVersion, engineVersion) {
 
 };
 
-exports.initAddons = function(addons) {
+exports.initAddons = function() {
 
-  for (var i = 0; i < addons.length; i++) {
+  for (var i = 0; i < loaded.length; i++) {
 
-    var addon = addons[i];
+    var addon = loaded[i];
 
     try {
-
       require('../addons/' + addon).init();
     } catch (error) {
 
       console.log('Could not initialize addon ' + addon);
+
       if (verbose) {
         console.log(error);
       }
@@ -99,6 +102,8 @@ exports.initAddons = function(addons) {
 };
 
 exports.testAddons = function(addons) {
+
+  loaded = [];
 
   for (var i = 0; i < addons.length; i++) {
 
@@ -117,6 +122,8 @@ exports.testAddons = function(addons) {
         exports.testVersion(addon, loadedAddon.engineVersion,
             engineInfo.version);
       }
+
+      loaded.push(addon);
 
     } catch (error) {
 
@@ -140,6 +147,8 @@ exports.startAddons = function() {
 
   exports.testAddons(addons);
 
-  exports.initAddons(addons);
+  exports.initAddons();
+
+  exports.loadAddonSettings();
 
 };
