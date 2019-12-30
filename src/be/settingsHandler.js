@@ -294,7 +294,10 @@ exports.clearIndividualCaches = function(callback) {
 function checkSettingsChanges(settings, callback) {
   var reloadsToMake = [];
 
-  if (generalSettings.fePath !== settings.fePath) {
+  var feChanged = generalSettings.fePath !== settings.fePath;
+  var lChanged = generalSettings.languagePackPath !== settings.languagePackPath;
+
+  if (feChanged || lChanged) {
 
     exports.clearIndividualCaches(function clearedIndividualCaches() {
 

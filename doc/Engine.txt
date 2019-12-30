@@ -128,7 +128,6 @@ CHA_ID::7 - Addons
 	Addons are expected to overwrite public properties of the engine's modules. For an addon to be used, it must be added to the global setting addons, an array with the name of the addons to be loaded. 
 They will be loaded in the order they appear in the array. First they will be loaded and only after all of them are loaded, the function init() will be executed. Refer to the example addon. To perform 
 requests to be caught by the addon, the path must be formated in the following manner: "/addon.js/addonnamegoeshere". 
-    Also, any files of the addons that should not be reloaded as scripts should be put into a directory called 'dont-reload'. Also, it will not reload the .git directory or .ignore files.
 
 CHA_ID::8 - Cluster messaging
 	Process messages are used to communicate between the worker and the master process. These messages can be used in some different manners.

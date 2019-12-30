@@ -3,6 +3,7 @@
 var db = require('../db');
 var boards = db.boards();
 var threads = db.threads();
+var posts = db.posts();
 var boardAllowedArchives;
 var boardOps;
 var lang;
@@ -23,7 +24,23 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Archival {
+exports.cleanPasswords = function(thread, callback) {
+
+  posts.updateMany({
+    threadId : thread.threadId,
+    boardUri : thread.boardUri
+  }, {
+    $unset : {
+      password : 1
+    }
+  }, callback);
+
+};
+
 exports.setArchive = function(thread, callback) {
+
+  var unset = JSON.parse(JSON.stringify(miscOps.individualCaches));
+  unset.password = 1;
 
   threads.updateOne({
     _id : thread._id
@@ -31,31 +48,39 @@ exports.setArchive = function(thread, callback) {
     $set : {
       archived : true
     },
-    $unset : miscOps.individualCaches
+    $unset : unset
   }, function(error) {
 
     if (error) {
-      callback(error);
-    } else {
-
-      process.send({
-        board : thread.boardUri,
-        thread : thread.threadId
-      });
-
-      process.send({
-        board : thread.boardUri
-      });
-
-      boards.updateOne({
-        boardUri : thread.boardUri
-      }, {
-        $inc : {
-          threadCount : -1
-        }
-      }, callback);
-
+      return callback(error);
     }
+
+    process.send({
+      board : thread.boardUri,
+      thread : thread.threadId
+    });
+
+    process.send({
+      board : thread.boardUri
+    });
+
+    // style exception, too simple
+    boards.updateOne({
+      boardUri : thread.boardUri
+    }, {
+      $inc : {
+        threadCount : -1
+      }
+    }, function(error) {
+
+      if (error) {
+        callback(error);
+      } else {
+        exports.cleanPasswords(thread, callback);
+      }
+
+    });
+    // style exception, too simple
 
   });
 
@@ -93,11 +118,9 @@ exports.archiveThread = function(language, parameters, userData, callback) {
   parameters.boardUri = parameters.boardUri.toString();
 
   if (userData.globalRole <= 2) {
-    exports.addToArchive(language, parameters, callback);
-    return;
+    return exports.addToArchive(language, parameters, callback);
   } else if (!boardAllowedArchives) {
-    callback(lang(language).errNotAllowedToArchive);
-    return;
+    return callback(lang(language).errNotAllowedToArchive);
   }
 
   boards.findOne({
@@ -110,23 +133,21 @@ exports.archiveThread = function(language, parameters, userData, callback) {
   }, function gotBoard(error, board) {
 
     if (error) {
-      callback(error);
+      return callback(error);
     } else if (!board) {
-      callback(lang(language).errBoardNotFound);
+      return callback(lang(language).errBoardNotFound);
+    }
+
+    var allowed = userData.login === board.owner;
+
+    if (!allowed && board.volunteers) {
+      allowed = board.volunteers.indexOf(userData.login) >= 0;
+    }
+
+    if (!allowed) {
+      callback(lang(language).errNotAllowedToArchive);
     } else {
-
-      var allowed = userData.login === board.owner;
-
-      if (!allowed && board.volunteers) {
-        allowed = board.volunteers.indexOf(userData.login) >= 0;
-      }
-
-      if (!allowed) {
-        callback(lang(language).errNotAllowedToArchive);
-      } else {
-        exports.addToArchive(language, parameters, callback);
-      }
-
+      exports.addToArchive(language, parameters, callback);
     }
 
   });

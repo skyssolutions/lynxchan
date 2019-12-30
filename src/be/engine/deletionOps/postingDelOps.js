@@ -497,8 +497,7 @@ exports.resetLastBump = function(board, parentThreads, callback, index) {
   index = index || 0;
 
   if (index >= parentThreads.length) {
-    callback();
-    return;
+    return callback();
   }
 
   threads.findOne({
@@ -507,13 +506,14 @@ exports.resetLastBump = function(board, parentThreads, callback, index) {
   }, {
     projection : {
       creation : 1,
+      autoSage : 1,
       _id : 0
     }
   }, function gotThread(error, thread) {
 
     if (error) {
       callback(error);
-    } else if (!thread) {
+    } else if (!thread || thread.autoSage) {
       exports.resetLastBump(board, parentThreads, callback, ++index);
     } else {
 

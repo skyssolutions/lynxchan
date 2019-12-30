@@ -7,13 +7,17 @@ var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var dbLanguages = require('../db').languages();
 var verbose;
-
+var languagePackPath;
 var languagePack;
 var alternativeLanguages = {};
 
 exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
+
+  if (languagePackPath !== settings.languagePackPath) {
+    exports.init();
+  }
 
   verbose = settings.verbose || settings.verboseMisc;
 };
@@ -131,7 +135,7 @@ exports.init = function(language) {
 
   var defaultLanguagePath = __dirname + '/../data/defaultLanguagePack.json';
 
-  var defaultPack = JSON.parse(fs.readFileSync(defaultLanguagePath));
+  var defaultPack = require(defaultLanguagePath);
 
   if (language) {
 
@@ -147,7 +151,7 @@ exports.init = function(language) {
 
     var settings = require('../settingsHandler').getGeneralSettings();
 
-    var languagePackPath = settings.languagePackPath;
+    languagePackPath = settings.languagePackPath;
 
     if (languagePackPath) {
       languagePack = exports.loadLanguagePack(defaultPack, languagePackPath);
