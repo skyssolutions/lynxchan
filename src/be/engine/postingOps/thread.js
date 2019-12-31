@@ -9,6 +9,7 @@ var boards = db.boards();
 var logger = require('../../logger');
 var common;
 var delOps;
+var formOps;
 var overboardOps;
 var uploadHandler;
 var lang;
@@ -36,6 +37,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   common = require('.').common;
+  formOps = require('../formOps');
   delOps = require('../deletionOps').miscDeletions;
   uploadHandler = require('../uploadHandler');
   lang = require('../langOps').languagePack;
@@ -242,58 +244,80 @@ exports.getNewThread = function(req, userData, parameters, board, threadId,
 
 };
 
-exports.createThread = function(req, userData, parameters, board, threadId,
+exports.createThread = function(req, userData, parameters, newFiles, board,
+    threadId, wishesToSign, enabledCaptcha, callback) {
+
+  var threadToAdd = exports.getNewThread(req, userData, parameters, board,
+      threadId, wishesToSign);
+
+  if (newFiles.length) {
+    threadToAdd.files = uploadHandler.handleSpoilers(board, parameters.spoiler,
+        newFiles);
+  }
+
+  threads.insertOne(threadToAdd, function createdThread(error) {
+
+    if (error && error.code === 11000) {
+
+      parameters.creationDate = new Date();
+
+      exports.createThread(req, userData, parameters, newFiles, board,
+          threadId + 1, wishesToSign, enabledCaptcha, callback);
+    } else if (error) {
+      callback(error);
+    } else {
+
+      common.recordFlood(req, true);
+
+      exports.updateLatest(board, enabledCaptcha, req.language, callback,
+          threadToAdd);
+
+    }
+  });
+
+};
+
+exports.checkFileErrors = function(parameters, board, req) {
+
+  var boardSettings = board.settings || [];
+
+  var noFiles = !parameters.files.length;
+  var textBoard = boardSettings.indexOf('textBoard') > -1;
+  var requireFile = boardSettings.indexOf('requireThreadFile') > -1;
+
+  if (textBoard && !noFiles) {
+    return lang(req.language).errTextBoard;
+  } else if (requireFile && !textBoard && noFiles) {
+    return lang(req.language).msgErrThreadFileRequired;
+  }
+
+  return common.checkBoardFileLimits(parameters.files, board, req.language);
+
+};
+
+exports.handleFiles = function(req, userData, parameters, board, threadId,
     wishesToSign, enabledCaptcha, callback) {
 
-  var newFiles = [];
+  formOps.validateMimes(parameters, parameters.files, function(error) {
 
-  uploadHandler.saveUploads(parameters, newFiles, function savedUploads() {
-
-    var textBoard = board ? board.settings.indexOf('textBoard') > -1 : null;
-    var requireFile = board ? board.settings.indexOf('requireThreadFile') > -1
-        : null;
-
-    if (textBoard && newFiles.length) {
-      return common.recordFloodAndError(req, lang(req.language).errTextBoard,
-          callback, true);
-    } else if (requireFile && !textBoard && !newFiles.length) {
-      return common.recordFloodAndError(req,
-          lang(req.language).msgErrThreadFileRequired, callback, true);
+    if (error) {
+      return common.recordFloodAndError(req, error, callback, true);
     }
 
-    var boardLimitError = common.checkBoardFileLimits(parameters.files, board,
-        req.language);
+    var fileError = exports.checkFileErrors(parameters, board, req);
 
-    if (boardLimitError) {
-      return common.recordFloodAndError(req, boardLimitError, callback, true);
+    if (fileError) {
+      return common.recordFloodAndError(req, fileError, callback, true);
     }
 
-    var threadToAdd = exports.getNewThread(req, userData, parameters, board,
-        threadId, wishesToSign);
-
-    if (newFiles.length) {
-      threadToAdd.files = uploadHandler.handleSpoilers(board,
-          parameters.spoiler, newFiles);
-    }
+    var newFiles = [];
 
     // style exception, too simple
-    threads.insertOne(threadToAdd, function createdThread(error) {
-      if (error && error.code === 11000) {
+    uploadHandler.saveUploads(parameters, newFiles, function savedUploads() {
 
-        parameters.creationDate = new Date();
+      exports.createThread(req, userData, parameters, newFiles, board,
+          threadId, wishesToSign, enabledCaptcha, callback);
 
-        exports.createThread(req, userData, parameters, board, threadId + 1,
-            wishesToSign, enabledCaptcha, callback);
-      } else if (error) {
-        callback(error);
-      } else {
-
-        common.recordFlood(req, true);
-
-        exports.updateLatest(board, enabledCaptcha, req.language, callback,
-            threadToAdd);
-
-      }
     });
     // style exception, too simple
 
@@ -470,7 +494,7 @@ exports.getNewThreadId = function(req, userData, parameters, board,
             parameters.flagName = flagName;
             parameters.flag = flagUrl;
 
-            exports.createThread(req, userData, parameters, board,
+            exports.handleFiles(req, userData, parameters, board,
                 lastIdData.value.lastPostId, wishesToSign, enabledCaptcha,
                 callback);
           });

@@ -521,43 +521,27 @@ exports.processFile = function(file, callback) {
 
 };
 
-exports.iterateUploads = function(parameters, newFiles, callback, index) {
+exports.saveUploads = function(parameters, newFiles, callback, index) {
 
   index = index || 0;
 
-  if (index < parameters.files.length) {
-
-    var file = parameters.files[index];
-
-    exports.processFile(file, function processedFile(error, newFile) {
-
-      if (error && verbose) {
-        console.log(error);
-      }
-
-      if (newFile) {
-        newFiles.push(newFile);
-      }
-
-      exports.iterateUploads(parameters, newFiles, callback, ++index);
-
-    });
-
-  } else {
-    callback();
+  if (index >= parameters.files.length) {
+    return callback();
   }
 
-};
+  var file = parameters.files[index];
 
-exports.saveUploads = function(parameters, newFiles, callback) {
+  exports.processFile(file, function processedFile(error, newFile) {
 
-  formOps.validateMimes(parameters, parameters.files, function(error) {
-
-    if (error) {
-      callback(error);
-    } else {
-      exports.iterateUploads(parameters, newFiles, callback);
+    if (error && verbose) {
+      console.log(error);
     }
+
+    if (newFile) {
+      newFiles.push(newFile);
+    }
+
+    exports.saveUploads(parameters, newFiles, callback, ++index);
 
   });
 

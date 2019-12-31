@@ -10,6 +10,7 @@ var threads = db.threads();
 var logger = require('../../logger');
 var common;
 var overboardOps;
+var formOps;
 var referenceHandler;
 var r9k;
 var uploadHandler;
@@ -41,6 +42,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   common = require('.').common;
+  formOps = require('../formOps');
   overboardOps = require('../overboardOps');
   referenceHandler = require('../mediaHandler');
   r9k = require('../r9k');
@@ -432,7 +434,7 @@ exports.updateThread = function(boardData, parameters, thread, language,
 exports.updateLatest = function(boardData, parameters, thread, language,
     callback, post) {
 
-  uploadHandler.updateLatestImages(boardData, thread.threadId, null,
+  uploadHandler.updateLatestImages(boardData, post.threadId, post.postId,
       post.files, function(error) {
 
         if (error) {
@@ -490,55 +492,75 @@ exports.getNewPost = function(req, parameters, userData, postId, thread, board,
 
 };
 
-exports.createPost = function(req, parameters, userData, postId, thread, board,
-    wishesToSign, cb) {
+exports.createPost = function(req, parameters, newFiles, userData, postId,
+    thread, board, wishesToSign, cb) {
 
-  var newFiles = [];
+  var postToAdd = exports.getNewPost(req, parameters, userData, postId, thread,
+      board, wishesToSign);
 
-  uploadHandler.saveUploads(parameters, newFiles, function savedFiles() {
+  if (newFiles.length) {
+    postToAdd.files = uploadHandler.handleSpoilers(board, parameters.spoiler,
+        newFiles);
+  }
 
-    var textBoard = board ? board.settings.indexOf('textBoard') > -1 : null;
+  posts.insertOne(postToAdd, function createdPost(error) {
+    if (error && error.code !== 11000) {
+      cb(error);
+    } else if (error) {
+      parameters.creationDate = new Date();
 
-    if (!parameters.message && !newFiles.length) {
-      return common.recordFloodAndError(req,
-          lang(req.language).errNoFileAndMessage, cb);
-    } else if (textBoard && newFiles.length) {
-      return common.recordFloodAndError(req, lang(req.language).errTextBoard,
-          cb);
+      exports.createPost(req, parameters, userData, postId + 1, thread, board,
+          wishesToSign, cb);
+    } else {
+
+      common.recordFlood(req);
+
+      exports.updateLatest(board, parameters, thread, req.language, cb,
+          postToAdd);
+
+    }
+  });
+
+};
+
+exports.checkFileErrors = function(parameters, board, req) {
+
+  var noFiles = !parameters.files.length;
+  var textBoard = (board.settings || []).indexOf('textBoard') > -1;
+
+  if (textBoard && !noFiles) {
+    return lang(req.language).errTextBoard;
+  } else if (!parameters.message && noFiles) {
+    return lang(req.language).errNoFileAndMessage;
+  }
+
+  return common.checkBoardFileLimits(parameters.files, board, req.language);
+
+};
+
+exports.handleFiles = function(req, parameters, userData, postId, thread,
+    board, wishesToSign, callback) {
+
+  formOps.validateMimes(parameters, parameters.files, function(error) {
+
+    if (error) {
+      return common.recordFloodAndError(req, error, callback);
     }
 
-    var boardLimitError = common.checkBoardFileLimits(parameters.files, board,
-        req.language);
+    var fileError = exports.checkFileErrors(parameters, board, req);
 
-    if (boardLimitError) {
-      return common.recordFloodAndError(req, boardLimitError, cb);
+    if (fileError) {
+      return common.recordFloodAndError(req, fileError, callback);
     }
 
-    var postToAdd = exports.getNewPost(req, parameters, userData, postId,
-        thread, board, wishesToSign);
-
-    if (newFiles.length) {
-      postToAdd.files = uploadHandler.handleSpoilers(board, parameters.spoiler,
-          newFiles);
-    }
+    var newFiles = [];
 
     // style exception, too simple
-    posts.insertOne(postToAdd, function createdPost(error) {
-      if (error && error.code !== 11000) {
-        cb(error);
-      } else if (error) {
-        parameters.creationDate = new Date();
+    uploadHandler.saveUploads(parameters, newFiles, function savedUploads() {
 
-        exports.createPost(req, parameters, userData, postId + 1, thread,
-            board, wishesToSign, cb);
-      } else {
+      exports.createPost(req, parameters, newFiles, userData, postId, thread,
+          board, wishesToSign, callback);
 
-        common.recordFlood(req);
-
-        exports.updateLatest(board, parameters, thread, req.language, cb,
-            postToAdd);
-
-      }
     });
     // style exception, too simple
 
@@ -556,7 +578,7 @@ exports.getPostFlag = function(req, parameters, userData, postId, thread,
         parameters.flag = flagUrl;
         parameters.flagCode = flagCode;
 
-        exports.createPost(req, parameters, userData, postId, thread, board,
+        exports.handleFiles(req, parameters, userData, postId, thread, board,
             wishesToSign, cb);
       });
 
