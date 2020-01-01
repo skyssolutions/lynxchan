@@ -8,17 +8,25 @@
 # Stable versions
 See other branches named like `1.1.x` for stable versions. They will receive only critical bug fixes and will be maintained for at least one year after release. Remember to use a compatible version of your front-end with these stable versions. Newer versions might not have required elements on the templates for these versions.
 
-# Required software
+# Required dependencies
 * [Node.js](http://nodejs.org) 12.x, I suggest installing from source code. DO NOT build the master's HEAD.
 * [MongoDB](https://www.mongodb.org/) 4.2.x.
 * [UnZip](http://www.info-zip.org) 6.00, this is probably already included in your distro, though.
 * [cUrl](http://curl.haxx.se) 7.29.0, this is usually included too.
 * [ImageMagick](http://www.imagemagick.org/script/index.php) 6.9.10-64
 * [A front-end](https://gitgud.io/LynxChan/PenumbraLynx) that must either be placed on the `src/fe` directory or have it's absolute path set on the general.json file. Read the readme.md on src/be for more information about how to configure the path for the front-end.
-* [ffmpeg](https://www.ffmpeg.org/) (Optional) 4.2 if mediaThumb setting is enabled. Requires zlib-devel on centOS to work properly when compiled from source.
-* [Sendmail](https://www.proofpoint.com/us/open-source-email-solution) (Optional) 8.14.7 if the option to send e-mails through sendmail is enabled.
-* [file](http://www.darwinsys.com/file/) (Optional) 5.11 if the option to validate upload mimetypes is enabled.
-* [exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool/) (Optional) 11.01 if the option to strip exif data is enabled.
+
+# Optional dependencies
+* [ffmpeg](https://www.ffmpeg.org/) 4.2 if mediaThumb setting is enabled. Requires zlib-devel on centOS to work properly when compiled from source.
+* [Sendmail](https://www.proofpoint.com/us/open-source-email-solution) 8.14.7 if the option to send e-mails through sendmail is enabled.
+* [file](http://www.darwinsys.com/file/) 5.11 if the option to validate upload mimetypes is enabled.
+* [exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool/) 11.01 if the option to strip exif data is enabled.
+
+# Optional but recommended dependencies
+* [Magick++ with headers](https://imagemagick.org/Magick++/) ImageMagick-c++-devel 6.9.10.64 to be more precise.
+* [GNU Make](https://www.gnu.org/software/make/) 1:4.2.1-9.
+* [Python](https://www.python.org/) 2.7.15-24.
+* [GCC C++](https://gcc.gnu.org/) 8.2.1-3.5.
 
 If you need help installing these, consult doc/Dependencies.txt.
 

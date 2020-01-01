@@ -23,6 +23,20 @@ var formOps;
 var gridFsHandler;
 var captchaControl = {};
 
+var native;
+
+try {
+  native = require('../build/Release/native');
+} catch (error) {
+
+  if (require('cluster').isMaster) {
+    console.log('Could not load native captcha.');
+    console.log('Exec captcha will be used as a fallback.');
+    console.log(error);
+  }
+
+}
+
 var poolIndex = -1;
 
 // captcha settings
@@ -225,6 +239,15 @@ exports.createMask = function(text) {
 };
 
 exports.generateImage = function(text, captchaData, callback) {
+
+  if (native) {
+
+    return exports.transferToGfs(native.buildCaptcha(text, imageFont),
+        captchaData._id, function(error) {
+          callback(error, captchaData);
+        });
+
+  }
 
   var command = exports.createMask();
 

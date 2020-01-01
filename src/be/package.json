@@ -13,8 +13,10 @@
     "multiparty": "4.2.x",
     "nodemailer": "6.3.x",
     "nodemailer-direct-transport": "3.3.x",
-    "parse5": "5.1.x"
+    "parse5": "5.1.x",
+    "node-addon-api": "2.0.*"
   },
+  "gypfile": true,
   "author": "Stephen Lynx",
   "license": "MIT"
 }
