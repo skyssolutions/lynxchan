@@ -1473,6 +1473,10 @@ divFilters:
     use: have children appended to it.
     description: holds the list of current filters.
 
+maxLengthLabel:
+    use: have it's innerHTML manipulated.
+    description: displays the maximum length allowed for filters.
+
 boardIdentifier:
     use: have it's value manipulated or might be removed.
     description: hidden input that identifies the board for filter creation.
@@ -1884,6 +1888,10 @@ TEM_ID::48
 globalSettingsPage: page used to change global settings.
 
 Elements:
+fieldMaxFilterLength:
+    use: have it's value manipulated.
+    description: field that displays the maximum length allowed for filters.
+
 fieldLatestPostPinned:
     use: have it's value manipulated.
     description: field that displays the amount of posts to show on each pinned thread in board pages.

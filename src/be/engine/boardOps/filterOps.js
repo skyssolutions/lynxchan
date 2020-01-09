@@ -8,13 +8,24 @@ var filters = db.filters();
 var boards = db.boards();
 var miscOps;
 var lang;
-
 var globalBoardModeration;
+
+var filterParameters = [ {
+  field : 'originalTerm',
+}, {
+  field : 'replacementTerm',
+  removeHTML : true
+} ];
 
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
   maxFiltersCount = settings.maxFilters;
   globalBoardModeration = settings.allowGlobalBoardModeration;
+
+  for (var i = 0; i < filterParameters.length; i++) {
+    filterParameters[i].length = settings.maxFilterLength;
+  }
+
 };
 
 exports.loadDependencies = function() {
@@ -23,15 +34,6 @@ exports.loadDependencies = function() {
   lang = require('../langOps').languagePack;
 
 };
-
-var filterParameters = [ {
-  field : 'originalTerm',
-  length : 32
-}, {
-  field : 'replacementTerm',
-  length : 32,
-  removeHTML : true
-} ];
 
 // Section 1: Filter creation {
 exports.setFilter = function(board, callback, parameters) {

@@ -337,6 +337,7 @@
   {
     "template": "filterManagement",
     "prebuiltFields": {
+      "maxLengthLabel": "inner",
       "divFilters": "children",
       "boardIdentifier": [
         "value",
@@ -459,6 +460,7 @@
     "template": "globalSettingsPage",
     "prebuiltFields": {
       "checkboxDiskMedia": "checked",
+      "fieldMaxFilterLength": "value",
       "fieldLatestPostPinned": "value",
       "fieldTorDNSL": "value",
       "checkboxStripExif": "checked",

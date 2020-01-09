@@ -145,6 +145,7 @@ Settings files that goes into the settings directory:
 * `thumbExtension`: forces all thumbs to use this extension. Keeps gifs from being animated as a side-effect, even if `gif` is used.
 * `allowGlobalBoardModeration`(Boolean): if true, global staff will be allowed to act as board moderators too.
 * `addons`(Array): array of addons to be loaded. They will be loaded in the order they appear in this array.
+* `maxFilterLength`(Number): maximum length allowed for filters. Defaults to 32.
 * `useGlobalBanners`(Boolean): indicates if boards should use global banners. 
 * `allowVolunteerSettings(Boolean)`: indicates if board volunteers are allowed to change board settings.
 * `allowBoardCustomJs`(Boolean): if true, boards are allowed to have custom javascript.

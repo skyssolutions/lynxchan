@@ -217,6 +217,11 @@
   },
   {
     "type": "number",
+    "setting": "maxFilterLength",
+    "element": "fieldMaxFilterLength"
+  },
+  {
+    "type": "number",
     "setting": "captchaLimit",
     "element": "fieldCaptchaLimit"
   },

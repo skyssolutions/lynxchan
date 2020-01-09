@@ -6,6 +6,7 @@ var settings;
 var common;
 var templateHandler;
 var lang;
+var filterLength;
 var miscOps;
 var maxBannerLimit;
 var displayMaxBannerSize;
@@ -15,6 +16,7 @@ var displayMaxFlagNameLength;
 exports.loadSettings = function() {
 
   settings = require('../../../settingsHandler').getGeneralSettings();
+  filterLength = settings.maxFilterLength;
   maxBannerLimit = settings.maxBoardBanners;
   displayMaxBannerSize = common.formatFileSize(settings.maxBannerSizeB);
   displayMaxFlagSize = common.formatFileSize(settings.maxFlagSizeB);
@@ -82,7 +84,8 @@ exports.filterManagement = function(boardUri, filters, language) {
 
   var template = templateHandler(language).filterManagement;
 
-  var document = template.template.replace('__title__', titleToUse);
+  var document = template.template.replace('__title__', titleToUse).replace(
+      '__maxLengthLabel_inner__', filterLength);
 
   if (boardUri) {
 
