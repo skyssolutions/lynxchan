@@ -578,8 +578,8 @@ exports.deleteClosedContent = function(parameters, foundReports, userData,
         if (error) {
           callback(error);
         } else {
-          exports.banReporter(parameters, foundReports, userData, closureDate,
-              callback);
+          exports.applyReporterBans(parameters, foundReports, userData,
+              closureDate, callback);
         }
 
       });
