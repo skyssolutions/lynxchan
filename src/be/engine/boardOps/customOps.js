@@ -151,8 +151,6 @@ exports.deleteCustomCss = function(userData, boardUri, language, callback) {
 };
 // } Section 2: Custom CSS deletion
 
-//TODO
-
 exports.setCustomSpoiler = function(userData, boardUri, file, language,
     callback) {
 
@@ -402,7 +400,7 @@ exports.removeAllCustomJs = function(urisToClean) {
 
 };
 
-exports.clearCstomJs = function() {
+exports.clearCustomJs = function() {
 
   boards.aggregate([ {
     $match : {

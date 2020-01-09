@@ -20,6 +20,7 @@ var rssBuilder;
 var jsonBuilder;
 var latestLimit;
 var maxThreads;
+var latestPinned;
 var disableCatalogPosting;
 
 exports.boardProjection = {
@@ -52,6 +53,7 @@ exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
   pageSize = settings.pageSize;
+  latestPinned = settings.latestPostPinned;
   latestLimit = settings.latestPostsAmount;
   altLanguages = settings.useAlternativeLanguages;
   verbose = settings.verbose || settings.verboseGenerator;
@@ -266,8 +268,17 @@ exports.getLatestPosts = function(boardUri, page, threadsArray, pageCount,
   var postsToFetch = [];
 
   for (var i = 0; i < threadsArray.length; i++) {
-    if (threadsArray[i].latestPosts) {
-      postsToFetch = postsToFetch.concat(threadsArray[i].latestPosts);
+
+    var thread = threadsArray[i];
+    var threadLatest = thread.latestPosts;
+
+    if (threadLatest) {
+
+      if (thread.pinned && threadLatest.length > latestPinned) {
+        threadLatest.splice(0, threadLatest.length - latestPinned);
+      }
+
+      postsToFetch = postsToFetch.concat(threadLatest);
     }
   }
 

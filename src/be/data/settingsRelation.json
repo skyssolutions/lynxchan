@@ -192,6 +192,11 @@
   },
   {
     "type": "number",
+    "setting": "latestPostPinned",
+    "element": "fieldLatestPostPinned"
+  },
+  {
+    "type": "number",
     "setting": "ipExpirationDays",
     "element": "fieldIpExpiration"
   },

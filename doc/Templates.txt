@@ -1884,6 +1884,10 @@ TEM_ID::48
 globalSettingsPage: page used to change global settings.
 
 Elements:
+fieldLatestPostPinned:
+    use: have it's value manipulated.
+    description: field that displays the amount of posts to show on each pinned thread in board pages.
+
 checkboxValidateMimes:
     use: might be turned on.
     description: indicates if uploaded file mimes should be validated through 'file'.

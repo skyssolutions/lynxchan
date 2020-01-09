@@ -106,6 +106,7 @@ function getRebuildBoards(settings) {
   var fileSizeDelta = generalSettings.maxFileSizeMB !== settings.maxFileSizeMB;
   var globalCChanged = generalSettings.forceCaptcha ^ settings.forceCaptcha;
   var fileCChanged = generalSettings.maxFiles !== settings.maxFiles;
+  var lPC = generalSettings.latestPostPinned !== settings.latestPostPinned;
   var catalogPostingChanged = generalSettings.disableCatalogPosting
       ^ settings.disableCatalogPosting;
   var unboundChanged = generalSettings.unboundBoardLimits
@@ -115,7 +116,7 @@ function getRebuildBoards(settings) {
   rebuildBoards = unboundChanged || rebuildBoards || catalogPostingChanged;
   rebuildBoards = rebuildBoards || fileCChanged || mLengthChanged;
 
-  return rebuildBoards || fileSizeDelta || globalCChanged;
+  return rebuildBoards || fileSizeDelta || globalCChanged || lPC;
 
 }
 
@@ -217,9 +218,6 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
 
   broadCastReload(reloadsToMake, callback);
 
-  if (!settings.allowBoardCustomJs && generalSettings.allowBoardCustomJs) {
-    require('./engine/boardOps').custom.clearCstomJs();
-  }
 }
 
 function clearStaffIndividualCaches(callback) {
@@ -297,6 +295,10 @@ function checkSettingsChanges(settings, callback) {
   var feChanged = generalSettings.fePath !== settings.fePath;
   var lChanged = generalSettings.languagePackPath !== settings.languagePackPath;
 
+  if (!settings.allowBoardCustomJs && generalSettings.allowBoardCustomJs) {
+    require('./engine/boardOps').custom.clearCustomJs();
+  }
+
   if (feChanged || lChanged) {
 
     exports.clearIndividualCaches(function clearedIndividualCaches() {
@@ -309,6 +311,29 @@ function checkSettingsChanges(settings, callback) {
     });
 
     return;
+  } else if (generalSettings.latestPostPinned !== settings.latestPostPinned) {
+
+    require('./db').threads().updateMany({
+      pinned : true
+    }, {
+      $unset : {
+        innerCache : 1,
+        outerCache : 1,
+        previewCache : 1,
+        clearCache : 1,
+        alternativeCaches : 1,
+        hashedCache : 1,
+        previewHashedCache : 1,
+        outerHashedCache : 1,
+        outerClearCache : 1
+      }
+    }, function clearedThreads(error) {
+
+      if (error) {
+        console.log(error);
+      }
+
+    });
   }
 
   checkGeneralSettingsChanged(settings, reloadsToMake, callback);
@@ -565,6 +590,7 @@ exports.getDefaultSettings = function() {
     latestPostsAmount : 50,
     captchaLimit : 5,
     authenticationLimit : 120,
+    latestPostPinned : 1,
     incSpamIpsSource : 'https://www.stopforumspam.com/downloads/listed_ip_1.zip'
   };
 
