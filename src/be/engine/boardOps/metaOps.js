@@ -643,21 +643,21 @@ exports.createBoard = function(captchaId, parameters, userData, language,
 // } Section 4: Creation
 
 // Section 5: Board management {
-exports.getOpenReportCount = function(boardData, foundLanguages, foundBans,
-    callback) {
+exports.getOpenReportCount = function(boardData, foundLanguages,
+    appealedBanCount, callback) {
 
   reports.countDocuments(reportOps.getQueryBlock({
     boardUri : boardData.boardUri
   }), function(error, count) {
-    callback(error, boardData, foundLanguages, foundBans, count);
+    callback(error, boardData, foundLanguages, appealedBanCount, count);
   });
 
 };
 
-exports.getAvailableLanguages = function(boardData, foundBans, callback) {
+exports.getAvailableLanguages = function(boardData, appealedCount, callback) {
 
   if (!useLanguages) {
-    return exports.getOpenReportCount(boardData, [], foundBans, callback);
+    return exports.getOpenReportCount(boardData, [], appealedCount, callback);
   }
 
   languages.find({}, {
@@ -675,7 +675,7 @@ exports.getAvailableLanguages = function(boardData, foundBans, callback) {
         id : element._id.toString(),
         label : element.headerValues.join(', ')
       };
-    }), foundBans, callback);
+    }), appealedCount, callback);
 
   });
 
@@ -683,7 +683,7 @@ exports.getAvailableLanguages = function(boardData, foundBans, callback) {
 
 exports.getAppealedBans = function(boardData, callback) {
 
-  bans.find({
+  bans.countDocuments({
     boardUri : boardData.boardUri,
     appeal : {
       $exists : true
@@ -699,12 +699,12 @@ exports.getAppealedBans = function(boardData, callback) {
       expiration : 1,
       appliedBy : 1
     }
-  }).toArray(function gotBans(error, foundBans) {
+  }, function gotBans(error, appealedBanCount) {
 
     if (error) {
       callback(error);
     } else {
-      exports.getAvailableLanguages(boardData, foundBans, callback);
+      exports.getAvailableLanguages(boardData, appealedBanCount, callback);
     }
 
   });

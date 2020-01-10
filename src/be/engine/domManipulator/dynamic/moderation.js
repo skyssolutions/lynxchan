@@ -33,10 +33,11 @@ exports.loadDependencies = function() {
 
 };
 
-exports.bans = function(bans, globalPage, language) {
+exports.bans = function(bans, globalPage, language, appealed) {
 
   var document = templateHandler(language).bansPage.template.replace(
-      '__title__', lang(language).titBansManagement);
+      '__title__', lang(language)[appealed ? 'titAppealedBansManagement'
+          : 'titBansManagement']);
 
   return document.replace('__bansDiv_children__', common.getBanList(bans,
       globalPage, language));

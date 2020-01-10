@@ -340,11 +340,7 @@ exports.getOpenReportsCount = function(foundUsers, foundBans, callback) {
 
 };
 
-exports.getAppealedBans = function(userRole, foundUsers, callback) {
-
-  if (userRole === 3) {
-    return exports.getOpenReportsCount(foundUsers, null, callback);
-  }
+exports.getAppealedBansCount = function(userRole, foundUsers, callback) {
 
   var query = {
     appeal : {
@@ -359,16 +355,7 @@ exports.getAppealedBans = function(userRole, foundUsers, callback) {
     query.boardUri = null;
   }
 
-  bans.find(query, {
-    projection : {
-      reason : 1,
-      appeal : 1,
-      boardUri : 1,
-      denied : 1,
-      expiration : 1,
-      appliedBy : 1
-    }
-  }).toArray(function gotBans(error, foundBans) {
+  bans.countDocuments(query, function gotBans(error, foundBans) {
 
     if (error) {
       callback(error);
@@ -385,35 +372,35 @@ exports.getManagementData = function(userRole, language, userLogin, callback) {
   var globalStaff = userRole <= MAX_STAFF_ROLE;
 
   if (!globalStaff) {
-    callback(lang(language).errDeniedGlobalManagement);
-  } else {
-
-    users.find({
-      login : {
-        $ne : userLogin
-      },
-      globalRole : {
-        $gt : userRole,
-        $lte : MAX_STAFF_ROLE
-      }
-    }, {
-      projection : {
-        _id : 0,
-        login : 1,
-        globalRole : 1
-      }
-    }).sort({
-      login : 1
-    }).toArray(function gotUsers(error, foundUsers) {
-
-      if (error) {
-        callback(error);
-      } else {
-        exports.getAppealedBans(userRole, foundUsers, callback);
-      }
-
-    });
+    return callback(lang(language).errDeniedGlobalManagement);
   }
+
+  users.find({
+    login : {
+      $ne : userLogin
+    },
+    globalRole : {
+      $gt : userRole,
+      $lte : MAX_STAFF_ROLE
+    }
+  }, {
+    projection : {
+      _id : 0,
+      login : 1,
+      globalRole : 1
+    }
+  }).sort({
+    login : 1
+  }).toArray(function gotUsers(error, foundUsers) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.getAppealedBansCount(userRole, foundUsers, callback);
+    }
+
+  });
+
 };
 // } Section 1: Global management data
 

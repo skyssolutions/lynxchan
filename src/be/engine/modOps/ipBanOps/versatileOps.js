@@ -514,3 +514,65 @@ exports.liftBan = function(userData, parameters, language, callback) {
 
 };
 // } Section 3: Lift ban
+
+// Section 4: Appealed bans {
+exports.readAppealedBans = function(parameters, callback) {
+
+  var queryBlock = {
+    appeal : {
+      $exists : true
+    },
+    denied : {
+      $exists : false
+    }
+  };
+
+  if (parameters.boardUri) {
+    queryBlock.boardUri = parameters.boardUri;
+  } else if (!globalBoardModeration) {
+    queryBlock.boardUri = null;
+  }
+
+  bans.find(queryBlock, {
+    projection : {
+      reason : 1,
+      appeal : 1,
+      boardUri : 1,
+      denied : 1,
+      expiration : 1,
+      appliedBy : 1
+    }
+  }).sort({
+    creation : -1
+  }).toArray(callback);
+};
+
+exports.getAppealedBans = function(userData, parameters, language, callback) {
+
+  var isOnGlobalStaff = userData.globalRole < miscOps.getMaxStaffRole();
+
+  if (parameters.boardUri) {
+
+    parameters.boardUri = parameters.boardUri.toString();
+
+    boards.findOne({
+      boardUri : parameters.boardUri
+    }, function gotBoard(error, board) {
+      if (error) {
+        callback(error);
+      } else if (!board) {
+        callback(lang(language).errBoardNotFound);
+      } else if (!common.isInBoardStaff(userData, board, 2)) {
+        callback(lang(language).errDeniedBoardBanManagement);
+      } else {
+        exports.readAppealedBans(parameters, callback);
+      }
+    });
+  } else if (!isOnGlobalStaff) {
+    callback(lang(language).errDeniedGlobalBanManagement);
+  } else {
+    exports.readAppealedBans(parameters, callback);
+  }
+
+};
+// } Section 4: Appealed bans

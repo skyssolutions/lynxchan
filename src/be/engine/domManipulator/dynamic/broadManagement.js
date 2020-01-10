@@ -91,6 +91,9 @@ exports.boardManagementLinks = [ {
 }, {
   page : 'flags',
   element : 'flagManagementLink'
+}, {
+  page : 'appealedBans',
+  element : 'appealedBansLink'
 } ];
 
 exports.boardRangeSettingsRelation = [ {
@@ -321,7 +324,7 @@ exports.checkOwnership = function(userData, boardData, languages, template,
 };
 
 exports.getBoardManagementContent = function(boardData, languages, userData,
-    bans, language) {
+    language) {
 
   var template = templateHandler(language).bManagement;
 
@@ -339,18 +342,16 @@ exports.getBoardManagementContent = function(boardData, languages, userData,
   document = document.replace('__messageLengthLabel_inner__',
       boardMessageLength);
 
-  document = exports.setBoardManagementLinks(document, boardData);
-
-  return document.replace('__appealedBansPanel_children__', common.getBanList(
-      bans, false, language));
+  return exports.setBoardManagementLinks(document, boardData);
 
 };
 
-exports.boardManagement = function(userData, bData, languages, bans,
-    reportCount, language) {
+exports.boardManagement = function(userData, bData, languages,
+    appealedBanCount, reportCount, language) {
 
   var document = exports.getBoardManagementContent(bData, languages, userData,
-      bans, language).replace('__openReportsLabel_inner__', reportCount);
+      language).replace('__openReportsLabel_inner__', reportCount).replace(
+      '__appealedBansLabel_inner__', appealedBanCount);
 
   var boardUri = common.clean(bData.boardUri);
   var selfLink = '/' + boardUri + '/';
@@ -531,34 +532,14 @@ exports.processHideableElements = function(document, userRole, staff, language,
 
 };
 
-exports.setGlobalManagementLists = function(document, userRole, appealedBans,
-    language, removable) {
-
-  if (appealedBans) {
-    document = document.replace('__appealedBansPanel_location__',
-        removable.appealedBansPanel);
-
-    document = document.replace('__appealedBansPanel_children__', common
-        .getBanList(appealedBans, true, language));
-  } else {
-    document = document.replace('__appealedBansPanel_location__', '');
-  }
-
-  return document;
-
-};
-
-exports.globalManagement = function(userRole, userLogin, staff, appealedBans,
-    reportCount, language) {
+exports.globalManagement = function(userRole, userLogin, staff,
+    appealedBanCount, reportCount, language) {
 
   var template = templateHandler(language).gManagement;
 
   var document = template.template.replace('__title__',
       lang(language).titGlobalManagement).replace('__openReportsLabel_inner__',
-      reportCount);
-
-  document = exports.setGlobalManagementLists(document, userRole, appealedBans,
-      language, template.removable);
+      reportCount).replace('__appealedBansLabel_inner__', appealedBanCount);
 
   document = exports.setGlobalManagementLinks(userRole, document,
       template.removable);

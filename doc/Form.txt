@@ -194,14 +194,7 @@ Json output(Object): object with data used in global management. Contains the fo
     staff(Array): array with the global staff of the site the user is allowed to manage. Contains objects each with the following fields:
         login: login of the user.
         globalRole: global role of the user.
-    appealedBans(Array): array of bans that were appealed and not denied. Each object contains the following fields: 
-        _id: unique id of the ban.
-        boardUri: board for which the ban applies. Only informed for board bans and while using global board moderation.
-        reason: reason of the ban.
-        expiration: when the ban expires.
-        appliedBy: login of the user that applied the ban.
-        appeal: appeal of the bans.
-        denied(Boolean): indicates if the appeal was denied.
+    appealedBans(Number): amount of appealed bans.
 
 ------------------------------------------------------------------------------------------
 
@@ -261,13 +254,7 @@ Json output(Object): object with data used to manage the board. Contains the fol
     boardMessage: message displayed on the board header.
     maxBumpAgeDays(Number): for how many days after its creation that a non-cyclic thread can be bumped.
     isOwner(Boolean): indicates if the user owns the board.
-    appealedBans(Array) array of appealed bans that weren't denied. Each object contains the following fields:
-        _id: unique id of the ban.
-        reason: reason of the ban.
-        expiration: when the ban expires.
-        appliedBy: login of the user that applied the ban.
-        appeal: appeal of the bans.
-        denied(Boolean): indicates if the appeal was denied.
+    appealedBans(Number): amount of appealed bans.
 
 ------------------------------------------------------------------------------------------
 
@@ -1482,6 +1469,24 @@ Parameters:
     threadId(Number): threadId of the thread have it's file deleted. Ignored if postId is informed.
     index(Number): index of the file to be delete. 
     delete(Boolean): if informed, the media will also be wiped from the server after being unlinked. Ignored if the user is not on global staff.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::92
+
+Name: appealedBans
+
+Description: shows the appealed bans. Requires authentication, uses get parameters.
+
+Parameters:
+    boardUri: uri of the board to display the appealed bans. If not informed, global bans will be shown.
+
+Json output(Array): array with the appealed bans data. Contains object with the following fields:
+    _id: unique id of the ban.
+    reason: reason of the ban.
+    expiration: when the ban expires.
+    appliedBy: login of the user that applied the ban.
+    appeal: appeal of the ban.
 
 ------------------------------------------------------------------------------------------
 

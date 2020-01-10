@@ -229,14 +229,11 @@
   {
     "template": "gManagement",
     "prebuiltFields": {
+      "appealedBansLabel": "inner",
       "asnBansLink": "removal",
       "socketLink": "removal",
       "accountsLink": "removal",
       "openReportsLabel": "inner",
-      "appealedBansPanel": [
-        "removal",
-        "children"
-      ],
       "globalBannersLink": "removal",
       "languagesLink": "removal",
       "globalFiltersLink": "removal",
@@ -262,7 +259,8 @@
       "resetLockIdentifier": "value",
       "locationComboBox": "children",
       "linkSelf": "href",
-      "appealedBansPanel": "children",
+      "appealedBansLink": "href",
+      "appealedBansLabel": "inner",
       "uniqueFilesCheckbox": "checked",
       "uniquePostsCheckbox": "checked",
       "blockDeletionCheckbox": "checked",

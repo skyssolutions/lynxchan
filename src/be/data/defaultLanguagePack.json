@@ -369,5 +369,6 @@
   "titOffenseRecord": "Offense record",
   "errDeniedSingleDeletion": "You are not allowed to delete single files from this posting.",
   "msgFileUnlinked": "File unlinked from posting.",
-  "titOpenReports": "Open reports"
+  "titOpenReports": "Open reports",
+  "titAppealedBansManagement": "Appealed bans"
 }
