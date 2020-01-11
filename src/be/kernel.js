@@ -4,6 +4,17 @@
 // Controls the workers.
 
 var cluster = require('cluster');
+
+try {
+  exports.native = require('./build/Release/native');
+} catch (error) {
+  if (require('cluster').isMaster) {
+    console.log('Could not load native functions.');
+    console.log('Exec functions will be used as a fallback.');
+    console.log(error);
+  }
+}
+
 var db;
 var fs = require('fs');
 var settingsHandler = require('./settingsHandler');

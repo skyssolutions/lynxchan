@@ -105,9 +105,54 @@ Napi::Value buildCaptcha(const Napi::CallbackInfo& args) {
 			imageBlob.length());
 }
 
+Napi::Value getImageBounds(const Napi::CallbackInfo& args) {
+
+	Napi::Env env = args.Env();
+
+	if (!args.Length()) {
+		Napi::TypeError::New(env, "Not enough arguments.").ThrowAsJavaScriptException();
+		return env.Null();
+	}
+
+	if (!args[0].IsString()) {
+		Napi::TypeError::New(env, "Argument must be a string").ThrowAsJavaScriptException();
+		return env.Null();
+	}
+
+	size_t maxWidth = 0;
+	size_t maxHeight = 0;
+
+	std::list < Magick::Image > frameList;
+
+	readImages(&frameList, args[0].As<Napi::String>());
+
+	for (std::list<Magick::Image>::iterator it = frameList.begin();
+			it != frameList.end(); it++) {
+
+		Magick::Geometry dimensions = it->size();
+
+		size_t currentWidth = dimensions.width();
+		size_t currentHeight = dimensions.height();
+
+		maxWidth = currentWidth > maxWidth ? currentWidth : maxWidth;
+		maxHeight = currentHeight > maxHeight ? currentHeight : maxHeight;
+
+	}
+
+	Napi::Object obj = Napi::Object::New(env);
+
+	obj.Set(Napi::String::New(env, "height"),
+			Napi::Number::New(env, maxHeight));
+	obj.Set(Napi::String::New(env, "width"), Napi::Number::New(env, maxWidth));
+
+	return obj;
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
 	exports.Set(Napi::String::New(env, "buildCaptcha"),
 			Napi::Function::New(env, buildCaptcha));
+	exports.Set(Napi::String::New(env, "getImageBounds"),
+			Napi::Function::New(env, getImageBounds));
 	return exports;
 }
 

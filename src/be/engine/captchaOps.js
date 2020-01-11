@@ -6,6 +6,7 @@ var url = require('url');
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var exec = require('child_process').exec;
+var native = require('../kernel').native;
 var captchas = require('../db').captchas();
 var crypto = require('crypto');
 var taskListener = require('../taskListener');
@@ -22,20 +23,6 @@ var uploadHandler;
 var formOps;
 var gridFsHandler;
 var captchaControl = {};
-
-var native;
-
-try {
-  native = require('../build/Release/native');
-} catch (error) {
-
-  if (require('cluster').isMaster) {
-    console.log('Could not load native captcha.');
-    console.log('Exec captcha will be used as a fallback.');
-    console.log(error);
-  }
-
-}
 
 var poolIndex = -1;
 

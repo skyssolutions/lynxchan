@@ -8,6 +8,7 @@ var db = require('../db');
 var uploadReferences = db.uploadReferences();
 var exec = require('child_process').exec;
 var kernel = require('../kernel');
+var native = kernel.native;
 var genericThumb = kernel.genericThumb();
 var genericAudioThumb = kernel.genericAudioThumb();
 var spoilerPath = kernel.spoilerImage();
@@ -68,6 +69,20 @@ exports.getImageBounds = function(file, callback) {
 
   var path = file.pathInDisk;
 
+  // TODO make it asynchronous
+  if (native) {
+
+    try {
+      var dimensions = native.getImageBounds(path);
+      callback(null, dimensions.width, dimensions.height);
+
+    } catch (error) {
+      callback(error);
+    }
+
+    return;
+  }
+
   exec('identify ' + path, function(error, results) {
     if (error) {
       callback(error);
@@ -78,7 +93,7 @@ exports.getImageBounds = function(file, callback) {
       var maxWidth = 0;
 
       for (var i = 0; i < lines.length; i++) {
-        var dimensions = lines[i].match(/\s(\d+)x(\d+)\s/);
+        dimensions = lines[i].match(/\s(\d+)x(\d+)\s/);
 
         if (dimensions) {
 
