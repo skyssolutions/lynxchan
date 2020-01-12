@@ -3,7 +3,9 @@
     {
       "target_name": "native",
       "sources": [
-        "main.cpp"
+        "native/main.cpp",
+        "native/captcha.cpp",
+        "native/imageBounds.cpp"
       ],
       "include_dirs": [
         "<!@(pkg-config --cflags-only-I Magick++ | sed s/-I//g)",

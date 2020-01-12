@@ -538,7 +538,12 @@ exports.loadSettings = function() {
 // } Section 2: Load settings
 
 exports.getDefaultSettings = function() {
-  return require('./data/defaultSettings.json');
+
+  var toRet = require('./data/defaultSettings.json');
+
+  toRet.fePath = __dirname + '/../fe';
+
+  return toRet;
 };
 
 exports.getDbSettings = function() {

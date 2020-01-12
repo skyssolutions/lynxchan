@@ -1,7 +1,6 @@
 {
   "address": "0.0.0.0",
   "port": 80,
-  "fePath": "/home/sergio/../fe",
   "tempDirectory": "/tmp",
   "pageSize": 10,
   "latestPostCount": 5,
