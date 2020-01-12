@@ -69,18 +69,8 @@ exports.getImageBounds = function(file, callback) {
 
   var path = file.pathInDisk;
 
-  // TODO make it asynchronous
   if (native) {
-
-    try {
-      var dimensions = native.getImageBounds(path);
-      callback(null, dimensions.width, dimensions.height);
-
-    } catch (error) {
-      callback(error);
-    }
-
-    return;
+    return native.getImageBounds(path, callback);
   }
 
   exec('identify ' + path, function(error, results) {
@@ -93,7 +83,7 @@ exports.getImageBounds = function(file, callback) {
       var maxWidth = 0;
 
       for (var i = 0; i < lines.length; i++) {
-        dimensions = lines[i].match(/\s(\d+)x(\d+)\s/);
+        var dimensions = lines[i].match(/\s(\d+)x(\d+)\s/);
 
         if (dimensions) {
 

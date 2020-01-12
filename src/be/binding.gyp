@@ -14,8 +14,8 @@
           "<!@(pkg-config --libs-only-l Magick++)"
         ]
       },
+      "cflags_cc!": [ "-fno-exceptions" ],
       "defines": [
-        "NAPI_DISABLE_CPP_EXCEPTIONS",
         "MAGICKCORE_HDRI_ENABLE=0",
         "MAGICKCORE_QUANTUM_DEPTH=16"
       ]
