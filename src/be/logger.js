@@ -1,6 +1,7 @@
 'use strict';
 
 var fs = require('fs');
+var crypto = require('crypto');
 var dns = require('dns');
 var kernel = require('./kernel');
 
@@ -295,6 +296,23 @@ exports.ip = function(req) {
 
     return req.cachedIp;
   }
+
+};
+
+exports.md5 = function(path, callback) {
+
+  var stream = fs.createReadStream(path);
+  var hash = crypto.createHash('md5');
+
+  stream.on('error', callback);
+
+  stream.on('data', function(data) {
+    hash.update(data, 'utf8');
+  });
+
+  stream.on('end', function() {
+    callback(null, hash.digest('hex'));
+  });
 
 };
 

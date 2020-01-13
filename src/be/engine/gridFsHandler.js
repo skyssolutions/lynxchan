@@ -7,6 +7,7 @@ var fs = require('fs');
 var http = require('http');
 var exec = require('child_process').exec;
 var db = require('../db');
+var logger = require('../logger');
 var redirects = db.redirects();
 var files = db.files();
 var chunks = db.chunks();
@@ -168,58 +169,80 @@ exports.sendFileToMaster = function(newDoc, path, callback, attempts, error) {
 
 };
 
-exports.writeFileToDisk = function(dest, path, fileInfo, callback, data) {
+exports.copyFileToLocation = function(path, newDoc, callback) {
 
-  if (!data) {
+  var idString = newDoc._id.toString();
+  var destDir = __dirname + '/../media/';
+  destDir += idString.substring(idString.length - 3);
+  var newPath = destDir + '/' + idString;
 
-    var statCmd = 'ls -l ' + path + ' | cut -d " " -f 5 && md5sum ' + path;
-    statCmd += ' | cut -d " " -f 1';
+  fs.mkdir(destDir, function(error) {
 
-    return exec(statCmd, function(error, data) {
+    if (error && error.code !== 'EEXIST') {
+      return callback(error);
+    }
 
-      if (error) {
-        callback(error);
-      } else {
-        exports.writeFileToDisk(dest, path, fileInfo, callback, data
-            .split('\n'));
-      }
-
+    // style exception, too simple
+    fs.copyFile(path, newPath, function(error) {
+      callback(error, newDoc);
     });
+    // style exception, too simple
 
-  }
+  });
+
+};
+
+exports.writeFileToDisk = function(dest, path, fileInfo, callback, size, md5) {
 
   var newDoc = {
     filename : dest,
     onDisk : true,
     contentType : fileInfo.contentType,
     metadata : fileInfo.metadata,
-    length : +data[0],
-    md5 : data[1]
+    length : size,
+    md5 : md5
   };
 
   files.insertOne(newDoc, function(error) {
 
     if (error) {
-      callback(error);
-    } else {
+      return callback(error);
+    }
 
-      newDoc.id = newDoc._id;
+    newDoc.id = newDoc._id;
 
-      if (masterNode) {
-        return exports.sendFileToMaster(newDoc, path, callback);
+    if (masterNode) {
+      return exports.sendFileToMaster(newDoc, path, callback);
+    }
+
+    exports.copyFileToLocation(path, newDoc, callback);
+
+  });
+
+};
+
+exports.getDiskFileStats = function(dest, path, fileInfo, callback) {
+
+  var statCmd = 'ls -l ' + path + ' | cut -d " " -f 5 && md5sum ' + path;
+  statCmd += ' | cut -d " " -f 1';
+
+  logger.md5(path, function(error, md5) {
+
+    if (error) {
+      return callback(error);
+    }
+
+    // style exception, too simple
+    fs.stat(path, function(error, info) {
+
+      if (error) {
+        return callback(error);
       }
 
-      var idString = newDoc._id.toString();
-      var destDir = __dirname + '/../media/';
-      destDir += idString.substring(idString.length - 3);
-      var newPath = destDir + '/' + idString;
+      exports.writeFileToDisk(dest, path, fileInfo, callback, info.size, md5);
 
-      exec('mkdir -p ' + destDir + ' && cp ' + path + ' ' + newPath, function(
-          error) {
-        callback(error, newDoc);
-      });
-
-    }
+    });
+    // style exception, too simple
 
   });
 
@@ -270,7 +293,7 @@ exports.writeFile = function(path, dest, mime, meta, callback) {
   };
 
   if (meta.type === 'media' && diskMedia) {
-    exports.writeFileToDisk(dest, path, fileInfo, writeCallback);
+    exports.getDiskFileStats(dest, path, fileInfo, writeCallback);
   } else {
     exports.writeFileToGridFs(dest, path, fileInfo, writeCallback);
   }
@@ -334,19 +357,28 @@ exports.removeFilesFromMaster = function(toRemove, callback, attempts, error) {
 
 };
 
-exports.removeFilesFromDisk = function(toRemove, callback) {
+exports.removeFilesFromDisk = function(toRemove, callback, index) {
 
-  var cmd = 'rm -f';
+  index = index || 0;
 
-  for (var i = 0; i < toRemove.length; i++) {
-
-    var idString = toRemove[i].toString();
-
-    cmd += ' ' + __dirname + '/../media/';
-    cmd += idString.substring(idString.length - 3) + '/' + idString;
+  if (index >= toRemove.length) {
+    return callback();
   }
 
-  exec(cmd, callback);
+  var idString = toRemove[index].toString();
+
+  var path = __dirname + '/../media/' + idString.substring(idString.length - 3);
+  path += '/' + idString;
+
+  fs.unlink(path, function(error) {
+
+    if (error && error.code !== 'ENOENT') {
+      callback(error);
+    } else {
+      exports.removeFilesFromDisk(toRemove, callback, ++index);
+    }
+
+  });
 
 };
 
@@ -361,24 +393,22 @@ exports.removeDiskFiles = function(onDisk, onDb, callback) {
   var removalCallback = function(error) {
 
     if (error) {
-      exports.removeGridFsFiles(onDb, callback);
-    } else {
-
-      files.removeMany({
-        _id : {
-          $in : toRemove
-        }
-      }, function(error) {
-
-        if (error) {
-          exports.removeGridFsFiles(onDb, callback);
-        } else {
-          exports.removeDiskFiles(onDisk, onDb, callback);
-        }
-
-      });
-
+      return exports.removeGridFsFiles(onDb, callback);
     }
+
+    files.removeMany({
+      _id : {
+        $in : toRemove
+      }
+    }, function(error) {
+
+      if (error) {
+        exports.removeGridFsFiles(onDb, callback);
+      } else {
+        exports.removeDiskFiles(onDisk, onDb, callback);
+      }
+
+    });
 
   };
 

@@ -3,7 +3,6 @@
 // general operations for the form api
 
 var fs = require('fs');
-var crypto = require('crypto');
 var url = require('url');
 var multiParty = require('multiparty');
 var logger = require('../logger');
@@ -408,18 +407,9 @@ exports.getCheckSums = function(fields, files, callback, index) {
     return callback();
   }
 
-  var stream = fs.createReadStream(file.path);
-  var hash = crypto.createHash('md5');
+  logger.md5(file.path, function(error, md5) {
 
-  stream.on('error', callback);
-
-  stream.on('data', function(data) {
-    hash.update(data, 'utf8');
-  });
-
-  stream.on('end', function() {
-
-    file.md5 = hash.digest('hex');
+    file.md5 = md5;
     exports.getCheckSums(fields, files, callback, ++index);
 
   });

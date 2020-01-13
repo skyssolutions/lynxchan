@@ -3,6 +3,8 @@
 var fs = require('fs');
 var http = require('http');
 var kernel = require('./kernel');
+var defaultSettings = require('./data/defaultSettings.json');
+defaultSettings.fePath = __dirname + '/../fe';
 var dbSettings;
 var generalSettings;
 
@@ -538,12 +540,7 @@ exports.loadSettings = function() {
 // } Section 2: Load settings
 
 exports.getDefaultSettings = function() {
-
-  var toRet = require('./data/defaultSettings.json');
-
-  toRet.fePath = __dirname + '/../fe';
-
-  return toRet;
+  return defaultSettings;
 };
 
 exports.getDbSettings = function() {
