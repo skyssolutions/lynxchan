@@ -126,7 +126,7 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
 
   if (!flagData) {
 
-    flags.find({
+    return flags.find({
       boardUri : boardUri
     }, {
       projection : {
@@ -142,12 +142,12 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
             exports.thread(boardUri, threadId, callback, boardData, threadData,
                 foundFlags);
           }
+
         });
 
-    return;
   } else if (!boardData) {
 
-    boards.findOne({
+    return boards.findOne({
       boardUri : boardUri
     }, {
       projection : exports.boardProjection
@@ -161,10 +161,9 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
       }
     });
 
-    return;
   } else if (!threadData) {
 
-    threads.findOne({
+    return threads.findOne({
       boardUri : boardUri,
       threadId : threadId
     }, {
@@ -180,7 +179,6 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
 
     });
 
-    return;
   }
 
   if (verbose) {
@@ -197,26 +195,23 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
   }).toArray(
       function(error, foundPosts) {
         if (error) {
-          callback(error);
-        } else {
-
-          // style exception, too simple
-          jsonBuilder.thread(boardUri, boardData, threadData, foundPosts,
-              function savedJson(error) {
-
-                if (error) {
-                  callback(error);
-                } else {
-
-                  exports.generateThreadHTML(boardData, flagData, threadData,
-                      foundPosts, foundPosts.slice(-latestLimit), callback);
-
-                }
-
-              }, null, null, flagData);
-          // style exception, too simple
-
+          return callback(error);
         }
+
+        // style exception, too simple
+        jsonBuilder.thread(boardUri, boardData, threadData, foundPosts,
+            function savedJson(error) {
+
+              if (error) {
+                return callback(error);
+              }
+
+              exports.generateThreadHTML(boardData, flagData, threadData,
+                  foundPosts, foundPosts.slice(-latestLimit), callback);
+
+            }, null, null, flagData);
+        // style exception, too simple
+
       });
 
 };

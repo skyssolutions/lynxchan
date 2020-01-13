@@ -25,6 +25,7 @@ var frontPage;
 var miscOps;
 var rssBuilder;
 var overboard;
+var latestPinned;
 var sfwOverboard;
 var fePath;
 var altLanguages;
@@ -35,6 +36,7 @@ exports.loadSettings = function() {
 
   multiboardThreadCount = settings.multiboardThreadCount;
   verbose = settings.verbose || settings.verboseGenerator;
+  latestPinned = settings.latestPostPinned;
   altLanguages = settings.useAlternativeLanguages;
   overboard = settings.overboard;
   fePath = settings.fePath;
@@ -461,6 +463,33 @@ exports.notFound = function(callback, language) {
 
 };
 
+exports.getPreFetchPreviewRelation = function(foundThreads) {
+
+  var previewRelation = {};
+
+  for (var i = 0; i < foundThreads.length; i++) {
+
+    var thread = foundThreads[i];
+
+    var boardUri = thread.boardUri;
+
+    var previewArray = previewRelation[boardUri] || [];
+
+    var over = thread.latestPosts && thread.latestPosts.length > latestPinned;
+
+    if (over && thread.pinned) {
+      thread.latestPosts.splice(0, thread.latestPosts.length - latestPinned);
+    }
+
+    previewArray = previewArray.concat(thread.latestPosts);
+
+    previewRelation[boardUri] = previewArray;
+  }
+
+  return previewRelation;
+
+};
+
 // Section 2: Overboard {
 exports.buildJsonAndRssOverboard = function(foundThreads, previewRelation,
     callback, sfw) {
@@ -531,22 +560,9 @@ exports.buildHTMLOverboard = function(foundThreads, previewRelation, sfw,
 
 exports.getOverboardPosts = function(foundThreads, callback, sfw) {
 
-  var previewRelation = {};
-
-  for (var i = 0; i < foundThreads.length; i++) {
-
-    var thread = foundThreads[i];
-
-    var boardUri = thread.boardUri;
-
-    var previewArray = previewRelation[boardUri] || [];
-
-    previewArray = previewArray.concat(thread.latestPosts);
-
-    previewRelation[boardUri] = previewArray;
-  }
-
   var orArray = [];
+
+  var previewRelation = exports.getPreFetchPreviewRelation(foundThreads);
 
   for ( var key in previewRelation) {
 
@@ -837,20 +853,7 @@ exports.generatePage = function(boardList, foundPosts, foundThreads, callback) {
 
 exports.getPosts = function(boardList, foundThreads, callback) {
 
-  var previewRelation = {};
-
-  for (var i = 0; i < foundThreads.length; i++) {
-
-    var thread = foundThreads[i];
-
-    var boardUri = thread.boardUri;
-
-    var previewArray = previewRelation[boardUri] || [];
-
-    previewArray = previewArray.concat(thread.latestPosts);
-
-    previewRelation[boardUri] = previewArray;
-  }
+  var previewRelation = exports.getPreFetchPreviewRelation(foundThreads);
 
   var orArray = [];
 
