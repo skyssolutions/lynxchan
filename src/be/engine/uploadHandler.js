@@ -304,10 +304,31 @@ exports.generateImageThumb = function(identifier, file, callback) {
 
   var command;
 
+  var thumbCb = function(error) {
+    if (error) {
+      callback(error);
+    } else {
+
+      file.thumbOnDisk = thumbDestination;
+      file.thumbMime = thumbExtension ? logger.getMime(thumbDestination)
+          : file.mime;
+      file.thumbPath = '/.media/t_' + identifier;
+
+      exports.transferThumbToGfs(identifier, file, callback);
+    }
+  };
+
   if (file.mime !== 'image/gif' || !ffmpegGif) {
 
     if (thumbExtension) {
       thumbDestination += '.' + thumbExtension;
+    }
+
+    if (native) {
+
+      return native.imageThumb(file.pathInDisk, thumbDestination, thumbSize,
+          thumbCb);
+
     }
 
     command = 'convert ' + file.pathInDisk + ' -coalesce -resize ';
@@ -318,18 +339,7 @@ exports.generateImageThumb = function(identifier, file, callback) {
     command = exports.getFfmpegGifCommand(file, thumbDestination);
   }
 
-  file.thumbOnDisk = thumbDestination;
-  file.thumbMime = thumbExtension ? logger.getMime(thumbDestination)
-      : file.mime;
-  file.thumbPath = '/.media/t_' + identifier;
-
-  exec(command, function(error) {
-    if (error) {
-      callback(error);
-    } else {
-      exports.transferThumbToGfs(identifier, file, callback);
-    }
-  });
+  exec(command, thumbCb);
 
 };
 

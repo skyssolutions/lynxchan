@@ -13,13 +13,7 @@ public:
 
     std::list < Magick::Image > frameList;
 
-    try {
-      readImages(&frameList, path);
-    } catch (Magick::Exception exception) {
-      error = exception.what();
-      failed = true;
-      return;
-    }
+    readImages(&frameList, path);
 
     for (std::list<Magick::Image>::iterator it = frameList.begin();
         it != frameList.end(); it++) {
@@ -39,15 +33,13 @@ public:
   void OnOK() {
     Napi::HandleScope scope(Env());
 
-    Callback().Call(
-        { failed ? Napi::String::New(Env(), error) : Env().Undefined(),
-            Napi::Number::New(Env(), width), Napi::Number::New(Env(), height) });
+    Callback().Call( { Env().Undefined(), Napi::Number::New(Env(), width),
+        Napi::Number::New(Env(), height) });
 
   }
 
 private:
-  std::string path, error;
-  bool failed = false;
+  std::string path;
   size_t width = 0, height = 0;
 };
 

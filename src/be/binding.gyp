@@ -6,7 +6,8 @@
         "native/main.cpp",
         "native/captcha.cpp",
         "native/imageBounds.cpp",
-        "native/videoBounds.cpp"
+        "native/videoBounds.cpp",
+        "native/imageThumb.cpp"
       ],
       "include_dirs": [
         "<!@(pkg-config --cflags-only-I Magick++ | sed s/-I//g)",

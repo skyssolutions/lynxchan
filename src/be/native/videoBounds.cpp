@@ -11,19 +11,22 @@ public:
       Napi::AsyncWorker(callback), path(path) {
   }
   ~VideoSizeWorker() {
+
+    if (formatContext) {
+      avformat_close_input(&formatContext);
+    }
+
   }
 
   void Execute() {
 
-    AVFormatContext* pFormatCtx;
-
-    error = avformat_open_input(&pFormatCtx, path.c_str(), NULL, NULL);
+    error = avformat_open_input(&formatContext, path.c_str(), NULL, NULL);
 
     if (error) {
       return;
     }
 
-    error = avformat_find_stream_info(pFormatCtx, NULL);
+    error = avformat_find_stream_info(formatContext, NULL);
 
     if (error) {
       return;
@@ -31,8 +34,8 @@ public:
 
     int videoStream = -1;
 
-    for (unsigned int i = 0; i < pFormatCtx->nb_streams; i++) {
-      if (pFormatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO
+    for (unsigned int i = 0; i < formatContext->nb_streams; i++) {
+      if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO
           && videoStream < 0) {
         videoStream = i;
       }
@@ -43,15 +46,16 @@ public:
       return;
     }
 
-    AVCodecParameters* pCodecCtx = pFormatCtx->streams[videoStream]->codecpar;
+    AVCodecParameters* codecParameters =
+        formatContext->streams[videoStream]->codecpar;
 
-    if (!pCodecCtx) {
+    if (!codecParameters) {
       error = AVERROR_UNKNOWN;
       return;
     }
 
-    width = pCodecCtx->width;
-    height = pCodecCtx->height;
+    width = codecParameters->width;
+    height = codecParameters->height;
 
   }
 
@@ -77,6 +81,7 @@ private:
   std::string path, errorStr;
   int error;
   size_t width = 0, height = 0;
+  AVFormatContext* formatContext = NULL;
 };
 
 Napi::Value getVideoBounds(const Napi::CallbackInfo& args) {
