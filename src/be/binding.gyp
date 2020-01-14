@@ -5,7 +5,8 @@
       "sources": [
         "native/main.cpp",
         "native/captcha.cpp",
-        "native/imageBounds.cpp"
+        "native/imageBounds.cpp",
+        "native/videoBounds.cpp"
       ],
       "include_dirs": [
         "<!@(pkg-config --cflags-only-I Magick++ | sed s/-I//g)",
@@ -13,10 +14,13 @@
       ],
       "link_settings": {
         "libraries": [
-          "<!@(pkg-config --libs-only-l Magick++)"
+          "<!@(pkg-config --libs-only-l Magick++)",
+          "-lavformat -lavcodec"
         ]
       },
-      "cflags_cc!": [ "-fno-exceptions" ],
+      "cflags_cc!": [
+        "-fno-exceptions"
+      ],
       "defines": [
         "MAGICKCORE_HDRI_ENABLE=0",
         "MAGICKCORE_QUANTUM_DEPTH=16"

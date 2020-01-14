@@ -1,12 +1,12 @@
 #include <Magick++.h>
 #include "imageBounds.h"
 
-class SizeWorker: public Napi::AsyncWorker {
+class ImageSizeWorker: public Napi::AsyncWorker {
 public:
-  SizeWorker(Napi::Function& callback, std::string path) :
+  ImageSizeWorker(Napi::Function& callback, std::string path) :
       Napi::AsyncWorker(callback), path(path) {
   }
-  ~SizeWorker() {
+  ~ImageSizeWorker() {
   }
 
   void Execute() {
@@ -57,7 +57,8 @@ Napi::Value getImageBounds(const Napi::CallbackInfo& args) {
 
   Napi::Function callback = args[1].As<Napi::Function>();
 
-  SizeWorker* sizeWorker = new SizeWorker(callback, args[0].As<Napi::String>());
+  ImageSizeWorker* sizeWorker = new ImageSizeWorker(callback,
+      args[0].As<Napi::String>());
   sizeWorker->Queue();
 
   return env.Undefined();

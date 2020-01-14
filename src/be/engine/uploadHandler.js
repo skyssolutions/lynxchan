@@ -107,6 +107,10 @@ exports.getVideoBounds = function(file, callback) {
 
   var path = file.pathInDisk;
 
+  if (native) {
+    return native.getVideoBounds(path, callback);
+  }
+
   exec(videoDimensionsCommand + path, function gotDimensions(error, output) {
 
     if (error) {
