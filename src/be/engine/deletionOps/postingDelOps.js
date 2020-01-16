@@ -65,7 +65,7 @@ exports.reaggregateLatestPosts = function(countData, board, parentThreads,
     }
   }, {
     $sort : {
-      creation : -1
+      creation : 1
     }
   }, {
     $limit : latestPosts
