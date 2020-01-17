@@ -293,9 +293,10 @@ Parameters:
     deleteMedia: if anything is informed and the user is part of the global staff, when deleting files or postings, the actual media files will be removed from the server.
     banType: type of ban. 0 bans only the ips of the selected posts and requires a valid expiration. 1 creates range bans off the first half of the ips and 2 creates range bans off the first 3/4 of the ips. 3 creates an ASN ban.
     password: password to be used for deletion.
-    reason: reason of the report.
+    reasonReport: reason of the report.
+    reasonBan: reason of the ban.
     banMessage: message to be displayed in the banned content.
-    action: action to be performed. 'ban', 'spoil', 'delete', 'ip-deletion' and 'report' may be used, case insensitive.
+    action: action to be performed. 'ban', ban-delete', 'spoil', 'delete', 'ip-deletion' and 'report' may be used, case insensitive.
     global: if any value is passed, indicates the reports are global.
     duration: duration of the ban. Defaults to 5 years. See the back-end readme for details.
     captcha: captcha input. Used for banning and reporting. Ignored for bans when the user is part of the global staff.

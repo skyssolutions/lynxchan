@@ -112,9 +112,20 @@ exports.getLatestPosts = function(parameters, threadsArray, userRole,
 
   var postsToFetch = [];
 
+  var latestPinned = settingsHandler.getGeneralSettings().latestPostPinned;
+
   for (var i = 0; i < threadsArray.length; i++) {
-    if (threadsArray[i].latestPosts) {
-      postsToFetch = postsToFetch.concat(threadsArray[i].latestPosts);
+
+    var thread = threadsArray[i];
+    var threadLatest = thread.latestPosts;
+
+    if (threadLatest) {
+
+      if (thread.pinned && threadLatest.length > latestPinned) {
+        threadLatest.splice(0, threadLatest.length - latestPinned);
+      }
+
+      postsToFetch = postsToFetch.concat(thread.latestPosts);
     }
   }
 

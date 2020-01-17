@@ -14,7 +14,7 @@ exports.regexRelation = {
 };
 
 exports.banArguments = [ {
-  field : 'reason',
+  field : 'reasonBan',
   length : 256,
   removeHTML : true
 }, {

@@ -175,7 +175,7 @@ exports.createRangeBan = function(userData, parameters, language, callback) {
     } else {
 
       var rangeBan = {
-        reason : parameters.reason,
+        reason : parameters.reasonBan,
         expiration : parameters.expiration,
         range : rangeInfo.range,
         ipv6 : rangeInfo.ipv6,
@@ -344,7 +344,7 @@ exports.createASNBan = function(user, parameters, language, callback) {
 
       var asnBan = {
         expiration : parameters.expiration,
-        reason : parameters.reason,
+        reason : parameters.reasonBan,
         asn : parameters.asn,
         appliedBy : user.login,
       };

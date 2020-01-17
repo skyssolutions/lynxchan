@@ -31,7 +31,7 @@ var lang;
 var allowBlockedToReport;
 
 exports.reportArguments = [ {
-  field : 'reason',
+  field : 'reasonReport',
   length : 256,
   removeHTML : true
 } ];
@@ -272,8 +272,8 @@ exports.createReport = function(req, report, reportedContent, parameters,
     ip : logger.ip(req)
   };
 
-  if (parameters.reason) {
-    toAdd.reason = parameters.reason;
+  if (parameters.reasonReport) {
+    toAdd.reason = parameters.reasonReport;
   }
 
   if (report.post) {

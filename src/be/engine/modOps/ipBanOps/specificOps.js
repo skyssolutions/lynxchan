@@ -127,7 +127,8 @@ exports.logBans = function(userData, board, informedPosts, informedThreads,
     logMessage += pieces.permanentExpirationPiece;
   }
 
-  logMessage += pieces.endPiece.replace('{$reason}', parameters.reason || '');
+  logMessage += pieces.endPiece
+      .replace('{$reason}', parameters.reasonBan || '');
 
   logOps.insertLog({
     user : userData.login,
@@ -240,7 +241,7 @@ exports.processFoundBanData = function(collection, board, parameters, user) {
 
     var ban = {
       appliedBy : user.login,
-      reason : parameters.reason,
+      reason : parameters.reasonBan,
       expiration : parameters.expiration,
       warning : parameters.banType === 4
     };
@@ -277,7 +278,7 @@ exports.recordOffenses = function(foundIps, pages, parentThreads, userData,
     records.push({
       ip : foundIps[i],
       global : parameters.global,
-      reason : parameters.reason,
+      reason : parameters.reasonBan,
       date : new Date(),
       mod : userData.login,
       expiration : parameters.expiration

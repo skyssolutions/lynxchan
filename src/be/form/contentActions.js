@@ -160,12 +160,17 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
     break;
   }
 
-  case 'ban': {
+  case 'ban':
+  case 'ban-delete': {
 
     modOps.ipBan.specific.ban(userData, reportedObjects, parameters, captchaId,
         req.language, function(error) {
           if (error) {
             formOps.outputError(error, 500, res, req.language, json, auth);
+          } else if (parameters.action === 'ban-delete') {
+            parameters.action = 'delete';
+            exports.processParameters(req, userData, parameters, res,
+                captchaId, auth);
           } else {
             formOps.outputResponse(json ? 'ok'
                 : lang(req.language).msgUsersBanned, json ? null

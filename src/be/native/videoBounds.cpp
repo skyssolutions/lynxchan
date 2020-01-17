@@ -1,6 +1,5 @@
 extern "C" {
 #include <libavformat/avformat.h>
-#include <libavcodec/avcodec.h>
 }
 
 #include "videoBounds.h"
@@ -95,9 +94,5 @@ Napi::Value getVideoBounds(const Napi::CallbackInfo& args) {
   sizeWorker->Queue();
 
   return env.Undefined();
-
-}
-
-void bootVideoBounds() {
 
 }
