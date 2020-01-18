@@ -96,15 +96,13 @@ exports.checkBypass = function(bypassId, callback) {
 exports.useBypass = function(bypassId, req, callback, thread) {
 
   if (!bypassMode || !bypassId) {
-    callback();
-    return;
+    return callback();
   }
 
   try {
     bypassId = new ObjectID(bypassId);
   } catch (error) {
-    callback(null, req);
-    return;
+    return callback(null, req);
   }
 
   var nextUse = new Date();
@@ -138,12 +136,12 @@ exports.useBypass = function(bypassId, req, callback, thread) {
     if (error) {
       errorToReturn = error;
     } else if (!result.value) {
-      callback(null, req);
-      return;
+      return callback(null, req);
     } else if (!floodDisabled && result.value[usageField] > new Date()) {
       errorToReturn = lang(req.language).errFlood;
     } else {
       req.bypassed = true;
+      req.bypassId = bypassId;
     }
 
     callback(errorToReturn, req);

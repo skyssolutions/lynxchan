@@ -112,11 +112,7 @@ exports.setPostingLinks = function(postingCell, posting, innerPage, modding,
 };
 
 exports.setPostingIp = function(cell, postingData, boardData, userRole,
-    removable, preview) {
-
-  if (preview) {
-    boardData = boardData[postingData.boardUri];
-  }
+    removable) {
 
   if (!boardData) {
     boardData = {};
@@ -150,10 +146,9 @@ exports.setPostingIp = function(cell, postingData, boardData, userRole,
 
 };
 
-exports.setPostingModdingElements = function(modding, posting, cell, bData,
-    userRole, removable, preview) {
+exports.setNonIpModdingElements = function(modding, posting, cell, removable) {
 
-  if (modding || preview) {
+  if (modding) {
     var editLink = '/edit.js?boardUri=' + common.clean(posting.boardUri);
 
     if (posting.postId) {
@@ -168,6 +163,22 @@ exports.setPostingModdingElements = function(modding, posting, cell, bData,
     cell = cell.replace('__linkEdit_location__', '');
   }
 
+  if (modding && posting.bypassId) {
+    cell = cell.replace('__panelBypassId_location__', removable.panelBypassId)
+        .replace('__labelBypassId_inner__', posting.bypassId);
+  } else {
+    cell = cell.replace('__panelBypassId_location__', '');
+  }
+
+  return cell;
+
+};
+
+exports.setPostingModdingElements = function(modding, posting, cell, bData,
+    userRole, removable) {
+
+  cell = exports.setNonIpModdingElements(modding, posting, cell, removable);
+
   if (modding && posting.asn) {
     cell = cell.replace('__panelASN_location__', removable.panelASN).replace(
         '__labelASN_inner__', posting.asn);
@@ -177,14 +188,13 @@ exports.setPostingModdingElements = function(modding, posting, cell, bData,
 
   // Due to technical limitations regarding individual caches, I decided to show
   // the link to users that are not in the global staff.
-  if ((modding || preview) && posting.ip) {
+  if (modding && posting.ip) {
     cell = cell.replace('__panelIp_location__', removable.panelIp).replace(
         '__linkHistory_location__', removable.linkHistory).replace(
         '__linkFileHistory_location__', removable.linkFileHistory).replace(
         '__linkOffenseRecord_location__', removable.linkOffenseRecord);
 
-    cell = exports.setPostingIp(cell, posting, bData, userRole, removable,
-        preview);
+    cell = exports.setPostingIp(cell, posting, bData, userRole, removable);
 
   } else {
     cell = cell.replace('__panelIp_location__', '').replace(
@@ -316,8 +326,9 @@ exports.addMessage = function(innerPage, modding, cell, posting, removable) {
 exports.setAllSharedPostingElements = function(postingCell, posting, removable,
     language, modding, innerPage, userRole, boardData, preview) {
 
-  postingCell = exports.setPostingModdingElements(modding, posting,
-      postingCell, boardData, userRole, removable, preview);
+  postingCell = exports.setPostingModdingElements(modding || preview, posting,
+      postingCell, preview ? boardData[posting.boardUri] : boardData, userRole,
+      removable);
 
   postingCell = exports.setSharedHideableElements(posting, removable,
       postingCell, preview, language);

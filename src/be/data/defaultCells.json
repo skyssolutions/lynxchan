@@ -32,6 +32,8 @@
     "prebuiltFields": {
       "panelASN": "removal",
       "labelASN": "inner",
+      "panelBypassId": "removal",
+      "labelBypassId": "inner",
       "contentOmissionIndicator": "removal",
       "linkHistory": [
         "href",
@@ -124,6 +126,8 @@
     "template": "postCell",
     "prebuiltFields": {
       "panelASN": "removal",
+      "panelBypassId": "removal",
+      "labelBypassId": "inner",
       "labelBoard": [
         "removal",
         "inner"

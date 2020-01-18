@@ -67,6 +67,7 @@ filters: stores global word filters.
 threads: stores board's threads.
     archived(Boolean): indicates if the thread is archived.
     name: name of the poster. 32 characters.
+    bypassId*: _id of the bypass used to make the posting. 
     hash: hash of the message used by R9K.
     signedRole: role of the user that posted the thread.
     password: password used to delete the thread. 8 characters.
@@ -127,6 +128,7 @@ posts: stores posts.
     email: email of the poster. 64 characters.
     id: thread-wise id of the poster.
     flag: url of this post's flag.
+    bypassId*: _id of the bypass used to make the posting.
     flagName: name of the flag used.
     flagCode: code of the flag used.
     subject: subject of the thread. 128 characters.

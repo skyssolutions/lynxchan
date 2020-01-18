@@ -474,6 +474,7 @@ exports.getNewPost = function(req, parameters, userData, postId, thread, board,
     subject : parameters.subject,
     name : nameToUse,
     id : id,
+    bypassId : req.bypassId,
     message : parameters.message,
     email : parameters.email
   };
