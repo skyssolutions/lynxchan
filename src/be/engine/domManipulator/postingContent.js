@@ -114,10 +114,6 @@ exports.setPostingLinks = function(postingCell, posting, innerPage, modding,
 exports.setPostingIp = function(cell, postingData, boardData, userRole,
     removable) {
 
-  if (!boardData) {
-    boardData = {};
-  }
-
   if (userRole <= minClearIpRole) {
     cell = cell.replace('__panelRange_location__', '');
   } else {
@@ -146,7 +142,8 @@ exports.setPostingIp = function(cell, postingData, boardData, userRole,
 
 };
 
-exports.setNonIpModdingElements = function(modding, posting, cell, removable) {
+exports.setNonIpModdingElements = function(modding, posting, cell, boardData,
+    userRole, removable) {
 
   if (modding) {
     var editLink = '/edit.js?boardUri=' + common.clean(posting.boardUri);
@@ -164,8 +161,12 @@ exports.setNonIpModdingElements = function(modding, posting, cell, removable) {
   }
 
   if (modding && posting.bypassId) {
+
     cell = cell.replace('__panelBypassId_location__', removable.panelBypassId)
-        .replace('__labelBypassId_inner__', posting.bypassId);
+        .replace(
+            '__labelBypassId_inner__',
+            miscOps.hashIpForDisplay([ posting.bypassId ], boardData.ipSalt,
+                userRole));
   } else {
     cell = cell.replace('__panelBypassId_location__', '');
   }
@@ -177,7 +178,10 @@ exports.setNonIpModdingElements = function(modding, posting, cell, removable) {
 exports.setPostingModdingElements = function(modding, posting, cell, bData,
     userRole, removable) {
 
-  cell = exports.setNonIpModdingElements(modding, posting, cell, removable);
+  bData = bData || {};
+
+  cell = exports.setNonIpModdingElements(modding, posting, cell, bData,
+      userRole, removable);
 
   if (modding && posting.asn) {
     cell = cell.replace('__panelASN_location__', removable.panelASN).replace(

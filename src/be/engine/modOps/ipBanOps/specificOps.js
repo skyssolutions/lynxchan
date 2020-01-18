@@ -609,6 +609,10 @@ exports.ban = function(userData, reportedObjects, parameters, captchaId,
 // Section 2: Appeal {
 exports.finishQuery = function(matchBlock, ip, callback) {
 
+  if (!ip) {
+    return callback();
+  }
+
   locationOps.getASN(ip, function gotASN(error, asn) {
 
     if (error) {
