@@ -209,14 +209,12 @@ exports.noMatch = function(ip, foundBan) {
 
 };
 
-exports.getActiveBan = function(ip, asn, boardUri, callback) {
+exports.getActiveBan = function(ip, asn, bypass, boardUri, callback) {
 
-  var singleBanCondition = {
+  var singleBanCondition = bypass ? {
+    bypassId : bypass
+  } : {
     ip : ip
-  };
-
-  var rangeBanCondition = {
-    'range.0' : ip[0]
   };
 
   var globalOrLocalOr = {
@@ -239,9 +237,17 @@ exports.getActiveBan = function(ip, asn, boardUri, callback) {
 
   var finalCondition = {
     $and : [ globalOrLocalOr, {
-      $or : [ rangeBanCondition, singleBanCondition ]
+      $or : [ singleBanCondition ]
     }, expirationOr ]
   };
+
+  if (ip) {
+
+    finalCondition.$and[1].$or.push({
+      'range.0' : ip[0]
+    });
+
+  }
 
   if (asn) {
     finalCondition.$and[1].$or.push({
@@ -260,7 +266,7 @@ exports.getActiveBan = function(ip, asn, boardUri, callback) {
 
         var foundBan = bans[i];
 
-        if (exports.noMatch(ip, foundBan)) {
+        if (ip && exports.noMatch(ip, foundBan)) {
           continue;
         }
 
@@ -293,7 +299,7 @@ exports.getASN = function(req, boardUri, callback) {
 
     req.asn = asn;
 
-    exports.getActiveBan(ip, asn, boardUri, callback);
+    exports.getActiveBan(ip, asn, req.bypass, boardUri, callback);
 
   });
 
@@ -380,7 +386,13 @@ exports.checkForBan = function(req, boardUri, thread, callback) {
 
     if (req.isTor) {
       if ((req.bypassed && torAllowed) || torLevel > 1) {
-        callback();
+
+        if (req.bypassId) {
+          exports.getActiveBan(null, null, req.bypass, boardUri, callback);
+        } else {
+          callback();
+        }
+
       } else {
 
         callback(torPassAllowed ? null : lang(req.language).errBlockedTor,

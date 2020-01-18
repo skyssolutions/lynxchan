@@ -4,6 +4,8 @@ extern "C" {
 
 #include "videoBounds.h"
 
+bool silent = false;
+
 class VideoSizeWorker: public Napi::AsyncWorker {
 public:
   VideoSizeWorker(Napi::Function& callback, std::string path) :
@@ -84,6 +86,11 @@ private:
 };
 
 Napi::Value getVideoBounds(const Napi::CallbackInfo& args) {
+
+  if (!silent) {
+    silent = true;
+    av_log_set_level (AV_LOG_QUIET);
+  }
 
   Napi::Env env = args.Env();
 

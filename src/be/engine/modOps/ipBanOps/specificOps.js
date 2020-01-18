@@ -233,11 +233,16 @@ exports.updateThreadsBanMessage = function(pages, parentThreads, userData,
 
 };
 
-exports.processFoundBanData = function(collection, board, parameters, user) {
+exports.processFoundBanData = function(collection, board, parameters, user,
+    bypass) {
 
   var bans = [];
 
   for (var i = 0; i < collection.length; i++) {
+
+    if (!collection[i]) {
+      continue;
+    }
 
     var ban = {
       appliedBy : user.login,
@@ -249,7 +254,7 @@ exports.processFoundBanData = function(collection, board, parameters, user) {
     if (parameters.banType === 3) {
       ban.asn = collection[i];
     } else if (!parameters.banType || ban.warning) {
-      ban.ip = collection[i];
+      ban[bypass ? 'bypassId' : 'ip'] = collection[i];
     } else if (parameters.banType === 1 || parameters.banType === 2) {
       ban.range = miscOps.getRange(collection[i], parameters.banType === 2);
     } else {
@@ -306,16 +311,21 @@ exports.recordOffenses = function(foundIps, pages, parentThreads, userData,
 
 };
 
-exports.createBans = function(foundIps, foundASNs, parentThreads, pages, board,
-    userData, parameters, callback, informedThreads, informedPosts) {
+exports.createBans = function(foundIps, foundASNs, foundBypasses,
+    parentThreads, pages, board, userData, parameters, callback,
+    informedThreads, informedPosts) {
 
   var newBans = exports.processFoundBanData(
       parameters.banType === 3 ? foundASNs : foundIps, board, parameters,
       userData);
 
+  if (parameters.banType !== 3) {
+    newBans = newBans.concat(exports.processFoundBanData(foundBypasses, board,
+        parameters, userData, true));
+  }
+
   if (!newBans.length) {
-    callback();
-    return;
+    return callback();
   }
 
   bans.insertMany(newBans, function createdBans(error, result) {
@@ -329,8 +339,8 @@ exports.createBans = function(foundIps, foundASNs, parentThreads, pages, board,
 
 };
 
-exports.getPostIps = function(foundIps, foundASNs, pages, informedPosts, board,
-    userData, parameters, callback, informedThreads) {
+exports.getPostIps = function(foundIps, foundASNs, foundBypasses, pages,
+    informedPosts, board, userData, parameters, callback, informedThreads) {
 
   posts.aggregate([ {
     $match : {
@@ -338,6 +348,12 @@ exports.getPostIps = function(foundIps, foundASNs, pages, informedPosts, board,
       $or : [ {
         ip : {
           $nin : foundIps,
+          $ne : null
+        }
+      }, {
+        ip : null,
+        bypassId : {
+          $nin : foundBypasses,
           $ne : null
         }
       }, {
@@ -356,6 +372,9 @@ exports.getPostIps = function(foundIps, foundASNs, pages, informedPosts, board,
       ips : {
         $addToSet : '$ip'
       },
+      bypasses : {
+        $addToSet : '$bypassId'
+      },
       asns : {
         $addToSet : '$asn'
       },
@@ -370,8 +389,9 @@ exports.getPostIps = function(foundIps, foundASNs, pages, informedPosts, board,
           callback(error);
         } else if (!results.length) {
 
-          exports.createBans(foundIps, foundASNs, [], pages, board, userData,
-              parameters, callback, informedThreads, informedPosts);
+          exports.createBans(foundIps, foundASNs, foundBypasses, [], pages,
+              board, userData, parameters, callback, informedThreads,
+              informedPosts);
 
         } else {
 
@@ -398,8 +418,9 @@ exports.getPostIps = function(foundIps, foundASNs, pages, informedPosts, board,
                   callback(error);
                 } else {
                   exports.createBans(foundIps.concat(results[0].ips), foundASNs
-                      .concat(results[0].asns), pageResults[0].parents, pages
-                      .concat(pageResults[0].pages), board, userData,
+                      .concat(results[0].asns), foundBypasses
+                      .concat(results[0].bypasses), pageResults[0].parents,
+                      pages.concat(pageResults[0].pages), board, userData,
                       parameters, callback, informedThreads, informedPosts);
 
                 }
@@ -441,6 +462,10 @@ exports.getThreadIps = function(board, userData, reportedObjects, parameters,
           $ne : null
         }
       }, {
+        bypassId : {
+          $ne : null
+        }
+      }, {
         asn : {
           $ne : null
         }
@@ -458,6 +483,9 @@ exports.getThreadIps = function(board, userData, reportedObjects, parameters,
       asns : {
         $addToSet : '$asn'
       },
+      bypasses : {
+        $addToSet : '$bypassId'
+      },
       pages : {
         $addToSet : '$page'
       }
@@ -469,12 +497,12 @@ exports.getThreadIps = function(board, userData, reportedObjects, parameters,
         if (error) {
           callback(error);
         } else if (!results.length) {
-          exports.getPostIps([], [], [], informedPosts, board, userData,
+          exports.getPostIps([], [], [], [], informedPosts, board, userData,
               parameters, callback, informedThreads);
         } else {
           exports.getPostIps(results[0].ips || [], results[0].asns || [],
-              results[0].pages, informedPosts, board, userData, parameters,
-              callback, informedThreads);
+              results[0].bypasses || [], results[0].pages, informedPosts,
+              board, userData, parameters, callback, informedThreads);
         }
 
       });

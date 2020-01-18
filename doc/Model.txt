@@ -212,6 +212,7 @@ reports: stores reports of threads and posts.
 
 bans: stores bans.
     _id**: unique id of the ban.
+    bypassId*: _id of the banned block bypass.
     appliedBy*: login of the user that applied the ban.
     expiration(Date): date of when the ban will expire.
     range(Array): range of the ban. Only includes the first half of the ip.

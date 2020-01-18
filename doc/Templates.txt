@@ -345,6 +345,14 @@ panelASN:
     use: might be removed.
     description: panel with the ASN label.
 
+panelBypassId:
+    use: might be removed.
+    description: panel with the bypassId label.
+
+labelBypassId:
+    use: have it's innerHTML manipulated.
+    description: label with the poster's bypassId.
+
 linkLast:
     use: have it's href manipulated or might be removed.
     description: link to the HTML version of the thread with only the latest posts.
@@ -493,6 +501,14 @@ Elements:
 linkOffenseRecord:
     use: have it's href manipulated or might be removed.
     description: link to the offense record of the poster's ip.
+
+panelBypassId:
+    use: might be removed.
+    description: panel with the bypassId label.
+
+labelBypassId:
+    use: have it's innerHTML manipulated.
+    description: label with the poster's bypassId.
 
 labelBoard:
     use: have it's innerHTML manipulated or might be removed.
