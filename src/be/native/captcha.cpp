@@ -107,8 +107,8 @@ public:
     Napi::HandleScope scope(Env());
 
     Callback().Call(
-        { Napi::Buffer<char>::Copy(Env(), (char*) imageBlob.data(),
-            imageBlob.length()) });
+        { Env().Undefined(), Napi::Buffer<char>::Copy(Env(),
+            (char*) imageBlob.data(), imageBlob.length()) });
 
   }
 

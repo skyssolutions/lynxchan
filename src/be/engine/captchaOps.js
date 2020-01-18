@@ -229,11 +229,17 @@ exports.generateImage = function(text, captchaData, callback) {
 
   if (native) {
 
-    return native.buildCaptcha(text, imageFont, function(data) {
+    return native.buildCaptcha(text, imageFont, function(error, data) {
 
+      if (error) {
+        return callback(error);
+      }
+
+      // style exception, too simple
       exports.transferToGfs(data, captchaData._id, function(error) {
         callback(error, captchaData);
       });
+      // style exception, too simple
 
     });
 
