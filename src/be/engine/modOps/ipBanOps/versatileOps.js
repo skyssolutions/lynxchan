@@ -300,7 +300,7 @@ exports.getASN = function(req, boardUri, callback) {
 
     req.asn = asn;
 
-    exports.getActiveBan(ip, asn, req.bypass, boardUri, callback);
+    exports.getActiveBan(ip, asn, req.bypassId, boardUri, callback);
 
   });
 
@@ -389,7 +389,7 @@ exports.checkForBan = function(req, boardUri, thread, callback) {
       if ((req.bypassed && torAllowed) || torLevel > 1) {
 
         if (req.bypassId) {
-          exports.getActiveBan(null, null, req.bypass, boardUri, callback);
+          exports.getActiveBan(null, null, req.bypassId, boardUri, callback);
         } else {
           callback();
         }

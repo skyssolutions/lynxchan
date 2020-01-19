@@ -70,15 +70,13 @@ exports.renewBypass = function(captchaId, captchaInput, language, callback) {
 exports.checkBypass = function(bypassId, callback) {
 
   if (!bypassId || !bypassMode) {
-    callback();
-    return;
+    return callback();
   }
 
   try {
     bypassId = new ObjectID(bypassId);
   } catch (error) {
-    callback();
-    return;
+    return callback();
   }
 
   bypasses.findOne({
