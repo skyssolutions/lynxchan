@@ -351,7 +351,6 @@ exports.getPostIps = function(foundIps, foundASNs, foundBypasses, pages,
           $ne : null
         }
       }, {
-        ip : null,
         bypassId : {
           $nin : foundBypasses,
           $ne : null

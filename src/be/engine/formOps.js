@@ -721,11 +721,10 @@ exports.checkBlankParameters = function(object, params, res, language, json) {
 
 };
 
-exports.outputBan = function(ban, req, res, json, callback, auth) {
+exports.outputBan = function(ban, bypassable, req, res, json, callback, auth) {
 
-  if ((ban.range || ban.asn) && req.bypassed) {
-    callback();
-    return;
+  if ((ban.range || ban.asn) && req.bypassed && bypassable) {
+    return callback();
   }
 
   res.writeHead(200, miscOps.getHeader(json ? 'application/json' : 'text/html',
@@ -794,7 +793,7 @@ exports.checkForBan = function(req, boardUri, res, cb, auth, json, thread) {
     } else if (error) {
       cb(error);
     } else if (ban) {
-      exports.outputBan(ban, req, res, json, cb, auth);
+      exports.outputBan(ban, bypassable, req, res, json, cb, auth);
     } else {
       cb();
     }

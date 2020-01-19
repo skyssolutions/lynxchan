@@ -78,6 +78,35 @@ exports.getFilesArray = function(fileArray, modding, preview) {
 
 };
 
+exports.appendPostOptionalItems = function(post, toReturn, bData, userRole) {
+
+  if (post.asn) {
+    toReturn.asn = post.asn;
+  }
+
+  if (post.bypassId) {
+
+    toReturn.bypassId = miscOps.hashIpForDisplay([ post.bypassId ],
+        bData.ipSalt, userRole);
+  }
+
+  if (post.ip) {
+
+    toReturn.ip = miscOps.hashIpForDisplay(post.ip, bData.ipSalt, userRole);
+
+    var allowedForIps = userRole <= minClearIpRole;
+
+    if (!allowedForIps) {
+      toReturn.broadRange = miscOps.hashIpForDisplay(miscOps.getRange(post.ip),
+          bData.ipSalt);
+
+      toReturn.narrowRange = miscOps.hashIpForDisplay(miscOps.getRange(post.ip,
+          true), bData.ipSalt);
+    }
+  }
+
+};
+
 exports.getPostObject = function(post, preview, boardData, modding, userRole) {
 
   var toReturn = {
@@ -100,27 +129,7 @@ exports.getPostObject = function(post, preview, boardData, modding, userRole) {
   };
 
   if (modding || preview) {
-
-    if (post.asn) {
-      toReturn.asn = post.asn;
-    }
-
-    if (post.ip) {
-
-      toReturn.ip = miscOps.hashIpForDisplay(post.ip, boardData.ipSalt,
-          userRole);
-
-      var allowedForIps = userRole <= minClearIpRole;
-
-      if (!allowedForIps) {
-        toReturn.broadRange = miscOps.hashIpForDisplay(miscOps
-            .getRange(post.ip), boardData.ipSalt);
-
-        toReturn.narrowRange = miscOps.hashIpForDisplay(miscOps.getRange(
-            post.ip, true), boardData.ipSalt);
-      }
-    }
-
+    exports.appendPostOptionalItems(post, toReturn, boardData, userRole);
   }
 
   if (preview) {
@@ -185,28 +194,7 @@ exports.getThreadObject = function(thread, posts, board, modding, userRole) {
   }
 
   if (modding) {
-
-    if (thread.asn) {
-      threadObject.asn = thread.asn;
-    }
-
-    if (thread.ip) {
-
-      threadObject.ip = miscOps.hashIpForDisplay(thread.ip, board.ipSalt,
-          userRole);
-
-      var allowedForIps = userRole <= minClearIpRole;
-
-      if (!allowedForIps) {
-        threadObject.broadRange = miscOps.hashIpForDisplay(miscOps
-            .getRange(thread.ip), board.ipSalt);
-
-        threadObject.narrowRange = miscOps.hashIpForDisplay(miscOps.getRange(
-            thread.ip, true), board.ipSalt);
-      }
-
-    }
-
+    exports.appendPostOptionalItems(thread, threadObject, board, userRole);
   }
 
   return threadObject;

@@ -256,32 +256,33 @@ exports.getActiveBan = function(ip, asn, bypass, boardUri, callback) {
   }
 
   bans.find(finalCondition).toArray(function gotBans(error, bans) {
+
     if (error) {
-      callback(error);
-    } else {
+      return callback(error);
+    }
 
-      var ban;
+    var ban;
 
-      for (var i = 0; i < bans.length; i++) {
+    for (var i = 0; i < bans.length; i++) {
 
-        var foundBan = bans[i];
+      var foundBan = bans[i];
 
-        if (ip && exports.noMatch(ip, foundBan)) {
-          continue;
-        }
-
-        var genericBan = ban && (ban.asn || ban.range);
-
-        var noBan = !ban || (ban.warning && !foundBan.warning);
-
-        if (noBan || (genericBan && (!foundBan.asn || !foundBan.range))) {
-          ban = foundBan;
-        }
+      if (ip && exports.noMatch(ip, foundBan)) {
+        continue;
       }
 
-      var canBypass = bypassAllowed && spamBypass && ban;
-      callback(null, ban, canBypass && (ban.asn || ban.range));
+      var genericBan = ban && (ban.asn || ban.range);
+
+      var noBan = !ban || (ban.warning && !foundBan.warning);
+
+      if (noBan || (genericBan && (!foundBan.asn || !foundBan.range))) {
+        ban = foundBan;
+      }
     }
+
+    var canBypass = bypassAllowed && spamBypass && ban;
+
+    callback(null, ban, canBypass && (ban.asn || ban.range));
 
   });
 

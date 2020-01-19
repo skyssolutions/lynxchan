@@ -365,6 +365,7 @@ Description: displays a thread in moderation mode, allowing for the user to ban 
 Parameters:
     boardUri: board containing the thread.
     threadId: id of the thread.
+    page(Number): page to be displayed instead of a thread. If no thread is informed or a page is informed instead, it will output an array with threads of that page.
 
 Json output(Object): object with the data of the thread.
     signedRole: role of the user that posted the thread.
@@ -385,6 +386,7 @@ Json output(Object): object with the data of the thread.
     message: text of the post.
     name: name of the poster.
     ip: hashed and salted ip of the poster.
+    bypassId: hashed and salted bypassId of the poster.
     narrowRange: hashed and salted narrow range of the poster, representing 3/4 of his ip.
     broadRange: hashed and salted broad range of the poster, representing 1/2 of his ip.
     creation(Date): time when the post was created.
@@ -413,6 +415,7 @@ Json output(Object): object with the data of the thread.
         postId(Number): unique id of the post inside the board.
         id: thread-wise id of the poster.
         ip: hashed and salted ip of the poster.
+        bypassId: hashed and salted bypassId of the poster.
         narrowRange: hashed and salted narrow range of the poster, representing 3/4 of his ip.
         broadRange: hashed and salted broad range of the poster, representing 1/2 of his ip.
         markdown: message with html markdown applied.
@@ -1305,6 +1308,7 @@ Parameters:
 JSON output(Array): array where each element is an object with the following fields:
     signedRole: role of the user that posted the thread.
     ip: posting ip.
+    bypassId: hashed and salted bypassId of the poster.
     asn: asn relative to the ip.
     broadRange: range of 1/2 of the ip.
     narrowRange: range of 1/4 of the ip.

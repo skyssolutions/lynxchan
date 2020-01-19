@@ -30,14 +30,22 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Board ip deletion {
-exports.gatherContentToDelete = function(boardUri, ips, userData, language,
-    callback) {
+exports.gatherContentToDelete = function(boardUri, ips, bypasses, userData,
+    language, callback) {
 
   var queryBlock = {
     boardUri : boardUri,
-    ip : {
-      $in : ips
-    }
+    $or : [ {
+      ip : {
+        $in : ips,
+        $ne : null
+      }
+    }, {
+      bypassId : {
+        $in : bypasses,
+        $ne : null
+      }
+    } ]
   };
 
   threads.aggregate([ {
@@ -58,58 +66,56 @@ exports.gatherContentToDelete = function(boardUri, ips, userData, language,
       function gotThreads(error, results) {
 
         if (error) {
-          callback(error);
-        } else {
+          return callback(error);
+        }
 
-          var foundThreads = {};
+        var foundThreads = {};
 
-          for (var i = 0; i < results.length; i++) {
+        for (var i = 0; i < results.length; i++) {
 
-            var result = results[i];
+          var result = results[i];
 
-            foundThreads[result._id] = result.threads;
-
-          }
-
-          // style exception, too simple
-          posts.aggregate([ {
-            $match : queryBlock
-          }, {
-            $project : {
-              boardUri : 1,
-              postId : 1
-            }
-          }, {
-            $group : {
-              _id : '$boardUri',
-              posts : {
-                $push : '$postId'
-              }
-            }
-          } ]).toArray(
-              function gotPosts(error, results) {
-                if (error) {
-                  callback(error);
-                } else {
-
-                  var foundPosts = {};
-
-                  for (var i = 0; i < results.length; i++) {
-
-                    var result = results[i];
-
-                    foundPosts[result._id] = result.posts;
-
-                  }
-
-                  exports.postingDeletions.posting(userData, {}, foundThreads,
-                      foundPosts, language, callback);
-
-                }
-              });
-          // style exception, too simple
+          foundThreads[result._id] = result.threads;
 
         }
+
+        // style exception, too simple
+        posts.aggregate([ {
+          $match : queryBlock
+        }, {
+          $project : {
+            boardUri : 1,
+            postId : 1
+          }
+        }, {
+          $group : {
+            _id : '$boardUri',
+            posts : {
+              $push : '$postId'
+            }
+          }
+        } ]).toArray(
+            function gotPosts(error, results) {
+
+              if (error) {
+                return callback(error);
+              }
+
+              var foundPosts = {};
+
+              for (var i = 0; i < results.length; i++) {
+
+                var result = results[i];
+
+                foundPosts[result._id] = result.posts;
+
+              }
+
+              exports.postingDeletions.posting(userData, {}, foundThreads,
+                  foundPosts, language, callback);
+
+            });
+        // style exception, too simple
 
       });
 
@@ -141,9 +147,15 @@ exports.gatherIpsToDelete = function(objects, userData, language, callback) {
   threads.aggregate([ {
     $match : {
       boardUri : board,
-      ip : {
-        $ne : null
-      },
+      $or : [ {
+        ip : {
+          $ne : null
+        }
+      }, {
+        bypassId : {
+          $ne : null
+        }
+      } ],
       threadId : {
         $in : selectedThreads
       }
@@ -152,7 +164,10 @@ exports.gatherIpsToDelete = function(objects, userData, language, callback) {
     $group : {
       _id : 0,
       ips : {
-        $push : '$ip'
+        $addToSet : '$ip'
+      },
+      bypasses : {
+        $addToSet : '$bypassId'
       }
     }
   } ]).toArray(
@@ -163,15 +178,23 @@ exports.gatherIpsToDelete = function(objects, userData, language, callback) {
         } else {
 
           var ips = results.length ? results[0].ips : [];
+          var bypasses = results.length ? results[0].bypasses : [];
 
           // style exception, too simple
           posts.aggregate([ {
             $match : {
               boardUri : board,
-              ip : {
-                $ne : null,
-                $nin : ips
-              },
+              $or : [ {
+                ip : {
+                  $ne : null,
+                  $nin : ips
+                }
+              }, {
+                bypassId : {
+                  $ne : null,
+                  $nin : bypasses
+                }
+              } ],
               postId : {
                 $in : selectedPosts
               }
@@ -181,6 +204,9 @@ exports.gatherIpsToDelete = function(objects, userData, language, callback) {
               _id : 0,
               ips : {
                 $push : '$ip'
+              },
+              bypasses : {
+                $addToSet : '$bypassId'
               }
             }
           } ]).toArray(
@@ -192,11 +218,12 @@ exports.gatherIpsToDelete = function(objects, userData, language, callback) {
 
                   if (results.length) {
                     ips = ips.concat(results[0].ips);
+                    bypasses = bypasses.concat(results[0].bypasses);
                   }
 
-                  if (ips.length) {
-                    exports.gatherContentToDelete(board, ips, userData,
-                        language, callback);
+                  if (ips.length || bypasses.length) {
+                    exports.gatherContentToDelete(board, ips, bypasses,
+                        userData, language, callback);
                   } else {
                     callback();
                   }
@@ -216,59 +243,53 @@ exports.deleteFromIpOnBoard = function(confirmation, objects, userData,
     language, callback, cleared) {
 
   if (!confirmation) {
-    callback(lang(language).errNoIpDeletionConfirmation);
-    return;
+    return callback(lang(language).errNoIpDeletionConfirmation);
+
   }
 
   if (!objects.length) {
-    callback();
-    return;
+    return callback();
   }
 
-  if (!cleared) {
+  if (cleared) {
+    return exports.gatherIpsToDelete(objects, userData, language, callback);
+  }
 
-    if (userData.globalRole <= miscOps.getMaxStaffRole()) {
-      exports.deleteFromIpOnBoard(confirmation, objects, userData, language,
-          callback, true);
-      return;
+  if (userData.globalRole <= miscOps.getMaxStaffRole()) {
+    return exports.deleteFromIpOnBoard(confirmation, objects, userData,
+        language, callback, true);
+  }
+
+  boards.findOne({
+    boardUri : objects[0].board
+  }, {
+    projection : {
+      owner : 1,
+      volunteers : 1
+    }
+  }, function gotBoard(error, board) {
+
+    if (error) {
+      callback(error);
+    } else if (!board) {
+      callback(lang(language).errBoardNotFound);
+    } else {
+
+      board.volunteers = board.volunteers || [];
+
+      var owner = userData.login === board.owner;
+      var volunteer = board.volunteers.indexOf(userData.login) > -1;
+
+      if (owner || volunteer) {
+        exports.deleteFromIpOnBoard(confirmation, objects, userData, language,
+            callback, true);
+      } else {
+        callback(lang(language).errDeniedBoardIpDeletion);
+      }
 
     }
 
-    boards.findOne({
-      boardUri : objects[0].board
-    }, {
-      projection : {
-        owner : 1,
-        volunteers : 1
-      }
-    }, function gotBoard(error, board) {
-
-      if (error) {
-        callback(error);
-      } else if (!board) {
-        callback(lang(language).errBoardNotFound);
-      } else {
-
-        board.volunteers = board.volunteers || [];
-
-        var owner = userData.login === board.owner;
-        var volunteer = board.volunteers.indexOf(userData.login) > -1;
-
-        if (owner || volunteer) {
-          exports.deleteFromIpOnBoard(confirmation, objects, userData,
-              language, callback, true);
-        } else {
-          callback(lang(language).errDeniedBoardIpDeletion);
-        }
-
-      }
-
-    });
-
-    return;
-  }
-
-  exports.gatherIpsToDelete(objects, userData, language, callback);
+  });
 
 };
 // } Section 1: Board ip deletion
