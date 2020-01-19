@@ -23,14 +23,29 @@ exports.loadDependencies = function() {
 
 };
 
-exports.runReadQuery = function(ip, callback) {
+exports.runReadQuery = function(ip, bypassId, callback) {
+
+  var orList = [];
+
+  if (ip) {
+    orList.push({
+      ip : ip
+    });
+  }
+
+  if (bypassId) {
+    orList.push({
+      bypassId : bypassId
+    });
+  }
 
   offenseRecords.find({
-    ip : ip
+    $or : orList
   }, {
     projection : {
       _id : 0,
-      ip : 0
+      ip : 0,
+      bypassId : 0
     }
   }).toArray(callback);
 
@@ -39,7 +54,7 @@ exports.runReadQuery = function(ip, callback) {
 exports.getOffenses = function(userData, parameters, language, callback) {
 
   if (parameters.ip && userData.globalRole <= clearIpMinRole) {
-    return exports.runReadQuery(logger.convertIpToArray(parameters.ip),
+    return exports.runReadQuery(logger.convertIpToArray(parameters.ip), null,
         callback);
   }
 
@@ -57,13 +72,14 @@ exports.getOffenses = function(userData, parameters, language, callback) {
 
   (parameters.threadId ? threads : posts).findOne(query, {
     _id : 0,
-    ip : 1
+    ip : 1,
+    bypassId : 1
   }, function(error, posting) {
 
-    if (error || !posting || !posting.ip) {
+    if (error || !posting || (!posting.ip && !posting.bypassId)) {
       callback(error, []);
     } else {
-      exports.runReadQuery(posting.ip, callback);
+      exports.runReadQuery(posting.ip, posting.bypassId, callback);
     }
 
   });

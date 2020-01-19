@@ -723,6 +723,31 @@ exports.handleFoundResults = function(queryBlock, threadResults, postResults,
 
 };
 
+exports.fetchPostResults = function(query, pipeLine, parameters, language,
+    callback) {
+
+  threads.aggregate(pipeLine).toArray(
+      function(error, threadResults) {
+
+        if (error) {
+          return callback(error);
+        }
+
+        posts.aggregate(pipeLine).toArray(
+            function(error, postResults) {
+
+              if (error) {
+                return callback(error);
+              }
+              exports.handleFoundResults(query, threadResults, postResults,
+                  parameters, language, callback);
+
+            });
+
+      });
+
+};
+
 exports.getMediaFromPost = function(query, parameters, language, callback) {
 
   var postQuery = {
@@ -744,13 +769,28 @@ exports.getMediaFromPost = function(query, parameters, language, callback) {
 
     if (error) {
       return callback(error);
-    } else if (!posting || !posting.ip) {
-      return callback(lang(language).errPostingNotFound);
+    } else if (!posting || (!posting.ip && !posting.bypassId)) {
+      return exports.getReferencesFromQuery(query, parameters, language,
+          callback);
+    }
+
+    var orList = [];
+
+    if (posting.ip) {
+      orList.push({
+        ip : posting.ip
+      });
+    }
+
+    if (posting.bypassId) {
+      orList.push({
+        bypassId : posting.bypassId
+      });
     }
 
     var pipeLine = [ {
       $match : {
-        ip : posting.ip,
+        $or : orList,
         'files.0' : {
           $exists : true
         }
@@ -768,29 +808,7 @@ exports.getMediaFromPost = function(query, parameters, language, callback) {
       }
     } ];
 
-    threads.aggregate(pipeLine).toArray(
-        function(error, threadResults) {
-
-          if (error) {
-            callback(error);
-          } else {
-
-            posts.aggregate(pipeLine).toArray(
-                function(error, postResults) {
-
-                  if (error) {
-                    callback(error);
-                  } else {
-
-                    exports.handleFoundResults(query, threadResults,
-                        postResults, parameters, language, callback);
-                  }
-
-                });
-
-          }
-
-        });
+    exports.fetchPostResults(query, pipeLine, parameters, language, callback);
 
   });
 

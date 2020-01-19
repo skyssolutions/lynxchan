@@ -1299,9 +1299,9 @@ Description: displays all latest postings made on the site. Requires authenticat
 
 Parameters:
     ip: ip to search posts from.
-    boardUri: boardUri of a post to search posts from the same ip. Required to use either postId or threadId.
-    postId(Number): postId of a post to search posts from the same ip.
-    threadId(Number): threadId of an OP to search posts from the same ip. Won't be used if postId is informed.
+    boardUri: boardUri of a post to search posts from the same ip and bypass. Required to use either postId or threadId.
+    postId(Number): postId of a post to search posts from the same ip and bypass.
+    threadId(Number): threadId of an OP to search posts from the same ip and bypass. Won't be used if postId is informed.
     date(Number or Date): date time to start the listing from.
     boards: list of boards to be read from. Will default to every board where the user can moderate.
 
@@ -1448,9 +1448,9 @@ Name: offenseRecord
 Description: shows the offense record of a given user.
 
 Parameters:
-    boardUri: uri of the board to check a posting's ip offense record.
-    postId: postId of the posting to check the ip's offense record.
-    threadId: threadId of the posting to check the ip's offense record.
+    boardUri: uri of the board to check a posting's ip and bypass offense record.
+    postId: postId of the posting to check the ip's and bypass' offense record.
+    threadId: threadId of the posting to check the ip's and bypass' offense record.
     ip: ip to check it's offense record.
 
 Json output(Array): array with the offense records founds. Contains objects with the following fields:

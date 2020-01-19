@@ -273,23 +273,39 @@ exports.processFoundBanData = function(collection, board, parameters, user,
 
 };
 
-exports.recordOffenses = function(foundIps, pages, parentThreads, userData,
-    parameters, callback, informedThreads, informedPosts, board) {
+exports.createOffenses = function(list, key, parameters, userData, offenses) {
 
-  var records = [];
+  for (var i = 0; i < list.length; i++) {
 
-  for (var i = 0; i < foundIps.length; i++) {
+    if (!list[i]) {
+      continue;
+    }
 
-    records.push({
-      ip : foundIps[i],
+    var record = {
       global : parameters.global,
       reason : parameters.reasonBan,
       date : new Date(),
       mod : userData.login,
       expiration : parameters.expiration
-    });
+    };
+
+    record[key] = list[i];
+
+    offenses.push(record);
 
   }
+
+};
+
+exports.recordOffenses = function(foundIps, foundBypasses, pages,
+    parentThreads, userData, parameters, callback, informedThreads,
+    informedPosts, board) {
+
+  var records = [];
+
+  exports.createOffenses(foundIps, 'ip', parameters, userData, records);
+  exports.createOffenses(foundBypasses, 'bypassId', parameters, userData,
+      records);
 
   offenseRecords.insertMany(records, function(error) {
 
@@ -332,8 +348,10 @@ exports.createBans = function(foundIps, foundASNs, foundBypasses,
     if (error) {
       callback(error);
     } else {
-      exports.recordOffenses(foundIps, pages, parentThreads, userData,
-          parameters, callback, informedThreads, informedPosts, board);
+      exports
+          .recordOffenses(foundIps, foundBypasses, pages, parentThreads,
+              userData, parameters, callback, informedThreads, informedPosts,
+              board);
     }
   });
 

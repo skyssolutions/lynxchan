@@ -126,19 +126,8 @@ exports.setPostingIp = function(cell, postingData, boardData, userRole,
         miscOps.getRange(postingData.ip, true), boardData.ipSalt));
   }
 
-  var urlAffix = '?boardUri=' + postingData.boardUri + '&';
-
-  if (postingData.postId) {
-    urlAffix += 'postId=' + postingData.postId;
-  } else {
-    urlAffix += 'threadId=' + postingData.threadId;
-  }
-
-  return cell.replace('__labelIp_inner__',
-      miscOps.hashIpForDisplay(postingData.ip, boardData.ipSalt, userRole))
-      .replace('__linkHistory_href__', '/latestPostings.js' + urlAffix)
-      .replace('__linkFileHistory_href__', '/mediaManagement.js' + urlAffix)
-      .replace('__linkOffenseRecord_href__', '/offenseRecord.js' + urlAffix);
+  return cell.replace('__labelIp_inner__', miscOps.hashIpForDisplay(
+      postingData.ip, boardData.ipSalt, userRole));
 
 };
 
@@ -175,6 +164,34 @@ exports.setNonIpModdingElements = function(modding, posting, cell, boardData,
 
 };
 
+exports.setModdingLinks = function(cell, modding, postingData, removable) {
+
+  if (modding && (postingData.ip || postingData.bypassId)) {
+    var urlAffix = '?boardUri=' + postingData.boardUri + '&';
+
+    if (postingData.postId) {
+      urlAffix += 'postId=' + postingData.postId;
+    } else {
+      urlAffix += 'threadId=' + postingData.threadId;
+    }
+
+    cell = cell.replace('__linkHistory_location__', removable.linkHistory)
+        .replace('__linkFileHistory_location__', removable.linkFileHistory)
+        .replace('__linkOffenseRecord_location__', removable.linkOffenseRecord)
+        .replace('__linkHistory_href__', '/latestPostings.js' + urlAffix)
+        .replace('__linkFileHistory_href__', '/mediaManagement.js' + urlAffix)
+        .replace('__linkOffenseRecord_href__', '/offenseRecord.js' + urlAffix);
+
+  } else {
+    cell = cell.replace('__linkHistory_location__', '').replace(
+        '__linkFileHistory_location__', '').replace(
+        '__linkOffenseRecord_location__', '');
+  }
+
+  return cell;
+
+};
+
 exports.setPostingModdingElements = function(modding, posting, cell, bData,
     userRole, removable) {
 
@@ -193,20 +210,15 @@ exports.setPostingModdingElements = function(modding, posting, cell, bData,
   // Due to technical limitations regarding individual caches, I decided to show
   // the link to users that are not in the global staff.
   if (modding && posting.ip) {
-    cell = cell.replace('__panelIp_location__', removable.panelIp).replace(
-        '__linkHistory_location__', removable.linkHistory).replace(
-        '__linkFileHistory_location__', removable.linkFileHistory).replace(
-        '__linkOffenseRecord_location__', removable.linkOffenseRecord);
+    cell = cell.replace('__panelIp_location__', removable.panelIp);
 
     cell = exports.setPostingIp(cell, posting, bData, userRole, removable);
 
   } else {
-    cell = cell.replace('__panelIp_location__', '').replace(
-        '__linkHistory_location__', '').replace('__linkFileHistory_location__',
-        '').replace('__linkOffenseRecord_location__', '');
+    cell = cell.replace('__panelIp_location__', '');
   }
 
-  return cell;
+  return exports.setModdingLinks(cell, modding, posting, removable);
 
 };
 

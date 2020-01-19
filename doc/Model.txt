@@ -374,6 +374,7 @@ redirects: stores known redirects.
 
 offenseRecords: stores actions taken against users.
   ip(Array): user ip.
+  bypassId*: user bypassId.
   reason: reason of the action.
   global(Boolean): true if the action was global.
   date(Date): date of the action taken.

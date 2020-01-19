@@ -165,7 +165,7 @@ exports.getPosts = function(hasDate, matchBlock, callback) {
 
 };
 
-exports.fetchPostIp = function(matchBlock, clearIps, parameters, callback) {
+exports.fetchPostInfo = function(matchBlock, clearIps, parameters, callback) {
 
   var query = {
     boardUri : parameters.boardUri
@@ -183,25 +183,39 @@ exports.fetchPostIp = function(matchBlock, clearIps, parameters, callback) {
 
   collectionToUse.findOne(query, {
     projection : {
-      ip : 1
+      ip : 1,
+      bypassId : 1
     }
   }, function gotPosting(error, posting) {
 
     if (error) {
-      callback(error);
-    } else {
+      return callback(error);
+    }
 
-      if (posting && posting.ip) {
-        matchBlock.ip = posting.ip;
+    if (posting && (posting.ip || posting.bypassId)) {
 
-        if (!clearIps) {
-          matchBlock.boardUri = posting.boardUri;
-        }
+      var orList = [];
+
+      matchBlock.$or = orList;
+
+      if (posting.ip) {
+        orList.push({
+          ip : posting.ip
+        });
       }
 
-      callback(null, matchBlock);
+      if (posting.bypassId) {
+        orList.push({
+          bypassId : posting.bypassId
+        });
+      }
 
+      if (!clearIps) {
+        matchBlock.boardUri = posting.boardUri;
+      }
     }
+
+    callback(null, matchBlock);
 
   });
 
@@ -305,7 +319,7 @@ exports.getMatchBlock = function(parameters, userData, callback) {
     matchBlock.ip = logger.convertIpToArray(parameters.ip);
     delete parameters.boardUri;
   } else if (exports.canSearchPerPost(parameters, userData)) {
-    return exports.fetchPostIp(matchBlock,
+    return exports.fetchPostInfo(matchBlock,
         userData.globalRole <= clearIpMinRole, parameters, callback);
   }
 
