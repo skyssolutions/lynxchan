@@ -109,8 +109,7 @@ exports.updateSpammers = function(callback) {
 exports.checkIp = function(ip, callback, override) {
 
   if (disabled && !override) {
-    callback();
-    return;
+    return callback();
   }
 
   logger.binarySearch({

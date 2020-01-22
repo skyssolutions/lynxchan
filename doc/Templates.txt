@@ -2472,6 +2472,10 @@ TEM_ID::56
 mediaManagementPage: page that allows the global staff to manage the uploaded media files.
 
 Elements:
+banPanel:
+    use: might be removed.
+    description: panel that holds the checkbox with the option to ban files that are being deleted.
+
 filesDiv:
     use: have children appended to it.
     description: div that contains the uploaded files.

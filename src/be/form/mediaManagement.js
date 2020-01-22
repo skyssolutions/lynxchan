@@ -25,8 +25,8 @@ exports.getMedia = function(auth, userData, parameters, res, language) {
         }, res, null, auth, null, true);
       } else {
         res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(domManipulator.mediaManagement(media, pages, parameters,
-            language));
+        res.end(domManipulator.mediaManagement(userData.globalRole, media,
+            pages, parameters, language));
       }
 
     }

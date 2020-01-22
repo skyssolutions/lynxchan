@@ -9,13 +9,13 @@ exports.deleteMedia = function(auth, param, userData, res, language, json) {
   var selectedIdentifiers = [];
 
   for ( var key in param) {
-    if (param.hasOwnProperty(key) && key !== 'files') {
+    if (param.hasOwnProperty(key) && key !== 'files' && key !== 'ban') {
       selectedIdentifiers.push(key);
     }
   }
 
-  mediaHandler.deleteFiles(selectedIdentifiers, userData, language,
-      function deletedFiles(error) {
+  mediaHandler.deleteFiles(!!param.ban, selectedIdentifiers, userData,
+      language, function deletedFiles(error) {
 
         if (error) {
           formOps.outputError(error, 500, res, language, json, auth);

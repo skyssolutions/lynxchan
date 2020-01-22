@@ -465,7 +465,8 @@ exports.removeFile = function(userData, parameters, language, posting, cb) {
 
     var identifier = removed.md5 + '-' + removed.mime.replace('/', '');
 
-    mediaHandler.deleteFiles([ identifier ], userData, language, cb, true);
+    mediaHandler
+        .deleteFiles(null, [ identifier ], userData, language, cb, true);
 
   });
 };

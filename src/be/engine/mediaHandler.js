@@ -6,6 +6,7 @@ var bucket = new (require('mongodb')).GridFSBucket(db.conn());
 var threads = db.threads();
 var posts = db.posts();
 var files = db.files();
+var hashBans = db.hashBans();
 var chunks = db.chunks();
 var references = db.uploadReferences();
 var maxGlobalStaffRole;
@@ -194,7 +195,7 @@ exports.updateReferencesCount = function(postReferences, threadReferences,
   }
 
   if (deleteMedia) {
-    exports.deleteFiles(identifiers, userData, language, callback, true);
+    exports.deleteFiles(null, identifiers, userData, language, callback, true);
   } else {
     exports.checkNewOrphans(identifiers, callback);
   }
@@ -873,7 +874,47 @@ exports.deleteReferences = function(userData, identifiers, callback) {
 
 };
 
-exports.deleteFiles = function(identifiers, userData, language, callback,
+exports.banDeleted = function(userData, identifiers, callback, index) {
+
+  index = index || 0;
+
+  if (index >= identifiers.length) {
+    return exports.deleteReferences(userData, identifiers, callback);
+  }
+
+  hashBans.insertOne({
+    md5 : identifiers[index].substring(0, 32),
+    user : userData.login,
+    date : new Date()
+  }, function(error) {
+
+    if (error && error.code !== 11000) {
+      callback(error);
+    } else {
+      exports.banDeleted(userData, identifiers, callback, ++index);
+    }
+
+  });
+
+};
+
+exports.handleDeletionResults = function(ban, results, userData, identifiers,
+    callback) {
+
+  gridFsHandler.removeFiles(results[0].files, function deletedFiles(error) {
+
+    if (error) {
+      callback(error);
+    } else if (!ban || (userData.globalRole === maxGlobalStaffRole)) {
+      exports.deleteReferences(userData, identifiers, callback);
+    } else {
+      exports.banDeleted(userData, identifiers, callback);
+    }
+  });
+
+};
+
+exports.deleteFiles = function(ban, identifiers, userData, language, callback,
     override) {
 
   if (!override) {
@@ -894,6 +935,7 @@ exports.deleteFiles = function(identifiers, userData, language, callback,
   }, {
     $project : {
       filename : 1,
+
       _id : 0
     }
   }, {
@@ -903,28 +945,19 @@ exports.deleteFiles = function(identifiers, userData, language, callback,
         $push : '$filename'
       }
     }
-  } ]).toArray(function gotNames(error, results) {
-
-    if (error) {
-      callback(error);
-    } else if (!results.length) {
-      exports.deleteReferences(userData, identifiers, callback);
-    } else {
-
-      // style exception, too simple
-      gridFsHandler.removeFiles(results[0].files, function deletedFiles(error) {
+  } ]).toArray(
+      function gotNames(error, results) {
 
         if (error) {
           callback(error);
-        } else {
+        } else if (!results.length) {
           exports.deleteReferences(userData, identifiers, callback);
+        } else {
+          exports.handleDeletionResults(ban, results, userData, identifiers,
+              callback);
         }
+
       });
-      // style exception, too simple
-
-    }
-
-  });
 
 };
 // } Section 4: File deletion

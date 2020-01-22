@@ -425,7 +425,7 @@ exports.getMediaManagementCells = function(media, language) {
 
 };
 
-exports.mediaManagement = function(media, pages, parameters, language) {
+exports.mediaManagement = function(role, media, pages, parameters, language) {
 
   var template = templateHandler(language).mediaManagementPage;
 
@@ -461,6 +461,13 @@ exports.mediaManagement = function(media, pages, parameters, language) {
     document = document.replace('__boardUriIdentifier_location__', '').replace(
         '__threadIdIdentifier_location__', '').replace(
         '__postIdIdentifier_location__', '');
+  }
+
+  if (role === miscOps.getMaxStaffRole()) {
+    document = document.replace('__banPanel_location__', '');
+  } else {
+    document = document.replace('__banPanel_location__',
+        template.removable.banPanel);
   }
 
   return document.replace('__filesDiv_children__', exports
