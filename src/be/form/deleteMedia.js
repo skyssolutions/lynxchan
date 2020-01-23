@@ -6,10 +6,16 @@ var mediaHandler = require('../engine/mediaHandler');
 
 exports.deleteMedia = function(auth, param, userData, res, language, json) {
 
-  var selectedIdentifiers = [];
+  var selectedIdentifiers;
+
+  if (param.text) {
+    selectedIdentifiers = param.text.match(/[0-9a-f]{32}-\w+/g) || [];
+  } else {
+    selectedIdentifiers = [];
+  }
 
   for ( var key in param) {
-    if (param.hasOwnProperty(key) && key !== 'files' && key !== 'ban') {
+    if (key.match(/[0-9a-f]{32}-\w+/)) {
       selectedIdentifiers.push(key);
     }
   }

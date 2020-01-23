@@ -898,10 +898,10 @@ exports.banDeleted = function(userData, identifiers, callback, index) {
 
 };
 
-exports.handleDeletionResults = function(ban, results, userData, identifiers,
+exports.handleDeletionResults = function(ban, files, userData, identifiers,
     callback) {
 
-  gridFsHandler.removeFiles(results[0].files, function deletedFiles(error) {
+  gridFsHandler.removeFiles(files, function deletedFiles(error) {
 
     if (error) {
       callback(error);
@@ -935,7 +935,6 @@ exports.deleteFiles = function(ban, identifiers, userData, language, callback,
   }, {
     $project : {
       filename : 1,
-
       _id : 0
     }
   }, {
@@ -950,11 +949,9 @@ exports.deleteFiles = function(ban, identifiers, userData, language, callback,
 
         if (error) {
           callback(error);
-        } else if (!results.length) {
-          exports.deleteReferences(userData, identifiers, callback);
         } else {
-          exports.handleDeletionResults(ban, results, userData, identifiers,
-              callback);
+          exports.handleDeletionResults(ban, results.length ? results[0].files
+              : [], userData, identifiers, callback);
         }
 
       });
