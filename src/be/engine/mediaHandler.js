@@ -12,6 +12,7 @@ var references = db.uploadReferences();
 var maxGlobalStaffRole;
 var gridFsHandler;
 var lang;
+var hashBanOps;
 var redactedModNames;
 var pruningMode;
 var maxFilesToDisplay;
@@ -20,6 +21,7 @@ var logOps;
 
 exports.loadDependencies = function() {
 
+  hashBanOps = require('./modOps').hashBan;
   logOps = require('./logOps');
   miscOps = require('./miscOps');
   gridFsHandler = require('./gridFsHandler');
@@ -855,26 +857,25 @@ exports.deleteReferences = function(userData, identifiers, callback) {
   }, function removedIdentifiers(error) {
 
     if (error) {
-      callback(error);
-    } else {
-
-      logOps.insertLog({
-        user : userData.login,
-        type : 'mediaDeletion',
-        time : new Date(),
-        description : lang().logMediaDeletion.replace('{$login}',
-            redactedModNames ? lang().guiRedactedName : userData.login)
-            .replace('{$identifiers}', identifiers.join(', ')),
-        global : true
-      }, callback);
-
+      return callback(error);
     }
+
+    logOps.insertLog({
+      user : userData.login,
+      type : 'mediaDeletion',
+      time : new Date(),
+      description : lang().logMediaDeletion.replace('{$login}',
+          redactedModNames ? lang().guiRedactedName : userData.login).replace(
+          '{$identifiers}', identifiers.join(', ')),
+      global : true
+    }, callback);
 
   });
 
 };
 
-exports.banDeleted = function(userData, identifiers, callback, index) {
+exports.banDeleted = function(parameters, userData, identifiers, callback,
+    index) {
 
   index = index || 0;
 
@@ -885,37 +886,40 @@ exports.banDeleted = function(userData, identifiers, callback, index) {
   hashBans.insertOne({
     md5 : identifiers[index].substring(0, 32),
     user : userData.login,
+    reason : parameters.reason,
     date : new Date()
   }, function(error) {
 
     if (error && error.code !== 11000) {
       callback(error);
     } else {
-      exports.banDeleted(userData, identifiers, callback, ++index);
+      exports.banDeleted(parameters, userData, identifiers, callback, ++index);
     }
 
   });
 
 };
 
-exports.handleDeletionResults = function(ban, files, userData, identifiers,
-    callback) {
+exports.handleDeletionResults = function(parameters, files, userData,
+    identifiers, callback) {
 
   gridFsHandler.removeFiles(files, function deletedFiles(error) {
+
+    var ban = !!parameters.ban;
 
     if (error) {
       callback(error);
     } else if (!ban || (userData.globalRole === maxGlobalStaffRole)) {
       exports.deleteReferences(userData, identifiers, callback);
     } else {
-      exports.banDeleted(userData, identifiers, callback);
+      exports.banDeleted(parameters, userData, identifiers, callback);
     }
   });
 
 };
 
-exports.deleteFiles = function(ban, identifiers, userData, language, callback,
-    override) {
+exports.deleteFiles = function(parameters, identifiers, userData, language,
+    callback, override) {
 
   if (!override) {
     var allowed = userData.globalRole <= maxGlobalStaffRole;
@@ -925,6 +929,8 @@ exports.deleteFiles = function(ban, identifiers, userData, language, callback,
   } else if (!identifiers || !identifiers.length) {
     return callback();
   }
+
+  miscOps.sanitizeStrings(parameters, hashBanOps.hashBanArguments);
 
   files.aggregate([ {
     $match : {
@@ -950,8 +956,9 @@ exports.deleteFiles = function(ban, identifiers, userData, language, callback,
         if (error) {
           callback(error);
         } else {
-          exports.handleDeletionResults(ban, results.length ? results[0].files
-              : [], userData, identifiers, callback);
+          exports.handleDeletionResults(parameters,
+              results.length ? results[0].files : [], userData, identifiers,
+              callback);
         }
 
       });

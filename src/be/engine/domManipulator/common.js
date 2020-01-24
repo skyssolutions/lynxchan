@@ -428,7 +428,9 @@ exports.setOmittedInformation = function(thread, posts, innerPage, language) {
 
   var threadCell = template.template;
 
-  if (innerPage || (thread.postCount || 0) <= (posts ? posts.length : 0)) {
+  posts = posts || [];
+
+  if (innerPage || (thread.postCount || 0) <= posts.length) {
     return threadCell.replace('__labelOmission_location__', '');
   }
 

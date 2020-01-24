@@ -5,6 +5,7 @@ exports.ipBan = require('./ipBanOps');
 exports.hashBan = require('./hashBanOps');
 exports.edit = require('./editOps');
 exports.report = require('./reportOps');
+exports.merge = require('./mergeOps');
 exports.transfer = require('./transferOps');
 exports.spoiler = require('./spoilerOps');
 
@@ -21,6 +22,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  exports.merge.loadDependencies();
   exports.common.loadDependencies();
   exports.ipBan.loadDependencies();
   exports.hashBan.loadDependencies();

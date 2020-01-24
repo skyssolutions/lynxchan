@@ -137,6 +137,8 @@ errInvalidConfirmation: error thrown when the user tries to confirm his e-mail w
 errNotConfirmed: error thrown when the user tries to perform an action that requires a confirmed e-mail while not having one.
 errReferralMismatch: error thrown when the user tries to authenticate but his referral doesn't match the host.
 errTotalFileLimitExceeded: error thrown when the user tries to post a new file but the site has reached it's file limit.
+errSourceThreadNotFound: error thrown when the source thread is not found.
+errDestinationThreadNotFound: error thrown when the destination thread is not found.
 guiGlobalLogsIndex: label used on the log index to mark global logs dates.
 guiTypeBan: label used for logs of bans.
 guiRedactedName: string used in place for redacted mod names.
@@ -267,6 +269,7 @@ msgThreadArchived: message used after archiving a thread.
 msgFlagCreated: message used after a new flag is created.
 msgFlagDeleted: message used after deleting a flag.
 msgAsnBanCreated: message used after placing an ASN ban.
+msgThreadMerged: message when a thread is merged.
 msgFileUnlinked: message used after unlinking a single file.
 msgBoardUnlocked: message used after unlocking a board's auto lock.
 msgSavedGlobalSettings: message used after saving global settings.

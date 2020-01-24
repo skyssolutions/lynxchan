@@ -370,5 +370,8 @@
   "errDeniedSingleDeletion": "You are not allowed to delete single files from this posting.",
   "msgFileUnlinked": "File unlinked from posting.",
   "titOpenReports": "Open reports",
-  "titAppealedBansManagement": "Appealed bans"
+  "titAppealedBansManagement": "Appealed bans",
+  "msgThreadMerged": "Thread merged.",
+  "errSourceThreadNotFound": "Source thread not found.",
+  "errDestinationThreadNotFound": "Destination thread not found."
 }

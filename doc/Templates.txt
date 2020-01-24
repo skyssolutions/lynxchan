@@ -177,6 +177,18 @@ TEM_ID::03
 threadPage: thread page, with all replies.
 
 Elements:
+divMerge:
+    use: might be removed.
+    description: div with the option to merge the thread into another thread within the same board.
+
+mergeThreadIdentifier:
+    use: have it's value manipulated.
+    description: hidden input used to identify the thread the page belongs to when merging.
+
+mergeBoardIdentifier:
+    use: have it's value manipulated.
+    description: hidden input used to identify the board the page belongs to when merging.
+
 divArchive:
     use: might be removed.
     description: div with the option archive the thread.

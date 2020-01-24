@@ -44,6 +44,13 @@ exports.availableLogTypes = {
   filePruning : 'guiTypeFilePruning'
 };
 
+exports.moddingBoardIdentifiers = [ 'mergeBoardIdentifier',
+    'controlBoardIdentifier', 'archiveBoardIdentifier',
+    'transferBoardIdentifier' ];
+exports.moddingThreadIdentifiers = [ 'archiveBoardIdentifier',
+    'controlThreadIdentifier', 'transferThreadIdentifier',
+    'mergeThreadIdentifier' ];
+
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
@@ -139,21 +146,15 @@ exports.setModdingInformation = function(document, threadData) {
     document = document.replace('checked="__checkboxCyclic_checked__"', '');
   }
 
-  document = document.replace('__archiveBoardIdentifier_value__', common
-      .clean(threadData.boardUri));
-  document = document.replace('__archiveThreadIdentifier_value__',
-      threadData.threadId);
+  for (var i = 0; i < exports.moddingBoardIdentifiers.length; i++) {
 
-  document = document.replace('__controlBoardIdentifier_value__', common
-      .clean(threadData.boardUri));
-  document = document.replace('__controlThreadIdentifier_value__',
-      threadData.threadId);
+    var boardId = '__' + exports.moddingBoardIdentifiers[i] + '_value__';
+    var threadId = '__' + exports.moddingThreadIdentifiers[i] + '_value__';
+    document = document.replace(boardId, common.clean(threadData.boardUri))
+        .replace(threadId, threadData.threadId);
+  }
 
-  document = document.replace('__transferThreadIdentifier_value__',
-      threadData.threadId);
-
-  return document.replace('__transferBoardIdentifier_value__', common
-      .clean(threadData.boardUri));
+  return document;
 
 };
 
@@ -171,10 +172,11 @@ exports.setThreadTitle = function(document, threadData) {
 
 };
 
-exports.setModElements = function(modding, document, userRole, removable,
-    archived) {
+exports.setComplexModElements = function(userRole, modding, document,
+    removable, archived) {
 
   var globalStaff = userRole <= miscOps.getMaxStaffRole();
+
   if (!globalStaff || !modding) {
     document = document.replace('__formTransfer_location__', '');
   } else {
@@ -198,6 +200,22 @@ exports.setModElements = function(modding, document, userRole, removable,
   } else {
     document = document
         .replace('__divArchive_location__', removable.divArchive);
+  }
+
+  return document;
+
+};
+
+exports.setModElements = function(modding, document, userRole, removable,
+    archived) {
+
+  document = exports.setComplexModElements(userRole, modding, document,
+      removable, archived);
+
+  if (!modding) {
+    document = document.replace('__divMerge_location__', '');
+  } else {
+    document = document.replace('__divMerge_location__', removable.divMerge);
   }
 
   return document;

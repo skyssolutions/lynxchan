@@ -1127,6 +1127,7 @@ Description: completely deletes media files from the database. Requires authenti
 
 Parameters:
     ban(Boolean): if informed, any deleted file will also have it's hash globally banned. Ignored if the user is a janitor.
+    reason: reason of the ban.
     text: if informed, the engine will search the informed text for identifiers to be deleted. The text will be run against the regex [0-9a-f]{32}-\w+ to look for identifiers.
 
 ------------------------------------------------------------------------------------------
@@ -1496,6 +1497,19 @@ Json output(Array): array with the appealed bans data. Contains object with the 
     expiration: when the ban expires.
     appliedBy: login of the user that applied the ban.
     appeal: appeal of the ban.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::93
+
+Name: mergeThread
+
+Description: merges a thread to another thread in the same board. Requires authentication.
+
+Parameters:
+    boardUri: uri of both threads.
+    threadSource: thread which will have it's replies merged into a different thread.
+    threadDestination: thread which will receive the replies.
 
 ------------------------------------------------------------------------------------------
 

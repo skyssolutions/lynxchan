@@ -121,8 +121,7 @@ exports.reaggregateThread = function(board, parentThreads, callback, index) {
   index = index || 0;
 
   if (index >= parentThreads.length) {
-    callback();
-    return;
+    return callback();
   }
 
   posts.aggregate([ {
@@ -153,24 +152,23 @@ exports.reaggregateThread = function(board, parentThreads, callback, index) {
       function gotResults(error, results) {
 
         if (error) {
-          callback(error);
-        } else {
-
-          var data = results.length ? results[0] : {
-            postCount : 0,
-            fileCount : 0
-          };
-
-          exports.reaggregateLatestPosts(data, board, parentThreads, callback,
-              index);
+          return callback(error);
         }
+
+        var data = results.length ? results[0] : {
+          postCount : 0,
+          fileCount : 0
+        };
+
+        exports.reaggregateLatestPosts(data, board, parentThreads, callback,
+            index);
 
       });
 
 };
 
-exports.signalAndLoop = function(parentThreads, board, parameters,
-    foundThreads, foundPosts, callback) {
+exports.signalAndLoop = function(parentThreads, board, foundThreads,
+    foundPosts, callback) {
 
   for (var i = 0; i < parentThreads.length; i++) {
     var parentThread = parentThreads[i];
@@ -209,14 +207,14 @@ exports.signalAndLoop = function(parentThreads, board, parameters,
 };
 
 exports.reaggregateThreadForDeletion = function(board, parentThreads,
-    parameters, foundThreads, foundPosts, callback) {
+    foundThreads, foundPosts, callback) {
 
   exports.reaggregateThread(board, parentThreads, function reaggregated(error) {
     if (error) {
       callback(error);
     } else {
-      exports.signalAndLoop(parentThreads, board, parameters, foundThreads,
-          foundPosts, callback);
+      exports.signalAndLoop(parentThreads, board, foundThreads, foundPosts,
+          callback);
     }
   });
 
@@ -225,24 +223,22 @@ exports.reaggregateThreadForDeletion = function(board, parentThreads,
 exports.updateBoardAndThreads = function(board, parameters, cb, foundThreads,
     foundPosts, parentThreads) {
 
-  if (!parameters.deleteUploads) {
-
-    boardOps.aggregateThreadCount(board.boardUri,
-        function aggregatedThreadCount(error) {
-
-          if (error) {
-            cb(error);
-          } else {
-            exports.reaggregateThreadForDeletion(board, parentThreads,
-                parameters, foundThreads, foundPosts, cb);
-          }
-
-        });
-
-  } else {
-    exports.signalAndLoop(parentThreads, board, parameters, foundThreads,
+  if (parameters.deleteUploads) {
+    return exports.signalAndLoop(parentThreads, board, foundThreads,
         foundPosts, cb);
   }
+
+  boardOps.aggregateThreadCount(board.boardUri, function aggregatedThreadCount(
+      error) {
+
+    if (error) {
+      return cb(error);
+    }
+
+    exports.reaggregateThreadForDeletion(board, parentThreads, foundThreads,
+        foundPosts, cb);
+
+  });
 
 };
 

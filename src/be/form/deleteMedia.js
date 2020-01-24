@@ -15,13 +15,16 @@ exports.deleteMedia = function(auth, param, userData, res, language, json) {
   }
 
   for ( var key in param) {
-    if (key.match(/[0-9a-f]{32}-\w+/)) {
-      selectedIdentifiers.push(key);
+
+    var match = key.match(/[0-9a-f]{32}-\w+/);
+
+    if (match) {
+      selectedIdentifiers.push(match.toString());
     }
   }
 
-  mediaHandler.deleteFiles(!!param.ban, selectedIdentifiers, userData,
-      language, function deletedFiles(error) {
+  mediaHandler.deleteFiles(param, selectedIdentifiers, userData, language,
+      function deletedFiles(error) {
 
         if (error) {
           formOps.outputError(error, 500, res, language, json, auth);

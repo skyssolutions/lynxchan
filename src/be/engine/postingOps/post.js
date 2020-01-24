@@ -95,13 +95,7 @@ exports.reaggregateThread = function(boardUri, threadId, postId, callback) {
           fileCount : data.fileCount
         }
       }, function updatedThread(error) {
-
-        if (error) {
-          callback(error);
-        } else {
-          callback(null, postId);
-        }
-
+        callback(error, postId);
       });
       // style exception, too simple
 
@@ -183,30 +177,27 @@ exports.cleanThreadPosts = function(boardUri, threadId, postId, language,
   } ]).toArray(
       function gotPosts(error, results) {
         if (error) {
-          callback(error);
+          return callback(error);
         } else if (!results.length) {
-          callback(null, postId);
-        } else {
-
-          var postsToDelete = results[0].posts;
-          var removedFileCount = results[0].removedFileCount;
-
-          // style exception, too simple
-          referenceHandler.clearPostingReferences(boardUri, null,
-              postsToDelete, false, false, null, language,
-              function removedReferences(error) {
-
-                if (error) {
-                  callback(error);
-                } else {
-                  exports.removeCleanedPosts(postsToDelete, boardUri, threadId,
-                      postId, removedFileCount, callback);
-                }
-
-              });
-          // style exception, too simple
-
+          return callback(null, postId);
         }
+
+        var postsToDelete = results[0].posts;
+        var removedFileCount = results[0].removedFileCount;
+
+        // style exception, too simple
+        referenceHandler.clearPostingReferences(boardUri, null, postsToDelete,
+            false, false, null, language, function removedReferences(error) {
+
+              if (error) {
+                callback(error);
+              } else {
+                exports.removeCleanedPosts(postsToDelete, boardUri, threadId,
+                    postId, removedFileCount, callback);
+              }
+
+            });
+        // style exception, too simple
 
       });
 
