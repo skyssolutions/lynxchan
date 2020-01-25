@@ -13,6 +13,7 @@ var gridFsHandler;
 var db = require('./db');
 var boards = db.boards();
 var stats = db.stats();
+var bypasses = db.bypasses();
 var threads = db.threads();
 var posts = db.posts();
 var uniqueIps = db.uniqueIps();
@@ -26,6 +27,8 @@ var torHandler;
 var spamOps;
 var referenceHandler;
 var schedules = {};
+
+var bypassCols = [ db.bans(), db.offenseRecords() ];
 
 exports.reload = function() {
 
@@ -606,6 +609,72 @@ function uniqueIpCount() {
 // } Section 5: Unique IP counting
 
 // Section 6: Automatic file pruning {
+function checkFoundBypassItem(results, colIndex) {
+
+  bypasses.findOne({
+    _id : results[0].bypassId
+  }, function(error, result) {
+
+    if (error) {
+      return console.log(error);
+    } else if (result) {
+      return clearDeadBypasses(results[0]._id, colIndex);
+    }
+
+    // style exception, too simple
+    bypassCols[colIndex].removeOne({
+      _id : results[0]._id
+    }, function(error) {
+
+      if (error) {
+        console.log(error);
+      } else {
+        return clearDeadBypasses(results[0]._id, colIndex);
+      }
+
+    });
+    // style exception, too simple
+
+  });
+
+}
+
+function clearDeadBypasses(currentId, colIndex) {
+
+  colIndex = colIndex || 0;
+
+  if (colIndex >= bypassCols.length) {
+    return;
+  }
+
+  bypassCols[colIndex].find(currentId ? {
+    _id : {
+      $gt : currentId
+    }
+  } : {
+    bypassId : {
+      $exists : true
+    }
+  }, {
+    projection : {
+      bypassId : 1
+    }
+  }).sort({
+    _id : 1
+  }).limit(1).toArray(function(error, results) {
+
+    if (error) {
+      return console.log(error);
+    } else if (!results.length) {
+      return clearDeadBypasses(null, ++colIndex);
+    }
+
+    checkFoundBypassItem(results, colIndex);
+
+  });
+
+}
+
 function commitPruning(takeOffMaintenance) {
 
   referenceHandler.prune(function prunedFiles(error) {
@@ -618,32 +687,28 @@ function commitPruning(takeOffMaintenance) {
       settingsHandler.changeMaintenanceMode(false);
     }
 
-    autoFilePruning();
-
   });
 
 }
 
 function startPruning() {
 
-  if (!settings.maintenance) {
-
-    settingsHandler.changeMaintenanceMode(true);
-
-    var commitAt = new Date();
-    commitAt.setUTCMilliseconds(0);
-    commitAt.setUTCSeconds(0);
-    commitAt.setUTCMinutes(commitAt.getUTCMinutes() + 1);
-
-    schedules.pruningWaiting = setTimeout(function() {
-      delete schedules.pruningWaiting;
-
-      commitPruning(true);
-    }, commitAt.getTime() - new Date().getTime());
-
-  } else {
-    commitPruning(false);
+  if (settings.maintenance) {
+    return commitPruning();
   }
+
+  settingsHandler.changeMaintenanceMode(true);
+
+  var commitAt = new Date();
+  commitAt.setUTCMilliseconds(0);
+  commitAt.setUTCSeconds(0);
+  commitAt.setUTCMinutes(commitAt.getUTCMinutes() + 1);
+
+  schedules.pruningWaiting = setTimeout(function() {
+    delete schedules.pruningWaiting;
+
+    commitPruning(true);
+  }, commitAt.getTime() - new Date().getTime());
 
 }
 
@@ -661,9 +726,11 @@ function autoFilePruning() {
 
     if (settings.pruningMode === 2) {
       startPruning();
-    } else {
-      autoFilePruning();
     }
+
+    clearDeadBypasses();
+
+    autoFilePruning();
 
   }, nextPrune.getTime() - new Date().getTime());
 
