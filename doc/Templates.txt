@@ -898,6 +898,10 @@ autoCaptchaThresholdField:
     use: have it's value manipulated.
     description: used to display the auto catpcha treshold.
 
+autoFullCaptchaThresholdField:
+    use: have it's value manipulated.
+    description: used to display the full auto catpcha treshold.
+
 flagManagementLink:
     use: have it's href manipulated.
     description: link to the page used to manipulate the board flags.

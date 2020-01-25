@@ -204,38 +204,48 @@ exports.cleanThreadPosts = function(boardUri, threadId, postId, language,
 };
 
 exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
-    cleanPosts, bump, language, callback) {
+    cleanPosts, bump, language, enabledCaptcha, callback) {
 
-  process.send({
-    board : parameters.boardUri,
-    thread : parameters.threadId
-  });
-
-  process.send({
-    board : parameters.boardUri,
-    catalog : true
-  });
-
-  process.send({
-    multiboard : true,
-    board : parameters.boardUri
-  });
-
-  if (bump) {
-
-    for (var i = 0; i < (thread.page || 1) && i < pageLimit; i++) {
-
-      // signal rebuild of board pages
-      process.send({
-        board : parameters.boardUri,
-        page : i + 1
-      });
-    }
-  } else if (thread.page) {
+  if (enabledCaptcha) {
     process.send({
       board : parameters.boardUri,
-      page : thread.page
+      buildAll : true
     });
+
+  } else {
+
+    process.send({
+      board : parameters.boardUri,
+      thread : parameters.threadId
+    });
+
+    process.send({
+      board : parameters.boardUri,
+      catalog : true
+    });
+
+    process.send({
+      multiboard : true,
+      board : parameters.boardUri
+    });
+
+    if (bump) {
+
+      for (var i = 0; i < (thread.page || 1) && i < pageLimit; i++) {
+
+        // signal rebuild of board pages
+        process.send({
+          board : parameters.boardUri,
+          page : i + 1
+        });
+      }
+    } else if (thread.page) {
+      process.send({
+        board : parameters.boardUri,
+        page : thread.page
+      });
+    }
+
   }
 
   common.addPostToStats(ip, parameters.boardUri, function updatedStats(error) {
@@ -255,7 +265,7 @@ exports.updateBoardForPostCreation = function(ip, parameters, postId, thread,
 };
 
 exports.addPostToGlobalLatest = function(omitted, post, thread, parameters,
-    cleanPosts, bump, language, callback) {
+    cleanPosts, bump, language, enabledCaptcha, callback) {
 
   if (!omitted && (overboard || sfwOverboard)) {
     overboardOps.reaggregate({
@@ -269,7 +279,7 @@ exports.addPostToGlobalLatest = function(omitted, post, thread, parameters,
 
   if (omitted || !globalLatestPosts || !post.message) {
     exports.updateBoardForPostCreation(post.ip, parameters, post.postId,
-        thread, cleanPosts, bump, language, callback);
+        thread, cleanPosts, bump, language, enabledCaptcha, callback);
 
   } else {
 
@@ -279,7 +289,7 @@ exports.addPostToGlobalLatest = function(omitted, post, thread, parameters,
       }
 
       exports.updateBoardForPostCreation(post.ip, parameters, post.postId,
-          thread, cleanPosts, bump, language, callback);
+          thread, cleanPosts, bump, language, enabledCaptcha, callback);
 
     });
   }
@@ -358,7 +368,7 @@ exports.youngEnoughToBump = function(boardData, thread) {
 };
 
 exports.updateThread = function(boardData, parameters, thread, language,
-    callback, post) {
+    enabledCaptcha, callback, post) {
 
   var updateBlock = exports.getSetBlock(thread, post);
 
@@ -407,13 +417,13 @@ exports.updateThread = function(boardData, parameters, thread, language,
           }
 
           exports.addPostToGlobalLatest(omitted, post, thread, parameters,
-              cleanPosts, bump, language, callback);
+              cleanPosts, bump, language, enabledCaptcha, callback);
 
         });
 
       } else {
         exports.addPostToGlobalLatest(omitted, post, thread, parameters,
-            cleanPosts, bump, language, callback);
+            cleanPosts, bump, language, enabledCaptcha, callback);
       }
 
     }
@@ -423,7 +433,7 @@ exports.updateThread = function(boardData, parameters, thread, language,
 };
 
 exports.updateLatest = function(boardData, parameters, thread, language,
-    callback, post) {
+    enabledCaptcha, callback, post) {
 
   uploadHandler.updateLatestImages(boardData, post.threadId, post.postId,
       post.files, function(error) {
@@ -432,7 +442,7 @@ exports.updateLatest = function(boardData, parameters, thread, language,
           callback(error);
         } else {
           exports.updateThread(boardData, parameters, thread, language,
-              callback, post);
+              enabledCaptcha, callback, post);
         }
 
       });
@@ -485,7 +495,7 @@ exports.getNewPost = function(req, parameters, userData, postId, thread, board,
 };
 
 exports.createPost = function(req, parameters, newFiles, userData, postId,
-    thread, board, wishesToSign, cb) {
+    thread, board, wishesToSign, enabledCaptcha, cb) {
 
   var postToAdd = exports.getNewPost(req, parameters, userData, postId, thread,
       board, wishesToSign);
@@ -502,13 +512,13 @@ exports.createPost = function(req, parameters, newFiles, userData, postId,
       parameters.creationDate = new Date();
 
       exports.createPost(req, parameters, userData, postId + 1, thread, board,
-          wishesToSign, cb);
+          wishesToSign, enabledCaptcha, cb);
     } else {
 
       common.recordFlood(req);
 
-      exports.updateLatest(board, parameters, thread, req.language, cb,
-          postToAdd);
+      exports.updateLatest(board, parameters, thread, req.language,
+          enabledCaptcha, cb, postToAdd);
 
     }
   });
@@ -531,7 +541,7 @@ exports.checkFileErrors = function(parameters, board, req) {
 };
 
 exports.handleFiles = function(req, parameters, userData, postId, thread,
-    board, wishesToSign, callback) {
+    board, wishesToSign, enabledCaptcha, callback) {
 
   formOps.validateMimes(parameters, parameters.files, function(error) {
 
@@ -551,7 +561,7 @@ exports.handleFiles = function(req, parameters, userData, postId, thread,
     uploadHandler.saveUploads(parameters, newFiles, function savedUploads() {
 
       exports.createPost(req, parameters, newFiles, userData, postId, thread,
-          board, wishesToSign, callback);
+          board, wishesToSign, enabledCaptcha, callback);
 
     });
     // style exception, too simple
@@ -561,7 +571,7 @@ exports.handleFiles = function(req, parameters, userData, postId, thread,
 };
 
 exports.getPostFlag = function(req, parameters, userData, postId, thread,
-    board, wishesToSign, cb) {
+    board, wishesToSign, enabledCaptcha, cb) {
 
   common.getFlagUrl(parameters.flag, logger.ip(req), board, parameters.noFlag,
       function gotFlagUrl(flagUrl, flagName, flagCode) {
@@ -571,8 +581,55 @@ exports.getPostFlag = function(req, parameters, userData, postId, thread,
         parameters.flagCode = flagCode;
 
         exports.handleFiles(req, parameters, userData, postId, thread, board,
-            wishesToSign, cb);
+            wishesToSign, enabledCaptcha, cb);
       });
+
+};
+
+exports.setCaptchaEnabling = function(updateBlock) {
+
+  updateBlock.$unset = {
+    autoFullCaptchaCount : 1,
+    autoFullCaptchaStartTime : 1
+  };
+
+  delete updateBlock.$inc.autoFullCaptchaCount;
+
+  updateBlock.$set.captchaMode = 2;
+
+  return true;
+};
+
+exports.setBoardCaptchaUpdate = function(board, block) {
+
+  if (!board.autoFullCaptchaThreshold || board.captchaMode === 2) {
+    return;
+  }
+
+  var expiration = new Date(new Date().getTime() - (1000 * 60 * 60));
+
+  var setBlock = block.$set;
+
+  if (board.autoCaptchaStartTime <= expiration) {
+
+    board.autoFullCaptchaStartTime = null;
+    board.autoFullCaptchaCount = 0;
+    setBlock.autoFullCaptchaCount = 1;
+  } else {
+    block.$inc.autoFullCaptchaCount = 1;
+  }
+
+  var currentCount = board.autoFullCaptchaCount;
+
+  var activate = currentCount >= board.autoFullCaptchaThreshold - 1;
+
+  if (!board.autoFullCaptchaStartTime && !activate) {
+    setBlock.autoFullCaptchaStartTime = new Date();
+  }
+
+  if (activate) {
+    return exports.setCaptchaEnabling(block);
+  }
 
 };
 
@@ -587,14 +644,23 @@ exports.getPostMarkdown = function(req, parameters, userData, thread, board,
     } else {
       parameters.markdown = markdown;
 
+      var updateBlock = {
+        $inc : {
+          lastPostId : 1
+        },
+        $set : {}
+      };
+
+      var enabledCaptcha = exports.setBoardCaptchaUpdate(board, updateBlock);
+
+      if (!Object.keys(updateBlock.$set).length) {
+        delete updateBlock.$set;
+      }
+
       // style exception, too simple
       boards.findOneAndUpdate({
         boardUri : parameters.boardUri
-      }, {
-        $inc : {
-          lastPostId : 1
-        }
-      }, {
+      }, updateBlock, {
         returnOriginal : false
       }, function gotNewId(error, lastIdData) {
         if (error) {
@@ -605,7 +671,7 @@ exports.getPostMarkdown = function(req, parameters, userData, thread, board,
 
           exports.getPostFlag(req, parameters, userData,
               lastIdData.value.lastPostId, thread, board, wishesToSign,
-              callback);
+              enabledCaptcha, callback);
         }
       });
       // style exception, too simple
@@ -737,6 +803,9 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
       filters : 1,
       owner : 1,
       boardUri : 1,
+      autoFullCaptchaThreshold : 1,
+      autoFullCaptchaCount : 1,
+      autoFullCaptchaStartTime : 1,
       usesCustomSpoiler : 1,
       anonymousName : 1,
       specialSettings : 1,

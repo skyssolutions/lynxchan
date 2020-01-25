@@ -196,6 +196,29 @@ exports.getMessageMarkdown = function(message) {
 
 };
 
+exports.setUpdateForFullAutoCaptcha = function(parameters, newSettings,
+    updateBlock, board) {
+
+  var informedAutoFullCaptcha = +parameters.autoFullCaptchaLimit;
+
+  var isInfnity = informedAutoFullCaptcha === Infinity;
+
+  informedAutoFullCaptcha = informedAutoFullCaptcha && !isInfnity;
+
+  if (informedAutoFullCaptcha) {
+    newSettings.autoFullCaptchaThreshold = +parameters.autoFullCaptchaLimit;
+  } else if (board.autoFullCaptchaThreshold) {
+    if (!updateBlock.$unset) {
+      updateBlock.$unset = {};
+    }
+
+    updateBlock.$unset.autoFullCaptchaCount = 1;
+    updateBlock.$unset.autoFullCaptchaStartTime = 1;
+    updateBlock.$unset.autoFullCaptchaThreshold = 1;
+  }
+
+};
+
 exports.setUpdateForAutoCaptcha = function(parameters, newSettings,
     updateBlock, board) {
 
@@ -215,6 +238,10 @@ exports.setUpdateForAutoCaptcha = function(parameters, newSettings,
     updateBlock.$unset.autoCaptchaThreshold = 1;
 
   }
+
+  exports.setUpdateForFullAutoCaptcha(parameters, newSettings, updateBlock,
+      board);
+
 };
 
 exports.sanitizeBoardTags = function(tags) {
@@ -741,7 +768,8 @@ exports.getBoardManagementData = function(userData, board,
       usesCustomSpoiler : 1,
       hourlyThreadLimit : 1,
       preferredLanguage : 1,
-      autoCaptchaThreshold : 1
+      autoCaptchaThreshold : 1,
+      autoFullCaptchaThreshold : 1
     }
   }, function(error, boardData) {
     if (error) {

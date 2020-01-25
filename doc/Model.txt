@@ -10,8 +10,11 @@ boards: stores boards.
     boardDescription: description of the board. 128 characters.
     lastPostId: id of last post in this board.
     autoCaptchaThreshold(Number): hourly threshold that enables captcha if exceeded.
+    autoFullCaptchaThreshold(Number): hourly threshold that enables full captcha if exceeded.
+    autoFullCaptchaCount(Number): counting towards automatic full captcha activation.
     autoCaptchaCount(Number): counting towards automatic captcha activation.
-    autoCaptchaStartTime(Date): time of when the counting towards automatic captchaActivation started.
+    autoFullCaptchaStartTime(Date): time of when the counting towards automatic full captcha activation started.
+    autoCaptchaStartTime(Date): time of when the counting towards automatic captcha activation started.
     hourlyThreadLimit(Number): hourly thread limit of the board.
     lockedUntil(Date): time of when the board will unlock.
     threadLockCount(Number): counting of created threads in the last hour towards the lock.

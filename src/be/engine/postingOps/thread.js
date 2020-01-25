@@ -426,8 +426,8 @@ exports.setCaptchaEnabling = function(updateBlock) {
 
 exports.setUpdateForAutoCaptcha = function(updateBlock, board) {
 
-  if (board.captchaMode > 0) {
-    return false;
+  if (board.captchaMode) {
+    return;
   }
 
   var expiration = new Date(new Date().getTime() - (1000 * 60 * 60));

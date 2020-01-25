@@ -262,6 +262,7 @@
       "resetLockIdentifier": "value",
       "locationComboBox": "children",
       "linkSelf": "href",
+      "autoFullCaptchaThresholdField": "value",
       "appealedBansLink": "href",
       "appealedBansLabel": "inner",
       "uniqueFilesCheckbox": "checked",

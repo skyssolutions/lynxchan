@@ -212,7 +212,7 @@ exports.setModElements = function(modding, document, userRole, removable,
   document = exports.setComplexModElements(userRole, modding, document,
       removable, archived);
 
-  if (!modding) {
+  if (!modding || archived) {
     document = document.replace('__divMerge_location__', '');
   } else {
     document = document.replace('__divMerge_location__', removable.divMerge);

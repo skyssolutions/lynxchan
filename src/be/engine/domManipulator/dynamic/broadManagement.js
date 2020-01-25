@@ -48,6 +48,7 @@ exports.boardFieldsRelation = {
   boardNameField : 'boardName',
   boardDescriptionField : 'boardDescription',
   autoCaptchaThresholdField : 'autoCaptchaThreshold',
+  autoFullCaptchaThresholdField : 'autoFullCaptchaThreshold',
   hourlyThreadLimitField : 'hourlyThreadLimit',
   anonymousNameField : 'anonymousName',
   maxFilesField : 'maxFiles',
