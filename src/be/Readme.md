@@ -201,6 +201,7 @@ Settings files that goes into the settings directory:
 * `maxBoardBanners`(Number): maximum amount of banners that boards are allowed to have. Defaults to 16.
 * `stripExif`(Boolean): if set, will remove exit data from files using exiftool.
 * `diskMedia`(Boolean): if set, media files and thumbs will be stored in disk instead of the database.
+* `captchaMode`(Number): level of captcha security. 0 is easy, 1 is moderate and 2 is hard. Defaults to 1.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

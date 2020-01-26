@@ -36,6 +36,7 @@
   "maxBannerSizeKB": 200,
   "maxFlagSizeKB": 32,
   "floodTimerSec": 10,
+  "captchaMode": 1,
   "clearIpMinRole": 0,
   "boardCreationRequirement": 4,
   "overBoardThreadCount": 50,

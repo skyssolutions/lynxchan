@@ -10,6 +10,7 @@ Description: builds an image to be used for captchas.
 Parameters:
     text: the text to the written in the image.
     font: the font to be used on the text.
+    level(Number): the security level of the captcha.
     callback(Buffer): the binary data of the resulting image.
 
 ----------------------------------------------------------------------------------------

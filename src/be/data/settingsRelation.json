@@ -36,6 +36,12 @@
     "element": "comboBypassMode"
   },
   {
+    "type": "range",
+    "limit": 2,
+    "setting": "captchaMode",
+    "element": "comboCaptchaMode"
+  },
+  {
     "type": "array",
     "setting": "addons",
     "element": "fieldAddons"

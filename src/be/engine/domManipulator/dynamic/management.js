@@ -187,7 +187,7 @@ exports.flagManagement = function(boardUri, flags, language) {
 // } Section 3: Flag management
 
 // Section 4: Global settings {
-exports.getComboSetting = function(element, setting) {
+exports.getComboSetting = function(setting) {
 
   var limit = setting.limit && setting.limit < setting.options.length;
 
@@ -253,7 +253,7 @@ exports.setElements = function(siteSettingsRelation, document) {
 
     case 'range': {
       document = document.replace(element + 'children__', exports
-          .getComboSetting(element, setting));
+          .getComboSetting(setting));
 
       break;
     }

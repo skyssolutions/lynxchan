@@ -22,6 +22,7 @@ var lang;
 var uploadHandler;
 var formOps;
 var gridFsHandler;
+var level;
 var captchaControl = {};
 
 var poolIndex = -1;
@@ -45,10 +46,18 @@ var maxCircles = 10;
 var minCircleSize = 15;
 var maxCircleSize = 30;
 
+// used to control how many lines will be drawn
+var lineCount = 5;
+
+// used to control how wide the lines can be
+var minLineWidth = 10;
+var maxLineWidth = 20;
+
 exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  level = settings.captchaMode;
   imageFont = settings.imageFont;
   captchaLimit = settings.captchaLimit;
   verbose = settings.verbose || settings.verboseMisc;
@@ -193,6 +202,34 @@ exports.transferToGfs = function(result, id, callback) {
 
 };
 
+exports.createSecureMask = function(text) {
+
+  var command = 'convert -size 300x100 xc: -draw \"';
+
+  var lineOffSet = miscOps.getRandomInt(-maxLineWidth, maxLineWidth) / level;
+
+  for (var i = 0; i < lineCount * level; i++) {
+
+    var lineWidth = miscOps.getRandomInt(minLineWidth, maxLineWidth) / level;
+
+    if (i) {
+      command += ' ';
+    }
+
+    command += 'rectangle 0,' + lineOffSet + ' ' + width + ',';
+    command += lineWidth + lineOffSet;
+
+    lineOffSet += miscOps.getRandomInt(minLineWidth, maxLineWidth) / level;
+    lineOffSet += lineWidth;
+
+  }
+
+  command += '\" -write mpr:mask +delete ';
+
+  return command;
+
+};
+
 exports.createMask = function(text) {
 
   var command = 'convert -size 300x100 xc: -draw \"';
@@ -229,7 +266,7 @@ exports.generateImage = function(text, captchaData, callback) {
 
   if (native) {
 
-    return native.buildCaptcha(text, imageFont, function(error, data) {
+    return native.buildCaptcha(text, imageFont, level, function(error, data) {
 
       if (error) {
         return callback(error);
@@ -245,7 +282,7 @@ exports.generateImage = function(text, captchaData, callback) {
 
   }
 
-  var command = exports.createMask();
+  var command = level ? exports.createSecureMask() : exports.createMask();
 
   command += 'xc: -pointsize 70 -gravity center -font ' + imageFont + ' -draw ';
   command += '\"text 0,0 \'' + text + '\'\" -write mpr:original +delete ';

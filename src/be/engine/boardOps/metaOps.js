@@ -28,6 +28,34 @@ var maxVolunteers;
 var volunteerSettings;
 var useLanguages;
 
+exports.boardManagementProjection = {
+  _id : 0,
+  tags : 1,
+  owner : 1,
+  ipSalt : 1,
+  settings : 1,
+  maxFiles : 1,
+  boardUri : 1,
+  boardName : 1,
+  volunteers : 1,
+  lockedUntil : 1,
+  captchaMode : 1,
+  boardMessage : 1,
+  autoSageLimit : 1,
+  anonymousName : 1,
+  acceptedMimes : 1,
+  maxFileSizeMB : 1,
+  maxBumpAgeDays : 1,
+  maxThreadCount : 1,
+  locationFlagMode : 1,
+  boardDescription : 1,
+  usesCustomSpoiler : 1,
+  hourlyThreadLimit : 1,
+  preferredLanguage : 1,
+  autoCaptchaThreshold : 1,
+  autoFullCaptchaThreshold : 1
+};
+
 var boardFieldsToCheck = [ 'boardName', 'boardMessage', 'boardDescription' ];
 
 exports.defaultSettings = [ 'disableIds' ];
@@ -744,33 +772,7 @@ exports.getBoardManagementData = function(userData, board,
   boards.findOne({
     boardUri : board
   }, {
-    projection : {
-      _id : 0,
-      tags : 1,
-      owner : 1,
-      ipSalt : 1,
-      settings : 1,
-      maxFiles : 1,
-      boardUri : 1,
-      boardName : 1,
-      volunteers : 1,
-      lockedUntil : 1,
-      captchaMode : 1,
-      boardMessage : 1,
-      autoSageLimit : 1,
-      anonymousName : 1,
-      acceptedMimes : 1,
-      maxFileSizeMB : 1,
-      maxBumpAgeDays : 1,
-      maxThreadCount : 1,
-      locationFlagMode : 1,
-      boardDescription : 1,
-      usesCustomSpoiler : 1,
-      hourlyThreadLimit : 1,
-      preferredLanguage : 1,
-      autoCaptchaThreshold : 1,
-      autoFullCaptchaThreshold : 1
-    }
+    projection : exports.boardManagementProjection
   }, function(error, boardData) {
     if (error) {
       callback(error);

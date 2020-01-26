@@ -16,6 +16,11 @@ const int maxCircles = 10;
 const int minCircleSize = 15;
 const int maxCircleSize = 30;
 
+const int lineCount = 5;
+
+const int minLineWidth = 10;
+const int maxLineWidth = 20;
+
 const double baseDistorts[] = { 0, 0, 0, 0, 0, 100, 0, 100, 300, 0, 300, 0, 300,
     100, 300, 100 };
 
@@ -28,8 +33,8 @@ int rng(int min, int max) {
 class CaptchaBuildWorker: public Napi::AsyncWorker {
 public:
   CaptchaBuildWorker(Napi::Function& callback, std::string text,
-      std::string font) :
-      Napi::AsyncWorker(callback), text(text), font(font) {
+      std::string font, int level) :
+      Napi::AsyncWorker(callback), text(text), font(font), level(level) {
   }
   ~CaptchaBuildWorker() {
   }
@@ -49,23 +54,41 @@ public:
 
     textImage.annotate(text, MagickCore::CenterGravity);
 
-    Magick::Image circleImage(dimensions, "white");
+    Magick::Image maskImage(dimensions, "white");
 
-    const int circleCount = rng(minCircles, maxCircles);
+    if (!level) {
 
-    for (int i = 0; i < circleCount; i++) {
+      const int circleCount = rng(minCircles, maxCircles);
 
-      const int startX = rng(width * 0.1, width * 0.9);
-      const int startY = rng(height * 0.1, height * 0.9);
+      for (int i = 0; i < circleCount; i++) {
 
-      const int size = rng(minCircleSize, maxCircleSize);
+        const int startX = rng(width * 0.1, width * 0.9);
+        const int startY = rng(height * 0.1, height * 0.9);
 
-      circleImage.draw(
-          Magick::DrawableCircle(startX, startY, rng(startX, startX + size),
-              rng(startY, startY + size)));
+        const int size = rng(minCircleSize, maxCircleSize);
+
+        maskImage.draw(
+            Magick::DrawableCircle(startX, startY, rng(startX, startX + size),
+                rng(startY, startY + size)));
+      }
+    } else {
+
+      int lineOffSet = rng(-maxLineWidth, maxLineWidth) / level;
+
+      for (int i = 0; i < lineCount * level; i++) {
+
+        const int lineWidth = rng(minLineWidth, maxLineWidth) / level;
+
+        maskImage.draw(
+            Magick::DrawableRectangle(0, lineOffSet, width,
+                lineWidth + lineOffSet));
+
+        lineOffSet += rng(minLineWidth, maxLineWidth) / level + lineWidth;
+
+      }
     }
 
-    textImage.composite(circleImage, 0, 0, Magick::DifferenceCompositeOp);
+    textImage.composite(maskImage, 0, 0, Magick::DifferenceCompositeOp);
     textImage.negate();
 
     const int distortCount = rng(minDistorts, maxDistorts);
@@ -114,6 +137,7 @@ public:
 
 private:
   std::string text, font;
+  int level;
   Magick::Blob imageBlob;
 };
 
@@ -121,10 +145,11 @@ Napi::Value buildCaptcha(const Napi::CallbackInfo& args) {
 
   Napi::Env env = args.Env();
 
-  Napi::Function callback = args[2].As<Napi::Function>();
+  Napi::Function callback = args[3].As<Napi::Function>();
 
   CaptchaBuildWorker* sizeWorker = new CaptchaBuildWorker(callback,
-      args[0].As<Napi::String>(), args[1].As<Napi::String>());
+      args[0].As<Napi::String>(), args[1].As<Napi::String>(),
+      args[2].As<Napi::Number>());
   sizeWorker->Queue();
 
   return env.Undefined();

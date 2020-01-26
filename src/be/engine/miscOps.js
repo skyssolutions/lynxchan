@@ -37,7 +37,8 @@ var MAX_STAFF_ROLE = 3;
 exports.plainTextMimes = [ 'application/x-javascript', 'application/json',
     'application/rss+xml' ];
 exports.optionList = [ 'guiBypassModes', 'guiPruningModes',
-    'guiTorPostingLevels', 'miscRoles', 'miscRoles', 'guiBypassModes' ];
+    'guiTorPostingLevels', 'miscRoles', 'miscRoles', 'guiBypassModes',
+    'guiCaptchaSecurity' ];
 exports.individualCaches = {
   innerCache : 1,
   outerCache : 1,

@@ -11,7 +11,7 @@ var generalSettings;
 var MAX_ATTEMPTS = 4;
 
 exports.zeroSettingsExceptions = [ 'boardCreationRequirement',
-    'staticExpiration' ];
+    'staticExpiration', 'captchaMode' ];
 
 // Section 1: New settings {
 function broadCastToSlaves(newSettings, callback, index, attempts) {

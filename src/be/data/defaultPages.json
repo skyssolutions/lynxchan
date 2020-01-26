@@ -569,6 +569,7 @@
       "checkboxUseAlternativeLanguages": "checked",
       "comboBypassMode": "children",
       "comboPruningMode": "children",
+      "comboCaptchaMode": "children",
       "comboSsl": "children",
       "comboTorPostingLevel": "children",
       "comboMinClearIpRole": "children",
