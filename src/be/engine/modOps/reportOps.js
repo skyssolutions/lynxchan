@@ -975,7 +975,7 @@ exports.getOpenReports = function(userData, parameters, language, callback) {
 
   if (!globalStaff && !parameters.boardUri) {
     return callback(lang(language).errDeniedGlobalReportManagement);
-  } else if (parameters.boardUri) {
+  } else if (parameters.boardUri && (!globalBoardModeration || !globalStaff)) {
 
     var allowedBoards = userData.ownedBoards || [];
 
