@@ -930,6 +930,8 @@ exports.deleteFiles = function(parameters, identifiers, userData, language,
     return callback();
   }
 
+  parameters = parameters || {};
+
   miscOps.sanitizeStrings(parameters, hashBanOps.hashBanArguments);
 
   files.aggregate([ {
