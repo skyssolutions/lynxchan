@@ -285,7 +285,7 @@ exports.checkForRedirection = function(req, pathName, res) {
   var isSlave = slaves.indexOf(remote) > -1;
 
   // Is up to the webserver to drop unwanted connections.
-  var isLocal = remote === '127.0.0.1';
+  var isLocal = remote === '127.0.0.1' || trustedProxies[0] === '*';
   var isMaster = master === remote;
 
   if (master) {

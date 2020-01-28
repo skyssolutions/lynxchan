@@ -3,7 +3,8 @@
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack;
 var miscOps = require('../engine/miscOps');
-var toSanitize = [ 'acceptedMimes', 'addons', 'slaves', 'trustedProxies' ];
+var toSanitize = [ 'acceptedMimes', 'addons', 'slaves', 'trustedProxies',
+    'dnsbl' ];
 
 exports.changeGlobalSettings = function(userData, parameters, res, auth,
     language, json) {

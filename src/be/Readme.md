@@ -89,7 +89,7 @@ To use SSL, enable the setting `ssl` and place the key file named `ssl.key` and 
 Settings files that goes into the settings directory:
 `general.json`: contains general settings for the application. Holds the following settings:
 * `useHttp2`(Boolean): if true, the engine will use HTTP2 for HTTPS.
-* `trustedProxies`(Array): list of ips of the trusted proxies. Trusted proxies will have the x-forwarded-for taken in account to get the ip. By default, localhost and the lynxchan cluster master are also trusted proxies.
+* `trustedProxies`(Array): list of ips of the trusted proxies. Trusted proxies will have the x-forwarded-for taken in account to get the ip. By default, localhost and the lynxchan cluster master are also trusted proxies. Also, if the first trusted proxy is '*', then all requests will be treated as coming from trusted proxies.
 * `dontProcessLinks`(Boolean): when set to true, links on posts won't be processed into hyperlinks.
 * `fileLimit`(Number): total limit of uploaded files on the whole site. Defaults to 1000.
 * `verbose`(Boolean): if true, will activate all verbose modes.
@@ -126,7 +126,7 @@ Settings files that goes into the settings directory:
 * `defaultAnonymousName`: Default anonymous name if none is set for the board. Defaults to the `miscDefaultAnonymous` entry on the language pack.
 * `topBoardsCount`(Number): amount of boards to be listed in the top boards.
 * `boardsPerPage`(Number): amount of boards to be listed in boards.js. Defaults to 50.
-* `dnsbl`: domain for a dnsbl to be used to check against posts.
+* `dnsbl`(Array): dnsbl domains to be used to check against posts.
 * `torSource`: url to the list of TOR exit nodes ips. Defaults to `https://check.torproject.org/exit-addresses`.
 * `languagePackPath`: absolute path to an optional language pack.
 * `mediaThumb`(Boolean): if true, videos and music will generate thumbs instead of using the generic ones. Requires ffmpeg installed.

@@ -62,6 +62,11 @@
     "element": "fieldTrustedProxies"
   },
   {
+    "type": "array",
+    "setting": "dnsbl",
+    "element": "fieldDnsbl"
+  },
+  {
     "type": "string",
     "setting": "address",
     "element": "fieldAddress"
@@ -70,11 +75,6 @@
     "type": "string",
     "setting": "fePath",
     "element": "fieldFePath"
-  },
-  {
-    "type": "string",
-    "setting": "dnsbl",
-    "element": "fieldDnsbl"
   },
   {
     "type": "string",

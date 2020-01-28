@@ -128,18 +128,24 @@ exports.checkIp = function(ip, callback, override) {
 
 };
 
-exports.checkDnsbl = function(ip, callback) {
+exports.checkDnsbl = function(ip, callback, index) {
 
   if (!dnsbl) {
     return exports.checkIp(ip, callback);
   }
 
-  logger.runDNSBL(ip, dnsbl, function(error, matched) {
+  index = index || 0;
+
+  if (index >= dnsbl.length) {
+    return exports.checkIp(ip, callback);
+  }
+
+  logger.runDNSBL(ip, dnsbl[index], function(error, matched) {
 
     if (error || matched) {
       callback(error, matched);
     } else {
-      exports.checkIp(ip, callback);
+      exports.checkDnsbl(ip, callback, ++index);
     }
 
   });
