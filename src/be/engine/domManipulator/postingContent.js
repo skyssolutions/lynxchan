@@ -137,7 +137,7 @@ exports.setNonIpModdingElements = function(modding, posting, cell, boardData,
   if (modding) {
     var editLink = '/edit.js?boardUri=' + common.clean(posting.boardUri);
 
-    if (posting.postId) {
+    if (posting.postId && posting.postId !== posting.threadId) {
       editLink += '&postId=' + posting.postId;
     } else {
       editLink += '&threadId=' + posting.threadId;
@@ -169,7 +169,7 @@ exports.setModdingLinks = function(cell, modding, postingData, removable) {
   if (modding && (postingData.ip || postingData.bypassId)) {
     var urlAffix = '?boardUri=' + postingData.boardUri + '&';
 
-    if (postingData.postId) {
+    if (postingData.postId && postingData.postId !== postingData.threadId) {
       urlAffix += 'postId=' + postingData.postId;
     } else {
       urlAffix += 'threadId=' + postingData.threadId;
