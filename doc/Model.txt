@@ -315,6 +315,8 @@ overboardThreads: stores aggregated data of threads on the overboard.
 ----------------------------------------------------------------------------------------
 
 blockBypasses: stores data about bypassing tokens.
+    hourlyLimitEnd(Date): time at which the hourly limit started counting.
+    hourlyLimitCount(Number): count towards the hourly limit.
     usesLeft(Number): how many uses are left in this token.
     expiration(Date): time of when the token will expire.
     nextUsage(Date): time of when this token is allowed to be used again without flood being detected.

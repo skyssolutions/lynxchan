@@ -378,5 +378,6 @@
     "Easy",
     "Moderate",
     "Hard"
-  ]
+  ],
+  "errHourlyLimit": "You exceeded the hourly use rate of your bypass."
 }

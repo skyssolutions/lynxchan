@@ -11,11 +11,13 @@ var floodDisabled;
 var floodExpiration;
 var bypassMaxPosts;
 var bypassMode;
+var hourlyLimit;
 
 exports.loadSettings = function() {
   var settings = require('../settingsHandler').getGeneralSettings();
 
   floodExpiration = settings.floodTimerSec;
+  hourlyLimit = 600 / floodExpiration;
   bypassMaxPosts = settings.bypassMaxPosts;
   bypassMode = settings.bypassMode;
   floodDisabled = settings.disableFloodCheck;
@@ -91,6 +93,44 @@ exports.checkBypass = function(bypassId, callback) {
 
 };
 
+exports.updateHourlyUsage = function(bypass, rate) {
+
+  var block;
+
+  if (!bypass.hourlyLimitEnd || bypass.hourlyLimitEnd < new Date()) {
+
+    var newEnd = new Date();
+    newEnd.setUTCHours(newEnd.getUTCHours() + 1);
+
+    block = {
+      $set : {
+        hourlyLimitEnd : newEnd,
+        hourlyLimitCount : rate
+      }
+    };
+
+  } else {
+
+    block = {
+      $inc : {
+        hourlyLimitCount : rate
+      }
+    };
+
+  }
+
+  bypasses.updateOne({
+    _id : bypass._id
+  }, block, function(error) {
+
+    if (error) {
+      console.log(error);
+    }
+
+  });
+
+};
+
 exports.useBypass = function(bypassId, req, callback, thread) {
 
   if (!bypassMode || !bypassId) {
@@ -131,15 +171,26 @@ exports.useBypass = function(bypassId, req, callback, thread) {
 
     var errorToReturn;
 
+    var value = result.value || {};
+
+    if (value.hourlyLimitEnd && value.hourlyLimitEnd > new Date()) {
+      var limitCheck = value.hourlyLimitCount >= hourlyLimit;
+    }
+
     if (error) {
       errorToReturn = error;
     } else if (!result.value) {
       return callback(null, req);
     } else if (!floodDisabled && result.value[usageField] > new Date()) {
       errorToReturn = lang(req.language).errFlood;
+    } else if (!floodDisabled && limitCheck) {
+      errorToReturn = lang(req.language).errHourlyLimit;
     } else {
       req.bypassed = true;
       req.bypassId = bypassId;
+
+      exports.updateHourlyUsage(result.value, thread ? 10 : 1);
+
     }
 
     callback(errorToReturn, req);

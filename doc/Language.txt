@@ -139,6 +139,7 @@ errReferralMismatch: error thrown when the user tries to authenticate but his re
 errTotalFileLimitExceeded: error thrown when the user tries to post a new file but the site has reached it's file limit.
 errSourceThreadNotFound: error thrown when the source thread is not found.
 errDestinationThreadNotFound: error thrown when the destination thread is not found.
+errHourlyLimit: error thrown when the user uses up all of it's hourly bypass uses.
 guiGlobalLogsIndex: label used on the log index to mark global logs dates.
 guiTypeBan: label used for logs of bans.
 guiRedactedName: string used in place for redacted mod names.
