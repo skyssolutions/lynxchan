@@ -108,7 +108,7 @@ exports.logBans = function(userData, board, informedPosts, informedThreads,
   var logMessage = pieces.startPiece.replace('{$login}',
       redactedModNames ? lang().guiRedactedName : userData.login);
 
-  if (parameters.global) {
+  if (parameters.globalBan) {
     logMessage += pieces.globalPiece;
   }
 
@@ -134,7 +134,7 @@ exports.logBans = function(userData, board, informedPosts, informedThreads,
     user : userData.login,
     type : 'ban',
     time : new Date(),
-    global : parameters.global,
+    global : parameters.globalBan,
     boardUri : board,
     description : logMessage
   }, callback);
@@ -244,7 +244,10 @@ exports.processFoundBanData = function(collection, board, parameters, user,
       continue;
     }
 
+    var nonBypass = parameters.banType && parameters.banType !== 4;
+
     var ban = {
+      nonBypassable : !!(nonBypass && parameters.nonBypassable),
       appliedBy : user.login,
       reason : parameters.reasonBan,
       expiration : parameters.expiration,
@@ -261,7 +264,7 @@ exports.processFoundBanData = function(collection, board, parameters, user,
       continue;
     }
 
-    if (!parameters.global) {
+    if (!parameters.globalBan) {
       ban.boardUri = board;
     }
 
@@ -282,7 +285,7 @@ exports.createOffenses = function(list, key, parameters, userData, offenses) {
     }
 
     var record = {
-      global : parameters.global,
+      global : parameters.globalBan,
       reason : parameters.reasonBan,
       date : new Date(),
       mod : userData.login,
@@ -539,12 +542,15 @@ exports.iterateBoards = function(foundBoards, userData, reportedObjects,
   boards.findOne({
     boardUri : board
   }, function gotBoard(error, board) {
+
+    var inBoardStaff = board && common.isInBoardStaff(userData, board);
+
     if (error) {
       callback(error);
     } else if (!board) {
       exports.iterateBoards(foundBoards, userData, reportedObjects, parameters,
           callback);
-    } else if (!common.isInBoardStaff(userData, board) && !parameters.global) {
+    } else if (!inBoardStaff && !parameters.globalBan) {
       exports.iterateBoards(foundBoards, userData, reportedObjects, parameters,
           callback);
     } else {
@@ -579,9 +585,11 @@ exports.isolateBoards = function(userData, reportedObjects, parameters,
 
   var allowedGlobalRangeBan = userData.globalRole <= minClearIps;
 
-  if (parameters.global && !allowedToGlobalBan) {
+  allowedGlobalRangeBan = allowedGlobalRangeBan && parameters.globalBan;
+
+  if (parameters.globalBan && !allowedToGlobalBan) {
     callback(lang(language).errDeniedGlobalBanManagement);
-  } else if (!allowedGlobalRangeBan && parameters.global && parameters.range) {
+  } else if (!allowedGlobalRangeBan && parameters.range) {
     callback(lang(language).errDeniedGlobalRangeBanManagement);
   } else {
     var foundBoards = [];

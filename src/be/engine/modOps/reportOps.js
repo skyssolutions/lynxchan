@@ -265,7 +265,7 @@ exports.createReport = function(req, report, reportedContent, parameters,
     callback) {
 
   var toAdd = {
-    global : parameters.global,
+    global : parameters.globalReport,
     boardUri : report.board,
     threadId : +report.thread,
     creation : new Date(),
@@ -338,8 +338,7 @@ exports.findReportedContent = function(report, req, reportedContent,
 exports.iterateReports = function(req, reportedContent, parameters, cb) {
 
   if (!reportedContent.length) {
-    cb();
-    return;
+    return cb();
   }
 
   var report = reportedContent.shift();
@@ -347,7 +346,7 @@ exports.iterateReports = function(req, reportedContent, parameters, cb) {
   if (allowBlockedToReport) {
     exports.findReportedContent(report, req, reportedContent, parameters, cb);
   } else {
-    var uriToCheck = parameters.global ? null : report.board;
+    var uriToCheck = parameters.globalReport ? null : report.board;
 
     ipBan.checkForBan(req, uriToCheck, null,
         function checkedForBan(error, ban) {

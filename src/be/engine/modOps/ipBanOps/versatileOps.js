@@ -121,19 +121,28 @@ exports.masterFloodCheck = function(task, socket) {
 exports.readBans = function(parameters, callback) {
 
   var queryBlock = {
-    ip : {
-      $exists : true
-    },
+    $and : [ {
+      $or : [ {
+        ip : {
+          $exists : true
+        }
+      }, {
+        bypassId : {
+          $exists : true
+        }
+      } ]
+    }, {
+      $or : [ {
+        expiration : {
+          $gt : new Date()
+        }
+      }, {
+        expiration : null
+      } ]
+    } ],
     warning : {
       $ne : true
-    },
-    $or : [ {
-      expiration : {
-        $gt : new Date()
-      }
-    }, {
-      expiration : null
-    } ]
+    }
   };
 
   if (parameters.boardUri) {
@@ -209,6 +218,38 @@ exports.noMatch = function(ip, foundBan) {
 
 };
 
+exports.filterBans = function(ip, bans) {
+
+  var ban;
+
+  for (var i = 0; i < bans.length; i++) {
+
+    var foundBan = bans[i];
+
+    if (ip && exports.noMatch(ip, foundBan)) {
+      continue;
+    }
+
+    if (!ban || (ban.warning && !foundBan.warning)) {
+      ban = foundBan;
+      continue;
+    }
+
+    var genericBan = ban.asn || ban.range;
+
+    var foundGeneric = foundBan.asn || foundBan.range;
+
+    var genericPriority = foundBan.nonBypassable && !ban.nonBypassable;
+
+    if (genericBan && (!foundGeneric || genericPriority)) {
+      ban = foundBan;
+    }
+  }
+
+  return ban;
+
+};
+
 exports.getActiveBan = function(ip, asn, bypass, boardUri, callback) {
 
   var singleBanCondition = bypass ? {
@@ -261,26 +302,10 @@ exports.getActiveBan = function(ip, asn, bypass, boardUri, callback) {
       return callback(error);
     }
 
-    var ban;
-
-    for (var i = 0; i < bans.length; i++) {
-
-      var foundBan = bans[i];
-
-      if (ip && exports.noMatch(ip, foundBan)) {
-        continue;
-      }
-
-      var genericBan = ban && (ban.asn || ban.range);
-
-      var noBan = !ban || (ban.warning && !foundBan.warning);
-
-      if (noBan || (genericBan && (!foundBan.asn || !foundBan.range))) {
-        ban = foundBan;
-      }
-    }
+    var ban = exports.filterBans(ip, bans);
 
     var canBypass = bypassAllowed && spamBypass && ban;
+    canBypass = canBypass && !ban.nonBypassable;
 
     callback(null, ban, canBypass && (ban.asn || ban.range));
 
@@ -374,9 +399,7 @@ exports.checkForFlood = function(req, boardUri, thread, callback) {
 exports.checkForBan = function(req, boardUri, thread, callback) {
 
   if (bypassMandatory && !req.bypassed) {
-    callback(null, null, true);
-
-    return;
+    return callback(null, null, true);
   }
 
   torOps.markAsTor(req, function markedAsTor(error) {
