@@ -335,7 +335,7 @@ exports.createBans = function(foundIps, foundASNs, foundBypasses,
       parameters.banType === 3 ? foundASNs : foundIps, board, parameters,
       userData);
 
-  if (parameters.banType !== 3) {
+  if (!parameters.banType || parameters.banType === 4) {
     newBans = newBans.concat(exports.processFoundBanData(foundBypasses, board,
         parameters, userData, true));
   }

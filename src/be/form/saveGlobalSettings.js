@@ -1,17 +1,42 @@
 'use strict';
 
+var settings = require('../data/settingsRelation.json');
 var formOps = require('../engine/formOps');
 var lang = require('../engine/langOps').languagePack;
 var miscOps = require('../engine/miscOps');
-var toSanitize = [ 'acceptedMimes', 'addons', 'slaves', 'trustedProxies',
-    'dnsbl' ];
+
+exports.processArray = function(rawParam) {
+
+  var parts = rawParam.trim().split(',');
+
+  var newArray = [];
+
+  for (var j = 0; j < parts.length; j++) {
+
+    var processedPart = parts[j].trim();
+
+    if (processedPart.length) {
+      newArray.push(processedPart);
+    }
+
+  }
+
+  return newArray;
+
+};
 
 exports.changeGlobalSettings = function(userData, parameters, res, auth,
     language, json) {
 
-  for (var i = 0; i < toSanitize.length; i++) {
+  for (var i = 0; i < settings.length; i++) {
 
-    var param = toSanitize[i];
+    var setting = settings[i];
+
+    if (setting.type !== 'array') {
+      continue;
+    }
+
+    var param = setting.setting;
 
     var rawParam = parameters[param];
 
@@ -20,21 +45,7 @@ exports.changeGlobalSettings = function(userData, parameters, res, auth,
       continue;
     }
 
-    var parts = rawParam.trim().split(',');
-
-    var newArray = [];
-
-    for (var j = 0; j < parts.length; j++) {
-
-      var processedPart = parts[j].trim();
-
-      if (processedPart.length) {
-        newArray.push(processedPart);
-      }
-
-    }
-
-    parameters[param] = newArray;
+    parameters[param] = exports.processArray(rawParam);
 
   }
 
