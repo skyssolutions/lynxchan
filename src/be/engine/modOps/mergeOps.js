@@ -3,6 +3,7 @@
 var settingsHandler = require('../../settingsHandler');
 var db = require('../../db');
 var boards = db.boards();
+var redirects = db.redirects();
 var threads = db.threads();
 var posts = db.posts();
 var lang;
@@ -65,27 +66,42 @@ exports.updateExtraCols = function(parameters, userData, callback, index) {
 
 };
 
-exports.performMerge = function(parameters, userData, callback) {
+exports.cleanOldThread = function(parameters, userData, callback) {
 
-  posts.updateMany({
+  threads.removeOne({
     boardUri : parameters.boardUri,
     threadId : +parameters.threadSource
-  }, {
-    $set : {
-      threadId : +parameters.threadDestination
-    },
-    $unset : miscOps.individualCaches
   }, function(error) {
 
-    if (error) {
-      return callback(error);
+    if (error && verbose) {
+      console.log(error);
+    }
+
+    var redirectExpiration = new Date();
+    redirectExpiration.setUTCDate(redirectExpiration.getUTCDate() + 1);
+
+    var newRedirects = [];
+
+    var originBoiler = '/' + parameters.boardUri + '/res/';
+    originBoiler += +parameters.threadSource;
+
+    var destinationBoiler = '/' + parameters.boardUri + '/res/';
+    destinationBoiler += +parameters.threadDestination;
+
+    for (var i = 0; i < 2; i++) {
+
+      var extension = [ '.html', '.json' ][i];
+
+      newRedirects.push({
+        origin : originBoiler + extension,
+        expiration : redirectExpiration,
+        destination : destinationBoiler + extension
+      });
+
     }
 
     // style exception, too simple
-    threads.removeOne({
-      boardUri : parameters.boardUri,
-      threadId : +parameters.threadSource
-    }, function(error) {
+    redirects.insertMany(newRedirects, function(error) {
 
       if (error && verbose) {
         console.log(error);
@@ -95,6 +111,81 @@ exports.performMerge = function(parameters, userData, callback) {
 
     });
     // style exception, too simple
+
+  });
+
+};
+
+exports.getPostsOps = function(foundPosts, parameters) {
+
+  var ops = [];
+
+  var matchRegex = '<a class="quoteLink" href="\/';
+  matchRegex += parameters.boardUri;
+  matchRegex += '\/res\/' + (+parameters.threadSource);
+  matchRegex += '\.html#\\d+">&gt;&gt;\\d+<\/a>';
+
+  var replaceFunction = function(match) {
+
+    var newString = '/res/' + (+parameters.threadDestination);
+
+    return match.replace('/res/' + (+parameters.threadSource), newString);
+  };
+
+  for (var i = 0; i < foundPosts.length; i++) {
+
+    var post = foundPosts[i];
+
+    ops.push({
+      updateOne : {
+        filter : {
+          _id : post._id
+        },
+        update : {
+          $set : {
+            markdown : post.markdown.replace(new RegExp(matchRegex, 'g'),
+                replaceFunction),
+            threadId : +parameters.threadDestination
+          },
+          $unset : miscOps.individualCaches
+        }
+      }
+    });
+
+  }
+
+  return ops;
+
+};
+
+exports.performMerge = function(parameters, userData, callback) {
+
+  posts.find({
+    boardUri : parameters.boardUri,
+    threadId : +parameters.threadSource
+  }, {
+    projection : {
+      markdown : 1
+    }
+  }).toArray(function(error, foundPosts) {
+
+    if (error) {
+      return callback(error);
+    } else if (!foundPosts.length) {
+      return exports.cleanOldThread(parameters, userData, callback);
+    }
+
+    var ops = exports.getPostsOps(foundPosts, parameters);
+
+    posts.bulkWrite(ops, function(error) {
+
+      if (error) {
+        callback(error);
+      } else {
+        exports.cleanOldThread(parameters, userData, callback);
+      }
+
+    });
 
   });
 
