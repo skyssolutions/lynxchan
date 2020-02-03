@@ -31,6 +31,7 @@ The status are:
     hashBan: user tried to upload a banned file. In this case, data will contain an array where each object contains the following fields:
         file: name provided for the file.
         boardUri: board uri of the hash ban. If not informed, the file is banned globally.
+        reason: reason of the hash ban.
 
 To post files by reference or spoil individual files, inform the following parameters:
 fileMd5

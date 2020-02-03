@@ -574,7 +574,8 @@ exports.hashBan = function(hashBans, language) {
 
     var cell = '<div class="hashBanCellDisplay">' + cellTemplate;
 
-    cell = cell.replace('__labelFile_inner__', common.clean(hashBan.file));
+    cell = cell.replace('__labelFile_inner__', common.clean(hashBan.file))
+        .replace('__labelReason_inner__', hashBan.reason || '');
 
     var boardToUse = hashBan.boardUri || lang(language).miscAllBoards;
     cell = cell.replace('__labelBoard_inner__', common.clean(boardToUse));

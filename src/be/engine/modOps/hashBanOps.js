@@ -285,6 +285,7 @@ exports.getProcessedBans = function(foundBans, files) {
 
         processedBans.push({
           file : file.title,
+          reason : foundBan.reason,
           boardUri : foundBan.boardUri
         });
 

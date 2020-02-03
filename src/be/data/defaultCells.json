@@ -381,7 +381,8 @@
     "template": "hashBanCellDisplay",
     "prebuiltFields": {
       "labelFile": "inner",
-      "labelBoard": "inner"
+      "labelBoard": "inner",
+      "labelReason": "inner"
     }
   },
   {

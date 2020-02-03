@@ -2412,6 +2412,10 @@ labelFile:
     use: have it's innerHTML manipulated.
     description: label where the name of the banned file is informed.
 
+labelReason:
+    use: have it's innerHTML manipulated.
+    description: label where the reason of the ban is informed.
+
 labelBoard:
     use: have it's innerHTML manipulated.
     description: label where the board that applied the ban is informed.

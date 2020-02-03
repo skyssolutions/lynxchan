@@ -647,11 +647,12 @@ function clearDeadBypasses(currentId, colIndex) {
     return;
   }
 
-  bypassCols[colIndex].find(currentId ? {
-    _id : {
+  bypassCols[colIndex].find({
+    _id : currentId ? {
       $gt : currentId
-    }
-  } : {
+    } : {
+      $exists : true
+    },
     bypassId : {
       $exists : true
     }
