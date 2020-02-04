@@ -333,15 +333,17 @@ exports.getGlobalSettingsData = function(userData, language, callback) {
 };
 
 // Section 1: Global management data {
-exports.getOpenReportsCount = function(foundUsers, foundBans, callback) {
+exports.getOpenReportsCount = function(foundUsers, userData, foundBans,
+    callback) {
 
-  reports.countDocuments(reportOps.getQueryBlock({}), function(error, count) {
+  reports.countDocuments(reportOps.getQueryBlock({}, userData), function(error,
+      count) {
     callback(error, foundUsers, foundBans, count);
   });
 
 };
 
-exports.getAppealedBansCount = function(userRole, foundUsers, callback) {
+exports.getAppealedBansCount = function(userData, foundUsers, callback) {
 
   var query = {
     appeal : {
@@ -361,16 +363,16 @@ exports.getAppealedBansCount = function(userRole, foundUsers, callback) {
     if (error) {
       callback(error);
     } else {
-      exports.getOpenReportsCount(foundUsers, foundBans, callback);
+      exports.getOpenReportsCount(foundUsers, userData, foundBans, callback);
     }
 
   });
 
 };
 
-exports.getManagementData = function(userRole, language, userLogin, callback) {
+exports.getManagementData = function(userData, language, callback) {
 
-  var globalStaff = userRole <= MAX_STAFF_ROLE;
+  var globalStaff = userData.globalRole <= MAX_STAFF_ROLE;
 
   if (!globalStaff) {
     return callback(lang(language).errDeniedGlobalManagement);
@@ -378,10 +380,10 @@ exports.getManagementData = function(userRole, language, userLogin, callback) {
 
   users.find({
     login : {
-      $ne : userLogin
+      $ne : userData.login
     },
     globalRole : {
-      $gt : userRole,
+      $gt : userData.globalRole,
       $lte : MAX_STAFF_ROLE
     }
   }, {
@@ -397,7 +399,7 @@ exports.getManagementData = function(userRole, language, userLogin, callback) {
     if (error) {
       callback(error);
     } else {
-      exports.getAppealedBansCount(userRole, foundUsers, callback);
+      exports.getAppealedBansCount(userData, foundUsers, callback);
     }
 
   });

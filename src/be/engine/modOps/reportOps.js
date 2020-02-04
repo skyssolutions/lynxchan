@@ -80,13 +80,15 @@ exports.getQueryBlock = function(parameters, userData, closed) {
 
   var noBoard;
 
-  if (userData.settings) {
+  if (userData && userData.settings) {
     noBoard = userData.settings.indexOf('noBoardReports') >= 0;
   }
 
   if (parameters.boardUri) {
     query.boardUri = parameters.boardUri;
-    query.global = false;
+    query.global = {
+      $ne : true
+    };
   } else if (!globalBoardModeration || noBoard) {
     query.global = true;
   }
