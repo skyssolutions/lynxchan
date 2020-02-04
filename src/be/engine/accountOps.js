@@ -227,7 +227,7 @@ exports.createAccount = function(parameters, role, language, callback) {
             if (error) {
               callback(error);
             } else {
-              exports.createSession(parameters.login, false, callback);
+              exports.createSession(parameters.login, null, false, callback);
             }
           });
       // style exception, too simple
@@ -276,7 +276,7 @@ exports.registerUser = function(parameters, cb, role, override, captchaId,
 };
 // } Section 2: Account creation
 
-exports.createSession = function(login, remember, callback) {
+exports.createSession = function(login, usedHash, remember, callback) {
 
   crypto.randomBytes(256, function gotHash(error, buffer) {
 
@@ -302,6 +302,7 @@ exports.createSession = function(login, remember, callback) {
         login : login
       }, {
         $set : {
+          oldHash : usedHash,
           hash : hash,
           renewExpiration : renewAt,
           logoutExpiration : logoutAt,
@@ -337,7 +338,7 @@ exports.login = function(parameters, language, callback) {
         } else if (!matches) {
           callback(lang(language).errLoginFailed);
         } else {
-          exports.createSession(parameters.login, !!parameters.remember,
+          exports.createSession(parameters.login, null, !!parameters.remember,
               callback);
         }
       });
@@ -349,26 +350,34 @@ exports.login = function(parameters, language, callback) {
 };
 
 // Section 3: Validate {
-exports.checkExpiration = function(user, now, callback) {
+exports.checkExpiration = function(user, usedHash, now, callback) {
 
   if (user.renewExpiration < now) {
 
-    exports.createSession(user.login, user.remember, function createdSession(
-        error, hash, expiration) {
+    exports.createSession(user.login, usedHash, user.remember,
+        function createdSession(error, hash, expiration) {
 
-      if (error) {
-        callback(error);
-      } else {
+          if (error) {
+            callback(error);
+          } else {
 
-        callback(null, {
-          authStatus : 'expired',
-          newHash : hash,
-          expiration : expiration
-        }, user);
+            callback(null, {
+              authStatus : 'expired',
+              newHash : hash,
+              expiration : expiration
+            }, user);
 
-      }
+          }
 
-    });
+        });
+
+  } else if (user.oldHash === usedHash) {
+
+    callback(null, {
+      authStatus : 'expired',
+      newHash : user.hash,
+      expiration : user.logoutExpiration
+    }, user);
 
   } else {
     callback(null, {
@@ -378,13 +387,12 @@ exports.checkExpiration = function(user, now, callback) {
 
 };
 
-exports.checkAuthLimit = function(user, language, now, callback) {
+exports.checkAuthLimit = function(user, usedHash, language, now, callback) {
 
   taskListener.openSocket(function opened(error, socket) {
 
     if (error) {
-      callback(error);
-      return;
+      return callback(error);
     }
 
     socket.onData = function receivedData(data) {
@@ -392,7 +400,7 @@ exports.checkAuthLimit = function(user, language, now, callback) {
       if (data.exceeded) {
         callback(lang(language).errAuthLimitExceeded);
       } else {
-        exports.checkExpiration(user, now, callback);
+        exports.checkExpiration(user, usedHash, now, callback);
       }
 
       taskListener.freeSocket(socket);
@@ -416,9 +424,15 @@ exports.validate = function(auth, language, callback) {
 
   var now = new Date();
 
+  var hash = auth.hash.toString();
+
   users.findOneAndUpdate({
     login : auth.login.toString(),
-    hash : auth.hash.toString(),
+    $or : [ {
+      hash : hash
+    }, {
+      oldHash : hash
+    } ],
     logoutExpiration : {
       $gt : now
     }
@@ -450,14 +464,14 @@ exports.validate = function(auth, language, callback) {
           if (error) {
             callback(error);
           } else {
-            exports.checkAuthLimit(user, language, now, callback);
+            exports.checkAuthLimit(user, hash, language, now, callback);
           }
 
         });
         // style exception, too simple
 
       } else {
-        exports.checkAuthLimit(user, language, now, callback);
+        exports.checkAuthLimit(user, hash, language, now, callback);
       }
 
     }
@@ -648,7 +662,8 @@ exports.updatePassword = function(userData, parameters, callback) {
         if (error) {
           callback(error);
         } else {
-          exports.createSession(userData.login, userData.remember, callback);
+          exports.createSession(userData.login, null, userData.remember,
+              callback);
         }
 
       });
