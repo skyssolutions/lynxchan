@@ -146,7 +146,7 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
           if (error) {
             formOps.outputError(error, 500, res, req.language, json, auth);
           } else if (ban) {
-            formOps.outputBan(ban, req, res, json, null, auth);
+            formOps.outputBan(ban, null, req, res, json, null, auth);
           } else {
 
             formOps.outputResponse(json ? 'ok'

@@ -341,23 +341,21 @@ exports.receivedFloodCheckResponse = function(req, ip, boardUri, socket, flood,
     spamOps.checkDnsbl(logger.ip(req), function checked(error, spammer) {
 
       if (error) {
-        callback(error);
-      } else if (spammer) {
+        return callback(error);
+      } else if (!spammer) {
+        return exports.getASN(req, boardUri, callback);
+      }
 
-        if (spamBypass && bypassAllowed) {
+      if (spamBypass && bypassAllowed) {
 
-          if (!req.bypassed) {
-            callback(null, null, true);
-          } else {
-            exports.getASN(req, boardUri, callback);
-          }
-
+        if (!req.bypassed) {
+          callback(null, null, true);
         } else {
-          callback(lang(req.language).errSpammer);
+          exports.getASN(req, boardUri, callback);
         }
 
       } else {
-        exports.getASN(req, boardUri, callback);
+        callback(lang(req.language).errSpammer);
       }
 
     });
