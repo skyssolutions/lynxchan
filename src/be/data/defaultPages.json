@@ -212,6 +212,7 @@
       "volunteeredDiv": "children",
       "globalManagementLink": "removal",
       "boardCreationDiv": "removal",
+      "checkboxNoBoardReports": "checked",
       "checkboxAlwaysSign": "checked",
       "checkboxReportNotify": "checked"
     }

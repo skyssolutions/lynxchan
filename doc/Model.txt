@@ -186,6 +186,7 @@ users: stores users.
         1 means global admin. Has all powers of global mods plus board deletion and transfer, board creation no matter the settings, board transfer and global janitor and mod assignment. 
         0 means root. All power of admins plus is able to assign global admins.
     settings(Array): array with the account settings. May hold the following values:
+        noBoardReports: indicates the user wishes to not see board reports on the global listing.
         alwaysSignRole: indicates the user wishes to always use his role signature on posts.
         reportNotify: indicates the user wishes to receive e-mail notifications of reports.
     inactive(Boolean): indicates the account is inactive.

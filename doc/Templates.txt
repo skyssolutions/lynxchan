@@ -641,6 +641,10 @@ labelLogin:
     use: have it's innerHTML manipulated.
     description: contains the user's login.
 
+checkboxNoBoardReports:
+    use: might be turned on.
+    description: check-box that indicates the user wishes to not see board reports on the global listing.
+
 checkboxAlwaysSign:
     use: might be turned on.
     description: check-box that indicates the user wishes to always sign posts with his role.

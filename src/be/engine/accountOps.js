@@ -26,7 +26,8 @@ var iterationsV2 = 16384;
 var keyLength = 256;
 var hashDigest = 'sha512';
 
-exports.validAccountSettings = [ 'alwaysSignRole', 'reportNotify' ];
+exports.validAccountSettings = [ 'alwaysSignRole', 'reportNotify',
+    'noBoardReports' ];
 
 exports.newAccountParameters = [ {
   field : 'login',

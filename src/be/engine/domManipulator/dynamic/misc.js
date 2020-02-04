@@ -17,6 +17,7 @@ var disabledLatestPostings;
 exports.optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
 
 exports.accountSettingsRelation = {
+  noBoardReports : 'checkboxNoBoardReports',
   alwaysSignRole : 'checkboxAlwaysSign',
   reportNotify : 'checkboxReportNotify'
 };

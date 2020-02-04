@@ -70,7 +70,7 @@ exports.loadDependencies = function() {
 
 };
 
-exports.getQueryBlock = function(parameters, closed) {
+exports.getQueryBlock = function(parameters, userData, closed) {
 
   var query = {
     closedBy : {
@@ -78,10 +78,16 @@ exports.getQueryBlock = function(parameters, closed) {
     }
   };
 
+  var noBoard;
+
+  if (userData.settings) {
+    noBoard = userData.settings.indexOf('noBoardReports') >= 0;
+  }
+
   if (parameters.boardUri) {
     query.boardUri = parameters.boardUri;
     query.global = false;
-  } else if (!globalBoardModeration) {
+  } else if (!globalBoardModeration || noBoard) {
     query.global = true;
   }
 
@@ -90,9 +96,9 @@ exports.getQueryBlock = function(parameters, closed) {
 };
 
 // Section 1: Closed reports {
-exports.readClosedReports = function(parameters, callback) {
+exports.readClosedReports = function(parameters, userData, callback) {
 
-  reports.find(exports.getQueryBlock(parameters, true), {
+  reports.find(exports.getQueryBlock(parameters, userData, true), {
     projection : {
       boardUri : 1,
       threadId : 1,
@@ -124,13 +130,13 @@ exports.getClosedReports = function(userData, parameters, language, callback) {
       } else if (!common.isInBoardStaff(userData, board)) {
         callback(lang(language).errDeniedBoardReportManagement);
       } else {
-        exports.readClosedReports(parameters, callback);
+        exports.readClosedReports(parameters, userData, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
     callback(lang(language).errDeniedGlobalReportManagement);
   } else {
-    exports.readClosedReports(parameters, callback);
+    exports.readClosedReports(parameters, userData, callback);
   }
 
 };
@@ -986,7 +992,7 @@ exports.getOpenReports = function(userData, parameters, language, callback) {
   }
 
   // style exception, too simple
-  reports.find(exports.getQueryBlock(parameters), {
+  reports.find(exports.getQueryBlock(parameters, userData), {
     projection : {
       boardUri : 1,
       reason : 1,

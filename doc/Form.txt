@@ -105,8 +105,9 @@ Json output(Object): object with the account data. Contains the following fields
     boardCreationAllowed(Boolean): indicates if the user is allowed to create boards.
     ownedBoards(Array): array with the list of uri of boards owned by the user.
     settings(Array): array of account settings. May contain the following values:
-        alwaysSignRole: user wishes to always use his role signature when posting.
+        noBoardReports: user wishes to hide board reports on the global listing.
         lockEnabled: uses wishes to have his account locked on too many failed logins.
+        reportNotify: user wishes to receive e-mail notifications about reports.
 
 ------------------------------------------------------------------------------------------
 
@@ -502,6 +503,7 @@ Parameters:
     email: new e-mail of the account. 64 characters.
     alwaysSignRole: any value indicates the user wishes to always use his role signature on posts.
     reportNotify: any value indicates the user wishes to receive e-mail notifications of reports.
+    noBoardReports: any value indicates the user wishes to hide board reports on the global listing.
 
 ------------------------------------------------------------------------------------------
 
