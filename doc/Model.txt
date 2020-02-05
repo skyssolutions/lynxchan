@@ -176,6 +176,7 @@ users: stores users.
     password: hashed password of the user.
     ownedBoards(Array): list of the uri's of the boards owned by this user.
     hash: current hash of the user.
+    oldHash: previous hash of the user.
     volunteeredBoards(Array): list of the uri's of the boards where this user is a volunteer at.
     renewExpiration(Date): time of when the hash should be silently renewed.
     logoutExpiration(Date): time of when the user should be logged out. Renewed after a new hash is created.

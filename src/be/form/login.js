@@ -31,10 +31,12 @@ exports.login = function(req, res, parameters, language, json) {
             field : 'loginredirect',
             value : '',
             expiration : new Date()
-          } ], {
+          } ], hash ? {
             authStatus : 'expired',
             newHash : hash,
             expiration : expiration
+          } : {
+            authStatus : 'ok'
           }, language, json);
     }
   });

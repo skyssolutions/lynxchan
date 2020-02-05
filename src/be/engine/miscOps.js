@@ -302,7 +302,7 @@ exports.getHeader = function(contentType, auth, header, cookies) {
   if (auth && auth.authStatus === 'expired') {
 
     var cookieString = 'hash=' + auth.newHash + '; path=/; expires=';
-    cookieString += auth.expiration.toUTCString();
+    cookieString += auth.expiration;
 
     header.push([ 'Set-Cookie', cookieString ]);
 

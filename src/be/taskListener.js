@@ -145,6 +145,11 @@ exports.processFloodTask = function(task, socket) {
     break;
   }
 
+  case 'createSession': {
+    accountOps.masterCreateSession(task, socket);
+    break;
+  }
+
   default:
     console.log('Unknown task type ' + task.type);
   }

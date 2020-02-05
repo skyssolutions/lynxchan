@@ -20,6 +20,7 @@ var domManipulator;
 var lang;
 var authLimit;
 
+var createSessionLocks = {};
 var authLimitControl = {};
 var iterations = 4096;
 var iterationsV2 = 16384;
@@ -276,44 +277,87 @@ exports.registerUser = function(parameters, cb, role, override, captchaId,
 };
 // } Section 2: Account creation
 
-exports.createSession = function(login, usedHash, remember, callback) {
+exports.masterCreateSession = function(task, socket) {
+
+  if (createSessionLocks[task.login]) {
+    return taskListener.sendToSocket(socket, {});
+  }
+
+  createSessionLocks[task.login] = true;
 
   crypto.randomBytes(256, function gotHash(error, buffer) {
 
     if (error) {
-      callback(error);
-    } else {
 
-      var hash = buffer.toString('base64');
+      delete createSessionLocks[task.login];
 
-      var renewAt = new Date();
-      renewAt.setMinutes(renewAt.getMinutes() + 1);
-
-      var logoutAt = new Date();
-
-      if (remember) {
-        logoutAt.setMonth(logoutAt.getMonth() + 1);
-      } else {
-        logoutAt.setHours(logoutAt.getHours() + 1);
-      }
-
-      // style exception, too simple
-      users.updateOne({
-        login : login
-      }, {
-        $set : {
-          oldHash : usedHash,
-          hash : hash,
-          renewExpiration : renewAt,
-          logoutExpiration : logoutAt,
-          remember : remember
-        }
-      }, function updatedUser(error) {
-        callback(error, hash, logoutAt);
+      return taskListener.sendToSocket(socket, {
+        error : error
       });
-      // style exception, too simple
-
     }
+
+    var hash = buffer.toString('base64');
+
+    var renewAt = new Date();
+    renewAt.setMinutes(renewAt.getMinutes() + 1);
+
+    var logoutAt = new Date();
+
+    if (task.remember) {
+      logoutAt.setMonth(logoutAt.getMonth() + 1);
+    } else {
+      logoutAt.setHours(logoutAt.getHours() + 1);
+    }
+
+    // style exception, too simple
+    users.updateOne({
+      login : task.login
+    }, {
+      $set : {
+        oldHash : task.usedHash,
+        hash : hash,
+        renewExpiration : renewAt,
+        logoutExpiration : logoutAt,
+        remember : task.remember
+      }
+    }, function updatedUser(error) {
+
+      delete createSessionLocks[task.login];
+
+      taskListener.sendToSocket(socket, {
+        error : error,
+        hash : hash,
+        logoutAt : logoutAt.toUTCString()
+      });
+    });
+    // style exception, too simple
+
+  });
+
+};
+
+exports.createSession = function(login, usedHash, remember, callback) {
+
+  taskListener.openSocket(function opened(error, socket) {
+
+    if (error) {
+      return callback(error);
+    }
+
+    socket.onData = function receivedData(data) {
+
+      callback(data.error, data.hash, data.logoutAt);
+
+      taskListener.freeSocket(socket);
+    };
+
+    taskListener.sendToSocket(socket, {
+      type : 'createSession',
+      login : login,
+      usedHash : usedHash,
+      remember : remember
+    });
+
   });
 
 };
@@ -361,10 +405,12 @@ exports.checkExpiration = function(user, usedHash, now, callback) {
             callback(error);
           } else {
 
-            callback(null, {
+            callback(null, hash ? {
               authStatus : 'expired',
               newHash : hash,
               expiration : expiration
+            } : {
+              authStatus : 'ok'
             }, user);
 
           }

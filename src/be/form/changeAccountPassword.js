@@ -16,10 +16,12 @@ exports.changePassword = function(userData, parameters, res, language, auth,
 
           formOps.outputResponse(json ? 'ok'
               : lang(language).msgChangedPassword, json ? null : '/account.js',
-              res, null, {
+              res, null, newHash ? {
                 authStatus : 'expired',
                 newHash : newHash,
                 expiration : expiration
+              } : {
+                authStatus : 'ok'
               }, language, json);
 
         }

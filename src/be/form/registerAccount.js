@@ -26,10 +26,12 @@ exports.createAccount = function(parameters, res, captchaId, language, json) {
             field : 'login',
             value : parameters.login,
             expiration : loginExpiration
-          } ], {
+          } ], hash ? {
             authStatus : 'expired',
             newHash : hash,
             expiration : expiration
+          } : {
+            authStatus : 'ok'
           }, language, json);
     }
 
