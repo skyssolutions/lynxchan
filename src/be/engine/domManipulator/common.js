@@ -19,6 +19,7 @@ var maxFileSizeMB;
 var messageLength;
 var verbose;
 var validMimes;
+var latestLimit;
 
 exports.indicatorsRelation = {
   pinned : 'pinIndicator',
@@ -35,6 +36,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  latestLimit = settings.latestPostsAmount;
   unboundBoardLimits = settings.unboundBoardLimits;
   verbose = settings.verboseCache || settings.verbose;
   globalBoardModeration = settings.allowGlobalBoardModeration;
@@ -358,8 +360,7 @@ exports.setHeader = function(template, language, bData, flagData, thread) {
 // Section 3: Thread content {
 exports.setOpLinks = function(cell, removable, thread, modding) {
 
-  cell = cell.replace('__linkReply_location__', removable.linkReply).replace(
-      '__linkLast_location__', removable.linkLast);
+  cell = cell.replace('__linkReply_location__', removable.linkReply);
 
   var boardUri = thread.boardUri;
 
@@ -370,10 +371,7 @@ exports.setOpLinks = function(cell, removable, thread, modding) {
     replyHref += thread.threadId;
   }
 
-  var lastHref = '/' + boardUri + '/last/' + thread.threadId + '.html';
-
-  return cell.replace('__linkReply_href__', replyHref).replace(
-      '__linkLast_href__', lastHref);
+  return cell.replace('__linkReply_href__', replyHref);
 
 };
 
@@ -390,9 +388,20 @@ exports.setThreadHiddeableElements = function(thread, cell, removable,
     }
   }
 
+  if (innerPage || thread.postCount <= latestLimit) {
+
+    cell = cell.replace('__linkLast_location__', '');
+
+  } else {
+
+    cell = cell.replace('__linkLast_location__', removable.linkLast).replace(
+        '__linkLast_href__',
+        '/' + thread.boardUri + '/last/' + thread.threadId + '.html');
+
+  }
+
   if (innerPage) {
-    return cell.replace('__linkReply_location__', '').replace(
-        '__linkLast_location__', '');
+    return cell.replace('__linkReply_location__', '');
   } else {
     return exports.setOpLinks(cell, removable, thread, modding);
   }

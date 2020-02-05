@@ -202,7 +202,10 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
     });
   }
 
-  var redactChanged = settings.redactModNames ^ generalSettings.redactModNames;
+  var gs = generalSettings;
+
+  var redactChanged = settings.redactModNames ^ gs.redactModNames;
+  var latestChanged = gs.latestPostsAmount !== settings.latestPostsAmount;
 
   if (redactChanged) {
     reloadsToMake.push({
@@ -211,10 +214,11 @@ function checkGeneralSettingsChanged(settings, reloadsToMake, callback) {
     });
   }
 
-  if (redactChanged || getRebuildBoards(settings)) {
+  if (redactChanged || latestChanged || getRebuildBoards(settings)) {
+
     reloadsToMake.push({
       allBoards : true,
-      clearInner : redactChanged
+      clearInner : redactChanged || latestChanged
     });
   }
 
@@ -353,8 +357,8 @@ function prepareSettingsForChangeCheck(settings, callback) {
       'redactModNames', 'omitUnindexedContent', 'unboundBoardLimits' ];
 
   // these ones default to the default values
-  var defaultToDefault = [ 'pageSize', 'maxFileSizeMB', 'maxFiles', 'fePath',
-      'messageLength' ];
+  var defaultToDefault = [ 'pageSize', 'latestPostsAmount', 'maxFileSizeMB',
+      'maxFiles', 'fePath', 'messageLength' ];
 
   var defaults = exports.getDefaultSettings();
 
