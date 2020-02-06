@@ -9,6 +9,7 @@ var db = require('../../db');
 var redirects = db.redirects();
 var boards = db.boards();
 var threads = db.threads();
+var reports = db.reports();
 var posts = db.posts();
 var redactedModNames;
 var logOps;
@@ -191,6 +192,52 @@ exports.runRebuilds = function(newBoard, newThreadId, originalThread, userData,
 };
 
 // Section 4: Posts update {
+exports.updateReports = function(newBoard, newThreadId, originalThread,
+    userData, newPostIdRelation, callback) {
+
+  var ops = [ {
+    deleteMany : {
+      filter : {
+        boardUri : originalThread.boardUri,
+        threadId : originalThread.threadId,
+        postId : null
+      }
+    }
+  } ];
+
+  for ( var key in newPostIdRelation) {
+
+    ops.push({
+      updateMany : {
+        filter : {
+          boardUri : originalThread.boardUri,
+          postId : +key
+        },
+        update : {
+          $set : {
+            boardUri : newBoard.boardUri,
+            postId : newPostIdRelation[key],
+            threadId : newThreadId
+          }
+        }
+      }
+    });
+
+  }
+
+  reports.bulkWrite(ops, function(error) {
+
+    if (error) {
+      console.log(error);
+    }
+
+    exports.runRebuilds(newBoard, newThreadId, originalThread, userData,
+        callback);
+
+  });
+
+};
+
 exports.getPostsOps = function(newPostIdRelation, newBoard, foundPosts,
     updateOps, newThreadId, originalThread) {
 
@@ -288,8 +335,8 @@ exports.updatePosts = function(newBoard, userData, foundPosts, newThreadId,
       callback(error);
     } else {
 
-      exports.runRebuilds(newBoard, newThreadId, originalThread, userData,
-          callback);
+      exports.updateReports(newBoard, newThreadId, originalThread, userData,
+          newPostIdRelation, callback);
 
     }
   });

@@ -388,7 +388,7 @@ exports.setThreadHiddeableElements = function(thread, cell, removable,
     }
   }
 
-  if (innerPage || thread.postCount <= latestLimit) {
+  if (innerPage || (thread.postCount || 0) <= latestLimit) {
 
     cell = cell.replace('__linkLast_location__', '');
 
