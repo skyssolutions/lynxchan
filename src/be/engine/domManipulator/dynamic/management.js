@@ -385,7 +385,8 @@ exports.getMediaLinks = function(template, file) {
   var cell = '<div class="mediaCell">';
   cell += template.template;
 
-  var detailsHref = '/mediaDetails.js?identifier=' + file.identifier;
+  var detailsHref = '/mediaDetails.js?identifier=';
+  detailsHref += file.identifier.replace(/\+/g, '%2B');
   cell = cell.replace('__detailsLink_href__', detailsHref);
 
   var filePath = '/.media/' + file.identifier;

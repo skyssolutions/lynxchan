@@ -1017,10 +1017,7 @@ exports.getMediaDetails = function(userData, parameters, language, callback) {
   var globalStaff = userData.globalRole <= maxGlobalStaffRole;
 
   if (!globalStaff) {
-
-    callback(lang(language).errDeniedMediaManagement);
-
-    return;
+    return callback(lang(language).errDeniedMediaManagement);
   }
 
   references.findOne({
