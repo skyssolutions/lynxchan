@@ -311,6 +311,11 @@ exports.getFileData = function(parameters) {
     var fileData = parameters.files.files;
 
     for (var i = 0; i < fileData.length; i++) {
+
+      if (!fileData[i].size) {
+        continue;
+      }
+
       bareInfo.push({
         title : fileData[i].originalFilename,
         md5 : fileData[i].md5

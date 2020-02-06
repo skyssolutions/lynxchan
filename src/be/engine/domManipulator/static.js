@@ -482,9 +482,7 @@ exports.page = function(page, threads, pageCount, boardData, flagData,
 // Section 3: Catalog {
 exports.setCatalogCellThumb = function(thread, language) {
 
-  common.clean(thread);
-
-  var href = '/' + thread.boardUri + '/res/';
+  var href = '/' + common.clean(thread.boardUri) + '/res/';
   href += thread.threadId + '.html';
 
   var cell = templateHandler(language).catalogCell.template.replace(
@@ -674,12 +672,11 @@ exports.getLatestPosts = function(latestPosts, language) {
   for (var i = 0; i < latestPosts.length; i++) {
     var post = latestPosts[i];
 
-    common.clean(post);
-
     var cell = '<div class="latestPostCell">' + cellTemplate;
     cell += '</div>';
 
-    cell = cell.replace('__labelPreview_inner__', post.previewText);
+    cell = cell.replace('__labelPreview_inner__', common
+        .clean(post.previewText));
 
     var postLink = '/' + post.boardUri + '/res/' + post.threadId + '.html';
     postLink += '#' + (post.postId || post.threadId);
