@@ -296,6 +296,20 @@ exports.checkFileErrors = function(parameters, board, req) {
 
 };
 
+exports.saveUploads = function(req, userData, parameters, board, threadId,
+    wishesToSign, enabledCaptcha, callback) {
+
+  var newFiles = [];
+
+  uploadHandler.saveUploads(parameters, newFiles, function savedUploads() {
+
+    exports.createThread(req, userData, parameters, newFiles, board, threadId,
+        wishesToSign, enabledCaptcha, callback);
+
+  });
+
+};
+
 exports.handleFiles = function(req, userData, parameters, board, threadId,
     wishesToSign, enabledCaptcha, callback) {
 
@@ -311,13 +325,15 @@ exports.handleFiles = function(req, userData, parameters, board, threadId,
       return common.recordFloodAndError(req, fileError, callback, true);
     }
 
-    var newFiles = [];
-
     // style exception, too simple
-    uploadHandler.saveUploads(parameters, newFiles, function savedUploads() {
+    r9k.check(parameters, board, req.language, function checked(error) {
 
-      exports.createThread(req, userData, parameters, newFiles, board,
-          threadId, wishesToSign, enabledCaptcha, callback);
+      if (error) {
+        common.recordFloodAndError(req, error, callback, true);
+      } else {
+        exports.saveUploads(req, userData, parameters, board, threadId,
+            wishesToSign, enabledCaptcha, callback);
+      }
 
     });
     // style exception, too simple
@@ -548,20 +564,6 @@ exports.checkFileLimit = function(req, userData, parameters, board, callback) {
 
 };
 
-exports.checkR9K = function(req, userData, parameters, board, callback) {
-
-  r9k.check(parameters, board, req.language, function checked(error) {
-
-    if (error) {
-      callback(error);
-    } else {
-      exports.checkFileLimit(req, userData, parameters, board, callback);
-    }
-
-  });
-
-};
-
 exports.cleanParameters = function(board, parameters, captchaId, req, cb,
     userData) {
 
@@ -586,7 +588,7 @@ exports.cleanParameters = function(board, parameters, captchaId, req, cb,
           if (error) {
             cb(error);
           } else {
-            exports.checkR9K(req, userData, parameters, board, cb);
+            exports.checkFileLimit(req, userData, parameters, board, cb);
           }
         });
     // style exception, too simple

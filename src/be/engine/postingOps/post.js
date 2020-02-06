@@ -23,12 +23,14 @@ var sfwOverboard;
 var pageLimit;
 var bumpLimit;
 var latestPostsCount;
+var pinnedLatest;
 var globalLatestPosts;
 
 exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  pinnedLatest = settings.latestPostPinned;
   unboundBoardSettings = settings.unboundBoardLimits;
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
@@ -330,6 +332,8 @@ exports.getSetBlock = function(thread, post) {
   if (latestPosts.length > latestPostsCount) {
     newOmittedPosts = true;
     latestPosts.splice(0, latestPosts.length - latestPostsCount);
+  } else {
+    newOmittedPosts = thread.pinned && latestPosts.length > pinnedLatest;
   }
 
   var updateBlock = {
@@ -345,6 +349,8 @@ exports.getSetBlock = function(thread, post) {
   if (newOmittedPosts) {
     updateBlock.$unset = {
       outerCache : 1,
+      outerHashedCache : 1,
+      outerClearCache : 1,
       alternativeCaches : 1
     };
   }
@@ -540,6 +546,20 @@ exports.checkFileErrors = function(parameters, board, req) {
 
 };
 
+exports.saveUploads = function(req, parameters, userData, postId, thread,
+    board, wishesToSign, enabledCaptcha, callback) {
+
+  var newFiles = [];
+
+  uploadHandler.saveUploads(parameters, newFiles, function savedUploads() {
+
+    exports.createPost(req, parameters, newFiles, userData, postId, thread,
+        board, wishesToSign, enabledCaptcha, callback);
+
+  });
+
+};
+
 exports.handleFiles = function(req, parameters, userData, postId, thread,
     board, wishesToSign, enabledCaptcha, callback) {
 
@@ -555,13 +575,15 @@ exports.handleFiles = function(req, parameters, userData, postId, thread,
       return common.recordFloodAndError(req, fileError, callback);
     }
 
-    var newFiles = [];
-
     // style exception, too simple
-    uploadHandler.saveUploads(parameters, newFiles, function savedUploads() {
+    r9k.check(parameters, board, req.language, function checked(error) {
 
-      exports.createPost(req, parameters, newFiles, userData, postId, thread,
-          board, wishesToSign, enabledCaptcha, callback);
+      if (error) {
+        common.recordFloodAndError(req, error, callback);
+      } else {
+        exports.saveUploads(req, parameters, userData, postId, thread, board,
+            wishesToSign, enabledCaptcha, callback);
+      }
 
     });
     // style exception, too simple
@@ -714,6 +736,7 @@ exports.getThread = function(req, parameters, userData, board, callback) {
       sfw : 1,
       salt : 1,
       page : 1,
+      pinned : 1,
       cyclic : 1,
       locked : 1,
       autoSage : 1,
@@ -774,20 +797,6 @@ exports.checkFileLimit = function(req, parameters, userData, board, callback) {
 
 };
 
-exports.checkR9K = function(req, parameters, userData, board, callback) {
-
-  r9k.check(parameters, board, req.language, function checked(error) {
-
-    if (error) {
-      callback(error);
-    } else {
-      exports.checkFileLimit(req, parameters, userData, board, callback);
-    }
-
-  });
-
-};
-
 exports.newPost = function(req, userData, parameters, captchaId, callback) {
 
   parameters.threadId = +parameters.threadId;
@@ -839,7 +848,8 @@ exports.newPost = function(req, userData, parameters, captchaId, callback) {
             if (error) {
               callback(error);
             } else {
-              exports.checkR9K(req, parameters, userData, board, callback);
+              exports
+                  .checkFileLimit(req, parameters, userData, board, callback);
             }
 
           }, true);
