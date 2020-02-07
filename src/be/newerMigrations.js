@@ -3,11 +3,15 @@
 // The dbMigrations.s couldn't be any larger, this is where any migration from
 // 1.6 onward will be
 
+var crypto = require('crypto');
+var fs = require('fs');
+var settings = require('./settingsHandler').getGeneralSettings();
 var db = require('./db');
+var bucket = new (require('mongodb')).GridFSBucket(db.conn());
 var aggregatedLogs = db.aggregatedLogs();
 var logs = db.logs();
 var files = db.files();
-var settings = require('./settingsHandler').getGeneralSettings();
+var references = db.uploadReferences();
 var reports = db.reports();
 var threads = db.threads();
 var posts = db.posts();
@@ -272,6 +276,239 @@ exports.aggregateLogs = function(callback) {
 
       exports.iterateDays(earliest, callback);
     }
+
+  });
+
+};
+
+// Added on 2.4
+exports.updatePostings = function(reference, file, hash, callback) {
+
+  var newPath = '/.media/' + hash;
+
+  if (reference.extension) {
+    newPath += '.' + reference.extension;
+  }
+
+  var ops = [ {
+    updateMany : {
+      filter : {
+        'files.path' : file.filename
+      },
+      update : {
+        $set : {
+          'files.$[file].thumb' : '/.media/t_' + hash
+        }
+      },
+      arrayFilters : [ {
+        'file.thumb' : '/.media/t_' + reference.identifier
+      } ]
+    }
+  }, {
+    updateMany : {
+      filter : {
+        'files.path' : file.filename
+      },
+      update : {
+        $set : {
+          'files.$[file].path' : newPath,
+          'files.$[file].sha256' : hash
+        },
+        $unset : {
+          'files.$[file].md5' : 1
+        }
+      },
+      arrayFilters : [ {
+        'file.path' : file.filename
+      } ]
+    }
+  } ];
+
+  posts.bulkWrite(ops, function(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+
+      // style exception, too simple
+      threads.bulkWrite(ops, function(error) {
+        callback(error, hash);
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.hashFile = function(reference, file, callback) {
+
+  if (file.onDisk) {
+    var idString = file._id.toString();
+
+    var diskPath = __dirname + '/media/';
+    diskPath += idString.substring(idString.length - 3) + '/' + idString;
+  }
+
+  var stream = file.onDisk ? fs.createReadStream(diskPath) : bucket
+      .openDownloadStreamByName(file.filename);
+
+  var hash = crypto.createHash('sha256');
+
+  stream.on('error', function(error) {
+
+    if (error.code === 'ENOENT') {
+      callback();
+    } else {
+      callback(error);
+    }
+
+  });
+
+  stream.on('data', function(data) {
+    hash.update(data, 'utf8');
+  });
+
+  stream.on('end', function() {
+    exports.updatePostings(reference, file, hash.digest('hex'), callback);
+  });
+
+};
+
+exports.renameFiles = function(reference, file, hash, callback) {
+
+  var newPath = '/.media/' + hash;
+
+  if (reference.extension) {
+    newPath += '.' + reference.extension;
+  }
+
+  files.bulkWrite([ {
+    updateOne : {
+      filter : {
+        filename : '/.media/t_' + reference.identifier
+      },
+      update : {
+        $set : {
+          filename : '/.media/t_' + hash
+        }
+      }
+    }
+  }, {
+    updateOne : {
+      filter : {
+        filename : file.filename
+      },
+      update : {
+        $set : {
+          filename : newPath
+        }
+      }
+    }
+  } ], function(error) {
+    callback(error, hash);
+  });
+
+};
+
+exports.findFile = function(reference, callback) {
+
+  var path = '/.media/' + reference.identifier;
+
+  if (reference.extension) {
+    path += '.' + reference.extension;
+  }
+
+  files.findOne({
+    filename : path
+  }, function(error, file) {
+
+    if (error || !file) {
+      return callback(error);
+    }
+
+    // style exception, too simple
+    exports.hashFile(reference, file, function(error, hash) {
+
+      if (error) {
+        callback(error);
+      } else {
+        exports.renameFiles(reference, file, hash, callback);
+      }
+
+    });
+    // style exception, too simple
+
+  });
+
+};
+
+exports.applySha256 = function(callback, lastId) {
+
+  references.find({
+    identifier : {
+      $exists : true
+    },
+    _id : lastId ? {
+      $gt : lastId
+    } : {
+      $exists : true
+    }
+  }).sort({
+    _id : 1
+  }).limit(1).toArray(function(error, foundReferences) {
+
+    if (error || !foundReferences.length) {
+      return callback(error);
+    }
+
+    exports.findFile(foundReferences[0], function(error, sha256) {
+
+      if (error) {
+        return callback(error);
+      }
+
+      if (!sha256) {
+
+        // style exception, too simple
+        return references.removeOne({
+          _id : foundReferences[0]._id
+        }, function(error) {
+
+          if (error) {
+            return callback(error);
+          } else {
+            exports.applySha256(callback, foundReferences[0]._id);
+          }
+
+        });
+        // style exception, too simple
+
+      }
+
+      // style exception, too simple
+      references.updateOne({
+        _id : foundReferences[0]._id
+      }, {
+        $set : {
+          sha256 : sha256
+        },
+        $unset : {
+          identifier : 1
+        }
+      }, function(error) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.applySha256(callback, foundReferences[0]._id);
+        }
+
+      });
+      // style exception, too simple
+
+    });
 
   });
 

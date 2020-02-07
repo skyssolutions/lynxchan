@@ -91,10 +91,8 @@ exports.json = function(req) {
 // Section 1.1: File processing {
 exports.checkNewFileReference = function(file, callback) {
 
-  var identifier = file.md5 + '-' + file.mime.replace('/', '');
-
   references.findOne({
-    identifier : identifier
+    sha256 : file.sha256
   }, function gotReference(error, reference) {
 
     if (error) {
@@ -118,7 +116,7 @@ exports.updateMetaMime = function(toPush, mime, fields) {
 
     var meta = fields.metaData[i];
 
-    if (meta.mime === mime && meta.md5 === toPush.md5) {
+    if (meta.sha256 === toPush.sha256) {
       meta.mime = toPush.mime;
     }
 
@@ -130,7 +128,7 @@ exports.getFileData = function(file, fields, mime, callback) {
 
   var toPush = {
     size : file.size,
-    md5 : file.md5,
+    sha256 : file.sha256,
     title : file.originalFilename,
     pathInDisk : file.path,
     mime : mime
@@ -184,7 +182,7 @@ exports.applyMetaData = function(fields, cb) {
     for (var i = 0; i < fields.files.length; i++) {
 
       var file = fields.files[i];
-      relation[file.md5 + '-' + file.mime.replace('/', '')] = file;
+      relation[file.sha256] = file;
 
     }
 
@@ -245,9 +243,7 @@ exports.getNewFiles = function(newFiles, fields, relation) {
 
     var metaData = fields.metaData[i];
 
-    var identifier = metaData.md5 + '-' + metaData.mime.replace('/', '');
-
-    var file = relation[identifier];
+    var file = relation[metaData.sha256];
 
     if (!file) {
 
@@ -285,7 +281,7 @@ exports.processReferencedFiles = function(fields, files, callback, index) {
   var entry = files.metadata[index];
 
   references.findOne({
-    identifier : entry.md5 + '-' + entry.mime.replace('/', '')
+    sha256 : entry.sha256
   }, function gotEntry(error, reference) {
 
     if (reference) {
@@ -332,10 +328,7 @@ exports.getRealMimeRelation = function(files) {
       continue;
     }
 
-    var identifier = file.md5 + '-';
-    identifier += file.headers['content-type'].replace('/', '');
-
-    realMimeRelation[identifier] = file.realMime;
+    realMimeRelation[file.sha256] = file.realMime;
 
   }
 
@@ -351,9 +344,7 @@ exports.applyRealMimes = function(fields, files, callback) {
 
     var metadata = files.metadata[i];
 
-    var key = metadata.md5 + '-' + metadata.mime.replace('/', '');
-
-    metadata.mime = realMimeRelation[key] || metadata.mime;
+    metadata.mime = realMimeRelation[metadata.sha256] || metadata.mime;
   }
 
   exports.stripExifs(fields, files, callback);
@@ -407,9 +398,9 @@ exports.getCheckSums = function(fields, files, callback, index) {
     return callback();
   }
 
-  logger.md5(file.path, function(error, md5) {
+  logger.sha256(file.path, function(error, sha256) {
 
-    file.md5 = md5;
+    file.sha256 = sha256;
     exports.getCheckSums(fields, files, callback, ++index);
 
   });
@@ -421,23 +412,23 @@ exports.getMetaData = function(fields, files) {
   var fileMetaData = [];
 
   var spoiled = fields.fileSpoiler || [];
-  var md5 = fields.fileMd5 || [];
+  var sha256 = fields.fileSha256 || [];
   var mime = fields.fileMime || [];
   var name = fields.fileName || [];
 
-  var min = Math.min(spoiled.length, md5.length);
+  var min = Math.min(spoiled.length, sha256.length);
   min = Math.min(min, mime.length);
   min = Math.min(min, name.length);
 
   for (var i = 0; i < Math.min(min, fileProcessingLimit); i++) {
 
-    if (!md5[i] || !mime[i] || !name[i]) {
+    if (!sha256[i] || !mime[i] || !name[i]) {
       continue;
     }
 
     fileMetaData.push({
       spoiler : spoiled[i],
-      md5 : md5[i],
+      sha256 : sha256[i],
       mime : mime[i],
       title : name[i]
     });
@@ -498,7 +489,7 @@ exports.getPostData = function(req, res, callback) {
 
     delete fields.fileSpoiler;
     delete fields.fileMime;
-    delete fields.fileMd5;
+    delete fields.fileSha256;
     delete fields.fileName;
 
     for ( var key in fields) {

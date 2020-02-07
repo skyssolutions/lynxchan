@@ -225,7 +225,7 @@ Meta-data of files on gridfs will have the following values:
 * `compressed`(Boolean): if true, it means the file has or is a compressed version.
 * `status`(Number): http status to be used when outputting this page. Defaults to 200 when outputting.
 * `date`(Number): date to which the file refers to.
-* `identifier`: identifier for media files.
+* `sha256`: hash for media files.
 * `languages`(Array): array of languages that this page is aimed at.
 * `referenceFile`: version of the default language for a file. Used for alternative language files. 
 * `type`: type of file. May hold one of the following values: 

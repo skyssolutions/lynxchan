@@ -1,6 +1,6 @@
 'use strict';
 
-var dbVersion = 13;
+var dbVersion = 14;
 
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
@@ -137,6 +137,10 @@ function upgrade(version, callback) {
 
   case 12:
     newerMigrations.aggregateLogs(callback);
+    break;
+
+  case 13:
+    newerMigrations.applySha256(callback);
     break;
 
   default:
@@ -330,7 +334,7 @@ function initUploadReferences(callback) {
     }
   }, {
     key : {
-      identifier : 1
+      sha256 : 1
     }
   } ], function setIndex(error, index) {
     if (error) {
@@ -342,6 +346,14 @@ function initUploadReferences(callback) {
     } else {
       indexSet(callback);
     }
+  });
+
+  cachedUploadReferences.dropIndex('identifier_1', function dropped(error) {
+
+    if (error && error.code !== 27) {
+      console.log(error);
+    }
+
   });
 
 }
@@ -436,12 +448,13 @@ function initHashBans(callback) {
 
   cachedHashBans.createIndexes([ {
     key : {
-      md5 : 1,
+      sha256 : 1,
       boardUri : 1
     },
     unique : 1
   } ], function setIndex(error, index) {
-    if (error) {
+    if (error && (error.code !== 11000 || error.keyValue.sha256)) {
+
       if (loading) {
         loading = false;
 

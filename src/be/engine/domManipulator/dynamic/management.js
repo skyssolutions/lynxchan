@@ -385,18 +385,17 @@ exports.getMediaLinks = function(template, file) {
   var cell = '<div class="mediaCell">';
   cell += template.template;
 
-  var detailsHref = '/mediaDetails.js?identifier=';
-  detailsHref += file.identifier.replace(/\+/g, '%2B');
+  var detailsHref = '/mediaDetails.js?identifier=' + file.sha256;
   cell = cell.replace('__detailsLink_href__', detailsHref);
 
-  var filePath = '/.media/' + file.identifier;
+  var filePath = '/.media/' + file.sha256;
 
   if (file.extension) {
     filePath += '.' + file.extension;
   }
 
   cell = cell.replace('__fileLink_href__', filePath);
-  cell = cell.replace('__fileLink_inner__', file.identifier);
+  cell = cell.replace('__fileLink_inner__', file.sha256);
 
   return cell + '</div>';
 
@@ -414,8 +413,8 @@ exports.getMediaManagementCells = function(media, language) {
 
     var cell = exports.getMediaLinks(template, file);
 
-    cell = cell.replace('__identifierCheckbox_name__', file.identifier);
-    cell = cell.replace('__thumbImg_src__', '/.media/t_' + file.identifier);
+    cell = cell.replace('__identifierCheckbox_name__', file.sha256);
+    cell = cell.replace('__thumbImg_src__', '/.media/t_' + file.sha256);
     cell = cell.replace('__referencesLabel_inner__', file.references);
 
     children += cell;

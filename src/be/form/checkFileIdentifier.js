@@ -11,10 +11,10 @@ exports.process = function(req, res) {
   var parameters = url.parse(req.url, true).query;
 
   references.findOne({
-    identifier : parameters.identifier
+    sha256 : parameters.identifier
   }, {
     projection : {
-      identifier : 1,
+      sha256 : 1,
       _id : 0
     }
   }, function foundReference(error, reference) {

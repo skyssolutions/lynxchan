@@ -155,7 +155,7 @@ exports.updatePostingFiles = function(file, callback) {
     mime : file.mime,
     thumb : file.thumbPath,
     size : file.size,
-    md5 : file.md5,
+    sha256 : file.sha256,
     width : file.width,
     height : file.height,
     spoiler : file.spoiler
@@ -167,7 +167,7 @@ exports.updatePostingFiles = function(file, callback) {
 exports.transferThumbToGfs = function(identifier, file, callback) {
 
   var meta = {
-    identifier : identifier,
+    sha256 : identifier,
     type : 'media'
   };
 
@@ -239,7 +239,7 @@ exports.generateAudioThumb = function(identifier, file, callback) {
       file.thumbPath = genericAudioThumb;
 
       gsHandler.writeFile(file.pathInDisk, file.path, file.mime, {
-        identifier : identifier,
+        sha256 : identifier,
         type : 'media'
       }, callback);
 
@@ -354,7 +354,7 @@ exports.decideOnDefaultThumb = function(file, identifier, callback) {
   }
 
   gsHandler.writeFile(file.pathInDisk, file.path, file.mime, {
-    identifier : identifier,
+    sha256 : identifier,
     type : 'media'
   }, callback);
 
@@ -427,7 +427,7 @@ exports.undoReference = function(error, identifier, callback, removal) {
   if (removal) {
 
     uploadReferences.deleteOne({
-      identifier : identifier
+      sha256 : identifier
     }, function removed(undoingError) {
       callback(undoingError || error);
     });
@@ -436,7 +436,7 @@ exports.undoReference = function(error, identifier, callback, removal) {
   }
 
   uploadReferences.updateOne({
-    identifier : identifier
+    sha256 : identifier
   }, {
     $inc : {
       references : -1
@@ -473,20 +473,20 @@ exports.willRequireThumb = function(file) {
 
 exports.processFile = function(file, callback) {
 
-  var identifier = file.md5 + '-' + file.mime.replace('/', '');
+  var identifier = file.sha256;
 
   var extension = logger.reverseMimes[file.mime];
 
   file.path = '/.media/' + identifier;
 
   uploadReferences.findOneAndUpdate({
-    identifier : identifier
+    sha256 : identifier
   }, {
     $inc : {
       references : 1
     },
     $setOnInsert : {
-      identifier : identifier,
+      sha256 : identifier,
       size : file.size,
       extension : extension,
       width : file.width,

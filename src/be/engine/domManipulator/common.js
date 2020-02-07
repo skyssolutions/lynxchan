@@ -114,8 +114,7 @@ exports.clean = function(toClean) {
     return toClean;
   }
 
-  return toClean.replace(/__/g, '&#95;&#95;').replace(/\$&/g, '$ &').replace(
-      /\$`/g, '$ `');
+  return toClean.replace(/_/g, '&#95;').replace(/\$/g, '&#36;');
 };
 
 exports.getFormCellBoilerPlate = function(cell, action, cssClass) {
@@ -784,7 +783,7 @@ exports.setUploadModElements = function(template, modding, cell, file, index,
         template.removable.unlinkAndDeleteLink).replace(
         '__unlinkLink_location__', template.removable.unlinkLink).replace(
         '__divHash_location__', template.removable.divHash).replace(
-        '__labelHash_inner__', file.md5).replace('__unlinkLink_href__',
+        '__labelHash_inner__', file.sha256).replace('__unlinkLink_href__',
         unlinkStart).replace('__unlinkAndDeleteLink_href__',
         unlinkStart + '&delete=1');
 

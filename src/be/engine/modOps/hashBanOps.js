@@ -19,7 +19,7 @@ var hashBanLimit;
 
 exports.hashBanArguments = [ {
   field : 'hash',
-  length : 32,
+  length : 64,
   removeHTML : true
 }, {
   field : 'reason',
@@ -54,13 +54,13 @@ exports.readHashBans = function(parameters, callback) {
     }
   }, {
     projection : {
-      md5 : 1,
+      sha256 : 1,
       reason : 1,
       date : 1,
       user : 1
     }
   }).sort({
-    md5 : 1
+    sha256 : 1
   }).toArray(function gotBans(error, hashBans) {
     callback(error, hashBans);
   });
@@ -99,7 +99,7 @@ exports.getHashBans = function(userData, parameters, language, callback) {
 exports.writeHashBan = function(userData, parameters, callback) {
 
   var hashBan = {
-    md5 : parameters.hash,
+    sha256 : parameters.hash,
     reason : parameters.reason,
     user : userData.login,
     date : new Date()
@@ -192,7 +192,7 @@ exports.removeHashBan = function(hashBan, userData, callback) {
         logMessage += pieces.globalPiece;
       }
 
-      logMessage += pieces.finalPiece.replace('{$hash}', hashBan.md5);
+      logMessage += pieces.finalPiece.replace('{$hash}', hashBan.sha256);
 
       logOps.insertLog({
         user : userData.login,
@@ -281,7 +281,7 @@ exports.getProcessedBans = function(foundBans, files) {
 
       var file = files[j];
 
-      if (file.md5 === foundBan.md5) {
+      if (file.sha256 === foundBan.sha256) {
 
         processedBans.push({
           file : file.title,
@@ -318,7 +318,7 @@ exports.getFileData = function(parameters) {
 
       bareInfo.push({
         title : fileData[i].originalFilename,
-        md5 : fileData[i].md5
+        sha256 : fileData[i].sha256
       });
     }
 
@@ -329,7 +329,7 @@ exports.getFileData = function(parameters) {
   for (i = 0; i < metadata.length; i++) {
     bareInfo.push({
       title : metadata[i].title,
-      md5 : metadata[i].md5
+      sha256 : metadata[i].sha256
     });
   }
 
@@ -347,15 +347,15 @@ exports.checkForHashBans = function(parameters, req, callback) {
     return callback(lang(req.language).errTorFilesBlocked);
   }
 
-  var md5s = [];
+  var sha256s = [];
 
   for (var i = 0; i < fileData.length; i++) {
-    md5s.push(fileData[i].md5);
+    sha256s.push(fileData[i].sha256);
   }
 
   hashBans.find({
-    md5 : {
-      $in : md5s
+    sha256 : {
+      $in : sha256s
     },
     $or : [ {
       boardUri : {

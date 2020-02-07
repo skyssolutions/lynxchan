@@ -28,24 +28,24 @@ exports.getQuery = function(boardData, checkMessage, checkFiles, parameters,
   }
 
   if (checkFiles) {
-    var md5s = [];
+    var sha256s = [];
 
     for (var i = 0; i < parameters.files.length; i++) {
 
       var file = parameters.files[i];
 
-      if (md5s.indexOf(file.md5) > -1) {
+      if (sha256s.indexOf(file.sha256) > -1) {
         callback(lang(language).errDuplicateFileBeingPosted);
 
         return;
       }
 
-      md5s.push(file.md5);
+      sha256s.push(file.sha256);
     }
 
     query.$or.push({
-      'files.md5' : {
-        $in : md5s
+      'files.sha256' : {
+        $in : sha256s
       }
     });
   }

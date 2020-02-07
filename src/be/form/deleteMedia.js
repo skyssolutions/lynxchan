@@ -9,14 +9,14 @@ exports.deleteMedia = function(auth, param, userData, res, language, json) {
   var selectedIdentifiers;
 
   if (param.text) {
-    selectedIdentifiers = param.text.match(/[0-9a-f]{32}-[\w\+]+/g) || [];
+    selectedIdentifiers = param.text.match(/[0-9a-f]{64}/g) || [];
   } else {
     selectedIdentifiers = [];
   }
 
   for ( var key in param) {
 
-    var match = key.match(/[0-9a-f]{32}-[\w\+]+/);
+    var match = key.match(/[0-9a-f]{64}/);
 
     if (match) {
       selectedIdentifiers.push(match.toString());

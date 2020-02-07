@@ -66,7 +66,7 @@ exports.getFilesArray = function(fileArray, modding, preview) {
       };
 
       if (modding || preview) {
-        toPush.md5 = file.md5;
+        toPush.sha256 = file.sha256;
       }
 
       toReturn.push(toPush);

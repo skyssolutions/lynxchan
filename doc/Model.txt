@@ -114,7 +114,7 @@ threads: stores board's threads.
         path: path for the file.
         thumb: path for the file's thumbnail.
         size(Number) size in bytes of the file.
-        md5: file hash.
+        sha256: file hash.
         mime: mimetype of the file.
         width(Number): width of the file, if image or video.
         height(Number): height of the file, if image or video.
@@ -156,7 +156,7 @@ posts: stores posts.
     files(Array): pre-aggregated array of files uploaded with the post. Each object contains the following fields:
         originalName: original name of the upload.
         path: path for the file.
-        md5: file hash.
+        sha256: file hash.
         thumb: path for the file's thumbnail.
         size(Number) size in bytes of the file.
         mime: mimetype of the file.
@@ -289,7 +289,7 @@ boardStats: stores hourly posting stats for boards.
 hashBans: stores bans on files.
     _id**: unique identifier of the hash ban.
     boardUri*/***: board of hash ban. If not indicated, the hash ban is global.
-    md5***: hash of the file to be banned. 32 characters.
+    sha256***: hash of the file to be banned. 64 characters.
     reason: reason of the ban. 32 characters.
     user*: user that applied the ban.
     date(Date): date when the ban was applied.
@@ -350,7 +350,7 @@ uniqueIpAggregation: stores daily unique ip's hashes on boards.
 
 uploadReferences: stores reference count to uploaded files.
     references(Number): amount of references to this file.
-    identifier: combination of hash plus mime used to identify the file. Example: 'hash-mime'. The slash will be removed from the mime part.
+    sha256: checksum of the file.
     width(Number): pre-aggregated width of the file, if any.
     height(Number): pre-aggregated height of the file, if any.
     size(Number): pre-aggregated size in bytes of the file.

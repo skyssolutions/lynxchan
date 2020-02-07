@@ -463,10 +463,8 @@ exports.removeFile = function(userData, parameters, language, posting, cb) {
       return cb();
     }
 
-    var identifier = removed.md5 + '-' + removed.mime.replace('/', '');
-
-    mediaHandler
-        .deleteFiles(null, [ identifier ], userData, language, cb, true);
+    mediaHandler.deleteFiles(null, [ removed.sha256 ], userData, language, cb,
+        true);
 
   });
 };

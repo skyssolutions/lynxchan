@@ -44,7 +44,7 @@ exports.clearNewOrphans = function(identifiers, callback) {
 
   references.aggregate([ {
     $match : {
-      identifier : {
+      sha256 : {
         $in : identifiers
       },
       references : {
@@ -55,7 +55,7 @@ exports.clearNewOrphans = function(identifiers, callback) {
     $group : {
       _id : 0,
       identifiers : {
-        $push : '$identifier'
+        $push : '$sha256'
       }
     }
   } ]).toArray(
@@ -76,14 +76,14 @@ exports.checkNewOrphans = function(identifiers, callback) {
 
   references.aggregate([ {
     $match : {
-      identifier : {
+      sha256 : {
         $in : identifiers
       }
     }
   }, {
     $project : {
       extension : 1,
-      identifier : 1,
+      sha256 : 1,
       references : 1,
       _id : 0
     }
@@ -116,16 +116,13 @@ exports.getAggregationQuery = function(matchQuery) {
   }, {
     $project : {
       _id : 0,
-      'files.md5' : 1,
-      'files.mime' : 1
+      'files.sha256' : 1
     }
   }, {
     $unwind : '$files'
   }, {
     $group : {
-      _id : {
-        $concat : [ '$files.md5', '-', '$files.mime' ]
-      },
+      _id : '$files.sha256',
       count : {
         $sum : 1
       }
@@ -164,7 +161,7 @@ exports.getOperations = function(postReferences, threadReferences) {
       operations.push({
         updateOne : {
           filter : {
-            identifier : key.replace('/', '')
+            sha256 : key
           },
           update : {
             $inc : {
@@ -192,7 +189,7 @@ exports.updateReferencesCount = function(postReferences, threadReferences,
   for (var i = 0; i < groupedReferences.length; i++) {
 
     var reference = groupedReferences[i];
-    identifiers.push(reference._id.replace('/', ''));
+    identifiers.push(reference._id);
 
   }
 
@@ -355,7 +352,7 @@ exports.deletePrunedFiles = function(identifiers, files, callback) {
       callback(error);
     } else {
       references.removeMany({
-        identifier : {
+        sha256 : {
           $in : identifiers
         }
       }, callback);
@@ -368,7 +365,7 @@ exports.removePrunedFiles = function(identifiers, callback) {
 
   files.aggregate([ {
     $match : {
-      'metadata.identifier' : {
+      'metadata.sha256' : {
         $in : identifiers
       }
     }
@@ -444,14 +441,14 @@ exports.getFilesToPrune = function(callback, page) {
     $limit : maxFilesToDisplay
   }, {
     $project : {
-      identifier : 1,
+      sha256 : 1,
       _id : 0
     }
   }, {
     $group : {
       _id : 0,
       identifiers : {
-        $push : '$identifier'
+        $push : '$sha256'
       }
     }
   } ]).toArray(function gotIdentifiers(error, results) {
@@ -507,7 +504,7 @@ exports.getReferenceUpdate = function(threadResults, postResults, relation) {
       ops.push({
         updateOne : {
           filter : {
-            identifier : reference.identifier
+            sha256 : reference.sha256
           },
           update : {
             $set : {
@@ -541,32 +538,27 @@ exports.getRepliesCount = function(threadResults, queryData, page, callback) {
       function gotFiles(error, results) {
 
         if (error) {
-          callback(error);
-        } else {
+          return callback(error);
+        }
 
-          var bulkOperations = exports.getReferenceUpdate(threadResults,
-              results, queryData.relation);
+        var bulkOperations = exports.getReferenceUpdate(threadResults, results,
+            queryData.relation);
 
-          if (!bulkOperations.length) {
-            exports.flipPage(page, callback);
+        if (!bulkOperations.length) {
+          return exports.flipPage(page, callback);
+        }
+
+        // style exception, too simple
+        references.bulkWrite(bulkOperations, function wroteReferences(error) {
+
+          if (error) {
+            callback(error);
           } else {
-
-            // style exception, too simple
-            references.bulkWrite(bulkOperations,
-                function wroteReferences(error) {
-
-                  if (error) {
-                    callback(error);
-                  } else {
-                    exports.flipPage(page, callback);
-                  }
-
-                });
-            // style exception, too simple
-
+            exports.flipPage(page, callback);
           }
 
-        }
+        });
+        // style exception, too simple
 
       });
 
@@ -597,11 +589,11 @@ exports.getReferenceCountQuery = function(results) {
 
     var result = results[i];
 
-    var path = '/.media/' + result.identifier;
+    var path = '/.media/' + result.sha256;
     path += result.extension ? ('.' + result.extension) : '';
 
     countRelation[path] = {
-      identifier : result.identifier,
+      sha256 : result.sha256,
       references : result.references,
       aggregatedCount : 0
     };
@@ -652,7 +644,7 @@ exports.prune = function(callback, page) {
   }, {
     $project : {
       extension : 1,
-      identifier : 1,
+      sha256 : 1,
       references : 1,
       _id : 0
     }
@@ -692,7 +684,7 @@ exports.getReferencesFromQuery = function(queryBlock, parameters, language,
         projection : {
           _id : 0,
           references : 1,
-          identifier : 1,
+          sha256 : 1,
           extension : 1
         }
       }).sort({
@@ -716,10 +708,8 @@ exports.handleFoundResults = function(queryBlock, threadResults, postResults,
 
   postResults = postResults.length ? postResults[0].identifiers : [];
 
-  queryBlock.identifier = {
-    $in : threadResults.concat(postResults).map(function(element) {
-      return element.replace('/', '');
-    })
+  queryBlock.sha256 = {
+    $in : threadResults.concat(postResults)
   };
 
   exports.getReferencesFromQuery(queryBlock, parameters, language, callback);
@@ -804,9 +794,7 @@ exports.getMediaFromPost = function(query, parameters, language, callback) {
       $group : {
         _id : 0,
         identifiers : {
-          $addToSet : {
-            $concat : [ '$files.md5', '-', '$files.mime' ]
-          }
+          $addToSet : '$files.sha256'
         }
       }
     } ];
@@ -835,7 +823,7 @@ exports.getMedia = function(userData, parameters, language, callback) {
   }
 
   if (parameters.filter) {
-    queryBlock.identifier = new RegExp(parameters.filter.toLowerCase());
+    queryBlock.sha256 = new RegExp(parameters.filter.toLowerCase());
   }
 
   if (parameters.boardUri && (parameters.threadId || parameters.postId)) {
@@ -851,7 +839,7 @@ exports.getMedia = function(userData, parameters, language, callback) {
 exports.deleteReferences = function(userData, identifiers, callback) {
 
   references.removeMany({
-    identifier : {
+    sha256 : {
       $in : identifiers
     }
   }, function removedIdentifiers(error) {
@@ -884,7 +872,7 @@ exports.banDeleted = function(parameters, userData, identifiers, callback,
   }
 
   hashBans.insertOne({
-    md5 : identifiers[index].substring(0, 32),
+    sha256 : identifiers[index],
     user : userData.login,
     reason : parameters.reason,
     date : new Date()
@@ -936,7 +924,7 @@ exports.deleteFiles = function(parameters, identifiers, userData, language,
 
   files.aggregate([ {
     $match : {
-      'metadata.identifier' : {
+      'metadata.sha256' : {
         $in : identifiers
       }
     }
@@ -1021,7 +1009,7 @@ exports.getMediaDetails = function(userData, parameters, language, callback) {
   }
 
   references.findOne({
-    identifier : parameters.identifier
+    sha256 : parameters.identifier
   }, function found(error, media) {
 
     if (error) {
@@ -1071,8 +1059,7 @@ exports.moveToDisk = function(toMove, callback) {
     onDisk : true,
     contentType : toMove.contentType,
     metadata : toMove.metadata,
-    length : toMove.length,
-    md5 : toMove.md5
+    length : toMove.length
   };
 
   files.insertOne(newDoc, function inserted(error) {

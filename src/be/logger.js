@@ -299,10 +299,10 @@ exports.ip = function(req) {
 
 };
 
-exports.md5 = function(path, callback) {
+exports.sha256 = function(path, callback) {
 
   var stream = fs.createReadStream(path);
-  var hash = crypto.createHash('md5');
+  var hash = crypto.createHash('sha256');
 
   stream.on('error', callback);
 

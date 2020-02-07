@@ -110,7 +110,8 @@ exports.writeData = function(data, dest, mime, meta, callback, compressed) {
 
   var uploadStream = bucket.openUploadStream(dest, {
     contentType : mime,
-    metadata : meta
+    metadata : meta,
+    disableMD5 : true
   });
 
   uploadStream.once('error', callback);
@@ -192,15 +193,14 @@ exports.copyFileToLocation = function(path, newDoc, callback) {
 
 };
 
-exports.writeFileToDisk = function(dest, path, fileInfo, callback, size, md5) {
+exports.writeFileToDisk = function(dest, path, fileInfo, callback, size) {
 
   var newDoc = {
     filename : dest,
     onDisk : true,
     contentType : fileInfo.contentType,
     metadata : fileInfo.metadata,
-    length : size,
-    md5 : md5
+    length : size
   };
 
   files.insertOne(newDoc, function(error) {
@@ -223,26 +223,13 @@ exports.writeFileToDisk = function(dest, path, fileInfo, callback, size, md5) {
 
 exports.getDiskFileStats = function(dest, path, fileInfo, callback) {
 
-  var statCmd = 'ls -l ' + path + ' | cut -d " " -f 5 && md5sum ' + path;
-  statCmd += ' | cut -d " " -f 1';
-
-  logger.md5(path, function(error, md5) {
+  fs.stat(path, function(error, info) {
 
     if (error) {
       return callback(error);
     }
 
-    // style exception, too simple
-    fs.stat(path, function(error, info) {
-
-      if (error) {
-        return callback(error);
-      }
-
-      exports.writeFileToDisk(dest, path, fileInfo, callback, info.size, md5);
-
-    });
-    // style exception, too simple
+    exports.writeFileToDisk(dest, path, fileInfo, callback, info.size);
 
   });
 
@@ -295,6 +282,9 @@ exports.writeFile = function(path, dest, mime, meta, callback) {
   if (meta.type === 'media' && diskMedia) {
     exports.getDiskFileStats(dest, path, fileInfo, writeCallback);
   } else {
+
+    fileInfo.disableMD5 = true;
+
     exports.writeFileToGridFs(dest, path, fileInfo, writeCallback);
   }
 
