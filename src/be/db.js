@@ -446,23 +446,37 @@ function initTripcodes(callback) {
 
 function initHashBans(callback) {
 
-  cachedHashBans.createIndexes([ {
-    key : {
-      sha256 : 1,
-      boardUri : 1
-    },
-    unique : 1
-  } ], function setIndex(error, index) {
-    if (error && (error.code !== 11000 || error.keyValue.sha256)) {
+  cachedHashBans.removeMany({
+    sha256 : null
+  }, function(error) {
 
-      if (loading) {
-        loading = false;
+    cachedHashBans.createIndexes([ {
+      key : {
+        sha256 : 1,
+        boardUri : 1
+      },
+      unique : 1
+    } ], function setIndex(error, index) {
+      if (error) {
 
-        callback(error);
+        if (loading) {
+          loading = false;
+
+          callback(error);
+        }
+      } else {
+        indexSet(callback);
       }
-    } else {
-      indexSet(callback);
-    }
+    });
+
+    cachedHashBans.dropIndex('md5_1_boardUri_1', function dropped(error) {
+
+      if (error && error.code !== 27) {
+        console.log(error);
+      }
+
+    });
+
   });
 }
 
