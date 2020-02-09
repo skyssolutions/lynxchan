@@ -9,6 +9,7 @@
     "template": "catalogPage",
     "headChildren": true,
     "prebuiltFields": {
+      "divName": "removal",
       "noFlagDiv": "removal",
       "divThreads": "children",
       "labelBoard": "inner",

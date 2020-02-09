@@ -1358,6 +1358,10 @@ noFlagDiv:
     use: might be removed.
     description: div with the option to not show the user location flag.
 
+divName:
+    use: might be removed.
+    description: holds the name input elements.
+
 postingForm:
     use: might be removed.
     description: element removed when the site disables thread creation from catalogs.
