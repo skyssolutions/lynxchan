@@ -632,7 +632,7 @@ exports.setBoardCaptchaUpdate = function(board, block) {
 
   var setBlock = block.$set;
 
-  if (board.autoCaptchaStartTime <= expiration) {
+  if (board.autoFullCaptchaStartTime <= expiration) {
 
     board.autoFullCaptchaStartTime = null;
     board.autoFullCaptchaCount = 0;
