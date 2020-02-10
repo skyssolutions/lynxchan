@@ -53,6 +53,7 @@ exports.readRangeBans = function(parameters, callback, boardData) {
   bans.find(queryBlock, {
     projection : {
       range : 1,
+      nonBypassable : 1,
       reason : 1,
       expiration : 1,
       ipv6 : 1
@@ -175,6 +176,7 @@ exports.createRangeBan = function(userData, parameters, language, callback) {
     } else {
 
       var rangeBan = {
+        nonBypassable : !!parameters.nonBypassable,
         reason : parameters.reasonBan,
         expiration : parameters.expiration,
         range : rangeInfo.range,
@@ -271,6 +273,7 @@ exports.readASNBans = function(parameters, callback, boardData) {
   bans.find(queryBlock, {
     projection : {
       asn : 1,
+      nonBypassable : 1,
       reason : 1,
       expiration : 1
     }
@@ -343,6 +346,7 @@ exports.createASNBan = function(user, parameters, language, callback) {
     } else {
 
       var asnBan = {
+        nonBypassable : !!parameters.nonBypassable,
         expiration : parameters.expiration,
         reason : parameters.reasonBan,
         asn : parameters.asn,

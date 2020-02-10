@@ -100,8 +100,15 @@ exports.getRangeBanCells = function(rangeBans, boardData, userRole, language) {
       rangeToUse = miscOps.formatIp(rangeBan.range, rangeBan.ipv6);
     }
 
-    cell = cell.replace('__rangeLabel_inner__', rangeToUse);
-    cell = cell.replace('__idIdentifier_value__', rangeBan._id);
+    if (rangeBan.nonBypassable) {
+      cell = cell.replace('__bypassableLabel_location__',
+          template.removable.bypassableLabel);
+    } else {
+      cell = cell.replace('__bypassableLabel_location__', '');
+    }
+
+    cell = cell.replace('__rangeLabel_inner__', rangeToUse).replace(
+        '__idIdentifier_value__', rangeBan._id);
 
     children += cell.replace('__reasonLabel_inner__', rangeBan.reason || '')
         .replace('__expirationLabel_inner__',
@@ -421,6 +428,13 @@ exports.getAsnBanCells = function(asnBans, language) {
 
     var cell = common.getFormCellBoilerPlate(template.template, '/liftBan.js',
         'asnBanCell');
+
+    if (asnBan.nonBypassable) {
+      cell = cell.replace('__bypassableLabel_location__',
+          template.removable.bypassableLabel);
+    } else {
+      cell = cell.replace('__bypassableLabel_location__', '');
+    }
 
     cell = cell.replace('__asnLabel_inner__', asnBan.asn);
     cell = cell.replace('__idIdentifier_value__', asnBan._id);

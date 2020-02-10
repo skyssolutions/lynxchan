@@ -307,6 +307,7 @@
     "prebuiltFields": {
       "rangeLabel": "inner",
       "idIdentifier": "value",
+      "bypassableLabel": "removal",
       "reasonLabel": "inner",
       "expirationLabel": "inner"
     }
@@ -430,6 +431,7 @@
     "template": "asnBanCell",
     "prebuiltFields": {
       "asnLabel": "inner",
+      "bypassableLabel": "removal",
       "idIdentifier": "value",
       "reasonLabel": "inner",
       "expirationLabel": "inner"

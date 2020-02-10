@@ -775,7 +775,8 @@ Name: placeRangeBan
 Description: creates a range ban. Requires authentication. Global range bans are restricted to users with global role lower than 3.
 
 Parameters:
-    reason: reason of the ban.
+    nonBypassable(Boolean): if the ban cannot be bypassed.
+    reasonBan: reason of the ban.
     duration: duration of the ban.
     boardUri: if not informed, the range ban will be global.
     range: range to be banned. The range must use a cidr format and the range size must be in increments of 8. like 1.2.3.4/16 or 2001:db8:85a3::/64.
@@ -1399,7 +1400,8 @@ Name: placeAsnBan
 Description: creates an ASN ban. Requires authentication.
 
 Parameters:
-    reason: reason of the ban.
+    nonBypassable(Boolean): if the ban cannot be bypassed.
+    reasonBan: reason of the ban.
     duration: duration of the ban.
     boardUri: if not informed, the range ban will be global.
     asn: ASN to be banned.

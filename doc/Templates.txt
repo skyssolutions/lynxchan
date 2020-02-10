@@ -1721,6 +1721,10 @@ reasonLabel:
     use: have it's innerHTML manipulated.
     description: label that holds the ban reason.
 
+bypassableLabel:
+    use: might be removed.
+    description: indicates if the ban is non-bypassable.
+
 expirationLabel:
     use: have it's innerHTML manipulated.
     description: label that holds the ban expiration date.
@@ -2821,6 +2825,10 @@ Elements:
 reasonLabel:
     use: have it's innerHTML manipulated.
     description: label that holds the ban reason.
+
+bypassableLabel:
+    use: might be removed.
+    description: indicates if the ban is non-bypassable.
 
 expirationLabel:
     use: have it's innerHTML manipulated.
