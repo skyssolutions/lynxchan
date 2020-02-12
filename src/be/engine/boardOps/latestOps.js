@@ -1,7 +1,10 @@
 'use strict';
 
+var mongo = require('mongodb');
+var ObjectID = mongo.ObjectID;
 var logger = require('../../logger');
 var db = require('../../db');
+var bans = db.bans();
 var boards = db.boards();
 var posts = db.posts();
 var threads = db.threads();
@@ -239,6 +242,28 @@ exports.canSearchPerPost = function(parameters, userData) {
 
 };
 
+exports.canSearchPerBan = function(ban, userData) {
+
+  if (!ban || (!ban.ip && !ban.bypassId)) {
+    return false;
+  }
+
+  if (userData.globalRole <= clearIpMinRole) {
+    return true;
+  }
+
+  if (!ban.boardUri) {
+    return false;
+  }
+
+  var allowedBoards = userData.ownedBoards || [];
+
+  allowedBoards = allowedBoards.concat(userData.volunteeredBoards || []);
+
+  return allowedBoards.indexOf(ban.boardUri) >= 0;
+
+};
+
 exports.getBoardsToShow = function(parameters, userData) {
 
   parameters.boards = (parameters.boards || '').split(',').map(
@@ -297,11 +322,21 @@ exports.setDate = function(parameters) {
 
 };
 
+exports.setIpAndPostMatch = function(parameters, matchBlock, userData, cb) {
+
+  if (parameters.ip && userData.globalRole <= clearIpMinRole) {
+    matchBlock.ip = logger.convertIpToArray(parameters.ip);
+    delete parameters.boardUri;
+  } else if (exports.canSearchPerPost(parameters, userData)) {
+    return exports.fetchPostInfo(matchBlock,
+        userData.globalRole <= clearIpMinRole, parameters, cb);
+  }
+
+  cb(null, matchBlock);
+
+};
+
 exports.getMatchBlock = function(parameters, userData, callback) {
-
-  exports.setDate(parameters);
-
-  var boardsToShow = exports.getBoardsToShow(parameters, userData);
 
   var matchBlock = parameters.date ? {
     creation : {
@@ -309,30 +344,72 @@ exports.getMatchBlock = function(parameters, userData, callback) {
     }
   } : {};
 
+  var boardsToShow = exports.getBoardsToShow(parameters, userData);
+
   if (boardsToShow) {
     matchBlock.boardUri = {
       $in : boardsToShow
     };
   }
 
-  if (parameters.ip && userData.globalRole <= clearIpMinRole) {
-    matchBlock.ip = logger.convertIpToArray(parameters.ip);
-    delete parameters.boardUri;
-  } else if (exports.canSearchPerPost(parameters, userData)) {
-    return exports.fetchPostInfo(matchBlock,
-        userData.globalRole <= clearIpMinRole, parameters, callback);
+  if (!parameters.banId) {
+    return exports
+        .setIpAndPostMatch(parameters, matchBlock, userData, callback);
   }
 
-  callback(null, matchBlock);
+  try {
+    var banId = new ObjectID(parameters.banId);
+  } catch (error) {
+    return callback(null, matchBlock);
+  }
+
+  bans.findOne({
+    _id : banId
+  }, function(error, ban) {
+
+    if (error) {
+      return callback(error);
+    }
+
+    if (exports.canSearchPerBan(ban, userData)) {
+
+      var clearIps = userData.globalRole <= clearIpMinRole;
+
+      if (!clearIps) {
+        matchBlock.boardUri = ban.boardUri;
+      }
+
+      var orList = [];
+
+      matchBlock.$or = orList;
+
+      if (ban.ip) {
+        orList.push({
+          ip : ban.ip
+        });
+      }
+
+      if (ban.bypassId) {
+        orList.push({
+          bypassId : ban.bypassId
+        });
+      }
+
+    }
+
+    callback(null, matchBlock);
+
+  });
 
 };
 
 exports.getLatestPostings = function(userData, parameters, language, callback) {
 
   if (disableLatestPostings) {
-    callback(lang(language).errDisabledLatestPostings);
-    return;
+    return callback(lang(language).errDisabledLatestPostings);
   }
+
+  exports.setDate(parameters);
 
   exports.getMatchBlock(parameters, userData, function gotMatchBlock(error,
       matchBlock) {

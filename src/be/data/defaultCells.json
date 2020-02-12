@@ -253,7 +253,19 @@
       "appealLabel": "inner",
       "liftIdentifier": "value",
       "boardLabel": "inner",
-      "boardPanel": "removal"
+      "boardPanel": "removal",
+      "offenseRecordLink": [
+        "removal",
+        "href"
+      ],
+      "fileHistoryLink": [
+        "removal",
+        "href"
+      ],
+      "postHistoryLink": [
+        "removal",
+        "href"
+      ]
     }
   },
   {

@@ -290,6 +290,9 @@ exports.updatePostings = function(reference, file, hash, callback) {
     newPath += '.' + reference.extension;
   }
 
+  var newThumbPath = reference.hasThumb ? ('/.media/t_' + hash) : newPath;
+  var currentThumbPath = '/.media/t_' + reference.identifier;
+
   var ops = [ {
     updateMany : {
       filter : {
@@ -297,11 +300,11 @@ exports.updatePostings = function(reference, file, hash, callback) {
       },
       update : {
         $set : {
-          'files.$[file].thumb' : '/.media/t_' + hash
+          'files.$[file].thumb' : newThumbPath
         }
       },
       arrayFilters : [ {
-        'file.thumb' : '/.media/t_' + reference.identifier
+        'file.thumb' : reference.hasThumb ? currentThumbPath : file.filename
       } ]
     }
   }, {

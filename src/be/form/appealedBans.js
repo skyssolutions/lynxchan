@@ -17,10 +17,15 @@ exports.getAppealedBans = function(userData, parameters, res, auth, language) {
     } else {
 
       if (json) {
-        formOps.outputResponse('ok', bans, res, null, auth, null, true);
+        formOps.outputResponse('ok', bans.map(function(ban) {
+          delete ban.bypassId;
+          delete ban.ip;
+          return ban;
+        }), res, null, auth, null, true);
       } else {
         res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(dom.bans(bans, !parameters.boardUri, language, true));
+        res.end(dom.bans(bans, !parameters.boardUri, userData.globalRole,
+            language, true));
       }
 
     }

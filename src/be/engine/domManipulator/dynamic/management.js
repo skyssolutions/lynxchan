@@ -341,6 +341,10 @@ exports.getMediaManagementLinkBoilerPlate = function(parameters) {
     boilerPlate += '&orphaned=1';
   }
 
+  if (parameters.banId) {
+    boilerPlate += '&banId=' + parameters.banId;
+  }
+
   if (parameters.filter) {
     boilerPlate += '&filter=' + parameters.filter;
   }
@@ -425,6 +429,46 @@ exports.getMediaManagementCells = function(media, language) {
 
 };
 
+exports.setMediaManagementIdentifiers = function(parameters, doc, template) {
+
+  if (parameters.banId) {
+    doc = doc.replace('__banIdentifier_location__',
+        template.removable.banIdentifier).replace('__banIdentifier_value__',
+        parameters.banId);
+  } else {
+    doc = doc.replace('__banIdentifier_location__', '');
+  }
+
+  if (parameters.boardUri && (parameters.threadId || parameters.postId)) {
+
+    doc = doc.replace('__boardUriIdentifier_location__',
+        template.removable.boardUriIdentifier).replace(
+        '__boardUriIdentifier_value__', parameters.boardUri);
+
+    if (parameters.threadId) {
+
+      return doc.replace('__threadIdIdentifier_location__',
+          template.removable.threadIdIdentifier).replace(
+          '__postIdIdentifier_location__', '').replace(
+          '__threadIdIdentifier_value__', parameters.threadId);
+
+    } else {
+
+      return doc.replace('__postIdIdentifier_location__',
+          template.removable.postIdIdentifier).replace(
+          '__threadIdIdentifier_location__', '').replace(
+          '__postIdIdentifier_value__', parameters.postId);
+
+    }
+
+  } else {
+    return doc.replace('__boardUriIdentifier_location__', '').replace(
+        '__threadIdIdentifier_location__', '').replace(
+        '__postIdIdentifier_location__', '');
+  }
+
+};
+
 exports.mediaManagement = function(role, media, pages, parameters, language) {
 
   var template = templateHandler(language).mediaManagementPage;
@@ -435,34 +479,6 @@ exports.mediaManagement = function(role, media, pages, parameters, language) {
   document = document.replace('__pagesDiv_children__', exports
       .getMediaManagementPages(pages, parameters));
 
-  if (parameters.boardUri && (parameters.threadId || parameters.postId)) {
-
-    document = document.replace('__boardUriIdentifier_location__',
-        template.removable.boardUriIdentifier).replace(
-        '__boardUriIdentifier_value__', parameters.boardUri);
-
-    if (parameters.threadId) {
-
-      document = document.replace('__threadIdIdentifier_location__',
-          template.removable.threadIdIdentifier).replace(
-          '__postIdIdentifier_location__', '').replace(
-          '__threadIdIdentifier_value__', parameters.threadId);
-
-    } else {
-
-      document = document.replace('__postIdIdentifier_location__',
-          template.removable.postIdIdentifier).replace(
-          '__threadIdIdentifier_location__', '').replace(
-          '__postIdIdentifier_value__', parameters.postId);
-
-    }
-
-  } else {
-    document = document.replace('__boardUriIdentifier_location__', '').replace(
-        '__threadIdIdentifier_location__', '').replace(
-        '__postIdIdentifier_location__', '');
-  }
-
   if (role === miscOps.getMaxStaffRole()) {
     document = document.replace('__banPanel_location__', '');
   } else {
@@ -470,8 +486,9 @@ exports.mediaManagement = function(role, media, pages, parameters, language) {
         template.removable.banPanel);
   }
 
-  return document.replace('__filesDiv_children__', exports
-      .getMediaManagementCells(media, language));
+  return exports.setMediaManagementIdentifiers(parameters, document, template)
+      .replace('__filesDiv_children__',
+          exports.getMediaManagementCells(media, language));
 
 };
 // } Section 6: Media management

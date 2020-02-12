@@ -16,10 +16,15 @@ exports.getBans = function(userData, parameters, res, auth, language) {
     } else {
 
       if (json) {
-        formOps.outputResponse('ok', bans, res, null, auth, null, true);
+        formOps.outputResponse('ok', bans.map(function(ban) {
+          delete ban.ip;
+          delete ban.bypassId;
+          return ban;
+        }), res, null, auth, null, true);
       } else {
         res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(dom.bans(bans, !parameters.boardUri, language));
+        res.end(dom.bans(bans, !parameters.boardUri, userData.globalRole,
+            language));
       }
 
     }

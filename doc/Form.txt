@@ -34,12 +34,12 @@ The status are:
         reason: reason of the hash ban.
 
 To post files by reference or spoil individual files, inform the following parameters:
-fileMd5
+fileSha256
 fileMime
 fileSpoiler
 fileName
 
-You can inform them multiple times. If a file matches the md5 and mime, it will be reused. Individual files will be spoiled if the value of fileSpoiler is anything but an empty string, but you must inform the empty string anyway for them to work.
+You can inform them multiple times. If a file matches the sha256, it will be reused. Individual files will be spoiled if the value of fileSpoiler is anything but an empty string, but you must inform the empty string anyway for them to work.
 You must inform all of them the same amount of times when informing any of them. They will be read in the same order, so the first entry of them represents one file, the second entry of them a second file.
 When no valid entry is informed, just the uploaded files will be used on the post.
 
@@ -401,7 +401,7 @@ Json output(Object): object with the data of the thread.
     files(Array): files uploaded with the thread. Each object contains the following fields:
         originalName: original name of the upload.
         path: path for the file.
-        md5: md5 hash of the file.
+        sha256: sha256 hash of the file.
         thumb: path for the file's thumbnail.
         size(Number) size in bytes of the file.
         mime: mime of the file.
@@ -428,7 +428,7 @@ Json output(Object): object with the data of the thread.
         banMessage: message to be displayed indicating this message was a cause to a ban.
         creation(Date): time when the post was created.
         files(Array): pre-aggregated array of files uploaded with the post. Each object contains the following fields:
-            md5: md5 hash of the file.
+            sha256: sha256 hash of the file.
             originalName: original name of the upload.
             path: path for the file.
             thumb: path for the file's thumbnail.
@@ -796,7 +796,7 @@ Parameters:
 
 Json output(Array): array with the hash bans. Each object contains the following fields:
     _id: unique id of the hash ban.
-    md5: banned hash.
+    sha256: banned hash.
     date(Date): date of the ban.
     user: user that applied the ban.
     reason: reason of the ban.
@@ -812,7 +812,7 @@ Description: creates a hash ban that will keep files with this hash to be posted
 Parameters:
     reason: reason of the hash ban.
     boardUri: if not informed, the hash ban will be global.
-    hash: banned MD5 hash. 32 characters.
+    hash: banned sha256 hash. 64 characters.
 
 Json output: id of the new ban.
 
@@ -1085,7 +1085,7 @@ Name: checkFileIdentifier
 Description: checks if a file already exists on the server. Uses get parameters. Outputs only json.
 
 Parameters:
-    identifier: identifier for the file. It is composed of the file md5 plus a '-' character plus the mime of the file with any '/' removed, all lowercases. Example: 07646fffbf7147f8d77916c453b98853-imagejpeg
+    identifier: identifier for the file. It is composed of the file sha256, all lowercases.
 
 Json output(Boolean): if the file exists, returns a true.
 
@@ -1110,6 +1110,7 @@ Name: mediaManagement
 Description: displays the uploaded files and allows to manage them. Requires authentication. Reserved for the global staff. Uses get parameters.
 
 Parameters:
+    banId: id of a ban to search files posted by the same author.
     orphaned: if informed, only orphaned files will be displayed.
     page: page the user wishes to see.
     filter: if informed, only files with the given string on the identifier will be shown. Case insensitive.
@@ -1311,6 +1312,7 @@ Description: displays all latest postings made on the site. Requires authenticat
 
 Parameters:
     ip: ip to search posts from.
+    banId: id of a ban to search all other posts from the same author.
     boardUri: boardUri of a post to search posts from the same ip and bypass. Required to use either postId or threadId.
     postId(Number): postId of a post to search posts from the same ip and bypass.
     threadId(Number): threadId of an OP to search posts from the same ip and bypass. Won't be used if postId is informed.
@@ -1342,7 +1344,7 @@ JSON output(Array): array where each element is an object with the following fie
     files(Array): files uploaded with the thread. Each object contains the following fields:
         originalName: original name of the upload.
         path: path for the file.
-        md5: md5 hash of the file.
+        sha256: md5 hash of the file.
         thumb: path for the file's thumbnail.
         size(Number) size in bytes of the file.
         mime: mime of the file.
@@ -1461,6 +1463,7 @@ Name: offenseRecord
 Description: shows the offense record of a given user.
 
 Parameters:
+    banId: id of a ban to search all offenses from the same author.
     boardUri: uri of the board to check a posting's ip and bypass offense record.
     postId: postId of the posting to check the ip's and bypass' offense record.
     threadId: threadId of the posting to check the ip's and bypass' offense record.

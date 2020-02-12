@@ -13,6 +13,7 @@ var templateHandler;
 var postingContent;
 var maxAllowedFiles;
 var globalBoardModeration;
+var miscOps;
 var clearIpRole;
 var unboundBoardLimits;
 var maxFileSizeMB;
@@ -56,6 +57,7 @@ exports.loadDependencies = function() {
   lang = require('../langOps').languagePack;
   templateHandler = require('../templateHandler').getTemplates;
   postingContent = require('./postingContent');
+  miscOps = require('../miscOps');
 
 };
 
@@ -861,7 +863,39 @@ exports.setBanCellHiddenElements = function(ban, template, language) {
 
 };
 
-exports.setOptionalBanElements = function(ban, cell, template, language) {
+exports.setHistoryBanLinks = function(ban, userRole, template, cell) {
+
+  if (ban.ip || ban.bypassId) {
+
+    var affix = '?banId=' + ban._id;
+
+    cell = cell.replace('__postHistoryLink_location__',
+        template.removable.postHistoryLink).replace(
+        '__offenseRecordLink_location__', template.removable.offenseRecordLink)
+        .replace('__offenseRecordLink_href__', '/offenseRecord.js' + affix)
+        .replace('__postHistoryLink_href__', '/latestPostings.js' + affix);
+
+    if (userRole <= miscOps.getMaxStaffRole()) {
+      cell = cell.replace('__fileHistoryLink_location__',
+          template.removable.fileHistoryLink).replace(
+          '__fileHistoryLink_href__', '/mediaManagement.js' + affix);
+    } else {
+      cell = cell.replace('__fileHistoryLink_location__', '');
+    }
+
+  } else {
+    cell = cell.replace('__postHistoryLink_location__', '').replace(
+        '__offenseRecordLink_location__', '').replace(
+        '__fileHistoryLink_location__', '');
+
+  }
+
+  return cell;
+
+};
+
+exports.setOptionalBanElements = function(ban, userRole, cell, template,
+    language) {
 
   if (ban.appeal) {
 
@@ -891,17 +925,18 @@ exports.setOptionalBanElements = function(ban, cell, template, language) {
     cell = cell.replace('__expirationPanel_location__', '');
   }
 
-  return cell;
+  return exports.setHistoryBanLinks(ban, userRole, template, cell);
 
 };
 
-exports.getBanCell = function(ban, globalPage, language) {
+exports.getBanCell = function(ban, userRole, globalPage, language) {
 
   var template = templateHandler(language).banCell;
 
   var cell = exports.setBanCellHiddenElements(ban, template, language);
 
-  cell = exports.setOptionalBanElements(ban, cell, template, language);
+  cell = exports
+      .setOptionalBanElements(ban, userRole, cell, template, language);
 
   cell = cell.replace('__idLabel_inner__', ban._id);
   cell = cell.replace('__appliedByLabel_inner__', exports.clean(ban.appliedBy));
@@ -919,12 +954,12 @@ exports.getBanCell = function(ban, globalPage, language) {
 
 };
 
-exports.getBanList = function(bans, boardData, globalPage, userRole, language) {
+exports.getBanList = function(bans, globalPage, userRole, language) {
 
   var children = '';
 
   for (var i = 0; i < bans.length; i++) {
-    var cell = exports.getBanCell(bans[i], globalPage, language);
+    var cell = exports.getBanCell(bans[i], userRole, globalPage, language);
     children += '<div class="banCell">' + cell + '</div>';
   }
 

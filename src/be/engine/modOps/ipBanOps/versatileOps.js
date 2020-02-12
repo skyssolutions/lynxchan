@@ -156,15 +156,15 @@ exports.readBans = function(parameters, callback) {
       reason : 1,
       appeal : 1,
       denied : 1,
+      ip : 1,
+      bypassId : 1,
       boardUri : 1,
       expiration : 1,
       appliedBy : 1
     }
   }).sort({
     creation : -1
-  }).toArray(function gotBans(error, bans) {
-    callback(error, bans);
-  });
+  }).toArray(callback);
 };
 
 exports.getBans = function(userData, parameters, language, callback) {
@@ -572,6 +572,8 @@ exports.readAppealedBans = function(parameters, callback) {
       reason : 1,
       appeal : 1,
       boardUri : 1,
+      ip : 1,
+      bypassId : 1,
       denied : 1,
       expiration : 1,
       appliedBy : 1

@@ -1156,6 +1156,18 @@ reasonPanel:
     use: might be removed.
     description: panel that contains the reason.
 
+offenseRecordLink:
+    use: might be removed or have it's href manipulated.
+    description: link that takes to the user offense record.
+
+fileHistoryLink:
+    use: might be removed or have it's href manipulated.
+    description: link that takes to the user file history.
+
+postHistoryLink:
+    use: might be removed or have it's href manipulated.
+    description: link that takes to the user post history.
+
 expirationPanel:
     use: might be removed.
     description: panel that contains the expiration.
@@ -2516,6 +2528,10 @@ filesDiv:
     use: have children appended to it.
     description: div that contains the uploaded files.
 
+banIdentifier:
+    use: have it's value manipulated or might be removed.
+    description: identifier used to show only files posted by a specific user from a ban.
+
 pagesDiv:
     use: have children appended to it.
     description: div that displays the available pages.
@@ -2717,6 +2733,10 @@ Elements:
 fieldDate:
     use: have it's value manipulated.
     description: input with the date to set the search.
+
+inputBanId:
+    use: have it's value manipulated or might be removed.
+    description: hidden input with the banId of the ban to search other posts from the same ip.
 
 divPostings:
     use: have children appended to it.

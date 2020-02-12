@@ -615,6 +615,10 @@
     "template": "mediaManagementPage",
     "prebuiltFields": {
       "banPanel": "removal",
+      "banIdentifier": [
+        "removal",
+        "value"
+      ],
       "filesDiv": "children",
       "pagesDiv": "children",
       "boardUriIdentifier": [
@@ -674,6 +678,10 @@
   {
     "template": "latestPostingsPage",
     "prebuiltFields": {
+      "inputBanId": [
+        "value",
+        "removal"
+      ],
       "divPostings": "children",
       "fieldDate": "value",
       "fieldBoards": "value",

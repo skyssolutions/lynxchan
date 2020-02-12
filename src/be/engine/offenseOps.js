@@ -1,8 +1,11 @@
 'use strict';
 
+var mongo = require('mongodb');
+var ObjectID = mongo.ObjectID;
 var logger = require('../logger');
 var db = require('../db');
 var latestOps;
+var bans = db.bans();
 var offenseRecords = db.offenseRecords();
 var threads = db.threads();
 var posts = db.posts();
@@ -51,6 +54,29 @@ exports.runReadQuery = function(ip, bypassId, callback) {
 
 };
 
+exports.fetchBan = function(userData, parameters, language, callback) {
+
+  try {
+    var banId = new ObjectID(parameters.banId);
+  } catch (error) {
+    return callback(null, []);
+  }
+
+  bans.findOne({
+    _id : banId
+  }, function(error, ban) {
+
+    if (error) {
+      callback(error);
+    } else if (!latestOps.canSearchPerBan(ban, userData)) {
+      callback(lang(language).errDeniedOffenseHistory);
+    } else {
+      exports.runReadQuery(ban.ip, ban.bypassId, callback);
+    }
+  });
+
+};
+
 exports.getOffenses = function(userData, parameters, language, callback) {
 
   if (parameters.ip && userData.globalRole <= clearIpMinRole) {
@@ -58,7 +84,9 @@ exports.getOffenses = function(userData, parameters, language, callback) {
         callback);
   }
 
-  if (!latestOps.canSearchPerPost(parameters, userData)) {
+  if (parameters.banId) {
+    return exports.fetchBan(userData, parameters, language, callback);
+  } else if (!latestOps.canSearchPerPost(parameters, userData)) {
     return callback(lang(language).errDeniedOffenseHistory);
   }
 

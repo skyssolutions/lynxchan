@@ -1,10 +1,13 @@
 'use strict';
 
 var fs = require('fs');
+var mongo = require('mongodb');
+var ObjectID = mongo.ObjectID;
 var db = require('../db');
 var bucket = new (require('mongodb')).GridFSBucket(db.conn());
 var threads = db.threads();
 var posts = db.posts();
+var bans = db.bans();
 var files = db.files();
 var hashBans = db.hashBans();
 var chunks = db.chunks();
@@ -670,32 +673,30 @@ exports.getReferencesFromQuery = function(queryBlock, parameters, language,
   references.countDocuments(queryBlock, function counted(error, count) {
 
     if (error) {
-      callback(error);
-    } else {
-
-      var pageCount = Math.ceil(count / maxFilesToDisplay);
-
-      pageCount = pageCount || 1;
-
-      var page = parameters.page || 1;
-
-      // style exception, too simple
-      references.find(queryBlock, {
-        projection : {
-          _id : 0,
-          references : 1,
-          sha256 : 1,
-          extension : 1
-        }
-      }).sort({
-        _id : -1
-      }).skip((page - 1) * maxFilesToDisplay).limit(maxFilesToDisplay).toArray(
-          function gotReferences(error, foundReferences) {
-            callback(error, foundReferences, pageCount);
-          });
-      // style exception, too simple
-
+      return callback(error);
     }
+
+    var pageCount = Math.ceil(count / maxFilesToDisplay);
+
+    pageCount = pageCount || 1;
+
+    var page = parameters.page || 1;
+
+    // style exception, too simple
+    references.find(queryBlock, {
+      projection : {
+        _id : 0,
+        references : 1,
+        sha256 : 1,
+        extension : 1
+      }
+    }).sort({
+      _id : -1
+    }).skip((page - 1) * maxFilesToDisplay).limit(maxFilesToDisplay).toArray(
+        function gotReferences(error, foundReferences) {
+          callback(error, foundReferences, pageCount);
+        });
+    // style exception, too simple
 
   });
 
@@ -708,9 +709,23 @@ exports.handleFoundResults = function(queryBlock, threadResults, postResults,
 
   postResults = postResults.length ? postResults[0].identifiers : [];
 
-  queryBlock.sha256 = {
-    $in : threadResults.concat(postResults)
-  };
+  if (queryBlock.sha256) {
+
+    queryBlock.$and = [ {
+      sha256 : queryBlock.sha256
+    }, {
+      sha256 : {
+        $in : threadResults.concat(postResults)
+      }
+    } ];
+
+  } else {
+
+    queryBlock.sha256 = {
+      $in : threadResults.concat(postResults)
+    };
+
+  }
 
   exports.getReferencesFromQuery(queryBlock, parameters, language, callback);
 
@@ -726,6 +741,7 @@ exports.fetchPostResults = function(query, pipeLine, parameters, language,
           return callback(error);
         }
 
+        // style exception, too simple
         posts.aggregate(pipeLine).toArray(
             function(error, postResults) {
 
@@ -736,8 +752,48 @@ exports.fetchPostResults = function(query, pipeLine, parameters, language,
                   parameters, language, callback);
 
             });
+        // style exception, too simple
 
       });
+
+};
+
+exports.buildPipeLine = function(ip, bypassId, query, parameters, language,
+    callback) {
+
+  var orList = [];
+
+  if (ip) {
+    orList.push({
+      ip : ip
+    });
+  }
+
+  if (bypassId) {
+    orList.push({
+      bypassId : bypassId
+    });
+  }
+
+  var pipeLine = [ {
+    $match : {
+      $or : orList,
+      'files.0' : {
+        $exists : true
+      }
+    }
+  }, {
+    $unwind : '$files'
+  }, {
+    $group : {
+      _id : 0,
+      identifiers : {
+        $addToSet : '$files.sha256'
+      }
+    }
+  } ];
+
+  exports.fetchPostResults(query, pipeLine, parameters, language, callback);
 
 };
 
@@ -767,39 +823,35 @@ exports.getMediaFromPost = function(query, parameters, language, callback) {
           callback);
     }
 
-    var orList = [];
+    exports.buildPipeLine(posting.ip, posting.bypassId, query, parameters,
+        language, callback);
 
-    if (posting.ip) {
-      orList.push({
-        ip : posting.ip
-      });
+  });
+
+};
+
+exports.getMediaFromBan = function(query, parameters, language, callback) {
+
+  try {
+    var banId = new ObjectID(parameters.banId);
+  } catch (error) {
+    return exports
+        .getReferencesFromQuery(query, parameters, language, callback);
+  }
+
+  bans.findOne({
+    _id : banId
+  }, function(error, ban) {
+
+    if (error) {
+      return callback(error);
+    } else if (!ban || (!ban.ip && !ban.bypassId)) {
+      return exports.getReferencesFromQuery(query, parameters, language,
+          callback);
     }
 
-    if (posting.bypassId) {
-      orList.push({
-        bypassId : posting.bypassId
-      });
-    }
-
-    var pipeLine = [ {
-      $match : {
-        $or : orList,
-        'files.0' : {
-          $exists : true
-        }
-      }
-    }, {
-      $unwind : '$files'
-    }, {
-      $group : {
-        _id : 0,
-        identifiers : {
-          $addToSet : '$files.sha256'
-        }
-      }
-    } ];
-
-    exports.fetchPostResults(query, pipeLine, parameters, language, callback);
+    exports.buildPipeLine(ban.ip, ban.bypassId, query, parameters, language,
+        callback);
 
   });
 
@@ -810,8 +862,7 @@ exports.getMedia = function(userData, parameters, language, callback) {
   var globalStaff = userData.globalRole <= maxGlobalStaffRole;
 
   if (!globalStaff) {
-    callback(lang(language).errDeniedMediaManagement);
-    return;
+    return callback(lang(language).errDeniedMediaManagement);
   }
 
   var queryBlock = {};
@@ -828,6 +879,8 @@ exports.getMedia = function(userData, parameters, language, callback) {
 
   if (parameters.boardUri && (parameters.threadId || parameters.postId)) {
     exports.getMediaFromPost(queryBlock, parameters, language, callback);
+  } else if (parameters.banId) {
+    exports.getMediaFromBan(queryBlock, parameters, language, callback);
   } else {
     exports.getReferencesFromQuery(queryBlock, parameters, language, callback);
   }

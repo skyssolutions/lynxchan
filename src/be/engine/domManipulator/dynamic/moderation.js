@@ -33,14 +33,14 @@ exports.loadDependencies = function() {
 
 };
 
-exports.bans = function(bans, globalPage, language, appealed) {
+exports.bans = function(bans, globalPage, userRole, language, appealed) {
 
   var document = templateHandler(language).bansPage.template.replace(
       '__title__', lang(language)[appealed ? 'titAppealedBansManagement'
           : 'titBansManagement']);
 
   return document.replace('__bansDiv_children__', common.getBanList(bans,
-      globalPage, language));
+      globalPage, userRole, language));
 
 };
 
@@ -296,6 +296,21 @@ exports.getPosts = function(postings, boardData, userRole, language) {
 
 };
 
+exports.setInputPostingInfo = function(parameters, document, removable) {
+
+  var toRemove = parameters.threadId ? 'PostId' : 'ThreadId';
+  var toShow = parameters.threadId ? 'ThreadId' : 'PostId';
+
+  return document
+      .replace('__inputBoardUri_location__', removable.inputBoardUri).replace(
+          '__input' + toRemove + '_location__', '').replace(
+          '__input' + toShow + '_location__', removable['input' + toShow])
+      .replace('__inputBoardUri_value__', parameters.boardUri).replace(
+          '__input' + toShow + '_value__',
+          parameters.threadId || parameters.postId);
+
+};
+
 exports.setIpSearchFeatures = function(document, removable, parameters,
     userData) {
 
@@ -320,27 +335,26 @@ exports.setIpSearchFeatures = function(document, removable, parameters,
     document = document.replace('__panelIp_location__', '');
   }
 
+  if (!parameters.banId) {
+    document = document.replace('__inputBanId_location__', '');
+  } else {
+    document = document
+        .replace('__inputBanId_location__', removable.inputBanId).replace(
+            '__inputBanId_value__', parameters.banId);
+  }
+
   if (!parameters.boardUri || (!parameters.threadId && !parameters.postId)) {
 
-    document = document.replace('__inputBoardUri_location__', '').replace(
+    return document.replace('__inputBoardUri_location__', '').replace(
         '__inputThreadId_location__', '').replace('__inputPostId_location__',
         '');
 
   } else {
 
-    var toRemove = parameters.threadId ? 'PostId' : 'ThreadId';
-    var toShow = parameters.threadId ? 'ThreadId' : 'PostId';
-
-    document = document.replace('__inputBoardUri_location__',
-        removable.inputBoardUri).replace('__input' + toRemove + '_location__',
-        '').replace('__input' + toShow + '_location__',
-        removable['input' + toShow]).replace('__inputBoardUri_value__',
-        parameters.boardUri).replace('__input' + toShow + '_value__',
-        parameters.threadId || parameters.postId);
+    return exports.setInputPostingInfo(parameters, document, removable);
 
   }
 
-  return document;
 };
 
 exports.getBoilerLink = function(parameters) {
@@ -349,6 +363,10 @@ exports.getBoilerLink = function(parameters) {
 
   if (parameters.ip) {
     boiler += '&ip=' + parameters.ip;
+  }
+
+  if (parameters.banId) {
+    boiler += '&banId=' + parameters.banId;
   }
 
   if (parameters.boardUri && (parameters.threadId || parameters.postId)) {
