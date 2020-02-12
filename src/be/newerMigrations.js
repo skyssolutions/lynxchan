@@ -447,6 +447,45 @@ exports.findFile = function(reference, callback) {
 
 };
 
+exports.checkForWrongThumb = function(reference, callback) {
+
+  if (reference.hasThumb) {
+    return exports.findFile(reference, callback);
+  }
+
+  files.findOne({
+    filename : '/.media/t_' + reference.identifier
+  }, function(error, foundFile) {
+
+    if (error) {
+      return callback(error);
+    } else if (!foundFile) {
+      return exports.findFile(reference, callback);
+    }
+
+    // style exception, too simple
+    references.updateOne({
+      _id : reference._id
+    }, {
+      $set : {
+        hasThumb : true
+      }
+    }, function(error) {
+
+      if (error) {
+        callback(error);
+      } else {
+        reference.hasThumb = true;
+        exports.findFile(reference, callback);
+      }
+
+    });
+    // style exception, too simple
+
+  });
+
+};
+
 exports.applySha256 = function(callback, lastId) {
 
   references.find({
@@ -466,7 +505,7 @@ exports.applySha256 = function(callback, lastId) {
       return callback(error);
     }
 
-    exports.findFile(foundReferences[0], function(error, sha256) {
+    exports.checkForWrongThumb(foundReferences[0], function(error, sha256) {
 
       if (error) {
         return callback(error);

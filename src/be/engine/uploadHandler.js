@@ -147,9 +147,9 @@ exports.removeFromDisk = function(path, callback) {
 // } Section 1: Utility functions
 
 // Section 2: Upload handling {
-exports.updatePostingFiles = function(file, callback) {
+exports.updatePostingFiles = function(file) {
 
-  callback(null, {
+  return {
     originalName : miscOps.cleanHTML(file.title),
     path : file.path,
     mime : file.mime,
@@ -159,7 +159,30 @@ exports.updatePostingFiles = function(file, callback) {
     width : file.width,
     height : file.height,
     spoiler : file.spoiler
+  };
+
+};
+
+exports.postTransferThumb = function(error, meta, file, callback) {
+
+  fs.unlink(file.thumbOnDisk, function deletedTempThumb(deletionError) {
+    if (deletionError) {
+      console.log(deletionError);
+    }
   });
+
+  if (error) {
+    callback(error);
+  } else {
+
+    // style exception, too simple
+    gsHandler.writeFile(file.pathInDisk, file.path, file.mime, meta, function(
+        error) {
+      callback(error, true);
+    });
+    // style exception, too simple
+
+  }
 
 };
 
@@ -174,18 +197,7 @@ exports.transferThumbToGfs = function(identifier, file, callback) {
   gsHandler.writeFile(file.thumbOnDisk, file.thumbPath, file.thumbMime, meta,
       function wroteTbToGfs(error) {
 
-        fs.unlink(file.thumbOnDisk, function deletedTempThumb(deletionError) {
-          if (deletionError) {
-            console.log(deletionError);
-          }
-        });
-
-        if (error) {
-          callback(error);
-        } else {
-          gsHandler.writeFile(file.pathInDisk, file.path, file.mime, meta,
-              callback);
-        }
+        exports.postTransferThumb(error, meta, file, callback);
 
       });
 
@@ -241,7 +253,9 @@ exports.generateAudioThumb = function(identifier, file, callback) {
       gsHandler.writeFile(file.pathInDisk, file.path, file.mime, {
         sha256 : identifier,
         type : 'media'
-      }, callback);
+      }, function(error) {
+        callback(error);
+      });
 
     } else {
       file.thumbOnDisk = thumbDestination;
@@ -356,7 +370,9 @@ exports.decideOnDefaultThumb = function(file, identifier, callback) {
   gsHandler.writeFile(file.pathInDisk, file.path, file.mime, {
     sha256 : identifier,
     type : 'media'
-  }, callback);
+  }, function(error) {
+    callback(error);
+  });
 
 };
 
@@ -387,87 +403,51 @@ exports.generateThumb = function(identifier, file, callback) {
 };
 // } Section 2.1: New file
 
-exports.checkForThumb = function(reference, identifier, file, callback) {
+exports.checkForThumb = function(reference, identifier, file) {
 
   var possibleThumbName = '/.media/t_' + identifier;
 
   if (reference.hasThumb) {
     file.thumbPath = possibleThumbName;
-    return exports.updatePostingFiles(file, callback);
+  } else if (exports.thumbAudioMimes.indexOf(file.mime) > -1) {
+    file.thumbPath = genericAudioThumb;
+  } else if (file.mime.indexOf('image/') < 0) {
+    file.thumbPath = genericThumb;
+  } else {
+    file.thumbPath = file.path;
   }
 
-  files.findOne({
-    filename : possibleThumbName
-  }, function gotThumb(error, result) {
-
-    if (error) {
-      callback(error);
-    } else if (!result) {
-
-      if (exports.thumbAudioMimes.indexOf(file.mime) > -1) {
-        file.thumbPath = genericAudioThumb;
-      } else if (file.mime.indexOf('image/') < 0) {
-        file.thumbPath = genericThumb;
-      } else {
-        file.thumbPath = file.path;
-      }
-
-    } else {
-      file.thumbPath = possibleThumbName;
-    }
-
-    exports.updatePostingFiles(file, callback);
-
-  });
+  return exports.updatePostingFiles(file);
 
 };
 
-exports.undoReference = function(error, identifier, callback, removal) {
+exports.undoReference = function(error, identifier, callback) {
 
-  if (removal) {
-
-    uploadReferences.deleteOne({
-      sha256 : identifier
-    }, function removed(undoingError) {
-      callback(undoingError || error);
-    });
-
-    return;
-  }
-
-  uploadReferences.updateOne({
+  uploadReferences.deleteOne({
     sha256 : identifier
-  }, {
-    $inc : {
-      references : -1
-    }
-  }, function undone(undoingError) {
+  }, function removed(undoingError) {
     callback(undoingError || error);
   });
 
 };
 
-exports.willRequireThumb = function(file) {
+exports.updateHasThumb = function(identifier, file, callback) {
 
-  var tooSmall = file.height <= thumbSize && file.width <= thumbSize;
+  uploadReferences.updateOne({
+    sha256 : identifier
+  }, {
+    $set : {
+      hasThumb : true
+    }
+  }, function(error) {
 
-  var gifCondition = thumbExtension || tooSmall;
+    if (error) {
+      exports.undoReference(error, identifier, callback);
+    } else {
+      callback(null, file);
+    }
 
-  var svg = file.mime === 'image/svg+xml';
-
-  var apngCondition = gifCondition && file.size > apngThreshold;
-  apngCondition = apngCondition && file.mime === 'image/png';
-
-  var imageCondition = apngCondition || file.mime.indexOf('image/') > -1;
-  imageCondition = imageCondition && !tooSmall && !svg;
-
-  if (file.mime === 'image/gif' && gifCondition) {
-    return true;
-  } else if (imageCondition) {
-    return true;
-  } else if (exports.videoMimes.indexOf(file.mime) > -1 && mediaThumb) {
-    return true;
-  }
+  });
 
 };
 
@@ -490,8 +470,7 @@ exports.processFile = function(file, callback) {
       size : file.size,
       extension : extension,
       width : file.width,
-      height : file.height,
-      hasThumb : exports.willRequireThumb(file)
+      height : file.height
     }
   }, {
     upsert : true,
@@ -499,42 +478,43 @@ exports.processFile = function(file, callback) {
   }, function updatedReference(error, result) {
 
     if (error) {
-      callback(error);
-    } else if (!result.lastErrorObject.updatedExisting) {
+      return callback(error);
+    }
 
-      if (extension) {
-        file.path += '.' + extension;
-      }
-
-      // style exception, too simple
-      exports.generateThumb(identifier, file, function savedFile(error) {
-
-        if (error) {
-          exports.undoReference(error, identifier, callback, true);
-        } else {
-          exports.updatePostingFiles(file, callback);
-        }
-
-      });
-      // style exception, too simple
-
-    } else {
+    if (result.lastErrorObject.updatedExisting) {
 
       if (result.value.extension) {
         file.path += '.' + result.value.extension;
       }
 
-      exports.checkForThumb(result.value, identifier, file,
-          function updatedPosting(error, newFile) {
+      return callback(null, exports.checkForThumb(result.value, identifier,
+          file));
 
-            if (error) {
-              exports.undoReference(error, identifier, callback);
-            } else {
-              callback(null, newFile);
-            }
-
-          });
     }
+
+    if (extension) {
+      file.path += '.' + extension;
+    }
+
+    // style exception, too simple
+    exports.generateThumb(identifier, file, function savedFile(error,
+        generatedThumb) {
+
+      if (error) {
+        exports.undoReference(error, identifier, callback);
+      } else if (generatedThumb) {
+
+        // TODO
+        console.log('generated');
+        exports.updateHasThumb(identifier, exports.updatePostingFiles(file),
+            callback);
+
+      } else {
+        callback(null, exports.updatePostingFiles(file));
+      }
+
+    });
+    // style exception, too simple
 
   });
 
