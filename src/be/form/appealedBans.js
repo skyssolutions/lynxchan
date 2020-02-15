@@ -3,6 +3,7 @@
 var formOps = require('../engine/formOps');
 var url = require('url');
 var miscOps = require('../engine/miscOps');
+var settingsHandler = require('../settingsHandler');
 var dom = require('../engine/domManipulator').dynamicPages.moderationPages;
 var modOps = require('../engine/modOps').ipBan.versatile;
 
@@ -18,8 +19,16 @@ exports.getAppealedBans = function(userData, parameters, res, auth, language) {
 
       if (json) {
         formOps.outputResponse('ok', bans.map(function(ban) {
+
+          var allowed = userData.globalRole <= settingsHandler
+              .getGeneralSettings().clearIpMinRole;
+
+          if (!allowed) {
+            delete ban.ip;
+            delete ban.range;
+          }
           delete ban.bypassId;
-          delete ban.ip;
+
           return ban;
         }), res, null, auth, null, true);
       } else {

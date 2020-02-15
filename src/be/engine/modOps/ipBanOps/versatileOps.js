@@ -574,6 +574,7 @@ exports.readAppealedBans = function(parameters, callback) {
       boardUri : 1,
       ip : 1,
       bypassId : 1,
+      range : 1,
       denied : 1,
       expiration : 1,
       appliedBy : 1

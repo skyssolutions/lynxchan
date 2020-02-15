@@ -451,6 +451,7 @@ Parameters:
 Json output(Array): array with the bans. Each object contains the following values:
     _id: unique id of the ban.
     reason: reason of the ban.
+    ip(Array): banned ip.
     boardUri: board for which the ban applies. Only informed for board bans, when viewing global bans and while using global board moderation.
     expiration: when the ban expires.
     appliedBy: login of the user that applied the ban.
@@ -1506,6 +1507,8 @@ Json output(Array): array with the appealed bans data. Contains object with the 
     _id: unique id of the ban.
     reason: reason of the ban.
     expiration: when the ban expires.
+    ip(Array): ip of the ban.
+    range(Array): range of the ban.
     appliedBy: login of the user that applied the ban.
     appeal: appeal of the ban.
 

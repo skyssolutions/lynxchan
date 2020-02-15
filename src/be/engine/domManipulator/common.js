@@ -863,6 +863,22 @@ exports.setBanCellHiddenElements = function(ban, template, language) {
 
 };
 
+exports.setTargetLabel = function(ban, cell, userRole, template) {
+
+  if ((ban.ip || ban.range) && userRole <= clearIpRole) {
+
+    return cell.replace('__targetLabel_location__',
+        template.removable.targetLabel).replace('__targetLabel_inner__',
+        miscOps.formatIp(ban.ip || ban.range, ban.ipv6));
+
+  } else {
+
+    return cell.replace('__targetLabel_location__', '');
+
+  }
+
+};
+
 exports.setHistoryBanLinks = function(ban, userRole, template, cell) {
 
   if (ban.ip || ban.bypassId) {
@@ -890,7 +906,7 @@ exports.setHistoryBanLinks = function(ban, userRole, template, cell) {
 
   }
 
-  return cell;
+  return exports.setTargetLabel(ban, cell, userRole, template);
 
 };
 

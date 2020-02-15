@@ -1152,6 +1152,10 @@ banCell*: cell used to list bans.
 Root element: div
 
 Elements:
+targetLabel:
+    use: might be removed or have it's innerHTML manipulated.
+    description: label that might display the ip or range banned.
+
 reasonPanel:
     use: might be removed.
     description: panel that contains the reason.

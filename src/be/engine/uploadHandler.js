@@ -504,8 +504,6 @@ exports.processFile = function(file, callback) {
         exports.undoReference(error, identifier, callback);
       } else if (generatedThumb) {
 
-        // TODO
-        console.log('generated');
         exports.updateHasThumb(identifier, exports.updatePostingFiles(file),
             callback);
 
