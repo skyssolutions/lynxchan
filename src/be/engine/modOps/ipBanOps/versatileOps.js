@@ -252,11 +252,19 @@ exports.filterBans = function(ip, bans) {
 
 exports.getActiveBan = function(ip, asn, bypass, boardUri, callback) {
 
-  var singleBanCondition = bypass ? {
-    bypassId : bypass
-  } : {
-    ip : ip
-  };
+  var matchArray = [];
+
+  if (bypass) {
+    matchArray.push({
+      bypassId : bypass
+    });
+  }
+
+  if (ip) {
+    matchArray.push({
+      ip : ip
+    });
+  }
 
   var globalOrLocalOr = {
     $or : [ {
@@ -278,7 +286,7 @@ exports.getActiveBan = function(ip, asn, bypass, boardUri, callback) {
 
   var finalCondition = {
     $and : [ globalOrLocalOr, {
-      $or : [ singleBanCondition ]
+      $or : matchArray
     }, expirationOr ]
   };
 
@@ -335,32 +343,30 @@ exports.receivedFloodCheckResponse = function(req, ip, boardUri, socket, flood,
     callback) {
 
   if (flood && !disableFloodCheck) {
-    callback(lang(req.language).errFlood);
-  } else {
-
-    spamOps.checkDnsbl(logger.ip(req), function checked(error, spammer) {
-
-      if (error) {
-        return callback(error);
-      } else if (!spammer) {
-        return exports.getASN(req, boardUri, callback);
-      }
-
-      if (spamBypass && bypassAllowed) {
-
-        if (!req.bypassed) {
-          callback(null, null, true);
-        } else {
-          exports.getASN(req, boardUri, callback);
-        }
-
-      } else {
-        callback(lang(req.language).errSpammer);
-      }
-
-    });
-
+    return callback(lang(req.language).errFlood);
   }
+
+  spamOps.checkDnsbl(logger.ip(req), function checked(error, spammer) {
+
+    if (error) {
+      return callback(error);
+    } else if (!spammer) {
+      return exports.getASN(req, boardUri, callback);
+    }
+
+    if (spamBypass && bypassAllowed) {
+
+      if (!req.bypassed) {
+        callback(null, null, true);
+      } else {
+        exports.getASN(req, boardUri, callback);
+      }
+
+    } else {
+      callback(lang(req.language).errSpammer);
+    }
+
+  });
 
 };
 
@@ -406,23 +412,22 @@ exports.checkForBan = function(req, boardUri, thread, callback) {
       console.log(error);
     }
 
-    if (req.isTor) {
-      if ((req.bypassed && torAllowed) || torLevel > 1) {
+    if (!req.isTor) {
+      return exports.checkForFlood(req, boardUri, thread, callback);
+    }
 
-        if (req.bypassId) {
-          exports.getActiveBan(null, null, req.bypassId, boardUri, callback);
-        } else {
-          callback();
-        }
+    if ((req.bypassed && torAllowed) || torLevel > 1) {
 
+      if (req.bypassId) {
+        exports.getActiveBan(null, null, req.bypassId, boardUri, callback);
       } else {
-
-        callback(torPassAllowed ? null : lang(req.language).errBlockedTor,
-            null, torPassAllowed);
+        callback();
       }
 
     } else {
-      exports.checkForFlood(req, boardUri, thread, callback);
+
+      callback(torPassAllowed ? null : lang(req.language).errBlockedTor, null,
+          torPassAllowed);
     }
 
   });

@@ -9,9 +9,9 @@
   "version": "2.4.0",
   "dependencies": {
     "http-proxy": "1.18.x",
-    "mongodb": "3.3.x",
+    "mongodb": "3.5.x",
     "multiparty": "4.2.x",
-    "nodemailer": "6.3.x",
+    "nodemailer": "6.4.x",
     "nodemailer-direct-transport": "3.3.x",
     "parse5": "5.1.x",
     "node-addon-api": "2.0.x"
