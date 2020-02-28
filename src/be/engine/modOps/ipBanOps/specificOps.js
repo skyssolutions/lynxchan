@@ -15,6 +15,7 @@ var logger;
 var logOps;
 var miscOps;
 var minClearIps;
+var verbose;
 var captchaOps;
 var common;
 var lang;
@@ -29,6 +30,8 @@ exports.loadSettings = function() {
 
   var settings = require('../../../settingsHandler').getGeneralSettings();
   defaultBanMessage = settings.defaultBanMessage;
+
+  verbose = settings.verbose || settings.verboseMisc;
 
   minClearIps = settings.clearIpMinRole;
   redactedModNames = settings.redactModNames;
@@ -640,19 +643,17 @@ exports.finishQuery = function(matchBlock, ip, callback) {
 
   locationOps.getASN(ip, function gotASN(error, asn) {
 
-    if (error) {
-      return callback(error);
-    }
-
     var orBlock = [ {
       ip : ip
-    }, {
-      range : {
-        $in : [ miscOps.getRange(ip), miscOps.getRange(ip, true) ]
-      }
-    }, {
-      asn : asn
     } ];
+
+    if (error && verbose) {
+      console.log(error);
+    } else if (asn) {
+      orBlock.push({
+        asn : asn
+      });
+    }
 
     matchBlock.$or = orBlock;
 
@@ -666,8 +667,7 @@ exports.appealBan = function(ip, parameters, language, callback) {
   try {
     parameters.banId = new ObjectID(parameters.banId);
   } catch (error) {
-    callback(lang(language).errBanNotFound);
-    return;
+    return callback(lang(language).errBanNotFound);
   }
 
   miscOps.sanitizeStrings(parameters, exports.appealArguments);
