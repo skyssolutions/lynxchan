@@ -463,6 +463,7 @@
   {
     "template": "globalSettingsPage",
     "prebuiltFields": {
+      "fieldTrustedProxies": "value",
       "checkboxDiskMedia": "checked",
       "fieldMaxFilterLength": "value",
       "fieldLatestPostPinned": "value",
