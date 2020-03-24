@@ -634,34 +634,6 @@ exports.ban = function(userData, reportedObjects, parameters, captchaId,
 };
 // } Section 1: Ban
 
-// Section 2: Appeal {
-exports.finishQuery = function(matchBlock, ip, callback) {
-
-  if (!ip) {
-    return callback();
-  }
-
-  locationOps.getASN(ip, function gotASN(error, asn) {
-
-    var orBlock = [ {
-      ip : ip
-    } ];
-
-    if (error && verbose) {
-      console.log(error);
-    } else if (asn) {
-      orBlock.push({
-        asn : asn
-      });
-    }
-
-    matchBlock.$or = orBlock;
-
-    callback();
-  });
-
-};
-
 exports.appealBan = function(ip, parameters, language, callback) {
 
   try {
@@ -672,43 +644,30 @@ exports.appealBan = function(ip, parameters, language, callback) {
 
   miscOps.sanitizeStrings(parameters, exports.appealArguments);
 
-  var matchBlock = {
+  bans.findOneAndUpdate({
     _id : parameters.banId,
     appeal : {
       $exists : false
     }
-  };
-
-  exports.finishQuery(matchBlock, ip, function finishedQuery(error) {
+  }, {
+    $set : {
+      appeal : parameters.appeal
+    }
+  }, function gotBan(error, result) {
 
     if (error) {
-      return callback(error);
+      callback(error);
+    } else if (!result.value) {
+      callback(lang(language).errBanNotFound);
+    } else {
+      callback();
     }
-
-    // style exception, too simple
-    bans.findOneAndUpdate(matchBlock, {
-      $set : {
-        appeal : parameters.appeal
-      }
-    }, function gotBan(error, result) {
-
-      if (error) {
-        callback(error);
-      } else if (!result.value) {
-        callback(lang(language).errBanNotFound);
-      } else {
-        callback();
-      }
-
-    });
-    // style exception, too simple
 
   });
 
 };
-// } Section 2: Appeal
 
-// Section 3: Deny appeal {
+// Section 2: Deny appeal {
 exports.writeDeniedAppeal = function(userData, ban, callback) {
 
   bans.updateOne({
@@ -797,9 +756,9 @@ exports.denyAppeal = function(userData, banId, language, callback) {
       });
 
 };
-// } Section 3: Deny appeal
+// } Section 2: Deny appeal
 
-// Section 4: Mass ban {
+// Section 3: Mass ban {
 exports.getMassBans = function(parameters, userLogin) {
 
   var toRet = [];
@@ -846,4 +805,4 @@ exports.massBan = function(userData, parameters, language, callback) {
   bans.insertMany(banList, callback);
 
 };
-// } Section 4: Mass ban
+// } Section 3: Mass ban

@@ -369,6 +369,6 @@ exports.setAllSharedPostingElements = function(postingCell, posting, removable,
       posting.files.length > 1 ? ' multipleUploads' : '');
 
   return postingCell.replace('__panelUploads_children__', common.setUploadCell(
-      posting, modding, language));
+      posting, modding || preview, language));
 
 };
