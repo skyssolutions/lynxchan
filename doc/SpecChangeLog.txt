@@ -1,3 +1,334 @@
+2.4.0:
+
+**Form.txt**
+
+New json dynamic response status: hashBan.
+
+When posting files by reference or individually spoiling them, fileMd5 was changed to fileSha256.
+
+---------------------------------------
+
+account:
+
+New valid values on settings on the json version:
+noBoardReports
+reportNotify
+
+---------------------------------------
+
+globalManagement:
+
+appealedBans changed from an array to a number.
+
+Added openReports on the json response.
+
+---------------------------------------
+
+boardManagement:
+
+appealedBans and openReports changed from an array to a number.
+
+---------------------------------------
+
+contentActions:
+
+New parameters:
+nonBypassable
+reasonBan
+globalReport
+globalBan
+reasonReport
+
+Removed parameters:
+reason
+global
+
+---------------------------------------
+
+closeReports:
+
+banReporter changed to banTarget.
+
+New parameter: closeAllFromReporter
+
+---------------------------------------
+
+mod:
+
+New parameter: page
+
+New output json value: bypassId.
+md5 changed to sha256.
+
+---------------------------------------
+
+bans:
+
+New json output field: ip.
+
+---------------------------------------
+
+changeAccountSettings:
+
+New parameter: noBoardReports
+
+---------------------------------------
+
+setBoardSettings:
+
+New parameter: autoFullCaptchaLimit
+
+---------------------------------------
+
+boards:
+
+New parameter: unindexed
+
+---------------------------------------
+
+placeRangeBan:
+
+New parameter: nonBypassable
+reason changed to reasonBan
+
+---------------------------------------
+
+hashBans:
+
+Json output field change from md5 to sha256
+
+---------------------------------------
+
+checkFileIdentifier:
+
+Changed format of the identifier.
+
+---------------------------------------
+
+mediaManagement:
+
+New parameter: banId
+
+---------------------------------------
+
+deleteMedia
+
+Added parameters: 
+ban
+reason
+text
+
+---------------------------------------
+
+latestPostings:
+
+New parameter: banId
+
+New json output fields:
+bypassId
+boardUri
+postId
+
+Changed files.md5 to files.sha256
+
+---------------------------------------
+
+placeAsnBan
+
+New parameter: nonBypassable
+
+Changed reason to reasonBan
+
+---------------------------------------
+
+New pages:
+storeFile
+removeFiles
+offenseRecord
+unlinkSingle
+appealedBans
+mergeThread
+
+---------------------------------------
+
+**Language.txt**
+
+New entries:
+errDeniedSingleDeletion
+errDeniedOffenseHistory
+errSourceThreadNotFound
+errDestinationThreadNotFound
+errHourlyLimit
+guiCaptchaSecurity
+msgThreadMerged
+msgFileUnlinked
+titOffenseRecord
+titOpenReports
+titAppealedBansManagement
+
+Removed entries:
+errExpiredCaptcha
+errWrongCaptcha
+
+---------------------------------------
+
+New specification document: Native.txt
+
+---------------------------------------
+
+**Templates.txt**
+
+threadPage:
+
+New elements:
+divMerge
+mergeThreadIdentifier
+mergeBoardIdentifier
+
+---------------------------------------
+
+opCell:
+
+New elements:
+linkOffenseRecord
+panelBypassId
+labelBypassId
+
+---------------------------------------
+
+postCell:
+
+New elements:
+linkOffenseRecord
+panelBypassId
+labelBypassId
+
+---------------------------------------
+
+accountPage:
+
+New elements:
+checkboxNoBoardReports
+
+---------------------------------------
+
+gManagement:
+
+New elements:
+appealedBansLabel
+openReportsLabel
+
+Removed element:
+reportDiv
+
+---------------------------------------
+
+bManagement:
+
+New elements:
+appealedBansLink
+appealedBansLabel
+openReportsLabel
+autoFullCaptchaThresholdField
+openReportsLink
+
+Removed element:
+reportDiv
+
+---------------------------------------
+
+reportCell:
+
+Removed element:
+boardPanel
+
+---------------------------------------
+
+banCell:
+
+New elements:
+targetLabel
+offenseRecordLink
+fileHistoryLink
+postHistoryLink
+
+---------------------------------------
+
+uploadCell:
+
+New elements:
+unlinkLink
+unlinkAndDeleteLink
+
+---------------------------------------
+
+catalogPage:
+
+New elements:
+divName
+
+---------------------------------------
+
+filterManagement:
+
+New elements:
+maxLengthLabel
+
+---------------------------------------
+
+rangeBanCell:
+
+New elements:
+bypassableLabel
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+comboCaptchaMode
+fieldMaxFilterLength
+fieldLatestPostPinned
+checkboxDiskMedia
+
+---------------------------------------
+
+hashBanCellDisplay:
+
+New elements:
+labelReason
+
+---------------------------------------
+
+mediaManagementPage:
+
+New elements:
+banPanel
+banIdentifier
+
+---------------------------------------
+
+latestPostingsPage:
+
+New elements:
+inputBanId
+
+---------------------------------------
+
+asnBanCell:
+
+New elements:
+bypassableLabel
+
+---------------------------------------
+
+New pages:
+offenseRecordPage
+offenseCell
+openReportsPage
+
+---------------------------------------
+
 2.3.0:
 
 **Form.txt**

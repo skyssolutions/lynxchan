@@ -1233,7 +1233,7 @@ unlinkLink:
     use: have it's href manipulated and might be removed.
     description: link to unlink only the individual file.
 
-unlinkAndDeletekLink:
+unlinkAndDeleteLink:
     use: have it's href manipulated and might be removed.
     description: link to unlink and then delete only the individual file.
 
