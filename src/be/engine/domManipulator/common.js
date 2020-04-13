@@ -754,7 +754,7 @@ exports.setUploadLinks = function(cell, file) {
 
   cell = cell.replace('__nameLink_href__', file.path);
 
-  var img = '<img src="' + file.thumb + '">';
+  var img = '<img loading="lazy" src="' + file.thumb + '">';
 
   cell = cell.replace('__imgLink_children__', img);
 

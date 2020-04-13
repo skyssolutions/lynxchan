@@ -489,7 +489,8 @@ exports.setCatalogCellThumb = function(thread, language) {
       '__linkThumb_href__', href);
 
   if (thread.files && thread.files.length) {
-    var img = '<img src="' + common.clean(thread.files[0].thumb) + '">';
+    var img = '<img  loading="lazy" src="';
+    img += common.clean(thread.files[0].thumb) + '">';
     cell = cell.replace('__linkThumb_inner__', img);
   } else {
     cell = cell.replace('__linkThumb_inner__', lang(language).guiOpen);
@@ -633,9 +634,9 @@ exports.getLatestImages = function(latestImages, language) {
     var postLink = '/' + boardUri + '/res/' + image.threadId + '.html';
     postLink += '#' + (image.postId || image.threadId);
 
-    var cell = '<a href="' + postLink + '"><img src="' + image.thumb + '">';
+    var cell = '<a href="' + postLink + '"><img loading="lazy" src="';
 
-    children += cell + '</a>';
+    children += cell + image.thumb + '"></a>';
 
   }
 
