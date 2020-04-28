@@ -30,7 +30,7 @@
   "torSource": "https://check.torproject.org/exit-addresses",
   "maxBoardRules": 20,
   "thumbSize": 128,
-  "imageFont": "DejaVu-Sans-Book",
+  "imageFont": "DejaVu-Sans",
   "maxFilters": 20,
   "maxBoardVolunteers": 20,
   "maxBannerSizeKB": 200,
