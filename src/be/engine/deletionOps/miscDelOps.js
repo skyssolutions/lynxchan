@@ -459,7 +459,9 @@ exports.removeFile = function(userData, parameters, language, posting, cb) {
       board : posting.boardUri
     });
 
-    if (!deleteMedia) {
+    var global = userData.globalRole <= miscOps.getMaxStaffRole();
+
+    if (!deleteMedia || !global) {
       return cb();
     }
 
