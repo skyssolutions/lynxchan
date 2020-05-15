@@ -361,7 +361,7 @@ exports.getSetBlock = function(thread, post) {
 
 exports.youngEnoughToBump = function(boardData, thread) {
 
-  if (!boardData.maxBumpAgeDays) {
+  if (!boardData.maxBumpAgeDays || thread.cyclic) {
     return true;
   }
 
