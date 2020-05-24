@@ -75,34 +75,32 @@ exports.mergeFoundPostings = function(foundPostings, checkPostings, callback) {
 
 };
 
-exports.getUpperLimit = function(foundPostings, callback) {
+exports.getUpperLimit = function(matchBlock, foundPostings, callback) {
 
   if (!foundPostings.length) {
     return callback(null, foundPostings);
   }
 
-  var match = {
-    creation : {
-      $lt : foundPostings[foundPostings.length - 1].creation
-    }
+  matchBlock.creation = {
+    $lt : foundPostings[foundPostings.length - 1].creation
   };
 
-  posts.find(match, {
+  posts.find(matchBlock, {
     projection : generator.postProjection
   }).sort({
     creation : -1
-  }).limit(latestLimit).toArray(
+  }).limit(latestLimit + 1).toArray(
       function gotPosts(error, foundPosts) {
 
         if (error) {
           return callback(error);
         }
 
-        threads.find(match, {
+        threads.find(matchBlock, {
           projection : generator.postProjection
         }).sort({
           creation : -1
-        }).limit(latestLimit).toArray(
+        }).limit(latestLimit + 1).toArray(
             function gotThreads(error, foundThreads) {
 
               if (error) {
@@ -159,7 +157,7 @@ exports.getPosts = function(hasDate, matchBlock, callback) {
         foundPostings = foundPostings.splice(0, latestLimit);
       }
 
-      exports.getUpperLimit(foundPostings, callback);
+      exports.getUpperLimit(matchBlock, foundPostings, callback);
 
     });
     // style exception, too simple
