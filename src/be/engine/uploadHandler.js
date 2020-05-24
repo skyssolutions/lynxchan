@@ -320,22 +320,24 @@ exports.generateImageThumb = function(identifier, file, callback) {
 
   var thumbCb = function(error) {
     if (error) {
-      callback(error);
-    } else {
-
-      file.thumbOnDisk = thumbDestination;
-      file.thumbMime = thumbExtension ? logger.getMime(thumbDestination)
-          : file.mime;
-      file.thumbPath = '/.media/t_' + identifier;
-
-      exports.transferThumbToGfs(identifier, file, callback);
+      return callback(error);
     }
+
+    file.thumbOnDisk = thumbDestination;
+    file.thumbMime = thumbExtension ? logger.getMime(thumbDestination)
+        : file.mime;
+    file.thumbPath = '/.media/t_' + identifier;
+
+    exports.transferThumbToGfs(identifier, file, callback);
+
   };
 
   if (file.mime !== 'image/gif' || !ffmpegGif) {
 
     if (thumbExtension) {
       thumbDestination += '.' + thumbExtension;
+    } else if (logger.reverseMimes[file.mime]) {
+      thumbDestination += '.' + logger.reverseMimes[file.mime];
     }
 
     if (native) {
