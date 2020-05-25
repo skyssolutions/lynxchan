@@ -1,6 +1,6 @@
 'use strict';
 
-var dbVersion = 14;
+var dbVersion = 15;
 
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
@@ -141,6 +141,10 @@ function upgrade(version, callback) {
 
   case 13:
     newerMigrations.applySha256(callback);
+    break;
+
+  case 14:
+    newerMigrations.fixMissingSha256(callback);
     break;
 
   default:

@@ -3,6 +3,7 @@
 // The dbMigrations.s couldn't be any larger, this is where any migration from
 // 1.6 onward will be
 
+var exec = require('child_process').exec;
 var crypto = require('crypto');
 var fs = require('fs');
 var settings = require('./settingsHandler').getGeneralSettings();
@@ -10,6 +11,9 @@ var db = require('./db');
 var bucket = new (require('mongodb')).GridFSBucket(db.conn());
 var aggregatedLogs = db.aggregatedLogs();
 var logs = db.logs();
+var port = settings.port;
+var chunks = db.chunks();
+var masterNode = settings.master;
 var files = db.files();
 var references = db.uploadReferences();
 var reports = db.reports();
@@ -549,6 +553,285 @@ exports.applySha256 = function(callback, lastId) {
 
       });
       // style exception, too simple
+
+    });
+
+  });
+
+};
+
+// Added both on 2.5 and retroactively on 2.4
+exports.removeGridFsFiles = function(onDb, callback) {
+
+  if (!onDb || !onDb.ids.length) {
+    return callback();
+  }
+
+  chunks.removeMany({
+    'files_id' : {
+      $in : onDb.ids
+    }
+  }, function removedChunks(error) {
+
+    if (error) {
+      callback();
+    } else {
+
+      // style exception, too simple
+      files.removeMany({
+        _id : {
+          $in : onDb.ids
+        }
+      }, function() {
+        callback();
+      });
+      // style exception, too simple
+
+    }
+
+  });
+
+};
+
+exports.removeFilesFromMaster = function(toRemove, callback, attempts, error) {
+
+  attempts = attempts || 0;
+
+  if (attempts >= 10) {
+    return callback(error);
+  }
+
+  var cmd = 'curl http://';
+  cmd += masterNode + ':' + port + '/removeFiles.js?ids=' + toRemove.join(',');
+
+  exec(cmd, function(error, data) {
+
+    if (error) {
+      return exports.sendFileToMaster(toRemove, callback, ++attempts, error);
+    } else {
+      callback();
+    }
+
+  });
+
+};
+
+exports.removeFilesFromDisk = function(toRemove, callback, index) {
+
+  index = index || 0;
+
+  if (index >= toRemove.length) {
+    return callback();
+  }
+
+  var idString = toRemove[index].toString();
+
+  var path = __dirname + '/../media/' + idString.substring(idString.length - 3);
+  path += '/' + idString;
+
+  fs.unlink(path, function(error) {
+
+    if (error && error.code !== 'ENOENT') {
+      callback(error);
+    } else {
+      exports.removeFilesFromDisk(toRemove, callback, ++index);
+    }
+
+  });
+
+};
+
+exports.removeDiskFiles = function(onDisk, onDb, callback) {
+
+  if (!onDisk || !onDisk.ids.length) {
+    return exports.removeGridFsFiles(onDb, callback);
+  }
+
+  var toRemove = onDisk.ids.splice(0, 10);
+
+  var removalCallback = function(error) {
+
+    if (error) {
+      return exports.removeGridFsFiles(onDb, callback);
+    }
+
+    files.removeMany({
+      _id : {
+        $in : toRemove
+      }
+    }, function(error) {
+
+      if (error) {
+        exports.removeGridFsFiles(onDb, callback);
+      } else {
+        exports.removeDiskFiles(onDisk, onDb, callback);
+      }
+
+    });
+
+  };
+
+  if (masterNode) {
+    exports.removeFilesFromMaster(toRemove, removalCallback);
+  } else {
+    exports.removeFilesFromDisk(toRemove, removalCallback);
+  }
+
+};
+
+exports.separateToBeRemoved = function(results, callback) {
+
+  var onDisk;
+  var onDb;
+
+  for (var i = 0; i < results.length; i++) {
+
+    var result = results[i];
+
+    if (result._id) {
+
+      if (!onDisk) {
+        onDisk = result;
+      } else {
+        onDisk.ids = onDisk.ids.concat(result.ids);
+      }
+
+    } else {
+
+      if (!onDb) {
+        onDb = result;
+      } else {
+        onDb.ids = onDb.ids.concat(result.ids);
+      }
+
+    }
+
+  }
+
+  exports.removeDiskFiles(onDisk, onDb, callback);
+
+};
+
+exports.removeDuplicates = function(file, callback) {
+
+  files.aggregate([ {
+    $match : {
+      _id : {
+        $ne : file._id
+      },
+      filename : file.filename
+    }
+  }, {
+    $group : {
+      _id : '$onDisk',
+      ids : {
+        $push : '$_id'
+      }
+    }
+  } ]).toArray(function gotArray(error, results) {
+
+    if (error || !results.length) {
+      callback(error);
+    } else {
+      exports.separateToBeRemoved(results, callback);
+    }
+  });
+
+};
+
+exports.cleanDuplicates = function(callback, lastId) {
+
+  files.find({
+    _id : lastId ? {
+      $gt : lastId
+    } : {
+      $exists : true
+    }
+  }).toArray(function(error, foundFiles) {
+
+    if (error || !foundFiles.length) {
+      return callback(error);
+    }
+
+    exports.removeDuplicates(foundFiles[0], function(error) {
+
+      if (error) {
+        callback(error);
+      } else {
+        exports.cleanDuplicates(callback, foundFiles[0]._id);
+      }
+
+    });
+
+  });
+
+};
+
+exports.handleMissingSha256 = function(reference, callback) {
+
+  var path = '/.media/' + reference.sha256;
+
+  if (reference.extension) {
+    path += '.' + reference.extension;
+  }
+
+  files.bulkWrite([ {
+    updateOne : {
+      filter : {
+        filename : '/.media/t_' + reference.sha256
+      },
+      update : {
+        $set : {
+          'metadata.sha256' : reference.sha256
+        },
+        $unset : {
+          'metadata.identifier' : true
+        }
+      }
+    }
+  }, {
+    updateOne : {
+      filter : {
+        filename : path
+      },
+      update : {
+        $set : {
+          'metadata.sha256' : reference.sha256
+        },
+        $unset : {
+          'metadata.identifier' : true
+        }
+      }
+    }
+  } ], callback);
+
+};
+
+exports.fixMissingSha256 = function(callback, lastId) {
+
+  references.find({
+    _id : lastId ? {
+      $gt : lastId
+    } : {
+      $exists : true
+    }
+  }).sort({
+    _id : 1
+  }).limit(1).toArray(function(error, foundReferences) {
+
+    if (error) {
+      return callback(error);
+    } else if (!foundReferences.length) {
+      return exports.cleanDuplicates(callback);
+    }
+
+    exports.handleMissingSha256(foundReferences[0], function(error) {
+
+      if (error) {
+        callback(error);
+      } else {
+        exports.fixMissingSha256(callback, foundReferences[0]._id);
+      }
 
     });
 
