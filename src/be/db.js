@@ -144,7 +144,7 @@ function upgrade(version, callback) {
     break;
 
   case 14:
-    newerMigrations.fixMissingSha256(callback);
+    newerMigrations.runMissingSha256(callback);
     break;
 
   default:
@@ -755,6 +755,14 @@ function initFiles(callback) {
     key : {
       'metadata.type' : 1
     }
+  }, {
+    key : {
+      'metadata.sha256' : 1
+    }
+  }, {
+    key : {
+      'filename' : 1
+    }
   } ], function setIndex(error, index) {
     if (error) {
       if (loading) {
@@ -784,6 +792,10 @@ exports.filters = function() {
 
 exports.chunks = function() {
   return cachedChunks;
+};
+
+exports.versions = function() {
+  return cachedVersions;
 };
 
 exports.client = function() {

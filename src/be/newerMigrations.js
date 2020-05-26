@@ -15,6 +15,7 @@ var port = settings.port;
 var chunks = db.chunks();
 var masterNode = settings.master;
 var files = db.files();
+var versions = db.versions();
 var references = db.uploadReferences();
 var reports = db.reports();
 var threads = db.threads();
@@ -834,6 +835,22 @@ exports.fixMissingSha256 = function(callback, lastId) {
       }
 
     });
+
+  });
+
+};
+
+exports.runMissingSha256 = function(callback) {
+
+  versions.findOne({
+    version : 13
+  }, function(error, document) {
+
+    if (error || !document) {
+      callback(error);
+    } else {
+      exports.fixMissingSha256(callback);
+    }
 
   });
 
