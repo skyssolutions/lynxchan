@@ -185,7 +185,8 @@ exports.fetchPostInfo = function(matchBlock, clearIps, parameters, callback) {
   collectionToUse.findOne(query, {
     projection : {
       ip : 1,
-      bypassId : 1
+      bypassId : 1,
+      boardUri : 1
     }
   }, function gotPosting(error, posting) {
 
