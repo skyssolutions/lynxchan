@@ -4,7 +4,7 @@
 
 var fs = require('fs');
 var url = require('url');
-var multiParty = require('multiparty');
+var formidable = require('formidable');
 var logger = require('../logger');
 var db = require('../db');
 var exifCommand = 'exiftool -all= -tagsfromfile @ -Orientation -ColorSpaceTags';
@@ -129,7 +129,7 @@ exports.getFileData = function(file, fields, mime, callback) {
   var toPush = {
     size : file.size,
     sha256 : file.sha256,
-    title : file.originalFilename,
+    title : file.name,
     pathInDisk : file.path,
     mime : mime
   };
@@ -212,11 +212,11 @@ exports.transferFileInformation = function(files, fields, cb) {
 
   var file = files.shift();
 
-  if (!file.realMime && !file.headers['content-type']) {
+  if (!file.realMime && !file.type) {
     return exports.transferFileInformation(files, fields, cb);
   }
 
-  var mime = file.realMime || file.headers['content-type'].toLowerCase().trim();
+  var mime = file.realMime || file.type.toLowerCase().trim();
 
   if (file.size) {
 
@@ -324,7 +324,7 @@ exports.getRealMimeRelation = function(files) {
   for (var i = 0; files.files && i < files.files.length; i++) {
     var file = files.files[i];
 
-    if (!file.realMime || file.headers['content-type'] === file.realMime) {
+    if (!file.realMime || file.type === file.realMime) {
       continue;
     }
 
@@ -407,7 +407,7 @@ exports.getCheckSums = function(fields, files, callback, index) {
 
 };
 
-exports.getMetaData = function(fields, files) {
+exports.getMetaData = function(fields) {
 
   var fileMetaData = [];
 
@@ -441,13 +441,15 @@ exports.getMetaData = function(fields, files) {
 
 exports.getPostData = function(req, res, callback) {
 
-  var parser = new multiParty.Form({
+  var parser = formidable({
     uploadDir : uploadDir,
-    autoFiles : true,
-    maxFilesSize : maxRequestSize
+    multiples : true,
+    maxFileSize : maxRequestSize
   });
 
   var filesToDelete = [];
+  var files = {};
+  var fields = {};
 
   var endingCb = function() {
 
@@ -469,15 +471,25 @@ exports.getPostData = function(req, res, callback) {
         500, res, req.language, json);
   });
 
-  parser.on('file', function(name, file) {
-    filesToDelete.push(file.path);
+  parser.on('field', function(name, value) {
+
+    var array = fields[name] || [];
+    fields[name] = array;
+    array.push(value);
+
   });
 
-  parser.parse(req, function parsed(error, fields, files) {
+  parser.on('file', function(name, file) {
 
-    if (error) {
-      return exports.outputError(error, 500, res, req.language, json);
-    }
+    filesToDelete.push(file.path);
+
+    var array = files[name] || [];
+    files[name] = array;
+    array.push(file);
+
+  });
+
+  parser.on('end', function() {
 
     files.files = files.files || [];
 
@@ -485,7 +497,7 @@ exports.getPostData = function(req, res, callback) {
       files.files.splice(fileProcessingLimit - files.files.length);
     }
 
-    var fileMetaData = exports.getMetaData(fields, files);
+    var fileMetaData = exports.getMetaData(fields);
 
     delete fields.fileSpoiler;
     delete fields.fileMime;
@@ -516,6 +528,8 @@ exports.getPostData = function(req, res, callback) {
     // style exception, too simple
 
   });
+
+  parser.parse(req);
 
 };
 

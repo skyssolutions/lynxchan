@@ -1,12 +1,12 @@
 # Dependencies
 Required modules:
-* mongodb: database driver.
-* jsdom: used for handling DOM to create HTML from the templates.
-* multiparty: used when parsing requests to the form api.
-* nodemailer: used to send e-mails for people resetting account passwords.
-* jsbn: used on ipv6 conversion.
 * http-proxy: used on sharding so the master server can act as a reverse-proxy and pass the request to slaves.
+* mongodb: database driver.
+* formidable: used when parsing requests to the form api.
+* nodemailer: used to send e-mails for people resetting account passwords.
 * nodemailer-direct-transport: used by nodemailer to send e-mails directly from the engine.
+* parse5: used for handling DOM to create HTML from the templates.
+* node-addon-api: used as a framework for the native functions.
 
 The version of each one is specified on the package.json file.
 

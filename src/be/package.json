@@ -10,7 +10,7 @@
   "dependencies": {
     "http-proxy": "1.18.x",
     "mongodb": "3.5.x",
-    "multiparty": "4.2.x",
+    "formidable": "1.2.x",
     "nodemailer": "6.4.x",
     "nodemailer-direct-transport": "3.3.x",
     "parse5": "5.1.x",

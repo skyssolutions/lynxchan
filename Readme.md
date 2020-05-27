@@ -9,7 +9,7 @@
 See other branches named like `1.1.x` for stable versions. They will receive only critical bug fixes and will be maintained for at least one year after release. Remember to use a compatible version of your front-end with these stable versions. Newer versions might not have required elements on the templates for these versions.
 
 # Required dependencies
-* [Node.js](http://nodejs.org) 12.x, I suggest installing from source code. DO NOT build the master's HEAD.
+* [Node.js](http://nodejs.org) 14.x, I suggest installing from source code. DO NOT build the master's HEAD.
 * [MongoDB](https://www.mongodb.org/) 4.2.x.
 * [UnZip](http://www.info-zip.org) 6.00, this is probably already included in your distro, though.
 * [cUrl](http://curl.haxx.se) 7.29.0, this is usually included too.
