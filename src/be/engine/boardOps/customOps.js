@@ -2,7 +2,11 @@
 
 // handles board customization operations
 
+var spoilerPath = require('../../kernel').spoilerImage();
 var db = require('../../db');
+var threads = db.threads();
+var posts = db.posts();
+var miscOps;
 var boards = db.boards();
 var lang;
 var gridFsHandler;
@@ -20,6 +24,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  miscOps = require('../miscOps');
   gridFsHandler = require('../gridFsHandler');
   lang = require('../langOps').languagePack;
 
@@ -198,6 +203,77 @@ exports.setCustomSpoiler = function(userData, boardUri, file, language,
   });
 };
 
+// Section 3: spoiler deletion {
+exports.removeUsedSpoilers = function(boardUri, callback) {
+
+  var filter = {
+    boardUri : boardUri,
+    'files.thumb' : '/' + boardUri + '/custom.spoiler'
+  };
+
+  var update = {
+    $set : {
+      'files.$[file].thumb' : spoilerPath
+    },
+    $unset : miscOps.individualCaches
+  };
+
+  var options = {
+    arrayFilters : [ {
+      'file.thumb' : '/' + boardUri + '/custom.spoiler'
+    } ]
+  };
+
+  posts.updateMany(filter, update, options, function(error) {
+
+    // style exception, too simple
+    threads.updateMany(filter, update, options, function(error) {
+
+      process.send({
+        board : boardUri,
+        buildAll : true
+      });
+
+      callback();
+
+    });
+    // style exception, too simple
+
+  });
+
+};
+
+exports.eraseSpoilerFile = function(boardUri, callback) {
+
+  gridFsHandler.removeFiles('/' + boardUri + '/custom.spoiler',
+      function removedFile(error) {
+
+        if (error) {
+          return callback(error);
+        }
+
+        // style exception, too simple
+        boards.updateOne({
+          boardUri : boardUri
+        }, {
+          $set : {
+            usesCustomSpoiler : false
+          }
+        }, function(error) {
+
+          if (error) {
+            return callback(error);
+          }
+
+          exports.removeUsedSpoilers(boardUri, callback);
+
+        });
+        // style exception, too simple
+
+      });
+
+};
+
 exports.deleteCustomSpoiler = function(userData, boardUri, language, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
@@ -213,29 +289,16 @@ exports.deleteCustomSpoiler = function(userData, boardUri, language, callback) {
       callback(lang(language).errDeniedSpoilerManagement);
     } else {
 
-      // style exception, too simple
-      gridFsHandler.removeFiles('/' + boardUri + '/custom.spoiler',
-          function removedFile(error) {
-            if (error) {
-              callback(error);
-            } else {
-              boards.updateOne({
-                boardUri : board.boardUri
-              }, {
-                $set : {
-                  usesCustomSpoiler : false
-                }
-              }, callback);
-            }
-          });
-      // style exception, too simple
+      exports.eraseSpoilerFile(boardUri, callback);
 
     }
   });
 
 };
 
-// Section 3: Custom javascript upload {
+// } Section 3: spoiler deletion
+
+// Section 4: Custom javascript upload {
 exports.updateBoardAfterNewJs = function(board, callback) {
 
   if (!board.usesCustomJs) {
@@ -310,9 +373,9 @@ exports.setCustomJs = function(userData, boardUri, file, language, callback) {
   });
 
 };
-// } Section 3: Custom javascript upload
+// } Section 4: Custom javascript upload
 
-// Section 4: Custom javascript deletion {
+// Section 5: Custom javascript deletion {
 exports.updateBoardAfterDeleteJs = function(board, callback) {
 
   if (board.usesCustomJs) {
@@ -371,9 +434,9 @@ exports.deleteCustomJs = function(userData, boardUri, language, callback) {
   });
 
 };
-// } Section 4: Custom javascript deletion
+// } Section 5: Custom javascript deletion
 
-// Section 5: Clearing custom javascript
+// Section 6: Clearing custom javascript
 exports.removeAllCustomJs = function(urisToClean) {
 
   var filesToDelete = [];
@@ -446,4 +509,4 @@ exports.clearCustomJs = function() {
   });
 
 };
-// Section 5: Clearing custom javascript
+// Section 6: Clearing custom javascript

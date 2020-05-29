@@ -310,17 +310,33 @@ exports.masterCreateSession = function(task, socket) {
     }
 
     // style exception, too simple
-    users.updateOne({
-      login : task.login
-    }, {
-      $set : {
-        oldHash : task.usedHash,
-        hash : hash,
-        renewExpiration : renewAt,
-        logoutExpiration : logoutAt,
-        remember : task.remember
+    users.bulkWrite([ {
+      updateOne : {
+        filter : {
+          hash : task.usedHash,
+          login : task.login
+        },
+        update : {
+          $set : {
+            oldHash : task.usedHash
+          }
+        }
       }
-    }, function updatedUser(error) {
+    }, {
+      updateOne : {
+        filter : {
+          login : task.login
+        },
+        update : {
+          $set : {
+            hash : hash,
+            renewExpiration : renewAt,
+            logoutExpiration : logoutAt,
+            remember : task.remember
+          }
+        }
+      }
+    } ], function updatedUser(error) {
 
       delete createSessionLocks[task.login];
 
