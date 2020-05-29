@@ -38,6 +38,6 @@ exports.process = function(req, res) {
 
         exports.getAsnBans(userData, parameters, res, auth, req.language);
 
-      }, false, false, true);
+      }, false, true);
 
 };
