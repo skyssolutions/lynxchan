@@ -1,0 +1,29 @@
+Sharding is the capability of the engine to run as a distributed system, with a single master and several slaves.
+
+WORKFLOW
+The master has two roles:
+
+1: to act as a load balancer, passing requests to the slaves.
+2: to distribute the centralized queue for generating pages.
+
+The first item is fairly simple, the master just acts as a reverse-proxy. The master will use plain http to forward plain http requests and https to forward https requests.
+
+The requests will be passed using the port the master is listening to when using http and 443 when using https. 
+So if your master listens on port 8080, it will try to pass the request to slaves on port 8080.
+
+The second item works as follows:
+Worker process on a slave triggers a page regeneration and send it to master process.
+Master process sends regeneration message to master node using http.
+Master process on master node queues the message or discards it.
+Master process sends the regeneration message to a slave node.
+Slave node receives the message on a worker process and generates the page.
+
+This way, the I/O is kept as efficient as possible, because there will be still a single queue, instead of each server having its own queue an possibily building the same pages at the same time.
+
+SETTING UP
+
+First, deploy all the servers you want to have running. Slaves will rebuild pages, so having them with a good CPU is desirable.
+
+Then on the slaves, log as a root user and on the global settings, input the ip of the master server on the correct field. If the slave is not running under a webserver, your next request won't be served, because slaves only serve requests to localhost and their master. So if you are running a slave under a webserver, you should restrict requests from any server but the master on it.
+
+Now on the master, input the ips of the slaves on the correct field using the screen for global settings. The master will update the settings of any slave that you set.

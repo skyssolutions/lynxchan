@@ -1,0 +1,23 @@
+Upgrading a server is not hard, but there might be a couple of gotchas. What I am going to write here is for how to upgrade a major version of LynxChan on a small server.
+
+Note: when upgrading to node 8 from 6 and to node 10 from 8, you have to manually delete your previous npm install before installing the new version, otherwise you will get an error about internal/fs. 
+Tested with node 8.4.0, build from source. 
+Npm location was /usr/local/lib/node_modules
+
+1: put your server on maintenance mode. You don't want the engine actually working while doing this.
+
+2: pull the version you wish to deploy. In case anything goes wrong there won't be any major issues if the code in place is the one you wish to run.
+
+3: update your main dependencies, like node, you want to have your native libraries to be compiled with the version you will run.
+
+4: go to src/be and either run 'npm update' or delete the node_modules directory and run npm install. Is not uncommon for libraries to change or even be added between versions and I had issues with updates with npm myself, so just re-installing everything is the easiest way to update sometimes, while npm is the fastest, just prone to failures.
+
+5: update your front-end, be by pulling the latest version of the placeholder front-end or deploying your front-end on the version that is compatible with the engine version you are going to use.
+
+6: restart the engine.
+
+7: take the server out of maintenance mode.
+
+8: run lynxchan -r -cc -nd so pages cached on mongo rebuilt and individual caches discarded.
+
+Done. New version without having the server offline for the process. 

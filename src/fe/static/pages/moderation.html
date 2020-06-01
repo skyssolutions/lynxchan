@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+<title>Moderation</title>
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+    <fieldset id="settingsFieldset">
+      <legend>Usage</legend>
+
+      <h1>Global moderation</h1>
+      Any account have a numeric global role assigned to it. If this role is
+      lesser than 4, it means the user is in the global staff.
+      <br>
+      Root: 0
+      <br>
+      Admin: 1
+      <br>
+      Volunteer: 2
+      <br>
+      Janitor: 3
+      <br>
+      Anything above 3 or undefined is considered a regular user. Janitors are
+      able to delete any post or thread on the site and to close global reports.
+      <br>
+      Volunteers are able able to lift and issue any kind of global ban.
+      <br>
+      Admins are able to add or remove volunteers and janitors, to delete and
+      transfer boards. They are also able to create boards when board creation
+      is disabled.
+      <br>
+      Roots are able to assign admins.
+      <br>
+      The first admin or root will have to have it's role set using the terminal
+      arguments. Consult the readme.md on src/be for instructions on that. Any
+      role have all the powers of the less <span title="[TRIGGER WARNING] :^)">privileged</span>
+      roles. When your account has access to the global staff tools, a link on
+      your account page will be displayed.
+
+      <h1>Board moderation</h1>
+      A board have it's board owner and board volunteers. Board volunteers are
+      added by the board owner and are able to delete content on the board,
+      lock, pin, make threads cyclic, close board reports, change board
+      settings, and apply bans for the board.
+      <br>
+      Board owners are able to do that, plus they are able to transfer or delete
+      their own boards, add board banners, filters, custom css and rules.
+
+      <h1>Custom CSS</h1>
+      Board owners can add a css file to their boards, just using the upload
+      form on the board management page. To delete the custom css file, click
+      the upload button without entering any files.
+
+      <h1>Reports</h1>
+      Any non-banned user is able to report content, as long as said content
+      haven't been reported yet.
+      <br>
+      Open reports will be displayed on the main moderation page with a link to
+      the reported content and a button to close the report.
+      <br>
+      Closed reports are not deleted until the content they relate to is
+      deleted. It is also possible to ask for the engine to delete the reported
+      content when closing the reports.
+
+      <h1>Deleting content</h1>
+      As long as you are logged in, your global role and board role will be
+      verified when you try to delete content AS LONG AS YOU DON'T INPUT A
+      PASSWORD.
+      <br>
+      If you input a password, your account will not be validated and the system
+      will try to use the deletion password you provided.
+      <br>
+      Not only its possible to delete content, but also to only delete the files
+      posted on the content.
+      <br>
+      Regular file deletion will just remove the reference to the file, while
+      media deletion will actually wipe the file from the site. Media deletion
+      is only usable by global staff.
+      <br>
+      Global staff is also allowed to use a clear IP to delete content from this
+      IP across the whole site. Board staff can use IP deletion, but it will be
+      restricted to the board of the first selected post to be deleted by IP
+      deletion.
+
+      <h1>Acessing moderation tools</h1>
+      When you open a thread, there will be a link that will lead you to the
+      moderation page for that board and thread, with all the moderation tools
+      for that thread.
+
+      <h1>Thread settings</h1>
+      Threads have 3 settings: pin, lock and cyclic.
+      <br>
+      Pin will make a thread be listed above all others, no matter how long it
+      was it's last bump.
+      <br>
+      Lock will prevent anyone from posting on a thread.
+      <br>
+      Cyclic will make the thread never get into auto-sage. Instead it will
+      delete old posts when it hits the post limit that would trigger auto-sage.
+
+      <h1 id="banSection">Bans</h1>
+      To apply bans, select the checkboxes on the left top corner of postings
+      and write a duration for the ban. The format used is the following:
+      <br>
+      <b>y</b>: amount of years.
+      <br>
+      <b>M</b>: amount of months.
+      <br>
+      <b>d</b>: amount of days.
+      <br>
+      <b>h</b>: amount of hours.
+      <br>
+      <b>m</b>: amount of minutes.
+      <br>
+      So if you write "2d 1h" it will create a 49 hour ban. The order of amounts
+      and spacing doesn`t matter. The same could be "1h 2d".
+      <br>
+      Board staff is also required to fill the captcha.
+      <br>
+      Bans can be lifted from the bans page that can be accessed from the
+      moderation pages.
+      <br>
+      Optionally, you can enter the ban reason and message. The ban message will
+      be displayed on the post itself instead of the default ban message set in
+      the site configurations. Global staff with the power to apply bans can
+      select the checkbox to apply a global ban.
+      <br>
+      The ban reason will appear for both the user and on the bans list.
+
+      <h1>Range bans</h1>
+      It is also possible to ban entire ranges of ips. When banning an user,
+      select the ban mode. Range bans can use either the first half or the first
+      three quarters of the user ip. Alternatively, it is possible to manually
+      ban a known IP on the range bans page.
+
+      <h1>Hash bans</h1>
+      Files can also be banned, keeping anyone from posting them. Copy the sha256
+      of the file shown in the thread moderation page and input it on the hash
+      bans page.
+
+      <h1>Board settings</h1>
+      There are many ways to customize how a board works in general.
+      <br>
+      The [code] tag allows for posts to transform text in this tag into a
+      non-formated text that is best used to display code.
+      <br>
+      The name used for anonymous posters, board name and description can also
+      be changed.
+      <br>
+      Board message will be displayed above the posting form and accepts any
+      most of posting markdown plus custom links using [displayed
+      text](address).
+      <br>
+      Adding a custom CSS will cause this file to be used after all other CSS
+      files on board, thread and catalog of the board.
+      <br>
+      A custom JS can only be added if allowed by the global setings.
+      <br>
+      A custom spoiler will replace any spoiled files on the board.
+      <br>
+      Location flags can be toggled. They won't work if the site doesn't have
+      the location data installed.
+      <br>
+      Custom flags can be selected by users when they post, being shown in place
+      of a flag representing their location.
+      <br>
+      Tags will be shown on the board listing and can be used to search for
+      boards.
+      <br>
+      Captcha mode allows for greater control on when an user has to use a
+      captcha to post. Not only is possible to set for captchas to be required
+      always or never, but it's also possible to set it to be used only when
+      creating threads.
+      <br>
+      Textboard mode will disable the uploading of files entirely. It is also
+      possible for users be required to always upload at least one file when
+      creating a new thread.
+      <br>
+      Unique files and posts will require that users do not upload files that
+      are already present on the board or that post similar posts.
+      <br>
+      By default users have an id unique to them inside threads, this feature
+      can be disabled for greater anonymity.
+      <br>
+      If you set users to not be allowed to delete their own posts, only staff
+      members will be allowed to delete them.
+      <br>
+      If forced anonymity is toggled, then users won't be able to use a name
+      when posting. They will still be allowed to use role signatures, however.
+      <br>
+      Early 404 will cause threads that have less than 5 replies to be deleted
+      when they leave the top third threads.
+      <br>
+      It is possible to make some posting more strict than the global values:
+      <br>
+      Amount of files
+      <br>
+      Maximum size for files
+      <br>
+      Maximum amount of threads on the board
+      <br>
+      Maximum amount of replies on threads
+      <br>
+      Valid file formats that can be uploaded to the board.
+      <br>
+      Any value greater or not included on the global values will be ignored.
+
+      <h1>Filters</h1>
+      Filters change a term for another term.
+
+      <h1>Banners</h1>
+      One can add customized banners for a board, they will be displayed
+      randomly for users.
+
+      <h1>Rules</h1>
+      Rules can be written and will be made visible on the rules.html page of
+      the board.
+
+      <h1>Board message markdown</h1>
+      It is similar to standard posting markdown with some differences:
+      <br>
+      It won't handle quotes.
+      <br>
+      Links won't be handled the same way, you have to use standard markdown for
+      them.
+      <br>
+      For example: [A link](http://hurr.durr) becomes
+      <a href="http://hurr.durr">A link</a>
+      <br>
+      [code] tag won't be applied.
+
+    </fieldset>
+
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

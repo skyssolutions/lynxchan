@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="/.static/css/global.css">
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+
+    <fieldset id="settingsFieldset">
+
+      <legend>Languages</legend>
+      <h3>New language</h3>
+      <form
+        action="/addLanguage.js"
+        method="post"
+        enctype="multipart/form-data">
+
+        <label>
+          <input
+            type="text"
+            name="headerValues"
+            class="newLanguageField"
+            id="fieldHeaderValues"
+            placeholder="header values*">
+        </label>
+
+        <label>
+          <input
+            type="text"
+            name="frontEnd"
+            class="newLanguageField"
+            id="fieldFrontEnd"
+            placeholder="front-end">
+        </label>
+
+        <label>
+          <input
+            type="text"
+            class="newLanguageField"
+            name="languagePack"
+            id="fieldLanguagePack"
+            placeholder="language pack">
+        </label>
+
+        <button
+          type="submit"
+          id="addFormButton">Add language</button>
+        <br>
+
+      </form>
+      <hr>
+      <h3>Existing languages</h3>
+      <div id="languagesDiv"></div>
+      <br>
+      *: separate values by commas, spaces will be ignored (a, b,c)
+    </fieldset>
+
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/languages.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

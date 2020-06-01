@@ -1,0 +1,49 @@
+<hr />
+<p>
+  ID: <span class="idLabel"></span>
+</p>
+<p class="targetLabel"></p>
+<a class="postHistoryLink">[Post history]</a>
+<a class="offenseRecordLink">[Offense record]</a>
+<a class="fileHistoryLink">[File history]</a>
+<p id="reasonPanel">
+  Reason: <span class="reasonLabel"></span>
+</p>
+<p class="boardPanel">
+  Board: <span class="boardLabel"></span>
+</p>
+<p id="expirationPanel">
+  Expiration: <span class="expirationLabel"></span>
+</p>
+<p>
+  Applied By: <span class="appliedByLabel"></span>
+</p>
+<p>
+  <span class="appealPanel"> Appeal: <span class="appealLabel"></span></span>
+</p>
+<form
+  class="denyForm"
+  action="/denyAppeal.js"
+  method="post"
+  enctype="multipart/form-data">
+  <input
+    type="hidden"
+    name="banId"
+    class="denyIdentifier">
+  <button
+    type="submit"
+    class="denyFormButton">Deny appeal</button>
+</form>
+
+<form
+  action="/liftBan.js"
+  method="post"
+  enctype="multipart/form-data">
+  <button
+    type="submit"
+    class="liftFormButton">Lift</button>
+  <input
+    type="hidden"
+    class="liftIdentifier"
+    name="banId">
+</form>

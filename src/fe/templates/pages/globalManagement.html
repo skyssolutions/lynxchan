@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+
+    <fieldset id="settingsFieldset">
+
+      <legend>Global Management</legend>
+
+      <form
+        id="addStaffForm"
+        method="post"
+        enctype="multipart/form-data"
+        action="/setGlobalRole.js">
+        <hr />
+        <h3>Add user to global staff</h3>
+
+        <label>
+          Username:
+          <input
+            type="text"
+            name="login"
+            class="addUserField"
+            id="fieldLogin">
+        </label>
+        <label>
+          Role:
+          <select
+            name="role"
+            id="newStaffCombo"></select>
+        </label>
+
+        <button
+          type="submit"
+          id="addFormButton">Add user</button>
+
+      </form>
+
+      <div id="divStaff">
+        <hr />
+        <h3>Global staff</h3>
+      </div>
+      <hr>
+
+      <a
+        id="globalSettingsLink"
+        href="/globalSettings.js">
+        Global settings
+        <br>
+      </a>
+      <a
+        id="globalFiltersLink"
+        href="/filterManagement.js">
+        Global filters
+        <br>
+      </a>
+      <a
+        id="socketLink"
+        href="/socketControl.js">
+        Unix socket
+        <br>
+      </a>
+      <a
+        id="languagesLink"
+        href="/languages.js">
+        Alternative languages
+        <br>
+      </a>
+      <a
+        id="accountsLink"
+        href="/accounts.js">
+        Manage user accounts
+        <br>
+      </a>
+      <a
+        id="globalBannersLink"
+        href="/bannerManagement.js">
+        Global banners
+        <br>
+      </a>
+      <a
+        id="bansLink"
+        href="/bans.js">
+        Bans
+        <br>
+      </a>
+      <a
+        id="rangeBansLink"
+        href="/rangeBans.js">
+        Range bans
+        <br>
+      </a>
+      <a
+        id="asnBansLink"
+        href="/asnBans.js">
+        ASN bans
+        <br>
+      </a>
+      <a
+        id="hashBansLink"
+        href="/hashBans.js">
+        Hash bans
+        <br>
+      </a>
+      <a href="/mediaManagement.js">Media management</a>
+      <br>
+      <a href="/closedReports.js">Closed Reports</a>
+      <br>
+      <a href="/openReports.js">
+        Open reports(<span id="openReportsLabel"></span>)
+      </a>
+      <a href="/appealedBans.js">
+        <br>
+        Appealed bans(<span id="appealedBansLabel"></span>)
+      </a>
+
+      <hr />
+
+      <div id="massBanPanel">
+        <form
+          method="post"
+          action="/massBan.js"
+          enctype="multipart/form-data">
+          <h3>Mass bans</h3>
+
+          <label>
+            Clear text IPs, separated by commas:
+            <input
+              type="text"
+              name="ips"
+              class="massBanField"
+              id="fieldIps">
+          </label>
+
+          <label>
+            Ban duration:
+            <input
+              type="text"
+              name="duration"
+              class="massBanField"
+              id="fieldDuration">
+          </label>
+
+          <label>
+            Ban reason:
+            <input
+              type="text"
+              class="massBanField"
+              name="reason"
+              id="fieldReason">
+          </label>
+
+          <label>
+            <button
+              type="submit"
+              id="massBanFormButton">Ban</button>
+          </label>
+        </form>
+      </div>
+
+    </fieldset>
+
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/globalManagement.js"></script>
+<script src="/.static/js/bans.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

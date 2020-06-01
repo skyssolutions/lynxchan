@@ -1,0 +1,16 @@
+{
+  // Tell Passenger that this is a Node.js app.
+  // Replace "app.js" with your app's entry point file.
+  "app_type": "node",
+  "startup_file": "be/boot.js",
+  // Run the app in a production environment. The default value is "development".
+  "environment": "production",
+  // Run Passenger on the given port. In this example, we use port 80,
+  // the standard HTTP port.
+  "port": 80,
+  // Tell Passenger to daemonize into the background.
+  "daemonize": true,
+  // Tell Passenger to run the app as the given user. Only has effect
+  // if Passenger was started with root privileges.
+  "user": "app"
+}

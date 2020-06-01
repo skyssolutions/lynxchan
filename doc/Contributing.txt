@@ -1,0 +1,19 @@
+Here the guidelines for contributions will be laid out:
+
+1: The code must adhere to the [Felix's Node style guide](https://github.com/felixge/node-style-guide). One exception is allowed: to nest ONE callback. When done so, the nested function that uses a callback must be surrounded by comments so its clear where it lives and dies.
+
+2: The code must be formatted using the eclipse formatting configured in the projet.
+
+3: The code cannot display any warning according to the lint configured in the project.
+
+4: Multiple functions that are part of an operation must be grouped into a section using comments if the module contains more than just this operation.
+
+5: Functions cannot be called before they are declared.
+
+6: No prototyping.
+
+7: Every function on the engine modules must be on exports so addons can overwrite them.
+
+8: No single file can contain more than 1k LOC.
+
+9: Every single template, language, form api and database spec must be documented on its respective document.

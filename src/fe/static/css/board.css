@@ -1,0 +1,24 @@
+/*Elements used exclusively on board pages*/
+#linkPrevious:before {
+  font-family: Icons;
+  content: "\e035";
+  margin: 0 0.25em;
+}
+
+#linkLogs:before {
+  content: "\e069"
+}
+
+#linkPrevious, #linkNext {
+  vertical-align: middle;
+}
+
+#linkNext:after {
+  font-family: Icons;
+  content: "\e036";
+  margin: 0 0.25em;
+}
+
+.threadPages a {
+  text-decoration: none
+}

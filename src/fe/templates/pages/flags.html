@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+<link
+  href="/.static/css/flags.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+
+    <fieldset id="settingsFieldset">
+
+      <legend>Flags</legend>
+
+      <form
+        action="/createFlag.js"
+        method="post"
+        enctype="multipart/form-data">
+        <input
+          type="hidden"
+          name="boardUri"
+          id="boardIdentifier">
+
+        <div
+          class="hidden"
+          id="dragAndDropDiv">
+          <div
+            class="dropzone"
+            id="dropzone">
+            Drag flags to upload or
+            <br>
+            click here to select them
+          </div>
+          <div id="selectedDiv"></div>
+        </div>
+
+        <label id="nameLabel">
+          Flag Name:
+          <input
+            name="flagName"
+            id="fieldFlagName"
+            type="text">
+        </label>
+        <input
+          type="file"
+          id="files"
+          name="files">
+        <button
+          type="submit"
+          id="addFormButton">Add Flag</button>
+        <p class="small">
+          Maximum size allowed: <span id="maxSizeLabel"></span>
+          <br>
+          Maximum name length allowed: <span id="maxNameLengthLabel"></span>
+        </p>
+      </form>
+      <hr />
+      <div id="flagsDiv"></div>
+    </fieldset>
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/flags.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

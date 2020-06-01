@@ -1,0 +1,12 @@
+[Unit]
+Description=LynxChan
+After=mongod.service
+
+[Service]
+ExecStart=/usr/bin/lynxchan
+User=node
+StandardOutput=syslog
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

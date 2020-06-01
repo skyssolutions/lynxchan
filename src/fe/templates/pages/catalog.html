@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+<link
+  href="/.static/css/posting.css"
+  type="text/css"
+  rel="stylesheet" />
+<link
+  href="/.static/css/catalog.css"
+  type="text/css"
+  rel="stylesheet" />
+<link
+  href="/.static/css/thread.css"
+  type="text/css"
+  rel="stylesheet" />
+<link
+  href="/.static/css/boardContent.css"
+  type="text/css"
+  rel="stylesheet" />
+<link
+  href="/.static/css/watcher.css"
+  type="text/css"
+  rel="stylesheet" />
+<link
+  href="/.static/css/settingsMenu.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <p id="catalogId">
+    <span class="title">Catalog of </span>
+    <a
+      href="."
+      id="labelBoard"></a>
+  </p>
+
+
+  <div id="postingForm">
+    <button
+      id="togglePosting"
+      class="hidden">Post thread</button>
+    <fieldset id="newPostFieldset">
+      <legend>Mode: Thread</legend>
+
+      <form
+        action="/newThread.js"
+        enctype="multipart/form-data"
+        method="post">
+
+        <table id="postingTable">
+        </table>
+
+        <p class="small">
+          Remember to follow the
+          <a
+            href="rules.html"
+            class="rules">rules</a>
+        </p>
+
+        <button
+          type="submit"
+          id="formButton">Post</button>
+
+      </form>
+
+    </fieldset>
+
+  </div>
+
+  <div
+    id="divTools"
+    class="hidden">
+
+    <span class="catalogLabel">Search :</span>
+    <input
+      type="text"
+      id="catalogSearchField">
+
+
+    (
+    <button
+      id="catalogRefreshButton"
+      class="catalogLabel"
+      onclick="catalog.refreshCatalog(true)">Refresh</button>
+    <input
+      type="checkbox"
+      id="autoCatalogRefreshCheckBox"
+      onchange="catalog.changeCatalogRefresh()">
+    <span
+      class="catalogLabel"
+      id="catalogRefreshLabel">Auto</span>)
+
+  </div>
+
+  <div
+    id="divThreads"
+    class="catalogDiv"></div>
+
+</body>
+
+<script src="/.static/js/crypto.js"></script>
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/board.js"></script>
+<script src="/.static/js/postCommon.js"></script>
+<script src="/.static/js/captchaModal.js"></script>
+<script src="/.static/js/captchaUtils.js"></script>
+<script src="/.static/js/catalog.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/draggable.js"></script>
+<script src="/.static/js/watcher.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

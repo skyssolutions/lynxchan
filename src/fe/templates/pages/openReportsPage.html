@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+<link
+  href="/.static/css/posting.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+
+    <fieldset id="settingsFieldset">
+
+      <legend>Open Reports</legend>
+
+      <form
+        method="post"
+        action="/closeReports.js"
+        enctype="multipart/form-data">
+
+        <label>
+          <input
+            type="checkbox"
+            class="closeReportsField"
+            name="closeAllFromReporter"
+            id="closeAllFromReporterCheckbox">
+          Close all reports from these reporters
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            class="closeReportsField"
+            name="deleteContent"
+            id="deleteContentCheckbox">
+          Delete reported content after closing the reports
+        </label>
+
+        <label>Ban options</label>
+
+        <label>
+          Ban target:
+          <select
+            name="banTarget"
+            id="banTargetCombo">
+            <option value="0">None</option>
+            <option value="1">Post</option>
+            <option value="2">Reporter</option>
+          </select>
+        </label>
+
+        <label>
+          Ban duration:
+          <input
+            type="text"
+            class="closeReportsField"
+            id="fieldBanDuration"
+            name="duration">
+        </label>
+
+        <label>
+          Ban reason:
+          <input
+            type="text"
+            class="closeReportsField"
+            id="fieldBanReason"
+            name="banReason">
+        </label>
+
+        <button
+          type="submit"
+          id="closeReportsFormButton">Close selected reports</button>
+
+        <div id="reportDiv"></div>
+
+      </form>
+
+    </fieldset>
+
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+<script src="/.static/js/captchaUtils.js"></script>
+<script src="/.static/js/captchaModal.js"></script>
+<script src="/.static/js/postingMenu.js"></script>
+<script src="/.static/js/thumbs.js"></script>
+<script src="/.static/js/embed.js"></script>
+<script src="/.static/js/reports.js"></script>
+
+</html>

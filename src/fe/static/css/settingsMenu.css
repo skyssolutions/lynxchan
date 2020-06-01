@@ -1,0 +1,59 @@
+#settingsMenu {
+  position: fixed;
+  left: 100px;
+  top: 25px;
+  z-index: 100;
+}
+
+#closeSettingsMenuButton {
+  float: right;
+}
+
+#cssInput, #jsInput {
+  width: 24em;
+  height: 12em;
+}
+
+#closeSettingsMenuButton::before, .filterDeleteButton::before,
+  #closeSideCatalogButton::before {
+  content: '\e0db';
+}
+
+.settingsTab {
+  font-size: 80%;
+  cursor: pointer;
+  margin: 0.5em;
+}
+
+#selectedTab {
+  text-shadow: 0px 0px 5px #117743;
+}
+
+#settingsMenuContent {
+  padding: 0.25em
+}
+
+#newFilterPanel * {
+  margin: 0.5em
+}
+
+.settingsLabel, #labelExistingFilfterType, #labelExistingFilfterContent,
+  .existingFilterTypeLabel, .existingFilterContentLabel {
+  font-size: 80%;
+}
+
+#labelExistingFilfterType, .existingFilterTypeLabel {
+  display: inline-block;
+  width: 20%;
+}
+
+#labelExistingFilfterContent, .existingFilterContentLabel {
+  width: 75%;
+  display: inline-block;
+}
+
+#existingFiltersPanel {
+  overflow: hidden;
+  overflow-y: auto;
+  height: 20em;
+}

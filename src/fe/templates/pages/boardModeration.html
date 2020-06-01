@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+
+    <fieldset id="settingsFieldset">
+
+      <legend id="labelTitle"></legend>
+
+      <p>
+        Owner:
+        <a id="linkOwner"></a>
+      </p>
+
+      <p>
+        Last seen: <span id="labelLastSeen"></span>
+      </p>
+
+      <div
+        id="divVolunteers"
+        class="linkList">
+        <hr>
+        <h3>Volunteers:</h3>
+      </div>
+
+      <hr>
+      <div>
+        <p class="title">Ownership Transfer</p>
+        <form
+          method="post"
+          action="/transferBoardOwnership.js"
+          enctype="multipart/form-data">
+          <label>
+            User login:
+            <input
+              type="text"
+              name="login"
+              class="transferField"
+              id="fieldTransferLogin"
+              name="userLogin">
+          </label>
+          <input
+            type="hidden"
+            name="boardUri"
+            id="boardTransferIdentifier">
+          <button
+            type="submit"
+            id="transferFormButton">Transfer board</button>
+
+        </form>
+      </div>
+      <hr>
+      <div>
+        <p class="title">Board Deletion</p>
+        <form
+          method="post"
+          action="/deleteBoard.js"
+          enctype="multipart/form-data">
+          <label>
+            <input
+              type="checkbox"
+              class="deleteBoardField"
+              name="confirmDeletion"
+              id="confirmDelCheckbox">
+            Yes, I wish to delete this board
+          </label>
+          <input
+            type="hidden"
+            name="boardUri"
+            id="boardDeletionIdentifier">
+          <button
+            type="submit"
+            id="deleteFormButton">Delete board</button>
+
+        </form>
+      </div>
+      <hr>
+      <div>
+        <p class="title">Special Settings</p>
+        <form
+          method="post"
+          enctype="multipart/form-data"
+          action="/setSpecialBoardSettings.js">
+          <label>
+            <input
+              type="checkbox"
+              class="specialSettingsField"
+              name="sfw"
+              id="checkboxSfw">
+            Safe for work board
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              class="specialSettingsField"
+              name="locked"
+              id="checkboxLocked">
+            Locked
+          </label>
+          <input
+            type="hidden"
+            name="boardUri"
+            id="specialSettingsIdentifier">
+          <button
+            type="submit"
+            id="saveSpecialFormButton">Save special settings</button>
+
+        </form>
+      </div>
+
+    </fieldset>
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/reports.js"></script>
+<script src="/.static/js/boardModeration.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

@@ -1,0 +1,51 @@
+This document specifies the signature of the functions of the native module.
+
+----------------------------------------------------------------------------------------
+
+FUNC::01
+
+Name: buildCaptcha
+Description: builds an image to be used for captchas.
+
+Parameters:
+    text: the text to the written in the image.
+    font: the font to be used on the text.
+    level(Number): the security level of the captcha.
+    callback(Buffer): the binary data of the resulting image.
+
+----------------------------------------------------------------------------------------
+
+FUNC::02
+
+Name: getImageBounds
+Description: returns the dimensions of an image.
+
+Parameters:
+    path: path to an image.
+    callback(String, Number, Number): error if any, width and height of the image, specifically.
+
+----------------------------------------------------------------------------------------
+
+FUNC::03
+
+Name: getVideoBounds
+Description: returns the dimensions of a video.
+
+Parameters:
+    path: path to a video.
+    callback(String, Number, Number): error if any, width and height of the video, specifically.
+
+----------------------------------------------------------------------------------------
+
+FUNC::04
+
+Name: imageThumb
+Description: creates a thumbnail of a given image.
+
+Parameters:
+    path: path to an image.
+    destination: where the thumbnail should be saved at.
+    size(Number): the desired size of the image.
+    callback(String): error if any.
+
+----------------------------------------------------------------------------------------

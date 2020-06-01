@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+
+    <fieldset id="settingsFieldset">
+
+      <legend>Bypass</legend>
+
+      <h3>Warning: Block bypasses require cookies to work</h3>
+      <p>
+        <span id="indicatorValidBypass">You have a valid block bypass.</span>
+      </p>
+      <form
+        id="renewForm"
+        action="/renewBypass.js"
+        enctype="multipart/form-data"
+        method="post">
+        <hr />
+        <h3>Renew bypass</h3>
+
+        <div class="captchaDiv">
+
+          <img
+            class="captchaImage"
+            id="captchaImage"
+            src="/captcha.js">
+          <br>
+          <input
+            type="button"
+            class="hidden reloadCaptchaButton"
+            onclick="captchaUtils.reloadCaptcha()"
+            value="Reload">
+          <span class="captchaTimer"></span>
+          <br>
+          <input
+            name="captcha"
+            type="text"
+            class="bypassField"
+            id="fieldCaptcha"
+            placeholder="Answer">
+          <a
+            href="/noCookieCaptcha.js"
+            class="small">no cookies?</a>
+          <br>
+          <button
+            type="submit"
+            id="bypassFormButton">Renew block bypass</button>
+        </div>
+      </form>
+    </fieldset>
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/bypass.js"></script>
+<script src="/.static/js/captchaUtils.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

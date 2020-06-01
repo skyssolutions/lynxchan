@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="/.static/css/global.css">
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="/.static/css/posting.css">
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="/.static/css/markdown.css">
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="/.static/css/settingsMenu.css">
+<link
+  href="/.static/css/boardContent.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+    <fieldset id="settingsFieldset">
+
+      <legend>Search</legend>
+      <a id="linkPrevious">Previous page</a>
+      <a id="linkNext">Next page</a>
+
+      <form
+        action="/latestPostings.js"
+        method="get">
+        Date:
+        <input
+          type="text"
+          name="date"
+          id="fieldDate">
+        <br>
+        <span id="panelIp"> IP: <input
+            type="text"
+            name="ip"
+            id="fieldIp"> <br></span> Boards (separate with comma, if
+        empty, all boards will be checked):
+        <input
+          id="fieldBoards"
+          type="text"
+          name="boards">
+        <br>
+        <input
+          type="hidden"
+          name="banId"
+          id="inputBanId">
+        <input
+          type="hidden"
+          name="boardUri"
+          id="inputBoardUri">
+        <input
+          type="hidden"
+          name="threadId"
+          id="inputThreadId">
+        <input
+          type="hidden"
+          name="postId"
+          id="inputPostId">
+        <button type="submit">Search</button>
+      </form>
+
+      <hr>
+      <h3>Postings</h3>
+
+      <form
+        action="/contentActions.js"
+        method="post"
+        enctype="multipart/form-data">
+
+        <div id="actionsForm"></div>
+
+        <button
+          id="buttonLoadMore"
+          class="hidden">Load more</button>
+        <div id="divPostings"></div>
+
+      </form>
+
+    </fieldset>
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/captchaModal.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+<script src="/.static/js/posting.js"></script>
+<script src="/.static/js/mediaHiding.js"></script>
+<script src="/.static/js/latestPostings.js"></script>
+<script src="/.static/js/embed.js"></script>
+<script src="/.static/js/draggable.js"></script>
+<script src="/.static/js/settingsMenu.js"></script>
+<script src="/.static/js/tooltips.js"></script>
+<script src="/.static/js/hiding.js"></script>
+<script src="/.static/js/thumbs.js"></script>
+<script src="/.static/js/postingMenu.js"></script>
+<script src="/.static/js/captchaUtils.js"></script>
+<script src="/.static/js/bottomForms.js"></script>
+
+</html>

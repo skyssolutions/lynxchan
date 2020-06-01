@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="/.static/css/global.css">
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+
+    <fieldset id="settingsFieldset">
+
+      <legend>Media Management</legend>
+
+      <form
+        action="/mediaManagement.js"
+        method="GET">
+        Search:
+        <input
+          name="filter"
+          type="text">
+
+        <label>
+          <input
+            type="checkbox"
+            id="orphanedCheckbox"
+            name="orphaned">
+          Show only orphaned files
+        </label>
+
+        <input
+          type="hidden"
+          name="boardUri"
+          id="boardUriIdentifier">
+        <input
+          type="hidden"
+          name="threadId"
+          id="threadIdIdentifier">
+        <input
+          type="hidden"
+          name="postId"
+          id="postIdIdentifier">
+        <input
+          type="hidden"
+          name="banId"
+          id="banIdentifier">
+
+        <button type="submit">Filter</button>
+      </form>
+
+      <hr>
+
+      <button
+        class="hidden"
+        id="selectAllButton"
+        onclick="mediaManagement.selectAll()">Select all</button>
+
+      <form
+        action="/deleteMedia.js"
+        method="POST"
+        enctype="multipart/form-data">
+
+        <label>
+          <span>Mass deletion:</span>
+          <textarea
+            name="text"
+            id="massTextField"></textarea>
+        </label>
+
+        <div id="banPanel">
+          <label>
+            <span>Ban reason:</span>
+            <input
+              type="text"
+              name="reason"
+              id="reasonField">
+          </label>
+          <label>
+            <input
+              name="ban"
+              id="banCheckbox"
+              type="checkbox">
+            <span>Ban deleted files</span>
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          id="deleteFormButton">Delete selected media</button>
+
+        <div id="filesDiv"></div>
+      </form>
+      <hr>
+      <div id="pagesDiv"></div>
+
+    </fieldset>
+
+  </div>
+
+</body>
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/mediaManagement.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

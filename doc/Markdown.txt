@@ -1,0 +1,57 @@
+/^>[^\&\s].+/g: green text
+Observation: it will be run against individual lines of the message, not against the whole message at once.
+Class: greenText
+Example: 
+>text
+
+/\[spoiler\].+\[\/spoiler\]/g or /\*\*.+?\*\*/g: spoiler
+Observation: it will be run against individual lines of the message, not against the whole message at once.
+Class: spoiler
+Example:
+[spoiler]text[/spoiler] or **text**
+
+/>>>\/\w+\/\d+/g: cross-quote
+Class: quoteLink
+Example:
+>>>/board/1
+
+/>>>\/\w+\//g: board link
+Example:
+>>>/board/
+
+/>>\d+/g: quote
+Class: quoteLink
+Example:
+>>1
+
+/(http|https)\:\/\/\S+/g: links
+Example:
+http://url.com
+
+/\=\=.+?\=\=/g: red text
+Observation: it will be run against individual lines of the message, not against the whole message at once.
+Class: redText
+Example:
+==text==
+
+/\'\'\'.+?\'\'\'/: bold
+Observation: it will be run against individual lines of the message, not against the whole message at once.
+Example:
+'''text'''
+
+/\'\'.+?\'\'/g: italic
+Observation: it will be run against individual lines of the message, not against the whole message at once.
+Example:
+''text''
+
+/\_\_.+?\_\_/g: underline
+Observation: it will be run against individual lines of the message, not against the whole message at once.
+Example:
+__text__
+
+/\~\~.+?\~\~/g: strike
+Observation: it will be run against individual lines of the message, not against the whole message at once.
+Example:
+~~text~~
+
+There is also [aa]text[/aa] and [code]text[/code] that just replace each part individually instead of running a regex that searches for a certain pattern.

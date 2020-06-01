@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <fieldset id="settingsFieldset">
+    <legend>No Cookies?</legend>
+    <div id="divSolvedCaptcha">
+      <h3>
+        Captcha solved. Input this ID as the answer to the captcha when posting:
+        <span id="labelCaptchaId"></span>
+      </h3>
+      <hr />
+    </div>
+    <div>
+      <p>No problem! Solve this captcha here instead.</p>
+      <img id="imageCaptcha">
+      <form
+        method="post"
+        action="/solveCaptcha.js"
+        enctype="multipart/form-data">
+
+        <input
+          type="hidden"
+          name="captchaId"
+          id="inputCaptchaId">
+
+        <label>
+          <input
+            type="text"
+            name="answer"
+            placeholder="answer">
+        </label>
+
+        <input
+          type="submit"
+          value="Solve">
+
+      </form>
+    </div>
+  </fieldset>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

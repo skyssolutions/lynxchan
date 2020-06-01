@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+<link
+  href="/.static/css/boards.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav>
+    <span id="navLinkSpan"> <span>[</span> <a
+        href="/"
+        class="coloredIcon"
+        id="navLinkHome"></a> <span>/</span> <a
+        href="/boards.js"
+        class="coloredIcon"
+        id="navBoardList"></a> <span>/</span> <a
+        class="coloredIcon"
+        id="linkOverboard"></a> <span>/</span> <a id="linkSfwOver"></a> <span>/</span>
+      <a
+        href="/.static/pages/posting.html"
+        class="coloredIcon"
+        id="navPosting"></a> <span>]</span>
+    </span> <span id="navBoardsSpan"> </span> <span id="navOptionsSpan"> </span>
+  </nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="boardsWrapper">
+
+    <div
+      id="divBoards"
+      class="wide">
+      <span id="divBoardsLegend"> <span id="legend"><span
+          id="labelPPH"
+          class="cellComponent">PPH</span><span
+          id="labelPosts"
+          class="cellComponent">Posts</span><span
+          id="labelUsers"
+          class="cellComponent">Users</span></span></span>
+    </div>
+
+    <fieldset id="settingsFieldset">
+      <legend>Search</legend>
+      <form
+        action="/boards.js"
+        method="get">
+
+        <label>
+          <input
+            type="text"
+            name="boardUri"
+            placeholder="board">
+        </label>
+
+        <label>
+          <input
+            type="text"
+            name="tags"
+            placeholder="tags">
+        </label>
+
+        <label>
+          <select name="sorting">
+            <option value=''>Most popular</option>
+            <option value='1'>Least popular</option>
+            <option value='2'>Most posts first</option>
+            <option value='3'>Least posts first</option>
+            <option value='4'>Highest PPH first</option>
+            <option value='5'>Lowest PPH first</option>
+            <option value='6'>Alphabetic order</option>
+            <option value='7'>Reverse alphabetic order</option>
+          </select>
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            name="sfw">
+          SFW boards only
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            name="unindexed">
+          Unindexed boards only
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            name="inactive">
+          Abandoned boards only
+        </label>
+
+        <input
+          type="submit"
+          value="Search">
+
+      </form>
+    </fieldset>
+
+
+    <div class="boardPages">
+      [
+      <div id="divPages"></div>
+      ]
+    </div>
+
+
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+<link
+  href="/.static/css/posting.css"
+  type="text/css"
+  rel="stylesheet" />
+<link
+  href="/.static/css/thread.css"
+  type="text/css"
+  rel="stylesheet" />
+<link
+  href="/.static/css/boardContent.css"
+  type="text/css"
+  rel="stylesheet" />
+<link
+  href="/.static/css/watcher.css"
+  type="text/css"
+  rel="stylesheet" />
+<link
+  href="/.static/css/settingsMenu.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header class="boardHeader">
+    <img
+      id="bannerImage"
+      src="/randomBanner.js" />
+  </header>
+
+  <div id="threadList">
+
+    <form
+      action="/contentActions.js"
+      method="post"
+      enctype="multipart/form-data">
+
+      <div id="divThreads"></div>
+
+    </form>
+
+    <hr class="clearer">
+
+    <div id="bottomForms">
+
+      <fieldset class="reportFieldset">
+        <legend>Delete</legend>
+
+        <div class="contentAction">
+          <label>
+            Password
+            <input
+              type="text"
+              class="deletionField"
+              id="deletionFieldPassword"
+              name="password">
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              class="deletionField"
+              id="checkboxOnlyFiles"
+              name="deleteUploads">
+            Delete only files (Removes the file reference to the posts)
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              class="deletionField"
+              id="checkboxMediaDeletion"
+              name="deleteMedia">
+            Delete media (Removes the saved files from the server)
+          </label>
+          <button
+            type="submit"
+            id="deleteFormButton"
+            value="delete"
+            name="action">Delete</button>
+
+        </div>
+      </fieldset>
+
+      <fieldset class="reportFieldset">
+        <legend>Report</legend>
+
+        <div class="contentAction">
+
+          <label>
+            Reason
+            <input
+              type="text"
+              class="reportField"
+              id="reportFieldReason"
+              name="reason">
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              class="reportField"
+              id="checkboxGlobal"
+              name="global">
+            Global
+          </label>
+          <img
+            class="captchaImage"
+            id="captchaImageReport"
+            src="/captcha.js">
+
+          <input
+            type="button"
+            class="hidden reloadCaptchaButton"
+            onclick="captchaUtils.reloadCaptcha()"
+            value="Reload">
+          <span class="captchaTimer"></span>
+          <br>
+
+          <input
+            name="captcha"
+            type="text"
+            class="captchaField reportField"
+            id="fieldCaptchaReport"
+            placeholder="answer">
+
+          <a
+            href="/noCookieCaptcha.js"
+            class="small">no cookies?</a>
+          <br>
+
+          <button
+            type="submit"
+            id="reportFormButton"
+            value="report"
+            name="action">Report</button>
+
+        </div>
+
+      </fieldset>
+    </div>
+
+  </div>
+
+  <footer id="footer"></footer>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/overboard.js"></script>
+<script src="/.static/js/thumbs.js"></script>
+<script src="/.static/js/tooltips.js"></script>
+<script src="/.static/js/posting.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/draggable.js"></script>
+<script src="/.static/js/settingsMenu.js"></script>
+<script src="/.static/js/hiding.js"></script>
+<script src="/.static/js/mediaHiding.js"></script>
+<script src="/.static/js/embed.js"></script>
+<script src="/.static/js/board.js"></script>
+<script src="/.static/js/captchaUtils.js"></script>
+<script src="/.static/js/postingMenu.js"></script>
+<script src="/.static/js/watcher.js"></script>
+<script src="/.static/js/captchaModal.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+<script src="/.static/js/bottomForms.js"></script>
+
+</html>

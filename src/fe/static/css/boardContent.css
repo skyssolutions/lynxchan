@@ -1,0 +1,145 @@
+/*Elements shown on board and thread pages*/
+.selectedCell, .dropzone {
+  top: 5px;
+  text-align: center;
+  margin-bottom: 5px;
+  padding: 5px 0px;
+}
+
+.selectedCell {
+  margin-top: 10px;
+  cursor: default;
+}
+
+#bannerImage {
+  max-width: 100%;
+}
+
+.dropzone {
+  cursor: pointer;
+  transition: all 0.2s ease 0s;
+}
+
+.dragAndDropThumb {
+  max-height: 100px;
+  max-width: 85px;
+}
+
+.removeButton {
+  cursor: pointer;
+  color: rgba(125, 125, 125, 0.5);
+  display: inline-block;
+  margin-right: 5px;
+  font-size: 20px;
+}
+
+.removeButton:hover {
+  color: #7D7D7D;
+}
+
+#panelMessage {
+  margin: 1em;
+}
+
+#flagCombobox {
+  width: 85%;
+}
+
+.flagPreview {
+  display: inline-block;
+  max-width: 10%;
+  height: 16px;
+}
+
+#divUpload, .centered {
+  text-align: center;
+}
+
+#newPostFieldset {
+  display: inline-block;
+  padding-right: 0.75em;
+  width: 25em;
+}
+
+#postingForm {
+  text-align: center;
+  margin: 1em auto;
+}
+
+#postingForm button, #qrbutton {
+  width: 8em;
+  margin: 0.5em auto;
+  font-size: 125%;
+}
+
+#postingForm button:active {
+  box-shadow: 0px 0px 5px #117743;
+}
+
+#postingForm label {
+  font-size: 80%;
+  display: block;
+  clear: both;
+}
+
+input[type=checkbox].postingCheckbox {
+  display: none;
+}
+
+input[type=checkbox].postingCheckbox+label::before {
+  font-family: Icons;
+  content: "\e0db";
+  margin-right: 0.5em;
+  color: #117743;
+  display: inline-block;
+  cursor: pointer;
+}
+
+#checkboxSpoiler+label:after {
+  content: "Spoiler";
+}
+
+#alwaysUseBypassCheckBox+label:after {
+  content: "Bypass check";
+}
+
+#checkboxNoFlag+label:after {
+  content: "No location";
+}
+
+input[type=checkbox].postingCheckbox:checked+label:before {
+  content: "\e033";
+}
+
+#boardContentLinks {
+  margin-top: 0.5em;
+  font-size: 80%;
+}
+
+#favouriteButton:before {
+  font-family: Icons;
+  content: "\e0c2";
+  margin-left: 0.5em;
+  cursor: pointer;
+}
+
+@media only screen and (max-width: 812px) {
+  .boardHeader p#labelDescription {
+    display: none;
+  }
+  #fieldMessage {
+    width: 100%;
+  }
+  .reportFieldset {
+    padding: 0;
+  }
+  #newPostFieldset {
+    width: unset;
+    padding: 0;
+    border: unset;
+  }
+  #postingForm th {
+    font-size: 80%;
+    width: 60px;
+  }
+}

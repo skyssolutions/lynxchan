@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+
+    <fieldset id="settingsFieldset">
+
+      <legend>Filters</legend>
+
+      <p>
+        Maximum filter length: <span id="maxLengthLabel"></span>
+      </p>
+
+      <form
+        action="/createFilter.js"
+        method="post"
+        enctype="multipart/form-data">
+        <input
+          type="hidden"
+          name="boardUri"
+          id="boardIdentifier">
+        <label>
+          Original term:
+          <input
+            type="text"
+            class="addFilterField"
+            name="originalTerm"
+            id="fieldOriginalTerm">
+        </label>
+        <label>
+          Replacement term:
+          <input
+            type="text"
+            class="addFilterField"
+            name="replacementTerm"
+            id="fieldReplacementTerm">
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            class="addFilterField"
+            name="caseInsensitive"
+            id="checkboxCaseInsensitive">
+          Case-insensitive
+        </label>
+        <button
+          type="submit"
+          id="addFormButton">Add filter</button>
+
+      </form>
+      <hr />
+      <div id="divFilters"></div>
+    </fieldset>
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+<script src="/.static/js/filterManagement.js"></script>
+
+</html>

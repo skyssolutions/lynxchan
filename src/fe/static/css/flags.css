@@ -1,0 +1,40 @@
+#dragAndDropDiv {
+  text-align: center;
+  width: 300px;
+}
+
+.dropzone {
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+
+.selectedCell {
+  margin-top: 10px;
+}
+
+.dragAndDropThumb {
+  max-height: 100px;
+  max-width: 100px;
+}
+
+#settingsWrapper input[type=text] {
+  display: inline;
+  font-size: 100%;
+}
+
+#settingsWrapper #fieldFlagName {
+  display: inline-block;
+  font-size: 80%;
+}
+
+.removeButton {
+  cursor: pointer;
+  color: rgba(125, 125, 125, 0.5);
+  display: inline-block;
+  margin-right: 5px;
+  font-size: 20px;
+}
+
+.removeButton:hover {
+  color: #7D7D7D;
+}

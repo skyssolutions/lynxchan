@@ -1,0 +1,189 @@
+<fieldset class="reportFieldset">
+  <legend>Delete</legend>
+
+  <div class="contentAction">
+    <label>
+      Password
+      <input
+        type="text"
+        class="deletionField"
+        id="deletionFieldPassword"
+        name="password">
+    </label>
+    <label>
+      <input
+        type="checkbox"
+        class="deletionField"
+        id="checkboxOnlyFiles"
+        name="deleteUploads">
+      Delete only files (Removes the file reference to the posts)
+    </label>
+    <label>
+      <input
+        type="checkbox"
+        class="deletionField"
+        id="checkboxMediaDeletion"
+        name="deleteMedia">
+      Delete media (Removes the saved files from the server)
+    </label>
+    <button
+      type="submit"
+      id="deleteFormButton"
+      value="delete"
+      name="action">Delete</button>
+
+  </div>
+</fieldset>
+
+<fieldset class="reportFieldset">
+  <legend>Report</legend>
+
+  <div class="contentAction">
+
+    <label>
+      Reason
+      <input
+        type="text"
+        class="reportField"
+        id="reportFieldReason"
+        name="reasonReport">
+    </label>
+    <label>
+      <input
+        type="checkbox"
+        class="reportField"
+        id="checkboxGlobalReport"
+        name="globalReport">
+      Global
+    </label>
+    <img
+      class="captchaImage"
+      id="captchaImageReport"
+      src="/captcha.js">
+
+    <input
+      type="button"
+      class="hidden reloadCaptchaButton"
+      onclick="captchaUtils.reloadCaptcha()"
+      value="Reload">
+    <span class="captchaTimer"></span>
+    <br>
+
+    <input
+      name="captcha"
+      type="text"
+      class="captchaField reportField"
+      id="fieldCaptchaReport"
+      placeholder="answer">
+
+    <a
+      href="/noCookieCaptcha.js"
+      class="small">no cookies?</a>
+    <br>
+
+    <button
+      type="submit"
+      id="reportFormButton"
+      value="report"
+      name="action">Report</button>
+
+    <div id="divMod">
+      <hr>
+      <p>Moderation actions</p>
+      <label>
+        Ban duration (Defaults to 5 years):
+        <input
+          class="banField"
+          type="text"
+          id="fieldDuration"
+          name="duration">
+        <a href="/.static/pages/moderation.html#banSection">Duration format</a>
+      </label>
+
+      <label>
+        Ban Message
+        <input
+          class="banField"
+          type="text"
+          id="fieldbanMessage"
+          name="banMessage">
+      </label>
+
+      <label>
+        Ban Reason
+        <input
+          class="banField"
+          type="text"
+          id="fieldBanReason"
+          name="reasonBan">
+      </label>
+
+      <label>
+        Ban type:
+        <select
+          name="banType"
+          id="comboBoxBanTypes">
+          <option value="0">IP/Bypass ban</option>
+          <option value="1">Range ban (1/2 octects)</option>
+          <option value="2">Range ban (3/4 octects)</option>
+          <option value="3">ASN ban</option>
+          <option value="4">Ip/Bypass warning</option>
+        </select>
+      </label>
+
+      <label>
+        <input
+          class="banField"
+          type="checkbox"
+          id="checkBoxNonBypassable"
+          name="nonBypassable">
+        Non-Bypassable
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          class="reportField"
+          id="checkboxGlobalBan"
+          name="globalBan">
+        Global
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          class="ipDeletionField"
+          name="confirmation"
+          id="ipDeletionConfirmationCheckbox"
+          value="true">
+        Confirm board-wise ip deletion
+      </label>
+
+      <button
+        type="submit"
+        id="inputIpDelete"
+        value="ip-deletion"
+        name="action">Delete by ip/bypass on this board</button>
+
+      <button
+        type="submit"
+        id="inputBan"
+        value="ban"
+        name="action">Ban</button>
+
+      <button
+        type="submit"
+        id="inputBanDelete"
+        value="ban-delete"
+        name="action">Ban and delete</button>
+
+      <button
+        type="submit"
+        id="inputSpoil"
+        value="spoil"
+        name="action">Spoil Files</button>
+    </div>
+
+  </div>
+
+</fieldset>

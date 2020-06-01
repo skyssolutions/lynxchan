@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+
+    <fieldset id="settingsFieldset">
+
+      <legend>Hash Bans</legend>
+
+      <form
+        action="/placeHashBan.js"
+        method="post"
+        enctype="multipart/form-data">
+
+        <label>
+          Hash of the file to be banned:
+          <input
+            type="text"
+            class="addHashBanField"
+            name="hash"
+            id="hashField">
+        </label>
+
+        <label>
+          Reason of the ban:
+          <input
+            type="text"
+            class="addHashBanField"
+            name="reason"
+            id="reasonField">
+        </label>
+
+        <input
+          id="boardIdentifier"
+          type="hidden"
+          name="boardUri">
+
+        <button
+          type="submit"
+          id="createFormButton">Place hash ban</button>
+
+      </form>
+      <div id="hashBansDiv"></div>
+    </fieldset>
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/hashBans.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

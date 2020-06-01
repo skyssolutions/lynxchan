@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+
+    <fieldset id="settingsFieldset">
+
+      <legend>Banned</legend>
+
+      <p>
+        <span id="descriptionLabel"></span>
+      </p>
+      <p id="reasonPanel">
+        Reason: <span id="reasonLabel"></span>
+      </p>
+      <p id="expirationPanel">
+        Expiration: <span id="expirationLabel"></span>
+      </p>
+      <p>
+        Ban ID: <span id="idLabel"></span>
+      </p>
+
+      <hr />
+
+      <form
+        action="/appealBan.js"
+        id="formAppeal"
+        method="post"
+        enctype="multipart/form-data">
+
+        <h3>Appeal Ban</h3>
+
+        <input
+          type="hidden"
+          name="banId"
+          id="idIdentifier">
+
+        <textarea
+          name="appeal"
+          id="fieldAppeal"
+          placeholder="Appeal your ban here."></textarea>
+
+        <input
+          type="submit"
+          value="Appeal Ban"
+          id="buttonFormAppeal">
+
+      </form>
+
+    </fieldset>
+
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

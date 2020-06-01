@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+
+    <fieldset id="settingsFieldset">
+
+      <legend>Account</legend>
+      <h3>
+        Logged in as: <span id="labelLogin"></span>, <span id="labelGlobalRole"></span>
+      </h3>
+
+      <form action="/logout.js">
+        <button
+          id="logoutFormButton"
+          type="submit">Logout</button>
+
+      </form>
+
+      <hr />
+      <a
+        href="/globalManagement.js"
+        id="globalManagementLink">Global Management</a>
+      <br />
+      <a href="/.static/pages/moderation.html">Moderation Manual</a>
+      <hr />
+
+      <form
+        action="/requestEmailConfirmation.js"
+        method="post"
+        enctype="multipart/form-data"
+        id="confirmationForm">
+        <p>Your e-mail haven't been confirmed yet.</p>
+        <p>You won't be able to reset your password or receive report
+          notifications until doing so.</p>
+        <button
+          type="submit"
+          id="requestConfirmationFormButton">Request confirmation
+          e-mail</button>
+        <hr>
+      </form>
+
+      <h3>Settings</h3>
+
+      <form
+        action="/changeAccountSettings.js"
+        method="post"
+        enctype="multipart/form-data">
+
+        <label>
+          E-mail:
+          <input
+            type="email"
+            name="email"
+            class="settingsField"
+            id="emailField">
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            class="settingsField"
+            name="alwaysSignRole"
+            id="checkboxAlwaysSign">
+          Always use role signature
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            class="settingsField"
+            name="reportNotify"
+            id="checkboxReportNotify">
+          Receive e-mail report notifications
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            class="settingsField"
+            name="noBoardReports"
+            id="checkboxNoBoardReports">
+          Don't show board reports on the global list
+        </label>
+
+        <button
+          type="submit"
+          id="saveFormButton">Save</button>
+
+      </form>
+
+      <hr />
+
+      <h3>Password Change</h3>
+
+      <form
+        action="/changeAccountPassword.js"
+        method="post"
+        enctype="multipart/form-data">
+
+        <label>
+          Current Password:
+          <input
+            type="password"
+            class="passwordChangeField"
+            name="password"
+            id="fieldPassword">
+        </label>
+        <label>
+          New Password:
+          <input
+            type="password"
+            class="passwordChangeField"
+            name="newPassword"
+            id="fieldNewPassword">
+        </label>
+        <label>
+          Confirm New Password:
+          <input
+            type="password"
+            class="passwordChangeField"
+            name="confirmation"
+            id="fieldConfirmation">
+        </label>
+
+        <button
+          type="submit"
+          id="passwordFormButton">Change password</button>
+
+      </form>
+
+      <hr />
+
+      <h3>Delete account</h3>
+      <form
+        action="/deleteAccount.js"
+        method="post"
+        enctype="multipart/form-data">
+
+        <label>
+          <input
+            id="confirmationCheckbox"
+            type="checkbox"
+            class="deleteAccountField"
+            name="confirmation">
+          Yes, I wish to delete my account.
+        </label>
+
+        <button
+          id="deleteAccountFormButton"
+          type="submit">Delete account</button>
+
+      </form>
+      <hr />
+
+      <h3>Owned Boards</h3>
+      <div id="ownedDiv"></div>
+      <hr />
+
+      <h3>Volunteered Boards</h3>
+      <div id="volunteeredDiv"></div>
+
+      <a
+        href="/latestPostings.js"
+        id="latestPostingsLink">Latest postings</a>
+
+      <hr />
+
+      <div id="boardCreationDiv">
+
+        <h3>Create Board</h3>
+
+        <form
+          action="/createBoard.js"
+          enctype="multipart/form-data"
+          method="post">
+
+          <label>
+            Board URI:
+            <input
+              type="text"
+              class="creationField"
+              name="boardUri"
+              id="newBoardFieldUri">
+          </label>
+          <label>
+            Board Name:
+            <input
+              type="text"
+              class="creationField"
+              name="boardName"
+              id="newBoardFieldName">
+          </label>
+          <label>
+            Board Description:
+            <input
+              class="creationField"
+              type="text"
+              name="boardDescription"
+              id="newBoardFieldDescription">
+          </label>
+
+          <div class="captchaDiv">
+            <img
+              src="/captcha.js"
+              class="captchaImage"
+              id="captchaImage" />
+
+            <br>
+            <input
+              type="button"
+              onClick="captchaUtils.reloadCaptcha()"
+              value="Reload"
+              class="hidden reloadCaptchaButton">
+            <span class="captchaTimer"></span>
+            <br>
+
+            <input
+              type="text"
+              class="captchaField creationField"
+              name="captcha"
+              id="fieldCaptcha"
+              placeholder="answer">
+
+            <a
+              href="/noCookieCaptcha.js"
+              class="small">no cookies?</a>
+
+          </div>
+
+          <button
+            type="submit"
+            id="newBoardFormButton">Create board</button>
+
+        </form>
+
+      </div>
+
+    </fieldset>
+
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/account.js"></script>
+<script src="/.static/js/captchaUtils.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

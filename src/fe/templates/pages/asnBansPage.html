@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+
+    <fieldset id="settingsFieldset">
+
+      <legend>ASN Ban</legend>
+
+      <form
+        action="/placeAsnBan.js"
+        method="post"
+        enctype="multipart/form-data">
+        <label>
+          ASN to be banned:
+          <input
+            type="text"
+            name="asn"
+            class="asnBanField"
+            id="asnField">
+        </label>
+        <label>
+          Reason:
+          <input
+            type="text"
+            name="reason"
+            class="asnBanField"
+            id="reasonField">
+        </label>
+        <label>
+          Duration:
+          <input
+            type="text"
+            name="duration"
+            class="asnBanField"
+            id="durationField">
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            name="nonBypassable"
+            class="asnBanField"
+            id="nonBypassableCheckbox">
+          Non-Bypassable
+        </label>
+        <input
+          id="boardIdentifier"
+          type="hidden"
+          name="boardUri">
+
+        <button
+          type="submit"
+          id="createFormButton">Place ASN ban</button>
+
+      </form>
+      <div id="asnBansDiv"></div>
+    </fieldset>
+  </div>
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/asnBans.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

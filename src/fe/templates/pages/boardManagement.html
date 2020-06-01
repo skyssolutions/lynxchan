@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+
+    <fieldset id="settingsFieldset">
+
+      <legend id="boardLabel"></legend>
+
+      <p>
+        <a href="/account.js">Account</a>
+      </p>
+      <p>
+        <a id="linkSelf">Board's front-page</a>
+      </p>
+
+      <div id="ownerControlDiv">
+
+        <hr />
+
+        <h3>Add volunteer</h3>
+
+        <form
+          action="/setVolunteer.js"
+          method="post"
+          enctype="multipart/form-data">
+
+          <label>
+            User login:
+            <input
+              type="text"
+              name="login"
+              class="addVolunteerField"
+              id="addVolunteerFieldLogin">
+          </label>
+
+          <input
+            type="hidden"
+            name="add"
+            value=true>
+
+          <input
+            type="hidden"
+            name="boardUri"
+            id="addVolunteerBoardIdentifier">
+
+          <button
+            type="submit"
+            id="addVolunteerFormButton">Add volunteer</button>
+
+        </form>
+
+        <hr />
+
+        <h3>Ownership transfer</h3>
+
+        <form
+          action="/transferBoardOwnership.js"
+          method="post"
+          enctype="multipart/form-data">
+
+          <label>
+            User login:
+            <input
+              type="text"
+              name="login"
+              class="transferBoardField"
+              id="transferBoardFieldLogin">
+          </label>
+
+          <input
+            type="hidden"
+            name="boardUri"
+            id="transferBoardIdentifier">
+
+          <button
+            type="submit"
+            id="transferBoardFormButton">Transfer board</button>
+
+        </form>
+
+        <hr />
+
+        <h3>Delete board</h3>
+
+        <form
+          method="post"
+          action="/deleteBoard.js"
+          enctype="multipart/form-data">
+
+          <label>
+            <input
+              type="checkbox"
+              class="deleteBoardField"
+              name="confirmDeletion"
+              id="confirmDelCheckbox">
+            Yes, I wish to delete this board
+          </label>
+
+          <input
+            id="deletionIdentifier"
+            name="boardUri"
+            type="hidden">
+
+          <button
+            type="submit"
+            id="deleteBoardFormButton">Delete board</button>
+
+        </form>
+
+        <hr />
+
+        <h3>Custom CSS</h3>
+
+        <p>Upload without any files to delete the custom CSS</p>
+
+        <form
+          action="/setCustomCss.js"
+          method="post"
+          enctype="multipart/form-data">
+
+          <input
+            type="hidden"
+            name="boardUri"
+            id="customCssIdentifier">
+
+          <label>
+            <input
+              type="file"
+              id="files"
+              name="files">
+          </label>
+
+          <button
+            id="cssFormButton"
+            type="submit">Upload CSS</button>
+
+        </form>
+
+        <hr />
+
+        <div id="customJsForm">
+
+          <h3>Custom JavaScript</h3>
+
+          <p>Upload without any files to delete the custom JavaScript</p>
+
+          <form
+            action="/setCustomJs.js"
+            method="post"
+            enctype="multipart/form-data">
+
+            <input
+              type="hidden"
+              name="boardUri"
+              id="customJsIdentifier">
+
+            <label>
+              <input
+                type="file"
+                id="JsFiles"
+                name="files">
+            </label>
+
+            <button
+              id="jsFormButton"
+              type="submit">Upload Js</button>
+
+          </form>
+          <hr />
+        </div>
+
+        <h3>Custom Spoiler</h3>
+
+        <p>Upload without any files to delete the custom spoiler</p>
+
+        <div id="customSpoilerIndicator">
+          <p>There is a custom spoiler saved for this board</p>
+        </div>
+
+        <form
+          id="indicatorMarker"
+          action="/setCustomSpoiler.js"
+          method="post"
+          enctype="multipart/form-data">
+
+          <input
+            type="hidden"
+            name="boardUri"
+            id="customSpoilerIdentifier">
+
+          <label>
+            <input
+              type="file"
+              id="filesSpoiler"
+              name="files">
+          </label>
+
+          <button
+            id="spoilerFormButton"
+            type="submit">Upload custom spoiler</button>
+
+        </form>
+
+        <hr />
+
+        <h3>Volunteers</h3>
+
+        <div id="volunteersDiv"></div>
+
+        <hr>
+
+        <p>
+          <a id="bannerManagementLink">Manage banners</a>
+        </p>
+        <p>
+          <a id="filterManagementLink">Manage filters</a>
+        </p>
+        <p>
+          <a id="ruleManagementLink">Manage rules</a>
+        </p>
+        <p>
+          <a id="flagManagementLink">Manage flags</a>
+        </p>
+
+        <hr />
+
+      </div>
+
+      <p>
+        <a id="rangeBansLink">Range bans</a>
+      </p>
+      <p>
+        <a id="asnBansLink">ASN bans</a>
+      </p>
+      <p>
+        <a id="hashBansLink">Hash bans</a>
+      </p>
+      <p>
+        <a id="bansLink">Bans</a>
+      </p>
+      <p>
+        <a id="closedReportsLink">Closed reports</a>
+      </p>
+      <p>
+        <a id="openReportsLink">
+          Open reports(<span id="openReportsLabel"></span>)
+        </a>
+      </p>
+      <p>
+        <a id="appealedBansLink">
+          Appealed bans(<span id="appealedBansLabel"></span>)
+        </a>
+      </p>
+
+      <form
+        action="/resetBoardLock.js"
+        method="post"
+        enctype="multipart/form-data"
+        id="resetBoardLockForm">
+
+        <hr />
+
+        <input
+          type="hidden"
+          name="boardUri"
+          id="resetLockIdentifier">
+        <button
+          type="submit"
+          id="resetLockButton">Reset auto board lock</button>
+      </form>
+
+
+      <form
+        id="settingsForm"
+        action="/setBoardSettings.js"
+        method="post"
+        enctype="multipart/form-data">
+
+        <hr />
+
+        <h3>Settings</h3>
+
+        <input
+          type="hidden"
+          id="boardSettingsIdentifier"
+          name="boardUri">
+
+        <label>
+          Board name:
+          <input
+            id="boardNameField"
+            class="boardSettingsField"
+            type="text"
+            name="boardName">
+        </label>
+
+        <label>
+          Board description:
+          <input
+            id="boardDescriptionField"
+            name="boardDescription"
+            class="wide boardSettingsField"></input>
+        </label>
+
+        <label>
+          Anonymous name:
+          <input
+            id="anonymousNameField"
+            type="text"
+            class="boardSettingsField"
+            name="anonymousName">
+        </label>
+
+        <label>
+          Maximum files<sup>2</sup>:
+          <input
+            id="maxFilesField"
+            type="number"
+            class="boardSettingsField"
+            name="maxFiles">
+        </label>
+
+        <label>
+          Max file size<sup>2</sup>:
+          <input
+            id="maxFileSizeField"
+            type="number"
+            class="boardSettingsField"
+            name="maxFileSizeMB">
+        </label>
+
+        <label>
+          For how many days a non-cyclic thread is allowed to be bumped after
+          its creation:
+          <input
+            id="maxBumpAgeField"
+            type="number"
+            class="boardSettingsField"
+            name="maxBumpAge">
+        </label>
+
+        <label>
+          Reply limit (autosage)<sup>2</sup>:
+          <input
+            id="autoSageLimitField"
+            type="number"
+            class="boardSettingsField"
+            name="autoSageLimit">
+        </label>
+
+        <label>
+          Allowed file types<sup>1,2</sup>:
+          <input
+            id="validMimesField"
+            type="text"
+            class="boardSettingsField"
+            name="acceptedMimes"
+            class="wide">
+        </label>
+
+        <label>
+          Thread limit<sup>2</sup>:
+          <input
+            id="maxThreadsField"
+            type="number"
+            class="boardSettingsField"
+            name="maxThreadCount">
+        </label>
+
+        <label>
+          Hourly thread limit (locks thread creation temporarily if exceeded):
+          <input
+            id="hourlyThreadLimitField"
+            type="number"
+            class="boardSettingsField"
+            name="hourlyThreadLimit">
+        </label>
+
+        <label>
+          Enable captcha for new threads if this many threads are created within
+          one hour:
+          <input
+            id="autoCaptchaThresholdField"
+            type="number"
+            class="boardSettingsField"
+            name="autoCaptchaLimit">
+        </label>
+
+        <label>
+          Enable captcha for all posts if this many replies are posted within
+          one hour:
+          <input
+            id="autoFullCaptchaThresholdField"
+            type="number"
+            class="boardSettingsField"
+            name="autoFullCaptchaLimit">
+        </label>
+
+        <label>
+          Tags (separate with commas):
+          <input
+            type="text"
+            id="tagsField"
+            name="tags"
+            class="wide boardSettingsField">
+        </label>
+
+        <label>
+          Board Message (maximum length: <span id="messageLengthLabel"></span>):
+          <textarea
+            name="boardMessage"
+            id="boardMessageField"
+            class="wide"></textarea>
+        </label>
+
+        <label>
+          Location flags:
+          <select
+            id="locationComboBox"
+            name="locationFlagMode"></select>
+        </label>
+
+        <label>
+          Captcha mode:
+          <select
+            id="captchaModeComboBox"
+            name="captchaMode"></select>
+        </label>
+
+        <label>
+          Preferred language:
+          <select
+            id="languageCombobox"
+            name="preferredLanguage"></select>
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            name="disableIds"
+            class="boardSettingsField"
+            id="disableIdsCheckbox">
+          Disable thread-wise ids
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            class="boardSettingsField"
+            name="requireThreadFile"
+            id="requireFileCheckbox">
+          Require at least one file for new threads
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            name="textBoard"
+            class="boardSettingsField"
+            id="textBoardCheckbox">
+          Textboard
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            name="blockDeletion"
+            class="boardSettingsField"
+            id="blockDeletionCheckbox">
+          Block users from deleting their posts
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            class="boardSettingsField"
+            name="allowCode"
+            id="allowCodeCheckbox">
+          Allow use of code tags
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            class="boardSettingsField"
+            name="unindex"
+            id="unindexCheckbox">
+          Don't index on top boards and board list.
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            class="boardSettingsField"
+            name="forceAnonymity"
+            id="forceAnonymityCheckbox">
+          Force anonymity
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            name=early404
+            class="boardSettingsField"
+            id="early404Checkbox">
+          Early 404: threads that are not replied to at least 5 times will be
+          deleted after they leave the top 1/3 threads.
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            class="boardSettingsField"
+            name="uniqueFiles"
+            id="uniqueFilesCheckbox">
+          Unique Files
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            class="boardSettingsField"
+            name="uniquePosts"
+            id="uniquePostsCheckbox">
+          Unique Posts
+        </label>
+
+        <button
+          type="submit"
+          id="saveSettingsFormButton">Save</button>
+
+        <p>1: Separate elements with commas</p>
+        <p>2: Will be ignored if values are higher than the global
+          equivalent or are not present on the global equivalent, unless unbound
+          board settings are enabled</p>
+
+      </form>
+
+    </fieldset>
+
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/boardManagement.js"></script>
+<script src="/.static/js/bans.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

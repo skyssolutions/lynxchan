@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+
+    <fieldset id="settingsFieldset">
+
+      <legend>Logs</legend>
+
+      <div id="logSearch">
+        <form
+          method="get"
+          action="logs.js">
+          <label>
+            Year
+            <input
+              type="text"
+              name="year"
+              placeholder="YYYY">
+            <input
+              type="hidden"
+              name="boardUri"
+              id="identifierBoard">
+          </label>
+          <input
+            type="submit"
+            value="Search">
+        </form>
+      </div>
+      <hr />
+      <h3 id="labelBoard"></h3>
+      <div
+        id="divDates"
+        class="linkList"></div>
+    </fieldset>
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

@@ -1,0 +1,3 @@
+Every board has a rss feed that contains the threads on its first page.
+The overboard also has a rss feed.
+Both can be found as a file called index.rss on the board's directory.

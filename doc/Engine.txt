@@ -1,0 +1,141 @@
+This text documents inner the inner working of the engine.
+
+CHA_ID::1 - Entry points 
+	Entry points are the places where an user can interact with the system. There are 2 main entry points: the terminal running the software and the form api.
+	The terminal can be used to run commands by running LynxChan with parameters. These parameters and how they are used can be found on src/be/Readme.md. The parameters are parsed on boot.js and the 
+actions are performed before it starts to run as a daemon.
+	The form api is used by users performing http requests. The details of the api can be found in it's documentation.
+
+CHA_ID::2 - Internal work
+	The actual work is done by the code in the scr/be/engine directory. These files are used by the entry points to perform actions on the system.
+
+CHA_ID::2.1 - accountOps
+	This module handles account logic for account creation, login, global role change, account validation, password reset and account settings change. A function that might be of interest of others is 
+validate. It takes two parameters: the first being an object that must contain two fields: login and hash. Then it looks for an account with the informed login and session hash and runs the second 
+parameter as a callback passing back the error (if any), the authentication block and user data. The authentication block should be used to inform the user's account validation status. It is used to 
+give a more descriptive error or to dynamically change the user authentication hash without a need for a logout. The hash must be added to the response headers when using the form api and it must be 
+passed directly for the api response functions. The user data contains the following fields: login, hash, ownedBoards, settings, globalRole and email. Look into the model documentation for more 
+information about these fields.
+	Another useful function is createSession. It takes a login as the first parameter and executes the second parameter as a callback passing the error (if any) and the new hash for the account in the 
+second. Then this new hash must be passed back to the user in the proper manner for it to update its hash.
+
+CHA_ID::2.2 - boardOps
+	This module handles general board operations, like creation and management of boards. Moderation functions of a board are not included in this module, but in modOps.
+
+CHA_ID::2.3 - captchaOps
+	Handles anything related to captcha. The main function to be used is attemptCaptcha. It takes as parameters the captcha id, the attempted answer, and object containing information of the board 
+where this captcha is being used and a callback. Then it will execute the callback informing an error if any happened. It also has a function named solveCaptcha that will solve a captcha that, unlike 
+the previous function, it will not invalidate the captcha. It takes an object containing the fields captchaId and answer, and as the second parameter a callback. It tries to solve the captcha and will 
+use the callback the same way of the previous function. Then the id of the solved captcha can be informed as the answer when attempting a captcha. In this case, the captcha id is ignored.
+	Captchas rely on cookies on the form api, the purpose of solving a captcha without deleting it is to allow it to be used by non-cookie users. There is a page in the form api called noCookieCaptcha 
+that uses this feature.
+
+CHA_ID::2.4 - deletionOps
+	Handles deletion of content, like postings and boards. The most complex operation here is posting, used to delete both threads and replies. First it uses the list of informed content and assembles 
+a list of boards involved in the deletion. Then it iterates through these boards and for each board it looks for the threads to be deleted, then looks for posts to be deleted, including the ones that 
+are going to be deleted because of deleted threads. Then it removes the found threads and posts. After that, it looks for the files of removed postings and delete these too. After that, it updates the 
+thread count of the board, updates the latest posts array of involved threads and iterate the next board. It also handles automatic deletion of exceeding threads in boards. All operations here should 
+delete the files of involved content.
+
+CHA_ID::2.5 - domManipulator
+	Handles manipulation of templates to generate html pages. Static pages are saved on gridfs and use a callback that is executed when the operation finishes, dynamic pages are have its content 
+returned to be output by the form api module that required it. The only exception being thread pages, that can also be generated for dynamic use by mod.js on the form api and will use the callback to 
+return the html instead of saving it to mongo. All of its public functions use try-catch to handle errors with missing elements from the templates.
+
+CHA_ID::2.6 - formOps
+	Contains specific functions for the form api. It contains the function getPostData that takes in request, response and a callback to extract parameters from the request and calls 
+the callback passing back the request cookies and the parameters. Also contains a function that automates account validation, getAuthenticatedPost. It takes in request, response, a boolean that if 
+informed will try and extract the parameters and a callback. It will execute the callback informing the new authentication block, user data and parameters. The purpose of the optional parameter 
+extraction is that if the request isn't passing parameters in the request body, the library used to extract its parameters will thrown an error. 
+	Another option would be to manually extract the cookies using its function getCookies and then use validate from accountOps. getCookies takes in the request and returns an object with the informed 
+cookies. But for uniformity, I opted to include this boolean in the parameters of getAuthenticatedPost.
+	It contains a outputResponse function. It takes as parameters a message to be output, the link the users will be redirected from the message, the response object. It also contains two 
+optional parameters. The first being cookies, an array of arrays where the first element of the inner array is the cookie field and the second is the cookie value. These cookies will be applied to the 
+response. The second optional parameter is authBlock. It is to be informed as it is received from accountOps on validate and its used to renew the hash of the user.
+
+CHA_ID::2.7 - generator
+	This module handles the logic of building static files from information. It gathers data from the database and then use the functions from domManipulator, rssBuilder and jsonBuider to store this 
+data on gridFS. It also has a convenience function used to rebuild all pages, all. It takes just the callback and executes it when the operation is finished, informing an error, if any. Currently it 
+does not support the rebuild if preview pages for postings.
+	It also saves default images (banner, thumbnail, spoiler) to gridfs.
+
+CHA_ID::2.8 - gridFsHandler
+	Handles operations using gridfs. Mainly it has writeData that is used to write raw data into the disk. It takes as parameters the data, the filename to be used, the mimetype to be used, an object 
+that will be used as metadata and a callback. If the informed data is a string, it will be converted to an utf-8 buffer. It also has a writeFile function that takes the path to the file instead of the 
+raw data.
+	It also has a function used to stream back files to the user, outputFile. It takes as parameters the filename to be read, the request, the response and the callback. It also has two optional 
+parameters, cookies and retry. Cookies works the same way they work on outputResponse of formOps. Retry is for its own use and should not be informed in any way.
+
+CHA_ID::2.9 - jsonBuilder
+	Counterpart for domManipulator.
+
+CHA_ID::2.10 - langOps
+	This module handles the reading and validation of the used language pack. It loads it synchronously and validate it against the default language pack. The language pack can be obtained from the 
+function languagePack.
+ 
+CHA_ID::2.11 - miscOps
+	General functions shared among modules. Most useful function I would say its the getMime one. It takes a file path or name and returns it mime. It also has a function to sanitize the string 
+parameters of an object, sanitizeStrings. It takes as parameters the object to be sanitized and the array of instructions on how to sanitize these parameters. The array must contain objects with the 
+following fields: field; informs the name of the parameter to be sanitized, length; maximum length of the parameter, removeHtml; boolean that if is true, will replace <> by its HTML code. getHeader 
+can be used to generate a base header for responses. It just takes in the mime type to be used. It can be used for any response and makes it handy to inform the correct mimetype of the response.
+
+CHA_ID::2.12 - requestHandler
+	Internal use. Don't mind it, it just checks who should handle the request and redirect it.
+
+CHA_ID::2.13 - staticHandler
+	Internal use, caches and output static files from the front-end.
+
+CHA_ID::2.14 - templateHandler
+	Loads and serves templates. It will also test templates to check if they have all the required elements. The templates to be loaded can be found in the function loadAndTestTemplates. Notice there 
+are two arrays of templates, one for cells and other for pages. Pages have its elements checked by creating a document with the template and iterating the expected elements looking them by their ids.
+	Cells, on the other hand, have an element created and its innerHTML set as the template. After that, it looks for elements by their classes and also checks if two elements are found with the same 
+expected class.
+
+CHA_ID::2.15 - torOps
+	It has two main roles: first being loading known TOR exit nodes to the database. Second being marking a request object with the boolean property isTor using the function markAsTor. It takes the 
+parameters a request and a callback. The callback is executed with any eventual error and with the provided request as the second element. I don't really use the request that is returned from the 
+callback, but I imagined it could be useful in a scenario.
+
+CHA_ID::2.16 - uploadHandler
+	Provides functions to handle with uploads in general. removeFromDisk takes a file path to remove a file from the file system. It also may take a callback as the second parameter that informs a 
+possible error. The main function here is saveUploads. It takes the following parameters: boardUri, threadId, postId, files, spoiler and callback. A final parameter being index, but it is for internal 
+use. The first three parameters should be self-explanatory. files is the field in the parameters returned by either formOps or apiOps with the information of received files.  
+
+CHA_ID::3 - Generation queue
+	To reduce static files generation overhead, a queue in the master thread is in place to avoid double generation of files. It is reached by using process.send and sending an object with the correct 
+parameters. Instructions of use can be found on the comment block at the beginning of generationQueue at src/be.
+
+CHA_ID::4 - Ip reading
+	Ips are read from the request.connection.remoteAddress and converted to an array of ints. If a request is marked as being from TOR, the function ip from logger will return null.
+
+CHA_ID::5 - Schedules
+	The module scheduleHandler is booted in the master thread and runs regular operations from time to time. Unless the application is set to run without starting a daemon.
+
+CHA_ID::6 - Memory footprint
+	Currently, it can be expected it to use about 70 to 90MB per process. It will run at least two processes, one for the master thread and one worker. The number of workers is the number of cores in 
+the CPU. This is because of the jsdom library. It not only uses quite some RAM by itself, but it uses a library named parse5 that uses 30mb on a single file. The guys think that using retarded amounts 
+of RAM its A-OK, so its either using something else or forking and reducing it's memory footprint.
+
+CHA_ID::7 - Addons
+	Addons should be written as regular modules and be placed on the /src/be/addons directory. They can be either a single file or a directory. They should have 4 things on their exports:
+	engineVersion: string indicating the engine version the addon is designed for.
+	init: function that is run by the engine after the engine and all addons are loaded.
+  loadSettings: function that is run every time the settings are changed.
+	formRequest: function that is called when a request to the form api is done to this addon. Takes two parameters:
+		req: request provided by the node.js api.
+		res: response provided by the nde.js. Reference for these two: https://nodejs.org/api/http.html
+  requestAlias: optional alias to be used when handling form requests, instead of the addon name.
+	Addons are expected to overwrite public properties of the engine's modules. For an addon to be used, it must be added to the global setting addons, an array with the name of the addons to be loaded. 
+They will be loaded in the order they appear in the array. First they will be loaded and only after all of them are loaded, the function init() will be executed. Refer to the example addon. To perform 
+requests to be caught by the addon, the path must be formated in the following manner: "/addon.js/addonnamegoeshere". 
+
+CHA_ID::8 - Cluster messaging
+	Process messages are used to communicate between the worker and the master process. These messages can be used in some different manners.
+	First we have generation queue messages. These messages are the most common and go from a worker to the master thread. They only have the data of the rebuild to be performed.
+	Then we have messages to be broadcast. These messages have a field named "upStream" and will also be broadcast to other workers.
+	Finally we have any other kind of message that have their own unique fields that are interpreted by the master process, like the message informing the master that the overboard threads must be 
+re-aggregated.
+
+CHA_ID::9 - Multi-board
+	If any amount is set to how many threads should be displayed on the multi-board, users will be able to format urls like '/a+b/' to see a page with the latest threads of both boards 'a' and 'b'. The 
+final slash is optional and any amount of boards can be selected.

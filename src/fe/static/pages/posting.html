@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+<title>Help</title>
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+    <fieldset id="settingsFieldset">
+      <legend>Help</legend>
+
+      <h1>Tripcodes</h1>
+      <p>To use a tripcode, add a # in your name. After the #, add the
+        password for the tripcode.</p>
+      <p>The server will apply a hash to the password and display the hashed
+        password.</p>
+      <p>To use a secure tripcode, add ## in your name and a password. A
+        secure tripcode will generate a random text to be displayed that will
+        only be used if your password matches.</p>
+
+      <h1>Role signature</h1>
+      <p>If you wish to display your global or board role when posting, you
+        can put #rs in your name, like a tripcode, case insensitive. This will
+        prevent you from using a tripcode.</p>
+      <p>You can also enable an always use role signature rule in your
+        account settings.</p>
+
+      <h1>Markdown</h1>
+      <p>When posting you can use some tools that will enhance its text in
+        HTML.</p>
+
+      <h3>Greentext</h3>
+      <p>If you add a > in the start of a line, it will greentext the text
+        until it finds a new line.</p>
+      <br>
+      <p>Example:</p>
+      <p>
+        >le ebin upboat :^) -> <span class="greenText">>le ebin upboat
+          :^)</span>
+      </p>
+
+      <br>
+
+      <h3>Quote</h3>
+      <p>If you write >> and then a number to a posting, it will create a
+        link to this post in the board you are posting and add a tooltip with
+        the post preview if you have javascript enabled.</p>
+      <br>
+      <p>Example:</p>
+      <p>
+        >>50 ->
+        <a href="">>>50</a>
+      </p>
+
+      <br>
+
+      <h3>Board link</h3>
+      <p>If you write >>> and then add a board name between slashes, it will
+        create a link to the board.</p>
+      <br>
+      <p>Example:</p>
+      <p>
+        >>>/cancer/ ->
+        <a
+          href=""
+          class="quoteLink">>>>/cancer/</a>
+      </p>
+
+      <br>
+
+      <h3>Cross-quote</h3>
+      <p>It is also possible to quote posts from another boards. Just add
+        the posting number after the board name.</p>
+      <br>
+      <p>Example:</p>
+      <p>
+        >>>/cancer/50 ->
+        <a
+          href=""
+          class="quoteLink">>>>/cancer/50</a>
+      </p>
+
+      <br>
+
+      <h3>Tags</h3>
+      <p>
+        [spoiler]the game[/spoiler] -> <span class="spoiler">the game</span>
+      </p>
+      <p>
+        **this also works** -> <span class="spoiler">this also works</span>
+      </p>
+      <p>
+        ==SRZ BIZNIZ== -> <span class="redText">SRZ BIZNIZ</span>
+      </p>
+      <p>
+        ''italics'' -> <em>italics</em>
+      </p>
+      <p>
+        '''bold''' -> <strong>bold</strong>
+      </p>
+      <p>
+        __underline__ -> <u>underline</u>
+      </p>
+      <p>
+        ~~strikethrough~~ -> <s>strikethrough</s>
+      <p>
+      <p>[aa] for japanese characters</p>
+      <p>[code] tags if enabled by board owner</p>
+
+      <br>
+
+      <h3>Urls</h3>
+      <p>If you post a url starting with either http or https, it will
+        automatically be linked.</p>
+      <br>
+      <p>Example:</p>
+      <p>
+        http://bot.net ->
+        <a href="">http://bot.net</a>
+      </p>
+
+    </fieldset>
+
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

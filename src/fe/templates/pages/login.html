@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+<link
+  href="/.static/css/global.css"
+  type="text/css"
+  rel="stylesheet" />
+</head>
+<body>
+
+  <script src="/.static/js/themeLoader.js"></script>
+
+  <nav id="dynamicHeader"></nav>
+
+  <header>
+    <img
+      src="/.static/logo.png"
+      class="logoImg"
+      alt="logo" />
+  </header>
+
+  <div id="settingsWrapper">
+
+    <fieldset id="settingsFieldset">
+
+      <legend>Account</legend>
+      <h3>Login</h3>
+
+      <form
+        action="/login.js"
+        enctype="multipart/form-data"
+        method="post">
+
+        <label>
+          <input
+            type="text"
+            name="login"
+            class="loginField"
+            id="loginFieldLogin"
+            placeholder="login">
+        </label>
+        <label>
+          <input
+            type="password"
+            class="loginField"
+            id="loginFieldPassword"
+            name="password"
+            placeholder="password">
+        </label>
+
+        <div id="divRemember">
+          <input
+            type="checkbox"
+            name="remember"
+            class="loginField"
+            id="checkboxRemember">
+          Remember me
+        </div>
+
+        <button
+          type="submit"
+          id="loginFormButton">Login</button>
+
+      </form>
+
+      <hr />
+
+      <div id="divCreation">
+        <h3>Register</h3>
+        <form
+          action="/registerAccount.js"
+          enctype="multipart/form-data"
+          method="post">
+
+          <label>
+            <input
+              type="text"
+              name="login"
+              class="registerField"
+              id="registerFieldLogin"
+              placeholder="login">
+          </label>
+          <label>
+            <input
+              type="password"
+              class="registerField"
+              id="registerFieldPassword"
+              name="password"
+              placeholder="password">
+          </label>
+          <label>
+            <input
+              type="email"
+              class="registerField"
+              id="registerFieldEmail"
+              name="email"
+              placeholder="email">
+          </label>
+
+          <div class="captchaDiv">
+
+            <img
+              id="captchaImage"
+              class="captchaImage"
+              src="/captcha.js">
+
+            <br>
+            <input
+              type="button"
+              class="hidden reloadCaptchaButton"
+              onclick="captchaUtils.reloadCaptcha()"
+              value="reload">
+            <span class="captchaTimer"></span>
+
+            <br>
+
+            <input
+              name="captcha"
+              type="text"
+              class="captchaField registerField"
+              id="fieldCaptcha"
+              placeholder="answer">
+
+            <a
+              class="small"
+              href="/noCookieCaptcha.js">no cookies?</a>
+          </div>
+
+          <button
+            type="submit"
+            id="registerFormButton">Register</button>
+
+        </form>
+        <hr />
+
+      </div>
+
+      <div id="divRecover">
+        <h3>Recover Account</h3>
+        <form
+          action="/requestAccountRecovery.js"
+          enctype="multipart/form-data"
+          method="post">
+          <label>
+            <input
+              type="text"
+              name="login"
+              class="recoverField"
+              id="recoverFieldLogin"
+              placeholder="login">
+          </label>
+
+          <div class="captchaDiv">
+
+            <img
+              id="captchaImageRecover"
+              class="captchaImage"
+              src="/captcha.js">
+
+            <br>
+            <input
+              type="button"
+              class="hidden reloadCaptchaButton"
+              onclick="captchaUtils.reloadCaptcha()"
+              value="reload">
+            <span class="captchaTimer"></span>
+
+            <br>
+
+            <input
+              name="captcha"
+              type="text"
+              class="captchaField recoverField"
+              id="fieldCaptchaRecover"
+              placeholder="answer">
+
+            <a
+              class="small"
+              href="/noCookieCaptcha.js">no cookies?</a>
+          </div>
+
+          <button
+            type="submit"
+            id="recoverFormButton">Request recovery</button>
+
+        </form>
+
+      </div>
+
+    </fieldset>
+
+  </div>
+
+</body>
+
+<script src="/.static/js/api.js"></script>
+<script src="/.static/js/login.js"></script>
+<script src="/.static/js/captchaUtils.js"></script>
+<script src="/.static/js/themes.js"></script>
+<script src="/.static/js/favouriteBoards.js"></script>
+
+</html>

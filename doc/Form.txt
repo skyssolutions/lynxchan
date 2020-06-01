@@ -1,0 +1,1531 @@
+This document describes the form api. The files will be stored in src/be/form and will be accessed by using domain/functionName.js.
+
+Pages will use the request body for parameters and cookies for authentication.
+The parameters should be passed using the request body as usual on posts.
+The forms should use multipart/form-data for enctype.
+Files should be sent with an input of type "file" using name "files".
+Pages that require proper validation will redirect the user to /login.html if authentication fails. Validation will require both the login and hash cookies to be set. The hash is the hash created when an account is created or performs login.
+Array parameters will be split using commas and spaces will be ignored.
+Boolean parameters will be just checked if they return a true condition on the server using simple js evaluation (if(parameters.X)).
+Pages with optional json output will require the get parameter "json" with any value to output the data in json form.
+When outputting json data, these pages will output data in the following structure:
+{
+  status: "status of the operation",
+  data: "any kind of data can be returned on this field".
+}
+
+The status are:
+    bypassable: user has been prevented from posting but its possible for him to use the block bypass to post.
+    error: internal server occurred. The error string will be on the data field.
+    ok: operation successful.
+    maintenance: site is going under maintenance.
+    banned: user is banned. In this case, data will contain an object with the following fields:
+        reason: the reason of the ban.
+        board: board that this ban applies to.
+        expiration(Date): when the ban expires.
+        warning(Boolean): if the ban is actually a warning. Warnings are cleared once they are seen.
+        asn(Number): asn banned.
+        range: range banned.
+        banId: id of the ban.
+        appealled(Boolean): indicates if the ban has been already appealed.
+    hashBan: user tried to upload a banned file. In this case, data will contain an array where each object contains the following fields:
+        file: name provided for the file.
+        boardUri: board uri of the hash ban. If not informed, the file is banned globally.
+        reason: reason of the hash ban.
+
+To post files by reference or spoil individual files, inform the following parameters:
+fileSha256
+fileMime
+fileSpoiler
+fileName
+
+You can inform them multiple times. If a file matches the sha256, it will be reused. Individual files will be spoiled if the value of fileSpoiler is anything but an empty string, but you must inform the empty string anyway for them to work.
+You must inform all of them the same amount of times when informing any of them. They will be read in the same order, so the first entry of them represents one file, the second entry of them a second file.
+When no valid entry is informed, just the uploaded files will be used on the post.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::01
+
+Name: newThread
+
+Description: creates a new thread. Accepts files.
+
+Parameters:
+    noFlag: if the board has locationFlagMode as 1 and anything is sent for this, the user won't show his location flag.
+    name: name of the poster. 32 characters.
+    email: e-mail of the poster. 64 characters.
+    message*: message to be posted. 4096 characters.
+    subject: subject of the thread. 128 characters.
+    boardUri*: URI of the board. Will be included in the posting form at the generation stage.
+    password: password to be used for deletion. 8 characters.
+    captcha: captcha input.
+    spoiler: if anything is sent, indicates the images should be spoilered.
+    flag: id of a flag to be used.
+
+Json output(Number): id of the new thread.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::02
+
+Name: replyThread
+
+Description: post a reply to a thread. Accepts files.
+
+Parameters:
+    noFlag: if the board has locationFlagMode as 1 and anything is sent for this, the user won't show his location flag.
+    name: name of the poster. 32 characters.
+    email: e-mail of the poster. 64 characters.
+    message: message to be posted. 4096 characters. Mandatory if no files are sent.
+    subject: subject of the thread. 128 characters.
+    password: password to be used for deletion. 8 characters.
+    boardUri*: URI of the board.
+    threadId*: id of the thread. Will be included in the posting form at the generation stage.
+    captcha: captcha input.
+    spoiler: if anything is sent, indicates the images should be spoilered.
+    flag: id of a flag to be used.
+
+Json output(Number): id of the new reply.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::03
+
+Name: account
+
+Description: display the account page for the user. Requires validation.
+
+Json output(Object): object with the account data. Contains the following fields:
+    login: login of the user.
+    email: e-mail of the user.
+    globalRole(Number): global role of the user.
+    disabledLatestPostings(Boolean): indicates if the viewing of latest postings is disabled.
+    volunteeredBoards(Array): array with the boards where this user is a volunteer.
+    boardCreationAllowed(Boolean): indicates if the user is allowed to create boards.
+    ownedBoards(Array): array with the list of uri of boards owned by the user.
+    settings(Array): array of account settings. May contain the following values:
+        noBoardReports: user wishes to hide board reports on the global listing.
+        lockEnabled: uses wishes to have his account locked on too many failed logins.
+        reportNotify: user wishes to receive e-mail notifications about reports.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::04
+
+Name: registerAccount
+
+Description: creates a new account.
+
+Parameters:
+    login*: login of the account. 16 characters. Only a-Z,_ and 0-9 allowed.
+    password*: password of the account.
+    email: e-mail of the account. 64 characters.
+    captcha: input for captcha.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::05
+
+Name: login
+
+Description: performs login of the user.
+
+Parameters:
+    login: login of the account.
+    password: password of the account.
+    remember(Boolean): if true, user will have longer sessions.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::06
+
+Name: logout
+
+Description: logouts the user, invalidating its authentication cookies.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::07
+
+Name: requestAccountRecovery
+
+Description: sends an e-mail to the user with a link so he can recover his account.
+
+Parameters:
+    login: login of the account.
+    captcha: captcha input.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::08
+
+Name: recoverAccount
+
+Description: creates a new random password and e-mails it to the user. It uses get parameters in the URL instead of post parameters.
+
+Parameters:
+    login: login of the account.
+    hash: hash of the recovery request.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::09
+
+Name: createBoard
+
+Description: creates a new board. Requires validation.
+
+Parameters:
+    boardUri*: URI of the new board. 32 characters, lower case and numbers only.
+    boardName*: name of the new board. 32 characters.
+    boardDescription: description of the new board. 128 characters.
+    captcha: input for captcha.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::10
+
+Name: globalManagement
+
+Description: displays page for global staff to perform global management using their global tools like the fancy faggots they are. Requires validation. Forbidden for users with global role higher than 3.
+
+Json output(Object): object with data used in global management. Contains the following fields:
+    login: login of the user.
+    openReports(Number): amount of open reports.
+    staff(Array): array with the global staff of the site the user is allowed to manage. Contains objects each with the following fields:
+        login: login of the user.
+        globalRole: global role of the user.
+    appealedBans(Number): amount of appealed bans.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::11
+
+Name: setGlobalRole
+
+Description: changes the global role of an user. Requires validation.
+
+Parameters:
+    login: login of the user.
+    role(Number): new role of the user.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::12
+
+Name: boardManagement
+
+Description: displays page for board management. Requires validation. Allowed only for the board owner and volunteers. It uses get parameters.
+
+Parameters:
+    boardUri: uri of the board the user wishes to manage.
+
+Json output(Object): object with data used to manage the board. Contains the following fields:
+    usesCustomSpoiler(Boolean): indicates if the board has a custom spoiler image.
+    volunteers(Array): array with the logins of the board volunteers.
+    boardName: name of the board.
+    openReports(Number): the amount of open reports.
+    autoSageLimit(Number): how many times a thread can be replied before it stops being bumped.
+    maxThreadCount(Number): how many threads the board can have.
+    maxFileSizeMB(Number): how large files uploaded to the board can be.
+    acceptedMimes(Array): accepted mimes for uploaded files.
+    captchaMode(Number): indicates the captcha mode for the board. 0 means no captcha, 1 means only for new threads and 2 means for all posts on the board.
+    maxFiles(Number): maximum allowed files to be uploaded on posts.
+    boardDescription: description of the board.
+    anonName: name used for anonymous users.
+    preferredLanguage: id of the board preferred language.
+    availableLanguages(Array): array with the currently available languages for the board. Each element is an object with the following fields:
+        id: id of the language.
+        label: labe of the language.
+    hourlyThreadLimit(Number): how many threads can be created on the board within an hour before it locks thread creation.
+    autoCaptchaThreshold(Number): how many threads can be created on the board within an hour before captcha is turned on automatically.
+    settings(Array): array of settings being used in the board. May contain the following values:
+        disableIds: disables recording of thread-wise ids.
+        forceAnonymity: disables the name input.
+        unindex: removes board from index.
+        allowCode: allows the usage of [code] on postings.
+        early404: before pruning threads, will first prune any thread with less than 5 replies that are over the first third.
+        blockDeletion: makes it impossible for users to delete their own posts.
+        requireThreadFile: requires at least one file when creating a thread.
+        uniqueFiles: enforces unique file posting.
+        uniquePosts: enforces unique message posting.
+        textBoard: upload of files is not allowed on the board.
+    tags(Array): array of tags for the board.
+    locationFlagMode(Number): current location flag mode for the board.
+    boardMessage: message displayed on the board header.
+    maxBumpAgeDays(Number): for how many days after its creation that a non-cyclic thread can be bumped.
+    isOwner(Boolean): indicates if the user owns the board.
+    appealedBans(Number): amount of appealed bans.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::13
+
+Name: setVolunteer
+
+Description: adds or remove a volunteer from a board. Requires validation. Allowed only for board owners.
+
+Parameters:
+    login: login of the user to be either removed or added to the list of board volunteers.
+    boardUri: board to have its list of volunteers managed.
+    add(Boolean): indicates if the user is to be added or removed from the list of volunteers.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::14
+
+Name: transferBoardOwnership
+
+Description: transfers the board to another user. Requires validation. Allowed only for board owners and users with global role lower than 2.
+
+Parameters:
+    boardUri: board to be transferred.
+    login: login of the new owner.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::15
+
+Name: contentActions
+
+Description: ban, deletes or reports posts and threads. The inputs of the posts will have their names generated on the page generation stage.
+
+Parameters:
+    nonBypassable: if informed, broad bans applied will not be able to be bypassable.
+    deleteMedia: if anything is informed and the user is part of the global staff, when deleting files or postings, the actual media files will be removed from the server.
+    banType: type of ban. 0 bans only the ips of the selected posts and requires a valid expiration. 1 creates range bans off the first half of the ips and 2 creates range bans off the first 3/4 of the ips. 3 creates an ASN ban.
+    password: password to be used for deletion.
+    reasonReport: reason of the report.
+    reasonBan: reason of the ban.
+    banMessage: message to be displayed in the banned content.
+    action: action to be performed. 'ban', ban-delete', 'spoil', 'delete', 'ip-deletion' and 'report' may be used, case insensitive.
+    globalBan: if any value is passed, indicates the bans are global.
+    globalReport: if any value is passed, indicates the reports are global.
+    duration: duration of the ban. Defaults to 5 years. See the back-end readme for details.
+    captcha: captcha input. Used for banning and reporting. Ignored for bans when the user is part of the global staff.
+    deleteUploads: if informed, only the uploads and not the posts and threads will be deleted.
+    confirmation: must be informed when using 'ip-deletion' as the action.
+
+Json output(Object): when using regular deletion, it will output an object with the following fields:
+    removedThreads(Number): amount of deleted threads.
+    removedPosts(Number): amount of deleted posts.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::16
+
+Name: deleteBoard
+
+Description: deletes a board. Requires validation. Allowed for board owners and users with global role lower than 2.
+
+Parameters:
+    boardUri: URI of the board to be deleted.
+    confirmDeletion(Boolean): confirmation that the board should be deleted.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::17
+
+Name: closeReports
+
+Description: closes a series of reports. The inputs of the reports will be generated by the engine. Requires authentication.
+
+Parameters:
+    banTarget(Number): indicates if a ban will be applied. 0: no bans applied. 1: reported posts are banned. 2: reporters are banned.
+    duration: string with the duration of the ban.
+    banReason: reason for the ban.
+    closeAllFromReporter(Boolean): if true, will also close all reports from any reporter which are having their reports closed. In the case of global reports, every global report across all boards will be closed. In the case of board reports, only other board reports within the same board will be closed.
+    deleteContent(Boolean): if true, will delete the reported content after closing the reports.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::18
+
+Name: closedReports
+
+Description: display the list of closed reports. Requires authentication. It uses get parameters instead of post.
+
+Parameters:
+    boardUri: board to display the closed reports of. If not informed, global reports will be displayed instead.
+
+Json output(Array): array with the closed reports. Each object contains the following fields:
+    _id: unique id of the report.
+    boardUri: board of the report.
+    threadId(Number): thread that either contains the reported post or was reported.
+    postId(Number): reported post.
+    reason: reason of the report.
+    closing: when the report was closed.
+    closedBy: login of the user that closed the report.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::19
+
+Name: mod
+
+Description: displays a thread in moderation mode, allowing for the user to ban users, lock and pin the thread. Requires authentication. It uses get parameters instead of post.
+
+Parameters:
+    boardUri: board containing the thread.
+    threadId: id of the thread.
+    page(Number): page to be displayed instead of a thread. If no thread is informed or a page is informed instead, it will output an array with threads of that page.
+
+Json output(Object): object with the data of the thread.
+    signedRole: role of the user that posted the thread.
+    banMessage: message to be displayed indicating this message was a cause to a ban.
+    id: thread-wise id of the poster.
+    email: email of the poster.
+    flagData(Array): array with the available flags for the board. Each element contains the following fields:
+        _id: id of the flag.
+        name: name of the flag.
+    markdown: message with html markdown applied.
+    flag: url of the used flag.
+    flagName: name of the used flag.
+    flagCode: location code of the flag.
+    threadId(Number): unique id of the thread inside the board.
+    subject: subject of the thread.
+    lastEditTime(Date): date of the last time the message of the thread message was edited.
+    lastEditLogin: Login of the last user to edit the thread message.
+    message: text of the post.
+    name: name of the poster.
+    ip: hashed and salted ip of the poster.
+    bypassId: hashed and salted bypassId of the poster.
+    narrowRange: hashed and salted narrow range of the poster, representing 3/4 of his ip.
+    broadRange: hashed and salted broad range of the poster, representing 1/2 of his ip.
+    creation(Date): time when the post was created.
+    locked(Boolean: indicates if the thread is locked and cannot be replied to.
+    cyclic(Boolean): indicates if the thread is cyclic.
+    autoSage(Boolean): indicates if the thread is bumplocked.
+    pinned(Boolean): indicates if the thread is pinned and will be listed on top of unpinned threads.
+    files(Array): files uploaded with the thread. Each object contains the following fields:
+        originalName: original name of the upload.
+        path: path for the file.
+        sha256: sha256 hash of the file.
+        thumb: path for the file's thumbnail.
+        size(Number) size in bytes of the file.
+        mime: mime of the file.
+        width(Number): width of the file, if image.
+        height(Number): size of the file, if image.
+    posts(Array): array of the posts in this thread. Each object contains the following fields:
+        name: name of the poster.
+        signedRole: role of the user that posted the thread.
+        email: email of the poster.
+        flag: url of the used flag.
+        flagName: name of the used flag.
+        flagCode: location code of the flag.
+        lastEditTime(Date): date of the last time the message of the thread message was edited.
+        lastEditLogin: Login of the last user to edit the thread message.
+        postId(Number): unique id of the post inside the board.
+        id: thread-wise id of the poster.
+        ip: hashed and salted ip of the poster.
+        bypassId: hashed and salted bypassId of the poster.
+        narrowRange: hashed and salted narrow range of the poster, representing 3/4 of his ip.
+        broadRange: hashed and salted broad range of the poster, representing 1/2 of his ip.
+        markdown: message with html markdown applied.
+        subject: subject of the thread.
+        message: text of the post.
+        banMessage: message to be displayed indicating this message was a cause to a ban.
+        creation(Date): time when the post was created.
+        files(Array): pre-aggregated array of files uploaded with the post. Each object contains the following fields:
+            sha256: sha256 hash of the file.
+            originalName: original name of the upload.
+            path: path for the file.
+            thumb: path for the file's thumbnail.
+            size(Number) size in bytes of the file.
+            width(Number): width of the file, if image.
+            mime: mime of the file.
+            height(Number): size of the file, if image.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::20
+
+Name: bans
+
+Description: displays the global or board bans. Requires authentication. Uses get parameters instead of post.
+
+Parameters:
+    boardUri: board to display the bans of. If not informed, global bans will be displayed instead.
+
+Json output(Array): array with the bans. Each object contains the following values:
+    _id: unique id of the ban.
+    reason: reason of the ban.
+    ip(Array): banned ip.
+    boardUri: board for which the ban applies. Only informed for board bans, when viewing global bans and while using global board moderation.
+    expiration: when the ban expires.
+    appliedBy: login of the user that applied the ban.
+    appeal: appeal of the bans.
+    denied(Boolean): indicates if the appeal was denied.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::21
+
+Name: liftBan
+
+Description: removes a ban. Requires authentication.
+
+Parameters:
+    banId: id of the ban to be lifted.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::22
+
+Name: changeThreadSettings
+
+Description: performs general control actions on a thread, like locking and pinning. Requires authentication.
+
+Parameters:
+    boardUri: board that contains the thread.
+    threadId: id of the thread to be managed.
+    lock: indicates if the thread must be locked. Any value sent will lock, if not sent, will unlock.
+    pin: indicates if the thread must be pinned. Any value will pin, if not sent, will unpin.
+    cyclic: indicates if the thread must be set on cyclic mode. Any value will put in cyclic mode. If not sent, will remove cyclic mode.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::23
+
+Name: captcha
+
+Description: returns a captcha image in png format. Uses get parameters. It sets too cookies: captchaid and captchaexpiration.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::24
+
+Name: changeAccountSettings
+
+Description: changes general account settings.
+
+Parameters:
+    email: new e-mail of the account. 64 characters.
+    alwaysSignRole: any value indicates the user wishes to always use his role signature on posts.
+    reportNotify: any value indicates the user wishes to receive e-mail notifications of reports.
+    noBoardReports: any value indicates the user wishes to hide board reports on the global listing.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::25
+
+Name: changeAccountPassword
+
+Description: changes account password.
+
+Parameters: 
+    password: current password.
+    newPassword: new password.
+    confirmation: repeat of new password.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::26
+
+Name: bannerManagement
+
+Description: displays screen to manage board banners. It uses get parameters. Restricted to owner of the board. Requires authentication.
+
+Parameters:
+    boardUri: URI of the board to be managed.
+
+Json output(Array): array of existing banners for the board. Each object contains the following fields:
+    _id: id of the banner.
+    filename: path for the banner.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::27
+
+Name: createBanners
+
+Description: adds new banners. Accepts files. Requires an image as the first image sent. Requires authentication. Restricted to the board owner and global admins.
+
+Parameters:
+    boardUri(Optional): board to add the banner to.
+
+Json output(Array): array with the information of created banners. Each element is an object with data relevant to the new banner:
+    id: id of the new banner.
+    path: path for the banner file.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::28
+
+Name: deleteBanner
+
+Description: deletes a banner. Requires authentication. Restricted to the board owner.
+
+Parameters:
+    bannerId: unique identifier of the banner.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::29
+
+Name: randomBanner
+
+Description: displays a random banner for the specified board. Displays the default banner if no banners are found for the board. Uses get parameters.
+
+Parameters:
+    boardUri: board URI.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::30
+
+Name: setBoardSettings
+
+Description: changes board settings. Requires authentication.
+
+Parameters:
+    preferredLanguage: the id of the preferred language of the board.
+    autoSageLimit(Number): how many times a thread can be replied before it stops being bumped.***
+    maxThreadCount(Number): how many threads the board can have.***
+    maxFileSizeMB(Number): how large files uploaded to the board can be.***
+    acceptedMimes(Array): accepted mimes for uploaded files.***
+    maxFiles(Number): maximum allowed files to be uploaded on posts.***
+    boardUri*: board URI.
+    boardName*: new name of the board. 32 characters.
+    boardDescription: new description of the board. 128 characters.
+    autoFullCaptchaLimit(Number): a limit that automatically enables captcha for all posts if these many replies are postd within an hour.
+    autoCaptchaLimit(Number): a limit that automatically enables captcha for new threads if these many threads are created within an hour.
+    disableIds: if any value is passed, ids on threads and posts will be disabled.
+    hourlyThreadLimit: limit of new threads allowed per hour. If exceeded, the board will lock for thread creation temporarily.
+    anonymousName: name to be used when the user is anonymous. 32 character.
+    forceAnonymity: if any value is passed, the name input is disabled on posting.
+    maxBumpAge(Number): for how many days non-cyclic threads can be bumped after being created.
+    allowCode: if any value is passed, use of code tag will be allowed on markdown.
+    boardMessage: new message of the board. 256 characters.
+    early404: before pruning threads, will first prune any thread with less than 5 replies that are over the first third.
+    tags(Array): array of tags to be used on this board.
+    unindex: if any value is passed, the board will not be displayed on the top boards or the boards list.
+    blockDeletion: disables user deletion of content.
+    requireThreadFile: requires at least one file for creating threads.
+    uniqueFiles: enforces unique files on posting.
+    uniquePosts: enforces unique messages on posting.
+    locationFlagMode(Number): mode for location flags. 0 means disabled, 1 means the user can opt-out, 2 means they are mandatory.
+    captchaMode(Number): indicates the captcha mode for the board. 0 means no captcha, 1 means only for new threads and 2 means for all posts on the board.
+    textBoard: upload of files is not allowed on the board.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::31
+
+Name: logs
+
+Description: displays available dates for logs. It uses get parameters.
+
+Parameters:
+    year: year in format YYYY to specify a year to fetch available dates. Defaults to current year.
+    boardUri: boardUri of the board to view available dates from. If none, global logs dates will be shown.
+
+Json output(Array): array with the available dates.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::32
+
+Name: filterManagement
+
+Description: page used to manage filters of a board. Uses get parameters. Reserved to board owners or site administrators. Requires authentication.
+
+Parameters:
+    boardUri: URI of the board to have its filters managed.
+
+Json output(Array): array with filters of the board. Each object contains the following fields:
+    originalTerm: term to be replaced.
+    replacementTerm: term that will replace the original one.
+    caseInsensitive(Boolean): indicates the filter is case-insensitive.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::33
+
+Name: createFilter
+
+Description: page used to create filters . Uses get parameters. Reserved to board owners or site administrators. Requires authentication.
+
+Parameters:
+    boardUri: URI of the board to have its filters managed.
+    originalTerm: word to be filtered. 32 characters.
+    replacementTerm: world to be filtered to. 32 characters.
+    caseInsensitive(Boolean): indicates the filter is case-insensitive.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::34
+
+Name: deleteFilter
+
+Description: page used to delete filters of a board. Uses get parameters. Reserved to board owners or site administrators. Requires authentication.
+
+Parameters:
+    boardUri: uri of the board to have its filter deleted.
+    filterIdentifier: identification of the filter to be deleted.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::35
+
+Name: boardModeration
+
+Description: page used by global admins to moderate boards. It provides tools like board transfer and board deletion to the global staff. Restricted to users with global role lower than 2. Requires authentication. Uses get parameters.
+
+Parameters:
+    boardUri: URI of the board be moderated.
+
+Json output(Object): object with the moderation data of the board. Contains the following fields:
+    owner: login of the board owner.
+    lastSeen(Date): date of when the board owner was last seen.
+    specialSettings(Array): array with the board's special settings. May hold the following values:
+        sfw: indicates the board is sfw.
+        locked: indicates the board is locked.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::36
+
+Name: boards
+
+Description: displays all existing boards. Uses get parameters.
+
+Parameters:
+    unindexed: displays only unindexed boards if anything is informed.
+    inactive: displays only inactive boards if anything is informed.
+    sfw: displays only sfw boards if anything is informed.
+    page: page to be viewed.
+    boardUri: uri to be searched partially.
+    tags(Array): tags to be searched. Only boards with all tags will be returned.
+    sorting: sorting to be used:
+        1: from least popular to most popular.
+        2: from most posts to least posts.
+        3: from least posts to most posts.
+        4: from highest PPH to lowest PPH.
+        5: from lowest PPH to highest PPH.
+        6: alphabetic order.
+        7: reverse alphabetic order.
+        Anything else sort them from most popular to least popular.
+
+Json output(Object): object with data regarding the available boards. Contains the following fields:
+    pageCount: total amount of available pages.
+    overboard: uri of the overboard, if any.
+    sfwOverboard: uri of the sfw overboard, if any.
+    boards(Array): array with the available boards. Each object contains the following fields:
+        boardUri: uri of the board.
+        inactive(Boolean): indicates the board has been marked inactive due to its owner not logging in for too long.
+        boardName: name of the board.
+        boardDescription: description of the board.
+        lastPostId(Number): total amount of posts made on this board so far.
+        postsPerHour(Number): how many posts this board received in the last hour.
+        tags(Array): array with strings identifying the subjects of the board.
+        uniqueIps(Number): how many unique ips posted on the board in the last 24 hours.
+        specialSettings(Array): array of the board's special settings. May hold the following values:
+            sfw: indicates the board is sfw.
+            locked: indicates the board is locked.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::37
+
+Name: noCookieCaptcha
+
+Description: page used for solving captchas with cookies disabled. Uses get parameters.
+
+Parameters:
+    solvedCaptcha: id of a solved captcha to be displayed.
+
+Json output: id of a new captcha.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::38
+
+Name: solveCaptcha
+
+Description: solves a captcha without invalidating it.
+
+Parameters:
+    captchaId: id of the captcha to be solved.
+    answer: answer to the captcha.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::39
+
+Name: rangeBans
+
+Description: displays the page for management of range bans. Requires authentication. Uses get parameters.
+
+Parameters: 
+    boardUri: if informed, will display only range bans for the board.
+
+Json output(Array): array with the range bans found. Each object contains the following fields:
+    _id: unique id of the range ban.
+    range: range of the ban.
+    expiration(Date): expiration date of the ban.
+    reason: reason of the ban.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::40
+
+Name: placeRangeBan
+
+Description: creates a range ban. Requires authentication. Global range bans are restricted to users with global role lower than 3.
+
+Parameters:
+    nonBypassable(Boolean): if the ban cannot be bypassed.
+    reasonBan: reason of the ban.
+    duration: duration of the ban.
+    boardUri: if not informed, the range ban will be global.
+    range: range to be banned. The range must use a cidr format and the range size must be in increments of 8. like 1.2.3.4/16 or 2001:db8:85a3::/64.
+
+Json output: id of the new range ban.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::41
+
+Name: hashBans
+
+Description: displays the page for management of hash bans. Requires authentication. Uses get parameters.
+
+Parameters: 
+    boardUri: if informed, will display only hash bans for the board.
+
+Json output(Array): array with the hash bans. Each object contains the following fields:
+    _id: unique id of the hash ban.
+    sha256: banned hash.
+    date(Date): date of the ban.
+    user: user that applied the ban.
+    reason: reason of the ban.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::42
+
+Name: placeHashBan
+
+Description: creates a hash ban that will keep files with this hash to be posted. Requires authentication. Global hash bans require global role lower than 3.
+
+Parameters:
+    reason: reason of the hash ban.
+    boardUri: if not informed, the hash ban will be global.
+    hash: banned sha256 hash. 64 characters.
+
+Json output: id of the new ban.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::43
+
+Name: liftHashBan
+
+Description: lifts a hash ban. Requires authentication.
+
+Parameters:
+    hashBanId: id of the hash ban to be removed.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::44
+
+Name: setCustomCss
+
+Description: uploads a custom CSS for a board. Requires authentication. Allowed only for board owners. If no file is sent, any set file will be removed.
+
+Parameters:
+    boardUri: URI of the board to have it's custom CSS managed.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::45
+
+Name: rules
+
+Description: displays the page used to manage a board rule's. Requires authentication. Restricted to the board owner. Uses get parameters.
+
+Parameters:
+    boardUri: URI of the board the user wishes to manage it's rules.
+
+Json output(Array): array with the board rules.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::46
+
+Name: createRule
+
+Description: adds a new rule to a board. Requires authentication. Restricted to the board owner.
+
+Parameters:
+    boardUri: URI of the board the user wishes to add a new rule to.
+    rule: text of the rule. 512 characters.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::47
+
+Name: deleteRule
+
+Description: deletes a rule from a board. Requires authentication. Restricted to the board owner.
+
+Parameters:
+    boardUri: URI of the board to have a rule deleted.
+    ruleIndex: index of the rule to be deleted.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::48
+
+Name: edit
+
+Description: displays a page used to edit posts and threads. Requires authentication. Restricted to global staff and board staff. Uses get parameters.
+
+Parameters:
+    boardUri: URI of the board to have a posting edited.
+    threadId: id of the thread to be edited.
+    postId: id of the post to be edited.
+
+Json output(Object): object with the data pertinent to the post being edited. Contains the following fields:
+    message: original message of the posting.
+    subject: original subject of the posting.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::49
+
+Name: saveEdit
+
+Description: saves a new message for a posting. Requires authentication. Restricted to global staff and board staff.
+
+Parameters:
+    boardUri: URI of the board to have a posting edited.
+    message*: new message of the posting.
+    threadId: id of the thread to be edited.
+    postId: id of the post to be edited.
+    subject: new subject of the posting. 128 characters.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::50
+
+Name: flags
+
+Description: displays the flag management page of a board. Uses get parameters, requires authentication, reserved for the board owner.
+
+Parameters:
+    boardUri: URI of the board to have the flags managed.
+
+Json output(Array): array of flags of the board. Each object contains the following fields:
+    _id: unique id of the flag.
+    name: name of the flag.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::51
+
+Name: createFlag
+
+Description: creates a new flag for the board. Requires authentication, reserved for the board owner. Requires one image uploaded.
+
+Parameters:
+    boardUri: URI of the board.
+    flagName: name of the new flag. 16 characters.
+
+Json output: id of the new flag.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::52
+
+Name: deleteFlag
+
+Description: Deletes a flag. Requires authentication, reserved for the board owner.
+
+Parameters:
+    flagId: id of the flag to be deleted.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::53
+
+Name: globalSettings
+
+Description: displays the page that allows for the user to change global settings. Requires authentication. Restricted to root users.
+
+Json output(Object): object with the current global settings. Same as global settings.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::54
+
+Name: saveGlobalSettings
+
+Description: saves global settings. Requires authentication. Restricted to root users. Blank parameters will revert to the default.
+
+Parameters:
+    Same as global settings.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::55
+
+Name: setCustomSpoiler
+
+Description: uploads a custom spoiler for a board. Requires authentication. Allowed only for board owners. If no file is sent, any set file will be removed.
+
+Parameters:
+    boardUri: URI of the board to have it's custom spoiler image managed.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::56
+
+Name: deleteFromIp
+
+Description: deletes posts and threads from an ip from multiple boards. Requires authentication. Reserved for users with an role equal or lower than the global setting clearIpMinRole.
+
+Parameters:
+    ip*: ip to have its posts deleted.
+    boards: uri of the boards to have posts from the informed ip deleted. If not informed, the posts from the ip will be deleted from all boards.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::57
+
+Name: setCustomJs
+
+Description: uploads a custom javascript for a board. Requires authentication. Reserved for board owners. If no file is sent, removes the custom js from the board.
+
+Parameters:
+    boardUri: uri of the board to have its's custom javascrip edited.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::58
+
+Name: transferThread
+
+Description: transfers a thread from a board to another. Requires authentication. Reserved for global staff.
+
+Parameters:
+    boardUri: uri of the board that contains the thread to be transferred.
+    threadId: id of the thread to be transferred.
+    boardUriDestination: uri of the board that will receive the thread.
+
+Json output(Number): new id of the thread.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::59
+
+Name: blockBypass
+
+Description: displays the page that allows the user to renew a block bypass and indicates if he has a valid block bypass token.
+
+Json output(Object): object with information about the current block byass status. Contains the following fields:
+    valid(Boolean): indicates if the user has a valid block bypass.
+    mode(Number): current blockBypass mode. 0 means disabled, 1 enabled and 2 mandatory.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::60
+
+Name: renewBypass
+
+Description: allows the user to renew his block bypass.
+
+Parameters:
+    captcha: captcha input.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::61
+
+Name: appealBan
+
+Description: appeals a ban.
+
+Parameters:
+    banId: id of the ban being appealed.
+    appeal: appeal.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::62
+
+Name: denyAppeal
+
+Description: denies the appeal of a ban. Requires authentication.
+
+Parameters:
+    banId: id of the ban being having it's appeal denied.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::63
+
+Name: graphs
+
+Description: displays available dates for graphs. It uses get parameters.
+
+Parameters:
+    year: year in format YYYY to specify a year to fetch available dates. Defaults to current year.
+
+Json output(Array): array with the available dates.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::64
+
+Name: checkFileIdentifier
+
+Description: checks if a file already exists on the server. Uses get parameters. Outputs only json.
+
+Parameters:
+    identifier: identifier for the file. It is composed of the file sha256, all lowercases.
+
+Json output(Boolean): if the file exists, returns a true.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::65
+
+Name: setSpecialBoardSettings
+
+Description: sets the special settings for the board. Requires authentication, allowed only for users with global role lesser than 2.
+
+Parameters:
+    boardUri*: board to have its special settings changed.
+    sfw: if informed, will add it to the special settings of the board, indicating it is sfw.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::66
+
+Name: mediaManagement
+
+Description: displays the uploaded files and allows to manage them. Requires authentication. Reserved for the global staff. Uses get parameters.
+
+Parameters:
+    banId: id of a ban to search files posted by the same author.
+    orphaned: if informed, only orphaned files will be displayed.
+    page: page the user wishes to see.
+    filter: if informed, only files with the given string on the identifier will be shown. Case insensitive.
+    boardUri: when searching for files by a given poster, this is the boardUri of the post in question.
+    threadId(Number): when searching for files by a given poster, this is the thread of the OP in question.
+    postId(Number): when searching for files by a given poster, this is the thread of the OP in question.
+
+JSON output(Object): object with the media information. Contains the following fields:
+    pages(Number): amount of pages available.
+    media(Array): array with the media files for the page. Each element is an object with the following fields:
+        identifier: identifier of the file.
+        references(Number): amount of references the file has.
+        extension: extension used when the file was store. It is not used for the thumbnail, only the main file. Might be null, in which case the file didn't use an extension when being saved.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::67
+
+Name: deleteMedia
+
+Description: completely deletes media files from the database. Requires authentication. Reserved for the global staff. Any parameter informed which the name matches the regex [0-9a-f]{32}-\w+ will be picked as an identifier to be deleted.
+
+Parameters:
+    ban(Boolean): if informed, any deleted file will also have it's hash globally banned. Ignored if the user is a janitor.
+    reason: reason of the ban.
+    text: if informed, the engine will search the informed text for identifiers to be deleted. The text will be run against the regex [0-9a-f]{32}-\w+ to look for identifiers.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::68
+
+Name: languages
+
+Description: displays the alternative languages management page. Requires authentication. Reserved for users with global role lesser than 2.
+
+JSON output(Array): array with the existing alternative languages. Each object contains the following fields:
+    _id: language's id.
+    frontEnd: path for the language's front-end.
+    languagePack: path for the language's language pack.
+    headerValues(Array): array with the possible values that will use this language.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::69
+
+Name: addLanguage
+
+Description: adds a new alternative languages. Requires authentication. Reserved for users with global role lesser than 2.
+
+Parameters:
+    frontEnd: path for the language's front-end.
+    languagePack: path for the language's language pack.
+    headerValues(Array): values sent on the header that will cause the language to be used.
+
+Json output: id of the new language.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::70
+
+Name: deleteLanguage
+
+Description: deletes an alternative language. Requires authentication. Reserved for users with global role lesser than 2.
+
+Parameters:
+    languageId: id of the language to be deleted.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::71
+
+Name: accounts
+
+Description: displays all accounts registered on the database. Requires authentication. Reserved for users with global role lesser than 2.
+
+JSON output(Array): array with the registered logins.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::72
+
+Name: accountManagement
+
+Description: displays data for an account. Requires authentication. Reserved for users with global role lesser than 2. Uses get parameters.
+
+Parameters:
+    account: account to retrieve data for.
+
+JSON output(Object): object containing the following data for the account:
+    globalRole(Number): account's global role.
+    ownedBoards(Array): array containing the boards this user owned.
+    volunteeredBoards(Array): array containing the boards this user is a volunteer at.
+    lastSeen(Date): date when this account was last active.
+    email: account e-mail.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::73
+
+Name: addAccount
+
+Description: adds a new user account. Requires authentication. Reserved for users with global role lesser than 2.
+
+Parameters:
+    login: login for the new account.
+    email: email for the new account.
+    password: password for the new account.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::74
+
+Name: deleteAccount
+
+Description: deletes an account after transfering any owned board to the user deleting the account. Requires authentication. Reserved for users with global role lesser than 2.
+
+Parameters:
+    account: login of the account to be deleted. If not sent, the user's own account will be deleted. In that case, the account will only be deleted if the user doesn't own any boards.
+    confirmation(Boolean): if not informed as a boolean true, the operation will not be executed.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::75
+
+Name: socketControl
+
+Description: shows the status of the unix socket. Requires authentication. Restricted to users with global role 0.
+
+JSON output(Object): object containing the following data for the socket status:
+    status: status of the socket.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::76
+
+Name: restartSocket
+
+Description: restarts the unix socket. Requires authentication. Restricted to users with global role 0.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::77
+
+Name: massBan
+
+Description: applies a ban to several ips. Requires authentication. Reserved for users with global role lesser than 2.
+
+Parameters:
+    ips(Array)*: ips in cleartext to be banned.
+    reason: reason for the ban.
+    duration: duration of the ban. Defaults to 5 years. See the back-end readme for details.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::78
+
+Name: mediaDetails
+
+Description: displays detailed information on a media file. It uses get parameters.
+
+Parameters:
+    identifier: media identifier.
+
+JSON output(Object): object containing the details of the media:
+    size(Number): number in bytes of the file.
+    uploadDate(Date): date when the file was first uploaded.
+    references(Array): array with all the postings that reference this file. Each element is an object containing the folllowing fields:
+        boardUri: board of the posting.
+        threadId(Number): threadId of the posting.
+        postId(Number): postId of the posting, if any.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::79
+
+Name: requestEmailConfirmation
+
+Description: requests a confirmation e-mail to be sent to the user's registered e-mail. Requires authentication.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::80
+
+Name: confirmEmail
+
+Description: confirms the specified account's e-mail. Uses get parameters.
+
+Parameters:
+    login: login of the account to be confirmed.
+    hash: token required to confirm the account.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::81
+
+Name: latestPostings
+
+Description: displays all latest postings made on the site. Requires authentication. Uses get parameters.
+
+Parameters:
+    ip: ip to search posts from.
+    banId: id of a ban to search all other posts from the same author.
+    boardUri: boardUri of a post to search posts from the same ip and bypass. Required to use either postId or threadId.
+    postId(Number): postId of a post to search posts from the same ip and bypass.
+    threadId(Number): threadId of an OP to search posts from the same ip and bypass. Won't be used if postId is informed.
+    date(Number or Date): date time to start the listing from.
+    boards: list of boards to be read from. Will default to every board where the user can moderate.
+
+JSON output(Array): array where each element is an object with the following fields:
+    signedRole: role of the user that posted the thread.
+    ip: posting ip.
+    bypassId: hashed and salted bypassId of the poster.
+    asn: asn relative to the ip.
+    broadRange: range of 1/2 of the ip.
+    narrowRange: range of 1/4 of the ip.
+    banMessage: message to be displayed indicating this message was a cause to a ban.
+    id: thread-wise id of the poster.
+    email: email of the poster.
+    markdown: message with html markdown applied.
+    flag: url of the used flag.
+    flagName: name of the used flag.
+    flagCode: location code of the flag.
+    threadId(Number): unique id of the thread inside the board.
+    boardUri: board to which the posting belongs to.
+    postId(Number): unique id of the reply inside the board.
+    subject: subject of the thread.
+    lastEditTime(Date): date of the last time the message of the thread message was edited.
+    lastEditLogin: Login of the last user to edit the thread message.
+    message: text of the post.
+    name: name of the poster.
+    files(Array): files uploaded with the thread. Each object contains the following fields:
+        originalName: original name of the upload.
+        path: path for the file.
+        sha256: md5 hash of the file.
+        thumb: path for the file's thumbnail.
+        size(Number) size in bytes of the file.
+        mime: mime of the file.
+        width(Number): width of the file, if image.
+        height(Number): size of the file, if image.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::82
+
+Name: archiveThread
+
+Description: adds a thread to the archives. Requires authentication.
+
+Parameters:
+    boardUri: board the thread belongs to.
+    threadId(Number): id of the thread.
+    confirmation(Boolean): confirmation of the action.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::83
+
+Name: archives
+
+Description: displays archived threads. Uses get parameters.
+
+Parameters:
+    boards: lists of boards to list from.
+    page(Number): page to be fetched.
+
+Json output(Object): contains the following fields:
+    pages(Number): total amount of pages available.
+    threads(Array): array with the found archived threads. Contains objects each one with the following fields:
+        boardUri: board the thread belongs to.
+        threadId(Number): id of the thread.
+        subject: thread subject.
+        message: thread message.
+        creation(Date): date when the thread was created.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::84
+
+Name: takeSettings
+
+Description: internal use only, it receives new settings from a master node in raw format but responds only in json.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::85
+
+Name: placeAsnBan
+
+Description: creates an ASN ban. Requires authentication.
+
+Parameters:
+    nonBypassable(Boolean): if the ban cannot be bypassed.
+    reasonBan: reason of the ban.
+    duration: duration of the ban.
+    boardUri: if not informed, the range ban will be global.
+    asn: ASN to be banned.
+
+Json output: id of the new ASN ban.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::86
+
+Name: asnBans
+
+Description: displays the page for management of asn bans. Requires authentication. Uses get parameters.
+
+Parameters: 
+    boardUri: if informed, will display only asn bans for the board.
+
+Json output(Array): array with the asn bans found. Each object contains the following fields:
+    _id: unique id of the range ban.
+    asn: asn of the ban.
+    expiration(Date): expiration date of the ban.
+    reason: reason of the ban.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::87
+
+Name: resetBoardLock
+
+Description: allows to unlock a board if it's been locked by the hourly thread limit.
+
+Parameters:
+    boardUri: uri of the board to be unlocked.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::88
+
+Name: storeFile
+
+Description: internal use only, it receives a new file to be stored in disk.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::89
+
+Name: removeFiles
+
+Description: internal use only, it receives removes a list of files from the media directory.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::90
+
+Name: offenseRecord
+
+Description: shows the offense record of a given user.
+
+Parameters:
+    banId: id of a ban to search all offenses from the same author.
+    boardUri: uri of the board to check a posting's ip and bypass offense record.
+    postId: postId of the posting to check the ip's and bypass' offense record.
+    threadId: threadId of the posting to check the ip's and bypass' offense record.
+    ip: ip to check it's offense record.
+
+Json output(Array): array with the offense records founds. Contains objects with the following fields:
+    reason: reason of the action.
+    global(Boolean): true if the action was global.
+    date(Date): date of the action taken.
+    expiration(Date): expiration of the action taken.
+    mod(String): login of the user that took the action.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::91
+
+Name: unlinkSingle
+
+Description: unlinks a single file from a posting. Requires authentication, uses get parameters.
+
+Parameters:
+    boardUri: uri of the board of the posting.
+    postId(Number): postId of the reply to have it's file deleted.
+    threadId(Number): threadId of the thread have it's file deleted. Ignored if postId is informed.
+    index(Number): index of the file to be delete. 
+    delete(Boolean): if informed, the media will also be wiped from the server after being unlinked. Ignored if the user is not on global staff.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::92
+
+Name: appealedBans
+
+Description: shows the appealed bans. Requires authentication, uses get parameters.
+
+Parameters:
+    boardUri: uri of the board to display the appealed bans. If not informed, global bans will be shown.
+
+Json output(Array): array with the appealed bans data. Contains object with the following fields:
+    _id: unique id of the ban.
+    reason: reason of the ban.
+    expiration: when the ban expires.
+    ip(Array): ip of the ban.
+    range(Array): range of the ban.
+    appliedBy: login of the user that applied the ban.
+    appeal: appeal of the ban.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::93
+
+Name: mergeThread
+
+Description: merges a thread to another thread in the same board. Requires authentication.
+
+Parameters:
+    boardUri: uri of both threads.
+    threadSource: thread which will have it's replies merged into a different thread.
+    threadDestination: thread which will receive the replies.
+
+------------------------------------------------------------------------------------------
+
+*: mandatory parameters.
+***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.
