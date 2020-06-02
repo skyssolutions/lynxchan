@@ -245,6 +245,8 @@
         "removal",
         "inner"
       ],
+      "asnPanel": "removal",
+      "asnLabel": "inner",
       "reasonPanel": "removal",
       "expirationPanel": "removal",
       "reasonLabel": "inner",
@@ -316,16 +318,6 @@
       "labelUniqueIps": "inner",
       "indicatorSfw": "removal",
       "indicatorInactive": "removal"
-    }
-  },
-  {
-    "template": "rangeBanCell",
-    "prebuiltFields": {
-      "rangeLabel": "inner",
-      "idIdentifier": "value",
-      "bypassableLabel": "removal",
-      "reasonLabel": "inner",
-      "expirationLabel": "inner"
     }
   },
   {
@@ -441,16 +433,6 @@
       "dateLabel": "inner",
       "nameLabel": "inner",
       "theadLink": "href"
-    }
-  },
-  {
-    "template": "asnBanCell",
-    "prebuiltFields": {
-      "asnLabel": "inner",
-      "bypassableLabel": "removal",
-      "idIdentifier": "value",
-      "reasonLabel": "inner",
-      "expirationLabel": "inner"
     }
   },
   {

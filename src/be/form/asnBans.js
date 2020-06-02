@@ -21,7 +21,8 @@ exports.getAsnBans = function(userData, parameters, res, auth, language) {
         formOps.outputResponse('ok', asnBans, res, null, auth, null, json);
       } else {
         res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(dom.asnBans(asnBans, boardData, language));
+        res.end(dom
+            .asnBans(asnBans, !parameters.boardUri, boardData, language));
       }
 
     }

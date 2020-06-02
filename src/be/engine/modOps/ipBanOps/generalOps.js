@@ -273,6 +273,9 @@ exports.readASNBans = function(parameters, callback, boardData) {
   bans.find(queryBlock, {
     projection : {
       asn : 1,
+      appeal : 1,
+      appliedBy : 1,
+      denied : 1,
       nonBypassable : 1,
       reason : 1,
       expiration : 1
