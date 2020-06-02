@@ -26,7 +26,6 @@ var validateMimes;
 var domManipulator;
 var lang;
 var uploadHandler;
-var videoMimes;
 var mediaThumb;
 
 exports.loadSettings = function() {
@@ -53,7 +52,6 @@ exports.loadDependencies = function() {
   domManipulator = require('./domManipulator').dynamicPages.miscPages;
   lang = require('./langOps').languagePack;
   uploadHandler = require('./uploadHandler');
-  videoMimes = uploadHandler.videoMimes;
 
 };
 
@@ -134,8 +132,7 @@ exports.getFileData = function(file, fields, mime, callback) {
     mime : mime
   };
 
-  var video = videoMimes.indexOf(toPush.mime) > -1;
-  video = video && mediaThumb;
+  var video = toPush.mime.indexOf('video/') && mediaThumb;
 
   var measureFunction;
 

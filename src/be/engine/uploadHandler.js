@@ -37,11 +37,6 @@ exports.correctedMimesRelation = {
   'video/ogg' : 'audio/ogg'
 };
 
-exports.thumbAudioMimes = [ 'audio/mpeg', 'audio/ogg', 'audio/webm',
-    'audio/flac' ];
-
-exports.videoMimes = [ 'video/webm', 'video/mp4', 'video/ogg' ];
-
 exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
@@ -361,7 +356,7 @@ exports.generateImageThumb = function(identifier, file, callback) {
 
 exports.decideOnDefaultThumb = function(file, identifier, callback) {
 
-  if (exports.thumbAudioMimes.indexOf(file.mime) > -1) {
+  if (file.mime.indexOf('audio/') > -1) {
     file.thumbPath = genericAudioThumb;
   } else if (file.mime.indexOf('image/') < 0) {
     file.thumbPath = genericThumb;
@@ -394,9 +389,9 @@ exports.generateThumb = function(identifier, file, callback) {
     exports.generateGifThumb(identifier, file, callback);
   } else if (imageCondition || apngCondition) {
     exports.generateImageThumb(identifier, file, callback);
-  } else if (exports.videoMimes.indexOf(file.mime) > -1 && mediaThumb) {
+  } else if (file.mime.indexOf('video/') > -1 && mediaThumb) {
     exports.generateVideoThumb(identifier, file, tooSmall, callback);
-  } else if (exports.thumbAudioMimes.indexOf(file.mime) > -1 && mediaThumb) {
+  } else if (file.mime.indexOf('audio/') > -1 && mediaThumb) {
     exports.generateAudioThumb(identifier, file, callback);
   } else {
     exports.decideOnDefaultThumb(file, identifier, callback);
@@ -411,7 +406,7 @@ exports.checkForThumb = function(reference, identifier, file) {
 
   if (reference.hasThumb) {
     file.thumbPath = possibleThumbName;
-  } else if (exports.thumbAudioMimes.indexOf(file.mime) > -1) {
+  } else if (file.mime.indexOf('audio/') > -1) {
     file.thumbPath = genericAudioThumb;
   } else if (file.mime.indexOf('image/') < 0) {
     file.thumbPath = genericThumb;
