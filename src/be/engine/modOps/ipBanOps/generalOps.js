@@ -55,6 +55,9 @@ exports.readRangeBans = function(parameters, callback, boardData) {
       range : 1,
       nonBypassable : 1,
       reason : 1,
+      appeal : 1,
+      appliedBy : 1,
+      denied : 1,
       expiration : 1,
       ipv6 : 1
     }

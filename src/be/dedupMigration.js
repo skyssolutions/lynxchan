@@ -26,7 +26,6 @@ var thumbExtension = settings.thumbExtension;
 var mediaThumb = settings.mediaThumb;
 var tempDir = settings.tempDirectory;
 var thumbAudioMimes = [ 'audio/mpeg', 'audio/ogg' ];
-var videoMimes = [ 'video/webm', 'video/mp4', 'video/ogg' ];
 var videoThumbCommand = 'ffmpeg -i {$path} -y -vframes 1 -vf scale=';
 var mp3ThumbCommand = 'ffmpeg -i {$path} -y -an -vcodec copy {$destination}';
 mp3ThumbCommand += ' && mogrify -resize {$dimension} {$destination}';
@@ -214,7 +213,7 @@ function rebuildThumb(extension, tempPath, identifier, file, callback) {
 
     generateImageThumb(extension, tempPath, identifier, callback);
 
-  } else if (videoMimes.indexOf(file.mime) > -1 && file.width && mediaThumb) {
+  } else if (file.mime.indexOf('video/') > -1 && file.width && mediaThumb) {
 
     generateVideoThumb(tempPath, identifier, file, tooSmall, callback);
 
