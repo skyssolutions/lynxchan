@@ -678,25 +678,26 @@ exports.writeDeniedAppeal = function(userData, ban, callback) {
     }
   }, function deniedAppeal(error) {
     if (error) {
-      callback(error);
-    } else {
-
-      // style exception, too simple
-      logOps.insertLog({
-        user : userData.login,
-        type : 'appealDeny',
-        time : new Date(),
-        boardUri : ban.boardUri,
-        global : ban.boardUri ? false : true,
-        description : lang().logAppealDenied.replace('{$login}',
-            redactedModNames ? lang().guiRedactedName : userData.login)
-            .replace('{$id}', ban._id)
-      }, function logged() {
-        callback(null, ban.boardUri);
-      });
-      // style exception, too simple
-
+      return callback(error);
+    } else if (ban.range || ban.asn) {
+      return callback(null, ban.asn ? 'asn' : 'range', ban.boardUri);
     }
+
+    // style exception, too simple
+    logOps.insertLog({
+      user : userData.login,
+      type : 'appealDeny',
+      time : new Date(),
+      boardUri : ban.boardUri,
+      global : ban.boardUri ? false : true,
+      description : lang().logAppealDenied.replace('{$login}',
+          redactedModNames ? lang().guiRedactedName : userData.login).replace(
+          '{$id}', ban._id)
+    }, function logged() {
+      callback(null, ban.boardUri);
+    });
+    // style exception, too simple
+
   });
 
 };

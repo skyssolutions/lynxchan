@@ -22,8 +22,8 @@ exports.getRangeBans = function(userData, parameters, res, auth, language) {
             boardData, userData.globalRole), res, null, auth, null, json);
       } else {
         res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(dom.rangeBans(rangeBans, boardData, userData.globalRole,
-            language));
+        res.end(dom.rangeBans(rangeBans, !parameters.boardUri, boardData,
+            userData.globalRole, language));
       }
 
     }

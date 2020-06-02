@@ -576,6 +576,7 @@ exports.readAppealedBans = function(parameters, callback) {
     projection : {
       reason : 1,
       appeal : 1,
+      asn : 1,
       boardUri : 1,
       ip : 1,
       bypassId : 1,

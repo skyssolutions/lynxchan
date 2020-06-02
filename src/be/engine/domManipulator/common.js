@@ -869,9 +869,17 @@ exports.setTargetLabel = function(ban, cell, userRole, template) {
 
     return cell.replace('__targetLabel_location__',
         template.removable.targetLabel).replace('__targetLabel_inner__',
-        miscOps.formatIp(ban.ip || ban.range, ban.ipv6));
+        miscOps.formatIp(ban.ip || ban.range, ban.ipv6)).replace(
+        '__asnPanel_location__', '');
 
   } else {
+
+    if (ban.asn) {
+      cell = cell.replace('__asnPanel_location__', template.removable.asnPanel)
+          .replace('__asnLabel_inner__', ban.asn);
+    } else {
+      cell = cell.replace('__asnPanel_location__', '');
+    }
 
     return cell.replace('__targetLabel_location__', '');
 

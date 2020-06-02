@@ -78,48 +78,8 @@ exports.closedReports = function(reports, language) {
 
 };
 
-// Section 1: Range bans {
-exports.getRangeBanCells = function(rangeBans, boardData, userRole, language) {
-
-  var children = '';
-
-  var template = templateHandler(language).rangeBanCell;
-
-  for (var i = 0; i < rangeBans.length; i++) {
-    var rangeBan = rangeBans[i];
-
-    var cell = common.getFormCellBoilerPlate(template.template, '/liftBan.js',
-        'rangeBanCell');
-
-    var rangeToUse;
-
-    if (boardData) {
-      rangeToUse = miscOps.hashIpForDisplay(rangeBan.range, boardData.ipSalt,
-          userRole, rangeBan.ipv6);
-    } else {
-      rangeToUse = miscOps.formatIp(rangeBan.range, rangeBan.ipv6);
-    }
-
-    if (rangeBan.nonBypassable) {
-      cell = cell.replace('__bypassableLabel_location__',
-          template.removable.bypassableLabel);
-    } else {
-      cell = cell.replace('__bypassableLabel_location__', '');
-    }
-
-    cell = cell.replace('__rangeLabel_inner__', rangeToUse).replace(
-        '__idIdentifier_value__', rangeBan._id);
-
-    children += cell.replace('__reasonLabel_inner__', rangeBan.reason || '')
-        .replace('__expirationLabel_inner__',
-            rangeBan.expiration ? rangeBan.expiration.toUTCString() : '');
-  }
-
-  return children;
-
-};
-
-exports.rangeBans = function(rangeBans, boardData, userRole, language) {
+exports.rangeBans = function(rangeBans, globalPage, boardData, userRole,
+    language) {
 
   var template = templateHandler(language).rangeBansPage;
 
@@ -137,13 +97,12 @@ exports.rangeBans = function(rangeBans, boardData, userRole, language) {
     document = document.replace('__boardIdentifier_location__', '');
   }
 
-  return document.replace('__rangeBansDiv_children__', exports
-      .getRangeBanCells(rangeBans, boardData, userRole, language));
+  return document.replace('__rangeBansDiv_children__', common.getBanList(
+      rangeBans, globalPage, userRole, language));
 
 };
-// } Section 1: Range bans
 
-// Section 2: Hash bans {
+// Section 1: Hash bans {
 exports.getHashBanCells = function(hashBans, language) {
 
   var children = '';
@@ -194,9 +153,9 @@ exports.hashBans = function(hashBans, boardUri, language) {
       hashBans, language));
 
 };
-// } Section 2: Hash bans
+// } Section 1: Hash bans
 
-// Section 3: Board moderation {
+// Section 2: Board moderation {
 exports.setSpecialCheckboxesAndIdentifiers = function(document, boardData) {
 
   var specialSettings = boardData.specialSettings || [];
@@ -267,9 +226,9 @@ exports.boardModeration = function(boardData, ownerData, language) {
   return document.replace('__labelTitle_inner__', title);
 
 };
-// } Section 3: Board moderation
+// } Section 2: Board moderation
 
-// Section 4: Latest postings {
+// Section 3: Latest postings {
 exports.getPosts = function(postings, boardData, userRole, language) {
 
   var postsContent = '';
@@ -432,41 +391,9 @@ exports.latestPostings = function(postings, parameters, userData, pivotPosting,
       postings, boardData, userData.globalRole, language));
 
 };
-// } Section 4: Latest postings
+// } Section 3: Latest postings
 
-// Section 5: ASN bans {
-exports.getAsnBanCells = function(asnBans, language) {
-
-  var children = '';
-
-  var template = templateHandler(language).asnBanCell;
-
-  for (var i = 0; i < asnBans.length; i++) {
-    var asnBan = asnBans[i];
-
-    var cell = common.getFormCellBoilerPlate(template.template, '/liftBan.js',
-        'asnBanCell');
-
-    if (asnBan.nonBypassable) {
-      cell = cell.replace('__bypassableLabel_location__',
-          template.removable.bypassableLabel);
-    } else {
-      cell = cell.replace('__bypassableLabel_location__', '');
-    }
-
-    cell = cell.replace('__asnLabel_inner__', asnBan.asn);
-    cell = cell.replace('__idIdentifier_value__', asnBan._id);
-
-    children += cell.replace('__reasonLabel_inner__', asnBan.reason || '')
-        .replace('__expirationLabel_inner__',
-            asnBan.expiration ? asnBan.expiration.toUTCString() : '');
-  }
-
-  return children;
-
-};
-
-exports.asnBans = function(asnBans, boardData, language) {
+exports.asnBans = function(asnBans, globalPage, boardData, language) {
 
   var template = templateHandler(language).asnBansPage;
 
@@ -484,13 +411,12 @@ exports.asnBans = function(asnBans, boardData, language) {
     document = document.replace('__boardIdentifier_location__', '');
   }
 
-  return document.replace('__asnBansDiv_children__', exports.getAsnBanCells(
-      asnBans, language));
+  return document.replace('__asnBansDiv_children__', common.getBanList(asnBans,
+      globalPage, null, language));
 
 };
-// } Section 5: ASN bans
 
-// Section 6: Open reports
+// Section 4: Open reports
 exports.getReportCell = function(report, boardData, language, ops, userRole) {
 
   var template = templateHandler(language).reportCell;
@@ -542,4 +468,4 @@ exports.openReports = function(reports, boardData, userData, language) {
       reports, boardData, language, userData.globalRole));
 
 };
-// } Section 6: Open reports
+// } Section 4: Open reports
