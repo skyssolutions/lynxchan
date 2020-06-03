@@ -167,6 +167,12 @@ function finishFullAggregation(message, results) {
 
   var operations = [];
 
+  operations.push({
+    deleteMany : {
+      filter : {}
+    }
+  });
+
   var ids = [];
 
   for (var i = 0; i < results.length; i++) {
@@ -190,16 +196,6 @@ function finishFullAggregation(message, results) {
     });
 
   }
-
-  operations.push({
-    deleteMany : {
-      filter : {
-        thread : {
-          $nin : ids
-        }
-      }
-    }
-  });
 
   overboardThreads.bulkWrite(operations, function reaggregated(error) {
     reaggregating = false;

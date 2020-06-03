@@ -11,14 +11,17 @@ var boards = db.boards();
 var threads = db.threads();
 var reports = db.reports();
 var posts = db.posts();
+var hasOverboard;
 var redactedModNames;
 var logOps;
+var overboardOps;
 var miscOps;
 var lang;
 
 exports.loadDependencies = function() {
 
   logOps = require('../logOps');
+  overboardOps = require('../overboardOps');
   miscOps = require('../miscOps');
   lang = require('../langOps').languagePack;
 
@@ -27,6 +30,7 @@ exports.loadDependencies = function() {
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
   redactedModNames = settings.redactModNames;
+  hasOverboard = settings.overboard || settings.sfwOverboard;
 };
 
 // Section 1: Posting files update {
@@ -87,6 +91,7 @@ exports.revertThread = function(thread, originalError, callback) {
     _id : thread._id
   }, {
     $set : {
+      sfw : thread.sfw || false,
       boardUri : thread.boardUri,
       threadId : thread.threadId,
       files : thread.files,
@@ -479,10 +484,13 @@ exports.updateThread = function(userData, parameters, originalThread, newBoard,
     newLatestPosts.push(i);
   }
 
+  var sfw = (newBoard.specialSettings || []).indexOf('sfw') > -1;
+
   threads.updateOne({
     _id : originalThread._id
   }, {
     $set : {
+      sfw : sfw,
       boardUri : parameters.boardUriDestination,
       threadId : newThreadId,
       latestPosts : newLatestPosts,
@@ -513,6 +521,16 @@ exports.updateThread = function(userData, parameters, originalThread, newBoard,
             if (error) {
               exports.revertThread(originalThread, error, cb);
             } else {
+
+              if (hasOverboard) {
+
+                overboardOps.reaggregate({
+                  overboard : true,
+                  reaggregate : true
+                });
+
+              }
+
               cb(null, newThreadId);
             }
           });
