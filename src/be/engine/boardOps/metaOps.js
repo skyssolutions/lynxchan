@@ -18,6 +18,8 @@ var reportOps;
 var miscOps;
 var modCommonOps;
 var redactedModNames;
+var overboardOps;
+var hasOverboard;
 var lang;
 var maxBoardTags;
 var overboard;
@@ -94,6 +96,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
   forcedCaptcha = settings.forceCaptcha;
+  hasOverboard = settings.overboard || settings.sfwOverboard;
   useLanguages = settings.useAlternativeLanguages;
   volunteerSettings = settings.allowVolunteerSettings;
   globalBoardModeration = settings.allowGlobalBoardModeration;
@@ -111,6 +114,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  overboardOps = require('../overboardOps');
   logOps = require('../logOps');
   reportOps = require('../modOps').report;
   captchaOps = require('../captchaOps');
@@ -836,12 +840,39 @@ exports.setSpecialSettings = function(userData, parameters, language, cb) {
   }, function gotBoard(error, result) {
 
     if (error) {
-      cb(error);
+      return cb(error);
     } else if (!result.value) {
-      cb(lang(language).errBoardNotFound);
-    } else {
-      cb();
+      return cb(lang(language).errBoardNotFound);
     }
+
+    var oldSFW = (result.value.specialSettings || []).indexOf('sfw') > -1;
+    var newSfw = parameters.specialSettings.indexOf('sfw') > -1;
+
+    if (oldSFW === newSfw) {
+      return cb();
+    }
+
+    // style exception, too simple
+    threads.updateMany({
+      boardUri : parameters.boardUri
+    }, {
+      $set : {
+        sfw : newSfw
+      }
+    }, function(error) {
+
+      cb(error);
+
+      if (hasOverboard) {
+
+        overboardOps.reaggregate({
+          overboard : true,
+          reaggregate : true
+        });
+      }
+
+    });
+    // style exception, too simple
 
   });
 
