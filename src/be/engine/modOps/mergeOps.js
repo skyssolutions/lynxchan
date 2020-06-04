@@ -13,6 +13,11 @@ var verbose;
 
 var extraCols = [ db.reports(), db.latestPosts(), db.latestImages() ];
 
+exports.fieldsToCopy = [ 'name', 'hash', 'asn', 'signedRole', 'password',
+    'email', 'flag', 'bypassId', 'flagName', 'flagCode', 'subject', 'ip',
+    'message', 'markdown', 'banMessage', 'creation', 'boardUri',
+    'lastEditTime', 'lastEditLogin', 'files' ];
+
 exports.loadSettings = function() {
   var settings = settingsHandler.getGeneralSettings();
   verbose = settings.verbose || settings.verboseMisc;
@@ -33,34 +38,76 @@ exports.updateExtraCols = function(parameters, userData, callback, index) {
         [ +parameters.threadSource ], [], [ +parameters.threadDestination ]);
   }
 
-  extraCols[index].removeMany({
-    boardUri : parameters.boardUri,
-    threadId : +parameters.threadSource,
-    postId : null
-  }, function(error) {
+  extraCols[index].bulkWrite([ {
+    updateMany : {
+      filter : {
+        boardUri : parameters.boardUri,
+        threadId : +parameters.threadSource,
+        postId : null
+      },
+      update : {
+        $set : {
+          threadId : +parameters.threadDestination,
+          postId : +parameters.threadSource
+        }
+      }
+    }
+  }, {
+    updateMany : {
+      filter : {
+        boardUri : parameters.boardUri,
+        threadId : +parameters.threadSource
+      },
+      update : {
+        $set : {
+          threadId : +parameters.threadDestination
+        }
+      }
+    }
+  } ], function(error) {
 
     if (error && verbose) {
       console.log(error);
     }
 
-    // style exception, too simple
-    extraCols[index].updateMany({
-      boardUri : parameters.boardUri,
-      threadId : +parameters.threadSource
-    }, {
-      $set : {
-        threadId : +parameters.threadDestination
-      }
-    }, function(error) {
+    exports.updateExtraCols(parameters, userData, callback, ++index);
 
-      if (error && verbose) {
-        console.log(error);
-      }
+  });
 
-      exports.updateExtraCols(parameters, userData, callback, ++index);
+};
 
+exports.createRedirects = function(parameters, userData, callback) {
+
+  var redirectExpiration = new Date();
+  redirectExpiration.setUTCDate(redirectExpiration.getUTCDate() + 1);
+
+  var newRedirects = [];
+
+  var originBoiler = '/' + parameters.boardUri + '/res/';
+  originBoiler += +parameters.threadSource;
+
+  var destinationBoiler = '/' + parameters.boardUri + '/res/';
+  destinationBoiler += +parameters.threadDestination;
+
+  for (var i = 0; i < 2; i++) {
+
+    var extension = [ '.html', '.json' ][i];
+
+    newRedirects.push({
+      origin : originBoiler + extension,
+      expiration : redirectExpiration,
+      destination : destinationBoiler + extension
     });
-    // style exception, too simple
+
+  }
+
+  redirects.insertMany(newRedirects, function(error) {
+
+    if (error && verbose) {
+      console.log(error);
+    }
+
+    exports.updateExtraCols(parameters, userData, callback);
 
   });
 
@@ -68,46 +115,36 @@ exports.updateExtraCols = function(parameters, userData, callback, index) {
 
 exports.cleanOldThread = function(parameters, userData, callback) {
 
-  threads.removeOne({
+  threads.findOneAndDelete({
     boardUri : parameters.boardUri,
     threadId : +parameters.threadSource
-  }, function(error) {
+  }, function(error, result) {
 
     if (error && verbose) {
       console.log(error);
     }
 
-    var redirectExpiration = new Date();
-    redirectExpiration.setUTCDate(redirectExpiration.getUTCDate() + 1);
+    if (!result.value) {
+      return exports.createRedirects(parameters, userData, callback);
+    }
 
-    var newRedirects = [];
+    var newPost = {
+      threadId : +parameters.threadDestination,
+      postId : +parameters.threadSource
+    };
 
-    var originBoiler = '/' + parameters.boardUri + '/res/';
-    originBoiler += +parameters.threadSource;
-
-    var destinationBoiler = '/' + parameters.boardUri + '/res/';
-    destinationBoiler += +parameters.threadDestination;
-
-    for (var i = 0; i < 2; i++) {
-
-      var extension = [ '.html', '.json' ][i];
-
-      newRedirects.push({
-        origin : originBoiler + extension,
-        expiration : redirectExpiration,
-        destination : destinationBoiler + extension
-      });
-
+    for (var i = 0; i < exports.fieldsToCopy.length; i++) {
+      newPost[exports.fieldsToCopy[i]] = result.value[exports.fieldsToCopy[i]];
     }
 
     // style exception, too simple
-    redirects.insertMany(newRedirects, function(error) {
+    posts.insertOne(newPost, function(error) {
 
       if (error && verbose) {
         console.log(error);
       }
 
-      exports.updateExtraCols(parameters, userData, callback);
+      exports.createRedirects(parameters, userData, callback);
 
     });
     // style exception, too simple
