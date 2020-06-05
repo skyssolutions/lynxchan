@@ -200,37 +200,34 @@ exports.updateThreadsBanMessage = function(pages, parentThreads, userData,
   }, function setMessage(error) {
 
     if (error) {
-      callback(error);
-    } else {
-
-      // style exception, too simple
-      posts.updateMany({
-        boardUri : board,
-        postId : {
-          $in : informedPosts
-        }
-      }, {
-        $set : {
-          banMessage : parameters.banMessage || defaultBanMessage
-        },
-        $unset : miscOps.individualCaches
-      }, function setMessage(error) {
-        if (error) {
-          callback(error);
-        } else {
-
-          exports.reloadPages(pages, board, informedThreads, informedPosts,
-              parentThreads);
-
-          exports.logBans(userData, board, informedPosts, informedThreads,
-              parameters, callback);
-
-        }
-
-      });
-      // style exception, too simple
-
+      return callback(error);
     }
+
+    // style exception, too simple
+    posts.updateMany({
+      boardUri : board,
+      postId : {
+        $in : informedPosts
+      }
+    }, {
+      $set : {
+        banMessage : parameters.banMessage || defaultBanMessage
+      },
+      $unset : miscOps.individualCaches
+    }, function setMessage(error) {
+
+      if (error) {
+        return callback(error);
+      }
+
+      exports.reloadPages(pages, board, informedThreads, informedPosts,
+          parentThreads);
+
+      exports.logBans(userData, board, informedPosts, informedThreads,
+          parameters, callback);
+
+    });
+    // style exception, too simple
 
   });
 
@@ -319,13 +316,8 @@ exports.recordOffenses = function(foundIps, foundBypasses, pages,
       callback(error);
     } else {
 
-      if (!parameters.banType) {
-
-        exports.updateThreadsBanMessage(pages, parentThreads, userData,
-            parameters, callback, informedThreads, informedPosts, board);
-      } else {
-        callback();
-      }
+      exports.updateThreadsBanMessage(pages, parentThreads, userData,
+          parameters, callback, informedThreads, informedPosts, board);
 
     }
 
