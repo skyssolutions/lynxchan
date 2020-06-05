@@ -167,8 +167,8 @@ exports.reaggregateThread = function(board, parentThreads, callback, index) {
 
 };
 
-exports.signalAndLoop = function(parentThreads, board, foundThreads,
-    foundPosts, callback) {
+exports.signalAndLoop = function(parentThreads, board, foundThreads, rawPosts,
+    callback) {
 
   for (var i = 0; i < parentThreads.length; i++) {
     var parentThread = parentThreads[i];
@@ -203,17 +203,17 @@ exports.signalAndLoop = function(parentThreads, board, foundThreads,
     board : board.boardUri
   });
 
-  callback(null, foundThreads.length, foundPosts.length);
+  callback(null, foundThreads.length, rawPosts.length);
 };
 
 exports.reaggregateThreadForDeletion = function(board, parentThreads,
-    foundThreads, foundPosts, callback) {
+    foundThreads, rawPosts, callback) {
 
   exports.reaggregateThread(board, parentThreads, function reaggregated(error) {
     if (error) {
       callback(error);
     } else {
-      exports.signalAndLoop(parentThreads, board, foundThreads, foundPosts,
+      exports.signalAndLoop(parentThreads, board, foundThreads, rawPosts,
           callback);
     }
   });
@@ -221,11 +221,11 @@ exports.reaggregateThreadForDeletion = function(board, parentThreads,
 };
 
 exports.updateBoardAndThreads = function(board, parameters, cb, foundThreads,
-    foundPosts, parentThreads) {
+    rawPosts, parentThreads) {
 
   if (parameters.deleteUploads) {
-    return exports.signalAndLoop(parentThreads, board, foundThreads,
-        foundPosts, cb);
+    return exports.signalAndLoop(parentThreads, board, foundThreads, rawPosts,
+        cb);
   }
 
   boardOps.aggregateThreadCount(board.boardUri, function aggregatedThreadCount(
@@ -236,14 +236,14 @@ exports.updateBoardAndThreads = function(board, parameters, cb, foundThreads,
     }
 
     exports.reaggregateThreadForDeletion(board, parentThreads, foundThreads,
-        foundPosts, cb);
+        rawPosts, cb);
 
   });
 
 };
 
 exports.removeReportsAndGlobalLatestImages = function(board, parameters, cb,
-    foundThreads, foundPosts, parentThreads) {
+    foundThreads, rawPosts, parentThreads) {
 
   var matchBlock = {
     boardUri : board.boardUri,
@@ -253,7 +253,7 @@ exports.removeReportsAndGlobalLatestImages = function(board, parameters, cb,
       }
     }, {
       postId : {
-        $in : foundPosts
+        $in : rawPosts
       }
     } ]
   };
@@ -261,29 +261,27 @@ exports.removeReportsAndGlobalLatestImages = function(board, parameters, cb,
   globalLatestImages.removeMany(matchBlock, function removedLatesImages(error) {
 
     if (error) {
-      cb(error);
+      return cb(error);
+    }
+
+    if (!parameters.deleteUploads) {
+
+      // style exception, too simple
+      reports.removeMany(matchBlock, function removedReports(error) {
+
+        if (error) {
+          cb(error);
+        } else {
+          exports.updateBoardAndThreads(board, parameters, cb, foundThreads,
+              rawPosts, parentThreads);
+        }
+
+      });
+      // style exception, too simple
+
     } else {
-
-      if (!parameters.deleteUploads) {
-
-        // style exception, too simple
-        reports.removeMany(matchBlock, function removedReports(error) {
-
-          if (error) {
-            cb(error);
-          } else {
-            exports.updateBoardAndThreads(board, parameters, cb, foundThreads,
-                foundPosts, parentThreads);
-          }
-
-        });
-        // style exception, too simple
-
-      } else {
-        exports.updateBoardAndThreads(board, parameters, cb, foundThreads,
-            foundPosts, parentThreads);
-      }
-
+      exports.updateBoardAndThreads(board, parameters, cb, foundThreads,
+          rawPosts, parentThreads);
     }
 
   });
@@ -311,20 +309,26 @@ exports.appendThreadDeletionLog = function(foundThreads) {
   return logMessage;
 };
 
-exports.appendPostDeletionLog = function(foundThreads, foundPosts) {
+exports.appendPostDeletionLog = function(foundPosts) {
 
   var logMessage = '';
 
-  if (foundPosts.length) {
+  if (!foundPosts.length) {
+    return logMessage;
+  }
 
-    for (var i = 0; i < foundPosts.length; i++) {
-      if (i) {
+  for (var j = 0; j < foundPosts.length; j++) {
+
+    var thread = foundPosts[j];
+
+    for (var i = 0; i < thread.posts.length; i++) {
+
+      if (i || j) {
         logMessage += ',';
       }
 
-      logMessage += ' ' + foundPosts[i];
+      logMessage += ' ' + thread._id + '/' + thread.posts[i];
     }
-
   }
 
   return logMessage;
@@ -348,7 +352,7 @@ exports.getLogMessage = function(parameters, foundThreads, foundPosts,
     logMessage += pieces.threadPiece + threadList;
   }
 
-  var postList = exports.appendPostDeletionLog(foundThreads, foundPosts);
+  var postList = exports.appendPostDeletionLog(foundPosts);
 
   if (postList.length) {
 
@@ -369,7 +373,7 @@ exports.getLogMessage = function(parameters, foundThreads, foundPosts,
 };
 
 exports.logRemoval = function(userData, board, parameters, cb, foundThreads,
-    foundPosts, parentThreads) {
+    rawPosts, foundPosts, parentThreads) {
 
   var logMessage = exports.getLogMessage(parameters, foundThreads, foundPosts,
       userData, board);
@@ -384,13 +388,13 @@ exports.logRemoval = function(userData, board, parameters, cb, foundThreads,
   }, function insertedLog() {
 
     exports.removeReportsAndGlobalLatestImages(board, parameters, cb,
-        foundThreads, foundPosts, parentThreads);
+        foundThreads, rawPosts, parentThreads);
   });
 
 };
 
 exports.removeGlobalLatestPosts = function(userData, board, parameters, cb,
-    foundThreads, foundPosts, parentThreads) {
+    foundThreads, rawPosts, foundPosts, parentThreads) {
 
   var operations = [];
 
@@ -409,14 +413,14 @@ exports.removeGlobalLatestPosts = function(userData, board, parameters, cb,
 
   }
 
-  if (foundPosts.length) {
+  if (rawPosts.length) {
 
     operations.push({
       deleteMany : {
         filter : {
           boardUri : board.boardUri,
           postId : {
-            $in : foundPosts
+            $in : rawPosts
           }
         }
       }
@@ -434,12 +438,12 @@ exports.removeGlobalLatestPosts = function(userData, board, parameters, cb,
       if (userData) {
 
         exports.logRemoval(userData, board, parameters, cb, foundThreads,
-            foundPosts, parentThreads);
+            rawPosts, foundPosts, parentThreads);
 
       } else {
 
         exports.removeReportsAndGlobalLatestImages(board, parameters, cb,
-            foundThreads, foundPosts, parentThreads);
+            foundThreads, rawPosts, parentThreads);
       }
     }
 
@@ -565,7 +569,7 @@ exports.resetLastBump = function(board, parentThreads, callback, index) {
 };
 
 exports.updateThreadPages = function(userData, board, parameters, cb,
-    foundThreads, foundPosts, parentThreads) {
+    foundThreads, rawPosts, foundPosts, parentThreads) {
 
   exports.resetLastBump(board, parentThreads, function resetBumps(error) {
 
@@ -580,7 +584,7 @@ exports.updateThreadPages = function(userData, board, parameters, cb,
         }
 
         exports.removeGlobalLatestPosts(userData, board, parameters, cb,
-            foundThreads, foundPosts, parentThreads);
+            foundThreads, rawPosts, foundPosts, parentThreads);
 
       });
 
@@ -591,53 +595,52 @@ exports.updateThreadPages = function(userData, board, parameters, cb,
 };
 
 exports.removeFoundContent = function(userData, board, parameters, cb,
-    foundThreads, foundPosts, parentThreads) {
+    foundThreads, rawPosts, foundPosts, parentThreads) {
 
   if (parameters.deleteUploads) {
 
     if (userData) {
       exports.logRemoval(userData, board, parameters, cb, foundThreads,
-          foundPosts, parentThreads);
+          rawPosts, foundPosts, parentThreads);
     } else {
       exports.removeReportsAndGlobalLatestImages(board, parameters, cb,
-          foundThreads, foundPosts, parentThreads);
+          foundThreads, rawPosts, parentThreads);
     }
 
-  } else {
+    return;
 
-    threads.deleteMany({
+  }
+
+  threads.deleteMany({
+    boardUri : board.boardUri,
+    threadId : {
+      $in : foundThreads
+    }
+  }, function removedThreads(error) {
+    if (error) {
+      return cb(error);
+    }
+
+    // style exception, too simple
+    posts.deleteMany({
       boardUri : board.boardUri,
-      threadId : {
-        $in : foundThreads
+      postId : {
+        $in : rawPosts
       }
-    }, function removedThreads(error) {
+    }, function removedPosts(error) {
       if (error) {
         cb(error);
       } else {
 
-        // style exception, too simple
-        posts.deleteMany({
-          boardUri : board.boardUri,
-          postId : {
-            $in : foundPosts
-          }
-        }, function removedPosts(error) {
-          if (error) {
-            cb(error);
-          } else {
-
-            exports.updateThreadPages(userData, board, parameters, cb,
-                foundThreads, foundPosts, parentThreads);
-
-          }
-
-        });
-        // style exception, too simple
+        exports.updateThreadPages(userData, board, parameters, cb,
+            foundThreads, rawPosts, foundPosts, parentThreads);
 
       }
 
     });
-  }
+    // style exception, too simple
+
+  });
 
 };
 
@@ -760,45 +763,50 @@ exports.getPostsToDelete = function(userData, board, postsToDelete, parameters,
     }
   }, {
     $group : {
-      _id : 0,
+      _id : '$threadId',
       posts : {
         $push : '$postId'
-      },
-      parentThreads : {
-        $addToSet : '$threadId'
       }
     }
   } ]).toArray(
-      function gotPosts(error, results) {
+      function gotPosts(error, foundPosts) {
+
         if (error) {
-          cb(error);
-        } else {
-          var foundPosts = results.length ? results[0].posts : [];
+          return cb(error);
+        }
 
-          if (!foundPosts.length && !foundThreads.length) {
-            cb();
-            return;
-          }
+        if (!foundPosts.length && !foundThreads.length) {
+          return cb();
+        }
 
-          var parentThreads = results.length ? exports.sanitizeParentThreads(
-              foundThreads, results[0].parentThreads) : [];
+        var parentThreads = [];
+        var rawPosts = [];
 
-          // style exception, too simple
-          referenceHandler.clearPostingReferences(board.boardUri, foundThreads,
-              foundPosts, parameters.deleteUploads, parameters.deleteMedia,
-              userData, language, function clearedReferences(error) {
+        for (var i = 0; i < foundPosts.length; i++) {
+          parentThreads.push(foundPosts[i]._id);
 
-                if (error) {
-                  cb(error);
-                } else {
-                  exports.removeFoundContent(userData, board, parameters, cb,
-                      foundThreads, foundPosts, parentThreads);
-                }
-
-              });
-          // style exception, too simple
+          rawPosts = rawPosts.concat(foundPosts[i].posts);
 
         }
+
+        parentThreads = exports.sanitizeParentThreads(foundThreads,
+            parentThreads);
+
+        // style exception, too simple
+        referenceHandler.clearPostingReferences(board.boardUri, foundThreads,
+            rawPosts, parameters.deleteUploads, parameters.deleteMedia,
+            userData, language, function clearedReferences(error) {
+
+              if (error) {
+                return cb(error);
+              }
+
+              exports.removeFoundContent(userData, board, parameters, cb,
+                  foundThreads, rawPosts, foundPosts, parentThreads);
+
+            });
+        // style exception, too simple
+
       });
 
 };
