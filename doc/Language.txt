@@ -112,7 +112,7 @@ errDisabledBypass: error thrown when block bypass is not enabled.
 errInvalidToken: error thrown when the specified unlock token is not valid.
 errBanNotFound: error thrown when the specified ban can't be found.
 errCouldNotMeasureImage: error thrown when the engine can't measure an image's dimensions.
-errFlood: error thrown when flood is detected.
+errFlood: error thrown when flood is detected. Replaces: {$time}.
 errArchiveConfirmation: error thrown when the thread archival is not confirmed.
 errNotAllowedToArchive: error thrown when the user is not allowed to archive a thread.
 errMessageAlreadyPosted: error thrown when R9K blocks a message.

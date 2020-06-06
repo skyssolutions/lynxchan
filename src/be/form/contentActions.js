@@ -212,44 +212,42 @@ exports.testDeletionFlood = function(userData, parameters, threads, posts, req,
     res, json, auth, redirectBoard) {
 
   if (userData || settingHandler.getGeneralSettings().disableFloodCheck) {
-    exports.runDeletion(userData, parameters, threads, posts, req.language,
-        res, json, auth, redirectBoard);
-  } else {
+    return exports.runDeletion(userData, parameters, threads, posts,
+        req.language, res, json, auth, redirectBoard);
+  }
 
-    var ip = logger.convertIpToArray(logger.getRawIp(req));
+  var ip = logger.convertIpToArray(logger.getRawIp(req));
 
-    taskListener.openSocket(function opened(error, socket) {
+  taskListener.openSocket(function opened(error, socket) {
 
-      if (error) {
-        formOps.outputError(error, 500, res, req.language, json, auth);
-        return;
+    if (error) {
+      formOps.outputError(error, 500, res, req.language, json, auth);
+      return;
+    }
+
+    socket.onData = function receivedData(data) {
+
+      if (data.flood) {
+
+        formOps.outputError(lang(req.language).errFlood.replace('{$time}',
+            data.left), 500, res, req.language, json);
+
+      } else {
+        exports.runDeletion(userData, parameters, threads, posts, req.language,
+            res, json, auth, redirectBoard);
       }
 
-      socket.onData = function receivedData(data) {
+      taskListener.freeSocket(socket);
 
-        if (data.flood) {
+    };
 
-          formOps.outputError(lang(req.language).errFlood, 500, res,
-              req.language, json);
-
-        } else {
-          exports.runDeletion(userData, parameters, threads, posts,
-              req.language, res, json, auth, redirectBoard);
-        }
-
-        taskListener.freeSocket(socket);
-
-      };
-
-      taskListener.sendToSocket(socket, {
-        type : 'floodCheck',
-        ip : ip,
-        record : true
-      });
-
+    taskListener.sendToSocket(socket, {
+      type : 'floodCheck',
+      ip : ip,
+      record : true
     });
 
-  }
+  });
 
 };
 
