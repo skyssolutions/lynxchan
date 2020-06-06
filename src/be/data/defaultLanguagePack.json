@@ -229,7 +229,7 @@
   "msgFlagDeleted": "Flag deleted.",
   "guiUnlimited": "limitless",
   "guiNoFlag": "No flag",
-  "errFlood": "Flood detected.",
+  "errFlood": "Flood detected, wait {$time} more seconds.",
   "errFormatNotAllowed": "A file had a format that is not allowed by the server.",
   "titGlobalSettings": "Global settings",
   "errDeniedGlobalSettings": "You are not allowed to edit the global settings.",

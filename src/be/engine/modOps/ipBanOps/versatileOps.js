@@ -103,17 +103,24 @@ exports.masterFloodCheck = function(task, socket) {
 
   var lastEntry = trackingToUse[task.ip];
 
-  var flood = !!(lastEntry && new Date() < lastEntry);
+  var left;
 
-  taskListener.sendToSocket(socket, {
-    flood : flood
-  });
+  var now = new Date();
 
-  if (!flood) {
+  var flood = !!(lastEntry && now < lastEntry);
+
+  if (flood) {
+    left = Math.ceil((lastEntry.getTime() - now.getTime()) / 1000);
+  } else {
     var toAdd = task.record ? (task.thread ? 10 : 1) * floodTimer : 1000;
 
     trackingToUse[task.ip] = new Date(new Date().getTime() + toAdd);
   }
+
+  taskListener.sendToSocket(socket, {
+    flood : flood,
+    left : left
+  });
 
 };
 
@@ -339,11 +346,12 @@ exports.getASN = function(req, boardUri, callback) {
 
 };
 
-exports.receivedFloodCheckResponse = function(req, ip, boardUri, socket, flood,
+exports.receivedFloodCheckResponse = function(req, ip, boardUri, floodData,
     callback) {
 
-  if (flood && !disableFloodCheck) {
-    return callback(lang(req.language).errFlood);
+  if (floodData.flood && !disableFloodCheck) {
+    return callback(lang(req.language).errFlood.replace('{$time}',
+        floodData.left));
   }
 
   spamOps.checkDnsbl(logger.ip(req), function checked(error, spammer) {
@@ -383,8 +391,7 @@ exports.checkForFlood = function(req, boardUri, thread, callback) {
 
     socket.onData = function receivedData(data) {
 
-      exports.receivedFloodCheckResponse(req, ip, boardUri, socket, data.flood,
-          callback);
+      exports.receivedFloodCheckResponse(req, ip, boardUri, data, callback);
 
       taskListener.freeSocket(socket);
 
