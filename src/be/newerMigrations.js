@@ -748,7 +748,9 @@ exports.cleanDuplicates = function(callback, lastId) {
     } : {
       $exists : true
     }
-  }).toArray(function(error, foundFiles) {
+  }).sort({
+    _id : 1
+  }).limit(1).toArray(function(error, foundFiles) {
 
     if (error || !foundFiles.length) {
       return callback(error);
