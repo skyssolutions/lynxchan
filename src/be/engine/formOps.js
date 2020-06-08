@@ -132,13 +132,11 @@ exports.getFileData = function(file, fields, mime, callback) {
     mime : mime
   };
 
-  var video = toPush.mime.indexOf('video/') && mediaThumb;
-
   var measureFunction;
 
   if (toPush.mime.indexOf('image/') > -1) {
     measureFunction = uploadHandler.getImageBounds;
-  } else if (video) {
+  } else if (toPush.mime.indexOf('video/') > -1 && mediaThumb) {
     measureFunction = uploadHandler.getVideoBounds;
   }
 
@@ -210,6 +208,7 @@ exports.transferFileInformation = function(files, fields, cb) {
   var file = files.shift();
 
   if (!file.realMime && !file.type) {
+    console.log('no mime, skip');
     return exports.transferFileInformation(files, fields, cb);
   }
 
