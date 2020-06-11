@@ -26,6 +26,7 @@ var engineInfo;
 var disableCatalogPosting;
 var boardStaffArchiving;
 var cacheHandler;
+var noBanCaptcha;
 
 exports.availableLogTypes = {
   ban : 'guiTypeBan',
@@ -54,6 +55,7 @@ exports.moddingThreadIdentifiers = [ 'archiveBoardIdentifier',
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  noBanCaptcha = settings.disableBanCaptcha;
   redactModNames = settings.redactModNames;
   verbose = settings.verbose || settings.verboseCache;
   boardStaffArchiving = settings.allowBoardStaffArchiving;
@@ -289,7 +291,7 @@ exports.thread = function(boardData, flagData, threadData, posts, callback,
     document = document.replace('__divControls_location__',
         template.removable.divControls).replace('__divMod_location__',
         template.removable.divMod).replace('__divBanCaptcha_location__',
-        global ? '' : template.removable.divBanCaptcha);
+        global || noBanCaptcha ? '' : template.removable.divBanCaptcha);
 
     document = exports.setModdingInformation(document, threadData);
 
@@ -476,7 +478,7 @@ exports.page = function(page, threads, pageCount, boardData, flagData,
 
     callback(null, document.replace('__divMod_location__',
         template.removable.divMod).replace('__divBanCaptcha_location__',
-        global ? '' : template.removable.divBanCaptcha));
+        global || noBanCaptcha ? '' : template.removable.divBanCaptcha));
   } else {
     exports.writePage(boardUri, page, boardData, language, document.replace(
         '__divMod_location__', ''), callback);

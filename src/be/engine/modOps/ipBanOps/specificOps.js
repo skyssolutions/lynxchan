@@ -19,6 +19,7 @@ var verbose;
 var captchaOps;
 var common;
 var lang;
+var noBanCaptcha;
 
 exports.appealArguments = [ {
   length : 512,
@@ -30,6 +31,8 @@ exports.loadSettings = function() {
 
   var settings = require('../../../settingsHandler').getGeneralSettings();
   defaultBanMessage = settings.defaultBanMessage;
+
+  noBanCaptcha = settings.disableBanCaptcha;
 
   verbose = settings.verbose || settings.verboseMisc;
 
@@ -606,7 +609,7 @@ exports.isolateBoards = function(userData, reportedObjects, parameters,
 exports.ban = function(userData, reportedObjects, parameters, captchaId,
     language, callback) {
 
-  if (userData.globalRole <= miscOps.getMaxStaffRole()) {
+  if (noBanCaptcha || userData.globalRole <= miscOps.getMaxStaffRole()) {
     return exports.isolateBoards(userData, reportedObjects, parameters,
         language, callback);
   }
