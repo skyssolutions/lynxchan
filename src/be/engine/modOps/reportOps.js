@@ -373,8 +373,8 @@ exports.report = function(req, reportedContent, parameters, captchaId, cb) {
 
   miscOps.sanitizeStrings(parameters, exports.reportArguments);
 
-  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null, req.language,
-      function solvedCaptcha(error) {
+  captchaOps.attemptCaptcha(captchaId, parameters.captchaReport, null,
+      req.language, function solvedCaptcha(error) {
         if (error) {
           cb(error);
         } else {
