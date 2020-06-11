@@ -284,10 +284,12 @@ exports.thread = function(boardData, flagData, threadData, posts, callback,
 
   if (modding) {
 
+    var global = userRole <= miscOps.getMaxStaffRole();
+
     document = document.replace('__divControls_location__',
-        template.removable.divControls);
-    document = document.replace('__divMod_location__',
-        template.removable.divMod);
+        template.removable.divControls).replace('__divMod_location__',
+        template.removable.divMod).replace('__divBanCaptcha_location__',
+        global ? '' : template.removable.divBanCaptcha);
 
     document = exports.setModdingInformation(document, threadData);
 
@@ -295,8 +297,8 @@ exports.thread = function(boardData, flagData, threadData, posts, callback,
 
   } else {
 
-    document = document.replace('__divControls_location__', '');
-    document = document.replace('__divMod_location__', '');
+    document = document.replace('__divControls_location__', '').replace(
+        '__divMod_location__', '');
 
     var meta = {
       boardUri : boardUri,
@@ -469,8 +471,12 @@ exports.page = function(page, threads, pageCount, boardData, flagData,
           language));
 
   if (mod) {
+
+    var global = userRole <= miscOps.getMaxStaffRole();
+
     callback(null, document.replace('__divMod_location__',
-        template.removable.divMod));
+        template.removable.divMod).replace('__divBanCaptcha_location__',
+        global ? '' : template.removable.divBanCaptcha));
   } else {
     exports.writePage(boardUri, page, boardData, language, document.replace(
         '__divMod_location__', ''), callback);

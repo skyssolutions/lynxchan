@@ -70,6 +70,10 @@ TEM_ID::02
 boardPage: board pages, listing threads.
 
 Elements:
+divBanCaptcha:
+    use: might be removed.
+    description: div with the captcha used for banning.
+
 linkLogs:
     use: have it's href manipulated.
     description: link to the board's logs.
@@ -177,6 +181,10 @@ TEM_ID::03
 threadPage: thread page, with all replies.
 
 Elements:
+divBanCaptcha:
+    use: might be removed.
+    description: div with the captcha used for banning.
+
 divMerge:
     use: might be removed.
     description: div with the option to merge the thread into another thread within the same board.

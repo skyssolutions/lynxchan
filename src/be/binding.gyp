@@ -11,6 +11,8 @@
       ],
       "include_dirs": [
         "<!@(pkg-config --cflags-only-I Magick++ | sed s/-I//g)",
+        "<!@(pkg-config --cflags-only-I libavformat | sed s/-I//g)",
+        "<!@(pkg-config --cflags-only-I libavcodec | sed s/-I//g)",
         "<!@(node -p \"require('node-addon-api').include\")"
       ],
       "link_settings": {

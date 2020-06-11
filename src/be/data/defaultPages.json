@@ -111,6 +111,7 @@
     "headChildren": true,
     "bodyChildren": true,
     "prebuiltFields": {
+      "divBanCaptcha": "removal",
       "labelName": "inner",
       "labelDescription": [
         "inner",
@@ -152,6 +153,7 @@
     "headChildren": true,
     "bodyChildren": true,
     "prebuiltFields": {
+      "divBanCaptcha": "removal",
       "divMerge": "removal",
       "noFlagDiv": "removal",
       "ipDeletionForm": "removal",

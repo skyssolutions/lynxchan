@@ -607,13 +607,11 @@ exports.ban = function(userData, reportedObjects, parameters, captchaId,
     language, callback) {
 
   if (userData.globalRole <= miscOps.getMaxStaffRole()) {
-    exports.isolateBoards(userData, reportedObjects, parameters, language,
-        callback);
-
-    return;
+    return exports.isolateBoards(userData, reportedObjects, parameters,
+        language, callback);
   }
 
-  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null, language,
+  captchaOps.attemptCaptcha(captchaId, parameters.captchaBan, null, language,
       function solvedCaptcha(error) {
         if (error) {
           callback(error);
