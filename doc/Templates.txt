@@ -1947,6 +1947,10 @@ TEM_ID::47
 globalSettingsPage: page used to change global settings.
 
 Elements:
+checkboxDisableBanCaptcha:
+    use: might be checked.
+    description: checkbox that indicates if ban captchas are disabled.
+
 comboCaptchaMode:
     use: have children appended to it.
     description: combobox with the available captcha security levels.
