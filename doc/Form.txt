@@ -97,6 +97,7 @@ Name: account
 Description: display the account page for the user. Requires validation.
 
 Json output(Object): object with the account data. Contains the following fields:
+    noCaptchaBan(Boolean): indicates if captcha for bans is entirely disabled.
     login: login of the user.
     email: e-mail of the user.
     globalRole(Number): global role of the user.
@@ -299,7 +300,7 @@ Parameters:
     reasonReport: reason of the report.
     reasonBan: reason of the ban.
     banMessage: message to be displayed in the banned content.
-    action: action to be performed. 'ban', ban-delete', 'spoil', 'delete', 'ip-deletion' and 'report' may be used, case insensitive.
+    action: action to be performed. 'ban', 'ban-delete', 'spoil', 'delete', 'ip-deletion', 'thread-ip-deletion' and 'report' may be used, case insensitive.
     globalBan: if any value is passed, indicates the bans are global.
     globalReport: if any value is passed, indicates the reports are global.
     duration: duration of the ban. Defaults to 5 years. See the back-end readme for details.
