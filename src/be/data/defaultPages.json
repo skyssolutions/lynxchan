@@ -465,6 +465,7 @@
   {
     "template": "globalSettingsPage",
     "prebuiltFields": {
+      "checkboxLowercaseBoardUris": "checked",
       "checkboxDisableBanCaptcha": "checked",
       "fieldTrustedProxies": "value",
       "checkboxDiskMedia": "checked",

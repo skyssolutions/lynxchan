@@ -90,6 +90,7 @@ Settings files that goes into the settings directory:
 `general.json`: contains general settings for the application. Holds the following settings:
 * `disableBanCaptcha`(Boolean): if true, bans will never require captchas for anyone.
 * `useHttp2`(Boolean): if true, the engine will use HTTP2 for HTTPS.
+* `lowercaseBoardUris`(Boolean): if true, all new boards will use lowercase uris.
 * `trustedProxies`(Array): list of ips of the trusted proxies. Trusted proxies will have the x-forwarded-for taken in account to get the ip. By default, localhost and the lynxchan cluster master are also trusted proxies. Also, if the first trusted proxy is '*', then all requests will be treated as coming from trusted proxies.
 * `dontProcessLinks`(Boolean): when set to true, links on posts won't be processed into hyperlinks.
 * `fileLimit`(Number): total limit of uploaded files on the whole site. Defaults to 1000.

@@ -29,6 +29,7 @@ var boardCreationRequirement;
 var maxVolunteers;
 var volunteerSettings;
 var useLanguages;
+var lowercase;
 
 exports.boardManagementProjection = {
   _id : 0,
@@ -105,7 +106,7 @@ exports.loadSettings = function() {
   maxBoardTags = settings.maxBoardTags;
   redactedModNames = settings.redactModNames;
   overboard = settings.overboard;
-
+  lowercase = settings.lowercaseBoardUris;
   sfwOverboard = settings.sfwOverboard;
 
   exports.boardParameters[4].length = settings.boardMessageLength;
@@ -671,20 +672,21 @@ exports.createBoard = function(captchaId, parameters, userData, language,
   var allowed = userData.globalRole <= boardCreationRequirement;
 
   if (!allowed && boardCreationRequirement <= miscOps.getMaxStaffRole()) {
-    callback(lang(language).errDeniedBoardCreation);
-    return;
+    return callback(lang(language).errDeniedBoardCreation);
   }
 
   miscOps.sanitizeStrings(parameters, exports.boardParameters);
 
+  if (lowercase) {
+    parameters.boardUri = parameters.boardUri.toLowerCase();
+  }
+
   var reservedUris = [ overboard, sfwOverboard ];
 
   if (/\W/.test(parameters.boardUri)) {
-    callback(lang(language).errInvalidUri);
-    return;
+    return callback(lang(language).errInvalidUri);
   } else if (reservedUris.indexOf(parameters.boardUri) > -1) {
-    callback(lang(language).errUriInUse);
-    return;
+    return callback(lang(language).errUriInUse);
   }
 
   captchaOps.attemptCaptcha(captchaId, parameters.captcha, null, language,
