@@ -473,6 +473,11 @@
   },
   {
     "type": "boolean",
+    "setting": "lowercaseBoardUris",
+    "element": "checkboxLowercaseBoardUris"
+  },
+  {
+    "type": "boolean",
     "setting": "useHttp2",
     "element": "checkboxHttp2"
   },
