@@ -462,11 +462,12 @@ exports.removeFile = function(userData, parameters, language, posting, cb) {
     var global = userData.globalRole <= miscOps.getMaxStaffRole();
 
     if (!deleteMedia || !global) {
-      return cb();
-    }
+      mediaHandler.checkNewOrphans([ removed.sha256 ], cb);
+    } else {
 
-    mediaHandler.deleteFiles(null, [ removed.sha256 ], userData, language, cb,
-        true);
+      mediaHandler.deleteFiles(null, [ removed.sha256 ], userData, language,
+          cb, true);
+    }
 
   });
 };
