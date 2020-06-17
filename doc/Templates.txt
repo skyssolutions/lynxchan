@@ -1951,6 +1951,10 @@ checkboxDisableBanCaptcha:
     use: might be checked.
     description: checkbox that indicates if ban captchas are disabled.
 
+checkboxUnlockHistory:
+    use: might be checked.
+    description: checkbox that indicates if users without access to plain text ips can still see user's history across boards.
+
 checkboxLowercaseBoardUris:
     use: might be checked.
     description: checkbox that indicates if new boards will have forced lowercase uris.

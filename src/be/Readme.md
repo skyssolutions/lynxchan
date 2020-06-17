@@ -88,6 +88,7 @@ To use SSL, enable the setting `ssl` and place the key file named `ssl.key` and 
 # Back-end settings
 Settings files that goes into the settings directory:
 `general.json`: contains general settings for the application. Holds the following settings:
+* `unlockHistory`(Boolean): if true, users that can't see plain text ips can still see a user's history across boards.
 * `disableBanCaptcha`(Boolean): if true, bans will never require captchas for anyone.
 * `useHttp2`(Boolean): if true, the engine will use HTTP2 for HTTPS.
 * `lowercaseBoardUris`(Boolean): if true, all new boards will use lowercase uris.

@@ -468,6 +468,11 @@
   },
   {
     "type": "boolean",
+    "setting": "unlockHistory",
+    "element": "checkboxUnlockHistory"
+  },
+  {
+    "type": "boolean",
     "setting": "disableSpamCheck",
     "element": "checkboxDisableSpamCheck"
   },
