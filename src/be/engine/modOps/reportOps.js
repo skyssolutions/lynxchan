@@ -657,6 +657,7 @@ exports.getQueryForAllReports = function(ids, foundReports) {
     _id : {
       $nin : ids
     },
+    closedBy : null,
     $or : queryOr
   };
 
