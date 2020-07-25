@@ -612,10 +612,11 @@ exports.log = function(logData, logs, callback) {
 
 };
 
-exports.blockBypass = function(valid) {
+exports.blockBypass = function(bypass) {
 
   return {
-    valid : valid ? true : false,
+    valid : bypass ? true : false,
+    validated : bypass.validated || !bypass.validationCode,
     mode : bypassMode
   };
 

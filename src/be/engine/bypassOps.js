@@ -1,5 +1,6 @@
 'use strict';
 
+var crypto = require('crypto');
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var db = require('../db');
@@ -12,6 +13,7 @@ var floodExpiration;
 var bypassMaxPosts;
 var bypassMode;
 var hourlyLimit;
+var validationRange;
 
 exports.loadSettings = function() {
   var settings = require('../settingsHandler').getGeneralSettings();
@@ -21,6 +23,7 @@ exports.loadSettings = function() {
   bypassMaxPosts = settings.bypassMaxPosts;
   bypassMode = settings.bypassMode;
   floodDisabled = settings.disableFloodCheck;
+  validationRange = settings.bypassValidationRange;
   expirationToAdd = settings.bypassDurationHours;
 };
 
@@ -31,49 +34,88 @@ exports.loadDependencies = function() {
 
 };
 
+// Section 1: Renew bypass {
+exports.createBypassDoc = function(session, validationCode, validationResult,
+    callback) {
+
+  var expiration = new Date();
+  expiration.setUTCHours(expiration.getUTCHours() + expirationToAdd);
+
+  // style exception, too simple
+  bypasses.insertOne({
+    session : session,
+    validationCode : validationCode,
+    validationHash : validationResult,
+    usesLeft : bypassMaxPosts,
+    expiration : expiration
+  }, function inserted(error, results) {
+
+    callback(error, results, session, validationResult);
+  });
+  // style exception, too simple
+
+};
+
+exports.getValidationResult = function(session, callback) {
+
+  var validationCode = Math.floor(Math.random() * validationRange).toString();
+
+  crypto.pbkdf2(session, validationCode, 16384, 256, 'SHA512', function(error,
+      result) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.createBypassDoc(session, validationCode, result
+          .toString('base64'), callback);
+    }
+
+  });
+
+};
+
 exports.renewBypass = function(captchaId, captchaInput, language, callback) {
 
   if (!bypassMode) {
-    callback(lang(language).errDisabledBypass);
-    return;
+    return callback(lang(language).errDisabledBypass);
   }
 
   captchaOps.attemptCaptcha(captchaId, captchaInput, null, language,
       function solved(error) {
 
         if (error) {
-          callback(error);
-        } else {
-
-          var expiration = new Date();
-          expiration.setUTCHours(expiration.getUTCHours() + expirationToAdd);
-
-          var newBypass = {
-            usesLeft : bypassMaxPosts,
-            expiration : expiration
-          };
-
-          // style exception, too simple
-          bypasses.insertOne(newBypass, function inserted(error) {
-            if (error) {
-              callback(error);
-            } else {
-              callback(null, newBypass);
-            }
-          });
-          // style exception, too simple
-
+          return callback(error);
         }
+
+        crypto.randomBytes(256, function gotHash(error, buffer) {
+
+          if (error) {
+            return callback(error);
+          }
+
+          buffer = buffer.toString('base64');
+
+          if (validationRange) {
+            exports.getValidationResult(buffer, callback);
+          } else {
+            exports.createBypassDoc(buffer, null, null, callback);
+          }
+
+        });
 
       });
 
 };
+// } Section 1: Renew bypass
 
 exports.checkBypass = function(bypassId, callback) {
 
   if (!bypassId || !bypassMode) {
     return callback();
   }
+
+  var session = bypassId.substr(24, 344);
+  bypassId = bypassId.substr(0, 24);
 
   try {
     bypassId = new ObjectID(bypassId);
@@ -83,6 +125,7 @@ exports.checkBypass = function(bypassId, callback) {
 
   bypasses.findOne({
     _id : bypassId,
+    session : session,
     usesLeft : {
       $gt : 0
     },
@@ -137,6 +180,9 @@ exports.useBypass = function(bypassId, req, callback, thread) {
     return callback();
   }
 
+  var session = bypassId.substr(24, 344);
+  bypassId = bypassId.substr(0, 24);
+
   try {
     bypassId = new ObjectID(bypassId);
   } catch (error) {
@@ -156,6 +202,7 @@ exports.useBypass = function(bypassId, req, callback, thread) {
 
   bypasses.findOneAndUpdate({
     _id : bypassId,
+    session : session,
     usesLeft : {
       $gt : 0
     },

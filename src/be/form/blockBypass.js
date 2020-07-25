@@ -14,18 +14,18 @@ exports.process = function(req, res) {
   var json = url.parse(req.url, true).query.json;
 
   bypassOps.checkBypass(formOps.getCookies(req).bypass, function checkedBypass(
-      error, valid) {
+      error, bypass) {
 
     if (error) {
       formOps.outputError(error, 500, res, req.language, json);
     } else {
 
       if (json) {
-        formOps.outputResponse('ok', jsonBuilder.blockBypass(valid), res, null,
-            null, null, true);
+        formOps.outputResponse('ok', jsonBuilder.blockBypass(bypass), res,
+            null, null, null, true);
       } else {
         res.writeHead(200, miscOps.getHeader('text/html'));
-        res.end(domManipulator.blockBypass(valid, req.language));
+        res.end(domManipulator.blockBypass(bypass, req.language));
       }
 
     }

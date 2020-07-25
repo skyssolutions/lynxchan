@@ -2486,6 +2486,10 @@ indicatorValidBypass:
     use: might be removed.
     description: element that indicates if the user has a valid block bypass.
 
+indicatorNotValidated:
+    use: might be removed.
+    description: element that indicates if the bypass needs further POW validation.
+
 renewForm:
     use: might be removed.
     description: form used to renew the bypass.

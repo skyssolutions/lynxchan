@@ -1030,6 +1030,7 @@ Description: displays the page that allows the user to renew a block bypass and 
 
 Json output(Object): object with information about the current block byass status. Contains the following fields:
     valid(Boolean): indicates if the user has a valid block bypass.
+    validated(Boolean): indicates if the bypass needs POW validation.
     mode(Number): current blockBypass mode. 0 means disabled, 1 enabled and 2 mandatory.
 
 ------------------------------------------------------------------------------------------
