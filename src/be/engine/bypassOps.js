@@ -108,6 +108,52 @@ exports.renewBypass = function(captchaId, captchaInput, language, callback) {
 };
 // } Section 1: Renew bypass
 
+exports.validateBypass = function(bypassId, code, language, callback) {
+
+  var session = bypassId.substr(24, 344);
+  bypassId = bypassId.substr(0, 24);
+
+  try {
+    bypassId = new ObjectID(bypassId);
+  } catch (error) {
+    return callback(lang(language).errBypassNotFound);
+  }
+
+  bypasses.findOne({
+    _id : bypassId,
+    session : session,
+  }, function(error, bypass) {
+
+    if (error) {
+      return callback(error);
+    } else if (!bypass || bypass.validated) {
+      return callback(lang(language).errBypassNotFound);
+    }
+
+    if (bypass.validationCode === code) {
+
+      bypasses.updateOne({
+        _id : bypassId
+      }, {
+        $set : {
+          validated : true
+        }
+      }, callback);
+
+    } else {
+
+      bypasses.removeOne({
+        _id : bypassId
+      }, function() {
+        callback(lang(language).errBypassNotFound);
+      });
+
+    }
+
+  });
+
+};
+
 exports.checkBypass = function(bypassId, callback) {
 
   if (!bypassId || !bypassMode) {
@@ -203,6 +249,11 @@ exports.useBypass = function(bypassId, req, callback, thread) {
   bypasses.findOneAndUpdate({
     _id : bypassId,
     session : session,
+    $or : [ {
+      validated : true
+    }, {
+      validationCode : null
+    } ],
     usesLeft : {
       $gt : 0
     },
@@ -224,12 +275,18 @@ exports.useBypass = function(bypassId, req, callback, thread) {
       var limitCheck = value.hourlyLimitCount >= hourlyLimit;
     }
 
+    var now = new Date();
+
     if (error) {
       errorToReturn = error;
     } else if (!result.value) {
       return callback(null, req);
-    } else if (!floodDisabled && result.value[usageField] > new Date()) {
-      errorToReturn = lang(req.language).errFlood;
+    } else if (!floodDisabled && result.value[usageField] > now) {
+
+      var left = Math
+          .ceil((result.value[usageField].getTime() - now.getTime()) / 1000);
+
+      errorToReturn = lang(req.language).errFlood.replace('{$time}', left);
     } else if (!floodDisabled && limitCheck) {
       errorToReturn = lang(req.language).errHourlyLimit;
     } else {

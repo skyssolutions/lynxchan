@@ -471,6 +471,7 @@
       "fieldTrustedProxies": "value",
       "checkboxDiskMedia": "checked",
       "fieldMaxFilterLength": "value",
+      "fieldBypassValidationRange": "value",
       "fieldLatestPostPinned": "value",
       "fieldTorDNSL": "value",
       "checkboxStripExif": "checked",

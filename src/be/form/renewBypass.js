@@ -2,7 +2,6 @@
 
 var formOps = require('../engine/formOps');
 var bypassOps = require('../engine/bypassOps');
-var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var settingsHandler = require('../settingsHandler');
 var lang = require('../engine/langOps').languagePack;
 

@@ -1039,7 +1039,7 @@ PAG_ID::60
 
 Name: renewBypass
 
-Description: allows the user to renew his block bypass.
+Description: allows the user to renew his block bypass. Bypasses longer than 372 characters require validation, see validateBypass.
 
 Parameters:
     captcha: captcha input.
@@ -1527,6 +1527,17 @@ Parameters:
     boardUri: uri of both threads.
     threadSource: thread which will have it's replies merged into a different thread.
     threadDestination: thread which will receive the replies.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::94
+
+Name: validateBypass
+
+Description: provides POW validation.
+
+Parameters:
+    code: the brute forced code. To find this code follow this logic: get the bypass cookie, ignore the first 24 characters. Take the following 344 characters as the base string and the next 344 characters as the resulted hash. Now try numbers starting from 0 as the salt through PBKDF2 with sha 512, 16384 iterations and 256 derived bytes (not bits). When you find a derivation that matches the resulted hash, submit that number as the code. Submitting the wrong code will result in the deletion of the bypass.
 
 ------------------------------------------------------------------------------------------
 

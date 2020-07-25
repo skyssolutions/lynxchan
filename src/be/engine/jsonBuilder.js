@@ -616,7 +616,7 @@ exports.blockBypass = function(bypass) {
 
   return {
     valid : bypass ? true : false,
-    validated : bypass.validated || !bypass.validationCode,
+    validated : bypass && (bypass.validated || !bypass.validationCode),
     mode : bypassMode
   };
 

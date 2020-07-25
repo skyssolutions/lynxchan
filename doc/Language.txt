@@ -100,6 +100,7 @@ errDeniedGlobalBannerManagement: error thrown when the user is not allowed to ma
 errNoCustomJs: error throw when custom javascript is not allowed on boards.
 errDeniedJsManagement: error thrown when the user is not allowed to manage the custom css of a board.
 errOnlyJsAllowed: error thrown when an operation requires a javascript file.
+errBypassNotFound: error thrown when the bypass being validated can't be found.
 errTorFilesBlocked: error thrown when TOR users are not allowed to post files.
 errNoFileAndMessage: error thrown when an operation requires either a message or files uploaded. Used when replying a thread.
 errDeniedThreadTransfer: error thrown when the user is not allowed to move a thread between boards.
@@ -271,6 +272,7 @@ msgThreadArchived: message used after archiving a thread.
 msgFlagCreated: message used after a new flag is created.
 msgFlagDeleted: message used after deleting a flag.
 msgAsnBanCreated: message used after placing an ASN ban.
+msgBypassValidated: message user after the bypass is validated.
 msgThreadMerged: message when a thread is merged.
 msgFileUnlinked: message used after unlinking a single file.
 msgBoardUnlocked: message used after unlocking a board's auto lock.

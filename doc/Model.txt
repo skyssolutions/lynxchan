@@ -322,6 +322,10 @@ blockBypasses: stores data about bypassing tokens.
     hourlyLimitCount(Number): count towards the hourly limit.
     usesLeft(Number): how many uses are left in this token.
     expiration(Date): time of when the token will expire.
+    validationCode(Number): code that validates the bypass POW.
+    session(String): authentication string for the bypass.
+    validated(Boolean): indicates if the validation code was given back.
+    validationHash(String): the resulting hash of the session salted with the validation code.
     nextUsage(Date): time of when this token is allowed to be used again without flood being detected.
     nextThreadUsage(Date): time of when this token is allowed to be used again for thread creation without flood being detected.
 

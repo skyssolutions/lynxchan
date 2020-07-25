@@ -193,6 +193,11 @@
   },
   {
     "type": "number",
+    "setting": "bypassValidationRange",
+    "element": "fieldBypassValidationRange"
+  },
+  {
+    "type": "number",
     "setting": "maxBoardBanners",
     "element": "fieldMaxBoardBanners"
   },

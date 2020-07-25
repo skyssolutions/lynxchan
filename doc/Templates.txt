@@ -1947,6 +1947,10 @@ TEM_ID::47
 globalSettingsPage: page used to change global settings.
 
 Elements:
+fieldBypassValidationRange:
+    use: have it's value manipulated.
+    description: checkbox that displays the bypass validation code range.
+
 checkboxDisableBanCaptcha:
     use: might be checked.
     description: checkbox that indicates if ban captchas are disabled.
