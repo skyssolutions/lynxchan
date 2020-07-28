@@ -2498,6 +2498,10 @@ renewForm:
     use: might be removed.
     description: form used to renew the bypass.
 
+labelBypass:
+    use: have it's innerHTML manipulated.
+    description: label with the user bypass string.
+
 ------------------------------------------------------------------------------------------
 
 TEM_ID::53

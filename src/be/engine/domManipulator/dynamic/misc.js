@@ -662,8 +662,12 @@ exports.blockBypass = function(bypass, language) {
         template.removable.indicatorValidBypass);
 
     if (bypass.validationCode && !bypass.validated) {
+
+      var fullString = bypass._id + bypass.session + bypass.validationHash;
+
       document = document.replace('__indicatorNotValidated_location__',
-          template.removable.indicatorNotValidated);
+          template.removable.indicatorNotValidated).replace(
+          '__labelBypass_inner__', fullString);
     } else {
 
       document = document.replace('__indicatorNotValidated_location__', '');

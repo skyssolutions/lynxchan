@@ -600,6 +600,7 @@
   {
     "template": "bypassPage",
     "prebuiltFields": {
+      "labelBypass": "inner",
       "indicatorNotValidated": "removal",
       "indicatorValidBypass": "removal",
       "renewForm": "removal"
