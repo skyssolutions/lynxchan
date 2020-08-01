@@ -9,7 +9,6 @@ var users = db.users();
 var boards = db.boards();
 var requests = db.recoveryRequests();
 var confirmations = db.confirmations();
-var sender;
 var creationDisabled;
 var logOps;
 var miscOps;
@@ -50,7 +49,6 @@ exports.loadSettings = function() {
   var settings = require('../settingsHandler').getGeneralSettings();
 
   authLimit = settings.authenticationLimit;
-  sender = settings.emailSender;
   redactedModNames = settings.redactModNames;
   creationDisabled = settings.disableAccountCreation;
 

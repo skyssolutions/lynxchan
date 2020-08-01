@@ -468,6 +468,11 @@
   },
   {
     "type": "boolean",
+    "setting": "disableEmail",
+    "element": "checkboxDisableEmail"
+  },
+  {
+    "type": "boolean",
     "setting": "validateMimes",
     "element": "checkboxValidateMimes"
   },
