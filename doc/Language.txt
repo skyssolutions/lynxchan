@@ -169,6 +169,7 @@ guiTypeThreadTransfer: label used for logs of thread transfers.
 guiTypeMediaDeletion: label used for logs of media deletion.
 guiNoPreferredLanguage: text indicating the board has no preferred language.
 guiWarningDescription: label used to describe a warning. Replaces: {$boardUri}.
+guiTypeThreadMerge: label used for logs of thread merges.
 guiTypeFilePruning: label used for logs of media pruning.
 guiBanDescriptionAsn: label used to describe a ASN ban. Replaces: {$asn}, {$board}.
 guiBanDescriptionRange: label used to describe a range ban. Replaces: {$range}, {$board}.
@@ -191,6 +192,7 @@ logPostingDeletion: object containing pieces used to compose the message added t
     postPiece: piece used to indicate posts being deleted.
     endPiece: piece used at the end of the message. Replaces: {$board}.
 logFilePruning: log entry for file pruning. Replaces: {$identifiers}.
+logThreadMerge: log entry for thread merges. Replaces: {$origin}, {$destination}.
 logBoardDeletion: log entry for board deletion. Replaces: {$login}, {$board}.
 logMediaDeletion: log entry for media deletion. Replaces: {$login}, {$identifiers}.
 logReportClosure: object containing the pieces for the log used when someone closes a report. It contains the following fields:

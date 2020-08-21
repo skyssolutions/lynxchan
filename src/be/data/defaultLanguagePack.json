@@ -261,6 +261,7 @@
   "errDeniedThreadTransfer": "You are not allowed to transfer a thread between boards.",
   "logThreadTransfer": "User {$login} transferred thread {$thread} from /{$board}/ to /{$boardDestination}/.",
   "guiTypeThreadTransfer": "Thread transfer",
+  "guiTypeThreadMerge": "Thread merge",
   "msgContentSpoilered": "Files spoilered.",
   "errDeniedSpoilered": "You are not allowed to spoil existing files.",
   "msgErrThreadFileRequired": "This board requires at least one file when creating threads.",
@@ -381,5 +382,6 @@
   ],
   "errHourlyLimit": "You exceeded the hourly use rate of your bypass.",
   "errBypassNotFound": "Bypass not found.",
-  "msgBypassValidated": "Bypass was validated."
+  "msgBypassValidated": "Bypass was validated.",
+  "logThreadMerge": "Thread {$origin} was merged into thread {$destination}."
 }

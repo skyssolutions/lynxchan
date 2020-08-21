@@ -40,6 +40,7 @@ exports.availableLogTypes = {
   hashBan : 'guiTypeHashBan',
   hashBanLift : 'guiTypeHashBanLift',
   threadTransfer : 'guiTypeThreadTransfer',
+  threadMerge : 'guiTypeThreadMerge',
   appealDeny : 'guiTypeAppealDeny',
   mediaDeletion : 'guiTypeMediaDeletion',
   filePruning : 'guiTypeFilePruning'

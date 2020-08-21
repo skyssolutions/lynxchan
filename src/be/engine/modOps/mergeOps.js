@@ -10,6 +10,7 @@ var lang;
 var miscOps;
 var delOps;
 var verbose;
+var logOps;
 
 var extraCols = [ db.reports(), db.latestPosts(), db.latestImages() ];
 
@@ -27,6 +28,7 @@ exports.loadDependencies = function() {
   delOps = require('../deletionOps').postingDeletions;
   lang = require('../langOps').languagePack;
   miscOps = require('../miscOps');
+  logOps = require('../logOps');
 };
 
 exports.updateExtraCols = function(parameters, userData, callback, index) {
@@ -113,6 +115,27 @@ exports.createRedirects = function(parameters, userData, callback) {
 
 };
 
+exports.addLogEntry = function(parameters, userData, callback) {
+
+  var message = lang().logThreadMerge.replace('{$origin}',
+      parameters.boardUri + '/' + parameters.threadSource).replace(
+      '{$destination}',
+      parameters.boardUri + '/' + parameters.threadDestination);
+
+  logOps.insertLog({
+    user : userData.login,
+    type : 'threadMerge',
+    time : new Date(),
+    boardUri : parameters.boardUri,
+    description : message
+  }, function() {
+
+    exports.createRedirects(parameters, userData, callback);
+
+  });
+
+};
+
 exports.cleanOldThread = function(parameters, userData, callback) {
 
   threads.findOneAndDelete({
@@ -144,7 +167,7 @@ exports.cleanOldThread = function(parameters, userData, callback) {
         console.log(error);
       }
 
-      exports.createRedirects(parameters, userData, callback);
+      exports.addLogEntry(parameters, userData, callback);
 
     });
     // style exception, too simple
