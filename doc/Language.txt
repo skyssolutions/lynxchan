@@ -205,6 +205,7 @@ logPostingBan: object containing the pieces for the log used when an user bans p
     startPiece: piece used in the beginning of the message. Replaces: {$login}.
     globalPiece: piece used to indicate the bans were global.
     midPiece: piece used after either the start or the global piece.
+    midPieceWarning: piece used instead of midPiece for when a warning is issued instead of a ban.
     threadPiece: piece used to indicate the banned threads.
     threadAndPostPiece: piece used to indicate the banned posts if any thred were banned.
     postPiece: piece used to indicate the banned posts.

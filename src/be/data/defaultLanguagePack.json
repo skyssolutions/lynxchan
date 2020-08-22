@@ -138,6 +138,7 @@
   "logPostingBan": {
     "startPiece": "User {$login} ",
     "globalPiece": "globally ",
+    "midPieceWarning": "warned the posters of the following ",
     "midPiece": "banned the posters of the following ",
     "threadPiece": "threads: ",
     "threadAndPostPiece": " and the following ",
