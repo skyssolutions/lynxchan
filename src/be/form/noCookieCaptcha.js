@@ -16,12 +16,13 @@ exports.process = function(req, res) {
           formOps.outputError(error, 500, res, req.language, parameters.json);
         } else {
 
+          var string = captchaData._id + captchaData.session;
+
           if (parameters.json) {
-            formOps.outputResponse('ok', captchaData._id, res, null, null,
-                null, true);
+            formOps.outputResponse('ok', string, res, null, null, null, true);
           } else {
             res.writeHead(200, miscOps.getHeader('text/html'));
-            res.end(domManipulator.noCookieCaptcha(parameters, captchaData._id,
+            res.end(domManipulator.noCookieCaptcha(parameters, string,
                 req.language));
           }
         }

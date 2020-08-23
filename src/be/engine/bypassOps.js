@@ -108,6 +108,21 @@ exports.renewBypass = function(captchaId, captchaInput, language, callback) {
 };
 // } Section 1: Renew bypass
 
+// Section 2: Validate bypass
+exports.commitBypassValidation = function(bypass, callback) {
+
+  bypasses.updateOne({
+    _id : bypass._id
+  }, {
+    $set : {
+      validated : true
+    }
+  }, function(error) {
+    callback(error, bypass);
+  });
+
+};
+
 exports.validateBypass = function(bypassId, code, language, callback) {
 
   var session = bypassId.substr(24, 344);
@@ -132,13 +147,7 @@ exports.validateBypass = function(bypassId, code, language, callback) {
 
     if (bypass.validationCode === code) {
 
-      bypasses.updateOne({
-        _id : bypassId
-      }, {
-        $set : {
-          validated : true
-        }
-      }, callback);
+      exports.commitBypassValidation(bypass, callback);
 
     } else {
 
@@ -153,6 +162,7 @@ exports.validateBypass = function(bypassId, code, language, callback) {
   });
 
 };
+// } Section 2: Validate bypass
 
 exports.checkBypass = function(bypassId, callback) {
 

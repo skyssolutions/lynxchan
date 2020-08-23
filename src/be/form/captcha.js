@@ -10,7 +10,7 @@ exports.showCaptcha = function(captchaData, res) {
   res.writeHead(302, miscOps.getHeader(null, null, [ [ 'Location',
       '/.global/captchas/' + captchaData._id ] ], [ {
     field : 'captchaid',
-    value : captchaData._id,
+    value : captchaData._id + captchaData.session,
     expiration : captchaData.expiration,
     path : '/'
   }, {

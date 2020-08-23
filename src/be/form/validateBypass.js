@@ -13,16 +13,19 @@ exports.validateBypass = function(auth, parameters, res, language, json) {
   }
 
   bypassOps.validateBypass(auth.bypass, parameters.code.trim(), language,
-      function(error) {
+      function(error, bypassData) {
 
         if (error) {
-          formOps.outputError(error, 500, res, language, json);
-        } else {
-
-          formOps.outputResponse(json ? 'ok'
-              : lang(language).msgBypassValidated, json ? null
-              : '/blockBypass.js', res, null, null, language, json);
+          return formOps.outputError(error, 500, res, language, json);
         }
+
+        formOps.outputResponse(json ? 'ok' : lang(language).msgBypassValidated,
+            json ? null : '/blockBypass.js', res, [ {
+              field : 'bypass',
+              value : bypassData._id + bypassData.session,
+              path : '/',
+              expiration : bypassData.expiration
+            } ], null, language, json);
 
       });
 };

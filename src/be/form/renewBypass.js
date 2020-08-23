@@ -19,7 +19,7 @@ exports.renewBypass = function(auth, parameters, res, language, json) {
           formOps.outputResponse(json ? 'ok' : lang(language).msgBypassRenewed,
               json ? null : '/blockBypass.js', res, [ {
                 field : 'bypass',
-                value : bypass._id + session + salted,
+                value : bypass._id + session + (salted || ''),
                 path : '/',
                 expiration : bypass.expiration
               } ], null, language, json);
