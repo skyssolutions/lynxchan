@@ -454,6 +454,7 @@ exports.catalog = function(boardUri, threads, callback) {
 
     if (thread.files && thread.files.length) {
       threadToPush.thumb = thread.files[0].thumb;
+      threadToPush.mime = thread.files[0].mime;
     }
 
     threadsArray.push(threadToPush);
