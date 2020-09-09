@@ -370,7 +370,7 @@ exports.validateMimes = function(fields, files, callback, index) {
       file.realMime = receivedMime.trim();
 
       if (!file.realMime.indexOf('text/')) {
-        var actualRealMime = logger.getMime(file.originalFilename);
+        var actualRealMime = logger.getMime(file.name);
 
         if (actualRealMime !== 'application/octet-stream') {
           file.realMime = actualRealMime;
