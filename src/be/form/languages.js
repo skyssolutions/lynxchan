@@ -20,8 +20,10 @@ exports.getLanguages = function(auth, parameters, userData, res, language) {
             formOps
                 .outputResponse('ok', languages, res, null, auth, null, true);
           } else {
-            res.writeHead(200, miscOps.getHeader('text/html', auth));
-            res.end(dom.languages(languages, language));
+
+            return formOps.dynamicPage(res, dom.languages(languages, language),
+                auth);
+
           }
 
         }

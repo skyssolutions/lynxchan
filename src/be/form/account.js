@@ -2,7 +2,32 @@
 
 var formOps = require('../engine/formOps');
 var miscOps = require('../engine/miscOps');
+var settingsHandler = require('../settingsHandler');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
+
+exports.outputJson = function(userData, res, auth) {
+
+  var settings = settingsHandler.getGeneralSettings();
+
+  var creationRequirement = settings.boardCreationRequirement;
+
+  var allowed = userData.globalRole <= creationRequirement;
+
+  allowed = allowed || creationRequirement > miscOps.getMaxStaffRole();
+
+  formOps.outputResponse('ok', {
+    noCaptchaBan : settings.disableBanCaptcha,
+    login : userData.login,
+    email : userData.email || '',
+    ownedBoards : userData.ownedBoards || [],
+    settings : userData.settings || [],
+    volunteeredBoards : userData.volunteeredBoards || [],
+    disabledLatestPostings : settings.disableLatestPostings || false,
+    boardCreationAllowed : allowed,
+    globalRole : isNaN(userData.globalRole) ? 4 : userData.globalRole
+  }, res, null, auth, null, true);
+
+};
 
 exports.process = function(req, res) {
 
@@ -10,32 +35,11 @@ exports.process = function(req, res) {
       function gotData(auth, userData) {
 
         if (!formOps.json(req)) {
-          res.writeHead(200, miscOps.getHeader('text/html', auth));
-          res.end(domManipulator.account(userData, req.language));
-          return;
+          return formOps.dynamicPage(res, domManipulator.account(userData,
+              req.language), auth);
         }
 
-        var settings = require('../settingsHandler').getGeneralSettings();
-
-        var creationRequirement = settings.boardCreationRequirement;
-
-        var allowed = userData.globalRole <= creationRequirement;
-
-        allowed = allowed || creationRequirement > miscOps.getMaxStaffRole();
-
-        formOps.outputResponse('ok',
-            {
-              noCaptchaBan : require('../settingsHandler')
-                  .getGeneralSettings().disableBanCaptcha,
-              login : userData.login,
-              email : userData.email || '',
-              ownedBoards : userData.ownedBoards || [],
-              settings : userData.settings || [],
-              volunteeredBoards : userData.volunteeredBoards || [],
-              disabledLatestPostings : settings.disableLatestPostings || false,
-              boardCreationAllowed : allowed,
-              globalRole : isNaN(userData.globalRole) ? 4 : userData.globalRole
-            }, res, null, auth, null, true);
+        exports.outputJson(userData, res, auth);
 
       }, false, true);
 };

@@ -19,9 +19,10 @@ exports.getFilterData = function(parameters, userData, res, auth, language) {
           if (json) {
             formOps.outputResponse('ok', filters, res, null, auth, null, true);
           } else {
-            res.writeHead(200, miscOps.getHeader('text/html', auth));
-            res.end(dom
-                .filterManagement(parameters.boardUri, filters, language));
+
+            return formOps.dynamicPage(res, dom.filterManagement(
+                parameters.boardUri, filters, language), auth);
+
           }
 
         }

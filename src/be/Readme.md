@@ -181,6 +181,7 @@ Settings files that goes into the settings directory:
 * `ipExpirationDays`(Number): amount of days to wait before removing the ip from postings counting from it's date of creation. Null or any value below 1 means that ips should never be removed. The schedule that clears the ips is run hourly.
 * `torPostingLevel`(Number): indicates the permission level for TOR posting. 0 means no posting at all, 1 means posting with a block bypass and 2 means regular posting.
 * `allowTorFiles`(Boolean): when posting, allows TOR users to post files.
+* `useCacheControl`(Boolean): the cache-control header will be used instead of expire. It might help with services like cloudflare.
 * `verboseApis`(Boolean): causes both the json api and the form api to print what is being both input and output.
 * `verboseCache`(Boolean): causes the cache handler to print reads and writes.
 * `verboseGridfs`(Boolean): causes the gridFsHandler to print information about it's operations.

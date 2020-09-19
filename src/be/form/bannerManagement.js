@@ -20,8 +20,9 @@ exports.getBannerData = function(auth, parameters, userData, res, language) {
       if (json) {
         formOps.outputResponse('ok', banners, res, null, auth, null, true);
       } else {
-        res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(dom.bannerManagement(uri, banners, language));
+
+        return formOps.dynamicPage(res, dom.bannerManagement(uri, banners,
+            language), auth);
       }
 
     }

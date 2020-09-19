@@ -22,9 +22,8 @@ exports.latestPostings = function(auth, parameters, user, res, language) {
         formOps.outputResponse('ok', jsonBuilder.latestPostings(postings, user,
             boardData), res, null, auth, null, true);
       } else {
-        res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(dom.latestPostings(postings, parameters, user, pivotPosting,
-            boardData, language));
+        return formOps.dynamicPage(res, dom.latestPostings(postings,
+            parameters, user, pivotPosting, boardData, language), auth);
       }
 
     }

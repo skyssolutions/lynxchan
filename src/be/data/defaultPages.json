@@ -476,6 +476,7 @@
       "fieldLatestPostPinned": "value",
       "fieldTorDNSL": "value",
       "checkboxStripExif": "checked",
+      "checkboxUseCacheControl": "checked",
       "checkboxUnboundBoardLimits": "checked",
       "fieldLatestPostsAmount": "value",
       "fieldMaxBoardBanners": "value",

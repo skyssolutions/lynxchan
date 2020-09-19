@@ -17,8 +17,8 @@ exports.getSocketData = function(userData, json, res, auth, language) {
       if (json) {
         formOps.outputResponse('ok', statusData, res, null, auth, null, true);
       } else {
-        res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(dom.socketData(statusData, language));
+
+        formOps.dynamicPage(res, dom.socketData(statusData, language), auth);
       }
 
     }

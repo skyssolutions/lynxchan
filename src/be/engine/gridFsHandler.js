@@ -17,6 +17,7 @@ var verbose;
 var alternativeLanguages;
 var miscOps;
 var diskMedia;
+var useCacheControl;
 var requestHandler;
 var masterNode;
 var port;
@@ -27,6 +28,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  useCacheControl = settings.useCacheControl;
   port = settings.port;
   masterNode = settings.master;
   disable304 = settings.disable304;
@@ -479,11 +481,25 @@ exports.removeFiles = function(name, callback) {
 exports.setExpiration = function(header, stats) {
   var expiration = new Date();
 
-  if (exports.permanentTypes.indexOf(stats.metadata.type) > -1) {
+  var permanent = exports.permanentTypes.indexOf(stats.metadata.type) > -1;
+
+  if (permanent) {
     expiration.setFullYear(expiration.getFullYear() + 1);
   }
 
-  header.push([ 'expires', expiration.toUTCString() ]);
+  if (!useCacheControl) {
+    header.push([ 'expires', expiration.toUTCString() ]);
+  } else {
+
+    if (permanent) {
+      header.push([ 'cache-control',
+          'max-age=' + (expiration - new Date()) / 1000 ]);
+    } else {
+      header.push([ 'cache-control', 'no-cache' ]);
+    }
+
+  }
+
 };
 
 exports.getHeader = function(stats, req) {

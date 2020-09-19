@@ -19,8 +19,8 @@ exports.getFlagData = function(parameters, userData, res, auth, language) {
           if (json) {
             formOps.outputResponse('ok', flags, res, null, auth, null, true);
           } else {
-            res.writeHead(200, miscOps.getHeader('text/html', auth));
-            res.end(dom.flagManagement(parameters.boardUri, flags, language));
+            return formOps.dynamicPage(res, dom.flagManagement(
+                parameters.boardUri, flags, language), auth);
           }
 
         }

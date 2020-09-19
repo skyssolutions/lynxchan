@@ -23,9 +23,10 @@ exports.getBoardManagementData = function(board, userData, res, json, auth,
               languages, bans, reportCount), res, null, auth, null, true);
 
         } else {
-          res.writeHead(200, miscOps.getHeader('text/html', auth));
-          res.end(dom.boardManagement(userData, bData, languages, bans,
-              reportCount, language));
+
+          return formOps.dynamicPage(res, dom.boardManagement(userData, bData,
+              languages, bans, reportCount, language), auth);
+
         }
 
       });

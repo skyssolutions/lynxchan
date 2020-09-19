@@ -498,6 +498,11 @@
   },
   {
     "type": "boolean",
+    "setting": "useCacheControl",
+    "element": "checkboxUseCacheControl"
+  },
+  {
+    "type": "boolean",
     "setting": "verboseGenerator",
     "element": "checkboxVerboseGenerator"
   },

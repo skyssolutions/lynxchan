@@ -27,8 +27,8 @@ exports.getBoardModerationData = function(parameters, userData, res, auth,
 
           } else {
 
-            res.writeHead(200, miscOps.getHeader('text/html', auth));
-            res.end(dom.boardModeration(boardData, ownerData, language));
+            return formOps.dynamicPage(res, dom.boardModeration(boardData,
+                ownerData, language), auth);
 
           }
 

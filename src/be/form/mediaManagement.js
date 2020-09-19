@@ -24,9 +24,9 @@ exports.getMedia = function(auth, userData, parameters, res, language) {
           media : media
         }, res, null, auth, null, true);
       } else {
-        res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(domManipulator.mediaManagement(userData.globalRole, media,
-            pages, parameters, language));
+
+        formOps.dynamicPage(res, domManipulator.mediaManagement(
+            userData.globalRole, media, pages, parameters, language), auth);
       }
 
     }

@@ -7,8 +7,13 @@ var formOps = require('../engine/formOps');
 
 exports.showCaptcha = function(captchaData, res) {
 
-  res.writeHead(302, miscOps.getHeader(null, null, [ [ 'Location',
-      '/.global/captchas/' + captchaData._id ] ], [ {
+  var headers = [ [ 'Location', '/.global/captchas/' + captchaData._id ] ];
+
+  if (settingsHandler.getGeneralSettings().useCacheControl) {
+    headers.push([ 'cache-control', 'no-cache' ]);
+  }
+
+  res.writeHead(302, miscOps.getHeader(null, null, headers, [ {
     field : 'captchaid',
     value : captchaData._id + captchaData.session,
     expiration : captchaData.expiration,

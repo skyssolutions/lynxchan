@@ -23,10 +23,11 @@ exports.getManagementData = function(userData, res, json, auth, language) {
       }, res, null, auth, language, true);
 
     } else {
-      res.writeHead(200, miscOps.getHeader('text/html', auth));
 
-      res.end(dom.globalManagement(userData.globalRole, userData.login,
-          globalStaff, appealedBanCount, reportCount, language));
+      return formOps.dynamicPage(res,
+          dom.globalManagement(userData.globalRole, userData.login,
+              globalStaff, appealedBanCount, reportCount, language), auth);
+
     }
 
   });

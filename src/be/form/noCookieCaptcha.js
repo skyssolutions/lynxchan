@@ -21,9 +21,9 @@ exports.process = function(req, res) {
           if (parameters.json) {
             formOps.outputResponse('ok', string, res, null, null, null, true);
           } else {
-            res.writeHead(200, miscOps.getHeader('text/html'));
-            res.end(domManipulator.noCookieCaptcha(parameters, string,
-                req.language));
+
+            formOps.dynamicPage(res, domManipulator.noCookieCaptcha(parameters,
+                string, req.language));
           }
         }
 

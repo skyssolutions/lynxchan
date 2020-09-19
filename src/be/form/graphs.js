@@ -72,8 +72,9 @@ exports.process = function(req, res) {
       if (json) {
         formOps.outputResponse('ok', dates, res, null, null, null, true);
       } else {
-        res.writeHead(200, miscOps.getHeader('text/html'));
-        res.end(domManipulator.graphs(dates, req.language));
+
+        formOps.dynamicPage(res, domManipulator.graphs(dates, req.language));
+
       }
 
     }

@@ -28,8 +28,10 @@ exports.getPostingToEdit = function(userData, parameters, res, auth, language) {
               subject : posting.subject
             }, res, null, auth, null, true);
           } else {
-            res.writeHead(200, miscOps.getHeader('text/html', auth));
-            res.end(domManipulator.edit(parameters, posting, language));
+
+            return formOps.dynamicPage(res, domManipulator.edit(parameters,
+                posting, language), auth);
+
           }
 
         }

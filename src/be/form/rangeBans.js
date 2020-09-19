@@ -21,9 +21,10 @@ exports.getRangeBans = function(userData, parameters, res, auth, language) {
         formOps.outputResponse('ok', jsonBuilder.rangeBans(rangeBans,
             boardData, userData.globalRole), res, null, auth, null, json);
       } else {
-        res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(dom.rangeBans(rangeBans, !parameters.boardUri, boardData,
-            userData.globalRole, language));
+
+        formOps.dynamicPage(res, dom.rangeBans(rangeBans, !parameters.boardUri,
+            boardData, userData.globalRole, language), auth);
+
       }
 
     }

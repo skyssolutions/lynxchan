@@ -20,8 +20,10 @@ exports.getOpenReports = function(userData, parameters, res, auth, language) {
           if (json) {
             formOps.outputResponse('ok', reports, res, null, auth, null, true);
           } else {
-            res.writeHead(200, miscOps.getHeader('text/html', auth));
-            res.end(dom.openReports(reports, boardData, userData, language));
+
+            formOps.dynamicPage(res, dom.openReports(reports, boardData,
+                userData, language), auth);
+
           }
 
         }

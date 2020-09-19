@@ -24,8 +24,10 @@ exports.process = function(req, res) {
         formOps.outputResponse('ok', jsonBuilder.blockBypass(bypass), res,
             null, null, null, true);
       } else {
-        res.writeHead(200, miscOps.getHeader('text/html'));
-        res.end(domManipulator.blockBypass(bypass, req.language));
+
+        return formOps.dynamicPage(res, domManipulator.blockBypass(bypass,
+            req.language));
+
       }
 
     }

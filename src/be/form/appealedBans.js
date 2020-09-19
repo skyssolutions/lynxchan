@@ -32,9 +32,10 @@ exports.getAppealedBans = function(userData, parameters, res, auth, language) {
           return ban;
         }), res, null, auth, null, true);
       } else {
-        res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(dom.bans(bans, !parameters.boardUri, userData.globalRole,
-            language, true));
+
+        return formOps.dynamicPage(res, dom.bans(bans, !parameters.boardUri,
+            userData.globalRole, language, true), auth);
+
       }
 
     }
