@@ -142,10 +142,16 @@ exports.showMaintenance = function(req, pathName, res) {
 
   } else {
 
-    res.writeHead(302, {
+    var header = {
       'Location' : exports.formImages.indexOf(pathName) >= 0 ? kernel
           .maintenanceImage() : '/maintenance.html'
-    });
+    };
+
+    if (useCacheControl) {
+      header['cache-control'] = 'no-cache';
+    }
+
+    res.writeHead(302, header);
     res.end();
 
   }
@@ -510,9 +516,15 @@ exports.checkMultiBoardRouting = function(splitArray, req, res, callback) {
           splitArray.push('');
         }
 
-        res.writeHead(302, {
+        var header = {
           'Location' : splitArray.join('/')
-        });
+        };
+
+        if (useCacheControl) {
+          header['cache-control'] = 'no-cache';
+        }
+
+        res.writeHead(302, header);
         res.end();
 
       } else {
@@ -547,10 +559,16 @@ exports.decideRouting = function(req, pathName, res, callback) {
 
     if (gotSecondString && !/\W/.test(splitArray[1])) {
 
-      // redirects if we missed the slash on the board front-page
-      res.writeHead(302, {
+      var header = {
         'Location' : '/' + splitArray[1] + '/'
-      });
+      };
+
+      if (useCacheControl) {
+        header['cache-control'] = 'no-cache';
+      }
+
+      // redirects if we missed the slash on the board front-page
+      res.writeHead(302, header);
       res.end();
 
     } else {
