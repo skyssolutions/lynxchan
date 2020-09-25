@@ -10,7 +10,11 @@ Optional elements can be declared on the "optional" key. On this key, put an obj
 
 The value of every entry, both optionals and specified is the relative path of the file inside the templates directory.
 
-To run the optional elements on static files, create an entry named "templated" and set it as an array with the relative paths to the files to the static directory.
+To run the optional elements on static html files, create an entry named "templated" and set it as an array with the relative paths to the files to the static directory.
+
+Any static html file needs at least 2 root elements to be processed when it comes to templates. So don't forget to add doctype at the beginning of them.
+
+If you write strings in the $X format in files, X will be searched as an entry in the language pack and replace the string in both templated static files or templates using the /\$\w+/g regex. This feature can be used on any plain text file, not only html files.
 
 ------------------------------------------------------------------------------------------
 

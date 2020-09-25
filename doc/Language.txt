@@ -9,6 +9,8 @@ msg: messages used in the form api.
 sub: e-mail subject.
 tit: page titles.
 
+Alternative language packs can contain entries not contained in the default pack.
+
 The structure of this json is as follows:
 
 errDeniedSingleDeletion: error thrown when the user is not allowed to perform the deletion of a single file in a post.

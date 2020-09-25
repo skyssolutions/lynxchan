@@ -9,6 +9,7 @@ var pagesLocation = __dirname + '/../data/defaultPages.json';
 exports.pageTests = JSON.parse(fs.readFileSync(pagesLocation, 'utf8'));
 var settingsHandler = require('../settingsHandler');
 var verbose;
+var lang;
 var parser = require('parse5');
 var preBuiltDefault = {};
 var preBuiltAlternative = {};
@@ -65,6 +66,12 @@ exports.getTemplates = function(language) {
   } else {
     return preBuiltDefault;
   }
+
+};
+
+exports.loadDependencies = function() {
+
+  lang = require('./langOps').languagePack;
 
 };
 
@@ -527,7 +534,7 @@ exports.loadPages = function(errors, fePath, templateSettings, prebuiltObject) {
 };
 // } Section 5: Pages
 
-exports.loadTemplated = function(fePath, templateSettings, prebuilt) {
+exports.loadTemplated = function(fePath, templateSettings, prebuilt, language) {
 
   prebuilt.templated = {};
 
@@ -541,18 +548,26 @@ exports.loadTemplated = function(fePath, templateSettings, prebuilt) {
     var entry = templated[i];
 
     try {
-      var dom = parser.parse(fs.readFileSync(fePath + '/static/' + entry,
-          'utf8'));
+
+      var content = fs.readFileSync(fePath + '/static/' + entry, 'utf8');
+
+      var dom = parser.parse(content);
     } catch (error) {
       console.log('Failed to load templated file ' + entry);
       continue;
     }
 
-    exports.startMapping(templateSettings.optionalContent, dom.childNodes, {},
-        {});
+    if (dom.childNodes.length > 1) {
+
+      exports.startMapping(templateSettings.optionalContent, dom.childNodes,
+          {}, {});
+
+      content = parser.serialize(dom);
+
+    }
 
     prebuilt.templated[entry] = {
-      data : Buffer.from(parser.serialize(dom), 'utf-8'),
+      data : Buffer.from(exports.translatePage(language, content), 'utf-8'),
       stats : {
         mtime : new Date()
       }
@@ -562,7 +577,8 @@ exports.loadTemplated = function(fePath, templateSettings, prebuilt) {
 
 };
 
-exports.runTemplateLoading = function(fePath, templateSettings, prebuilt) {
+exports.runTemplateLoading = function(fePath, templateSettings, prebuilt,
+    language) {
 
   var errors = [];
 
@@ -581,11 +597,34 @@ exports.runTemplateLoading = function(fePath, templateSettings, prebuilt) {
 
   }
 
-  exports.loadTemplated(fePath, templateSettings, prebuilt);
+  exports.loadTemplated(fePath, templateSettings, prebuilt, language);
   exports.loadCells(errors, fePath, templateSettings, prebuilt);
   exports.loadPages(errors, fePath, templateSettings, prebuilt);
 
   exports.handleLoadingErrors(errors);
+
+};
+
+exports.translatePage = function(language, content) {
+
+  return content.replace(/\$\w+/g, function(match) {
+    return lang(language)[match.substring(1)] || match;
+  });
+
+};
+
+exports.translate = function(language, object) {
+
+  for ( var key in object) {
+
+    if (key !== 'templated') {
+
+      object[key].template = exports.translatePage(language,
+          object[key].template);
+
+    }
+
+  }
 
 };
 
@@ -611,7 +650,10 @@ exports.loadTemplates = function(language) {
 
   }
 
-  exports.runTemplateLoading(fePath, templateSettings, prebuiltTemplateObject);
+  exports.runTemplateLoading(fePath, templateSettings, prebuiltTemplateObject,
+      language);
+
+  exports.translate(language, prebuiltTemplateObject);
 
 };
 
