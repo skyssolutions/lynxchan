@@ -7,6 +7,7 @@ var wssPort;
 var settings;
 var http2;
 var verbose;
+var initialized;
 var ssl;
 var socketRelation = {};
 
@@ -23,14 +24,23 @@ exports.loadSettings = function() {
 
 exports.notify = function(task) {
 
+  if (!initialized) {
+    return;
+  }
+
   var array = socketRelation[task.boardUri + '-' + task.threadId];
 
   if (!array) {
     return;
   }
 
+  var payload = JSON.stringify({
+    action : task.action,
+    target : task.target
+  });
+
   for (var i = 0; i < array.length; i++) {
-    array[i].send(task.postId);
+    array[i].send(payload);
   }
 
 };
@@ -93,6 +103,8 @@ exports.init = function() {
   if (settings.master) {
     return;
   }
+
+  initialized = wsPort || wssPort;
 
   if (wsPort) {
 

@@ -530,7 +530,8 @@ exports.createPost = function(req, parameters, newFiles, userData, postId,
           type : 'notifySockets',
           threadId : postToAdd.threadId,
           boardUri : postToAdd.boardUri,
-          postId : postId
+          target : [ postId ],
+          action : 'post'
         });
 
       }

@@ -3,6 +3,7 @@
 // handles manual postings deletion
 
 var logger = require('../../logger');
+var taskHandler = require('../../taskListener');
 var db = require('../../db');
 var posts = db.posts();
 var threads = db.threads();
@@ -14,6 +15,7 @@ var globalLatestPostsCount;
 var globalLatestImagesCount;
 var latestPosts;
 var common;
+var wsEnabled;
 var lang;
 var overboard;
 var redactedModNames;
@@ -29,6 +31,7 @@ exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
   redactedModNames = settings.redactModNames;
   sfwOverboard = settings.sfwOverboard;
+  wsEnabled = settings.wsPort || settings.wssPort;
   globalLatestPostsCount = settings.globalLatestPosts;
   globalLatestImagesCount = settings.globalLatestImages;
   latestPosts = settings.latestPostCount;
@@ -594,8 +597,37 @@ exports.updateThreadPages = function(userData, board, parameters, cb,
 
 };
 
+exports.wsNotify = function(boardUri, foundPosts, parentThreads, uploads) {
+
+  if (!wsEnabled) {
+    return;
+  }
+
+  for (var i = 0; i < foundPosts.length; i++) {
+
+    var post = foundPosts[i];
+
+    if (!uploads && parentThreads.indexOf(post._id) < 0) {
+      continue;
+    }
+
+    taskHandler.sendToSocket(null, {
+      type : 'notifySockets',
+      threadId : post._id,
+      boardUri : boardUri,
+      target : post.posts,
+      action : 'delete'
+    });
+
+  }
+
+};
+
 exports.removeFoundContent = function(userData, board, parameters, cb,
     foundThreads, rawPosts, foundPosts, parentThreads) {
+
+  exports.wsNotify(board.boardUri, foundPosts, parentThreads,
+      parameters.deleteUploads);
 
   if (parameters.deleteUploads) {
 
