@@ -496,6 +496,8 @@
       "fieldMaster": "value",
       "fieldTempDir": "value",
       "fieldRssDomain": "value",
+      "fieldWssPort": "value",
+      "fieldWsPort": "value",
       "fieldSslPass": "value",
       "fieldSenderEmail": "value",
       "fieldSiteTitle": "value",

@@ -62,6 +62,7 @@ errDeniedBoardBanManagement: error thrown when the user is not allowed to manage
 errDeniedGlobalBanManagement: error thrown when the user is not allowed to manage global bans.
 errDeniedBoardASNBanManagement: error thrown when the user is not allowed to manage ASN bans for a board.
 errDeniedGlobalASNBanManagement: error thrown when the user is not allowed to manage global ASN bans.
+errInvalidWsPort: error thrown when an invalid port is picked for wsPort or wssPort.
 errDeniedBoardRangeBanManagement: error thrown when the user is not allowed to manage range bans for a board.
 errDeniedGlobalRangeBanManagement: error thrown when the user is not allowed to manage global range bans.
 errDeniedBoardHashBansManagement: error thrown when the user is not allowed to manage hash bans for a board.

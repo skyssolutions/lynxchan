@@ -18,6 +18,8 @@ var domManipulator;
 var redactModNames;
 var messageLength;
 var globalCaptcha;
+var wsPort;
+var wssPort;
 
 exports.loadSettings = function() {
 
@@ -27,6 +29,8 @@ exports.loadSettings = function() {
   bypassMode = settings.bypassMode;
   globalCaptcha = settings.forceCaptcha;
   messageLength = settings.messageLength;
+  wsPort = settings.wsPort;
+  wssPort = settings.wssPort;
   maxAllowedFiles = settings.maxFiles;
   maxFileSizeMB = settings.maxFileSizeMB;
   minClearIpRole = settings.clearIpMinRole;
@@ -169,6 +173,8 @@ exports.getThreadObject = function(thread, posts, board, modding, userRole) {
     id : thread.id,
     name : thread.name,
     email : thread.email,
+    wsPort : wsPort,
+    wssPort : wssPort,
     boardUri : thread.boardUri,
     threadId : thread.threadId,
     flag : thread.flag,

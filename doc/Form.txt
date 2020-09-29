@@ -374,6 +374,8 @@ Parameters:
     page(Number): page to be displayed instead of a thread. If no thread is informed or a page is informed instead, it will output an array with threads of that page.
 
 Json output(Object): object with the data of the thread.
+    wsPort(Number): port used for the ws socket.
+    wssPort(Number): port used for the wss socket.
     signedRole: role of the user that posted the thread.
     banMessage: message to be displayed indicating this message was a cause to a ban.
     id: thread-wise id of the poster.

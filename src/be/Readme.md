@@ -207,6 +207,8 @@ Settings files that goes into the settings directory:
 * `diskMedia`(Boolean): if set, media files and thumbs will be stored in disk instead of the database.
 * `captchaMode`(Number): level of captcha security. 0 is easy, 1 is moderate and 2 is hard. Defaults to 1.
 * `disableEmail`(Boolean): silently disables sending any e-mails from the server.
+* `wsPort`(Number): port to be used for notification web socket. Can't be any of the other ports used.t
+* `wssPort`(Number): port to be used for secure notification websocket. A regular websocket won't work under a page loaded through ssl. It will use the same files used for regular ssl. Can't be any of the other ports used.
 * `latestPostsAmount`(Number): amount of posts to be displayed on the /last/ version of threads and on latestPostings. Defaults to 50.
 * `bypassValidationRange`(Number): maximum limit of the block bypass validation code that must be brute forced so the bypass can be used. A minimum of 1000 is recommended.
 

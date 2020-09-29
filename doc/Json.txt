@@ -38,6 +38,8 @@ JSO_ID::02
 Path:/<board>/res/<thread>.json
 
 Root(Object):
+    wsPort(Number): port used for ws notifications.
+    wssPort(Number): port used for wss notifications.
     boardName: name of the board.
     boardDescription: description of the board.
     boardMarkdown: markdown of the board message.

@@ -384,5 +384,6 @@
   "errHourlyLimit": "You exceeded the hourly use rate of your bypass.",
   "errBypassNotFound": "Bypass not found.",
   "msgBypassValidated": "Bypass was validated.",
-  "logThreadMerge": "Thread {$origin} was merged into thread {$destination}."
+  "logThreadMerge": "Thread {$origin} was merged into thread {$destination}.",
+  "errInvalidWsPort": "Invalid wsPort or wssPort, you can't use the same port used to listen to http/https."
 }
