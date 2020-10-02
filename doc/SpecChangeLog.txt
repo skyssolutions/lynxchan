@@ -1,3 +1,155 @@
+2.5.0:
+
+New document: WebSockets.txt
+
+**Form.txt**
+
+New page: validateBypass
+
+---------------------------------------
+
+account:
+
+New field: noCaptchaBan
+
+---------------------------------------
+
+contentActions:
+
+Removed parameter: captcha
+
+New parameters:
+captchaReport
+captchaBan
+
+---------------------------------------
+
+mod:
+
+New json output fields:
+wsPort
+wssPort
+
+---------------------------------------
+
+blockBypass:
+
+New json output field: validated
+
+---------------------------------------
+
+**Json.txt**
+
+---------------------------------------
+
+/<board>/res/<thread>.json:
+
+New fields:
+wsPort
+wssPort
+
+---------------------------------------
+
+/<board>/catalog.json:
+
+New field: mime
+
+---------------------------------------
+
+**Language.txt*
+
+errFlood now has a new string to be replaced.
+
+---------------------------------------
+
+New fields:
+errInvalidWsPort
+errBypassNotFound
+guiTypeThreadMerge
+logThreadMerge
+logPostingBan.midPieceWarning
+msgBypassValidated
+
+---------------------------------------
+
+**Model.txt**
+
+---------------------------------------
+
+captchas:
+
+New field: session
+
+---------------------------------------
+
+blockBypasses:
+
+New fields:
+validationCode
+session
+validated
+validationHash
+
+---------------------------------------
+
+**Templates.txt**
+
+Now templates and static files can use language pack entries in the $X form. Only templated static files can use this feature.
+
+---------------------------------------
+
+Removed templates:
+rangeBanCell 
+asnBanCell
+
+---------------------------------------
+
+boardPage:
+
+New element: divBanCaptcha
+
+---------------------------------------
+
+threadPage:
+
+New element: divBanCaptcha
+
+---------------------------------------
+
+banCell:
+
+New elements: 
+asnPanel
+asnLabel
+
+---------------------------------------
+
+catalogCell:
+
+linkThumb has a new usage.
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldBypassValidationRange
+checkboxDisableBanCaptcha
+checkboxUnlockHistory
+checkboxLowercaseBoardUris
+fieldWsPort
+fieldWssPort
+
+---------------------------------------
+
+bypassPage:
+
+New fields:
+indicatorNotValidated
+labelBypass
+
+---------------------------------------
+
 2.4.0:
 
 **Form.txt**
