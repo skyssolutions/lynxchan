@@ -19,8 +19,10 @@ exports.getHashBans = function(userData, parameters, res, auth, language) {
       if (json) {
         formOps.outputResponse('ok', hashBans, res, null, auth, null, true);
       } else {
-        res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(dom.hashBans(hashBans, parameters.boardUri, language));
+
+        return formOps.dynamicPage(res, dom.hashBans(hashBans,
+            parameters.boardUri, language), auth);
+
       }
 
     }

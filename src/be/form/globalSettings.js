@@ -18,8 +18,7 @@ exports.getGlobalSettings = function(userData, res, json, auth, language) {
         formOps.outputResponse('ok', jsonBuilder.globalSettings(), res, null,
             auth, null, true);
       } else {
-        res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(dom.globalSettings(language));
+        return formOps.dynamicPage(res, dom.globalSettings(language), auth);
       }
     }
   });

@@ -359,6 +359,8 @@ function bootWorkers() {
     return;
   }
 
+  require('./engine/webSocketHandler').init();
+
   genQueue = require('./generationQueue');
 
   var workerLimit = require('os').cpus().length;

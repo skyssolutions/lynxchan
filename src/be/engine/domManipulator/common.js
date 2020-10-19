@@ -777,9 +777,19 @@ exports.setUploadModElements = function(template, modding, cell, file, index,
         '__unlinkAndDeleteLink_location__', '');
   } else {
 
+    var activeId;
+    var activeField;
+
+    if (posting.postId === posting.threadId) {
+      activeId = posting.threadId;
+      activeField = 'threadId';
+    } else {
+      activeId = posting.postId || posting.threadId;
+      activeField = posting.postId ? 'postId' : 'threadId';
+    }
+
     var unlinkStart = '/unlinkSingle.js?boardUri=' + posting.boardUri + '&';
-    unlinkStart += (posting.postId ? 'postId' : 'threadId') + '=';
-    unlinkStart += (posting.postId || posting.threadId) + '&index=' + index;
+    unlinkStart += activeField + '=' + activeId + '&index=' + index;
 
     cell = cell.replace('__unlinkAndDeleteLink_location__',
         template.removable.unlinkAndDeleteLink).replace(

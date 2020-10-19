@@ -14,7 +14,10 @@
     "nodemailer": "6.4.x",
     "nodemailer-direct-transport": "3.3.x",
     "parse5": "5.1.x",
-    "node-addon-api": "2.0.x"
+    "node-addon-api": "2.0.x",
+    "ws": "7.3.x",
+    "bufferutil": "4.0.x",
+    "utf-8-validate": "5.0.x"
   },
   "gypfile": true,
   "author": "Stephen Lynx",

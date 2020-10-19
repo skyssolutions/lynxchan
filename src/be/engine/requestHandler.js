@@ -24,6 +24,7 @@ var jsonBuilder;
 var miscOps;
 var gridFs;
 var cacheHandler;
+var useCacheControl;
 var lastSlaveIndex = 0;
 var slaves;
 var master;
@@ -42,6 +43,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  useCacheControl = settings.useCacheControl;
   trustedProxies = settings.trustedProxies || [];
   multiBoardAllowed = settings.multiboardThreadCount;
   verbose = settings.verbose || settings.verboseMisc;
@@ -99,7 +101,8 @@ exports.readRangeHeader = function(range, totalLength) {
 
 exports.outputError = function(error, res) {
 
-  var header = miscOps.getHeader('text/plain');
+  var header = miscOps.getHeader('text/plain', null, useCacheControl ? [ [
+      'cache-control', 'no-cache' ] ] : null);
 
   if (verbose) {
     console.log(error);
@@ -133,15 +136,22 @@ exports.showMaintenance = function(req, pathName, res) {
 
   if (formOps.json(req)) {
 
-    res.writeHead(200, miscOps.getHeader('application/json'));
+    res.writeHead(200, miscOps.getHeader('application/json', null,
+        useCacheControl ? [ [ 'cache-control', 'no-cache' ] ] : null));
     res.end(jsonBuilder.message('maintenance'));
 
   } else {
 
-    res.writeHead(302, {
+    var header = {
       'Location' : exports.formImages.indexOf(pathName) >= 0 ? kernel
           .maintenanceImage() : '/maintenance.html'
-    });
+    };
+
+    if (useCacheControl) {
+      header['cache-control'] = 'no-cache';
+    }
+
+    res.writeHead(302, header);
     res.end();
 
   }
@@ -506,9 +516,15 @@ exports.checkMultiBoardRouting = function(splitArray, req, res, callback) {
           splitArray.push('');
         }
 
-        res.writeHead(302, {
+        var header = {
           'Location' : splitArray.join('/')
-        });
+        };
+
+        if (useCacheControl) {
+          header['cache-control'] = 'no-cache';
+        }
+
+        res.writeHead(302, header);
         res.end();
 
       } else {
@@ -543,10 +559,16 @@ exports.decideRouting = function(req, pathName, res, callback) {
 
     if (gotSecondString && !/\W/.test(splitArray[1])) {
 
-      // redirects if we missed the slash on the board front-page
-      res.writeHead(302, {
+      var header = {
         'Location' : '/' + splitArray[1] + '/'
-      });
+      };
+
+      if (useCacheControl) {
+        header['cache-control'] = 'no-cache';
+      }
+
+      // redirects if we missed the slash on the board front-page
+      res.writeHead(302, header);
       res.end();
 
     } else {
@@ -587,9 +609,9 @@ exports.serve = function(req, pathName, res, callback) {
 exports.handle = function(req, res) {
 
   if (!req.headers || !req.headers.host) {
-    res.writeHead(200, miscOps.getHeader('text/plain'));
-    res.end('get fucked, m8 :^)');
-    return;
+    res.writeHead(200, miscOps.getHeader('text/plain', null,
+        useCacheControl ? [ [ 'cache-control', 'no-cache' ] ] : null));
+    return res.end('get fucked, m8 :^)');
   }
 
   var pathName = url.parse(req.url).pathname;

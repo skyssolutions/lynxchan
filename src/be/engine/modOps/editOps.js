@@ -2,6 +2,7 @@
 
 // handle editing operations
 
+var taskListener = require('../../taskListener');
 var db = require('../../db');
 var boards = db.boards();
 var threads = db.threads();
@@ -11,6 +12,7 @@ var miscOps;
 var postOps;
 var overboardOps;
 var common;
+var wsEnabled;
 var r9k;
 var sfwOverboard;
 var overboard;
@@ -29,6 +31,7 @@ exports.loadSettings = function() {
 
   exports.editArguments[0].length = settings.messageLength;
 
+  wsEnabled = settings.wsPort || settings.wssPort;
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
 };
@@ -271,6 +274,18 @@ exports.recordEdit = function(parameters, login, language, callback) {
     } else if (!posting.value) {
       callback(lang(language).errPostingNotFound);
     } else if (posting.value.postId) {
+
+      if (wsEnabled) {
+
+        taskListener.sendToSocket(null, {
+          type : 'notifySockets',
+          threadId : posting.value.threadId,
+          boardUri : parameters.boardUri,
+          target : [ posting.value.postId ],
+          action : 'edit'
+        });
+
+      }
 
       // style exception, too simple
       threads.findOne({

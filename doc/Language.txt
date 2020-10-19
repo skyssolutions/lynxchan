@@ -9,6 +9,8 @@ msg: messages used in the form api.
 sub: e-mail subject.
 tit: page titles.
 
+Alternative language packs can contain entries not contained in the default pack.
+
 The structure of this json is as follows:
 
 errDeniedSingleDeletion: error thrown when the user is not allowed to perform the deletion of a single file in a post.
@@ -60,6 +62,7 @@ errDeniedBoardBanManagement: error thrown when the user is not allowed to manage
 errDeniedGlobalBanManagement: error thrown when the user is not allowed to manage global bans.
 errDeniedBoardASNBanManagement: error thrown when the user is not allowed to manage ASN bans for a board.
 errDeniedGlobalASNBanManagement: error thrown when the user is not allowed to manage global ASN bans.
+errInvalidWsPort: error thrown when an invalid port is picked for wsPort or wssPort.
 errDeniedBoardRangeBanManagement: error thrown when the user is not allowed to manage range bans for a board.
 errDeniedGlobalRangeBanManagement: error thrown when the user is not allowed to manage global range bans.
 errDeniedBoardHashBansManagement: error thrown when the user is not allowed to manage hash bans for a board.
@@ -100,6 +103,7 @@ errDeniedGlobalBannerManagement: error thrown when the user is not allowed to ma
 errNoCustomJs: error throw when custom javascript is not allowed on boards.
 errDeniedJsManagement: error thrown when the user is not allowed to manage the custom css of a board.
 errOnlyJsAllowed: error thrown when an operation requires a javascript file.
+errBypassNotFound: error thrown when the bypass being validated can't be found.
 errTorFilesBlocked: error thrown when TOR users are not allowed to post files.
 errNoFileAndMessage: error thrown when an operation requires either a message or files uploaded. Used when replying a thread.
 errDeniedThreadTransfer: error thrown when the user is not allowed to move a thread between boards.
@@ -168,6 +172,7 @@ guiTypeThreadTransfer: label used for logs of thread transfers.
 guiTypeMediaDeletion: label used for logs of media deletion.
 guiNoPreferredLanguage: text indicating the board has no preferred language.
 guiWarningDescription: label used to describe a warning. Replaces: {$boardUri}.
+guiTypeThreadMerge: label used for logs of thread merges.
 guiTypeFilePruning: label used for logs of media pruning.
 guiBanDescriptionAsn: label used to describe a ASN ban. Replaces: {$asn}, {$board}.
 guiBanDescriptionRange: label used to describe a range ban. Replaces: {$range}, {$board}.
@@ -190,6 +195,7 @@ logPostingDeletion: object containing pieces used to compose the message added t
     postPiece: piece used to indicate posts being deleted.
     endPiece: piece used at the end of the message. Replaces: {$board}.
 logFilePruning: log entry for file pruning. Replaces: {$identifiers}.
+logThreadMerge: log entry for thread merges. Replaces: {$origin}, {$destination}.
 logBoardDeletion: log entry for board deletion. Replaces: {$login}, {$board}.
 logMediaDeletion: log entry for media deletion. Replaces: {$login}, {$identifiers}.
 logReportClosure: object containing the pieces for the log used when someone closes a report. It contains the following fields:
@@ -202,6 +208,7 @@ logPostingBan: object containing the pieces for the log used when an user bans p
     startPiece: piece used in the beginning of the message. Replaces: {$login}.
     globalPiece: piece used to indicate the bans were global.
     midPiece: piece used after either the start or the global piece.
+    midPieceWarning: piece used instead of midPiece for when a warning is issued instead of a ban.
     threadPiece: piece used to indicate the banned threads.
     threadAndPostPiece: piece used to indicate the banned posts if any thred were banned.
     postPiece: piece used to indicate the banned posts.
@@ -271,6 +278,7 @@ msgThreadArchived: message used after archiving a thread.
 msgFlagCreated: message used after a new flag is created.
 msgFlagDeleted: message used after deleting a flag.
 msgAsnBanCreated: message used after placing an ASN ban.
+msgBypassValidated: message user after the bypass is validated.
 msgThreadMerged: message when a thread is merged.
 msgFileUnlinked: message used after unlinking a single file.
 msgBoardUnlocked: message used after unlocking a board's auto lock.

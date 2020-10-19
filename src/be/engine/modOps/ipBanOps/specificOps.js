@@ -118,7 +118,8 @@ exports.logBans = function(userData, board, informedPosts, informedThreads,
     logMessage += pieces.globalPiece;
   }
 
-  logMessage += pieces.midPiece;
+  logMessage += parameters.banType === 4 ? pieces.midPieceWarning
+      : pieces.midPiece;
 
   logMessage += exports.appendThreadsToBanLog(informedThreads, pieces);
   logMessage += exports.appendPostsToBanLog(informedPosts, informedThreads,
@@ -126,11 +127,14 @@ exports.logBans = function(userData, board, informedPosts, informedThreads,
 
   logMessage += pieces.boardPiece.replace('{$board}', board);
 
-  if (parameters.expiration) {
-    logMessage += pieces.expirationPiece.replace('{$expiration}',
-        parameters.expiration);
-  } else {
-    logMessage += pieces.permanentExpirationPiece;
+  if (parameters.banType !== 4) {
+
+    if (parameters.expiration) {
+      logMessage += pieces.expirationPiece.replace('{$expiration}',
+          parameters.expiration);
+    } else {
+      logMessage += pieces.permanentExpirationPiece;
+    }
   }
 
   logMessage += pieces.endPiece

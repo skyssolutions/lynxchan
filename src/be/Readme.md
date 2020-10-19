@@ -88,6 +88,7 @@ To use SSL, enable the setting `ssl` and place the key file named `ssl.key` and 
 # Back-end settings
 Settings files that goes into the settings directory:
 `general.json`: contains general settings for the application. Holds the following settings:
+* `unlockHistory`(Boolean): if true, users that can't see plain text ips can still see a user's history across boards.
 * `disableBanCaptcha`(Boolean): if true, bans will never require captchas for anyone.
 * `useHttp2`(Boolean): if true, the engine will use HTTP2 for HTTPS.
 * `lowercaseBoardUris`(Boolean): if true, all new boards will use lowercase uris.
@@ -180,6 +181,7 @@ Settings files that goes into the settings directory:
 * `ipExpirationDays`(Number): amount of days to wait before removing the ip from postings counting from it's date of creation. Null or any value below 1 means that ips should never be removed. The schedule that clears the ips is run hourly.
 * `torPostingLevel`(Number): indicates the permission level for TOR posting. 0 means no posting at all, 1 means posting with a block bypass and 2 means regular posting.
 * `allowTorFiles`(Boolean): when posting, allows TOR users to post files.
+* `useCacheControl`(Boolean): the cache-control header will be used instead of expire. It might help with services like cloudflare.
 * `verboseApis`(Boolean): causes both the json api and the form api to print what is being both input and output.
 * `verboseCache`(Boolean): causes the cache handler to print reads and writes.
 * `verboseGridfs`(Boolean): causes the gridFsHandler to print information about it's operations.
@@ -204,7 +206,11 @@ Settings files that goes into the settings directory:
 * `stripExif`(Boolean): if set, will remove exit data from files using exiftool.
 * `diskMedia`(Boolean): if set, media files and thumbs will be stored in disk instead of the database.
 * `captchaMode`(Number): level of captcha security. 0 is easy, 1 is moderate and 2 is hard. Defaults to 1.
+* `disableEmail`(Boolean): silently disables sending any e-mails from the server.
+* `wsPort`(Number): port to be used for notification web socket. Can't be any of the other ports used.t
+* `wssPort`(Number): port to be used for secure notification websocket. A regular websocket won't work under a page loaded through ssl. It will use the same files used for regular ssl. Can't be any of the other ports used.
 * `latestPostsAmount`(Number): amount of posts to be displayed on the /last/ version of threads and on latestPostings. Defaults to 50.
+* `bypassValidationRange`(Number): maximum limit of the block bypass validation code that must be brute forced so the bypass can be used. A minimum of 1000 is recommended.
 
 `db.json`: contains database connection information.
 * `address`: address of the database.

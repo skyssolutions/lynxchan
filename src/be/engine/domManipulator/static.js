@@ -40,6 +40,7 @@ exports.availableLogTypes = {
   hashBan : 'guiTypeHashBan',
   hashBanLift : 'guiTypeHashBanLift',
   threadTransfer : 'guiTypeThreadTransfer',
+  threadMerge : 'guiTypeThreadMerge',
   appealDeny : 'guiTypeAppealDeny',
   mediaDeletion : 'guiTypeMediaDeletion',
   filePruning : 'guiTypeFilePruning'
@@ -499,9 +500,11 @@ exports.setCatalogCellThumb = function(thread, language) {
   if (thread.files && thread.files.length) {
     var img = '<img  loading="lazy" src="';
     img += common.clean(thread.files[0].thumb) + '">';
-    cell = cell.replace('__linkThumb_inner__', img);
+    cell = cell.replace('__linkThumb_inner__', img).replace(
+        '__linkThumb_mime__', thread.files[0].mime);
   } else {
-    cell = cell.replace('__linkThumb_inner__', lang(language).guiOpen);
+    cell = cell.replace('__linkThumb_inner__', lang(language).guiOpen).replace(
+        '__linkThumb_mime__', '');
   }
 
   return cell;

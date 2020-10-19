@@ -26,8 +26,10 @@ exports.process = function(req, res) {
         }, res, null, null, null, true);
 
       } else {
-        res.writeHead(200, miscOps.getHeader('text/html'));
-        res.end(dom.archives(threads, parameters, pageCount, req.language));
+
+        return formOps.dynamicPage(res, dom.archives(threads, parameters,
+            pageCount, req.language));
+
       }
 
     }

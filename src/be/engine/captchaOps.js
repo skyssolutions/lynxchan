@@ -321,19 +321,30 @@ exports.createCaptcha = function(callback, pool) {
   var expiration = new Date();
   expiration.setUTCMinutes(expiration.getUTCMinutes() + captchaExpiration);
 
-  var toInsert = {
-    answer : text,
-    expiration : expiration,
-    pool : pool
-  };
-
-  captchas.insertOne(toInsert, function(error) {
+  crypto.randomBytes(64, function gotHash(error, buffer) {
 
     if (error) {
-      callback(error);
-    } else {
-      exports.generateImage(text, toInsert, callback);
+      return callback(error);
     }
+
+    var toInsert = {
+      answer : text,
+      expiration : expiration,
+      pool : pool,
+      session : buffer.toString('base64')
+    };
+
+    // style exception, too simple
+    captchas.insertOne(toInsert, function(error) {
+
+      if (error) {
+        callback(error);
+      } else {
+        exports.generateImage(text, toInsert, callback);
+      }
+    });
+    // style exception, too simple
+
   });
 
 };
@@ -504,19 +515,20 @@ exports.checkForCaptcha = function(req, callback) {
   var cookies = formOps.getCookies(req);
 
   if (!cookies.captchaid) {
-    callback();
-    return;
+    return callback();
+
   }
 
   try {
-    cookies.captchaid = new ObjectID(cookies.captchaid);
+    var captchaId = new ObjectID(cookies.captchaid.substring(0, 24));
   } catch (error) {
     callback(error);
     return;
   }
 
   captchas.findOne({
-    _id : cookies.captchaid,
+    _id : captchaId,
+    session : cookies.captchaid.substring(24),
     expiration : {
       $gt : new Date()
     }
@@ -551,9 +563,9 @@ exports.attemptCaptcha = function(id, input, board, language, cb, thread) {
     return cb();
   }
 
-  input = (input || '').toString().trim().toLowerCase();
+  input = (input || '').toString().trim();
 
-  var preSolved = input.length === 24;
+  var preSolved = input.length === 112;
 
   if (preSolved) {
     id = input;
@@ -565,14 +577,16 @@ exports.attemptCaptcha = function(id, input, board, language, cb, thread) {
   }
 
   try {
-    id = new ObjectID(id);
+    var session = id.substring(24);
+    id = new ObjectID(id.substring(0, 24));
   } catch (error) {
     return cb(lang(language).errExpiredOrWrongCaptcha);
   }
 
   captchas.findOneAndDelete({
     _id : id,
-    answer : (preSolved ? null : input),
+    session : session,
+    answer : (preSolved ? null : input.toLowerCase()),
     expiration : {
       $gt : new Date()
     }
@@ -593,14 +607,14 @@ exports.attemptCaptcha = function(id, input, board, language, cb, thread) {
 exports.solveCaptcha = function(parameters, language, callback) {
 
   try {
-    parameters.captchaId = new ObjectID(parameters.captchaId);
+    var captchaId = new ObjectID(parameters.captchaId.substring(0, 24));
   } catch (error) {
-    callback(lang(language).errExpiredOrWrongCaptcha);
-    return;
+    return callback(lang(language).errExpiredOrWrongCaptcha);
   }
 
   captchas.findOneAndUpdate({
-    _id : parameters.captchaId,
+    _id : captchaId,
+    session : parameters.captchaId.substr(24),
     answer : (parameters.answer || '').toString().trim().toLowerCase(),
     expiration : {
       $gt : new Date()

@@ -19,8 +19,10 @@ exports.getRulesData = function(parameters, userData, res, auth, language) {
           if (json) {
             formOps.outputResponse('ok', rules, res, null, auth, null, true);
           } else {
-            res.writeHead(200, miscOps.getHeader('text/html', auth));
-            res.end(dom.ruleManagement(parameters.boardUri, rules, language));
+
+            formOps.dynamicPage(res, dom.ruleManagement(parameters.boardUri,
+                rules, language), auth);
+
           }
         }
       });

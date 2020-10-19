@@ -374,6 +374,8 @@ Parameters:
     page(Number): page to be displayed instead of a thread. If no thread is informed or a page is informed instead, it will output an array with threads of that page.
 
 Json output(Object): object with the data of the thread.
+    wsPort(Number): port used for the ws socket.
+    wssPort(Number): port used for the wss socket.
     signedRole: role of the user that posted the thread.
     banMessage: message to be displayed indicating this message was a cause to a ban.
     id: thread-wise id of the poster.
@@ -492,7 +494,7 @@ PAG_ID::23
 
 Name: captcha
 
-Description: returns a captcha image in png format. Uses get parameters. It sets too cookies: captchaid and captchaexpiration.
+Description: returns a captcha image in png format. Uses get parameters. It sets two cookies: captchaid and captchaexpiration.
 
 ------------------------------------------------------------------------------------------
 
@@ -1030,6 +1032,7 @@ Description: displays the page that allows the user to renew a block bypass and 
 
 Json output(Object): object with information about the current block byass status. Contains the following fields:
     valid(Boolean): indicates if the user has a valid block bypass.
+    validated(Boolean): indicates if the bypass needs POW validation.
     mode(Number): current blockBypass mode. 0 means disabled, 1 enabled and 2 mandatory.
 
 ------------------------------------------------------------------------------------------
@@ -1038,7 +1041,7 @@ PAG_ID::60
 
 Name: renewBypass
 
-Description: allows the user to renew his block bypass.
+Description: allows the user to renew his block bypass. Bypasses longer than 372 characters require validation, see validateBypass.
 
 Parameters:
     captcha: captcha input.
@@ -1526,6 +1529,17 @@ Parameters:
     boardUri: uri of both threads.
     threadSource: thread which will have it's replies merged into a different thread.
     threadDestination: thread which will receive the replies.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID::94
+
+Name: validateBypass
+
+Description: provides POW validation.
+
+Parameters:
+    code: the brute forced code. To find this code follow this logic: get the bypass cookie, ignore the first 24 characters. Take the following 344 characters as the base string and the next 344 characters as the resulted hash. Now try numbers starting from 0 as the salt through PBKDF2 with sha 512, 16384 iterations and 256 derived bytes (not bits). When you find a derivation that matches the resulted hash, submit that number as the code. Submitting the wrong code will result in the deletion of the bypass.
 
 ------------------------------------------------------------------------------------------
 

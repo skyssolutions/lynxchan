@@ -70,8 +70,8 @@ exports.process = function(req, res) {
       if (json) {
         formOps.outputResponse('ok', results, res, null, null, null, true);
       } else {
-        res.writeHead(200, miscOps.getHeader('text/html'));
-        res.end(domManipulator.logs(results, parameters, req.language));
+        formOps.dynamicPage(res, domManipulator.logs(results, parameters,
+           req.language));
       }
     }
 

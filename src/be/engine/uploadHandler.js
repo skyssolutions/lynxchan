@@ -68,7 +68,9 @@ exports.getImageBounds = function(file, callback) {
     return native.getImageBounds(path, callback);
   }
 
-  exec('identify ' + path, function(error, results) {
+  exec('identify ' + path, {
+    maxBuffer : Infinity
+  }, function(error, results) {
     if (error) {
       callback(error);
     } else {
@@ -106,7 +108,9 @@ exports.getVideoBounds = function(file, callback) {
     return native.getVideoBounds(path, callback);
   }
 
-  exec(videoDimensionsCommand + path, function gotDimensions(error, output) {
+  exec(videoDimensionsCommand + path, {
+    maxBuffer : Infinity
+  }, function gotDimensions(error, output) {
 
     if (error) {
       callback(error);
@@ -220,7 +224,9 @@ exports.generateVideoThumb = function(identifier, file, tooSmall, callback) {
   file.thumbOnDisk = thumbDestination;
   file.thumbPath = '/.media/t_' + identifier;
 
-  exec(command, function createdThumb(error) {
+  exec(command, {
+    maxBuffer : Infinity
+  }, function createdThumb(error) {
     if (error) {
       callback(error);
     } else {
@@ -240,7 +246,9 @@ exports.generateAudioThumb = function(identifier, file, callback) {
       /\{\$destination\}/g, thumbDestination).replace('{$dimension}',
       thumbSize + 'x' + thumbSize);
 
-  exec(mp3Command, function createdThumb(error) {
+  exec(mp3Command, {
+    maxBuffer : Infinity
+  }, function createdThumb(error) {
 
     if (error) {
       file.thumbPath = genericAudioThumb;
@@ -281,7 +289,9 @@ exports.generateGifThumb = function(identifier, file, cb) {
   var command = 'convert \'' + file.pathInDisk + '[0]\' -resize ' + thumbSize;
   command += 'x' + thumbSize + ' ' + thumbDestination;
 
-  exec(command, function resized(error) {
+  exec(command, {
+    maxBuffer : Infinity
+  }, function resized(error) {
     if (error) {
       cb(error);
     } else {
@@ -350,7 +360,9 @@ exports.generateImageThumb = function(identifier, file, callback) {
     command = exports.getFfmpegGifCommand(file, thumbDestination);
   }
 
-  exec(command, thumbCb);
+  exec(command, {
+    maxBuffer : Infinity
+  }, thumbCb);
 
 };
 

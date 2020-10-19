@@ -38,6 +38,8 @@ JSO_ID::02
 Path:/<board>/res/<thread>.json
 
 Root(Object):
+    wsPort(Number): port used for ws notifications.
+    wssPort(Number): port used for wss notifications.
     boardName: name of the board.
     boardDescription: description of the board.
     boardMarkdown: markdown of the board message.
@@ -199,6 +201,7 @@ Root(Array): array of objects representing threads. Each element contains the fo
     pinned(Boolean): indicates if the thread is pinned.
     cyclic(Boolean): indicates if the thread is cyclic.
     thumb: path to the thumbnail of the first image posted in this thread, if any.
+    mime: mimetype of the first file posted in the thread, if any.
     lastBump(Date): last time this thread was bumped.
     autoSage(Boolean): indicates if the thread is bumplocked.
 

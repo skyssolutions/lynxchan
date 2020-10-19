@@ -641,25 +641,37 @@ exports.noCookieCaptcha = function(parameters, captchaId, language) {
 
   }
 
-  var captchaUrl = '/.global/captchas/' + captchaId;
+  var captchaUrl = '/.global/captchas/' + captchaId.substring(0, 24);
   document = document.replace('__imageCaptcha_src__', captchaUrl);
 
   return document.replace('__inputCaptchaId_value__', captchaId);
 
 };
 
-exports.blockBypass = function(valid, language) {
+exports.blockBypass = function(bypass, language) {
 
   var template = templateHandler(language).bypassPage;
 
   var document = template.template.replace('__title__',
       lang(language).titBlockbypass);
 
-  if (!valid) {
+  if (!bypass) {
     document = document.replace('__indicatorValidBypass_location__', '');
   } else {
     document = document.replace('__indicatorValidBypass_location__',
         template.removable.indicatorValidBypass);
+
+    if (bypass.validationCode && !bypass.validated) {
+
+      var fullString = bypass._id + bypass.session + bypass.validationHash;
+
+      document = document.replace('__indicatorNotValidated_location__',
+          template.removable.indicatorNotValidated).replace(
+          '__labelBypass_inner__', fullString);
+    } else {
+
+      document = document.replace('__indicatorNotValidated_location__', '');
+    }
   }
 
   if (!blockBypass) {

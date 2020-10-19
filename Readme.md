@@ -1,8 +1,3 @@
-# Where is it at?
-
-Link to my heroku app: https://lynxchan-test.herokuapp.com/
-
-
 # About
 **LynxChan** is a chan engine designed with the following goals in mind:
 1. Fully support users not using javascript.
@@ -56,6 +51,10 @@ The dependencies versions are not exactly mandatory and only reflect the version
 
 # Running
 You can either run the `lynxchan` command or start the `lynxchan` service if you ran the `aux/root-setup.sh` script. You could just run the `src/be/boot.js` file. Run ``` sudo setcap 'cap_net_bind_service=+ep' `which node` ``` to be able to run it on port 80 without root access.
+If you are getting a code 203, it might be selinux not liking where you put lynxchan. Just run ``` chcon -t bin_t ABSOLUTE_PATH_TO_SRC_BE_BOOT.JS ``` to give FHS the finger and it will stop being a busybody.
+
+# Reverse proxies/CDN's (Cloudflare, Vanwa etc)
+These services have a history of not caching correctly when the `expires` header is used. So turn on the global setting that makes LynxChan use the `cache-control` header instead. Also, keep in mind the xff header has to be used in conjunction to the trusted proxies feature for the user actual ip to be used instead of the reverse proxy one.
 
 # Documentation
 As in many things, I am very anal about documentation.

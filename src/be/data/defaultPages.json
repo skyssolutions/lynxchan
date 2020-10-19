@@ -465,14 +465,18 @@
   {
     "template": "globalSettingsPage",
     "prebuiltFields": {
+      "checkboxUnlockHistory": "checked",
+      "checkboxDisableEmail": "checked",
       "checkboxLowercaseBoardUris": "checked",
       "checkboxDisableBanCaptcha": "checked",
       "fieldTrustedProxies": "value",
       "checkboxDiskMedia": "checked",
       "fieldMaxFilterLength": "value",
+      "fieldBypassValidationRange": "value",
       "fieldLatestPostPinned": "value",
       "fieldTorDNSL": "value",
       "checkboxStripExif": "checked",
+      "checkboxUseCacheControl": "checked",
       "checkboxUnboundBoardLimits": "checked",
       "fieldLatestPostsAmount": "value",
       "fieldMaxBoardBanners": "value",
@@ -492,6 +496,8 @@
       "fieldMaster": "value",
       "fieldTempDir": "value",
       "fieldRssDomain": "value",
+      "fieldWssPort": "value",
+      "fieldWsPort": "value",
       "fieldSslPass": "value",
       "fieldSenderEmail": "value",
       "fieldSiteTitle": "value",
@@ -598,6 +604,8 @@
   {
     "template": "bypassPage",
     "prebuiltFields": {
+      "labelBypass": "inner",
+      "indicatorNotValidated": "removal",
       "indicatorValidBypass": "removal",
       "renewForm": "removal"
     }

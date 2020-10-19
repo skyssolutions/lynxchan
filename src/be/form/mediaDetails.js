@@ -21,9 +21,8 @@ exports.getMediaDetails = function(auth, userData, parameters, res, language) {
           if (json) {
             formOps.outputResponse('ok', details, res, null, auth, null, true);
           } else {
-            res.writeHead(200, miscOps.getHeader('text/html', auth));
-            res.end(domManipulator.mediaDetails(parameters.identifier, details,
-                language));
+            formOps.dynamicPage(res, domManipulator.mediaDetails(
+                parameters.identifier, details, language), auth);
           }
 
         }

@@ -1,0 +1,15 @@
+>I can't access the site at all.
+First make sure the process itself is running through ps aux or something similar. Then try to access it through localhost using curl. If you can access it from localhost but not otherwise, the port is closed.
+
+>Spam data and tor ips don't update properly.
+>When the setting for storing media files on disk is activated, files can't be uploaded.
+Make sure the user running the daemon has writing permission to src/be and src/be/media.
+
+>Dynamic pages such as account.js are being cached and show the same page to several users.
+You are probably using a service like cloudflare, bitmitigate or vawna. Activate the the setting to use "cache-control" and the cache should be done correctly but the reverse-proxy.
+
+>When I change templates or static files, the site doesn't update.
+LynxChan has several layers of cache, including a cache of the front-end. Read src/be/readme for a complete list of parameters that influence these caches. Also, if you are running a service like cloudflare, make sure it isn't them who are caching the pages.
+
+>I can't run certain terminals commands.
+Make sure the user running the command has writing permission to the unix socket that the daemon create in the temporary directory.

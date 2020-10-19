@@ -234,6 +234,7 @@ captchas: stores captchas.
     _id**: unique id of the captcha.
     answer: answer to the captcha. If null, captcha has been already answered.
     expiration(Date): date of when the captcha will expire.
+    session: validation string for the captcha.
     pool(Boolean): indicates if the captcha is part of the captcha pool.
 
 ----------------------------------------------------------------------------------------
@@ -322,6 +323,10 @@ blockBypasses: stores data about bypassing tokens.
     hourlyLimitCount(Number): count towards the hourly limit.
     usesLeft(Number): how many uses are left in this token.
     expiration(Date): time of when the token will expire.
+    validationCode(Number): code that validates the bypass POW.
+    session(String): authentication string for the bypass.
+    validated(Boolean): indicates if the validation code was given back.
+    validationHash(String): the resulting hash of the session salted with the validation code.
     nextUsage(Date): time of when this token is allowed to be used again without flood being detected.
     nextThreadUsage(Date): time of when this token is allowed to be used again for thread creation without flood being detected.
 

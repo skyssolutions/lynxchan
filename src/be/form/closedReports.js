@@ -20,8 +20,10 @@ exports.getClosedReports = function(userData, parameters, res, auth, language) {
           if (json) {
             formOps.outputResponse('ok', reports, res, null, auth, null, true);
           } else {
-            res.writeHead(200, miscOps.getHeader('text/html', auth));
-            res.end(dom.closedReports(reports, language));
+
+            return formOps.dynamicPage(res, dom
+                .closedReports(reports, language), auth);
+
           }
 
         }

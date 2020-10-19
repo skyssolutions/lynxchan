@@ -25,6 +25,7 @@ var stripExif;
 var validateMimes;
 var domManipulator;
 var lang;
+var useCacheControl;
 var uploadHandler;
 var mediaThumb;
 
@@ -32,6 +33,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  useCacheControl = settings.useCacheControl;
   stripExif = settings.stripExif;
   fileProcessingLimit = settings.fileProcessingLimit;
   validateMimes = settings.validateMimes;
@@ -208,7 +210,6 @@ exports.transferFileInformation = function(files, fields, cb) {
   var file = files.shift();
 
   if (!file.realMime && !file.type) {
-    console.log('no mime, skip');
     return exports.transferFileInformation(files, fields, cb);
   }
 
@@ -370,7 +371,7 @@ exports.validateMimes = function(fields, files, callback, index) {
       file.realMime = receivedMime.trim();
 
       if (!file.realMime.indexOf('text/')) {
-        var actualRealMime = logger.getMime(file.originalFilename);
+        var actualRealMime = logger.getMime(file.name);
 
         if (actualRealMime !== 'application/octet-stream') {
           file.realMime = actualRealMime;
@@ -616,6 +617,10 @@ exports.redirectToLogin = function(res, skipReferer, req) {
 
   var headers = [ [ 'Location', '/login.html' ] ];
 
+  if (useCacheControl) {
+    headers.push([ 'cache-control', 'no-cache' ]);
+  }
+
   var cookies;
 
   if (skipReferer) {
@@ -637,6 +642,14 @@ exports.redirectToLogin = function(res, skipReferer, req) {
 
 };
 
+exports.dynamicPage = function(res, content, auth) {
+
+  res.writeHead(200, miscOps.getHeader('text/html', auth, useCacheControl ? [ [
+      'cache-control', 'no-cache' ] ] : null));
+  res.end(content);
+
+};
+
 exports.outputResponse = function(message, redirect, res, cookies, authBlock,
     language, json) {
 
@@ -645,7 +658,8 @@ exports.outputResponse = function(message, redirect, res, cookies, authBlock,
   }
 
   res.writeHead(200, miscOps.getHeader(json ? 'application/json' : 'text/html',
-      authBlock, null, cookies));
+      authBlock, useCacheControl ? [ [ 'cache-control', 'no-cache' ] ] : null,
+      cookies));
 
   res.end(json ? jsonBuilder.message(message, redirect) : domManipulator
       .message(message, redirect, language));
@@ -659,7 +673,8 @@ exports.outputError = function(error, code, res, language, json, auth) {
   }
 
   res.writeHead(json ? 200 : code, miscOps.getHeader(json ? 'application/json'
-      : 'text/html', auth));
+      : 'text/html', auth,
+      useCacheControl ? [ [ 'cache-control', 'no-cache' ] ] : null));
 
   res.end(json ? jsonBuilder.message('error', error.toString())
       : domManipulator.error(code, error.toString(), language));
@@ -729,7 +744,7 @@ exports.outputBan = function(ban, bypassable, req, res, json, callback, auth) {
   }
 
   res.writeHead(200, miscOps.getHeader(json ? 'application/json' : 'text/html',
-      auth));
+      auth, useCacheControl ? [ [ 'cache-control', 'no-cache' ] ] : null));
 
   if (ban.range) {
     ban.range = ban.range.join('.');
@@ -780,13 +795,19 @@ exports.checkForBan = function(req, boardUri, res, cb, auth, json, thread) {
 
       if (json) {
 
-        res.writeHead(200, miscOps.getHeader('application/json', auth));
+        res.writeHead(200, miscOps.getHeader('application/json', auth,
+            useCacheControl ? [ [ 'cache-control', 'no-cache' ] ] : null));
         res.end(jsonBuilder.message('bypassable'));
 
       } else {
 
-        res.writeHead(302, miscOps.getHeader(null, auth, [ [ 'Location',
-            '/blockBypass.js' ] ]));
+        var headers = [ [ 'Location', '/blockBypass.js' ] ];
+
+        if (useCacheControl) {
+          headers.push([ 'cache-control', 'no-cache' ]);
+        }
+
+        res.writeHead(302, miscOps.getHeader(null, auth, headers));
         res.end();
 
       }
@@ -813,7 +834,8 @@ exports.checkForHashBan = function(parameters, req, res, callback, auth, json) {
     } else {
 
       res.writeHead(200, miscOps.getHeader(json ? 'application/json'
-          : 'text/html', auth));
+          : 'text/html', auth, useCacheControl ? [ [ 'cache-control',
+          'no-cache' ] ] : null));
 
       res.end(json ? jsonBuilder.message('hashBan', hashBans) : domManipulator
           .hashBan(hashBans, req.language));

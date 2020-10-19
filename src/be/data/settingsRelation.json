@@ -193,6 +193,11 @@
   },
   {
     "type": "number",
+    "setting": "bypassValidationRange",
+    "element": "fieldBypassValidationRange"
+  },
+  {
+    "type": "number",
     "setting": "maxBoardBanners",
     "element": "fieldMaxBoardBanners"
   },
@@ -235,6 +240,16 @@
     "type": "number",
     "setting": "clusterPort",
     "element": "fieldClusterPort"
+  },
+  {
+    "type": "number",
+    "setting": "wsPort",
+    "element": "fieldWsPort"
+  },
+  {
+    "type": "number",
+    "setting": "wssPort",
+    "element": "fieldWssPort"
   },
   {
     "type": "number",
@@ -463,8 +478,18 @@
   },
   {
     "type": "boolean",
+    "setting": "disableEmail",
+    "element": "checkboxDisableEmail"
+  },
+  {
+    "type": "boolean",
     "setting": "validateMimes",
     "element": "checkboxValidateMimes"
+  },
+  {
+    "type": "boolean",
+    "setting": "unlockHistory",
+    "element": "checkboxUnlockHistory"
   },
   {
     "type": "boolean",
@@ -480,6 +505,11 @@
     "type": "boolean",
     "setting": "useHttp2",
     "element": "checkboxHttp2"
+  },
+  {
+    "type": "boolean",
+    "setting": "useCacheControl",
+    "element": "checkboxUseCacheControl"
   },
   {
     "type": "boolean",

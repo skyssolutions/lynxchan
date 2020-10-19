@@ -19,6 +19,7 @@ var globalBoardModeration;
 var lang;
 var sender;
 var ssl;
+var disableEmail;
 var clearIpMinRole;
 var settingsRelation;
 var mailer;
@@ -57,6 +58,7 @@ exports.loadSettings = function() {
 
   ssl = settings.ssl;
   sender = settings.emailSender;
+  disableEmail = settings.disableEmail;
   globalBoardModeration = settings.allowGlobalBoardModeration;
   CSP = settings.CSP;
   clearIpMinRole = settings.clearIpMinRole;
@@ -98,6 +100,10 @@ exports.cleanHTML = function(string) {
 };
 
 exports.sendMail = function(subject, content, recipient, callback) {
+
+  if (disableEmail) {
+    return callback();
+  }
 
   var data = {
     from : sender,

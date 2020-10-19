@@ -380,7 +380,32 @@ function prepareSettingsForChangeCheck(settings, callback) {
 
 }
 
-function writeNewSettings(settings, callback) {
+function validatePorts(settings) {
+
+  var ports = [ 443, settings.port || 80, settings.torPort ];
+
+  for (var i = 0; i < ports.length; i++) {
+
+    if (settings.wsPort && settings.wsPort === ports[i]) {
+      return true;
+    }
+
+    if (settings.wssPort && settings.wssPort === ports[i]) {
+      return true;
+    }
+
+  }
+
+}
+
+function writeNewSettings(settings, language, callback) {
+
+  if (validatePorts(settings)) {
+
+    var lang = require('./engine/langOps').languagePack;
+
+    return callback(lang(language).errInvalidWsPort);
+  }
 
   fs.writeFile(__dirname + '/settings/general.json', Buffer.from(JSON
       .stringify(settings, null, 2), 'utf-8'), function wroteFile(error) {
@@ -406,7 +431,7 @@ function writeNewSettings(settings, callback) {
 exports.setNewSettings = function(settings, language, callback) {
 
   if (!settings.overboard && !settings.sfwOverboard) {
-    return writeNewSettings(settings, callback);
+    return writeNewSettings(settings, language, callback);
   }
 
   var lang = require('./engine/langOps').languagePack(language);
@@ -445,7 +470,7 @@ exports.setNewSettings = function(settings, language, callback) {
     } else if (board) {
       callback(lang.errUriInUse);
     } else {
-      writeNewSettings(settings, callback);
+      writeNewSettings(settings, language, callback);
     }
   });
 

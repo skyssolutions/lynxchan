@@ -19,6 +19,8 @@ var unboundBoardSettings;
 var miscOps;
 var captchaOps;
 var overboard;
+var taskHandler = require('../../taskListener');
+var wsEnabled;
 var sfwOverboard;
 var pageLimit;
 var bumpLimit;
@@ -30,6 +32,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  wsEnabled = settings.wsPort || settings.wssPort;
   pinnedLatest = settings.latestPostPinned;
   unboundBoardSettings = settings.unboundBoardLimits;
   sfwOverboard = settings.sfwOverboard;
@@ -520,6 +523,18 @@ exports.createPost = function(req, parameters, newFiles, userData, postId,
       exports.createPost(req, parameters, userData, postId + 1, thread, board,
           wishesToSign, enabledCaptcha, cb);
     } else {
+
+      if (wsEnabled) {
+
+        taskHandler.sendToSocket(null, {
+          type : 'notifySockets',
+          threadId : postToAdd.threadId,
+          boardUri : postToAdd.boardUri,
+          target : [ postId ],
+          action : 'post'
+        });
+
+      }
 
       common.recordFlood(req);
 

@@ -13,6 +13,7 @@ var lang;
 var latestLimit;
 var clearIpMinRole;
 var generator;
+var unlockHistory;
 var disableLatestPostings;
 
 exports.loadDependencies = function() {
@@ -27,6 +28,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
   latestLimit = settings.latestPostsAmount;
+  unlockHistory = settings.unlockHistory;
   clearIpMinRole = settings.clearIpMinRole;
   disableLatestPostings = settings.disableLatestPostings;
 
@@ -166,7 +168,7 @@ exports.getPosts = function(hasDate, matchBlock, callback) {
 
 };
 
-exports.fetchPostInfo = function(matchBlock, clearIps, parameters, callback) {
+exports.fetchPostInfo = function(matchBlock, globalStaff, parameters, cb) {
 
   var query = {
     boardUri : parameters.boardUri
@@ -191,7 +193,7 @@ exports.fetchPostInfo = function(matchBlock, clearIps, parameters, callback) {
   }, function gotPosting(error, posting) {
 
     if (error) {
-      return callback(error);
+      return cb(error);
     }
 
     if (posting && (posting.ip || posting.bypassId)) {
@@ -212,12 +214,12 @@ exports.fetchPostInfo = function(matchBlock, clearIps, parameters, callback) {
         });
       }
 
-      if (!clearIps) {
+      if (!globalStaff && !unlockHistory) {
         matchBlock.boardUri = posting.boardUri;
       }
     }
 
-    callback(null, matchBlock);
+    cb(null, matchBlock);
 
   });
 
@@ -247,7 +249,7 @@ exports.canSearchPerBan = function(ban, userData) {
     return false;
   }
 
-  if (userData.globalRole <= clearIpMinRole) {
+  if (userData.globalRole <= miscOps.getMaxStaffRole()) {
     return true;
   }
 
@@ -327,8 +329,8 @@ exports.setIpAndPostMatch = function(parameters, matchBlock, userData, cb) {
     matchBlock.ip = logger.convertIpToArray(parameters.ip);
     delete parameters.boardUri;
   } else if (exports.canSearchPerPost(parameters, userData)) {
-    return exports.fetchPostInfo(matchBlock,
-        userData.globalRole <= clearIpMinRole, parameters, cb);
+    return exports.fetchPostInfo(matchBlock, userData.globalRole <= miscOps
+        .getMaxStaffRole(), parameters, cb);
   }
 
   cb(null, matchBlock);
@@ -372,9 +374,9 @@ exports.getMatchBlock = function(parameters, userData, callback) {
 
     if (exports.canSearchPerBan(ban, userData)) {
 
-      var clearIps = userData.globalRole <= clearIpMinRole;
+      var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
-      if (!clearIps) {
+      if (!globalStaff && !unlockHistory) {
         matchBlock.boardUri = ban.boardUri;
       }
 

@@ -1,0 +1,12 @@
+/src/be/node_modules
+/src/be/settings
+/src/be/ssl.key
+/src/be/ssl.cert
+/src/be/locationData
+/src/be/build
+/src/fe
+/src/be/addons
+/src/be/spamData
+/src/be/media
+/src/be/TORIps
+!/src/be/addons/example.js

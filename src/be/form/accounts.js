@@ -22,8 +22,10 @@ exports.getAccounts = function(auth, userData, res, req) {
       if (json) {
         formOps.outputResponse('ok', accounts, res, null, auth, null, true);
       } else {
-        res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(domManipulator.accounts(accounts, language));
+
+        return formOps.dynamicPage(res, domManipulator.accounts(accounts,
+            language), auth);
+
       }
 
     }

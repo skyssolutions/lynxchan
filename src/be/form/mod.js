@@ -26,15 +26,12 @@ exports.outputModData = function(bData, flagData, thread, posts, res, json,
 
   } else {
 
-    res.writeHead(200, miscOps.getHeader('text/html', auth));
-
     domManipulator.thread(bData, flagData, thread, posts,
         function gotThreadContent(error, content) {
           if (error) {
             formOps.outputError(error, 500, res, language, json, auth);
           } else {
-
-            res.end(content);
+            formOps.dynamicPage(res, content, auth);
           }
         }, true, userRole, language);
   }
@@ -53,12 +50,17 @@ exports.outputBoardModData = function(parameters, threadsArray, language, auth,
 
   } else {
 
-    res.writeHead(200, miscOps.getHeader('text/html', auth));
-
     domManipulator.page(parameters.page, threadsArray, pCount, bData, flagData,
         latestPosts, language, true, userRole, function gotThreadContent(error,
             content) {
-          res.end(content);
+
+          if (error) {
+            formOps.outputError(error, 500, res, language, parameters.json,
+                auth);
+          } else {
+            formOps.dynamicPage(res, content, auth);
+          }
+
         });
   }
 

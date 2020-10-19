@@ -18,7 +18,7 @@ exports.process = function(req, res) {
         formOps.outputError(error, 500, res, req.language, json);
       } else {
         var redirectLink = '/noCookieCaptcha.js?solvedCaptcha=';
-        redirectLink += parameters.captchaId;
+        redirectLink += encodeURIComponent(parameters.captchaId);
 
         formOps.outputResponse(json ? 'ok'
             : lang(req.language).msgCaptchaSolved, json ? null : redirectLink,

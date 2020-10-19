@@ -35,6 +35,7 @@ var fullReloadCallback = function(error, callback) {
   toDegenerate--;
 
   if (!toDegenerate) {
+    reloading = false;
     callback();
   }
 

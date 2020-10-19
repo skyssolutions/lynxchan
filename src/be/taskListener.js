@@ -21,6 +21,7 @@ var accountOps;
 var verbose;
 var versatileOps;
 var cacheHandler;
+var wsHandler;
 var generationQueue;
 var Socket = net.Socket;
 var isMaster = require('cluster').isMaster;
@@ -33,6 +34,7 @@ exports.reload = function() {
 
   var settings = settingsHandler.getGeneralSettings();
   verbose = settings.verbose || settings.verboseMisc;
+  wsHandler = require('./engine/webSocketHandler');
   cacheHandler = require('./engine/cacheHandler');
   master = settings.master;
   clusterPort = settings.clusterPort;
@@ -147,6 +149,11 @@ exports.processFloodTask = function(task, socket) {
 
   case 'createSession': {
     accountOps.masterCreateSession(task, socket);
+    break;
+  }
+
+  case 'notifySockets': {
+    wsHandler.notify(task);
     break;
   }
 

@@ -11,9 +11,15 @@ var formOps = require('../engine/formOps');
 
 exports.outputFile = function(file, res) {
 
-  res.writeHead(302, {
-    'Location' : file
-  });
+  var headers = {
+    'Location' : file,
+  };
+
+  if (settingsHandler.getGeneralSettings.useCacheControl) {
+    headers['Cache-control'] = 'no-cache';
+  }
+
+  res.writeHead(302, headers);
   res.end();
 
 };

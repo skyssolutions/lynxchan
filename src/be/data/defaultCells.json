@@ -4,6 +4,7 @@
     "prebuiltFields": {
       "linkThumb": [
         "inner",
+        "mime",
         "href"
       ],
       "labelReplies": "inner",

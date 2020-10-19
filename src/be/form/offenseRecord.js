@@ -22,8 +22,8 @@ exports.getOffenses = function(auth, userData, parameters, res, language) {
         formOps.outputResponse('ok', offenses, res, null, auth, null, true);
       } else {
 
-        res.writeHead(200, miscOps.getHeader('text/html', auth));
-        res.end(domManipulator.offenseRecord(offenses, parameters, language));
+        formOps.dynamicPage(res, domManipulator.offenseRecord(offenses,
+            parameters, language), auth);
 
       }
 

@@ -161,9 +161,11 @@ exports.countDocuments = function(userData, auth, parameters, req, res) {
                     formOps.outputResponse('ok', jsonBuilder.boards(pageCount,
                         foundBoards), res, null, auth, null, true);
                   } else {
-                    res.writeHead(200, miscOps.getHeader('text/html', auth));
-                    res.end(domManipulator.boards(parameters, foundBoards,
-                        pageCount, req.language));
+
+                    return formOps
+                        .dynamicPage(res, domManipulator.boards(parameters,
+                            foundBoards, pageCount, req.language), auth);
+
                   }
 
                 }

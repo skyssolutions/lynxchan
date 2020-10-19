@@ -22,6 +22,7 @@ var disable304;
 var templateHandler;
 var alternativeLanguages;
 var defaultFePath;
+var useCacheControl;
 var staticExpiration;
 var debug = kernel.feDebug();
 var typeIndex = {
@@ -42,6 +43,7 @@ exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
 
+  useCacheControl = settings.useCacheControl;
   staticExpiration = settings.staticExpiration;
   defaultFePath = settings.fePath;
   disable304 = settings.disable304;
@@ -882,11 +884,24 @@ exports.addHeaderBoilerPlate = function(header, stats, isStatic) {
 
   var expiration = new Date();
 
-  if (isStatic && staticExpiration) {
+  var canCache = isStatic && staticExpiration;
+
+  if (canCache) {
     expiration.setUTCMinutes(expiration.getUTCMinutes() + staticExpiration);
   }
 
-  header.push([ 'expires', expiration.toUTCString() ]);
+  if (useCacheControl) {
+
+    if (canCache) {
+      header.push([ 'cache-control',
+          'max-age=' + (expiration - new Date()) / 1000 ]);
+    } else {
+      header.push([ 'cache-control', 'no-cache' ]);
+    }
+
+  } else {
+    header.push([ 'expires', expiration.toUTCString() ]);
+  }
 
 };
 
@@ -940,27 +955,41 @@ exports.writeResponse = function(stats, data, res, isStatic, callback) {
 
 };
 
+exports.get304Headers = function(stats, isStatic) {
+
+  var header = [];
+
+  if (alternativeLanguages) {
+    header.push([ 'Vary', 'Accept-Language' ]);
+  }
+
+  if (stats.compressable) {
+    header.push([ 'Vary', 'Accept-Encoding' ]);
+  }
+
+  if (isStatic && staticExpiration) {
+    var expiration = new Date();
+    expiration.setUTCMinutes(expiration.getUTCMinutes() + staticExpiration);
+
+    if (useCacheControl) {
+      header.push([ 'cache-control',
+          'max-age=' + (expiration - new Date()) / 1000 ]);
+    } else {
+      header.push([ 'expires', expiration.toUTCString() ]);
+    }
+
+  }
+
+  return header;
+
+};
+
 exports.output304 = function(stats, res, isStatic, callback) {
 
   try {
 
-    var header = [];
-
-    if (alternativeLanguages) {
-      header.push([ 'Vary', 'Accept-Language' ]);
-    }
-
-    if (stats.compressable) {
-      header.push([ 'Vary', 'Accept-Encoding' ]);
-    }
-
-    if (isStatic && staticExpiration) {
-      var expiration = new Date();
-      expiration.setUTCMinutes(expiration.getUTCMinutes() + staticExpiration);
-      header.push([ 'expires', expiration.toUTCString() ]);
-    }
-
-    res.writeHead(304, miscOps.convertHeader(header));
+    res.writeHead(304, miscOps.convertHeader(exports.get304Headers(stats,
+        isStatic)));
     res.end();
 
     callback();
