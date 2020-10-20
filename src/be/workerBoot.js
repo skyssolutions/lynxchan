@@ -114,7 +114,7 @@ function startTorPort() {
 
     main(req, res);
 
-  }).listen(settings.torPort, settings.address);
+  }).listen(process.env.TORPORT || settings.torPort, settings.address);
 
   servers.push(server);
 

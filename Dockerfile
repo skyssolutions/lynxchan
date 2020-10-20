@@ -1,4 +1,4 @@
-FROM node:14.3.0-stretch-slim
+FROM node:14.14.0-buster-slim
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl ffmpeg wget unzip build-essential pkg-config libavformat-dev
 
 RUN echo "+ Starting Imagemagic download and build" && \
