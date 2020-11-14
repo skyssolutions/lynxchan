@@ -259,6 +259,7 @@ msgHashBanLifted: message used after lifting a hash ban.
 msgLoginSuccessful: message used after logging in.
 msgLogout: message used after logging out.
 msgHashBanCreated: message used after creating a hash ban.
+msgRuleEdited: message used after editing a rule.
 msgRangeBanCreated: message used after creating a range ban.
 msgPasswordReset: message used after resetting the user's password.
 msgAccountCreated: message used after creating an account.

@@ -1813,9 +1813,9 @@ ruleManagementCell*: cell used to list existing rules.
 Root element: form
 
 Elements:
-textLabel:
-    use: have it's innerHTML manipulated.
-    description: label with the text of the rule.
+textField:
+    use: have it's value manipulated.
+    description: field with the text of the rule.
 
 indexIdentifier:
     use: have it's value manipulated.

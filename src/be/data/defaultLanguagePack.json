@@ -385,5 +385,6 @@
   "errBypassNotFound": "Bypass not found.",
   "msgBypassValidated": "Bypass was validated.",
   "logThreadMerge": "Thread {$origin} was merged into thread {$destination}.",
-  "errInvalidWsPort": "Invalid wsPort or wssPort, you can't use the same port used to listen to http/https."
+  "errInvalidWsPort": "Invalid wsPort or wssPort, you can't use the same port used to listen to http/https.",
+  "msgRuleEdited": "Rule edited."
 }

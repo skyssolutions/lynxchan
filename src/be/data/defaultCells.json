@@ -369,7 +369,7 @@
     "prebuiltFields": {
       "indexIdentifier": "value",
       "boardIdentifier": "value",
-      "textLabel": "inner"
+      "textField": "value"
     }
   },
   {

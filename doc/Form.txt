@@ -872,13 +872,15 @@ Parameters:
 
 PAG_ID::47
 
-Name: deleteRule
+Name: ruleAction
 
-Description: deletes a rule from a board. Requires authentication. Restricted to the board owner.
+Description: edits or deletes a rule from a board. Requires authentication. Restricted to the board owner.
 
 Parameters:
     boardUri: URI of the board to have a rule deleted.
     ruleIndex: index of the rule to be deleted.
+    rule: text of the rule.
+    action: a string that indicates the action to be taken. "edit" changes the rule to be the new text, anything else deletes the rule.
 
 ------------------------------------------------------------------------------------------
 
