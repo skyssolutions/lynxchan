@@ -15,7 +15,8 @@ exports.boardModerationIdentifiers = [ 'boardTransferIdentifier',
 
 exports.specialSettingsRelation = {
   sfw : 'checkboxSfw',
-  locked : 'checkboxLocked'
+  locked : 'checkboxLocked',
+  allowJs : 'checkboxAllowJs'
 };
 
 exports.loadSettings = function() {

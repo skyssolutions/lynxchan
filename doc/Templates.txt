@@ -1605,6 +1605,10 @@ TEM_ID::31
 boardModerationPage: page used by global staff to moderate boards.
 
 Elements:
+checkboxAllowJs:
+    use: might be turned on.
+    description: checkbox that indicates if the board can have js uploaded even if not globally allowed.
+
 boardTransferIdentifier:
     use: have it's value manipulated.
     description: hidden input that identifies the board for the transfer operation.

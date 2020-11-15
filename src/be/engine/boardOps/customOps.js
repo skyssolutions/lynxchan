@@ -327,12 +327,14 @@ exports.updateBoardAfterNewJs = function(board, callback) {
 
 };
 
-exports.setCustomJs = function(userData, boardUri, file, language, callback) {
+exports.allowCustomJs = function(board) {
 
-  if (!customJs) {
-    callback(lang(language).errNoCustomJs);
-    return;
-  }
+  var allow = (board.specialSettings || []).indexOf('allowJs') >= 0;
+
+  return allow || customJs;
+};
+
+exports.setCustomJs = function(userData, boardUri, file, language, callback) {
 
   var globallyAllowed = userData.globalRole <= 1 && globalBoardModeration;
 
@@ -345,31 +347,33 @@ exports.setCustomJs = function(userData, boardUri, file, language, callback) {
   boards.findOne({
     boardUri : boardUri
   }, function gotBoard(error, board) {
+
     if (error) {
-      callback(error);
+      return callback(error);
     } else if (!board) {
-      callback(lang(language).errBoardNotFound);
+      return callback(lang(language).errBoardNotFound);
     } else if (board.owner !== userData.login && !globallyAllowed) {
-      callback(lang(language).errDeniedJsManagement);
+      return callback(lang(language).errDeniedJsManagement);
     } else if (!isJS) {
-      callback(lang(language).errOnlyJsAllowed);
-    } else {
-
-      // style exception, too simple
-      gridFsHandler.writeFile(file.pathInDisk, '/' + boardUri + '/custom.js',
-          file.mime, {
-            type : 'custom',
-            boardUri : boardUri
-          }, function savedFile(error) {
-            if (error) {
-              callback(error);
-            } else {
-              exports.updateBoardAfterNewJs(board, callback);
-            }
-          });
-      // style exception, too simple
-
+      return callback(lang(language).errOnlyJsAllowed);
+    } else if (!exports.allowCustomJs(board)) {
+      return callback(lang(language).errNoCustomJs);
     }
+
+    // style exception, too simple
+    gridFsHandler.writeFile(file.pathInDisk, '/' + boardUri + '/custom.js',
+        file.mime, {
+          type : 'custom',
+          boardUri : boardUri
+        }, function savedFile(error) {
+          if (error) {
+            callback(error);
+          } else {
+            exports.updateBoardAfterNewJs(board, callback);
+          }
+        });
+    // style exception, too simple
+
   });
 
 };
@@ -467,7 +471,10 @@ exports.clearCustomJs = function() {
 
   boards.aggregate([ {
     $match : {
-      usesCustomJs : true
+      usesCustomJs : true,
+      specialSettings : {
+        $ne : 'allowJs'
+      }
     }
   }, {
     $group : {

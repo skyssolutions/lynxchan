@@ -363,6 +363,7 @@
       ],
       "labelLastSeen": "inner",
       "checkboxSfw": "checked",
+      "checkboxAllowJs": "checked",
       "specialSettingsIdentifier": "value",
       "checkboxLocked": "checked",
       "divVolunteers": "children"

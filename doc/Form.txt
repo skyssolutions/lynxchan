@@ -1108,6 +1108,7 @@ Description: sets the special settings for the board. Requires authentication, a
 Parameters:
     boardUri*: board to have its special settings changed.
     sfw: if informed, will add it to the special settings of the board, indicating it is sfw.
+    allowJs: if informed, the board is allowed to always have custom js, even if not globally allowed.
 
 ------------------------------------------------------------------------------------------
 

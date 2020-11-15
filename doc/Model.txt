@@ -56,6 +56,7 @@ boards: stores boards.
     specialSettings(Array): array of settings that only the global staff are allowed to change. May hold the following values:
         sfw: indicates the board is sfw.
         locked: indicates the board is locked.
+        allowJs: indicates the board is always allowed to have custom js.
     inactive(Boolean): indicates the board owner is inactive.
 
 ----------------------------------------------------------------------------------------
