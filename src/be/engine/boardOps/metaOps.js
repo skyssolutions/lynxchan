@@ -25,6 +25,7 @@ var lang;
 var maxBoardTags;
 var allowJs;
 var overboard;
+var onlyConfirmed;
 var sfwOverboard;
 var globalBoardModeration;
 var boardCreationRequirement;
@@ -96,14 +97,8 @@ exports.transferParameters = [ {
 
 exports.validSpecialSettings = [ 'sfw', 'locked', 'allowJs' ];
 
-exports.loadSettings = function() {
+exports.loadMoreSettings = function(settings) {
 
-  var settings = require('../../settingsHandler').getGeneralSettings();
-  forcedCaptcha = settings.forceCaptcha;
-  hasOverboard = settings.overboard || settings.sfwOverboard;
-  useLanguages = settings.useAlternativeLanguages;
-  volunteerSettings = settings.allowVolunteerSettings;
-  globalBoardModeration = settings.allowGlobalBoardModeration;
   boardCreationRequirement = settings.boardCreationRequirement;
   maxVolunteers = settings.maxBoardVolunteers;
   maxBoardTags = settings.maxBoardTags;
@@ -112,6 +107,19 @@ exports.loadSettings = function() {
   allowJs = settings.allowBoardCustomJs;
   lowercase = settings.lowercaseBoardUris;
   sfwOverboard = settings.sfwOverboard;
+
+};
+
+exports.loadSettings = function() {
+
+  var settings = require('../../settingsHandler').getGeneralSettings();
+  forcedCaptcha = settings.forceCaptcha;
+  onlyConfirmed = settings.requireConfirmationForBoardCreation;
+  hasOverboard = settings.overboard || settings.sfwOverboard;
+  useLanguages = settings.useAlternativeLanguages;
+  volunteerSettings = settings.allowVolunteerSettings;
+  globalBoardModeration = settings.allowGlobalBoardModeration;
+  exports.loadMoreSettings(settings);
 
   exports.boardParameters[4].length = settings.boardMessageLength;
 
@@ -678,6 +686,8 @@ exports.createBoard = function(captchaId, parameters, userData, language,
 
   if (!allowed && boardCreationRequirement <= miscOps.getMaxStaffRole()) {
     return callback(lang(language).errDeniedBoardCreation);
+  } else if (onlyConfirmed && !userData.confirmed) {
+    return callback(lang(language).errOnlyConfirmedEmail);
   }
 
   miscOps.sanitizeStrings(parameters, exports.boardParameters);

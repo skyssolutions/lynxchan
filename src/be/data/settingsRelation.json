@@ -453,6 +453,11 @@
   },
   {
     "type": "boolean",
+    "setting": "requireConfirmationForBoardCreation",
+    "element": "checkboxRequireConfirmationForBoardCreation"
+  },
+  {
+    "type": "boolean",
     "setting": "disableBanCaptcha",
     "element": "checkboxDisableBanCaptcha"
   },
