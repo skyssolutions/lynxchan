@@ -387,5 +387,6 @@
   "logThreadMerge": "Thread {$origin} was merged into thread {$destination}.",
   "errInvalidWsPort": "Invalid wsPort or wssPort, you can't use the same port used to listen to http/https.",
   "msgRuleEdited": "Rule edited.",
-  "errOnlyConfirmedEmail": "You need to confirm your e-mail to be able to create boards."
+  "errOnlyConfirmedEmail": "You need to confirm your e-mail to be able to create boards.",
+  "errNonWhiteListedEmail": "Your e-mail provider is not on the whitelist. Allowed domains: {$domains}."
 }

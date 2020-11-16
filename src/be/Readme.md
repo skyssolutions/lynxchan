@@ -194,6 +194,7 @@ Settings files that goes into the settings directory:
 * `flagNameLength`(Number): maximum size allowed for custom flags names. Defaults to 32.
 * `allowBlockedToReport`(Boolean): allows users that were banned or blocked to report content, including TOR users if they are not allowed to post.
 * `clusterPort`(Number): port used for cluster communication.
+* `emailDomainWhiteList`(Array): array of whitelisted e-mail domains. If any domain is defined, then users can only use e-mails from these domains. Otherwise every domain is accepted.
 * `boardMessageLength`(Number): maximum size for board messages. Defaults to 256.
 * `staticExpiration`(Number): amount of minutes that static files served from cache will inform as expiration when requested. Defaults to 60.
 * `maxBoardHashBans`(Number): limit for board hash bans boards can have. Defaults to 128.

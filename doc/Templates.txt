@@ -1955,6 +1955,10 @@ TEM_ID::47
 globalSettingsPage: page used to change global settings.
 
 Elements:
+fieldEmailDomainWhiteList:
+    use: have it's value manipulated.
+    description: field with whitelisted e-mail domains.
+
 fieldBypassValidationRange:
     use: have it's value manipulated.
     description: checkbox that displays the bypass validation code range.

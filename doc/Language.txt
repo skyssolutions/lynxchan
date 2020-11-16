@@ -94,6 +94,7 @@ errFlagNotFound: error thrown when the specified flag for an operation can't be 
 errFormatNotAllowed: error thrown when an uploaded file uses a format disallowed by the server.
 errDeniedGlobalSettings: error thrown when the user is not allowed to edit global settings.
 errBoardLocked: error thrown when the board is locked for thread creation.
+errNonWhiteListedEmail: error thrown when the user tries to use an e-mail that is not on the e-mail domain whitelist. Replaces: {$domains}.
 errDeniedSpoilerManagement: error thrown when the user is not allowed to manage the custom spoiler of a board.
 errDeniedIpDeletion: error thrown when the user is not allowed to delete posts from a single ip.
 errInvalidRange: error thrown when an invalid range is informed.

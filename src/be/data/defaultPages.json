@@ -473,6 +473,7 @@
       "fieldTrustedProxies": "value",
       "checkboxDiskMedia": "checked",
       "fieldMaxFilterLength": "value",
+      "fieldEmailDomainWhiteList": "value",
       "checkboxRequireConfirmationForBoardCreation": "checked",
       "fieldBypassValidationRange": "value",
       "fieldLatestPostPinned": "value",

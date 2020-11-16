@@ -22,18 +22,18 @@ exports.changeSettings = function(userData, parameters, res, auth, language,
 
   parameters.settings = newSettings;
 
-  accountOps.changeSettings(userData, parameters, function changedSettings(
-      error) {
+  accountOps.changeSettings(userData, parameters, language,
+      function changedSettings(error) {
 
-    if (error) {
-      formOps.outputError(error, 500, res, language, json, auth);
-    } else {
-      formOps.outputResponse(json ? 'ok'
-          : lang(language).msgAccountSettingsSaved,
-          json ? null : '/account.js', res, null, auth, language, json);
-    }
+        if (error) {
+          return formOps.outputError(error, 500, res, language, json, auth);
+        }
 
-  });
+        formOps.outputResponse(json ? 'ok'
+            : lang(language).msgAccountSettingsSaved, json ? null
+            : '/account.js', res, null, auth, language, json);
+
+      });
 
 };
 
