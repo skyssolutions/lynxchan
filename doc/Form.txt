@@ -385,6 +385,7 @@ Json output(Object): object with the data of the thread.
         name: name of the flag.
     markdown: message with html markdown applied.
     flag: url of the used flag.
+    noReportCaptcha(Boolean) : indicates no captcha is needed for reporting.
     flagName: name of the used flag.
     flagCode: location code of the flag.
     threadId(Number): unique id of the thread inside the board.
@@ -1543,6 +1544,25 @@ Description: provides POW validation.
 
 Parameters:
     code: the brute forced code. To find this code follow this logic: get the bypass cookie, ignore the first 24 characters. Take the following 344 characters as the base string and the next 344 characters as the resulted hash. Now try numbers starting from 0 as the salt through PBKDF2 with sha 512, 16384 iterations and 256 derived bytes (not bits). When you find a derivation that matches the resulted hash, submit that number as the code. Submitting the wrong code will result in the deletion of the bypass.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID:: 95
+
+Name: openReports
+
+Description: lists open reports.
+
+Parameters:
+    boardUri: uri of the board to list open reports for. If none, it will list global reports. Requires authentication.
+
+Json ouput(Object): an array the open reports. Each object contains the following fields:
+    _id: the id of the report.
+    global(Boolean): indicates if the report is global or not.
+    boardUri: the board to which the report belongs to.
+    threadId(Number): the thread where the report belongs to.
+    creation(Date): then the report was made.
+    postId(Number): the post to which the report belongs to.
 
 ------------------------------------------------------------------------------------------
 

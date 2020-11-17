@@ -113,10 +113,13 @@ function getRebuildBoards(settings) {
       ^ settings.disableCatalogPosting;
   var unboundChanged = generalSettings.unboundBoardLimits
       ^ settings.unboundBoardLimits;
+  var reportCaptchaChanged = generalSettings.noReportCaptcha
+      ^ settings.noReportCaptcha;
   var mLengthChanged = generalSettings.messageLength !== settings.messageLength;
 
   rebuildBoards = unboundChanged || rebuildBoards || catalogPostingChanged;
   rebuildBoards = rebuildBoards || fileCChanged || mLengthChanged;
+  rebuildBoards = rebuildBoards || reportCaptchaChanged;
 
   return rebuildBoards || fileSizeDelta || globalCChanged || lPC;
 
@@ -156,6 +159,8 @@ function checkOverboardChanged(settings) {
 
   var changedOmission = settings.omitUnindexedContent
       ^ generalSettings.omitUnindexedContent;
+
+  changedOmission = generalSettings.noReportCaptcha ^ settings.noReportCaptcha;
 
   if (!overboardChanged && !overboardReduced && !changedOmission) {
     return;
@@ -354,7 +359,8 @@ function prepareSettingsForChangeCheck(settings, callback) {
       'defaultAnonymousName', 'defaultBanMessage', 'allowBoardCustomJs',
       'topBoardsCount', 'globalLatestPosts', 'forceCaptcha', 'overboard',
       'frontPageStats', 'disableAccountCreation', 'disableCatalogPosting',
-      'redactModNames', 'omitUnindexedContent', 'unboundBoardLimits' ];
+      'redactModNames', 'omitUnindexedContent', 'unboundBoardLimits',
+      'noReportCaptcha' ];
 
   // these ones default to the default values
   var defaultToDefault = [ 'pageSize', 'latestPostsAmount', 'maxFileSizeMB',

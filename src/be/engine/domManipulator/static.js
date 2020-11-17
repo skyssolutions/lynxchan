@@ -27,6 +27,7 @@ var disableCatalogPosting;
 var boardStaffArchiving;
 var cacheHandler;
 var noBanCaptcha;
+var noReportCaptcha;
 
 exports.availableLogTypes = {
   ban : 'guiTypeBan',
@@ -56,6 +57,7 @@ exports.moddingThreadIdentifiers = [ 'archiveBoardIdentifier',
 exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  noReportCaptcha = settings.noReportCaptcha;
   noBanCaptcha = settings.disableBanCaptcha;
   redactModNames = settings.redactModNames;
   verbose = settings.verbose || settings.verboseCache;
@@ -283,7 +285,9 @@ exports.thread = function(boardData, flagData, threadData, posts, callback,
   var template = templateHandler(language).threadPage;
 
   var document = exports.setThreadCommonInfo(template, threadData, boardData,
-      language, flagData, posts, modding, userRole, last);
+      language, flagData, posts, modding, userRole, last).replace(
+      '__divReportCaptcha_location__',
+      noReportCaptcha ? '' : template.removable.divReportCaptcha);
 
   if (modding) {
 
@@ -469,9 +473,11 @@ exports.page = function(page, threads, pageCount, boardData, flagData,
   document = exports.addPagesLinks(document, pageCount, page, mod,
       boardData.boardUri, template.removable);
 
-  document = document.replace('__divThreads_children__', exports
-      .getThreadListing(latestPosts, threads, mod, userRole, boardData,
-          language));
+  document = document.replace(
+      '__divThreads_children__',
+      exports.getThreadListing(latestPosts, threads, mod, userRole, boardData,
+          language)).replace('__divReportCaptcha_location__',
+      noReportCaptcha ? '' : template.removable.divReportCaptcha);
 
   if (mod) {
 
@@ -867,8 +873,10 @@ exports.getOverboardThreads = function(foundThreads, foundPreviews, language) {
 
   common.handleOps(operations);
 
-  var template = templateHandler(language).overboard.template;
-  return template.replace('__divThreads_children__', children);
+  var template = templateHandler(language).overboard;
+  return template.template.replace('__divThreads_children__', children)
+      .replace('__divReportCaptcha_location__',
+          noReportCaptcha ? '' : template.removable.divReportCaptcha);
 
 };
 

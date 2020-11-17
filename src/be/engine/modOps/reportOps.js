@@ -28,6 +28,7 @@ var common;
 var captchaOps;
 var globalBoardModeration;
 var lang;
+var noReportCaptcha;
 var allowBlockedToReport;
 
 exports.reportArguments = [ {
@@ -47,6 +48,7 @@ exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
   multipleReports = settings.multipleReports;
   redactedModNames = settings.redactModNames;
+  noReportCaptcha = settings.noReportCaptcha;
   allowBlockedToReport = settings.allowBlockedToReport;
   globalBoardModeration = settings.allowGlobalBoardModeration;
 
@@ -369,29 +371,37 @@ exports.iterateReports = function(req, reportedContent, parameters, cb) {
 
 };
 
+exports.checkReports = function(req, reportedContent, parameters, cb) {
+
+  if (!Array.isArray(reportedContent)) {
+    return cb();
+  }
+
+  reportedContent = reportedContent.slice(0, 1000);
+
+  if (reportedContent.length > 1 && !multipleReports) {
+    cb(lang(req.language).errDeniedMultipleReports);
+  } else {
+    exports.iterateReports(req, reportedContent, parameters, cb);
+  }
+
+};
+
 exports.report = function(req, reportedContent, parameters, captchaId, cb) {
 
   miscOps.sanitizeStrings(parameters, exports.reportArguments);
 
+  if (noReportCaptcha) {
+    return exports.checkReports(req, reportedContent, parameters, cb);
+  }
+
   captchaOps.attemptCaptcha(captchaId, parameters.captchaReport, null,
       req.language, function solvedCaptcha(error) {
+
         if (error) {
           cb(error);
         } else {
-
-          if (!Array.isArray(reportedContent)) {
-            cb();
-          } else {
-            reportedContent = reportedContent.slice(0, 1000);
-
-            if (reportedContent.length > 1 && !multipleReports) {
-              cb(lang(req.language).errDeniedMultipleReports);
-            } else {
-              exports.iterateReports(req, reportedContent, parameters, cb);
-            }
-
-          }
-
+          exports.checkReports(req, reportedContent, parameters, cb);
         }
 
       });

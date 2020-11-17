@@ -74,6 +74,10 @@ TEM_ID::02
 boardPage: board pages, listing threads.
 
 Elements:
+divReportCaptcha:
+    use: might be removed.
+    description: div with the captcha used for reporting.
+
 divBanCaptcha:
     use: might be removed.
     description: div with the captcha used for banning.
@@ -185,6 +189,10 @@ TEM_ID::03
 threadPage: thread page, with all replies.
 
 Elements:
+divReportCaptcha:
+    use: might be removed.
+    description: div with the captcha used for reporting.
+
 divBanCaptcha:
     use: might be removed.
     description: div with the captcha used for banning.
@@ -1967,6 +1975,10 @@ checkboxDisableBanCaptcha:
     use: might be checked.
     description: checkbox that indicates if ban captchas are disabled.
 
+checkboxNoReportCaptcha:
+    use: might be checked.
+    description: checkbox that indicates if captchas are disabled for report.
+
 checkboxUnlockHistory:
     use: might be checked.
     description: checkbox that indicates if users without access to plain text ips can still see user's history across boards.
@@ -2495,6 +2507,10 @@ TEM_ID::51
 overboard: page used to create the overboard and multi-board.
 
 Elements:
+divReportCaptcha:
+    use: might be removed.
+    description: div with the captcha used for reporting.
+
 divThreads:
     use: have children appended to it.
     description: div containing the threads.

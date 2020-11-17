@@ -40,6 +40,7 @@ Path:/<board>/res/<thread>.json
 Root(Object):
     wsPort(Number): port used for ws notifications.
     wssPort(Number): port used for wss notifications.
+    noReportCaptcha(Boolean) : indicates no captcha is needed for reporting.
     boardName: name of the board.
     boardDescription: description of the board.
     boardMarkdown: markdown of the board message.
@@ -116,6 +117,7 @@ Path:/<board>/<page>.json
 
 Root(Object):
     pageCount(Number): amount of pages this board has.
+    noReportCaptcha(Boolean) : indicates no captcha is needed for reporting.
     boardName: name of the board.
     globalCaptcha(Boolean): indicates if the site has global captcha turned on.
     captchaMode(Number): indicates the captcha mode for the board. 0 means no captcha, 1 means only for new threads and 2 means for all posts on the board.

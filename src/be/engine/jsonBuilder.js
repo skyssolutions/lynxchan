@@ -18,6 +18,7 @@ var domManipulator;
 var redactModNames;
 var messageLength;
 var globalCaptcha;
+var noReportCaptcha;
 var wsPort;
 var wssPort;
 
@@ -25,6 +26,7 @@ exports.loadSettings = function() {
 
   settings = require('../settingsHandler').getGeneralSettings();
 
+  noReportCaptcha = settings.noReportCaptcha;
   redactModNames = settings.redactModNames;
   bypassMode = settings.bypassMode;
   globalCaptcha = settings.forceCaptcha;
@@ -210,12 +212,10 @@ exports.getThreadObject = function(thread, posts, board, modding, userRole) {
 // Section 2: Thread {
 exports.addExtraThreadInfo = function(threadObject, boardData) {
 
-  threadObject.usesCustomJs = boardData.usesCustomJs;
+  threadObject.usesCustomJs = !!boardData.usesCustomJs;
   threadObject.boardName = boardData.boardName;
   threadObject.boardDescription = boardData.boardDescription;
   threadObject.boardMarkdown = boardData.boardMarkdown;
-  threadObject.maxMessageLength = messageLength;
-  threadObject.usesCustomCss = boardData.usesCustomCss;
 
   exports.setFileLimits(threadObject, boardData);
 
@@ -241,6 +241,10 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
 
   var threadObject = exports.getThreadObject(threadData, posts, boardData,
       modding, userRole);
+
+  threadObject.maxMessageLength = messageLength;
+  threadObject.usesCustomCss = boardData.usesCustomCss;
+  threadObject.noReportCaptcha = noReportCaptcha;
 
   exports.addExtraThreadInfo(threadObject, boardData);
 
@@ -380,7 +384,8 @@ exports.finalizePageData = function(pageCount, boardData, threadsToAdd,
     threads : threadsToAdd,
     maxMessageLength : messageLength,
     globalCaptcha : globalCaptcha,
-    captchaMode : boardData.captchaMode
+    captchaMode : boardData.captchaMode,
+    noReportCaptcha : noReportCaptcha
   };
 
   exports.setFileLimits(toWrite, boardData);
@@ -591,7 +596,8 @@ exports.overboard = function(foundThreads, previewRelation, callback,
   }
 
   cacheHandler.writeData(JSON.stringify({
-    threads : threadsToAdd
+    threads : threadsToAdd,
+    noReportCaptcha : noReportCaptcha
   }), url, 'application/json', {
     boards : boardList,
     type : boardList ? 'multiboard' : 'overboard'

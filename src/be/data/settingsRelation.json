@@ -478,6 +478,11 @@
   },
   {
     "type": "boolean",
+    "setting": "noReportCaptcha",
+    "element": "checkboxNoReportCaptcha"
+  },
+  {
+    "type": "boolean",
     "setting": "stripExif",
     "element": "checkboxStripExif"
   },
