@@ -20,6 +20,7 @@ var maxFileSizeMB;
 var messageLength;
 var verbose;
 var validMimes;
+var thumbSize;
 var latestLimit;
 
 exports.indicatorsRelation = {
@@ -37,6 +38,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  thumbSize = settings.thumbSize;
   latestLimit = settings.latestPostsAmount;
   unboundBoardLimits = settings.unboundBoardLimits;
   verbose = settings.verboseCache || settings.verbose;
@@ -739,6 +741,30 @@ exports.getPosts = function(posts, modding, boardData, userRole, innerPage,
 // } Section 3.1: Post content
 
 // Section 3.2: Uploads {
+exports.getImgTag = function(file) {
+
+  var img = '<img loading="lazy" src="' + file.thumb + '"';
+
+  if (file.thumb.length > 71 && file.width) {
+
+    var fixedHeight;
+
+    if (file.width < file.height) {
+      fixedHeight = thumbSize;
+    } else {
+      fixedHeight = Math.trunc((thumbSize / file.width) * file.height);
+    }
+
+    img += ' height="' + fixedHeight + '"';
+
+  } else {
+    img += ' class="variableHeight"';
+  }
+
+  return img + '>';
+
+};
+
 exports.setUploadLinks = function(cell, file) {
 
   cell = cell.replace('__imgLink_href__', file.path);
@@ -754,9 +780,7 @@ exports.setUploadLinks = function(cell, file) {
 
   cell = cell.replace('__nameLink_href__', file.path);
 
-  var img = '<img loading="lazy" src="' + file.thumb + '">';
-
-  cell = cell.replace('__imgLink_children__', img);
+  cell = cell.replace('__imgLink_children__', exports.getImgTag(file));
 
   var originalName = exports.clean(file.originalName);
 
