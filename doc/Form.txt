@@ -293,6 +293,7 @@ Name: contentActions
 Description: ban, deletes or reports posts and threads. The inputs of the posts will have their names generated on the page generation stage.
 
 Parameters:
+    categoryReport: category of the report.
     nonBypassable: if informed, broad bans applied will not be able to be bypassable.
     deleteMedia: if anything is informed and the user is part of the global staff, when deleting files or postings, the actual media files will be removed from the server.
     banType: type of ban. 0 bans only the ips of the selected posts and requires a valid expiration. 1 creates range bans off the first half of the ips and 2 creates range bans off the first 3/4 of the ips. 3 creates an ASN ban.
@@ -385,7 +386,8 @@ Json output(Object): object with the data of the thread.
         name: name of the flag.
     markdown: message with html markdown applied.
     flag: url of the used flag.
-    noReportCaptcha(Boolean) : indicates no captcha is needed for reporting.
+    noReportCaptcha(Boolean): indicates no captcha is needed for reporting.
+    reportCategories(Array): array with the available report categories.
     flagName: name of the used flag.
     flagCode: location code of the flag.
     threadId(Number): unique id of the thread inside the board.

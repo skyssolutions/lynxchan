@@ -112,6 +112,8 @@
     "bodyChildren": true,
     "prebuiltFields": {
       "divBanCaptcha": "removal",
+      "reportCategoriesDiv": "removal",
+      "reportComboboxCategory": "children",
       "labelName": "inner",
       "labelDescription": [
         "inner",
@@ -157,6 +159,8 @@
       "divBanCaptcha": "removal",
       "divReportCaptcha": "removal",
       "divMerge": "removal",
+      "reportCategoriesDiv": "removal",
+      "reportComboboxCategory": "children",
       "noFlagDiv": "removal",
       "ipDeletionForm": "removal",
       "divArchive": "removal",
@@ -469,6 +473,7 @@
     "template": "globalSettingsPage",
     "prebuiltFields": {
       "checkboxUnlockHistory": "checked",
+      "fieldReportCategories": "value",
       "checkboxDisableEmail": "checked",
       "checkboxLowercaseBoardUris": "checked",
       "checkboxDisableBanCaptcha": "checked",
@@ -604,7 +609,9 @@
     "template": "overboard",
     "prebuiltFields": {
       "divThreads": "children",
-      "divReportCaptcha": "removal"
+      "divReportCaptcha": "removal",
+      "reportCategoriesDiv": "removal",
+      "reportComboboxCategory": "children"
     }
   },
   {

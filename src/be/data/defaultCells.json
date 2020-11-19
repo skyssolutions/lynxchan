@@ -225,6 +225,8 @@
     "prebuiltFields": {
       "boardLabel": "inner",
       "reasonLabel": "inner",
+      "categoryDiv": "removal",
+      "categoryLabel": "inner",
       "link": "href",
       "postingDiv": "inner",
       "closureCheckbox": "name"

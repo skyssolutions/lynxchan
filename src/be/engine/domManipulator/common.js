@@ -20,6 +20,7 @@ var maxFileSizeMB;
 var messageLength;
 var verbose;
 var validMimes;
+var reportCategories;
 var thumbSize;
 var latestLimit;
 
@@ -38,6 +39,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  reportCategories = settings.reportCategories;
   thumbSize = settings.thumbSize;
   latestLimit = settings.latestPostsAmount;
   unboundBoardLimits = settings.unboundBoardLimits;
@@ -90,6 +92,28 @@ exports.matchCodeTags = function(markdown) {
   }
 
   return markdown;
+
+};
+
+exports.setReportCategories = function(template) {
+
+  var document = template.template;
+
+  if (!reportCategories || !reportCategories.length) {
+
+    return document.replace('__reportCategoriesDiv_location__', '');
+  }
+
+  document = document.replace('__reportCategoriesDiv_location__',
+      template.removable.reportCategoriesDiv);
+
+  var content = '';
+
+  for (var i = 0; i < reportCategories.length; i++) {
+    content += '<option>' + reportCategories[i] + '</option>';
+  }
+
+  return document.replace('__reportComboboxCategory_children__', content);
 
 };
 
@@ -347,7 +371,8 @@ exports.setHeader = function(template, language, bData, flagData, thread) {
   var boardUri = exports.clean(bData.boardUri);
 
   var title = '/' + boardUri + '/ - ' + exports.clean(bData.boardName);
-  var document = template.template.replace('__labelName_inner__', title);
+  var document = exports.setReportCategories(template).replace(
+      '__labelName_inner__', title);
 
   var linkBanner = '/randomBanner.js?boardUri=' + boardUri;
   document = document.replace('__bannerImage_src__', linkBanner);

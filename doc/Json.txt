@@ -38,6 +38,7 @@ JSO_ID::02
 Path:/<board>/res/<thread>.json
 
 Root(Object):
+    reportCategories(Array): array with the available report categories.
     wsPort(Number): port used for ws notifications.
     wssPort(Number): port used for wss notifications.
     noReportCaptcha(Boolean) : indicates no captcha is needed for reporting.
@@ -116,6 +117,7 @@ JSO_ID::03
 Path:/<board>/<page>.json
 
 Root(Object):
+    reportCategories(Array): array with the available report categories.
     pageCount(Number): amount of pages this board has.
     noReportCaptcha(Boolean) : indicates no captcha is needed for reporting.
     boardName: name of the board.

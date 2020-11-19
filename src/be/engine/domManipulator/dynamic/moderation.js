@@ -433,6 +433,15 @@ exports.getReportCell = function(report, boardData, language, ops, userRole) {
 
   cell = cell.replace('__boardLabel_inner__', report.boardUri);
 
+  if (report.category) {
+    cell = cell.replace('__categoryDiv_location__',
+        template.removable.categoryDiv).replace('__categoryLabel_inner__',
+        report.category);
+
+  } else {
+    cell = cell.replace('__categoryDiv_location__', '');
+  }
+
   if (report.associatedPost) {
     return cell.replace('__postingDiv_inner__', common.getPostInnerElements(
         report.associatedPost, true, language, ops, null, boardData, userRole));

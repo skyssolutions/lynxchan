@@ -58,6 +58,11 @@
   },
   {
     "type": "array",
+    "setting": "reportCategories",
+    "element": "fieldReportCategories"
+  },
+  {
+    "type": "array",
     "setting": "slaves",
     "element": "fieldSlaves"
   },

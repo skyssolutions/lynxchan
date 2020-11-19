@@ -874,9 +874,10 @@ exports.getOverboardThreads = function(foundThreads, foundPreviews, language) {
   common.handleOps(operations);
 
   var template = templateHandler(language).overboard;
-  return template.template.replace('__divThreads_children__', children)
-      .replace('__divReportCaptcha_location__',
-          noReportCaptcha ? '' : template.removable.divReportCaptcha);
+  return common.setReportCategories(template).replace(
+      '__divThreads_children__', children).replace(
+      '__divReportCaptcha_location__',
+      noReportCaptcha ? '' : template.removable.divReportCaptcha);
 
 };
 

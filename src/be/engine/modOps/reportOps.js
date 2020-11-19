@@ -27,6 +27,7 @@ var formOps;
 var common;
 var captchaOps;
 var globalBoardModeration;
+var reportCategories;
 var lang;
 var noReportCaptcha;
 var allowBlockedToReport;
@@ -47,6 +48,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
   multipleReports = settings.multipleReports;
+  reportCategories = settings.reportCategories;
   redactedModNames = settings.redactModNames;
   noReportCaptcha = settings.noReportCaptcha;
   allowBlockedToReport = settings.allowBlockedToReport;
@@ -278,6 +280,7 @@ exports.createReport = function(req, report, reportedContent, parameters,
     global : !!parameters.globalReport,
     boardUri : report.board,
     threadId : +report.thread,
+    category : parameters.categoryReport,
     creation : new Date(),
     ip : logger.ip(req)
   };
@@ -375,6 +378,12 @@ exports.checkReports = function(req, reportedContent, parameters, cb) {
 
   if (!Array.isArray(reportedContent)) {
     return cb();
+  }
+
+  var category = parameters.categoryReport;
+
+  if (!reportCategories || reportCategories.indexOf(category) < 0) {
+    delete parameters.categoryReport;
   }
 
   reportedContent = reportedContent.slice(0, 1000);
@@ -1004,11 +1013,11 @@ exports.getOpenReports = function(userData, parameters, language, callback) {
     }
   }
 
-  // style exception, too simple
   reports.find(exports.getQueryBlock(parameters, userData), {
     projection : {
       boardUri : 1,
       reason : 1,
+      category : 1,
       threadId : 1,
       creation : 1,
       postId : 1,
@@ -1029,7 +1038,6 @@ exports.getOpenReports = function(userData, parameters, language, callback) {
     }
 
   });
-  // style exception, too simple
 
 };
 // } Section 4: Open reports

@@ -212,6 +212,7 @@ reports: stores reports of threads and posts.
     closedBy*: when the report is closed, the login of the person that closed it will be set.
     reason: reason of why the content is breaking any rules. 256 characters.
     creation(Date): date of when the report was filled.
+    category: category of the report.
     closing(Date): date of when the report was closed.
 
 ----------------------------------------------------------------------------------------

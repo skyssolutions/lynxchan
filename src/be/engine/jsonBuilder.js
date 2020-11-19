@@ -17,6 +17,7 @@ var maxFileSizeMB;
 var domManipulator;
 var redactModNames;
 var messageLength;
+var reportCategories;
 var globalCaptcha;
 var noReportCaptcha;
 var wsPort;
@@ -26,6 +27,7 @@ exports.loadSettings = function() {
 
   settings = require('../settingsHandler').getGeneralSettings();
 
+  reportCategories = settings.reportCategories;
   noReportCaptcha = settings.noReportCaptcha;
   redactModNames = settings.redactModNames;
   bypassMode = settings.bypassMode;
@@ -245,6 +247,7 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
   threadObject.maxMessageLength = messageLength;
   threadObject.usesCustomCss = boardData.usesCustomCss;
   threadObject.noReportCaptcha = noReportCaptcha;
+  threadObject.reportCategories = reportCategories;
 
   exports.addExtraThreadInfo(threadObject, boardData);
 
@@ -385,7 +388,8 @@ exports.finalizePageData = function(pageCount, boardData, threadsToAdd,
     maxMessageLength : messageLength,
     globalCaptcha : globalCaptcha,
     captchaMode : boardData.captchaMode,
-    noReportCaptcha : noReportCaptcha
+    noReportCaptcha : noReportCaptcha,
+    reportCategories : reportCategories
   };
 
   exports.setFileLimits(toWrite, boardData);
@@ -597,7 +601,8 @@ exports.overboard = function(foundThreads, previewRelation, callback,
 
   cacheHandler.writeData(JSON.stringify({
     threads : threadsToAdd,
-    noReportCaptcha : noReportCaptcha
+    noReportCaptcha : noReportCaptcha,
+    reportCategories : reportCategories
   }), url, 'application/json', {
     boards : boardList,
     type : boardList ? 'multiboard' : 'overboard'

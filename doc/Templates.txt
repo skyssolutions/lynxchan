@@ -78,6 +78,14 @@ divReportCaptcha:
     use: might be removed.
     description: div with the captcha used for reporting.
 
+reportCategoriesDiv:
+    use: might be removed.
+    description: div that contains the report category selection.
+
+reportComboboxCategory:
+    use: have children appended to it.
+    description: combobox with the available report categories.
+
 divBanCaptcha:
     use: might be removed.
     description: div with the captcha used for banning.
@@ -192,6 +200,14 @@ Elements:
 divReportCaptcha:
     use: might be removed.
     description: div with the captcha used for reporting.
+
+reportCategoriesDiv:
+    use: might be removed.
+    description: div that contains the report category selection.
+
+reportComboboxCategory:
+    use: have children appended to it.
+    description: combobox with the available report categories.
 
 divBanCaptcha:
     use: might be removed.
@@ -1096,6 +1112,14 @@ reportCell*: cell used to list open reports.
 Root element: div
 
 Elements:
+categoryDiv:
+    use: might be removed.
+    description: panel that holds the report category.
+
+categoryLabel:
+    use: have it's innerHTML manipulated.
+    description: label with the report category.
+
 boardLabel:
     use: have it's innerHTML manipulated.
     description: holds the board of the report.
@@ -1963,6 +1987,10 @@ TEM_ID::47
 globalSettingsPage: page used to change global settings.
 
 Elements:
+fieldReportCategories:
+    use: have it's value manipulated.
+    description: field with the available report categories.
+
 fieldEmailDomainWhiteList:
     use: have it's value manipulated.
     description: field with whitelisted e-mail domains.
@@ -2510,6 +2538,14 @@ Elements:
 divReportCaptcha:
     use: might be removed.
     description: div with the captcha used for reporting.
+
+reportCategoriesDiv:
+    use: might be removed.
+    description: div that contains the report category selection.
+
+reportComboboxCategory:
+    use: have children appended to it.
+    description: combobox with the available report categories.
 
 divThreads:
     use: have children appended to it.
