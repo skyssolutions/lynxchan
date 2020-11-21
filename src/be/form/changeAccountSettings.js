@@ -43,6 +43,6 @@ exports.process = function(req, res) {
       parameters) {
     exports.changeSettings(userData, parameters, res, auth, req.language,
         formOps.json(req));
-  });
+  }, null, null, [ 'categoryFilter' ]);
 
 };

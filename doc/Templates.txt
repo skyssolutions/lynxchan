@@ -673,6 +673,10 @@ TEM_ID::07
 accountPage: page used for user's accounts.
 
 Elements:
+reportFilterDiv:
+    use: might be removed or have children appended to it.
+    description: div with the available report categories to filter report notifications.
+
 labelLogin:
     use: have it's innerHTML manipulated.
     description: contains the user's login.

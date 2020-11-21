@@ -17,6 +17,7 @@ var captchaOps;
 var redactedModNames;
 var domManipulator;
 var lang;
+var reportCategories;
 var domainWhiteList;
 var authLimit;
 
@@ -49,6 +50,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  reportCategories = settings.reportCategories;
   domainWhiteList = settings.emailDomainWhiteList;
   authLimit = settings.authenticationLimit;
   redactedModNames = settings.redactModNames;
@@ -722,10 +724,22 @@ exports.changeSettings = function(userData, parameters, language, callback) {
   var confirmed = parameters.email !== userData.email ? false
       : userData.confirmed;
 
+  var filters = [];
+  var informedFilters = parameters.categoryFilter || [];
+
+  for (var i = 0; i < reportCategories.length; i++) {
+
+    if (informedFilters.indexOf(reportCategories[i]) >= 0) {
+      filters.push(reportCategories[i]);
+    }
+
+  }
+
   users.updateOne({
     login : userData.login
   }, {
     $set : {
+      reportFilter : filters,
       email : parameters.email,
       settings : parameters.settings,
       confirmed : confirmed

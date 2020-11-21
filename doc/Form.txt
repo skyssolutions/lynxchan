@@ -109,6 +109,7 @@ Json output(Object): object with the account data. Contains the following fields
         noBoardReports: user wishes to hide board reports on the global listing.
         lockEnabled: uses wishes to have his account locked on too many failed logins.
         reportNotify: user wishes to receive e-mail notifications about reports.
+    reportFilter(Array): array with the category filters for e-mail notifications.
 
 ------------------------------------------------------------------------------------------
 
@@ -508,6 +509,7 @@ Name: changeAccountSettings
 Description: changes general account settings.
 
 Parameters:
+    categoryFilter: report category filter for e-mail notifications. Can be sent multiple times.
     email: new e-mail of the account. 64 characters.
     alwaysSignRole: any value indicates the user wishes to always use his role signature on posts.
     reportNotify: any value indicates the user wishes to receive e-mail notifications of reports.

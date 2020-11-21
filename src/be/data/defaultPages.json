@@ -218,6 +218,10 @@
       "labelGlobalRole": "inner",
       "ownedDiv": "children",
       "emailField": "value",
+      "reportFilterDiv": [
+        "removal",
+        "children"
+      ],
       "volunteeredDiv": "children",
       "globalManagementLink": "removal",
       "boardCreationDiv": "removal",

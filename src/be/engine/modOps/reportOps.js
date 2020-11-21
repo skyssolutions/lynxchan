@@ -151,18 +151,32 @@ exports.getClosedReports = function(userData, parameters, language, callback) {
 // Section 2: Create report {
 exports.fetchEmails = function(req, report, mods, callback) {
 
-  users.aggregate([ {
-    $match : {
-      confirmed : true,
-      settings : 'reportNotify',
-      email : {
-        $exists : true,
-        $ne : null
-      },
-      login : {
-        $in : mods
-      }
+  var matchBlock = {
+    confirmed : true,
+    settings : 'reportNotify',
+    email : {
+      $exists : true,
+      $ne : null
+    },
+    login : {
+      $in : mods
     }
+  };
+
+  if (report.category) {
+
+    matchBlock.$or = [ {
+      reportFilter : report.category
+    }, {
+      'reportFilter.0' : {
+        $exists : false
+      }
+    } ];
+
+  }
+
+  users.aggregate([ {
+    $match : matchBlock
   }, {
     $group : {
       _id : 0,

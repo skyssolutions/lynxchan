@@ -436,7 +436,7 @@ exports.getMetaData = function(fields) {
 
 };
 
-exports.getPostData = function(req, res, callback) {
+exports.getPostData = function(req, res, callback, arrayParams) {
 
   var parser = formidable({
     uploadDir : uploadDir,
@@ -502,6 +502,11 @@ exports.getPostData = function(req, res, callback) {
     delete fields.fileName;
 
     for ( var key in fields) {
+
+      if (arrayParams && arrayParams.indexOf(key) >= 0) {
+        continue;
+      }
+
       if (fields.hasOwnProperty(key)) {
         fields[key] = fields[key][0];
       }
@@ -546,7 +551,7 @@ exports.checkReferer = function(req) {
 };
 
 exports.getAuthenticatedPost = function(req, res, getParameters, callback,
-    optionalAuth, skipReferer) {
+    optionalAuth, skipReferer, arrayParams) {
 
   var json = exports.json(req);
 
@@ -591,7 +596,7 @@ exports.getAuthenticatedPost = function(req, res, getParameters, callback,
         }
 
       });
-    });
+    }, arrayParams);
   } else {
 
     accountOps.validate(exports.getCookies(req), req.language,

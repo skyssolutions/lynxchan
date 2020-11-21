@@ -167,6 +167,7 @@ posts: stores posts.
 ----------------------------------------------------------------------------------------
 
 users: stores users.
+    reportFilter(Array): array with the report categories that should be notified if e-mail notifications are enabled.
     login**: login of the user. 16 characters. Only a-Z, _ and 0-9 allowed.
     confirmed(Boolean): true if the current e-mail has been confirmed.
     email: e-mail of the user. 64 characters.

@@ -19,6 +19,7 @@ exports.outputJson = function(userData, res, auth) {
     noCaptchaBan : settings.disableBanCaptcha,
     login : userData.login,
     email : userData.email || '',
+    reportFilter : userData.reportFilter || [],
     ownedBoards : userData.ownedBoards || [],
     settings : userData.settings || [],
     volunteeredBoards : userData.volunteeredBoards || [],
