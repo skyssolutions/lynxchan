@@ -2973,7 +2973,7 @@ expirationLabel:
     description: label the holds the expiration of the offense.
 
 modLabel:
-    use: havei t's value manipulated.
+    use: have it's value manipulated.
     description: label that holds the mod that recorded the offense.
 
 ------------------------------------------------------------------------------------------
@@ -2983,9 +2983,36 @@ TEM_ID::71
 openReportsPage: page used to show open reports.
 
 Elements:
+filterCategoriesDiv:
+    use: have children appended to it.
+    description: div with the cells for available report categories.
+
+filterBoardIdentifier:
+    use: might be removed or have it's value manipulated.
+    description: input used to identify the board being viewed.
+
+filterForm:
+    use: might be removed.
+    description: form used to filter reports by categories.
+
 reportsDiv:
     use: have children appended to it.
     description: div with the open reports.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::72
+
+reportCategoryFilterCell*: cell used to display category report filters.
+
+Elements:
+categoryCheckbox:
+    use: have it's value manipulated and might be checked.
+    description: checkbox for the given category.
+
+categoryLabel:
+    use: have it's innerHTML manipulated.
+    description: label for the given category.
 
 ------------------------------------------------------------------------------------------
 

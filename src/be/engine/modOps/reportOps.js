@@ -1013,7 +1013,17 @@ exports.getOpenReports = function(userData, parameters, language, callback) {
     }
   }
 
-  reports.find(exports.getQueryBlock(parameters, userData), {
+  var query = exports.getQueryBlock(parameters, userData);
+
+  if (parameters.categoryFilter) {
+
+    query.category = {
+      $in : parameters.categoryFilter
+    };
+
+  }
+
+  reports.find(query, {
     projection : {
       boardUri : 1,
       reason : 1,

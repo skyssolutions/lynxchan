@@ -769,6 +769,12 @@
   {
     "template": "openReportsPage",
     "prebuiltFields": {
+      "filterCategoriesDiv": "children",
+      "filterBoardIdentifier": [
+        "removal",
+        "value"
+      ],
+      "filterForm": "removal",
       "reportDiv": "children"
     }
   }

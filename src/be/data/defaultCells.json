@@ -447,5 +447,15 @@
       "expirationLabel": "inner",
       "modLabel": "inner"
     }
+  },
+  {
+    "template": "reportCategoryFilterCell",
+    "prebuiltFields": {
+      "categoryCheckbox": [
+        "value",
+        "checked"
+      ],
+      "categoryLabel": "inner"
+    }
   }
 ]

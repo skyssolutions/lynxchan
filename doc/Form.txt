@@ -1557,14 +1557,17 @@ Description: lists open reports.
 
 Parameters:
     boardUri: uri of the board to list open reports for. If none, it will list global reports. Requires authentication.
+    categoryFilter: a category to filter open reports through. Can be informed multiple times.
 
-Json ouput(Object): an array the open reports. Each object contains the following fields:
-    _id: the id of the report.
-    global(Boolean): indicates if the report is global or not.
-    boardUri: the board to which the report belongs to.
-    threadId(Number): the thread where the report belongs to.
-    creation(Date): then the report was made.
-    postId(Number): the post to which the report belongs to.
+Json ouput(Object): an object with the following fields:
+    reports(Array): an array with the open reports. Each object contains the following fields:
+        _id: the id of the report.
+        global(Boolean): indicates if the report is global or not.
+        boardUri: the board to which the report belongs to.
+        threadId(Number): the thread where the report belongs to.
+        creation(Date): then the report was made.
+        postId(Number): the post to which the report belongs to.
+    reportCategories(Array): an array with the available report categories.
 
 ------------------------------------------------------------------------------------------
 

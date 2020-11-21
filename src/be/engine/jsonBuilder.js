@@ -662,3 +662,12 @@ exports.latestPostings = function(postings, user, boardData) {
   return postings;
 
 };
+
+exports.openReports = function(reports) {
+
+  return {
+    reports : reports,
+    reportCategories : reportCategories
+  };
+
+};
