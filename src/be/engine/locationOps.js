@@ -8,6 +8,8 @@ var compiledASN = __dirname + '/../locationData/compiledASNs';
 var compiledASNV6 = __dirname + '/../locationData/compiledASNsV6';
 
 var locationLineSize = 60;
+var ipLength = 4;
+var ipLengthV6 = 16;
 var ipLineSize = 10;
 var ipLineSizeV6 = 22;
 var ASNLineSize = 8;
@@ -68,6 +70,7 @@ exports.getLocationInfo = function(ip, callback) {
   var v6 = ip.length > 4;
 
   var length = v6 ? ipLineSizeV6 : ipLineSize;
+  var ipLengthToUse = v6 ? ipLengthV6 : ipLength;
   var location = v6 ? compiledIpsV6 : compiledIps;
 
   logger.binarySearch({
@@ -84,7 +87,7 @@ exports.getLocationInfo = function(ip, callback) {
 
     return {
       ip : tempArray,
-      geoId : buffer.readUIntBE(tempArray.length, 6)
+      geoId : buffer.readUIntBE(ipLengthToUse, 6)
     };
 
   }, function gotIpInfo(error, info) {
@@ -124,6 +127,7 @@ exports.getASN = function(ip, callback) {
   var v6 = ip.length > 4;
 
   var length = v6 ? ASNLineSizeV6 : ASNLineSize;
+  var ipLengthToUse = v6 ? ipLengthV6 : ipLength;
   var location = v6 ? compiledASNV6 : compiledASN;
 
   logger.binarySearch({
@@ -138,7 +142,7 @@ exports.getASN = function(ip, callback) {
       tempArray[i] = buffer[i];
     }
 
-    var newASN = buffer.readUInt32BE(tempArray.length);
+    var newASN = buffer.readUInt32BE(ipLengthToUse);
 
     return {
       ip : tempArray,
