@@ -32,6 +32,7 @@ var fileLimit;
 var dontProcessLinks;
 var globalMaxSizeMB;
 var globalMaxFiles;
+var versatileOps;
 
 var dataPath = __dirname + '/../../locationData/data.json';
 
@@ -101,6 +102,7 @@ exports.loadDependencies = function() {
   lang = require('../langOps').languagePack;
   miscOps = require('../miscOps');
   locationOps = require('../locationOps');
+  versatileOps = require('../modOps').ipBan.versatile;
 
 };
 
@@ -173,13 +175,13 @@ exports.recordFlood = function(req, thread) {
     return;
   }
 
-  var toAdd = (thread ? 10 : 1) * floodTimer;
+  var multiplerToUse = thread ? versatileOps.threadFloodMultiplier : 1;
 
   taskListener.sendToSocket(null, {
     type : 'recordFlood',
     thread : thread,
     ip : logger.ip(req),
-    expiration : new Date(new Date().getTime() + toAdd)
+    expiration : new Date(new Date().getTime() + multiplerToUse * floodTimer)
   });
 
 };
