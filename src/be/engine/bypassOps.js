@@ -305,8 +305,7 @@ exports.useBypass = function(bypassId, req, callback, thread) {
       req.bypassed = true;
       req.bypassId = bypassId;
 
-      exports.updateHourlyUsage(result.value,
-          thread ? versatileOps.threadFloodMultiplier : 1);
+      exports.updateHourlyUsage(result.value, thread ? 10 : 1);
 
     }
 
