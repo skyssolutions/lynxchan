@@ -3,8 +3,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl ffm
 
 RUN echo "+ Starting Imagemagic download and build" && \
     cd /usr/local/src && \
-    wget https://ftp.acc.umu.se/mirror/imagemagick.org/ftp/ImageMagick-6.9.11-34.tar.gz && \
-    tar -xvf ImageMagick-6.9.11-34.tar.gz && cd ImageMagick-6.9.11-34 && \
+    wget https://ftp.acc.umu.se/mirror/imagemagick.org/ftp/ImageMagick-6.9.12-1.tar.gz && \
+    tar -xvf ImageMagick-6.9.12-1.tar.gz && cd ImageMagick-6.9.12-1 && \
     ./configure && make -j8 && make install && ldconfig
 
 
