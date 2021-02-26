@@ -22,6 +22,10 @@ exports.loadSettings = function() {
 
 };
 
+exports.heartBeat = function() {
+  this.isAlive = true;
+};
+
 exports.notify = function(task) {
 
   if (!initialized) {
@@ -48,6 +52,9 @@ exports.notify = function(task) {
 exports.registerConnection = function(conn) {
 
   var registered = false;
+
+  conn.isAlive = true;
+  conn.on('pong', exports.heartBeat);
 
   conn.on('message', function(message) {
 
@@ -91,10 +98,20 @@ exports.registerConnection = function(conn) {
 exports.primeSocket = function(socket) {
 
   socket.on('connection', function(conn) {
-
     exports.registerConnection(conn);
-
   });
+
+  setInterval(function ping() {
+    socket.clients.forEach(function each(conn) {
+
+      if (!conn.isAlive) {
+        return conn.terminate();
+      }
+
+      conn.isAlive = false;
+      conn.ping();
+    });
+  }, 30000);
 
 };
 

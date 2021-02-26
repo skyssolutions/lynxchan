@@ -273,7 +273,7 @@ exports.createReport = function(req, report, reportedContent, parameters,
     callback) {
 
   var toAdd = {
-    global : parameters.globalReport,
+    global : !!parameters.globalReport,
     boardUri : report.board,
     threadId : +report.thread,
     creation : new Date(),
