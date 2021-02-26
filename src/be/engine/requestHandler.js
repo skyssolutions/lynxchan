@@ -416,7 +416,7 @@ exports.getLanguageToUse = function(req, callback) {
 
 exports.routeToFormApi = function(req, pathName, res, firstPart, callback) {
 
-  if (firstPart.length < 4) {
+  if (!firstPart || firstPart.length < 4) {
     return false;
   }
 
