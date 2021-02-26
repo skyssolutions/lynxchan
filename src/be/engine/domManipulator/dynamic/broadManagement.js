@@ -254,7 +254,11 @@ exports.setBoardOwnerControls = function(document, boardData, language) {
 
   var removable = templateHandler(language).bManagement.removable;
 
-  if (customJs) {
+  var specialSettings = boardData.specialSettings || [];
+
+  var allowJs = specialSettings.indexOf('allowJs') > -1;
+
+  if (customJs || allowJs) {
     document = document.replace('__customJsForm_location__',
         removable.customJsForm);
     document = document.replace('__customJsIdentifier_value__', boardUri);

@@ -27,7 +27,9 @@ var formOps;
 var common;
 var captchaOps;
 var globalBoardModeration;
+var reportCategories;
 var lang;
+var noReportCaptcha;
 var allowBlockedToReport;
 
 exports.reportArguments = [ {
@@ -46,7 +48,9 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
   multipleReports = settings.multipleReports;
+  reportCategories = settings.reportCategories;
   redactedModNames = settings.redactModNames;
+  noReportCaptcha = settings.noReportCaptcha;
   allowBlockedToReport = settings.allowBlockedToReport;
   globalBoardModeration = settings.allowGlobalBoardModeration;
 
@@ -147,18 +151,32 @@ exports.getClosedReports = function(userData, parameters, language, callback) {
 // Section 2: Create report {
 exports.fetchEmails = function(req, report, mods, callback) {
 
-  users.aggregate([ {
-    $match : {
-      confirmed : true,
-      settings : 'reportNotify',
-      email : {
-        $exists : true,
-        $ne : null
-      },
-      login : {
-        $in : mods
-      }
+  var matchBlock = {
+    confirmed : true,
+    settings : 'reportNotify',
+    email : {
+      $exists : true,
+      $ne : null
+    },
+    login : {
+      $in : mods
     }
+  };
+
+  if (report.category) {
+
+    matchBlock.$or = [ {
+      reportFilter : report.category
+    }, {
+      'reportFilter.0' : {
+        $exists : false
+      }
+    } ];
+
+  }
+
+  users.aggregate([ {
+    $match : matchBlock
   }, {
     $group : {
       _id : 0,
@@ -273,9 +291,10 @@ exports.createReport = function(req, report, reportedContent, parameters,
     callback) {
 
   var toAdd = {
-    global : parameters.globalReport,
+    global : !!parameters.globalReport,
     boardUri : report.board,
     threadId : +report.thread,
+    category : parameters.categoryReport,
     creation : new Date(),
     ip : logger.ip(req)
   };
@@ -369,29 +388,43 @@ exports.iterateReports = function(req, reportedContent, parameters, cb) {
 
 };
 
+exports.checkReports = function(req, reportedContent, parameters, cb) {
+
+  if (!Array.isArray(reportedContent)) {
+    return cb();
+  }
+
+  var category = parameters.categoryReport;
+
+  if (!reportCategories || reportCategories.indexOf(category) < 0) {
+    delete parameters.categoryReport;
+  }
+
+  reportedContent = reportedContent.slice(0, 1000);
+
+  if (reportedContent.length > 1 && !multipleReports) {
+    cb(lang(req.language).errDeniedMultipleReports);
+  } else {
+    exports.iterateReports(req, reportedContent, parameters, cb);
+  }
+
+};
+
 exports.report = function(req, reportedContent, parameters, captchaId, cb) {
 
   miscOps.sanitizeStrings(parameters, exports.reportArguments);
 
+  if (noReportCaptcha) {
+    return exports.checkReports(req, reportedContent, parameters, cb);
+  }
+
   captchaOps.attemptCaptcha(captchaId, parameters.captchaReport, null,
       req.language, function solvedCaptcha(error) {
+
         if (error) {
           cb(error);
         } else {
-
-          if (!Array.isArray(reportedContent)) {
-            cb();
-          } else {
-            reportedContent = reportedContent.slice(0, 1000);
-
-            if (reportedContent.length > 1 && !multipleReports) {
-              cb(lang(req.language).errDeniedMultipleReports);
-            } else {
-              exports.iterateReports(req, reportedContent, parameters, cb);
-            }
-
-          }
-
+          exports.checkReports(req, reportedContent, parameters, cb);
         }
 
       });
@@ -994,11 +1027,21 @@ exports.getOpenReports = function(userData, parameters, language, callback) {
     }
   }
 
-  // style exception, too simple
-  reports.find(exports.getQueryBlock(parameters, userData), {
+  var query = exports.getQueryBlock(parameters, userData);
+
+  if (parameters.categoryFilter) {
+
+    query.category = {
+      $in : parameters.categoryFilter
+    };
+
+  }
+
+  reports.find(query, {
     projection : {
       boardUri : 1,
       reason : 1,
+      category : 1,
       threadId : 1,
       creation : 1,
       postId : 1,
@@ -1019,7 +1062,6 @@ exports.getOpenReports = function(userData, parameters, language, callback) {
     }
 
   });
-  // style exception, too simple
 
 };
 // } Section 4: Open reports

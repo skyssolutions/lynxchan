@@ -7,6 +7,7 @@ var settingsHandler = require('../../../settingsHandler');
 var templateHandler;
 var lang;
 var miscOps;
+var reportCategories;
 var common;
 var clearIpMinRole;
 
@@ -15,12 +16,14 @@ exports.boardModerationIdentifiers = [ 'boardTransferIdentifier',
 
 exports.specialSettingsRelation = {
   sfw : 'checkboxSfw',
-  locked : 'checkboxLocked'
+  locked : 'checkboxLocked',
+  allowJs : 'checkboxAllowJs'
 };
 
 exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
+  reportCategories = settings.reportCategories;
   clearIpMinRole = settings.clearIpMinRole;
 };
 
@@ -432,6 +435,15 @@ exports.getReportCell = function(report, boardData, language, ops, userRole) {
 
   cell = cell.replace('__boardLabel_inner__', report.boardUri);
 
+  if (report.category) {
+    cell = cell.replace('__categoryDiv_location__',
+        template.removable.categoryDiv).replace('__categoryLabel_inner__',
+        report.category);
+
+  } else {
+    cell = cell.replace('__categoryDiv_location__', '');
+  }
+
   if (report.associatedPost) {
     return cell.replace('__postingDiv_inner__', common.getPostInnerElements(
         report.associatedPost, true, language, ops, null, boardData, userRole));
@@ -459,10 +471,62 @@ exports.getReportList = function(reports, boardData, language, userRole) {
 
 };
 
-exports.openReports = function(reports, boardData, userData, language) {
+exports.getCategories = function(parameters, language) {
 
-  var document = templateHandler(language).openReportsPage.template.replace(
-      '__title__', lang(language).titOpenReports);
+  var children = '';
+
+  var template = templateHandler(language).reportCategoryFilterCell;
+
+  var filters = parameters.categoryFilter || [];
+
+  for (var i = 0; i < reportCategories.length; i++) {
+
+    var category = reportCategories[i];
+
+    var cell = template.template.replace('__categoryLabel_inner__', category)
+        .replace('__categoryCheckbox_value__', category);
+
+    if (filters.indexOf(category) >= 0) {
+      cell = cell.replace('__categoryCheckbox_checked__', 'true');
+    } else {
+      cell = cell.replace('checked="__categoryCheckbox_checked__"', '');
+    }
+
+    children += cell;
+
+  }
+
+  return children;
+
+};
+
+exports.openReports = function(reports, parameters, boardData, userData,
+    language) {
+
+  var template = templateHandler(language).openReportsPage;
+
+  var document = template.template.replace('__title__',
+      lang(language).titOpenReports);
+
+  if (reportCategories) {
+    document = document.replace('__filterForm_location__',
+        template.removable.filterForm);
+
+    if (parameters.boardUri) {
+      document = document.replace('__filterBoardIdentifier_location__',
+          template.removable.filterBoardIdentifier).replace(
+          '__filterBoardIdentifier_value__', parameters.boardUri);
+
+    } else {
+      document = document.replace('__filterBoardIdentifier_location__', '');
+    }
+
+    document = document.replace('__filterCategoriesDiv_children__', exports
+        .getCategories(parameters, language));
+
+  } else {
+    document = document.replace('__filterForm_location__', '');
+  }
 
   return document.replace('__reportDiv_children__', exports.getReportList(
       reports, boardData, language, userData.globalRole));

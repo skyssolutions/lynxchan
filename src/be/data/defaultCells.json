@@ -225,6 +225,8 @@
     "prebuiltFields": {
       "boardLabel": "inner",
       "reasonLabel": "inner",
+      "categoryDiv": "removal",
+      "categoryLabel": "inner",
       "link": "href",
       "postingDiv": "inner",
       "closureCheckbox": "name"
@@ -369,7 +371,7 @@
     "prebuiltFields": {
       "indexIdentifier": "value",
       "boardIdentifier": "value",
-      "textLabel": "inner"
+      "textField": "value"
     }
   },
   {
@@ -444,6 +446,16 @@
       "dateLabel": "inner",
       "expirationLabel": "inner",
       "modLabel": "inner"
+    }
+  },
+  {
+    "template": "reportCategoryFilterCell",
+    "prebuiltFields": {
+      "categoryCheckbox": [
+        "value",
+        "checked"
+      ],
+      "categoryLabel": "inner"
     }
   }
 ]

@@ -168,6 +168,7 @@ Settings files that goes into the settings directory:
 * `pruningMode`(Number): The pruning mode to be used. 0 means no pruning at all. 1 means pruning files as soon as they become orphaned. 2 means prune orphaned files weekly.
 * `torPort`(Number): port that when used, will always mark the request as if it came from a TOR ip.
 * `sfwOverboard`: uri to be used for the sfw overboard.
+* `requireConfirmationForBoardCreation`(Boolean): if activated, only accounts with verified e-mails are able to create boards.
 * `CSP`: Content security policy directives. Example: `default-src 'self'`
 * `onlySfwLatestImages`(Boolean): makes so only SFW images are displayed on the front-page.
 * `inactivityThreshold`(Number): amount of days an user must be inactive so he and his boards will be marked as inactive.
@@ -193,6 +194,7 @@ Settings files that goes into the settings directory:
 * `flagNameLength`(Number): maximum size allowed for custom flags names. Defaults to 32.
 * `allowBlockedToReport`(Boolean): allows users that were banned or blocked to report content, including TOR users if they are not allowed to post.
 * `clusterPort`(Number): port used for cluster communication.
+* `emailDomainWhiteList`(Array): array of whitelisted e-mail domains. If any domain is defined, then users can only use e-mails from these domains. Otherwise every domain is accepted.
 * `boardMessageLength`(Number): maximum size for board messages. Defaults to 256.
 * `staticExpiration`(Number): amount of minutes that static files served from cache will inform as expiration when requested. Defaults to 60.
 * `maxBoardHashBans`(Number): limit for board hash bans boards can have. Defaults to 128.
@@ -207,7 +209,9 @@ Settings files that goes into the settings directory:
 * `diskMedia`(Boolean): if set, media files and thumbs will be stored in disk instead of the database.
 * `captchaMode`(Number): level of captcha security. 0 is easy, 1 is moderate and 2 is hard. Defaults to 1.
 * `disableEmail`(Boolean): silently disables sending any e-mails from the server.
-* `wsPort`(Number): port to be used for notification web socket. Can't be any of the other ports used.t
+* `noReportCaptcha`(Boolean): disables the need for captcha when reporting.
+* `reportCategories`(Array): array with possible report categories.
+* `wsPort`(Number): port to be used for notification web socket. Can't be any of the other ports used.
 * `wssPort`(Number): port to be used for secure notification websocket. A regular websocket won't work under a page loaded through ssl. It will use the same files used for regular ssl. Can't be any of the other ports used.
 * `latestPostsAmount`(Number): amount of posts to be displayed on the /last/ version of threads and on latestPostings. Defaults to 50.
 * `bypassValidationRange`(Number): maximum limit of the block bypass validation code that must be brute forced so the bypass can be used. A minimum of 1000 is recommended.

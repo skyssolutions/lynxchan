@@ -112,11 +112,14 @@
     "bodyChildren": true,
     "prebuiltFields": {
       "divBanCaptcha": "removal",
+      "reportCategoriesDiv": "removal",
+      "reportComboboxCategory": "children",
       "labelName": "inner",
       "labelDescription": [
         "inner",
         "removal"
       ],
+      "divReportCaptcha": "removal",
       "linkLogs": "href",
       "divMod": "removal",
       "linkMod": "href",
@@ -154,7 +157,10 @@
     "bodyChildren": true,
     "prebuiltFields": {
       "divBanCaptcha": "removal",
+      "divReportCaptcha": "removal",
       "divMerge": "removal",
+      "reportCategoriesDiv": "removal",
+      "reportComboboxCategory": "children",
       "noFlagDiv": "removal",
       "ipDeletionForm": "removal",
       "divArchive": "removal",
@@ -212,6 +218,10 @@
       "labelGlobalRole": "inner",
       "ownedDiv": "children",
       "emailField": "value",
+      "reportFilterDiv": [
+        "removal",
+        "children"
+      ],
       "volunteeredDiv": "children",
       "globalManagementLink": "removal",
       "boardCreationDiv": "removal",
@@ -363,6 +373,7 @@
       ],
       "labelLastSeen": "inner",
       "checkboxSfw": "checked",
+      "checkboxAllowJs": "checked",
       "specialSettingsIdentifier": "value",
       "checkboxLocked": "checked",
       "divVolunteers": "children"
@@ -466,12 +477,15 @@
     "template": "globalSettingsPage",
     "prebuiltFields": {
       "checkboxUnlockHistory": "checked",
+      "fieldReportCategories": "value",
       "checkboxDisableEmail": "checked",
       "checkboxLowercaseBoardUris": "checked",
       "checkboxDisableBanCaptcha": "checked",
       "fieldTrustedProxies": "value",
       "checkboxDiskMedia": "checked",
       "fieldMaxFilterLength": "value",
+      "fieldEmailDomainWhiteList": "value",
+      "checkboxRequireConfirmationForBoardCreation": "checked",
       "fieldBypassValidationRange": "value",
       "fieldLatestPostPinned": "value",
       "fieldTorDNSL": "value",
@@ -598,7 +612,10 @@
   {
     "template": "overboard",
     "prebuiltFields": {
-      "divThreads": "children"
+      "divThreads": "children",
+      "divReportCaptcha": "removal",
+      "reportCategoriesDiv": "removal",
+      "reportComboboxCategory": "children"
     }
   },
   {
@@ -756,6 +773,12 @@
   {
     "template": "openReportsPage",
     "prebuiltFields": {
+      "filterCategoriesDiv": "children",
+      "filterBoardIdentifier": [
+        "removal",
+        "value"
+      ],
+      "filterForm": "removal",
       "reportDiv": "children"
     }
   }

@@ -144,7 +144,7 @@ exports.logBans = function(userData, board, informedPosts, informedThreads,
     user : userData.login,
     type : 'ban',
     time : new Date(),
-    global : parameters.globalBan,
+    global : !!parameters.globalBan,
     boardUri : board,
     description : logMessage
   }, callback);

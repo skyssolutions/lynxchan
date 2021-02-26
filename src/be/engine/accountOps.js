@@ -17,6 +17,8 @@ var captchaOps;
 var redactedModNames;
 var domManipulator;
 var lang;
+var reportCategories;
+var domainWhiteList;
 var authLimit;
 
 var createSessionLocks = {};
@@ -48,6 +50,8 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  reportCategories = settings.reportCategories;
+  domainWhiteList = settings.emailDomainWhiteList;
   authLimit = settings.authenticationLimit;
   redactedModNames = settings.redactModNames;
   creationDisabled = settings.disableAccountCreation;
@@ -117,6 +121,25 @@ exports.cleanAuthControl = function() {
     }
 
   }
+
+};
+
+exports.checkEmail = function(email, language, callback) {
+
+  if (!email || !domainWhiteList) {
+    return true;
+  }
+
+  var domain = email.substr(email.indexOf('@') + 1);
+
+  var toRet = domainWhiteList.indexOf(domain) >= 0;
+
+  if (!toRet) {
+    callback(lang(language).errNonWhiteListedEmail.replace('{$domains}',
+        domainWhiteList.join(', ')));
+  }
+
+  return toRet;
 
 };
 
@@ -240,37 +263,35 @@ exports.registerUser = function(parameters, cb, role, override, captchaId,
     language) {
 
   if (!override && creationDisabled) {
-    cb(lang(language).errNoNewAccounts);
-    return;
+    return cb(lang(language).errNoNewAccounts);
   }
 
   miscOps.sanitizeStrings(parameters, exports.newAccountParameters);
 
   if (!parameters.login || /\W/.test(parameters.login)) {
-    cb(lang(language).errInvalidLogin);
-    return;
+    return cb(lang(language).errInvalidLogin);
   } else if (!parameters.password) {
-    cb(lang(language).errNoPassword);
-    return;
+    return cb(lang(language).errNoPassword);
   } else if (role !== undefined && role !== null && isNaN(role)) {
-    cb(lang(language).errInvalidRole);
+    return cb(lang(language).errInvalidRole);
+  } else if (!exports.checkEmail(parameters.email, language, cb)) {
     return;
   }
 
   if (override) {
-    exports.createAccount(parameters, role, language, cb);
-  } else {
-    captchaOps.attemptCaptcha(captchaId, parameters.captcha, null, language,
-        function solvedCaptcha(error) {
-
-          if (error) {
-            cb(error);
-          } else {
-            exports.createAccount(parameters, role, language, cb);
-          }
-
-        });
+    return exports.createAccount(parameters, role, language, cb);
   }
+
+  captchaOps.attemptCaptcha(captchaId, parameters.captcha, null, language,
+      function solvedCaptcha(error) {
+
+        if (error) {
+          return cb(error);
+        }
+
+        exports.createAccount(parameters, role, language, cb);
+
+      });
 
 };
 // } Section 2: Account creation
@@ -692,17 +713,33 @@ exports.recoverAccount = function(parameters, language, callback) {
 };
 // } Section 5: Reset request
 
-exports.changeSettings = function(userData, parameters, callback) {
+exports.changeSettings = function(userData, parameters, language, callback) {
 
   miscOps.sanitizeStrings(parameters, exports.changeSettingsParameters);
 
+  if (!exports.checkEmail(parameters.email, language, callback)) {
+    return;
+  }
+
   var confirmed = parameters.email !== userData.email ? false
       : userData.confirmed;
+
+  var filters = [];
+  var informedFilters = parameters.categoryFilter || [];
+
+  for (var i = 0; i < reportCategories.length; i++) {
+
+    if (informedFilters.indexOf(reportCategories[i]) >= 0) {
+      filters.push(reportCategories[i]);
+    }
+
+  }
 
   users.updateOne({
     login : userData.login
   }, {
     $set : {
+      reportFilter : filters,
       email : parameters.email,
       settings : parameters.settings,
       confirmed : confirmed
@@ -926,10 +963,11 @@ exports.addAccount = function(userRole, parameters, language, callback) {
   miscOps.sanitizeStrings(parameters, exports.newAccountParameters);
 
   if (!isAdmin) {
-    callback(lang(language).errDeniedAccountManagement);
-    return;
+    return callback(lang(language).errDeniedAccountManagement);
+
   } else if (/\W/.test(parameters.login)) {
-    callback(lang(language).errInvalidLogin);
+    return callback(lang(language).errInvalidLogin);
+  } else if (!exports.checkEmail(parameters.email, language, callback)) {
     return;
   }
 

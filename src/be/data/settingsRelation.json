@@ -48,8 +48,18 @@
   },
   {
     "type": "array",
+    "setting": "emailDomainWhiteList",
+    "element": "fieldEmailDomainWhiteList"
+  },
+  {
+    "type": "array",
     "setting": "acceptedMimes",
     "element": "fieldAcceptedMimes"
+  },
+  {
+    "type": "array",
+    "setting": "reportCategories",
+    "element": "fieldReportCategories"
   },
   {
     "type": "array",
@@ -453,6 +463,11 @@
   },
   {
     "type": "boolean",
+    "setting": "requireConfirmationForBoardCreation",
+    "element": "checkboxRequireConfirmationForBoardCreation"
+  },
+  {
+    "type": "boolean",
     "setting": "disableBanCaptcha",
     "element": "checkboxDisableBanCaptcha"
   },
@@ -465,6 +480,11 @@
     "type": "boolean",
     "setting": "unboundBoardLimits",
     "element": "checkboxUnboundBoardLimits"
+  },
+  {
+    "type": "boolean",
+    "setting": "noReportCaptcha",
+    "element": "checkboxNoReportCaptcha"
   },
   {
     "type": "boolean",

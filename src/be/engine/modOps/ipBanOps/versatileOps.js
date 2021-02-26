@@ -29,6 +29,8 @@ var globalBoardModeration;
 var floodTracking = {};
 var threadFloodTracking = {};
 
+exports.threadFloodMultiplier = 10;
+
 exports.loadSettings = function() {
   var settings = require('../../../settingsHandler').getGeneralSettings();
 
@@ -112,7 +114,9 @@ exports.masterFloodCheck = function(task, socket) {
   if (flood) {
     left = Math.ceil((lastEntry.getTime() - now.getTime()) / 1000);
   } else {
-    var toAdd = task.record ? (task.thread ? 10 : 1) * floodTimer : 1000;
+    var multiplierToUse = task.thread ? exports.threadFloodMultiplier : 1;
+
+    var toAdd = task.record ? multiplierToUse * floodTimer : 1000;
 
     trackingToUse[task.ip] = new Date(new Date().getTime() + toAdd);
   }

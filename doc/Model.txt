@@ -56,6 +56,7 @@ boards: stores boards.
     specialSettings(Array): array of settings that only the global staff are allowed to change. May hold the following values:
         sfw: indicates the board is sfw.
         locked: indicates the board is locked.
+        allowJs: indicates the board is always allowed to have custom js.
     inactive(Boolean): indicates the board owner is inactive.
 
 ----------------------------------------------------------------------------------------
@@ -166,6 +167,7 @@ posts: stores posts.
 ----------------------------------------------------------------------------------------
 
 users: stores users.
+    reportFilter(Array): array with the report categories that should be notified if e-mail notifications are enabled.
     login**: login of the user. 16 characters. Only a-Z, _ and 0-9 allowed.
     confirmed(Boolean): true if the current e-mail has been confirmed.
     email: e-mail of the user. 64 characters.
@@ -211,6 +213,7 @@ reports: stores reports of threads and posts.
     closedBy*: when the report is closed, the login of the person that closed it will be set.
     reason: reason of why the content is breaking any rules. 256 characters.
     creation(Date): date of when the report was filled.
+    category: category of the report.
     closing(Date): date of when the report was closed.
 
 ----------------------------------------------------------------------------------------

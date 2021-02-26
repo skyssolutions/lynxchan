@@ -11,22 +11,25 @@ exports.getOpenReports = function(userData, parameters, res, auth, language) {
 
   var json = parameters.json;
 
+  if (typeof parameters.categoryFilter === 'string') {
+    parameters.categoryFilter = [ parameters.categoryFilter ];
+  }
+
   modOps.getOpenReports(userData, parameters, language,
       function gotOpenReports(error, reports, boardData) {
+
         if (error) {
-          formOps.outputError(error, 500, res, language, json, auth);
-        } else {
-
-          if (json) {
-            formOps.outputResponse('ok', reports, res, null, auth, null, true);
-          } else {
-
-            formOps.dynamicPage(res, dom.openReports(reports, boardData,
-                userData, language), auth);
-
-          }
-
+          return formOps.outputError(error, 500, res, language, json, auth);
         }
+
+        if (json) {
+          return formOps.outputResponse('ok', jsonBuilder.openReports(reports),
+              res, null, auth, null, true);
+        }
+
+        formOps.dynamicPage(res, dom.openReports(reports, parameters,
+            boardData, userData, language), auth);
+
       });
 
 };

@@ -10,6 +10,7 @@ var lang;
 var common;
 var miscOps;
 var blockBypass;
+var reportCategories;
 var boardCreationRequirement;
 var messageLength;
 var disabledLatestPostings;
@@ -26,6 +27,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../../settingsHandler').getGeneralSettings();
 
+  reportCategories = settings.reportCategories;
   blockBypass = settings.bypassMode;
   messageLength = settings.messageLength;
   overboard = settings.overboard;
@@ -103,7 +105,41 @@ exports.getBoardsDiv = function(boardList) {
 
 };
 
-exports.setAccountSettingsCheckbox = function(settings, document) {
+exports.setFilters = function(document, language, removables, userData) {
+
+  document = document.replace('__reportFilterDiv_location__',
+      removables.reportFilterDiv);
+
+  var cell = templateHandler(language).reportCategoryFilterCell.template;
+
+  var children = '';
+
+  var filter = userData.reportFilter || [];
+
+  for (var i = 0; i < reportCategories.length; i++) {
+    var category = reportCategories[i];
+
+    var newCell = cell.replace('__categoryLabel_inner__', category).replace(
+        '__categoryCheckbox_value__', category);
+
+    if (filter.indexOf(category) >= 0) {
+      newCell = newCell.replace('__categoryCheckbox_checked__', 'true');
+    } else {
+      newCell = newCell.replace('checked="__categoryCheckbox_checked__"', '');
+    }
+
+    children += newCell;
+
+  }
+
+  return document.replace('__reportFilterDiv_children__', children);
+
+};
+
+exports.setAccountSettingsCheckbox = function(userData, document, removables,
+    language) {
+
+  var settings = userData.settings;
 
   for ( var key in exports.accountSettingsRelation) {
 
@@ -116,7 +152,11 @@ exports.setAccountSettingsCheckbox = function(settings, document) {
     }
   }
 
-  return document;
+  if (reportCategories) {
+    return exports.setFilters(document, language, removables, userData);
+  } else {
+    return document.replace('__reportFilterDiv_location__', '');
+  }
 
 };
 
@@ -173,7 +213,8 @@ exports.account = function(userData, language) {
   document = exports.setAccountHideableElements(userData, document,
       template.removable);
 
-  document = exports.setAccountSettingsCheckbox(userData.settings, document);
+  document = exports.setAccountSettingsCheckbox(userData, document,
+      template.removable, language);
 
   document = document.replace('__emailField_value__', common
       .clean(userData.email || ''));

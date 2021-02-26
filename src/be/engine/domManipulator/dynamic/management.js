@@ -112,10 +112,10 @@ exports.getRuleManagementCells = function(boardUri, rules, language) {
   for (var i = 0; i < rules.length; i++) {
     var rule = rules[i];
 
-    var cell = common.getFormCellBoilerPlate(template, '/deleteRule.js',
+    var cell = common.getFormCellBoilerPlate(template, '/ruleAction.js',
         'ruleManagementCell');
 
-    cell = cell.replace('__textLabel_inner__', common.clean(rule));
+    cell = cell.replace('__textField_value__', common.clean(rule));
 
     cell = cell.replace('__boardIdentifier_value__', boardUri);
 

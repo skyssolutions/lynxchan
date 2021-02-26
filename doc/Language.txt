@@ -88,11 +88,13 @@ errMaxFiltersReached: error thrown when the board owner tries to add a filter af
 errMaxBoardVolunteers: error thrown when the board owner tries to add a volunteer after the board has already reached the maximum amount of volunteers allowed.
 errPostingNotFound: error thrown when the specified posting can not be found.
 errBannerTooLarge: error thrown when a banner is too large to be used.
+errOnlyConfirmedEmail: error thrown when the user must confirm his e-mail to be able to create boards but didn't.
 errRepeatedFlag: error thrown when there is already a flag with the specified name in the board.
 errFlagNotFound: error thrown when the specified flag for an operation can't be found.
 errFormatNotAllowed: error thrown when an uploaded file uses a format disallowed by the server.
 errDeniedGlobalSettings: error thrown when the user is not allowed to edit global settings.
 errBoardLocked: error thrown when the board is locked for thread creation.
+errNonWhiteListedEmail: error thrown when the user tries to use an e-mail that is not on the e-mail domain whitelist. Replaces: {$domains}.
 errDeniedSpoilerManagement: error thrown when the user is not allowed to manage the custom spoiler of a board.
 errDeniedIpDeletion: error thrown when the user is not allowed to delete posts from a single ip.
 errInvalidRange: error thrown when an invalid range is informed.
@@ -259,6 +261,7 @@ msgHashBanLifted: message used after lifting a hash ban.
 msgLoginSuccessful: message used after logging in.
 msgLogout: message used after logging out.
 msgHashBanCreated: message used after creating a hash ban.
+msgRuleEdited: message used after editing a rule.
 msgRangeBanCreated: message used after creating a range ban.
 msgPasswordReset: message used after resetting the user's password.
 msgAccountCreated: message used after creating an account.

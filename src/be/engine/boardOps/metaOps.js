@@ -14,6 +14,7 @@ var captchaOps;
 var logOps;
 var forcedCaptcha;
 var postingOps;
+var customOps;
 var reportOps;
 var miscOps;
 var modCommonOps;
@@ -22,7 +23,9 @@ var overboardOps;
 var hasOverboard;
 var lang;
 var maxBoardTags;
+var allowJs;
 var overboard;
+var onlyConfirmed;
 var sfwOverboard;
 var globalBoardModeration;
 var boardCreationRequirement;
@@ -50,6 +53,7 @@ exports.boardManagementProjection = {
   maxFileSizeMB : 1,
   maxBumpAgeDays : 1,
   maxThreadCount : 1,
+  specialSettings : 1,
   locationFlagMode : 1,
   boardDescription : 1,
   usesCustomSpoiler : 1,
@@ -91,23 +95,31 @@ exports.transferParameters = [ {
   length : 16
 } ];
 
-exports.validSpecialSettings = [ 'sfw', 'locked' ];
+exports.validSpecialSettings = [ 'sfw', 'locked', 'allowJs' ];
 
-exports.loadSettings = function() {
+exports.loadMoreSettings = function(settings) {
 
-  var settings = require('../../settingsHandler').getGeneralSettings();
-  forcedCaptcha = settings.forceCaptcha;
-  hasOverboard = settings.overboard || settings.sfwOverboard;
-  useLanguages = settings.useAlternativeLanguages;
-  volunteerSettings = settings.allowVolunteerSettings;
-  globalBoardModeration = settings.allowGlobalBoardModeration;
   boardCreationRequirement = settings.boardCreationRequirement;
   maxVolunteers = settings.maxBoardVolunteers;
   maxBoardTags = settings.maxBoardTags;
   redactedModNames = settings.redactModNames;
   overboard = settings.overboard;
+  allowJs = settings.allowBoardCustomJs;
   lowercase = settings.lowercaseBoardUris;
   sfwOverboard = settings.sfwOverboard;
+
+};
+
+exports.loadSettings = function() {
+
+  var settings = require('../../settingsHandler').getGeneralSettings();
+  forcedCaptcha = settings.forceCaptcha;
+  onlyConfirmed = settings.requireConfirmationForBoardCreation;
+  hasOverboard = settings.overboard || settings.sfwOverboard;
+  useLanguages = settings.useAlternativeLanguages;
+  volunteerSettings = settings.allowVolunteerSettings;
+  globalBoardModeration = settings.allowGlobalBoardModeration;
+  exports.loadMoreSettings(settings);
 
   exports.boardParameters[4].length = settings.boardMessageLength;
 
@@ -117,6 +129,7 @@ exports.loadDependencies = function() {
 
   overboardOps = require('../overboardOps');
   logOps = require('../logOps');
+  customOps = require('./customOps');
   reportOps = require('../modOps').report;
   captchaOps = require('../captchaOps');
   postingOps = require('../postingOps').common;
@@ -673,6 +686,8 @@ exports.createBoard = function(captchaId, parameters, userData, language,
 
   if (!allowed && boardCreationRequirement <= miscOps.getMaxStaffRole()) {
     return callback(lang(language).errDeniedBoardCreation);
+  } else if (onlyConfirmed && !userData.confirmed) {
+    return callback(lang(language).errOnlyConfirmedEmail);
   }
 
   miscOps.sanitizeStrings(parameters, exports.boardParameters);
@@ -824,13 +839,76 @@ exports.getBoardModerationData = function(userData, boardUri, language,
   });
 };
 
+// Section 6: New special settings {
+exports.jsPostSpecial = function(boardData, cb) {
+
+  cb();
+
+  if (!boardData.usesCustomJs || allowJs) {
+    return;
+  }
+
+  boards.updateOne({
+    boardUri : boardData.boardUri
+  }, {
+    $set : {
+      usesCustomJs : false
+    }
+  }, function(error) {
+
+    if (error) {
+      console.log(error);
+    } else {
+      customOps.removeAllCustomJs([ boardData.boardUri ]);
+    }
+
+  });
+
+};
+
+exports.sfwPostSpecial = function(boardData, parameters, cb) {
+
+  var oldSFW = (boardData.specialSettings || []).indexOf('sfw') > -1;
+  var newSfw = parameters.specialSettings.indexOf('sfw') > -1;
+
+  if (oldSFW === newSfw) {
+    return exports.jsPostSpecial(boardData, cb);
+  }
+
+  // style exception, too simple
+  threads.updateMany({
+    boardUri : parameters.boardUri
+  }, {
+    $set : {
+      sfw : newSfw
+    }
+  }, function(error) {
+
+    if (error) {
+      cb(error);
+    }
+
+    if (hasOverboard) {
+
+      overboardOps.reaggregate({
+        overboard : true,
+        reaggregate : true
+      });
+    }
+
+    exports.jsPostSpecial(boardData, cb);
+
+  });
+  // style exception, too simple
+
+};
+
 exports.setSpecialSettings = function(userData, parameters, language, cb) {
 
   var admin = userData.globalRole < 2;
 
   if (!admin) {
-    cb(lang(language).errDeniedBoardMod);
-    return;
+    return cb(lang(language).errDeniedBoardMod);
   }
 
   boards.findOneAndUpdate({
@@ -847,38 +925,12 @@ exports.setSpecialSettings = function(userData, parameters, language, cb) {
       return cb(lang(language).errBoardNotFound);
     }
 
-    var oldSFW = (result.value.specialSettings || []).indexOf('sfw') > -1;
-    var newSfw = parameters.specialSettings.indexOf('sfw') > -1;
-
-    if (oldSFW === newSfw) {
-      return cb();
-    }
-
-    // style exception, too simple
-    threads.updateMany({
-      boardUri : parameters.boardUri
-    }, {
-      $set : {
-        sfw : newSfw
-      }
-    }, function(error) {
-
-      cb(error);
-
-      if (hasOverboard) {
-
-        overboardOps.reaggregate({
-          overboard : true,
-          reaggregate : true
-        });
-      }
-
-    });
-    // style exception, too simple
+    exports.sfwPostSpecial(result.value, parameters, cb);
 
   });
 
 };
+// } Section 6: New special settings
 
 exports.aggregateThreadCount = function(boardUri, callback) {
 

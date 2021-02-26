@@ -290,8 +290,6 @@ exports.process = function(req, res) {
 
     parameters.action = (parameters.action || '').toLowerCase();
 
-    parameters.global = parameters.hasOwnProperty('global');
-
     if (mandatoryAuth.indexOf(parameters.action) > -1 && !userData) {
       formOps.redirectToLogin(res);
       return;

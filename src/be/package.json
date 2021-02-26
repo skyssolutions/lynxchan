@@ -6,16 +6,16 @@
     "type": "git",
     "url": "https://gitgud.io/LynxChan/LynxChan.git"
   },
-  "version": "2.5.0",
+  "version": "2.6.0",
   "dependencies": {
     "http-proxy": "1.18.x",
-    "mongodb": "3.5.x",
+    "mongodb": "3.6.x",
     "formidable": "1.2.x",
     "nodemailer": "6.4.x",
     "nodemailer-direct-transport": "3.3.x",
-    "parse5": "5.1.x",
-    "node-addon-api": "2.0.x",
-    "ws": "7.3.x",
+    "parse5": "6.0.x",
+    "node-addon-api": "3.0.x",
+    "ws": "7.4.x",
     "bufferutil": "4.0.x",
     "utf-8-validate": "5.0.x"
   },

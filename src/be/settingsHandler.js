@@ -102,6 +102,27 @@ function broadCastReload(reloadsToMake, callback, feChanged) {
 
 }
 
+function categoriesChanged(settings) {
+
+  var newCats = settings.reportCategories;
+  var oldCats = generalSettings.reportCategories;
+
+  var newCatsExists = !!newCats;
+  var oldCatsExists = !!oldCats;
+
+  if (newCatsExists !== oldCatsExists || newCats.length !== oldCats.length) {
+    return true;
+  }
+
+  for (var i = 0; i < oldCats.length; i++) {
+    if (newCats.indexOf(oldCats[i]) === -1) {
+      return true;
+    }
+
+  }
+
+}
+
 function getRebuildBoards(settings) {
 
   var rebuildBoards = generalSettings.pageSize !== settings.pageSize;
@@ -113,10 +134,14 @@ function getRebuildBoards(settings) {
       ^ settings.disableCatalogPosting;
   var unboundChanged = generalSettings.unboundBoardLimits
       ^ settings.unboundBoardLimits;
+  var reportCaptchaChanged = generalSettings.noReportCaptcha
+      ^ settings.noReportCaptcha;
   var mLengthChanged = generalSettings.messageLength !== settings.messageLength;
 
   rebuildBoards = unboundChanged || rebuildBoards || catalogPostingChanged;
   rebuildBoards = rebuildBoards || fileCChanged || mLengthChanged;
+  rebuildBoards = rebuildBoards || reportCaptchaChanged;
+  rebuildBoards = rebuildBoards || categoriesChanged(settings);
 
   return rebuildBoards || fileSizeDelta || globalCChanged || lPC;
 
@@ -143,23 +168,7 @@ function rebuildFp(settings) {
 
 }
 
-function checkOverboardChanged(settings) {
-
-  var overboardChanged = settings.overboard !== generalSettings.overboard;
-
-  if (!overboardChanged) {
-    overboardChanged = settings.sfwOverboard !== generalSettings.sfwOverboard;
-  }
-
-  var overboardReduced = settings.overBoardThreadCount;
-  overboardReduced = overboardReduced < generalSettings.overBoardThreadCount;
-
-  var changedOmission = settings.omitUnindexedContent
-      ^ generalSettings.omitUnindexedContent;
-
-  if (!overboardChanged && !overboardReduced && !changedOmission) {
-    return;
-  }
+function rebuildOverboard(settings, changedOmission) {
 
   require('./engine/degenerator').global.overboard(function degenerated(error) {
 
@@ -180,6 +189,31 @@ function checkOverboardChanged(settings) {
     reaggregate : reaggregate || changedOmission,
     omit : settings.omitUnindexedContent
   });
+
+}
+
+function checkOverboardChanged(settings) {
+
+  var overboardChanged = settings.overboard !== generalSettings.overboard;
+
+  if (!overboardChanged) {
+    overboardChanged = settings.sfwOverboard !== generalSettings.sfwOverboard;
+  }
+
+  var overboardReduced = settings.overBoardThreadCount;
+  overboardReduced = overboardReduced < generalSettings.overBoardThreadCount;
+
+  overboardReduced = overboardReduced || categoriesChanged(settings);
+
+  var changedOmission = settings.omitUnindexedContent
+      ^ generalSettings.omitUnindexedContent;
+
+  var changedReportCaptcha = generalSettings.noReportCaptcha
+      ^ settings.noReportCaptcha;
+
+  if (overboardReduced || changedOmission || changedReportCaptcha) {
+    rebuildOverboard(settings, changedOmission);
+  }
 
 }
 
@@ -354,7 +388,8 @@ function prepareSettingsForChangeCheck(settings, callback) {
       'defaultAnonymousName', 'defaultBanMessage', 'allowBoardCustomJs',
       'topBoardsCount', 'globalLatestPosts', 'forceCaptcha', 'overboard',
       'frontPageStats', 'disableAccountCreation', 'disableCatalogPosting',
-      'redactModNames', 'omitUnindexedContent', 'unboundBoardLimits' ];
+      'redactModNames', 'omitUnindexedContent', 'unboundBoardLimits',
+      'noReportCaptcha', 'reportCategories' ];
 
   // these ones default to the default values
   var defaultToDefault = [ 'pageSize', 'latestPostsAmount', 'maxFileSizeMB',

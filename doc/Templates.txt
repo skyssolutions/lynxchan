@@ -74,6 +74,18 @@ TEM_ID::02
 boardPage: board pages, listing threads.
 
 Elements:
+divReportCaptcha:
+    use: might be removed.
+    description: div with the captcha used for reporting.
+
+reportCategoriesDiv:
+    use: might be removed.
+    description: div that contains the report category selection.
+
+reportComboboxCategory:
+    use: have children appended to it.
+    description: combobox with the available report categories.
+
 divBanCaptcha:
     use: might be removed.
     description: div with the captcha used for banning.
@@ -185,6 +197,18 @@ TEM_ID::03
 threadPage: thread page, with all replies.
 
 Elements:
+divReportCaptcha:
+    use: might be removed.
+    description: div with the captcha used for reporting.
+
+reportCategoriesDiv:
+    use: might be removed.
+    description: div that contains the report category selection.
+
+reportComboboxCategory:
+    use: have children appended to it.
+    description: combobox with the available report categories.
+
 divBanCaptcha:
     use: might be removed.
     description: div with the captcha used for banning.
@@ -649,6 +673,10 @@ TEM_ID::07
 accountPage: page used for user's accounts.
 
 Elements:
+reportFilterDiv:
+    use: might be removed or have children appended to it.
+    description: div with the available report categories to filter report notifications.
+
 labelLogin:
     use: have it's innerHTML manipulated.
     description: contains the user's login.
@@ -1088,6 +1116,14 @@ reportCell*: cell used to list open reports.
 Root element: div
 
 Elements:
+categoryDiv:
+    use: might be removed.
+    description: panel that holds the report category.
+
+categoryLabel:
+    use: have it's innerHTML manipulated.
+    description: label with the report category.
+
 boardLabel:
     use: have it's innerHTML manipulated.
     description: holds the board of the report.
@@ -1605,6 +1641,10 @@ TEM_ID::31
 boardModerationPage: page used by global staff to moderate boards.
 
 Elements:
+checkboxAllowJs:
+    use: might be turned on.
+    description: checkbox that indicates if the board can have js uploaded even if not globally allowed.
+
 boardTransferIdentifier:
     use: have it's value manipulated.
     description: hidden input that identifies the board for the transfer operation.
@@ -1813,9 +1853,9 @@ ruleManagementCell*: cell used to list existing rules.
 Root element: form
 
 Elements:
-textLabel:
-    use: have it's innerHTML manipulated.
-    description: label with the text of the rule.
+textField:
+    use: have it's value manipulated.
+    description: field with the text of the rule.
 
 indexIdentifier:
     use: have it's value manipulated.
@@ -1951,6 +1991,14 @@ TEM_ID::47
 globalSettingsPage: page used to change global settings.
 
 Elements:
+fieldReportCategories:
+    use: have it's value manipulated.
+    description: field with the available report categories.
+
+fieldEmailDomainWhiteList:
+    use: have it's value manipulated.
+    description: field with whitelisted e-mail domains.
+
 fieldBypassValidationRange:
     use: have it's value manipulated.
     description: checkbox that displays the bypass validation code range.
@@ -1958,6 +2006,10 @@ fieldBypassValidationRange:
 checkboxDisableBanCaptcha:
     use: might be checked.
     description: checkbox that indicates if ban captchas are disabled.
+
+checkboxNoReportCaptcha:
+    use: might be checked.
+    description: checkbox that indicates if captchas are disabled for report.
 
 checkboxUnlockHistory:
     use: might be checked.
@@ -2487,6 +2539,18 @@ TEM_ID::51
 overboard: page used to create the overboard and multi-board.
 
 Elements:
+divReportCaptcha:
+    use: might be removed.
+    description: div with the captcha used for reporting.
+
+reportCategoriesDiv:
+    use: might be removed.
+    description: div that contains the report category selection.
+
+reportComboboxCategory:
+    use: have children appended to it.
+    description: combobox with the available report categories.
+
 divThreads:
     use: have children appended to it.
     description: div containing the threads.
@@ -2913,7 +2977,7 @@ expirationLabel:
     description: label the holds the expiration of the offense.
 
 modLabel:
-    use: havei t's value manipulated.
+    use: have it's value manipulated.
     description: label that holds the mod that recorded the offense.
 
 ------------------------------------------------------------------------------------------
@@ -2923,9 +2987,36 @@ TEM_ID::71
 openReportsPage: page used to show open reports.
 
 Elements:
+filterCategoriesDiv:
+    use: have children appended to it.
+    description: div with the cells for available report categories.
+
+filterBoardIdentifier:
+    use: might be removed or have it's value manipulated.
+    description: input used to identify the board being viewed.
+
+filterForm:
+    use: might be removed.
+    description: form used to filter reports by categories.
+
 reportsDiv:
     use: have children appended to it.
     description: div with the open reports.
+
+------------------------------------------------------------------------------------------
+
+TEM_ID::72
+
+reportCategoryFilterCell*: cell used to display category report filters.
+
+Elements:
+categoryCheckbox:
+    use: have it's value manipulated and might be checked.
+    description: checkbox for the given category.
+
+categoryLabel:
+    use: have it's innerHTML manipulated.
+    description: label for the given category.
 
 ------------------------------------------------------------------------------------------
 

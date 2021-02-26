@@ -14,6 +14,7 @@ var bypassMaxPosts;
 var bypassMode;
 var hourlyLimit;
 var validationRange;
+var versatileOps;
 
 exports.loadSettings = function() {
   var settings = require('../settingsHandler').getGeneralSettings();
@@ -31,6 +32,7 @@ exports.loadDependencies = function() {
 
   captchaOps = require('./captchaOps');
   lang = require('./langOps').languagePack;
+  versatileOps = require('./modOps').ipBan.versatile;
 
 };
 
@@ -247,13 +249,13 @@ exports.useBypass = function(bypassId, req, callback, thread) {
 
   var nextUse = new Date();
 
-  var toAdd = (thread ? 10 : 1) * floodExpiration;
-
   var usageField = thread ? 'nextThreadUsage' : 'nextUsage';
 
   var setBlock = {};
   setBlock[usageField] = nextUse;
 
+  var multiplierToUse = thread ? versatileOps.threadFloodMultiplier : 1;
+  var toAdd = multiplierToUse * floodExpiration;
   nextUse.setUTCSeconds(nextUse.getUTCSeconds() + toAdd);
 
   bypasses.findOneAndUpdate({
