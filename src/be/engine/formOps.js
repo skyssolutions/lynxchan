@@ -64,19 +64,26 @@ exports.getDomain = function(req) {
 exports.getCookies = function(req) {
   var parsedCookies = {};
 
-  if (req.headers.cookie) {
+  try {
 
-    var cookies = req.headers.cookie.split(';');
+    if (req.headers.cookie) {
 
-    for (var i = 0; i < cookies.length; i++) {
+      var cookies = req.headers.cookie.split(';');
 
-      var cookie = cookies[i];
+      for (var i = 0; i < cookies.length; i++) {
 
-      var parts = cookie.split('=');
-      parsedCookies[parts.shift().trim()] = decodeURI(parts.join('='));
+        var cookie = cookies[i];
+
+        var parts = cookie.split('=');
+        parsedCookies[parts.shift().trim()] = decodeURI(parts.join('='));
+      }
 
     }
 
+  } catch (error) {
+    if (verbose) {
+      console.log(error);
+    }
   }
 
   return parsedCookies;
