@@ -547,7 +547,7 @@ exports.getCatalogCell = function(boardUri, document, thread, language) {
   if (thread.subject) {
 
     cell = cell.replace('__labelSubject_location__', removable.labelSubject);
-    cell = cell.replace('__labelSubject_inner__', thread.subject);
+    cell = cell.replace('__labelSubject_inner__', common.clean(thread.subject));
 
   } else {
     cell = cell.replace('__labelSubject_location__', '');
