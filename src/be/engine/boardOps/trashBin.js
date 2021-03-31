@@ -109,15 +109,7 @@ exports.getLatestPosts = function(threadsArray, foundBoard, callback) {
           callback(error);
         } else {
 
-          var processedLatest = {};
-
-          for (var i = 0; i < latestPosts.length; i++) {
-            var entry = latestPosts[i];
-
-            processedLatest[entry._id] = entry.latestPosts;
-          }
-
-          exports.getTrashPosts(threadsArray, processedLatest, parentThreads,
+          exports.getTrashPosts(threadsArray, latestPosts, parentThreads,
               foundBoard, callback);
 
         }

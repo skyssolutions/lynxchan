@@ -758,13 +758,16 @@ exports.composeQueryBlock = function(board, threadsToDelete, userData,
 
   var threadQueryBlock = {
     boardUri : board.boardUri,
-    trash : {
-      $ne : true
-    },
     threadId : {
       $in : threadsToDelete[board.boardUri] || []
     }
   };
+
+  if (parameters.action === 'trash') {
+    threadQueryBlock.trash = {
+      $ne : true
+    };
+  }
 
   if (parameters.deleteUploads) {
     threadQueryBlock['files.0'] = {

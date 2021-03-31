@@ -668,7 +668,15 @@ exports.trashBin = function(threads, posts, latestPosts, boardData, userRole) {
 
   var processedThreads = [];
 
-  for (var i = 0; i < threads.length; i++) {
+  var processedLatest = {};
+
+  for (var i = 0; i < latestPosts.length; i++) {
+    processedLatest[latestPosts[i]._id] = latestPosts[i].latestPosts;
+  }
+
+  latestPosts = processedLatest;
+
+  for (i = 0; i < threads.length; i++) {
     processedThreads.push(exports.getThreadObject(threads[i],
         latestPosts[threads[i].threadId], boardData, true, userRole));
   }

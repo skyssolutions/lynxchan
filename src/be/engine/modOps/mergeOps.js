@@ -268,6 +268,9 @@ exports.findThreads = function(parameters, userData, language, callback) {
     threadId : {
       $in : [ +parameters.threadSource, +parameters.threadDestination ]
     },
+    trash : {
+      $ne : true
+    },
     archived : {
       $ne : true
     },

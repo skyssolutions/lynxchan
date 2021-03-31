@@ -10,6 +10,7 @@ var miscOps;
 var reportCategories;
 var common;
 var clearIpMinRole;
+var staticPages;
 
 exports.boardModerationIdentifiers = [ 'boardTransferIdentifier',
     'boardDeletionIdentifier', 'specialSettingsIdentifier' ];
@@ -33,6 +34,7 @@ exports.loadDependencies = function() {
   templateHandler = require('../../templateHandler').getTemplates;
   lang = require('../../langOps').languagePack;
   common = require('..').common;
+  staticPages = require('..').staticPages;
 
 };
 
@@ -232,7 +234,7 @@ exports.boardModeration = function(boardData, ownerData, language) {
 // } Section 2: Board moderation
 
 // Section 3: Latest postings {
-exports.getPosts = function(postings, boardData, userRole, language) {
+exports.getPosts = function(postings, boardData, userRole, language, trashBin) {
 
   var postsContent = '';
 
@@ -246,8 +248,8 @@ exports.getPosts = function(postings, boardData, userRole, language) {
 
     posting.postId = posting.postId || posting.threadId;
 
-    postContent += common.getPostInnerElements(posting, true, language,
-        operations, null, boardData, userRole);
+    postContent += common.getPostInnerElements(posting, !trashBin, language,
+        operations, !!trashBin, boardData, userRole);
 
     postsContent += postContent + '</div>';
   }
@@ -540,12 +542,13 @@ exports.trashBin = function(threads, posts, latestPosts, parameters, boardData,
 
   var template = templateHandler(language).trashBinPage;
 
-  var document = template.template.replace('__title__',
-      lang(language).titTrashBin);
-
-  // TODO
-
-  return document;
+  return template.template.replace('__title__', lang(language).titTrashBin)
+      .replace('__postList_children__',
+          exports.getPosts(posts, boardData, userRole, language, true))
+      .replace(
+          '__threadList_children__',
+          staticPages.getThreadListing(latestPosts, threads, true, userRole,
+              boardData, language));
 
 };
 // } Section 5: Trash bin

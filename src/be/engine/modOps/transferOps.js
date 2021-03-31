@@ -547,9 +547,7 @@ exports.transfer = function(userData, parameters, language, callback) {
   var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
   if (!globalStaff) {
-    callback(lang(language).errDeniedThreadTransfer);
-
-    return;
+    return callback(lang(language).errDeniedThreadTransfer);
   }
 
   parameters.threadId = +parameters.threadId;
@@ -557,6 +555,9 @@ exports.transfer = function(userData, parameters, language, callback) {
   parameters.boardUriDestination = parameters.boardUriDestination.toString();
 
   threads.findOne({
+    trash : {
+      $ne : true
+    },
     threadId : parameters.threadId,
     boardUri : parameters.boardUri
   }, {

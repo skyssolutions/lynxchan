@@ -3028,5 +3028,20 @@ categoryLabel:
 
 ------------------------------------------------------------------------------------------
 
+TEM_ID::73
+
+trashBinPage: page that displays the contents of a board's trash bin.
+
+Elements:
+threadList:
+    use: have children appended to it.
+    description: div that holds the threads in the trash bin.
+
+postList:
+    use: have children appended to it.
+    description: div that holds the posts in the trash bin that do not belong to trashed threads.
+
+------------------------------------------------------------------------------------------
+
 *: cell. it's top level element will have the same class of it's name and it's elements will be identified by their classes and not their ids. Only the first element with the specified class will be manipulated.
 
