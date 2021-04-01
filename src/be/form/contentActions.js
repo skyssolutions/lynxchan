@@ -140,7 +140,7 @@ exports.checkDeletionActions = function(parameters, reportedObjects, userData,
 
   case 'restore': {
 
-    trashBin.restore(userData, threads, posts, function(error) {
+    trashBin.restore(userData, threads, posts, req.language, function(error) {
 
       if (error) {
         formOps.outputError(error, 500, res, req.language, json, auth);

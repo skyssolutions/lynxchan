@@ -382,6 +382,8 @@ exports.getLogMessage = function(parameters, foundThreads, foundPosts,
 exports.logRemoval = function(userData, board, parameters, cb, foundThreads,
     rawPosts, foundPosts, parentThreads) {
 
+  // TODO check if it's being trashed, check date of last trash
+
   var logMessage = exports.getLogMessage(parameters, foundThreads, foundPosts,
       userData, board);
 
