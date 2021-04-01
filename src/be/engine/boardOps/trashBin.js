@@ -22,6 +22,7 @@ exports.loadSettings = function() {
 
 };
 
+// Section 1: Fetch {
 exports.getTrashPosts = function(threadsArray, latestPosts, parentThreads,
     foundBoard, callback) {
 
@@ -155,5 +156,13 @@ exports.getTrash = function(user, parameters, language, callback) {
     }
 
   });
+
+};
+// } Section 1: Fetch
+
+exports.restore = function(userData, threads, posts, callback) {
+
+  // TODO
+  callback();
 
 };

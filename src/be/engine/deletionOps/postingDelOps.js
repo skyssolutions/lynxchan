@@ -271,7 +271,7 @@ exports.removeReportsAndGlobalLatestImages = function(board, parameters, cb,
       return cb(error);
     }
 
-    if (!parameters.deleteUploads) {
+    if (!parameters.deleteUploads && parameters.action !== 'trash') {
 
       // style exception, too simple
       reports.removeMany(matchBlock, function removedReports(error) {
@@ -886,6 +886,11 @@ exports.getPostsToDelete = function(userData, board, postsToDelete, parameters,
         parentThreads = exports.sanitizeParentThreads(foundThreads,
             parentThreads);
 
+        if (parameters.action === 'trash' && !parameters.deleteUploads) {
+          return exports.removeFoundContent(userData, board, parameters, cb,
+              foundThreads, rawPosts, foundPosts, parentThreads);
+        }
+
         // style exception, too simple
         referenceHandler.clearPostingReferences(board.boardUri, foundThreads,
             rawPosts, parameters.deleteUploads, parameters.deleteMedia,
@@ -1045,10 +1050,15 @@ exports.adjustTrashOption = function(parameters, userData) {
 
   if (parameters.action === 'delete') {
 
+    if (!userData) {
+      parameters.action = 'trash';
+      return;
+    }
+
     var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
     if (!userData || !globalStaff) {
-      parameters.deleteMedia = 'trash';
+      parameters.action = 'trash';
     }
   }
 

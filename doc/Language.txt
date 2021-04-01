@@ -248,6 +248,7 @@ msgAccountSettingsSaved: message used after saving the account settings.
 msgThreadSettingsSaved: message used after saving a thread's settings.
 msgReportsClosed: message used after closing reports.
 msgContentReported: message used after reporting content.
+msgRestored: message used after restoring content from the trash bin.
 msgUsersBanned: message used after banning users.
 msgContentDeleted: message used after deleting content. Replaces: {$threads}, {$posts}.
 msgBannerCreated: message used after creating a board banner.

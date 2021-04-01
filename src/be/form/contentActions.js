@@ -6,11 +6,13 @@ var taskListener = require('../taskListener');
 var lang = require('../engine/langOps').languagePack;
 var formOps = require('../engine/formOps');
 var accountOps = require('../engine/accountOps');
+var trashBin = require('../engine/boardOps').trashBin;
 var modOps = require('../engine/modOps');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var lang = require('../engine/langOps').languagePack;
 var miscOps = require('../engine/miscOps');
 var deleteOps = require('../engine/deletionOps');
+var deleteActions = [ 'delete', 'trash', 'restore' ];
 var mandatoryAuth = [ 'spoil', 'ban', 'ip-deletion' ];
 
 exports.processPostForDeletion = function(board, splitKey, postsToDelete) {
@@ -68,7 +70,7 @@ exports.processSplitKeyForGeneralUse = function(splitKey, reportedObjects) {
 exports.decideProcessing = function(parameters, split, threads, posts,
     reportedObjects) {
 
-  if (parameters.action === 'delete' || parameters.action === 'trash') {
+  if (deleteActions.indexOf(parameters.action) >= 0) {
     exports.processSplitKeyForDeletion(split, threads, posts);
   } else {
     exports.processSplitKeyForGeneralUse(split, reportedObjects);
@@ -108,6 +110,56 @@ exports.getProcessedObjects = function(parameters, threads, posts,
   }
 
   return redirectBoard ? '/' + redirectBoard + '/' : '/';
+
+};
+
+exports.checkDeletionActions = function(parameters, reportedObjects, userData,
+    req, res, auth, json, redirectBoard, threads, posts) {
+
+  switch (parameters.action) {
+
+  case 'thread-ip-deletion':
+  case 'ip-deletion': {
+
+    deleteOps.deleteFromIpOnBoard(parameters.action === 'thread-ip-deletion',
+        parameters.confirmation, reportedObjects, userData, req.language,
+        function deleted(error) {
+
+          if (error) {
+            formOps.outputError(error, 500, res, req.language, json, auth);
+          } else {
+            formOps.outputResponse(json ? 'ok'
+                : lang(req.language).msgDeletedFromIp, json ? null
+                : redirectBoard, res, null, auth, req.language, json);
+          }
+
+        });
+
+    break;
+  }
+
+  case 'restore': {
+
+    trashBin.restore(userData, threads, posts, function(error) {
+
+      if (error) {
+        formOps.outputError(error, 500, res, req.language, json, auth);
+      } else {
+        formOps.outputResponse(json ? 'ok' : lang(req.language).msgRestored,
+            json ? null : redirectBoard, res, null, auth, req.language, json);
+      }
+
+    });
+
+    break;
+  }
+
+  default: {
+    exports.testDeletionFlood(userData, parameters, threads, posts, req, res,
+        json, auth, redirectBoard);
+  }
+
+  }
 
 };
 
@@ -181,29 +233,11 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
     break;
   }
 
-  case 'thread-ip-deletion':
-  case 'ip-deletion': {
-
-    deleteOps.deleteFromIpOnBoard(parameters.action === 'thread-ip-deletion',
-        parameters.confirmation, reportedObjects, userData, req.language,
-        function deleted(error) {
-
-          if (error) {
-            formOps.outputError(error, 500, res, req.language, json, auth);
-          } else {
-            formOps.outputResponse(json ? 'ok'
-                : lang(req.language).msgDeletedFromIp, json ? null
-                : redirectBoard, res, null, auth, req.language, json);
-          }
-
-        });
-
-    break;
-  }
-
   default: {
-    exports.testDeletionFlood(userData, parameters, threads, posts, req, res,
-        json, auth, redirectBoard);
+
+    exports.checkDeletionActions(parameters, reportedObjects, userData, req,
+        res, auth, json, redirectBoard, threads, posts);
+
   }
 
   }

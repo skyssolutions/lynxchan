@@ -389,5 +389,6 @@
   "msgRuleEdited": "Rule edited.",
   "errOnlyConfirmedEmail": "You need to confirm your e-mail to be able to create boards.",
   "errNonWhiteListedEmail": "Your e-mail provider is not on the whitelist. Allowed domains: {$domains}.",
-  "titTrashBin": "Trash bin"
+  "titTrashBin": "Trash bin",
+  "msgRestored": "Postings restored."
 }
