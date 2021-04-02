@@ -1584,8 +1584,8 @@ Parameters:
     boardUri: uri of the board to show the trash bin.
 
 Json ouput(Object): an object with the following fields:
-    threads: the threads that are currently in the trash bin. See doc/Json.txt, section 3, "threads" for the data contained in the nodes.
-    posts: the posts that are in the trash bin but are not part of a trashed thread. See doc/Json.txt, section 3, "threads/posts" for the data contained in the nodes.
+    threads: the threads that are currently in the trash bin. See section 19, for the data contained in the nodes.
+    posts: the posts that are in the trash bin but are not part of a trashed thread. See section 19, for the data contained in the nodes.
 
 ------------------------------------------------------------------------------------------
 

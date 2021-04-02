@@ -16,6 +16,7 @@ exports.loadSettings = function() {
   exports.flags.loadSettings();
   exports.meta.loadSettings();
   exports.rules.loadSettings();
+  exports.trashBin.loadSettings();
 
 };
 

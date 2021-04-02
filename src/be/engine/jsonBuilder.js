@@ -664,19 +664,20 @@ exports.latestPostings = function(postings, user, boardData) {
 
 };
 
-exports.trashBin = function(threads, posts, latestPosts) {
+exports.trashBin = function(threads, posts, latestPosts, boardData, userRole) {
 
   var processedThreads = [];
 
   for (var i = 0; i < threads.length; i++) {
     processedThreads.push(exports.getThreadObject(threads[i],
-        latestPosts[threads[i].threadId]));
+        latestPosts[threads[i].threadId], boardData, true, userRole));
   }
 
   var processedPosts = [];
 
-  for (i = 0; i < threads.length; i++) {
-    processedPosts.push(exports.getPostObject(posts[i]));
+  for (i = 0; i < posts.length; i++) {
+    processedPosts.push(exports.getPostObject(posts[i], false, boardData, true,
+        userRole));
   }
 
   return {

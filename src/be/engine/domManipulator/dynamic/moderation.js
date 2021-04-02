@@ -535,15 +535,16 @@ exports.openReports = function(reports, parameters, boardData, userData,
 // } Section 4: Open reports
 
 // Section 5: Trash bin {
-exports.trashBin = function(threads, posts, latestPosts, parameters, language) {
+exports.trashBin = function(threads, posts, latestPosts, parameters, boardData,
+    userRole, language) {
 
   var template = templateHandler(language).trashBinPage;
 
   var document = template.template.replace('__title__',
       lang(language).titTrashBin);
 
-  //TODO
-  
+  // TODO
+
   return document;
 
 };

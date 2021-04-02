@@ -11,7 +11,7 @@ exports.trash = function(auth, parameters, user, res, language) {
   var json = parameters.json;
 
   boardOps.getTrash(user, parameters, language, function gotPostings(error,
-      threads, posts, latestPosts) {
+      threads, posts, latestPosts, boardData) {
 
     if (error) {
       return formOps.outputError(error, 500, res, language, json, auth);
@@ -19,11 +19,13 @@ exports.trash = function(auth, parameters, user, res, language) {
 
     if (json) {
 
-      formOps.outputResponse('ok', jsonBuilder.trashBin(threads, posts,
-          latestPosts), res, null, auth, null, true);
+      formOps
+          .outputResponse('ok', jsonBuilder.trashBin(threads, posts,
+              latestPosts, boardData, user.globalRole), res, null, auth, null,
+              true);
     } else {
       formOps.dynamicPage(res, dom.trashBin(threads, posts, latestPosts,
-          parameters, language), auth);
+          parameters, boardData, user.globalRole, language), auth);
     }
 
   });
