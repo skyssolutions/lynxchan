@@ -380,11 +380,17 @@ exports.getLogMessage = function(parameters, foundThreads, foundPosts,
 };
 
 exports.logRemoval = function(userData, board, parameters, cb, foundThreads,
-    rawPosts, foundPosts, parentThreads) {
+    rawPosts, foundPosts, parentThreads, filteredThreads, filteredPosts) {
 
-  // TODO check if it's being trashed, check date of last trash
+  if (filteredThreads && !filteredThreads.length && !filteredPosts.length) {
+    return exports.removeReportsAndGlobalLatestImages(board, parameters, cb,
+        foundThreads, rawPosts, parentThreads);
+  }
 
-  var logMessage = exports.getLogMessage(parameters, foundThreads, foundPosts,
+  var threadsToUse = filteredThreads || foundThreads;
+  var postsToUse = filteredPosts || foundPosts;
+
+  var logMessage = exports.getLogMessage(parameters, threadsToUse, postsToUse,
       userData, board);
 
   logOps.insertLog({
@@ -403,7 +409,8 @@ exports.logRemoval = function(userData, board, parameters, cb, foundThreads,
 };
 
 exports.removeGlobalLatestPosts = function(userData, board, parameters, cb,
-    foundThreads, rawPosts, foundPosts, parentThreads) {
+    foundThreads, rawPosts, foundPosts, parentThreads, filteredThreads,
+    filteredPosts) {
 
   var operations = [];
 
@@ -446,8 +453,10 @@ exports.removeGlobalLatestPosts = function(userData, board, parameters, cb,
 
       if (userData) {
 
-        exports.logRemoval(userData, board, parameters, cb, foundThreads,
-            rawPosts, foundPosts, parentThreads);
+        exports
+            .logRemoval(userData, board, parameters, cb, foundThreads,
+                rawPosts, foundPosts, parentThreads, filteredThreads,
+                filteredPosts);
 
       } else {
 
@@ -581,7 +590,8 @@ exports.resetLastBump = function(board, parentThreads, callback, index) {
 };
 
 exports.updateThreadPages = function(userData, board, parameters, cb,
-    foundThreads, rawPosts, foundPosts, parentThreads) {
+    foundThreads, rawPosts, foundPosts, parentThreads, filteredThreads,
+    filteredPosts) {
 
   exports.resetLastBump(board, parentThreads, function resetBumps(error) {
 
@@ -596,7 +606,8 @@ exports.updateThreadPages = function(userData, board, parameters, cb,
       }
 
       exports.removeGlobalLatestPosts(userData, board, parameters, cb,
-          foundThreads, rawPosts, foundPosts, parentThreads);
+          foundThreads, rawPosts, foundPosts, parentThreads, filteredThreads,
+          filteredPosts);
 
     });
 
@@ -631,7 +642,83 @@ exports.wsNotify = function(boardUri, foundPosts, parentThreads, uploads) {
 };
 
 exports.trashFoundContent = function(userData, board, parameters, cb,
-    foundThreads, rawPosts, foundPosts, parentThreads) {
+    foundThreads, rawPosts, foundPosts, parentThreads, filteredThreads,
+    filteredPosts) {
+
+  if (!filteredThreads) {
+
+    var limitDate = new Date();
+
+    limitDate.setUTCHours(limitDate.getUTCHours() - 1);
+
+    threads.aggregate([ {
+      $match : {
+        $or : [ {
+          trashDate : {
+            $lt : limitDate
+          }
+        }, {
+          trashDate : null
+        } ],
+        boardUri : board.boardUri,
+
+        threadId : {
+          $in : foundThreads
+        }
+      }
+    }, {
+      $group : {
+        _id : 0,
+        filterThreads : {
+          $push : '$threadId'
+        }
+      }
+    } ]).toArray(
+        function(error, resultThreads) {
+
+          if (error) {
+            return cb(error);
+          }
+
+          posts.aggregate([ {
+            $match : {
+              boardUri : board.boardUri,
+              $or : [ {
+                trashDate : {
+                  $lt : limitDate
+                }
+              }, {
+                trashDate : null
+              } ],
+              postId : {
+                $in : rawPosts
+              }
+            }
+          }, {
+            $group : {
+              _id : '$threadId',
+              posts : {
+                $push : '$postId'
+              }
+            }
+          } ]).toArray(
+              function(error, resultPosts) {
+
+                if (error) {
+                  return cb(error);
+                }
+
+                exports.trashFoundContent(userData, board, parameters, cb,
+                    foundThreads, rawPosts, foundPosts, parentThreads,
+                    resultThreads.length ? resultThreads[0].filterThreads : [],
+                    resultPosts);
+
+              });
+
+        });
+
+    return;
+  }
 
   threads.updateMany({
     boardUri : board.boardUri,
@@ -640,6 +727,7 @@ exports.trashFoundContent = function(userData, board, parameters, cb,
     }
   }, {
     $set : {
+      trashDate : new Date(),
       trash : true
     }
   }, function trashedThreads(error) {
@@ -655,6 +743,7 @@ exports.trashFoundContent = function(userData, board, parameters, cb,
       }
     }, {
       $set : {
+        trashDate : new Date(),
         trash : true
       }
     }, function trashedPosts(error) {
@@ -663,7 +752,8 @@ exports.trashFoundContent = function(userData, board, parameters, cb,
       } else {
 
         exports.updateThreadPages(userData, board, parameters, cb,
-            foundThreads, rawPosts, foundPosts, parentThreads);
+            foundThreads, rawPosts, foundPosts, parentThreads, filteredThreads,
+            filteredPosts);
 
       }
 

@@ -72,6 +72,7 @@ threads: stores board's threads.
     trash(Boolean): indicates if the thread is in the trash bin.
     archived(Boolean): indicates if the thread is archived.
     name: name of the poster. 32 characters.
+    trashDate(Date): date of the last time the thread was put in the trash.
     bypassId*: _id of the bypass used to make the posting. 
     hash: hash of the message used by R9K.
     signedRole: role of the user that posted the thread.
@@ -128,6 +129,7 @@ posts: stores posts.
     trash(Boolean): indicates if the post is in the trash bin.
     name: name of the poster. 32 characters.
     hash: hash of the message used by R9K.
+    trashDate(Date): date of the last time the thread was put in the trash.
     asn(Number): asn of the poster.
     signedRole: role of the user that posted the thread.
     password: password used to delete the post. 8 characters.

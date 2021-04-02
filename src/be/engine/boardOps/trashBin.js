@@ -404,7 +404,7 @@ exports.iterateBoardsToRestore = function(foundBoards, userData,
                   threadsToRestore, postsToRestore, language, callback);
               // style exception, too simple
 
-            }, foundThreads, [], parentThreads);
+            }, foundThreads, [], parentThreads.concat(foundThreads));
 
           } else {
 
