@@ -177,8 +177,6 @@ exports.getThreadObject = function(thread, posts, board, modding, userRole) {
     id : thread.id,
     name : thread.name,
     email : thread.email,
-    wsPort : wsPort,
-    wssPort : wssPort,
     boardUri : thread.boardUri,
     threadId : thread.threadId,
     flag : thread.flag,
@@ -248,6 +246,8 @@ exports.thread = function(boardUri, boardData, threadData, posts, callback,
   threadObject.usesCustomCss = boardData.usesCustomCss;
   threadObject.noReportCaptcha = noReportCaptcha;
   threadObject.reportCategories = reportCategories;
+  threadObject.wssPort = wssPort;
+  threadObject.wsPort = wsPort;
 
   exports.addExtraThreadInfo(threadObject, boardData);
 
@@ -494,7 +494,7 @@ exports.rules = function(boardUri, rules, callback) {
 };
 
 exports.boardManagement = function(userData, boardData, languages, bans,
-    reportCount) {
+    reportCount, trashCount) {
 
   return {
     usesCustomSpoiler : boardData.usesCustomSpoiler,
@@ -509,6 +509,7 @@ exports.boardManagement = function(userData, boardData, languages, bans,
     settings : boardData.settings || [],
     tags : boardData.tags || [],
     openReports : reportCount,
+    trashCount : trashCount,
     boardMessage : boardData.boardMessage,
     isOwner : userData.login === boardData.owner,
     appealedBans : bans || [],
@@ -660,6 +661,28 @@ exports.latestPostings = function(postings, user, boardData) {
   }
 
   return postings;
+
+};
+
+exports.trashBin = function(threads, posts, latestPosts) {
+
+  var processedThreads = [];
+
+  for (var i = 0; i < threads.length; i++) {
+    processedThreads.push(exports.getThreadObject(threads[i],
+        latestPosts[threads[i].threadId]));
+  }
+
+  var processedPosts = [];
+
+  for (i = 0; i < threads.length; i++) {
+    processedPosts.push(exports.getPostObject(posts[i]));
+  }
+
+  return {
+    threads : processedThreads,
+    posts : processedPosts
+  };
 
 };
 

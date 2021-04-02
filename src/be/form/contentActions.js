@@ -68,7 +68,7 @@ exports.processSplitKeyForGeneralUse = function(splitKey, reportedObjects) {
 exports.decideProcessing = function(parameters, split, threads, posts,
     reportedObjects) {
 
-  if (parameters.action === 'delete') {
+  if (parameters.action === 'delete' || parameters.action === 'trash') {
     exports.processSplitKeyForDeletion(split, threads, posts);
   } else {
     exports.processSplitKeyForGeneralUse(split, reportedObjects);
@@ -223,8 +223,7 @@ exports.testDeletionFlood = function(userData, parameters, threads, posts, req,
   taskListener.openSocket(function opened(error, socket) {
 
     if (error) {
-      formOps.outputError(error, 500, res, req.language, json, auth);
-      return;
+      return formOps.outputError(error, 500, res, req.language, json, auth);
     }
 
     socket.onData = function receivedData(data) {

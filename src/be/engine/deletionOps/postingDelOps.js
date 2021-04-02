@@ -57,6 +57,9 @@ exports.reaggregateLatestPosts = function(countData, board, parentThreads,
 
   posts.aggregate([ {
     $match : {
+      trash : {
+        $ne : true
+      },
       boardUri : board.boardUri,
       threadId : parentThreads[index]
     }
@@ -85,36 +88,34 @@ exports.reaggregateLatestPosts = function(countData, board, parentThreads,
     }
   } ]).toArray(function gotIds(error, results) {
     if (error) {
-      callback(error);
-    } else {
-
-      var foundPosts = results.length ? results[0].ids : [];
-
-      // style exception, too simple
-      threads.updateOne({
-        boardUri : board.boardUri,
-        threadId : parentThreads[index]
-      }, {
-        $set : {
-          fileCount : countData.fileCount,
-          postCount : countData.postCount,
-          latestPosts : foundPosts
-        },
-        $unset : {
-          outerCache : 1,
-          alternativeCaches : 1
-        }
-      }, function setPosts(error) {
-        if (error) {
-          callback(error);
-        } else {
-          exports.reaggregateThread(board, parentThreads, callback, ++index);
-        }
-
-      });
-      // style exception, too simple
-
+      return callback(error);
     }
+
+    var foundPosts = results.length ? results[0].ids : [];
+
+    // style exception, too simple
+    threads.updateOne({
+      boardUri : board.boardUri,
+      threadId : parentThreads[index]
+    }, {
+      $set : {
+        fileCount : countData.fileCount,
+        postCount : countData.postCount,
+        latestPosts : foundPosts
+      },
+      $unset : {
+        outerCache : 1,
+        alternativeCaches : 1
+      }
+    }, function setPosts(error) {
+      if (error) {
+        callback(error);
+      } else {
+        exports.reaggregateThread(board, parentThreads, callback, ++index);
+      }
+
+    });
+    // style exception, too simple
 
   });
 };
@@ -129,6 +130,9 @@ exports.reaggregateThread = function(board, parentThreads, callback, index) {
 
   posts.aggregate([ {
     $match : {
+      trash : {
+        $ne : true
+      },
       boardUri : board.boardUri,
       threadId : parentThreads[index]
     }
@@ -526,6 +530,9 @@ exports.resetLastBump = function(board, parentThreads, callback, index) {
 
       var matchBlock = {
         boardUri : board.boardUri,
+        trash : {
+          $ne : true
+        },
         threadId : parentThreads[index],
         email : {
           $ne : 'sage'
@@ -577,21 +584,19 @@ exports.updateThreadPages = function(userData, board, parameters, cb,
   exports.resetLastBump(board, parentThreads, function resetBumps(error) {
 
     if (error) {
-      cb(error);
-    } else {
-
-      common.setThreadsPage(board.boardUri, function update(error) {
-
-        if (error) {
-          console.log(error);
-        }
-
-        exports.removeGlobalLatestPosts(userData, board, parameters, cb,
-            foundThreads, rawPosts, foundPosts, parentThreads);
-
-      });
-
+      return cb(error);
     }
+
+    common.setThreadsPage(board.boardUri, function update(error) {
+
+      if (error) {
+        console.log(error);
+      }
+
+      exports.removeGlobalLatestPosts(userData, board, parameters, cb,
+          foundThreads, rawPosts, foundPosts, parentThreads);
+
+    });
 
   });
 
@@ -623,6 +628,50 @@ exports.wsNotify = function(boardUri, foundPosts, parentThreads, uploads) {
 
 };
 
+exports.trashFoundContent = function(userData, board, parameters, cb,
+    foundThreads, rawPosts, foundPosts, parentThreads) {
+
+  threads.updateMany({
+    boardUri : board.boardUri,
+    threadId : {
+      $in : foundThreads
+    }
+  }, {
+    $set : {
+      trash : true
+    }
+  }, function trashedThreads(error) {
+    if (error) {
+      return cb(error);
+    }
+
+    // style exception, too simple
+    posts.updateMany({
+      boardUri : board.boardUri,
+      postId : {
+        $in : rawPosts
+      }
+    }, {
+      $set : {
+        trash : true
+      }
+    }, function trashedPosts(error) {
+      if (error) {
+        cb(error);
+      } else {
+
+        exports.updateThreadPages(userData, board, parameters, cb,
+            foundThreads, rawPosts, foundPosts, parentThreads);
+
+      }
+
+    });
+    // style exception, too simple
+
+  });
+
+};
+
 exports.removeFoundContent = function(userData, board, parameters, cb,
     foundThreads, rawPosts, foundPosts, parentThreads) {
 
@@ -640,6 +689,13 @@ exports.removeFoundContent = function(userData, board, parameters, cb,
     }
 
     return;
+
+  }
+
+  if (parameters.action === 'trash') {
+
+    return exports.trashFoundContent(userData, board, parameters, cb,
+        foundThreads, rawPosts, foundPosts, parentThreads);
 
   }
 
@@ -702,6 +758,9 @@ exports.composeQueryBlock = function(board, threadsToDelete, userData,
 
   var threadQueryBlock = {
     boardUri : board.boardUri,
+    trash : {
+      $ne : true
+    },
     threadId : {
       $in : threadsToDelete[board.boardUri] || []
     }
@@ -850,8 +909,7 @@ exports.getThreadsToDelete = function(userData, board, threadsToDelete,
       userData, parameters);
 
   if (!threadQueryBlock) {
-    callback();
-    return;
+    return callback();
   }
 
   threads.aggregate([ {
@@ -871,14 +929,14 @@ exports.getThreadsToDelete = function(userData, board, threadsToDelete,
   } ]).toArray(
       function gotThreads(error, results) {
         if (error) {
-          callback(error);
-        } else {
-
-          var foundThreads = results.length ? results[0].threads : [];
-
-          exports.getPostsToDelete(userData, board, postsToDelete, parameters,
-              language, callback, foundThreads, threadQueryBlock);
+          return callback(error);
         }
+
+        var foundThreads = results.length ? results[0].threads : [];
+
+        exports.getPostsToDelete(userData, board, postsToDelete, parameters,
+            language, callback, foundThreads, threadQueryBlock);
+
       });
 
 };
@@ -899,8 +957,8 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
       });
     }
 
-    callback(null, removedThreadsSoFar, removedPostsSoFar);
-    return;
+    return callback(null, removedThreadsSoFar, removedPostsSoFar);
+
   }
 
   boards.findOne({
@@ -917,36 +975,36 @@ exports.iterateBoardsToDelete = function(userData, parameters, threadsToDelete,
   }, function gotBoard(error, board) {
 
     if (error) {
-      callback(error);
+      return callback(error);
     } else if (!board) {
-      callback(lang(language).errBoardNotFound);
-    } else {
-      var settings = board.settings || [];
-
-      if (!userData && settings.indexOf('blockDeletion') > -1) {
-        exports.iterateBoardsToDelete(userData, parameters, threadsToDelete,
-            postsToDelete, foundBoards, language, callback);
-
-        return;
-      }
-
-      exports.getThreadsToDelete(userData, board, threadsToDelete,
-          postsToDelete, parameters, language, function removedBoardPostings(
-              error, removedThreadsCount, removedPostsCount) {
-
-            if (error) {
-              callback(error);
-            } else {
-
-              removedThreadsSoFar += removedThreadsCount || 0;
-              removedPostsSoFar += removedPostsCount || 0;
-
-              exports.iterateBoardsToDelete(userData, parameters,
-                  threadsToDelete, postsToDelete, foundBoards, language,
-                  callback, removedThreadsSoFar, removedPostsSoFar);
-            }
-          });
+      return callback(lang(language).errBoardNotFound);
     }
+
+    var settings = board.settings || [];
+
+    if (!userData && settings.indexOf('blockDeletion') > -1) {
+      exports.iterateBoardsToDelete(userData, parameters, threadsToDelete,
+          postsToDelete, foundBoards, language, callback);
+
+      return;
+    }
+
+    exports.getThreadsToDelete(userData, board, threadsToDelete, postsToDelete,
+        parameters, language, function removedBoardPostings(error,
+            removedThreadsCount, removedPostsCount) {
+
+          if (error) {
+            return callback(error);
+          }
+
+          removedThreadsSoFar += removedThreadsCount || 0;
+          removedPostsSoFar += removedPostsCount || 0;
+
+          exports.iterateBoardsToDelete(userData, parameters, threadsToDelete,
+              postsToDelete, foundBoards, language, callback,
+              removedThreadsSoFar, removedPostsSoFar);
+
+        });
 
   });
 
@@ -970,7 +1028,7 @@ exports.adjustMediaDeletion = function(parameters, userData) {
 
   if (parameters.deleteMedia) {
 
-    if (!userData) {
+    if (!userData || parameters.action === 'trash') {
       parameters.deleteMedia = false;
     } else {
       parameters.deleteMedia = userData.globalRole <= miscOps.getMaxStaffRole();
@@ -980,11 +1038,25 @@ exports.adjustMediaDeletion = function(parameters, userData) {
 
 };
 
+exports.adjustTrashOption = function(parameters, userData) {
+
+  if (parameters.action === 'delete') {
+
+    var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+
+    if (!userData || !globalStaff) {
+      parameters.deleteMedia = 'trash';
+    }
+  }
+
+};
+
 exports.posting = function(userData, parameters, threadsToDelete,
     postsToDelete, language, callback) {
 
   var foundBoards = [];
 
+  exports.adjustTrashOption(parameters, userData);
   exports.adjustMediaDeletion(parameters, userData);
 
   for ( var key in threadsToDelete) {

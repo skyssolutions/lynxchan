@@ -276,6 +276,8 @@
       "resetLockIdentifier": "value",
       "locationComboBox": "children",
       "linkSelf": "href",
+      "linkTrash": "href",
+      "trashBinLabel": "inner",
       "autoFullCaptchaThresholdField": "value",
       "appealedBansLink": "href",
       "appealedBansLabel": "inner",
@@ -780,6 +782,11 @@
       ],
       "filterForm": "removal",
       "reportDiv": "children"
+    }
+  },
+  {
+    "template": "trashBinPage",
+    "prebuiltFields": {
     }
   }
 ]

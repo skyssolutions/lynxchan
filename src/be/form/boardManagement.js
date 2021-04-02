@@ -11,7 +11,8 @@ exports.getBoardManagementData = function(board, userData, res, json, auth,
     language) {
 
   boardOps.getBoardManagementData(userData, board, !json, language,
-      function gotManagementData(error, bData, languages, bans, reportCount) {
+      function gotManagementData(error, bData, languages, bans, reportCount,
+          trashCount) {
 
         if (error) {
           return formOps.outputError(error, 500, res, language, json, auth);
@@ -20,12 +21,13 @@ exports.getBoardManagementData = function(board, userData, res, json, auth,
         if (json) {
 
           formOps.outputResponse('ok', jsonB.boardManagement(userData, bData,
-              languages, bans, reportCount), res, null, auth, null, true);
+              languages, bans, reportCount, trashCount), res, null, auth, null,
+              true);
 
         } else {
 
           return formOps.dynamicPage(res, dom.boardManagement(userData, bData,
-              languages, bans, reportCount, language), auth);
+              languages, bans, reportCount, trashCount, language), auth);
 
         }
 

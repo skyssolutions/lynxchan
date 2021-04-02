@@ -166,6 +166,9 @@ exports.cleanThreads = function(boardUri, early404, limit, language, callback) {
 
     exports.pruneThreadsForAggregation([ {
       $match : {
+        trash : {
+          $ne : true
+        },
         boardUri : boardUri,
         archived : {
           $ne : true
@@ -201,6 +204,9 @@ exports.cleanThreads = function(boardUri, early404, limit, language, callback) {
 
   exports.pruneThreadsForAggregation([ {
     $match : {
+      trash : {
+        $ne : true
+      },
       boardUri : boardUri,
       archived : {
         $ne : true

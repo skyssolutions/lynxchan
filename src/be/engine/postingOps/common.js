@@ -1022,7 +1022,13 @@ exports.setThreadsPage = function(boardUri, callback, page) {
 
   threads.aggregate([ {
     $match : {
-      boardUri : boardUri
+      boardUri : boardUri,
+      trash : {
+        $ne : true
+      },
+      archived : {
+        $ne : true
+      }
     }
   }, {
     $sort : {
@@ -1043,32 +1049,30 @@ exports.setThreadsPage = function(boardUri, callback, page) {
   } ]).toArray(function gotThreads(error, results) {
 
     if (error) {
-      callback(error);
+      return callback(error);
     } else if (!results.length) {
-      callback();
-    } else {
-
-      // style exception, too simple
-      threads.updateMany({
-        _id : {
-          $in : results[0].threads
-        }
-      }, {
-        $set : {
-          page : page
-        }
-      }, function updatePage(error) {
-
-        if (error) {
-          callback(error);
-        } else {
-          exports.setThreadsPage(boardUri, callback, ++page);
-        }
-
-      });
-      // style exception, too simple
-
+      return callback();
     }
+
+    // style exception, too simple
+    threads.updateMany({
+      _id : {
+        $in : results[0].threads
+      }
+    }, {
+      $set : {
+        page : page
+      }
+    }, function updatePage(error) {
+
+      if (error) {
+        callback(error);
+      } else {
+        exports.setThreadsPage(boardUri, callback, ++page);
+      }
+
+    });
+    // style exception, too simple
 
   });
 

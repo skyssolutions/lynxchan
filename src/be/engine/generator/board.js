@@ -187,6 +187,9 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
 
   posts.find({
     boardUri : boardUri,
+    trash : {
+      $ne : true
+    },
     threadId : threadId
   }, {
     projection : postProjection
@@ -280,6 +283,9 @@ exports.getLatestPosts = function(boardUri, page, threadsArray, pageCount,
   posts.aggregate([ {
     $match : {
       boardUri : boardUri,
+      trash : {
+        $ne : true
+      },
       postId : {
         $in : postsToFetch
       }
@@ -382,6 +388,9 @@ exports.page = function(boardUri, page, callback, boardData, flagData) {
 
   threads.find({
     boardUri : boardUri,
+    trash : {
+      $ne : true
+    },
     archived : {
       $ne : true
     }
@@ -506,6 +515,9 @@ exports.catalog = function(boardUri, callback, boardData, flagData) {
 
   threads.find({
     boardUri : boardUri,
+    trash : {
+      $ne : true
+    },
     archived : {
       $ne : true
     }

@@ -34,6 +34,9 @@ exports.gatherContentToDelete = function(threadContext, boardUri, ips,
     bypasses, userData, language, callback) {
 
   var queryBlock = {
+    trash : {
+      $ne : true
+    },
     boardUri : boardUri,
     threadId : threadContext || {
       $exists : true
@@ -308,6 +311,9 @@ exports.deleteFromIp = function(parameters, userData, language, callback) {
   var processedIp = miscOps.sanitizeIp(parameters.ip);
 
   var queryBlock = {
+    trash : {
+      $ne : true
+    },
     ip : processedIp
   };
 

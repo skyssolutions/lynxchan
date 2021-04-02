@@ -744,6 +744,9 @@ exports.getThread = function(req, parameters, userData, board, callback) {
 
   threads.findOne({
     boardUri : parameters.boardUri,
+    trash : {
+      $ne : true
+    },
     threadId : parameters.threadId
   }, {
     projection : {

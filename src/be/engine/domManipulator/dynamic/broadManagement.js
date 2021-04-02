@@ -75,6 +75,9 @@ exports.boardManagementLinks = [ {
   page : 'bannerManagement',
   element : 'bannerManagementLink'
 }, {
+  page : 'trashBin',
+  element : 'linkTrash'
+}, {
   page : 'filterManagement',
   element : 'filterManagementLink'
 }, {
@@ -352,11 +355,12 @@ exports.getBoardManagementContent = function(boardData, languages, userData,
 };
 
 exports.boardManagement = function(userData, bData, languages,
-    appealedBanCount, reportCount, language) {
+    appealedBanCount, reportCount, trashCount, language) {
 
   var document = exports.getBoardManagementContent(bData, languages, userData,
       language).replace('__openReportsLabel_inner__', reportCount).replace(
-      '__appealedBansLabel_inner__', appealedBanCount);
+      '__appealedBansLabel_inner__', appealedBanCount).replace(
+      '__trashBinLabel_inner__', trashCount);
 
   var boardUri = common.clean(bData.boardUri);
   var selfLink = '/' + boardUri + '/';

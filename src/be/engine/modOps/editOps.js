@@ -172,6 +172,9 @@ exports.getThreadToChangeSettings = function(parameters, language, callback) {
 
   threads.findOne({
     boardUri : parameters.boardUri,
+    trash : {
+      $ne : true
+    },
     threadId : +parameters.threadId
   }, function gotThread(error, thread) {
     if (error) {

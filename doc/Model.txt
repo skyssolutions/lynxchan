@@ -69,6 +69,7 @@ filters: stores global word filters.
 ----------------------------------------------------------------------------------------
 
 threads: stores board's threads.
+    trash(Boolean): indicates if the thread is in the trash bin.
     archived(Boolean): indicates if the thread is archived.
     name: name of the poster. 32 characters.
     bypassId*: _id of the bypass used to make the posting. 
@@ -124,6 +125,7 @@ threads: stores board's threads.
 ----------------------------------------------------------------------------------------
 
 posts: stores posts.
+    trash(Boolean): indicates if the post is in the trash bin.
     name: name of the poster. 32 characters.
     hash: hash of the message used by R9K.
     asn(Number): asn of the poster.

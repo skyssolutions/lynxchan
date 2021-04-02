@@ -47,6 +47,9 @@ exports.loadDependencies = function() {
 exports.generateThreadCache = function(lockData, boardData, callback) {
 
   threads.findOne({
+    trash : {
+      $ne : true
+    },
     threadId : lockData.postingId,
     boardUri : lockData.boardUri
   }, function gotThread(error, thread) {

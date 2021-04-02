@@ -10,6 +10,7 @@ var languages = db.languages();
 var users = db.users();
 var boards = db.boards();
 var threads = db.threads();
+var posts = db.posts();
 var captchaOps;
 var logOps;
 var forcedCaptcha;
@@ -719,13 +720,67 @@ exports.createBoard = function(captchaId, parameters, userData, language,
 // } Section 4: Creation
 
 // Section 5: Board management {
+exports.getTrashBinCount = function(boardData, foundLanguages,
+    appealedBanCount, reportCount, callback) {
+
+  threads.aggregate([ {
+    $match : {
+      trash : true,
+      boardUri : boardData.boardUri
+    }
+  }, {
+    $group : {
+      _id : 0,
+      threadIds : {
+        $push : '$threadId'
+      }
+    }
+  } ]).toArray(
+      function(error, results) {
+
+        if (error) {
+          return callback(error);
+        }
+
+        var trashThreads = results.length ? results[0].threadIds : [];
+
+        // style exception, too simple
+        posts.countDocuments({
+          boardUri : boardData.boardUri,
+          trash : true,
+          threadId : {
+            $nin : trashThreads
+          }
+        }, function(error, count) {
+
+          if (error) {
+            return callback(error);
+          }
+
+          callback(error, boardData, foundLanguages, appealedBanCount,
+              reportCount, trashThreads.length + count);
+
+        });
+        // style exception, too simple
+
+      });
+
+};
+
 exports.getOpenReportCount = function(boardData, foundLanguages,
     appealedBanCount, callback) {
 
   reports.countDocuments(reportOps.getQueryBlock({
     boardUri : boardData.boardUri
   }), function(error, count) {
-    callback(error, boardData, foundLanguages, appealedBanCount, count);
+
+    if (error) {
+      return callback(error);
+    }
+
+    exports.getTrashBinCount(boardData, foundLanguages, appealedBanCount,
+        count, callback);
+
   });
 
 };

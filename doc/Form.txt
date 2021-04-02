@@ -227,6 +227,7 @@ Json output(Object): object with data used to manage the board. Contains the fol
     usesCustomSpoiler(Boolean): indicates if the board has a custom spoiler image.
     volunteers(Array): array with the logins of the board volunteers.
     boardName: name of the board.
+    trashCount(Number): amount of postings in the board's trash bin.
     openReports(Number): the amount of open reports.
     autoSageLimit(Number): how many times a thread can be replied before it stops being bumped.
     maxThreadCount(Number): how many threads the board can have.
@@ -302,7 +303,7 @@ Parameters:
     reasonReport: reason of the report.
     reasonBan: reason of the ban.
     banMessage: message to be displayed in the banned content.
-    action: action to be performed. 'ban', 'ban-delete', 'spoil', 'delete', 'ip-deletion', 'thread-ip-deletion' and 'report' may be used, case insensitive.
+    action: action to be performed. 'ban', 'ban-delete', 'spoil', 'delete', 'trash', 'ip-deletion', 'thread-ip-deletion' and 'report' may be used, case insensitive.
     globalBan: if any value is passed, indicates the bans are global.
     globalReport: if any value is passed, indicates the reports are global.
     duration: duration of the ban. Defaults to 5 years. See the back-end readme for details.
@@ -1570,6 +1571,21 @@ Json ouput(Object): an object with the following fields:
         creation(Date): then the report was made.
         postId(Number): the post to which the report belongs to.
     reportCategories(Array): an array with the available report categories.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID:: 96
+
+Name: trashBin
+
+Description: lists a board's trash bin. Requires authentication.
+
+Parameters:
+    boardUri: uri of the board to show the trash bin.
+
+Json ouput(Object): an object with the following fields:
+    threads: the threads that are currently in the trash bin. See doc/Json.txt, section 3, "threads" for the data contained in the nodes.
+    posts: the posts that are in the trash bin but are not part of a trashed thread. See doc/Json.txt, section 3, "threads/posts" for the data contained in the nodes.
 
 ------------------------------------------------------------------------------------------
 

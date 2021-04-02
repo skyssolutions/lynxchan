@@ -5,6 +5,7 @@ exports.filters = require('./filterOps');
 exports.rules = require('./ruleOps');
 exports.meta = require('./metaOps');
 exports.custom = require('./customOps');
+exports.trashBin = require('./trashBin');
 exports.latest = require('./latestOps');
 
 exports.loadSettings = function() {
@@ -22,6 +23,7 @@ exports.loadDependencies = function() {
 
   exports.latest.loadDependencies();
   exports.custom.loadDependencies();
+  exports.trashBin.loadDependencies();
   exports.flags.loadDependencies();
   exports.filters.loadDependencies();
   exports.rules.loadDependencies();

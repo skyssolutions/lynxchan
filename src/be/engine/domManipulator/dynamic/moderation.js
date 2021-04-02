@@ -419,7 +419,7 @@ exports.asnBans = function(asnBans, globalPage, boardData, language) {
 
 };
 
-// Section 4: Open reports
+// Section 4: Open reports {
 exports.getReportCell = function(report, boardData, language, ops, userRole) {
 
   var template = templateHandler(language).reportCell;
@@ -533,3 +533,18 @@ exports.openReports = function(reports, parameters, boardData, userData,
 
 };
 // } Section 4: Open reports
+
+// Section 5: Trash bin {
+exports.trashBin = function(threads, posts, latestPosts, parameters, language) {
+
+  var template = templateHandler(language).trashBinPage;
+
+  var document = template.template.replace('__title__',
+      lang(language).titTrashBin);
+
+  //TODO
+  
+  return document;
+
+};
+// } Section 5: Trash bin
