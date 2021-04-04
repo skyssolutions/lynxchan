@@ -1999,6 +1999,10 @@ TEM_ID::47
 globalSettingsPage: page used to change global settings.
 
 Elements:
+fieldTrashLimitDays:
+    use: have it's value manipulated.
+    description: field with the amount of days posts stay in the trash bin before being pruned.
+
 fieldReportCategories:
     use: have it's value manipulated.
     description: field with the available report categories.

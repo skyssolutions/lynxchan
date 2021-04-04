@@ -24,6 +24,7 @@ var captchaOps;
 var versatileOps;
 var accountOps;
 var torHandler;
+var trash;
 var spamOps;
 var referenceHandler;
 var schedules = {};
@@ -37,6 +38,7 @@ exports.reload = function() {
   ipExpiration = settings.ipExpirationDays;
   verbose = settings.verbose || settings.verboseMisc;
   tempDirectory = settings.tempDirectory;
+  trash = require('./engine/boardOps').trashBin;
   captchaExpiration = settings.captchaExpiration;
   cacheHandler = require('./engine/cacheHandler');
   versatileOps = require('./engine/modOps').ipBan.versatile;
@@ -301,6 +303,7 @@ function boardsStats() {
       clearIps();
     }
 
+    trash.prune();
     accountOps.cleanAuthControl();
     cacheHandler.runTTL();
     captchaOps.cleanCaptchaControl();

@@ -481,6 +481,7 @@
       "checkboxUnlockHistory": "checked",
       "fieldReportCategories": "value",
       "checkboxDisableEmail": "checked",
+      "fieldTrashLimitDays": "value",
       "checkboxLowercaseBoardUris": "checked",
       "checkboxDisableBanCaptcha": "checked",
       "fieldTrustedProxies": "value",

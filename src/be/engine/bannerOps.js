@@ -115,8 +115,6 @@ exports.processBanners = function(parameters, language, ids, callback, index) {
 
   index = index || 0;
 
-  //TODO
-  
   if (index >= parameters.files.length) {
     return callback();
   }

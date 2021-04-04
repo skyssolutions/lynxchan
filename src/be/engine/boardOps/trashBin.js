@@ -4,11 +4,14 @@ var db = require('../../db');
 var threads = db.threads();
 var boards = db.boards();
 var posts = db.posts();
+var reports = db.reports();
 var modCommonOps;
 var latestPinned;
 var generator;
 var delOps;
+var limitDays;
 var lang;
+var pruneCollections = [ reports, posts, threads ];
 
 exports.loadDependencies = function() {
   lang = require('../langOps').languagePack;
@@ -21,6 +24,7 @@ exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
   latestPinned = settings.latestPostPinned;
+  limitDays = settings.trashLimitDays;
 
 };
 
@@ -163,6 +167,7 @@ exports.getTrash = function(user, parameters, language, callback) {
 // } Section 1: Fetch
 
 // Section 2: Restore {
+// TODO apply limits after restoring
 exports.restorePosts = function(board, foundThreads, foundPosts, parentThreads,
     callback) {
 
@@ -447,3 +452,168 @@ exports.restore = function(userData, threadsToRestore, postsToRestore,
       postsToRestore, language, callback);
 };
 // } Section 2: Restore
+
+// Section 3: Prune {
+exports.iteratePruning = function(query, callback, index) {
+
+  index = index || 0;
+
+  if (index >= pruneCollections.length || !query) {
+    return callback();
+  }
+
+  pruneCollections[index].removeMany(query, function(error) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.iteratePruning(query, callback, ++index);
+    }
+
+  });
+
+};
+
+exports.composePruneQuery = function(foundThreads, results) {
+
+  var foundPosts = {};
+  var foundBoards = Object.keys(foundThreads);
+
+  for (var i = 0; i < results.length; i++) {
+
+    var result = results[i];
+
+    if (foundBoards.indexOf(result._id) < 0) {
+      foundBoards.push(result._id);
+    }
+
+    foundPosts[result._id] = result.posts;
+
+  }
+
+  var orArray = [];
+
+  for (i = 0; i < foundBoards.length; i++) {
+
+    if (foundThreads[foundBoards[i]]) {
+      orArray.push({
+        boardUri : foundBoards[i],
+        postId : {
+          $in : foundPosts[foundBoards[i]]
+        }
+      });
+
+    }
+
+    if (foundThreads[foundBoards[i]]) {
+
+      orArray.push({
+        boardUri : foundBoards[i],
+        threadId : {
+          $in : foundThreads[foundBoards[i]]
+        }
+      });
+    }
+
+  }
+
+  return orArray.length ? {
+    $or : orArray
+  } : null;
+
+};
+
+exports.getPostsToPrune = function(limit, foundThreads, callback) {
+
+  posts.aggregate([ {
+    $match : {
+      trash : true,
+      trashDate : {
+        $lt : limit
+      }
+    }
+  }, {
+    $project : {
+      boardUri : 1,
+      postId : 1
+    }
+  }, {
+    $group : {
+      _id : '$boardUri',
+      posts : {
+        $push : '$postId'
+      }
+    }
+  } ]).toArray(
+      function(error, results) {
+
+        if (error) {
+          callback(error);
+        } else {
+          exports.iteratePruning(exports.composePruneQuery(foundThreads,
+              results), callback);
+        }
+
+      });
+
+};
+
+exports.prune = function(callback) {
+
+  var limit = new Date();
+  limit.setUTCDate(limit.getUTCDate() - limitDays);
+
+  callback = callback || function(error) {
+
+    if (error) {
+      console.log('Error pruning trash');
+      console.log(error);
+    }
+
+  };
+
+  if (!limitDays) {
+    return callback();
+  }
+
+  threads.aggregate([ {
+    $match : {
+      trash : true,
+      trashDate : {
+        $lt : limit
+      }
+    }
+  }, {
+    $project : {
+      boardUri : 1,
+      threadId : 1
+    }
+  }, {
+    $group : {
+      _id : '$boardUri',
+      threads : {
+        $push : '$threadId'
+      }
+    }
+  } ]).toArray(function(error, results) {
+
+    if (error) {
+      return callback(error);
+    }
+
+    var foundThreads = {};
+
+    for (var i = 0; i < results.length; i++) {
+
+      var result = results[i];
+
+      foundThreads[result._id] = result.threads;
+
+    }
+
+    exports.getPostsToPrune(limit, foundThreads, callback);
+
+  });
+
+};
+// } Section 3: Prune

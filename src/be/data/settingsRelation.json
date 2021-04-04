@@ -218,6 +218,11 @@
   },
   {
     "type": "number",
+    "setting": "trashLimitDays",
+    "element": "fieldTrashLimitDays"
+  },
+  {
+    "type": "number",
     "setting": "ipExpirationDays",
     "element": "fieldIpExpiration"
   },
