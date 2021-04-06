@@ -9,14 +9,19 @@ var modCommonOps;
 var latestPinned;
 var generator;
 var delOps;
+var delMisc;
 var limitDays;
 var lang;
+var threadLimit;
+var unboundBoardSettings;
 var pruneCollections = [ reports, posts, threads ];
 
 exports.loadDependencies = function() {
   lang = require('../langOps').languagePack;
   modCommonOps = require('../modOps').common;
-  delOps = require('../deletionOps').postingDeletions;
+  var coreDelOps = require('../deletionOps');
+  delOps = coreDelOps.postingDeletions;
+  delMisc = coreDelOps.miscDeletions;
   generator = require('../generator');
 };
 
@@ -25,6 +30,8 @@ exports.loadSettings = function() {
   var settings = require('../../settingsHandler').getGeneralSettings();
   latestPinned = settings.latestPostPinned;
   limitDays = settings.trashLimitDays;
+  unboundBoardSettings = settings.unboundBoardLimits;
+  threadLimit = settings.maxThreadCount;
 
 };
 
@@ -167,7 +174,6 @@ exports.getTrash = function(user, parameters, language, callback) {
 // } Section 1: Fetch
 
 // Section 2: Restore {
-// TODO apply limits after restoring
 exports.restorePosts = function(board, foundThreads, foundPosts, parentThreads,
     callback) {
 
@@ -365,6 +371,41 @@ exports.getThreadsToRestore = function(board, threadsToRestore, postsToRestore,
 
 };
 
+exports.postRestore = function(board, foundBoards, userData, threadsToRestore,
+    postsToRestore, foundThreads, parentThreads, language, callback) {
+
+  delOps.updateBoardAndThreads(board, {}, function(error) {
+
+    if (error) {
+      return callback(error);
+    }
+
+    var boardThreadLimit = board.maxThreadCount;
+
+    var boardLimit = boardThreadLimit && boardThreadLimit < threadLimit;
+    boardLimit = boardLimit || (boardThreadLimit && unboundBoardSettings);
+
+    var limitToUse = boardLimit ? boardThreadLimit : threadLimit;
+
+    // style exception, too simple
+    delMisc.cleanThreads(board.boardUri,
+        board.settings.indexOf('early404') > -1, limitToUse, language,
+        function(error) {
+
+          if (error) {
+            return callback(error);
+          }
+
+          exports.iterateBoardsToRestore(foundBoards, userData,
+              threadsToRestore, postsToRestore, language, callback);
+
+        });
+    // style exception, too simple
+
+  }, foundThreads, [], parentThreads.concat(foundThreads));
+
+};
+
 exports.iterateBoardsToRestore = function(foundBoards, userData,
     threadsToRestore, postsToRestore, language, callback) {
 
@@ -377,6 +418,8 @@ exports.iterateBoardsToRestore = function(foundBoards, userData,
   }, {
     projection : {
       boardUri : 1,
+      settings : 1,
+      maxThreadCount : 1,
       owner : 1,
       _id : 0,
       volunteers : 1
@@ -397,20 +440,10 @@ exports.iterateBoardsToRestore = function(foundBoards, userData,
           if (error) {
             callback(error);
           } else if (foundThreads) {
-
-            delOps.updateBoardAndThreads(board, {}, function(error) {
-
-              if (error) {
-                return callback(error);
-              }
-
-              // style exception, too simple
-              exports.iterateBoardsToRestore(foundBoards, userData,
-                  threadsToRestore, postsToRestore, language, callback);
-              // style exception, too simple
-
-            }, foundThreads, [], parentThreads.concat(foundThreads));
-
+            exports
+                .postRestore(board, foundBoards, userData, threadsToRestore,
+                    postsToRestore, foundThreads, parentThreads, language,
+                    callback);
           } else {
 
             exports.iterateBoardsToRestore(foundBoards, userData,

@@ -91,6 +91,9 @@ exports.addToArchive = function(language, parameters, callback) {
   threads.findOne({
     boardUri : parameters.boardUri,
     threadId : +parameters.threadId,
+    trash : {
+      $ne : true
+    },
     archived : {
       $ne : true
     }
@@ -111,8 +114,7 @@ exports.addToArchive = function(language, parameters, callback) {
 exports.archiveThread = function(language, parameters, userData, callback) {
 
   if (!parameters.confirmation) {
-    callback(lang(language).errArchiveConfirmation);
-    return;
+    return callback(lang(language).errArchiveConfirmation);
   }
 
   parameters.boardUri = parameters.boardUri.toString();
@@ -169,6 +171,9 @@ exports.getArchives = function(parameters, callback) {
   }
 
   var query = {
+    trash : {
+      $ne : true
+    },
     archived : true
   };
 

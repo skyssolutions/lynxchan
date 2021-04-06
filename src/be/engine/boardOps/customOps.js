@@ -203,7 +203,7 @@ exports.setCustomSpoiler = function(userData, boardUri, file, language,
   });
 };
 
-// Section 3: spoiler deletion {
+// Section 3: Spoiler deletion {
 exports.removeUsedSpoilers = function(boardUri, callback) {
 
   var filter = {
@@ -296,7 +296,7 @@ exports.deleteCustomSpoiler = function(userData, boardUri, language, callback) {
 
 };
 
-// } Section 3: spoiler deletion
+// } Section 3: Spoiler deletion
 
 // Section 4: Custom javascript upload {
 exports.updateBoardAfterNewJs = function(board, callback) {
