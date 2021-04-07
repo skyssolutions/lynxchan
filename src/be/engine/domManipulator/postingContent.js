@@ -350,7 +350,7 @@ exports.setAllSharedPostingElements = function(postingCell, posting, removable,
       postingCell, preview, language);
 
   postingCell = exports.setPostingLinks(postingCell, posting, innerPage,
-      modding, removable);
+      modding || preview, removable);
 
   postingCell = exports.setPostingComplexElements(posting, postingCell,
       removable);

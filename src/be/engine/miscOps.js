@@ -6,6 +6,8 @@ var settingsHandler = require('../settingsHandler');
 var verbose;
 var db = require('../db');
 var bans = db.bans();
+var threads = db.threads();
+var posts = db.posts();
 var boards = db.boards();
 var crypto = require('crypto');
 var fs = require('fs');
@@ -339,12 +341,73 @@ exports.getGlobalSettingsData = function(userData, language, callback) {
 };
 
 // Section 1: Global management data {
+exports.getTrashCount = function(foundUsers, foundBans, foundReports, cb) {
+
+  threads.aggregate([ {
+    $match : {
+      trash : true
+    }
+  }, {
+    $group : {
+      _id : '$boardUri',
+      threads : {
+        $push : '$threadId'
+      }
+    }
+  } ]).toArray(function(error, results) {
+
+    if (error) {
+      return cb(error);
+    }
+
+    var orArray = [];
+
+    var count = 0;
+
+    for (var i = 0; i < results.length; i++) {
+
+      count += results[i].threads.length;
+
+      orArray.push({
+        boardUri : results[i]._id,
+        threadId : {
+          $in : results[i].threads
+        }
+      });
+
+    }
+
+    var query = {
+      trash : true
+    };
+
+    if (orArray.length) {
+      query.$nor = orArray;
+    }
+
+    // style exception, too simple
+    posts.countDocuments(query, function(error, trashPostsCount) {
+
+      cb(error, foundUsers, foundBans, foundReports, trashPostsCount + count);
+
+    });
+    // style exception, too simple
+
+  });
+
+};
+
 exports.getOpenReportsCount = function(foundUsers, userData, foundBans,
     callback) {
 
   reports.countDocuments(reportOps.getQueryBlock({}, userData), function(error,
       count) {
-    callback(error, foundUsers, foundBans, count);
+
+    if (error) {
+      return callback(error);
+    }
+
+    exports.getTrashCount(foundUsers, foundBans, count, callback);
   });
 
 };

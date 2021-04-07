@@ -246,6 +246,7 @@
   {
     "template": "gManagement",
     "prebuiltFields": {
+      "trashBinLabel": "inner",
       "appealedBansLabel": "inner",
       "asnBansLink": "removal",
       "socketLink": "removal",

@@ -234,7 +234,7 @@ exports.boardModeration = function(boardData, ownerData, language) {
 // } Section 2: Board moderation
 
 // Section 3: Latest postings {
-exports.getPosts = function(postings, boardData, userRole, language, trashBin) {
+exports.getPosts = function(postings, boardData, userRole, language) {
 
   var postsContent = '';
 
@@ -248,8 +248,8 @@ exports.getPosts = function(postings, boardData, userRole, language, trashBin) {
 
     posting.postId = posting.postId || posting.threadId;
 
-    postContent += common.getPostInnerElements(posting, !trashBin, language,
-        operations, !!trashBin, boardData, userRole);
+    postContent += common.getPostInnerElements(posting, true, language,
+        operations, false, boardData, userRole);
 
     postsContent += postContent + '</div>';
   }
@@ -537,18 +537,17 @@ exports.openReports = function(reports, parameters, boardData, userData,
 // } Section 4: Open reports
 
 // Section 5: Trash bin {
-exports.trashBin = function(threads, posts, latestPosts, parameters, boardData,
+exports.trashBin = function(threads, posts, latest, parameters, boardData,
     userRole, language) {
 
   var template = templateHandler(language).trashBinPage;
 
   return template.template.replace('__title__', lang(language).titTrashBin)
       .replace('__postList_children__',
-          exports.getPosts(posts, boardData, userRole, language, true))
-      .replace(
+          exports.getPosts(posts, boardData, userRole, language)).replace(
           '__threadList_children__',
-          staticPages.getThreadListing(latestPosts, threads, true, userRole,
-              boardData, language));
+          staticPages.getOverboardThreads(threads, latest, language, true,
+              boardData, userRole));
 
 };
 // } Section 5: Trash bin

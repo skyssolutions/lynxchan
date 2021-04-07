@@ -195,6 +195,7 @@ Description: displays page for global staff to perform global management using t
 Json output(Object): object with data used in global management. Contains the following fields:
     login: login of the user.
     openReports(Number): amount of open reports.
+    trashCount(Number): amount of items in the trash bin.
     staff(Array): array with the global staff of the site the user is allowed to manage. Contains objects each with the following fields:
         login: login of the user.
         globalRole: global role of the user.

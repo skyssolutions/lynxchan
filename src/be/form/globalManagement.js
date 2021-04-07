@@ -8,7 +8,7 @@ var miscOps = require('../engine/miscOps');
 exports.getManagementData = function(userData, res, json, auth, language) {
 
   miscOps.getManagementData(userData, language, function gotData(error,
-      globalStaff, appealedBanCount, reportCount) {
+      globalStaff, appealedBanCount, reportCount, trashCount) {
     if (error) {
       return formOps.outputError(error, 500, res, language, json, auth);
     }
@@ -18,15 +18,16 @@ exports.getManagementData = function(userData, res, json, auth, language) {
       formOps.outputResponse('ok', {
         login : userData.login,
         staff : globalStaff || [],
+        trashCount : trashCount,
         appealedBans : appealedBanCount,
         openReports : reportCount
       }, res, null, auth, language, true);
 
     } else {
 
-      return formOps.dynamicPage(res,
-          dom.globalManagement(userData.globalRole, userData.login,
-              globalStaff, appealedBanCount, reportCount, language), auth);
+      return formOps.dynamicPage(res, dom.globalManagement(userData.globalRole,
+          userData.login, globalStaff, appealedBanCount, reportCount,
+          trashCount, language), auth);
 
     }
 

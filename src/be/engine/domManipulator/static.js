@@ -324,7 +324,7 @@ exports.thread = function(boardData, flagData, threadData, posts, callback,
 
 // Section 2: Board {
 exports.getThreadListing = function(latestPosts, threads, modding, userRole,
-    boardData, language) {
+    boardData, language, preview) {
 
   var children = '';
 
@@ -343,7 +343,7 @@ exports.getThreadListing = function(latestPosts, threads, modding, userRole,
     var thread = threads[i];
 
     children += common.getThread(thread, latestPosts[thread.threadId], null,
-        modding, boardData, userRole, language, operations);
+        modding, boardData, userRole, language, operations, null, preview);
 
   }
 
@@ -851,7 +851,8 @@ exports.maintenance = function(language, callback) {
 };
 
 // Section 5: Overboard {
-exports.getOverboardThreads = function(foundThreads, foundPreviews, language) {
+exports.getOverboardThreads = function(foundThreads, foundPreviews, language,
+    modding, boardData, userRole) {
 
   var children = '';
 
@@ -866,14 +867,19 @@ exports.getOverboardThreads = function(foundThreads, foundPreviews, language) {
       previews = foundPreviews[thread.boardUri][thread.threadId];
     }
 
-    children += common.getThread(thread, previews, null, null, null, null,
-        language, operations);
+    children += common.getThread(thread, previews, null, modding, boardData,
+        userRole, language, operations);
 
   }
 
   common.handleOps(operations);
 
   var template = templateHandler(language).overboard;
+
+  if (modding) {
+    return children;
+  }
+
   return common.setReportCategories(template).replace(
       '__divThreads_children__', children).replace(
       '__divReportCaptcha_location__',

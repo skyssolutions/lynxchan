@@ -504,7 +504,7 @@ exports.getThreadCellBase = function(thread) {
 };
 
 exports.getThreadContent = function(thread, posts, innerPage, modding,
-    userRole, boardData, language) {
+    userRole, boardData, language, preview) {
 
   var threadCell = exports.setOmittedInformation(thread, posts, innerPage,
       language);
@@ -512,19 +512,19 @@ exports.getThreadContent = function(thread, posts, innerPage, modding,
   var removable = templateHandler(language).opCell.removable;
 
   threadCell = exports.setThreadHiddeableElements(thread, threadCell,
-      removable, innerPage, modding);
+      removable, innerPage, modding || preview);
 
   return postingContent.setAllSharedPostingElements(threadCell, thread,
-      removable, language, modding, innerPage, userRole, boardData);
+      removable, language, modding, innerPage, userRole, boardData, preview);
 
 };
 
 exports.getThread = function(thread, posts, innerPage, modding, boardData,
-    userRole, language, operations, last) {
+    userRole, language, operations, last, preview) {
 
   var threadCell = exports.getThreadCellBase(thread, language);
 
-  var cacheField = exports.getCacheField(false, innerPage, modding, userRole,
+  var cacheField = exports.getCacheField(preview, innerPage, modding, userRole,
       language);
 
   var currentCache = exports.getPostingCache(cacheField, thread, language);
@@ -532,7 +532,7 @@ exports.getThread = function(thread, posts, innerPage, modding, boardData,
   if ((!currentCache || !individualCaches) && !thread.tempCache) {
 
     var threadContent = exports.getThreadContent(thread, posts, innerPage,
-        modding, userRole, boardData, language);
+        modding, userRole, boardData, language, preview);
 
     if (!last && !modding && innerPage) {
       thread.tempCache = threadContent;
@@ -551,7 +551,7 @@ exports.getThread = function(thread, posts, innerPage, modding, boardData,
 
   threadCell = threadCell.replace('__divPosts_children__', exports.getPosts(
       posts, modding, boardData, userRole, innerPage, language, operations,
-      last));
+      last, preview));
 
   return threadCell + '</div>';
 
@@ -744,7 +744,7 @@ exports.handleOps = function(operations) {
 };
 
 exports.getPosts = function(posts, modding, boardData, userRole, innerPage,
-    language, operations, last) {
+    language, operations, last, preview) {
 
   var children = '';
 
@@ -753,8 +753,8 @@ exports.getPosts = function(posts, modding, boardData, userRole, innerPage,
 
     var postCell = exports.getPostCellBase(post);
 
-    postCell += exports.getPostInnerElements(post, false, language, operations,
-        modding, boardData, userRole, innerPage, last);
+    postCell += exports.getPostInnerElements(post, preview, language,
+        operations, modding, boardData, userRole, innerPage, last);
 
     children += postCell + '</div>';
 

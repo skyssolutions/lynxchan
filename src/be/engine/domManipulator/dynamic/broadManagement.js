@@ -542,13 +542,14 @@ exports.processHideableElements = function(document, userRole, staff, language,
 };
 
 exports.globalManagement = function(userRole, userLogin, staff,
-    appealedBanCount, reportCount, language) {
+    appealedBanCount, reportCount, trashCount, language) {
 
   var template = templateHandler(language).gManagement;
 
   var document = template.template.replace('__title__',
       lang(language).titGlobalManagement).replace('__openReportsLabel_inner__',
-      reportCount).replace('__appealedBansLabel_inner__', appealedBanCount);
+      reportCount).replace('__appealedBansLabel_inner__', appealedBanCount)
+      .replace('__trashBinLabel_inner__', trashCount);
 
   document = exports.setGlobalManagementLinks(userRole, document,
       template.removable);

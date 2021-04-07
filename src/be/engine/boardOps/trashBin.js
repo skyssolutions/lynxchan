@@ -10,6 +10,7 @@ var latestPinned;
 var generator;
 var delOps;
 var delMisc;
+var miscOps;
 var limitDays;
 var lang;
 var threadLimit;
@@ -23,6 +24,7 @@ exports.loadDependencies = function() {
   delOps = coreDelOps.postingDeletions;
   delMisc = coreDelOps.miscDeletions;
   generator = require('../generator');
+  miscOps = require('../miscOps');
 };
 
 exports.loadSettings = function() {
@@ -39,104 +41,160 @@ exports.loadSettings = function() {
 exports.getTrashPosts = function(threadsArray, latestPosts, parentThreads,
     foundBoard, callback) {
 
-  posts.find({
-    boardUri : foundBoard.boardUri,
-    trash : true,
-    threadId : {
-      $nin : parentThreads
-    }
-  }, {
+  var exclusionOr = [];
+
+  var seenBoards = [];
+
+  for ( var key in parentThreads) {
+
+    seenBoards.push(key);
+
+    exclusionOr.push({
+      boardUri : key,
+      threadId : {
+        $in : parentThreads[key]
+      }
+    });
+
+  }
+
+  var query = {
+    trash : true
+  };
+
+  if (foundBoard) {
+    query.boardUri = foundBoard.boardUri;
+  }
+
+  if (exclusionOr.length) {
+    query.$nor = exclusionOr;
+  }
+
+  posts.find(query, {
     projection : generator.postModProjection
-  }).toArray(function(error, foundPosts) {
+  }).toArray(
+      function(error, foundPosts) {
 
-    callback(error, threadsArray, foundPosts, latestPosts, foundBoard);
+        if (error) {
+          return callback(error);
+        } else if (foundBoard) {
 
-  });
+          var newFoundBoard = {};
+          newFoundBoard[foundBoard.boardUri] = foundBoard;
+
+          return callback(error, threadsArray, foundPosts, latestPosts,
+              newFoundBoard);
+        }
+
+        for (var i = 0; i < foundPosts.length; i++) {
+
+          var postBoard = foundPosts[i].boardUri;
+
+          if (seenBoards.indexOf(postBoard) < 0) {
+            seenBoards.push(postBoard);
+          }
+
+        }
+
+        // style exception, too simple
+        boards.find({
+          boardUri : {
+            $in : seenBoards
+          }
+        }).toArray(
+            function(error, boardsData) {
+
+              var newBoardData = {};
+
+              if (!error) {
+                for (var i = 0; i < boardsData.length; i++) {
+                  newBoardData[boardsData[i].boardUri] = boardsData[i];
+                }
+              }
+
+              return callback(error, threadsArray, foundPosts, latestPosts,
+                  newBoardData);
+            });
+        // style exception, too simple
+
+      });
 
 };
 
 exports.getLatestPosts = function(threadsArray, foundBoard, callback) {
 
-  var postsToFetch = [];
-  var parentThreads = [];
-
+  var parentThreads = {};
   for (var i = 0; i < threadsArray.length; i++) {
 
     var thread = threadsArray[i];
-    parentThreads.push(thread.threadId);
 
-    var threadLatest = thread.latestPosts;
+    var entry = parentThreads[thread.boardUri] || [];
+    parentThreads[thread.boardUri] = entry;
+    entry.push(thread.threadId);
 
-    if (threadLatest) {
-
-      if (thread.pinned && threadLatest.length > latestPinned) {
-        threadLatest.splice(0, threadLatest.length - latestPinned);
-      }
-
-      postsToFetch = postsToFetch.concat(thread.latestPosts);
-    }
   }
 
-  posts.aggregate([ {
-    $match : {
-      boardUri : foundBoard.boardUri,
+  var orArray = [];
+  var previewRelation = generator.global
+      .getPreFetchPreviewRelation(threadsArray);
+
+  for ( var key in previewRelation) {
+
+    orArray.push({
+      boardUri : key,
       postId : {
-        $in : postsToFetch
+        $in : previewRelation[key]
       }
-    }
+    });
+  }
+
+  posts.find({
+    $or : orArray
   }, {
-    $project : generator.postModProjection
-  }, {
-    $group : {
-      _id : '$threadId',
-      latestPosts : {
-        $push : {
-          ip : '$ip',
-          asn : '$asn',
-          boardUri : '$boardUri',
-          threadId : '$threadId',
-          postId : '$postId',
-          banMessage : '$banMessage',
-          flag : '$flag',
-          markdown : '$markdown',
-          alternativeCaches : '$alternativeCaches',
-          files : '$files',
-          outerCache : '$outerCache',
-          bypassId : '$bypassId',
-          flagCode : '$flagCode',
-          flagName : '$flagName',
-          name : '$name',
-          lastEditTime : '$lastEditTime',
-          lastEditLogin : '$lastEditLogin',
-          signedRole : '$signedRole',
-          id : '$id',
-          email : '$email',
-          subject : '$subject',
-          creation : '$creation'
-        }
-      }
-    }
-  } ]).toArray(
+    projection : generator.postModProjection
+  }).toArray(
       function gotPosts(error, latestPosts) {
 
         if (error) {
-          callback(error);
-        } else {
+          return callback(error);
+        }
 
-          exports.getTrashPosts(threadsArray, latestPosts, parentThreads,
-              foundBoard, callback);
+        var previewRelation = {};
+
+        for (var i = 0; i < latestPosts.length; i++) {
+
+          var post = latestPosts[i];
+
+          var boardElement = previewRelation[post.boardUri] || {};
+
+          previewRelation[post.boardUri] = boardElement;
+
+          var threadArray = boardElement[post.threadId] || [];
+
+          threadArray.push(post);
+
+          boardElement[post.threadId] = threadArray;
 
         }
+
+        exports.getTrashPosts(threadsArray, previewRelation, parentThreads,
+            foundBoard, callback);
+
       });
 
 };
 
 exports.getTrashThreads = function(foundBoard, callback) {
 
-  threads.find({
-    boardUri : foundBoard.boardUri,
+  var query = {
     trash : true
-  }, {
+  };
+
+  if (foundBoard) {
+    query.boardUri = foundBoard.boardUri;
+  }
+
+  threads.find(query, {
     projection : generator.threadModProjection
   }).sort({
     lastBump : -1
@@ -153,6 +211,17 @@ exports.getTrashThreads = function(foundBoard, callback) {
 };
 
 exports.getTrash = function(user, parameters, language, callback) {
+
+  if (!parameters.boardUri) {
+
+    if (user.globalRole <= miscOps.getMaxStaffRole()) {
+      exports.getTrashThreads(null, callback);
+    } else {
+      callback(lang(language).errDeniedGlobalManagement);
+    }
+
+    return;
+  }
 
   boards.findOne({
     boardUri : parameters.boardUri

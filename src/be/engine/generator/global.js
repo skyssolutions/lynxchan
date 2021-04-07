@@ -614,6 +614,9 @@ exports.getOverboardPosts = function(foundThreads, callback, sfw) {
 exports.getOverboardThreads = function(ids, callback, sfw) {
 
   threads.find({
+    trash : {
+      $ne : true
+    },
     _id : {
       $in : ids
     }
