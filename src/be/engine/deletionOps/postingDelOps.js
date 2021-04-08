@@ -24,6 +24,7 @@ var referenceHandler;
 var boardOps;
 var overboardOps;
 var miscOps;
+var limitDays;
 var logOps;
 
 exports.loadSettings = function() {
@@ -32,6 +33,7 @@ exports.loadSettings = function() {
   redactedModNames = settings.redactModNames;
   sfwOverboard = settings.sfwOverboard;
   wsEnabled = settings.wsPort || settings.wssPort;
+  limitDays = settings.trashLimitDays;
   globalLatestPostsCount = settings.globalLatestPosts;
   globalLatestImagesCount = settings.globalLatestImages;
   latestPosts = settings.latestPostCount;
@@ -1140,7 +1142,7 @@ exports.adjustMediaDeletion = function(parameters, userData) {
 
 exports.adjustTrashOption = function(parameters, userData) {
 
-  if (parameters.action === 'delete') {
+  if (parameters.action === 'delete' && limitDays) {
 
     if (!userData) {
       parameters.action = 'trash';
@@ -1152,6 +1154,8 @@ exports.adjustTrashOption = function(parameters, userData) {
     if (!userData || !globalStaff) {
       parameters.action = 'trash';
     }
+  } else if (parameters.action === 'trash' && !limitDays) {
+    parameters.action = 'delete';
   }
 
 };

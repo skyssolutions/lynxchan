@@ -105,7 +105,7 @@ Settings files that goes into the settings directory:
 * `imageFont`: font to be used on images. Defaults to DejaVu-Sans.
 * `ssl`(Number): SSL mode. If 0 it won`t be used, if 1 it will be used, if 2 all plain HTTP requests will be redirected to their HTTPS equivalent.
 * `sslPass`: optional passphrase for the ssl key.
-* `fileProcessingLimit`(Number): limit of files the engile will process in a single request. Defaults to 10.
+* `fileProcessingLimit`(Number): limit of files the engine will process in a single request. Defaults to 10.
 * `validateMimes`(Boolean): indicates if uploaded files should have it's mime validated through the 'file' command. 
 * `unboundBoardLimits`(Boolean): when set to true, board limits can surpass global limits.
 * `redactModNames`(Boolean): when set to true will redact mod names on logs and edit indicators. 
@@ -211,6 +211,7 @@ Settings files that goes into the settings directory:
 * `disableEmail`(Boolean): silently disables sending any e-mails from the server.
 * `noReportCaptcha`(Boolean): disables the need for captcha when reporting.
 * `reportCategories`(Array): array with possible report categories.
+* `trashLimitDays`(Number): how many days trashed posts live before being automatically deleted. If none if set, the trash bin is entirely disabled and posts are always immediately deleted.
 * `wsPort`(Number): port to be used for notification web socket. Can't be any of the other ports used.
 * `wssPort`(Number): port to be used for secure notification websocket. A regular websocket won't work under a page loaded through ssl. It will use the same files used for regular ssl. Can't be any of the other ports used.
 * `latestPostsAmount`(Number): amount of posts to be displayed on the /last/ version of threads and on latestPostings. Defaults to 50.

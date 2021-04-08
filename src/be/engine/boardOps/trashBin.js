@@ -148,6 +148,11 @@ exports.getLatestPosts = function(threadsArray, foundBoard, callback) {
     });
   }
 
+  if (!orArray.length) {
+    return exports.getTrashPosts(threadsArray, {}, parentThreads, foundBoard,
+        callback);
+  }
+
   posts.find({
     $or : orArray
   }, {

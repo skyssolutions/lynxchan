@@ -348,16 +348,17 @@ function initUploadReferences(callback) {
         callback(error);
       }
     } else {
+
+      cachedUploadReferences.dropIndex('identifier_1', function dropped(error) {
+
+        if (error && error.code !== 27) {
+          console.log(error);
+        }
+
+      });
+
       indexSet(callback);
     }
-  });
-
-  cachedUploadReferences.dropIndex('identifier_1', function dropped(error) {
-
-    if (error && error.code !== 27) {
-      console.log(error);
-    }
-
   });
 
 }
@@ -469,16 +470,17 @@ function initHashBans(callback) {
           callback(error);
         }
       } else {
+
+        cachedHashBans.dropIndex('md5_1_boardUri_1', function dropped(error) {
+
+          if (error && error.code !== 27) {
+            console.log(error);
+          }
+
+        });
+
         indexSet(callback);
       }
-    });
-
-    cachedHashBans.dropIndex('md5_1_boardUri_1', function dropped(error) {
-
-      if (error && error.code !== 27) {
-        console.log(error);
-      }
-
     });
 
   });
@@ -542,6 +544,10 @@ function initPosts(callback) {
     }
   }, {
     key : {
+      trash : 1
+    }
+  }, {
+    key : {
       creation : 1
     }
   }, {
@@ -560,16 +566,17 @@ function initPosts(callback) {
         callback(error);
       }
     } else {
+
+      cachedPosts.dropIndex('files.md5_1', function dropped(error) {
+
+        if (error && error.code !== 27) {
+          console.log(error);
+        }
+
+      });
+
       indexSet(callback);
     }
-  });
-
-  cachedPosts.dropIndex('files.md5_1', function dropped(error) {
-
-    if (error && error.code !== 27) {
-      console.log(error);
-    }
-
   });
 
 }
@@ -656,6 +663,10 @@ function initThreads(callback) {
     }
   }, {
     key : {
+      trash : 1
+    }
+  }, {
+    key : {
       archived : 1
     }
   }, {
@@ -670,16 +681,17 @@ function initThreads(callback) {
         callback(error);
       }
     } else {
+
+      cachedThreads.dropIndex('files.md5_1', function dropped(error) {
+
+        if (error && error.code !== 27) {
+          console.log(error);
+        }
+
+      });
+
       indexSet(callback);
     }
-  });
-
-  cachedThreads.dropIndex('files.md5_1', function dropped(error) {
-
-    if (error && error.code !== 27) {
-      console.log(error);
-    }
-
   });
 
 }
