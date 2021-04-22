@@ -236,7 +236,7 @@ exports.setThreadCommonInfo = function(template, threadData, boardData,
   document = exports.setThreadTitle(document, threadData);
 
   var linkModeration = '/mod.js?boardUri=' + common.clean(boardData.boardUri);
-  linkModeration += '&threadId=' + threadData.threadId;
+  linkModeration += '&amp;threadId=' + threadData.threadId;
   document = document.replace('__linkMod_href__', linkModeration);
 
   document = document.replace('__linkManagement_href__',
@@ -467,7 +467,7 @@ exports.page = function(page, threads, pageCount, boardData, flagData,
       '__linkModeration_href__', '/boardModeration.js?boardUri=' + boardUri)
       .replace('__linkLogs_href__', '/logs.js?boardUri=' + boardData.boardUri);
 
-  var modLink = '/mod.js?boardUri=' + boardUri + '&page=' + page;
+  var modLink = '/mod.js?boardUri=' + boardUri + '&amp;page=' + page;
   document = document.replace('__linkMod_href__', modLink);
 
   document = exports.addPagesLinks(document, pageCount, page, mod,

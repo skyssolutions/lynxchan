@@ -13,8 +13,7 @@ var globalBoardModeration;
 var filterParameters = [ {
   field : 'originalTerm',
 }, {
-  field : 'replacementTerm',
-  removeHTML : true
+  field : 'replacementTerm'
 } ];
 
 exports.loadSettings = function() {

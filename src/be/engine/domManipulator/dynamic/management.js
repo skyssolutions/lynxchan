@@ -68,7 +68,7 @@ exports.getFilterDiv = function(boardUri, filters, language) {
     }
 
     children += cell.replace('__labelReplacement_inner__',
-        common.clean(filter.replacementTerm)).replace(
+        common.clean(filter.replacementTerm, true)).replace(
         '__filterIdentifier_value__', originalTerm);
   }
 

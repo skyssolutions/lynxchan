@@ -136,10 +136,14 @@ exports.formatFileSize = function(size, language) {
 
 };
 
-exports.clean = function(toClean) {
+exports.clean = function(toClean, removeHtml) {
 
   if (typeof toClean !== 'string') {
     return toClean;
+  }
+
+  if (removeHtml) {
+    toClean = miscOps.cleanHTML(toClean);
   }
 
   return toClean.replace(/_/g, '&#95;').replace(/\$/g, '&#36;');
