@@ -1,3 +1,245 @@
+2.6.0:
+
+**Form.txt**
+
+New pages:
+openReports
+trashBin
+
+---------------------------------------
+
+account:
+
+New field:
+reportFilter
+
+---------------------------------------
+
+globalManagement:
+
+New field:
+trashCount
+
+---------------------------------------
+
+boardManagement:
+
+New field:
+trashCount
+
+---------------------------------------
+
+contentActions:
+
+New parameter:
+categoryReport
+
+
+action now accepts the values "trash" and "restore".
+
+---------------------------------------
+
+mod:
+
+New fields:
+noReportCaptcha
+reportCategories
+
+---------------------------------------
+
+changeAccountSettings:
+
+New parameter:
+categoryFilter
+
+---------------------------------------
+
+deleteRule:
+
+Renamed to "ruleAction".
+
+New parameters:
+rule
+action
+
+---------------------------------------
+
+setSpecialBoardSettings:
+
+New parameter:
+allowJs
+
+---------------------------------------
+
+**Json.txt**
+
+/<board>/res/<thread>.json:
+
+New fields:
+reportCategories
+noReportCaptcha
+
+---------------------------------------
+
+/<board>/<page>.json:
+
+New fields:
+reportCategories
+noReportCaptcha
+
+---------------------------------------
+
+**Json.txt**
+
+New entries:
+errOnlyConfirmedEmail
+errNonWhiteListedEmail
+msgRestored
+msgRuleEdited
+titTrashBin
+
+---------------------------------------
+
+**Model.txt**
+
+boards:
+
+New valid value for "specialSettings":
+allowJs
+
+---------------------------------------
+
+threads:
+
+New fields:
+trash
+trashDate
+
+---------------------------------------
+
+posts:
+
+New fields:
+trash
+trashDate
+
+---------------------------------------
+
+users:
+
+New fields:
+reportFilter
+
+---------------------------------------
+
+reports:
+
+New field:
+category
+
+---------------------------------------
+
+**Templates.txt**
+
+New templates:
+reportCategoryFilterCell
+trashBinPage
+
+---------------------------------------
+
+boardPage:
+
+New elements:
+divReportCaptcha
+reportCategoriesDiv
+reportComboboxCategory
+
+---------------------------------------
+
+threadPage:
+
+New elements:
+divReportCaptcha
+reportCategoriesDiv
+reportComboboxCategory
+
+---------------------------------------
+
+accountPage:
+
+New element:
+reportFilterDiv
+
+---------------------------------------
+
+gManagement:
+
+New element:
+trashBinLabel
+
+---------------------------------------
+
+bManagement:
+
+New elements:
+linkTrash
+trashBinLabel
+
+---------------------------------------
+
+reportCell:
+
+New elements:
+categoryDiv
+categoryLabel
+
+---------------------------------------
+
+boardModerationPage
+
+New element:
+checkboxAllowJs
+
+---------------------------------------
+
+ruleManagementCell:
+
+Removed element:
+textLabel
+
+New element:
+textField
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldTrashLimitDays
+fieldReportCategories
+fieldEmailDomainWhiteList
+checkboxNoReportCaptcha
+
+---------------------------------------
+
+overboard:
+
+New elements:
+divReportCaptcha
+reportCategoriesDiv
+reportComboboxCategory
+
+---------------------------------------
+
+openReportsPage:
+
+New elements:
+filterCategoriesDiv
+filterBoardIdentifier
+filterForm
+
+---------------------------------------
+
 2.5.0:
 
 New document: WebSockets.txt
