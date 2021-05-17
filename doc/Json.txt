@@ -133,7 +133,8 @@ Root(Object):
     settings: settings enabled in the board.
     threads(Array): threads in this page. Each object contains the following fields:
         signedRole: role of the user that posted the thread.
-        ommitedPosts(Number): ammount of posts in this thread that are not being shown.
+        omittedPosts(Number): ammount of posts in this thread that are not being shown.
+        omittedFiles(Number): amount of files in this thread that are not being shown.
         boardUri: uri of the board where the thread belongs to.
         banMessage: message to be displayed indicating this message was a cause to a ban.
         id: thread-wise id of the poster.

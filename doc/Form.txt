@@ -381,6 +381,8 @@ Json output(Object): object with the data of the thread.
     wsPort(Number): port used for the ws socket.
     wssPort(Number): port used for the wss socket.
     signedRole: role of the user that posted the thread.
+    omittedPosts(Number): ammount of posts in this thread that are not being shown.
+    omittedFiles(Number): amount of files in this thread that are not being shown.
     banMessage: message to be displayed indicating this message was a cause to a ban.
     id: thread-wise id of the poster.
     email: email of the poster.

@@ -198,7 +198,23 @@ exports.getThreadObject = function(thread, posts, board, modding, userRole) {
   };
 
   if (posts && posts.length < thread.postCount) {
-    threadObject.ommitedPosts = thread.postCount - posts.length;
+    threadObject.omittedPosts = thread.postCount - posts.length;
+
+    var displayedImages = 0;
+
+    for (var i = 0; i < posts.length; i++) {
+      var post = posts[i];
+
+      if (post.files) {
+
+        displayedImages += post.files.length;
+      }
+    }
+
+    if (thread.fileCount > displayedImages) {
+      threadObject.omittedFiles = thread.fileCount - displayedImages;
+    }
+
   }
 
   if (modding) {
