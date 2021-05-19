@@ -110,8 +110,16 @@ function categoriesChanged(settings) {
   var newCatsExists = !!newCats;
   var oldCatsExists = !!oldCats;
 
-  if (newCatsExists !== oldCatsExists || newCats.length !== oldCats.length) {
+  if (newCatsExists !== oldCatsExists) {
     return true;
+  }
+
+  if (newCatsExists && newCats.length !== oldCats.length) {
+    return true;
+  }
+
+  if (!newCatsExists) {
+    return false;
   }
 
   for (var i = 0; i < oldCats.length; i++) {
