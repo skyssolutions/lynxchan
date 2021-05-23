@@ -586,7 +586,7 @@ exports.transfer = function(userData, parameters, language, callback) {
           lastPostId : thread.postCount + 1
         }
       }, {
-        returnOriginal : false
+        returnDocument : 'after'
       }, function gotDestination(error, result) {
         if (error) {
           callback(error);

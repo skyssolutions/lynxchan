@@ -247,4 +247,5 @@ Meta-data of files on gridfs will have the following values:
   * `banner`
   * `flag`
   * `graph`
+  * `mimeThumb`
   * `custom`

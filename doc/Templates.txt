@@ -3067,7 +3067,7 @@ thumbList:
 
 TEM_ID::75
 
-mimeThumbCell: cell with the details of the mime thumb.
+mimeThumbCell*: cell with the details of the mime thumb.
 
 mimeLabel:
     use: have it's innerHTML manipulated.
@@ -3076,6 +3076,10 @@ mimeLabel:
 thumbImg:
     use: have it's src manipulated.
     description: image of the thumb file.
+
+idIdentifier:
+    use: have it's value manipulated.
+    description: hidden input with the id of the thumb.
 
 ------------------------------------------------------------------------------------------
 

@@ -142,7 +142,7 @@ exports.updateBoardForThreadCreation = function(boardData, threadId,
       threadCount : 1
     }
   }, {
-    returnOriginal : false
+    returnDocument : 'after'
   }, function updatedBoard(error, board) {
     if (error) {
       callback(error);
@@ -495,7 +495,7 @@ exports.getNewThreadId = function(req, userData, parameters, board,
   boards.findOneAndUpdate({
     boardUri : parameters.boardUri
   }, updateBlock, {
-    returnOriginal : false
+    returnDocument : 'after'
   }, function gotLastIdInfo(error, lastIdData) {
     if (error) {
       callback(error);

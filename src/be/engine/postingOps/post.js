@@ -698,7 +698,7 @@ exports.getPostMarkdown = function(req, parameters, userData, thread, board,
       boards.findOneAndUpdate({
         boardUri : parameters.boardUri
       }, updateBlock, {
-        returnOriginal : false
+        returnDocument : 'after'
       }, function gotNewId(error, lastIdData) {
         if (error) {
           callback(error);

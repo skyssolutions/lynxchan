@@ -68,6 +68,7 @@ errDeniedBoardRangeBanManagement: error thrown when the user is not allowed to m
 errDeniedGlobalRangeBanManagement: error thrown when the user is not allowed to manage global range bans.
 errDeniedBoardHashBansManagement: error thrown when the user is not allowed to manage hash bans for a board.
 errDeniedEdit: error thrown when the user is not allowed to edit a posting.
+errMimeThumbNotFound: error thrown when the user tries to delete a non-existent mime thumb.
 errDeniedGlobalHashBansManagement: error thrown when the user is not allowed to manage global hash bans.
 errDeniedBoardReportManagement: error thrown when the user is not allowed to manage reports for a board.
 errDeniedGlobalReportManagement: error thrown when the user is not allowed to manage global reports.
@@ -264,6 +265,7 @@ msgLoginSuccessful: message used after logging in.
 msgLogout: message used after logging out.
 msgHashBanCreated: message used after creating a hash ban.
 msgRuleEdited: message used after editing a rule.
+msgThumbAdded: message used after adding a new mime thumb.
 msgRangeBanCreated: message used after creating a range ban.
 msgPasswordReset: message used after resetting the user's password.
 msgAccountCreated: message used after creating an account.
@@ -303,6 +305,7 @@ msgAppealDenied: message displayed after denying an appeal.
 msgBoardSpecialSettingsSaved: message displayed after setting the special settings for a board.
 msgLanguageAdded: message displayed after adding a new alternative language.
 msgLanguageDeleted: message displayed after deleting an alternative language.
+msgThumbDeleted: message displayed after deleting a mime thumb.
 msgAccountAdded: message displayed after adding a new account.
 msgAccountDeleted: message displayed after deleting an account.
 msgSocketRestarted: message displayed after restarting the unix socket.

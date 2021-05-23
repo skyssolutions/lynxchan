@@ -392,5 +392,8 @@
   "titTrashBin": "Trash bin",
   "msgRestored": "Postings restored.",
   "errDeniedThumbManagement": "You are not allowed to manage custom mime thumbs.",
-  "titMimeThumbs": "Custom mime thumbs"
+  "titMimeThumbs": "Custom mime thumbs",
+  "msgThumbAdded": "Thumb set for the mime.",
+  "msgThumbDeleted": "Thumb removed.",
+  "errMimeThumbNotFound": "Thumb not found."
 }

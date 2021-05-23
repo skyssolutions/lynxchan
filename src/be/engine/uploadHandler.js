@@ -7,6 +7,7 @@ var logger = require('../logger');
 var db = require('../db');
 var uploadReferences = db.uploadReferences();
 var exec = require('child_process').exec;
+var mimeThumbs = db.thumbs();
 var kernel = require('../kernel');
 var native = kernel.native;
 var genericThumb = kernel.genericThumb();
@@ -368,19 +369,28 @@ exports.generateImageThumb = function(identifier, file, callback) {
 
 exports.decideOnDefaultThumb = function(file, identifier, callback) {
 
-  if (file.mime.indexOf('audio/') > -1) {
-    file.thumbPath = genericAudioThumb;
-  } else if (file.mime.indexOf('image/') < 0) {
-    file.thumbPath = genericThumb;
-  } else {
-    file.thumbPath = file.path;
-  }
+  mimeThumbs.findOne({
+    mime : file.mime
+  }, function(error, thumbFound) {
 
-  gsHandler.writeFile(file.pathInDisk, file.path, file.mime, {
-    sha256 : identifier,
-    type : 'media'
-  }, function(error) {
-    callback(error);
+    if (file.mime.indexOf('audio/') > -1) {
+      file.thumbPath = genericAudioThumb;
+    } else if (file.mime.indexOf('image/') < 0) {
+
+      file.thumbPath = thumbFound ? '/.global/mimeThumbs/' + thumbFound._id
+          : genericThumb;
+
+    } else {
+      file.thumbPath = file.path;
+    }
+
+    gsHandler.writeFile(file.pathInDisk, file.path, file.mime, {
+      sha256 : identifier,
+      type : 'media'
+    }, function(error) {
+      callback(error);
+    });
+
   });
 
 };
@@ -412,21 +422,28 @@ exports.generateThumb = function(identifier, file, callback) {
 };
 // } Section 2.1: New file
 
-exports.checkForThumb = function(reference, identifier, file) {
+exports.checkForThumb = function(reference, identifier, file, callback) {
 
   var possibleThumbName = '/.media/t_' + identifier;
 
-  if (reference.hasThumb) {
-    file.thumbPath = possibleThumbName;
-  } else if (file.mime.indexOf('audio/') > -1) {
-    file.thumbPath = genericAudioThumb;
-  } else if (file.mime.indexOf('image/') < 0) {
-    file.thumbPath = genericThumb;
-  } else {
-    file.thumbPath = file.path;
-  }
+  mimeThumbs.findOne({
+    mime : file.mime
+  }, function(error, thumbFound) {
 
-  return exports.updatePostingFiles(file);
+    if (reference.hasThumb) {
+      file.thumbPath = possibleThumbName;
+    } else if (file.mime.indexOf('audio/') > -1) {
+      file.thumbPath = genericAudioThumb;
+    } else if (file.mime.indexOf('image/') < 0) {
+      file.thumbPath = thumbFound ? '/.global/mimeThumbs/' + thumbFound._id
+          : genericThumb;
+    } else {
+      file.thumbPath = file.path;
+    }
+
+    callback(null, exports.updatePostingFiles(file));
+
+  });
 
 };
 
@@ -483,7 +500,7 @@ exports.processFile = function(file, callback) {
     }
   }, {
     upsert : true,
-    returnOriginal : false
+    returnDocument : 'after'
   }, function updatedReference(error, result) {
 
     if (error) {
@@ -496,8 +513,7 @@ exports.processFile = function(file, callback) {
         file.path += '.' + result.value.extension;
       }
 
-      return callback(null, exports.checkForThumb(result.value, identifier,
-          file));
+      return exports.checkForThumb(result.value, identifier, file, callback);
 
     }
 

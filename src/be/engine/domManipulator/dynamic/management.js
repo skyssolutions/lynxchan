@@ -752,9 +752,11 @@ exports.thumbManagement = function(data, parameters, language) {
 
     var entry = data[i];
 
-    children += cellTemplate.template
-        .replace('__mimeLabel_inner__', entry.mime).replace('__thumbImg_src__',
-            '/.global/mimeThumbs/' + entry._id);
+    children += common.getFormCellBoilerPlate(cellTemplate.template,
+        '/deleteMimeThumb.js', 'mimeThumbCell').replace('__mimeLabel_inner__',
+        entry.mime).replace('__thumbImg_src__',
+        '/.global/mimeThumbs/' + entry._id).replace('__idIdentifier_value__',
+        entry._id);
 
   }
 

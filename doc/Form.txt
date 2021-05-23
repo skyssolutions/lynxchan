@@ -1604,5 +1604,29 @@ Json ouput(Array): array with the registered thumbs. Each object contains the fo
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID:: 98
+
+Name: createMimeThumb
+
+Description: adds a new mime thumb. Requires authentication.
+
+Parameters:
+  mime: mime where this thumb will be used for.
+
+Json ouput: _id of the newly created thumb.
+
+------------------------------------------------------------------------------------------
+
+PAG_ID:: 99
+
+Name: deleteMimeThumb
+
+Description: removes a mime thumb.
+
+Parameters:
+  thumbId: id of the thumb that should be deleted.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.
