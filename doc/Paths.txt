@@ -11,6 +11,7 @@ The engine stores global files on the following paths:
 /.global/logs/ stores staff logs pages. Global log pages are stored in /.global/logs/.global while board log pages replace the second .global with the board uri.
 /.global/banners/ stores global banners.
 /.global/graphs/ stores daily graphs.
+/.global/mimeThumbs/ stores custom thumbnails for mimes.
 /maintenance.html stores the maintenance page.
 /404.html stores the 404 page.
 /login.html stores the login page.

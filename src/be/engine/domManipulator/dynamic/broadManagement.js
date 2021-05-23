@@ -502,12 +502,14 @@ exports.setGlobalManagementLinks = function(userRole, document, removable) {
     document = document.replace('__accountsLink_location__',
         removable.accountsLink).replace('__globalBannersLink_location__',
         removable.globalBannersLink).replace('__globalFiltersLink_location__',
-        removable.globalFiltersLink);
+        removable.globalFiltersLink).replace('__customThumbsLink_location__',
+        removable.customThumbsLink);
 
   } else {
     document = document.replace('__accountsLink_location__', '').replace(
         '__globalBannersLink_location__', '').replace(
-        '__globalFiltersLink_location__', '');
+        '__globalFiltersLink_location__', '').replace(
+        '__customThumbsLink_location__', '');
 
   }
 

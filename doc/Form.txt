@@ -1592,5 +1592,17 @@ Json ouput(Object): an object with the following fields:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID:: 97
+
+Name: customThumbs
+
+Description: lists custom thumbs for specific mimes.
+
+Json ouput(Array): array with the registered thumbs. Each object contains the following fields:
+  _id: id of the thumb.
+  mime: mime this thumb belongs to.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

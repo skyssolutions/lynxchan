@@ -403,6 +403,11 @@ offenseRecords: stores actions taken against users.
 
 ----------------------------------------------------------------------------------------
 
+mimeThumbs: stores custom thumbs for mimes.
+  mime: mime of the thumb.
+
+----------------------------------------------------------------------------------------
+
 *: duplicated data, foreign key.
 **: unique key
 ***: part of a unique key combination.

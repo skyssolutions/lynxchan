@@ -246,6 +246,7 @@
   {
     "template": "gManagement",
     "prebuiltFields": {
+      "customThumbsLink": "removal",
       "trashBinLabel": "inner",
       "appealedBansLabel": "inner",
       "asnBansLink": "removal",
@@ -791,6 +792,12 @@
     "prebuiltFields": {
       "threadList": "children",
       "postList": "children"
+    }
+  },
+  {
+    "template": "mimeThumbsPage",
+    "prebuiltFields": {
+      "thumbList": "children"
     }
   }
 ]

@@ -736,3 +736,28 @@ exports.offenseRecord = function(offenses, parameters, language) {
 
 };
 // } Section 9: Offense records
+
+exports.thumbManagement = function(data, parameters, language) {
+
+  var template = templateHandler(language).mimeThumbsPage;
+
+  var document = template.template.replace('__title__',
+      lang(language).titMimeThumbs);
+
+  var children = '';
+
+  var cellTemplate = templateHandler(language).mimeThumbCell;
+
+  for (var i = 0; i < data.length; i++) {
+
+    var entry = data[i];
+
+    children += cellTemplate.template
+        .replace('__mimeLabel_inner__', entry.mime).replace('__thumbImg_src__',
+            '/.global/mimeThumbs/' + entry._id);
+
+  }
+
+  return document.replace('__thumbList_children__', children);
+
+};

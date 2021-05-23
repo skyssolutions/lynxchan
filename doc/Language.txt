@@ -13,6 +13,7 @@ Alternative language packs can contain entries not contained in the default pack
 
 The structure of this json is as follows:
 
+errDeniedThumbManagement: error thrown when the user is not allowed to manage custom mime thumbs.
 errDeniedSingleDeletion: error thrown when the user is not allowed to perform the deletion of a single file in a post.
 errDeniedOffenseHistory: error thrown when the user tries to access the offense history of a user he is not allowed to.
 errOwnsBoards: error thrown when the user tries to delete his own account but he owns boards.
@@ -357,3 +358,4 @@ titOffenseRecord: title for the offense record page.
 titOpenReports: title for the open reports page.
 titTrashBin: title for the trash bin page.
 titAppealedBansManagement: title for the appealed bans page.
+titMimeThumbs: title for the mime thumbs page.

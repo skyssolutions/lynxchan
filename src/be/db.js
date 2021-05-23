@@ -23,6 +23,7 @@ var cachedClient;
 var maxIndexesSet = 18;
 
 var cachedFilters;
+var cachedMimeThumbs;
 var cachedRedirects;
 var cachedLanguages;
 var cachedConfirmationRequests;
@@ -874,6 +875,10 @@ exports.stats = function() {
   return cachedStats;
 };
 
+exports.thumbs = function() {
+  return cachedMimeThumbs;
+};
+
 exports.latestPosts = function() {
   return cachedLatestPosts;
 };
@@ -992,6 +997,7 @@ function initGlobalIndexedCollections(callback) {
   cachedFiles = cachedDb.collection('fs.files');
   cachedOffenseRecords = cachedDb.collection('offenseRecords');
   cachedRedirects = cachedDb.collection('redirects');
+  cachedMimeThumbs = cachedDb.collection('mimeThumbs');
   cachedConfirmationRequests = cachedDb.collection('confirmationRequests');
 
   initBoardIndexedCollections(callback);

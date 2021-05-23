@@ -457,5 +457,12 @@
       ],
       "categoryLabel": "inner"
     }
+  },
+  {
+    "template": "mimeThumbCell",
+    "prebuiltFields": {
+      "mimeLabel": "inner",
+      "thumbImg": "src"
+    }
   }
 ]
