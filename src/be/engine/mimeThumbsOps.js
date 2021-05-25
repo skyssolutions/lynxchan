@@ -3,6 +3,10 @@
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 var db = require('../db');
+var kernel = require('../kernel');
+var posts = db.posts();
+var threads = db.threads();
+var miscOps;
 var thumbs = db.thumbs();
 var gridFsHandler;
 var lang;
@@ -10,6 +14,7 @@ var lang;
 exports.loadDependencies = function() {
   lang = require('./langOps').languagePack;
   gridFsHandler = require('./gridFsHandler');
+  miscOps = require('./miscOps');
 };
 
 exports.getData = function(userData, language, callback) {
@@ -25,6 +30,44 @@ exports.getData = function(userData, language, callback) {
 };
 
 // Section 1: Thumb creation {
+exports.updatePosts = function(newUri, toInsert, callback) {
+
+  var ops = [ {
+    updateMany : {
+      filter : {
+        'files.mime' : toInsert.mime
+      },
+      update : {
+        $set : {
+          'files.$[file].thumb' : newUri
+        },
+        $unset : miscOps.individualCaches
+      },
+      arrayFilters : [ {
+        'file.thumb' : kernel.genericThumb()
+      } ]
+    }
+  } ];
+
+  posts.bulkWrite(ops, function(error) {
+
+    threads.bulkWrite(ops, function(error) {
+
+      if (!error) {
+
+        process.send({
+          allBoards : true
+        });
+
+      }
+
+      callback(null, toInsert._id);
+    });
+
+  });
+
+};
+
 exports.processThumbFile = function(toInsert, file, callback) {
 
   var newUrl = '/.global/mimeThumbs/' + toInsert._id;
@@ -44,7 +87,8 @@ exports.processThumbFile = function(toInsert, file, callback) {
 
     } else {
 
-      callback(null, toInsert._id);
+      exports.updatePosts(newUrl, toInsert, callback);
+
     }
   });
 
@@ -79,6 +123,53 @@ exports.addThumb = function(userData, params, language, callback) {
 };
 // } Section 1: Thumb creation
 
+// Section 2: Thumb creation {
+exports.cleanThumbs = function(path, removed, callback) {
+
+  if (!removed) {
+    return callback();
+  }
+
+  var ops = [ {
+    updateMany : {
+      filter : {
+        'files.mime' : removed
+      },
+      update : {
+        $set : {
+          'files.$[file].thumb' : kernel.genericThumb()
+        },
+        $unset : miscOps.individualCaches
+      },
+      arrayFilters : [ {
+        'file.thumb' : path
+      } ]
+    }
+  } ];
+
+  posts.bulkWrite(ops, function(error) {
+
+    if (error) {
+      return callback(error);
+    }
+
+    threads.bulkWrite(ops, function(error) {
+
+      if (!error) {
+
+        process.send({
+          allBoards : true
+        });
+
+      }
+
+      callback(error);
+    });
+
+  });
+
+};
+
 exports.deleteThumb = function(userData, params, language, callback) {
 
   var global = userData.globalRole < 2;
@@ -95,6 +186,7 @@ exports.deleteThumb = function(userData, params, language, callback) {
     return callback(lang(language).errMimeThumbNotFound);
   }
 
+  var thumbPath = '/.global/mimeThumbs/' + params.thumbId;
   gridFsHandler.removeFiles('/.global/mimeThumbs/' + params.thumbId,
       function removedFlagFile(error) {
 
@@ -102,10 +194,20 @@ exports.deleteThumb = function(userData, params, language, callback) {
           return callback(error);
         }
 
-        thumbs.removeOne({
+        // style exception, too simple
+        thumbs.findOneAndDelete({
           _id : parsedId
-        }, callback);
+        }, function(error, removed) {
+          if (error) {
+            callback(error);
+          } else {
+            exports.cleanThumbs(thumbPath, removed.value ? removed.value.mime
+                : null, callback);
+          }
+        });
+        // style exception, too simple
 
       });
 
 };
+// } Section 2: Thumb creation
