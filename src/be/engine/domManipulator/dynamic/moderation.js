@@ -10,7 +10,9 @@ var miscOps;
 var reportCategories;
 var common;
 var clearIpMinRole;
+var noReportCaptcha;
 var staticPages;
+var noBanCaptcha;
 
 exports.boardModerationIdentifiers = [ 'boardTransferIdentifier',
     'boardDeletionIdentifier', 'specialSettingsIdentifier' ];
@@ -25,6 +27,8 @@ exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
   reportCategories = settings.reportCategories;
+  noBanCaptcha = settings.disableBanCaptcha;
+  noReportCaptcha = settings.noReportCaptcha;
   clearIpMinRole = settings.clearIpMinRole;
 };
 
@@ -536,18 +540,21 @@ exports.openReports = function(reports, parameters, boardData, userData,
 };
 // } Section 4: Open reports
 
-// Section 5: Trash bin {
 exports.trashBin = function(threads, posts, latest, parameters, boardData,
     userRole, language) {
 
   var template = templateHandler(language).trashBinPage;
 
-  return template.template.replace('__title__', lang(language).titTrashBin)
-      .replace('__postList_children__',
-          exports.getPosts(posts, boardData, userRole, language)).replace(
-          '__threadList_children__',
-          staticPages.getOverboardThreads(threads, latest, language, true,
-              boardData, userRole));
+  var global = userRole <= miscOps.getMaxStaffRole();
+
+  return common.setReportCategories(template).replace('__title__',
+      lang(language).titTrashBin).replace('__postList_children__',
+      exports.getPosts(posts, boardData, userRole, language)).replace(
+      '__threadList_children__',
+      staticPages.getOverboardThreads(threads, latest, language, true,
+          boardData, userRole)).replace('__divBanCaptcha_location__',
+      global || noBanCaptcha ? '' : template.removable.divBanCaptcha).replace(
+      '__divReportCaptcha_location__',
+      noReportCaptcha ? '' : template.removable.divReportCaptcha);
 
 };
-// } Section 5: Trash bin

@@ -3049,6 +3049,22 @@ threadList:
     use: have children appended to it.
     description: div that holds the threads in the trash bin.
 
+divReportCaptcha:
+    use: might be removed.
+    description: div with the captcha used for reporting.
+
+reportCategoriesDiv:
+    use: might be removed.
+    description: div that contains the report category selection.
+
+reportComboboxCategory:
+    use: have children appended to it.
+    description: combobox with the available report categories.
+
+divBanCaptcha:
+    use: might be removed.
+    description: div with the captcha used for banning.
+
 postList:
     use: have children appended to it.
     description: div that holds the posts in the trash bin that do not belong to trashed threads.

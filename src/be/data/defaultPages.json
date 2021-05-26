@@ -791,7 +791,11 @@
     "template": "trashBinPage",
     "prebuiltFields": {
       "threadList": "children",
-      "postList": "children"
+      "divReportCaptcha": "removal",
+      "reportComboboxCategory": "children",
+      "postList": "children",
+      "divBanCaptcha": "removal",
+      "reportCategoriesDiv": "removal"
     }
   },
   {
