@@ -71,6 +71,12 @@ exports.registerConnection = function(conn) {
 
   });
 
+  conn.on('error', function(error) {
+    if (verbose) {
+      console.log(error);
+    }
+  });
+
   conn.on('close', function() {
 
     if (!registered) {
