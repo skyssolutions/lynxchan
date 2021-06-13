@@ -50,7 +50,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
-  reportCategories = settings.reportCategories;
+  reportCategories = settings.reportCategories || [];
   domainWhiteList = settings.emailDomainWhiteList;
   authLimit = settings.authenticationLimit;
   redactedModNames = settings.redactModNames;
