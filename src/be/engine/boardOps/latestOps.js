@@ -273,7 +273,7 @@ exports.getBoardsToShow = function(parameters, userData) {
       });
 
   for (var i = parameters.boards.length; i >= 0; i--) {
-    if (!parameters.boards[i]) {
+    if (!parameters.boards[i] || /\W/.test(parameters.boards[i])) {
       parameters.boards.splice(i, 1);
     }
   }
@@ -326,7 +326,22 @@ exports.setDate = function(parameters) {
 exports.setIpAndPostMatch = function(parameters, matchBlock, userData, cb) {
 
   if (parameters.ip && userData.globalRole <= clearIpMinRole) {
-    matchBlock.ip = logger.convertIpToArray(parameters.ip);
+
+    var convertedIp = logger.convertIpToArray(parameters.ip);
+
+    for (var i = 0; i < convertedIp.length; i++) {
+
+      if (Number.isNaN(convertedIp[i])) {
+        delete parameters.ip;
+        break;
+      }
+    }
+
+    if (parameters.ip) {
+
+      matchBlock.ip = convertedIp;
+    }
+
     delete parameters.boardUri;
   } else if (exports.canSearchPerPost(parameters, userData)) {
     return exports.fetchPostInfo(matchBlock, userData.globalRole <= miscOps

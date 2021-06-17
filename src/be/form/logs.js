@@ -33,6 +33,11 @@ exports.getMinDate = function(informedYear) {
 exports.process = function(req, res) {
 
   var parameters = url.parse(req.url, true).query;
+
+  if (parameters.boardUri && /\W/.test(parameters.boardUri)) {
+    delete parameters.boardUri;
+  }
+
   var date = exports.getMinDate(parameters.year);
   var json = parameters.json;
 
@@ -59,22 +64,23 @@ exports.process = function(req, res) {
         $push : '$date'
       }
     }
-  } ]).toArray(function gotDates(error, results) {
+  } ]).toArray(
+      function gotDates(error, results) {
 
-    if (error) {
-      formOps.outputError(error, 500, res, req.language, json);
-    } else {
+        if (error) {
+          formOps.outputError(error, 500, res, req.language, json);
+        } else {
 
-      results = results.length ? results[0].dates : [];
+          results = results.length ? results[0].dates : [];
 
-      if (json) {
-        formOps.outputResponse('ok', results, res, null, null, null, true);
-      } else {
-        formOps.dynamicPage(res, domManipulator.logs(results, parameters,
-           req.language));
-      }
-    }
+          if (json) {
+            formOps.outputResponse('ok', results, res, null, null, null, true);
+          } else {
+            formOps.dynamicPage(res, domManipulator.logs(results, parameters,
+                req.language));
+          }
+        }
 
-  });
+      });
 
 };

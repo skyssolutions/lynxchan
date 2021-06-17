@@ -857,6 +857,24 @@ exports.getMediaFromBan = function(query, parameters, language, callback) {
 
 };
 
+exports.sanitizePostInputs = function(parameters) {
+
+  if (parameters.boardUri && /\W/.test(parameters.boardUri)) {
+    delete parameters.boardUri;
+  } else if (parameters.threadId || parameters.postId) {
+
+    if (parameters.threadId && /\D/.test(parameters.threadId)) {
+      delete parameters.threadId;
+    }
+
+    if (parameters.postId && /\D/.test(parameters.postId)) {
+      delete parameters.postId;
+    }
+
+  }
+
+};
+
 exports.getMedia = function(userData, parameters, language, callback) {
 
   var globalStaff = userData.globalRole <= maxGlobalStaffRole;
@@ -873,9 +891,13 @@ exports.getMedia = function(userData, parameters, language, callback) {
     };
   }
 
-  if (parameters.filter) {
+  if (parameters.filter && !/\W/.test(parameters.filter)) {
     queryBlock.sha256 = new RegExp(parameters.filter.toLowerCase());
+  } else {
+    delete parameters.filter;
   }
+
+  exports.sanitizePostInputs(parameters);
 
   if (parameters.boardUri && (parameters.threadId || parameters.postId)) {
     exports.getMediaFromPost(queryBlock, parameters, language, callback);

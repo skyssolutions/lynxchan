@@ -30,7 +30,7 @@ exports.getQueryBlock = function(parameters) {
 
   var queryBlock = {};
 
-  if (parameters.boardUri && parameters.boardUri.length) {
+  if (parameters.boardUri && !/\W/.test(parameters.boardUri)) {
     queryBlock.boardUri = {
       $regex : parameters.boardUri
     };

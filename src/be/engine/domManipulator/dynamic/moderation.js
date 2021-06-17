@@ -330,20 +330,20 @@ exports.getBoilerLink = function(parameters) {
   var boiler = '/latestPostings.js?boards=' + parameters.boards;
 
   if (parameters.ip) {
-    boiler += '&ip=' + parameters.ip;
+    boiler += '&amp;ip=' + parameters.ip;
   }
 
   if (parameters.banId) {
-    boiler += '&banId=' + parameters.banId;
+    boiler += '&amp;banId=' + parameters.banId;
   }
 
   if (parameters.boardUri && (parameters.threadId || parameters.postId)) {
-    boiler += '&boardUri=' + parameters.boardUri + '&';
+    boiler += '&amp;boardUri=' + parameters.boardUri + '&amp;';
     boiler += (parameters.threadId ? 'threadId' : 'postId') + '=';
     boiler += parameters.threadId || parameters.postId;
   }
 
-  return boiler + '&date=';
+  return boiler + '&amp;date=';
 
 };
 

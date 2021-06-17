@@ -338,20 +338,20 @@ exports.getMediaManagementLinkBoilerPlate = function(parameters) {
   var boilerPlate = '';
 
   if (parameters.orphaned) {
-    boilerPlate += '&orphaned=1';
+    boilerPlate += '&amp;orphaned=1';
   }
 
   if (parameters.banId) {
-    boilerPlate += '&banId=' + parameters.banId;
+    boilerPlate += '&amp;banId=' + parameters.banId;
   }
 
   if (parameters.filter) {
-    boilerPlate += '&filter=' + parameters.filter;
+    boilerPlate += '&amp;filter=' + parameters.filter;
   }
 
   if (parameters.boardUri && (parameters.threadId || parameters.postId)) {
 
-    boilerPlate += '&boardUri=' + parameters.boardUri + '&';
+    boilerPlate += '&amp;boardUri=' + parameters.boardUri + '&amp;';
 
     if (parameters.threadId) {
       boilerPlate += 'threadId=' + parameters.threadId;

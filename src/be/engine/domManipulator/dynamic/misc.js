@@ -350,27 +350,27 @@ exports.getBoardPageLinkBoilerPlate = function(parameters) {
   var href = '';
 
   if (parameters.boardUri) {
-    href += '&boardUri=' + parameters.boardUri;
+    href += '&#38;boardUri=' + parameters.boardUri;
   }
 
   if (parameters.sfw) {
-    href += '&sfw=1';
+    href += '&#38;sfw=1';
   }
 
   if (parameters.unindexed) {
-    href += '&unindexed=1';
+    href += '&#38;unindexed=1';
   }
 
   if (parameters.tags) {
-    href += '&tags=' + parameters.tags;
+    href += '&#38;tags=' + parameters.tags;
   }
 
   if (parameters.inactive) {
-    href += '&inactive=1';
+    href += '&#38;inactive=1';
   }
 
   if (parameters.sorting) {
-    href += '&sorting=' + parameters.sorting;
+    href += '&#38;sorting=' + parameters.sorting;
   }
 
   return common.clean(miscOps.cleanHTML(href));

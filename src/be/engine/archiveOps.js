@@ -165,7 +165,7 @@ exports.getArchives = function(parameters, callback) {
       });
 
   for (var i = parameters.boards.length; i >= 0; i--) {
-    if (!parameters.boards[i]) {
+    if (!parameters.boards[i] || /\W/.test(parameters.boards[i])) {
       parameters.boards.splice(i, 1);
     }
   }
