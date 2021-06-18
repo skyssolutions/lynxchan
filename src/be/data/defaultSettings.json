@@ -61,5 +61,6 @@
   "captchaLimit": 5,
   "authenticationLimit": 120,
   "latestPostPinned": 1,
+  "CSP": "script-src 'self';",
   "incSpamIpsSource": "https://www.stopforumspam.com/downloads/listed_ip_1.zip"
 }

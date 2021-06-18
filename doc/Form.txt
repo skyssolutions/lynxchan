@@ -982,6 +982,7 @@ Name: saveGlobalSettings
 Description: saves global settings. Requires authentication. Restricted to root users. Blank parameters will revert to the default.
 
 Parameters:
+    password: the password of the user saving the settings.
     Same as global settings.
 
 ------------------------------------------------------------------------------------------

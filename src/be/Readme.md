@@ -169,7 +169,7 @@ Settings files that goes into the settings directory:
 * `torPort`(Number): port that when used, will always mark the request as if it came from a TOR ip.
 * `sfwOverboard`: uri to be used for the sfw overboard.
 * `requireConfirmationForBoardCreation`(Boolean): if activated, only accounts with verified e-mails are able to create boards.
-* `CSP`: Content security policy directives. Example: `default-src 'self'`
+* `CSP`: Content security policy directives. Default: `script-src 'self';`.
 * `onlySfwLatestImages`(Boolean): makes so only SFW images are displayed on the front-page.
 * `inactivityThreshold`(Number): amount of days an user must be inactive so he and his boards will be marked as inactive.
 * `mediaPageSize`(Number): amount of files to be displayed at once on the media management page. Defaults to 100.

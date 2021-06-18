@@ -15,6 +15,7 @@ var users = db.users();
 var reports = db.reports();
 var formOps;
 var reportOps;
+var accountOps;
 var omitUnindexed;
 var CSP;
 var globalBoardModeration;
@@ -75,6 +76,7 @@ exports.loadSettings = function() {
 
 exports.loadDependencies = function() {
 
+  accountOps = require('./accountOps');
   formOps = require('./formOps');
   reportOps = require('./modOps').report;
   lang = require('./langOps').languagePack;
@@ -605,12 +607,31 @@ exports.processNumberSetting = function(parameters, defaultSettings, item,
   }
 };
 
-exports.setGlobalSettings = function(userData, language, parameters, callback) {
+exports.setGlobalSettings = function(userData, language, parameters, callback,
+    checked) {
 
   if (userData.globalRole !== 0) {
-    callback(lang(language).errDeniedGlobalSettings);
+    return callback(lang(language).errDeniedGlobalSettings);
+  }
 
-    return;
+  if (!checked) {
+
+    return accountOps.passwordMatches(userData, parameters.password || '',
+        function(error, matches) {
+
+          delete parameters.password;
+
+          if (error) {
+            callback(error);
+          } else if (matches) {
+            exports.setGlobalSettings(userData, language, parameters, callback,
+                true);
+          } else {
+
+            callback(lang(language).errLoginFailed);
+          }
+
+        });
   }
 
   var parametersArray = exports.getParametersArray(language);
