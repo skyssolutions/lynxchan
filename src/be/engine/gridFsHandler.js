@@ -2,6 +2,7 @@
 
 // handles every gridfs operation.
 
+var lBreak = '\r\n';
 var zlib = require('zlib');
 var fs = require('fs');
 var http = require('http');
@@ -148,6 +149,18 @@ exports.writeData = function(data, dest, mime, meta, callback, compressed) {
 // } Section 1: Writing data
 
 // Section 2: Writing file {
+exports.concatFileString = function(boundary, newDoc) {
+
+  var stringToConcat = '--' + boundary + lBreak;
+  stringToConcat += 'Content-Disposition: form-data; name="files"; filename="';
+  stringToConcat += newDoc._id + '"' + lBreak;
+  stringToConcat += 'Content-Type: application/octet-stream';
+  stringToConcat += lBreak + lBreak;
+
+  return stringToConcat;
+
+};
+
 exports.sendFileToMaster = function(newDoc, path, callback, attempts, error) {
 
   attempts = attempts || 0;
@@ -156,17 +169,52 @@ exports.sendFileToMaster = function(newDoc, path, callback, attempts, error) {
     return callback(error);
   }
 
-  var cmd = 'curl -F "files=@' + path + ';filename=' + newDoc._id + '" http://';
-  cmd += masterNode + ':' + port + '/storeFile.js';
+  var readStream = fs.createReadStream(path);
 
-  exec(cmd, function(error, data) {
+  var boundary = '--------------------------';
+  for (var i = 0; i < 24; i++) {
+    boundary += Math.floor(Math.random() * 10).toString(16);
+  }
 
-    if (error) {
-      return exports
-          .sendFileToMaster(newDoc, path, callback, ++attempts, error);
-    } else {
-      callback(null, newDoc);
-    }
+  var buffer = new Buffer.alloc(0);
+
+  buffer = Buffer.from(exports.concatFileString(boundary, newDoc));
+
+  readStream.on('error', function(error) {
+    exports.sendFileToMaster(newDoc, path, callback, ++attempts, error);
+  });
+
+  readStream.on('data', function(data) {
+    buffer = Buffer.concat([ buffer, data ]);
+  });
+
+  readStream.on('end', function() {
+    buffer = Buffer.concat([ buffer,
+        Buffer.from(lBreak + '--' + boundary + '--' + lBreak) ]);
+
+    var req = http.request({
+      host : masterNode,
+      port : port,
+      path : '/storeFile.js',
+      method : 'POST',
+      headers : {
+        'user-agent' : 'lynxchan/420.69',
+        accept : '*/*',
+        expect : '100-continue',
+        'content-length' : buffer.length,
+        'content-type' : 'multipart/form-data; boundary=' + boundary
+      }
+    }, function(res) {
+      if (res.statusCode !== 200) {
+        exports.sendFileToMaster(newDoc, path, callback, ++attempts,
+            'Failed to send file to master.');
+      } else {
+        callback(null, newDoc);
+      }
+    });
+
+  req.write(buffer);
+  req.end();
 
   });
 

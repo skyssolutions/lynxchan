@@ -454,6 +454,10 @@ exports.start = function(firstBoot) {
     return;
   }
 
+  if (master){
+    return;
+  }
+
   exports.openSocket(function opened(error) {
 
     if (!error) {

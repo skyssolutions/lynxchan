@@ -583,8 +583,11 @@ function loadGeneralSettings() {
 }
 
 function setMaxSizes() {
-  if (generalSettings.maxFileSizeMB !== Infinity) {
-    generalSettings.maxFileSizeB = generalSettings.maxFileSizeMB * 1024 * 1024;
+
+  var setMaxFileSize = generalSettings.maxFileSizeMB;
+
+  if (setMaxFileSize && setMaxFileSize !== Infinity) {
+    generalSettings.maxFileSizeB = setMaxFileSize * 1024 * 1024;
   } else {
     generalSettings.maxFileSizeB = Infinity;
   }
