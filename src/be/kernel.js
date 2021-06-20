@@ -824,12 +824,13 @@ if (cluster.isMaster) {
     if (error.code === 'ENOENT') {
       console.log('Creating directories.');
 
-      var command = 'mkdir -p ' + __dirname + '/media ';
-      command += settingsHandler.getGeneralSettings().tempDirectory;
-
-      require('child_process').exec(command, function createdDirectory() {
-        bootDb();
-      });
+      require('child_process').execFile(
+          'mkdir',
+          [ '-p', __dirname + '/media',
+              settingsHandler.getGeneralSettings().tempDirectory ],
+          function createdDirectory() {
+            bootDb();
+          });
     } else {
       throw error;
     }

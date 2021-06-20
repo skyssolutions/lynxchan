@@ -58,7 +58,7 @@ exports.loadSettings = function() {
   var settings = require('../settingsHandler').getGeneralSettings();
 
   level = settings.captchaMode;
-  imageFont = settings.imageFont;
+  imageFont = settings.imageFont.replace(/[^A-Za-z0-9-]/g, '');
   captchaLimit = settings.captchaLimit;
   verbose = settings.verbose || settings.verboseMisc;
   forceCaptcha = settings.forceCaptcha;

@@ -3,7 +3,6 @@
 // The dbMigrations.s couldn't be any larger, this is where any migration from
 // 1.6 onward will be
 
-var exec = require('child_process').exec;
 var crypto = require('crypto');
 var fs = require('fs');
 var settings = require('./settingsHandler').getGeneralSettings();

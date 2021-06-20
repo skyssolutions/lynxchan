@@ -6,7 +6,6 @@ var lBreak = '\r\n';
 var zlib = require('zlib');
 var fs = require('fs');
 var http = require('http');
-var exec = require('child_process').exec;
 var db = require('../db');
 var logger = require('../logger');
 var redirects = db.redirects();
