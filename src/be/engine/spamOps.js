@@ -1,9 +1,10 @@
 'use strict';
 
+var https = require('https');
+var http = require('http');
 var fs = require('fs');
 var exec = require('child_process').exec;
 var logger = require('../logger');
-var command = 'curl -s {$host} | gunzip -';
 var ipLineSize = 4;
 var ipSource;
 var incrementalIpSource;
@@ -25,6 +26,28 @@ exports.loadSettings = function() {
 };
 
 exports.spamDataPath = __dirname + '/../spamData';
+
+exports.fetchSpamData = function(address, callback) {
+
+  var operationToUse = address.indexOf('https') > -1 ? https : http;
+
+  var req = operationToUse.request(address, function gotData(res) {
+
+    var subp = exec('gunzip -', {
+      maxBuffer : Infinity
+    }, callback);
+
+    res.pipe(subp.stdin);
+
+  });
+
+  req.once('error', function(error) {
+    callback(error);
+  });
+
+  req.end();
+
+};
 
 exports.parseIpBuffer = function(buffer) {
 
@@ -90,9 +113,7 @@ exports.processData = function(foundIps, callback) {
 
 exports.updateSpammers = function(callback) {
 
-  exec(command.replace('{$host}', ipSource), {
-    maxBuffer : Infinity
-  }, function gotData(error, data) {
+  exports.fetchSpamData(ipSource, function(error, data) {
 
     if (error) {
       callback(error);
@@ -200,43 +221,39 @@ exports.iterateNewIps = function(newIps, currentArray, callback, index,
 
 exports.incrementSpammers = function(callback) {
 
-  exec(command.replace('{$host}', incrementalIpSource), {
-    maxBuffer : Infinity
-  }, function gotData(error, data) {
+  exports.fetchSpamData(incrementalIpSource, function(error, data) {
 
     if (error) {
-      callback(error);
-    } else {
+      return callback(error);
+    }
 
-      // style exception, too simple
-      fs.readFile(exports.spamDataPath, function gotExistingData(error,
-          existingData) {
-        if (error) {
-          callback(error);
-        } else {
+    // style exception, too simple
+    fs.readFile(exports.spamDataPath, function gotExistingData(error,
+        existingData) {
+      if (error) {
+        callback(error);
+      } else {
 
-          var currentArray = [];
+        var currentArray = [];
 
-          for (var i = 0; i < existingData.length / 4; i++) {
+        for (var i = 0; i < existingData.length / 4; i++) {
 
-            var offset = i * 4;
+          var offset = i * 4;
 
-            var toAdd = Array(4);
+          var toAdd = Array(4);
 
-            for (var j = 0; j < 4; j++) {
-              toAdd[j] = existingData[j + offset];
-            }
-
-            currentArray.push(toAdd);
-
+          for (var j = 0; j < 4; j++) {
+            toAdd[j] = existingData[j + offset];
           }
 
-          exports.iterateNewIps(data.split('\n'), currentArray, callback);
-        }
-      });
-      // style exception, too simple
+          currentArray.push(toAdd);
 
-    }
+        }
+
+        exports.iterateNewIps(data.split('\n'), currentArray, callback);
+      }
+    });
+    // style exception, too simple
 
   });
 

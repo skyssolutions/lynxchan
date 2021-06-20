@@ -602,18 +602,27 @@ exports.removeFilesFromMaster = function(toRemove, callback, attempts, error) {
     return callback(error);
   }
 
-  var cmd = 'curl http://';
-  cmd += masterNode + ':' + port + '/removeFiles.js?ids=' + toRemove.join(',');
+  var req = require('http').request(
+      {
+        host : masterNode,
+        port : port,
+        path : '/removeFiles.js?ids=' + toRemove.join(','),
+        method : 'GET'
+      },
+      function(res) {
+        if (res.statusCode !== 200) {
+          exports.removeFilesFromMaster(toRemove, callback, ++attempts,
+              'Failed to remove file from master.');
+        } else {
+          callback();
+        }
+      });
 
-  exec(cmd, function(error, data) {
-
-    if (error) {
-      return exports.sendFileToMaster(toRemove, callback, ++attempts, error);
-    } else {
-      callback();
-    }
-
+  req.once('error', function(error) {
+    exports.removeFilesFromMaster(toRemove, callback, ++attempts, error);
   });
+
+  req.end();
 
 };
 
