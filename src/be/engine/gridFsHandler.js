@@ -592,7 +592,7 @@ exports.streamFile = function(stream, range, stats, req, res, header, retries,
         header.push([ 'Vary', 'Accept-Encoding' ]);
       }
 
-      if (alternativeLanguages) {
+      if (alternativeLanguages && stats.metadata.type !== 'media') {
         header.push([ 'Vary', 'Accept-Language' ]);
       }
 
@@ -685,7 +685,7 @@ exports.output304 = function(fileStats, res) {
 
   var header = [];
 
-  if (alternativeLanguages) {
+  if (alternativeLanguages && fileStats.metadata.type !== 'media') {
     header.push([ 'Vary', 'Accept-Language' ]);
   }
 

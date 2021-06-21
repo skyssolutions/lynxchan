@@ -690,6 +690,14 @@ exports.getOffenseList = function(document, offenses, language) {
             '__globalLabel_location__',
             offense.global ? template.removable.globalLabel : '');
 
+    if (!offense.type) {
+      cell = cell.replace('__typeDiv_location__', '');
+    } else {
+      cell = cell.replace('__typeDiv_location__', template.removable.typeDiv)
+          .replace('__typeLabel_inner__',
+              lang(language).guiOffenseTypes[offense.type]);
+    }
+
     list += '<div>' + cell + '</div>';
   }
 

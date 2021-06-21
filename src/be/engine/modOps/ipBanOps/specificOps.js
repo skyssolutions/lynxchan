@@ -296,7 +296,8 @@ exports.createOffenses = function(list, key, parameters, userData, offenses) {
       reason : parameters.reasonBan,
       date : new Date(),
       mod : userData.login,
-      expiration : parameters.expiration
+      expiration : parameters.expiration,
+      type : parameters.banType === 4 ? 'warning' : 'ban'
     };
 
     record[key] = list[i];

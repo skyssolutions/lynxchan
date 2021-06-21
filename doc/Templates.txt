@@ -2984,6 +2984,14 @@ offenseCell*: cell used to list offense history.
 Root element: div
 
 Elements:
+typeDiv:
+    use: might be removed.
+    description: div that holds the label indicating the type of the offense.
+
+typeLabel:
+    use: have it's innerHTML manipulated.
+    description: label that holds the offense type.
+
 reasonLabel:
     use: have it's innerHTML manipulated.
     description: label that holds the offense reason.

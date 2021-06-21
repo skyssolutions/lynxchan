@@ -396,5 +396,9 @@
   "titMimeThumbs": "Custom mime thumbs",
   "msgThumbAdded": "Thumb set for the mime.",
   "msgThumbDeleted": "Thumb removed.",
-  "errMimeThumbNotFound": "Thumb not found."
+  "errMimeThumbNotFound": "Thumb not found.",
+  "guiOffenseTypes": {
+    "ban": "Ban",
+    "warning": "Warning"
+  }
 }

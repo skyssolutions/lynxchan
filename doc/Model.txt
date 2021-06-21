@@ -400,6 +400,7 @@ offenseRecords: stores actions taken against users.
   date(Date): date of the action taken.
   expiration(Date): expiration of the action taken.
   mod(String): login of the user that took the action.
+  type(String): string representing what kind of action was taken. Valid values: ban, warning.
 
 ----------------------------------------------------------------------------------------
 

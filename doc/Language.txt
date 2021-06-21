@@ -161,6 +161,9 @@ guiTypeBoardTransfer: label used for logs of board ownership transfers.
 guiTypeHashBan: label used for logs of hash bans.
 guiWeekDays: array containing labels of weekdays starting on sunday.
 guiDateFormat: format of dates. Replaces: {$day}, {$month}, {$year}.
+guiOffenseTypes: object containing the possible offense types used in the offense record. Contains the following fields:
+    ban: label used for bans.
+    warning: label used for warnings.
 guiOmittedInfo: object containing the pieces used to inform how much stuff has been omitted from a thread when showing it on a board page. Contains the following fields:
     startPiece: first piece used when a post is omitted. Replaces: {$postAmount}.
     startPiecePlural: first piece used when multiple posts are omitted. Replaces: {$postAmount}.
