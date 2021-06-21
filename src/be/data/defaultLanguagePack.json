@@ -13,6 +13,7 @@
   "errDeniedChangeUser": "You are not allowed to change this user's role.",
   "errNoNewAccounts": "Account creation is disabled.",
   "errInvalidLogin": "Invalid login.",
+  "errTooManyFlags": "This board exceeded the flag limit.",
   "errLoginInUse": "Login is already in use.",
   "errBoardBannerLimit": "Banner limit reached.",
   "errLoginFailed": "Login failed.",

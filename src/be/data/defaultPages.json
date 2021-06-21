@@ -482,6 +482,7 @@
     "prebuiltFields": {
       "checkboxUnlockHistory": "checked",
       "fieldReportCategories": "value",
+      "fieldFlagLimit": "value",
       "checkboxDisableEmail": "checked",
       "fieldTrashLimitDays": "value",
       "checkboxLowercaseBoardUris": "checked",

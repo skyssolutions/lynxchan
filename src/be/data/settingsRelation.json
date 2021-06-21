@@ -228,6 +228,11 @@
   },
   {
     "type": "number",
+    "setting": "flagLimit",
+    "element": "fieldFlagLimit"
+  },
+  {
+    "type": "number",
     "setting": "inactivityThreshold",
     "element": "fieldInactivityThreshold"
   },

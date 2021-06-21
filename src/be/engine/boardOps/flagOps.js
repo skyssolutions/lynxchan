@@ -11,6 +11,7 @@ var db;
 var boards;
 var threads;
 var posts;
+var flagLimit;
 var flags;
 var lang;
 
@@ -27,6 +28,7 @@ exports.loadSettings = function() {
   maxFlagSize = settings.maxFlagSizeB;
   globalBoardModeration = settings.allowGlobalBoardModeration;
   newFlagParameters[0].length = settings.flagNameLength;
+  flagLimit = settings.flagLimit;
 
 };
 
@@ -74,6 +76,25 @@ exports.processFlagFile = function(toInsert, file, callback) {
 
 };
 
+exports.insertFlag = function(parameters, language, callback) {
+
+  var toInsert = {
+    boardUri : parameters.boardUri,
+    name : parameters.flagName
+  };
+
+  flags.insertOne(toInsert, function insertedFlag(error) {
+    if (error && error.code === 11000) {
+      callback(lang(language).errRepeatedFlag);
+    } else if (error) {
+      callback(error);
+    } else {
+      exports.processFlagFile(toInsert, parameters.files[0], callback);
+    }
+  });
+
+};
+
 exports.createFlag = function(userData, parameters, language, callback) {
 
   if (!parameters.files.length) {
@@ -103,22 +124,19 @@ exports.createFlag = function(userData, parameters, language, callback) {
       callback(lang(language).errDeniedFlagManagement);
     } else {
 
-      var toInsert = {
-        boardUri : parameters.boardUri,
-        name : parameters.flagName
-      };
-
-      // style exception, too simple
-      flags.insertOne(toInsert, function insertedFlag(error) {
-        if (error && error.code === 11000) {
-          callback(lang(language).errRepeatedFlag);
-        } else if (error) {
+      flags.countDocuments({
+        boardUri : parameters.boardUri
+      }, function(error, count) {
+        
+        if (error) {
           callback(error);
+        } else if (count >= flagLimit) {
+          callback(lang(language).errTooManyFlags);
         } else {
-          exports.processFlagFile(toInsert, parameters.files[0], callback);
+          exports.insertFlag(parameters, language, callback);
         }
+
       });
-      // style exception, too simple
 
     }
   });

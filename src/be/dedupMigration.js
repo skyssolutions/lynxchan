@@ -538,6 +538,12 @@ function deduplicatePostsFiles(callback, lastPostId) {
 
 exports.deduplicateFiles = function(callback, lastThreadId) {
 
+  if (tempDir.match(/[^a-zA-Z0-9\/]/g)) {
+    var msg = 'Invalid temporary directory name for deduplication,';
+    msg += ' only a-z, A-Z, 0-9 and / are allowed.';
+    return callback(msg);
+  }
+
   var matchBlock = {
     'files.0' : {
       $exists : true

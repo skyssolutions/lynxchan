@@ -2011,6 +2011,10 @@ fieldTrashLimitDays:
     use: have it's value manipulated.
     description: field with the amount of days posts stay in the trash bin before being pruned.
 
+fieldFlagLimit:
+    use: have it's value manipulated.
+    description: field with the limit of flags a board can have.
+
 fieldReportCategories:
     use: have it's value manipulated.
     description: field with the available report categories.

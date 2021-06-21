@@ -84,6 +84,7 @@ errCaptchaLimitExceeded: error thrown when the user requests too many captchas.
 errBoardBannerLimit: error thrown when the board has passed the allowed banner limit.
 errRuleLimitReached: error thrown when the user tries to add a rule to a board that has already reached the maximum amount of rules allowed.
 errInvalidIndex: error thrown when the index of a specified rule is invalid.
+errTooManyFlags: error thrown when the board has exceeded the flag limit.
 errDeniedMultipleReports: error thrown when the user is not allowed to report multiple postings at once.
 errThreadAutoLocked: error thrown when the user tries to post on an auto-locked thread.
 errMaxFiltersReached: error thrown when the board owner tries to add a filter after the board has already reached the maximum amount of filters allowed.

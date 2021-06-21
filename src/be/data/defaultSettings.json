@@ -26,6 +26,7 @@
     "audio/ogg",
     "audio/webm"
   ],
+  "flagLimit": 50,
   "boardsPerPage": 50,
   "torSource": "https://check.torproject.org/exit-addresses",
   "maxBoardRules": 20,

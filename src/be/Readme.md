@@ -130,6 +130,7 @@ Settings files that goes into the settings directory:
 * `topBoardsCount`(Number): amount of boards to be listed in the top boards.
 * `boardsPerPage`(Number): amount of boards to be listed in boards.js. Defaults to 50.
 * `dnsbl`(Array): dnsbl domains to be used to check against posts.
+* `flagLimit`(Number): maximum amount of flags boards are allowed to have. Defaults to 50.
 * `torSource`: url to the list of TOR exit nodes ips. Defaults to `https://check.torproject.org/exit-addresses`.
 * `languagePackPath`: absolute path to an optional language pack.
 * `mediaThumb`(Boolean): if true, videos and music will generate thumbs instead of using the generic ones. Requires ffmpeg installed.
