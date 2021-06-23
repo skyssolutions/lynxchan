@@ -2,7 +2,7 @@
 
 var formOps = require('../engine/formOps');
 var accountOps = require('../engine/accountOps');
-var mandatoryParameters = [ 'login' ];
+var mandatoryParameters = [ 'login', 'password' ];
 var lang = require('../engine/langOps').languagePack;
 
 exports.login = function(req, res, parameters, language, json) {
