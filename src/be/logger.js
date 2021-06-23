@@ -238,7 +238,11 @@ exports.parseIpv6 = function(ip) {
 
   }
 
-  return parsedIp;
+  if (parsedIp.length !== 16) {
+    return [ NaN ];
+  } else {
+    return parsedIp;
+  }
 
 };
 

@@ -77,17 +77,42 @@ exports.fetchBan = function(userData, parameters, language, callback) {
 
 };
 
+exports.sanitizeIp = function(parameters) {
+
+  if (!parameters.ip) {
+    return;
+  }
+
+  parameters.convertedIp = logger.convertIpToArray(parameters.ip);
+
+  for (var i = 0; i < parameters.convertedIp.length; i++) {
+
+    if (Number.isNaN(parameters.convertedIp[i])) {
+      delete parameters.ip;
+      delete parameters.convertedIp;
+
+      return;
+    }
+  }
+
+};
+
 exports.getOffenses = function(userData, parameters, language, callback) {
 
+  exports.sanitizeIp(parameters);
+
   if (parameters.ip && userData.globalRole <= clearIpMinRole) {
-    return exports.runReadQuery(logger.convertIpToArray(parameters.ip), null,
-        callback);
+    return exports.runReadQuery(parameters.convertedIp, null, callback);
   }
 
   if (parameters.banId) {
     return exports.fetchBan(userData, parameters, language, callback);
   } else if (!latestOps.canSearchPerPost(parameters, userData)) {
     return callback(lang(language).errDeniedOffenseHistory);
+  }
+
+  if (parameters.boardUri && parameters.boardUri.match(/\W/g)) {
+    parameters.boardUri = '';
   }
 
   var query = {
@@ -97,6 +122,11 @@ exports.getOffenses = function(userData, parameters, language, callback) {
   var fieldToUse = parameters.threadId ? 'threadId' : 'postId';
 
   query[fieldToUse] = +(parameters.threadId || parameters.postId);
+
+  delete parameters.threadId;
+  delete parameters.postId;
+
+  parameters[fieldToUse] = query[fieldToUse];
 
   (parameters.threadId ? threads : posts).findOne(query, {
     _id : 0,
