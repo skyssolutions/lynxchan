@@ -12,18 +12,21 @@ exports.getOffenses = function(auth, userData, parameters, res, language) {
   var json = parameters.json;
 
   offenseOps.getOffenses(userData, parameters, language, function(error,
-      offenses) {
+      offenses, asnBans) {
 
     if (error) {
       formOps.outputError(error, 500, res, language, json, auth);
     } else {
 
       if (json) {
-        formOps.outputResponse('ok', offenses, res, null, auth, null, true);
+        formOps.outputResponse('ok', {
+          offenses : offenses,
+          asnBans : asnBans
+        }, res, null, auth, null, true);
       } else {
 
         formOps.dynamicPage(res, domManipulator.offenseRecord(offenses,
-            parameters, language), auth);
+            asnBans, parameters, language), auth);
 
       }
 

@@ -5,6 +5,7 @@ var ObjectID = mongo.ObjectID;
 var logger = require('../logger');
 var db = require('../db');
 var latestOps;
+var locationOps;
 var bans = db.bans();
 var offenseRecords = db.offenseRecords();
 var threads = db.threads();
@@ -23,6 +24,36 @@ exports.loadDependencies = function() {
 
   lang = require('./langOps').languagePack;
   latestOps = require('./boardOps').latest;
+  locationOps = require('./locationOps');
+
+};
+
+exports.getAsnBans = function(asn, records, callback) {
+
+  bans.find({
+    asn : asn,
+    $or : [ {
+      expiration : {
+        $gt : new Date()
+      }
+    }, {
+      expiration : null
+    } ]
+  }, {
+    projection : {
+      asn : 1,
+      appeal : 1,
+      appliedBy : 1,
+      denied : 1,
+      nonBypassable : 1,
+      reason : 1,
+      expiration : 1
+    }
+  }).sort({
+    creation : -1
+  }).toArray(function gotBans(error, asnBans) {
+    callback(error, records, asnBans);
+  });
 
 };
 
@@ -50,7 +81,25 @@ exports.runReadQuery = function(ip, bypassId, callback) {
       ip : 0,
       bypassId : 0
     }
-  }).toArray(callback);
+  }).toArray(function(error, records) {
+
+    if (error || !ip) {
+      return callback(error, records);
+    }
+
+    // style exception, too simple
+    locationOps.getASN(ip, function gotASN(error, asn) {
+
+      if (error) {
+        callback(null, records);
+      } else {
+        exports.getAsnBans(asn, records, callback);
+      }
+
+    });
+    // style exception, too simple
+
+  });
 
 };
 

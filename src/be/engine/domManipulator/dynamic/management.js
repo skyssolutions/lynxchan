@@ -705,7 +705,7 @@ exports.getOffenseList = function(document, offenses, language) {
 
 };
 
-exports.offenseRecord = function(offenses, parameters, language) {
+exports.offenseRecord = function(offenses, asnBans, parameters, language) {
 
   var template = templateHandler(language).offenseRecordPage;
 
@@ -738,6 +738,15 @@ exports.offenseRecord = function(offenses, parameters, language) {
         '__threadIdentifier_location__', '').replace(
         '__postIdentifier_location__', '');
 
+  }
+
+  if (asnBans) {
+    document = document.replace('__asnBansDiv_location__',
+        template.removable.asnBansDiv).replace('__asnBansDiv_children__',
+        common.getBanList(asnBans, true, null, language));
+
+  } else {
+    document = document.replace('__asnBansDiv_location__', '');
   }
 
   return exports.getOffenseList(document, offenses, language);

@@ -761,6 +761,10 @@
     "template": "offenseRecordPage",
     "prebuiltFields": {
       "offensesDiv": "children",
+      "asnBansDiv": [
+        "children",
+        "removal"
+      ],
       "boardIdentifier": [
         "value",
         "removal"

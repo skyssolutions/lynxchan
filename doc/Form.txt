@@ -1441,7 +1441,7 @@ Parameters:
     boardUri: if informed, will display only asn bans for the board.
 
 Json output(Array): array with the asn bans found. Each object contains the following fields:
-    _id: unique id of the range ban.
+    _id: unique id of the ban.
     asn: asn of the ban.
     expiration(Date): expiration date of the ban.
     reason: reason of the ban.
@@ -1488,12 +1488,18 @@ Parameters:
     threadId: threadId of the posting to check the ip's and bypass' offense record.
     ip: ip to check it's offense record.
 
-Json output(Array): array with the offense records founds. Contains objects with the following fields:
-    reason: reason of the action.
-    global(Boolean): true if the action was global.
-    date(Date): date of the action taken.
-    expiration(Date): expiration of the action taken.
-    mod(String): login of the user that took the action.
+Json output(Object): object that returns the offense records and the related asn bans. Contains two entries:
+    offenses(Array): array with the offense records founds. Contains objects with the following fields:
+      reason: reason of the action.
+      global(Boolean): true if the action was global.
+      date(Date): date of the action taken.
+      expiration(Date): expiration of the action taken.
+      mod(String): login of the user that took the action.
+    asnBans(Array): array with the asn bans related to the search. Contains objects with the following fields:
+      _id: unique id of the ban.
+      asn: asn of the ban.
+      expiration(Date): expiration date of the ban.
+      reason: reason of the ban.
 
 ------------------------------------------------------------------------------------------
 
