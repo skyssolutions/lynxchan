@@ -46,6 +46,8 @@ exports.createBypassDoc = function(session, validationCode, validationResult,
   // style exception, too simple
   bypasses.insertOne({
     session : session,
+    creation : new Date(),
+    unused : true,
     validationCode : validationCode,
     validationHash : validationResult,
     usesLeft : bypassMaxPosts,
@@ -251,7 +253,9 @@ exports.useBypass = function(bypassId, req, callback, thread) {
 
   var usageField = thread ? 'nextThreadUsage' : 'nextUsage';
 
-  var setBlock = {};
+  var setBlock = {
+    unused : false
+  };
   setBlock[usageField] = nextUse;
 
   var multiplierToUse = thread ? versatileOps.threadFloodMultiplier : 1;
@@ -312,5 +316,48 @@ exports.useBypass = function(bypassId, req, callback, thread) {
     callback(errorToReturn, req);
 
   });
+
+};
+
+exports.purgeBypasses = function(userData, parameters, language, callback) {
+
+  var admin = userData.globalRole < 2;
+
+  if (!admin) {
+    return callback(lang(language).errDeniedBypassPurge);
+  }
+
+  var matchBlock = {};
+
+  if (parameters.unused) {
+    matchBlock.unused = true;
+  }
+
+  if (parameters.timeLimit) {
+    var limit = new Date();
+
+    limit.setUTCHours(limit.getUTCHours() - +parameters.timeLimit);
+
+    matchBlock.creation = {
+      $gt : limit
+    };
+  }
+
+  if (!parameters.confirmation) {
+
+    return bypasses.countDocuments(matchBlock, function(error, count) {
+
+      if (error) {
+        callback(error);
+      } else {
+        callback(lang(language).errBypassPurgeConfirmation.replace('{$count}',
+            count));
+      }
+
+    });
+
+  }
+
+  bypasses.deleteMany(matchBlock, callback);
 
 };

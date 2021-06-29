@@ -326,6 +326,8 @@ overboardThreads: stores aggregated data of threads on the overboard.
 ----------------------------------------------------------------------------------------
 
 blockBypasses: stores data about bypassing tokens.
+    creation(Date): time when the bypass was created.
+    unused(Boolean): set to false when the bypass is first used.
     hourlyLimitEnd(Date): time at which the hourly limit started counting.
     hourlyLimitCount(Number): count towards the hourly limit.
     usesLeft(Number): how many uses are left in this token.

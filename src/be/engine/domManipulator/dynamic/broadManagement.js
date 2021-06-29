@@ -530,13 +530,17 @@ exports.processHideableElements = function(document, userRole, staff, language,
 
     document = document.replace('__newStaffCombo_children__', exports
         .getNewStaffComboBox(userRole, language));
-    document = document.replace('__divStaff_children__', exports.getStaffDiv(
-        exports.getPossibleRoles(userRole, language), staff, language));
+    document = document.replace(
+        '__divStaff_children__',
+        exports.getStaffDiv(exports.getPossibleRoles(userRole, language),
+            staff, language)).replace('__purgeBypassesForm_location__',
+        removable.purgeBypassesForm);
 
   } else {
     document = document.replace('__addStaffForm_location__', '');
     document = document.replace('__massBanPanel_location__', '');
-    document = document.replace('__divStaff_location__', '');
+    document = document.replace('__divStaff_location__', '').replace(
+        '__purgeBypassesForm_location__', '');
   }
 
   return document;

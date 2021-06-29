@@ -1635,5 +1635,18 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID:: 100
+
+Name: purgeBypasses
+
+Description: purges block bypasses. Only usable by root and admin accounts.
+
+Parameters:
+  unused(Boolean): if informed, only unused bypasses will be purged.
+  timeLimit(Number): if informed, bypasses older than this many hours won't be deleted.
+  confirmation(Boolean): must be informed for the operation to be executed, otherwise it will only inform how many bypasses would be deleted.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

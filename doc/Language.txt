@@ -59,6 +59,8 @@ errBlankParameter: error sent to the user if a mandatory parameter is not sent o
 errDeniedGlobalManagement: error throw when the user is not allowed to view global management data.
 errThreadNotFound: error thrown when the specified thread of an operation cannot be found.
 errThreadLocked: error thrown when the user tries to reply to a locked thread.
+errBypassPurgeConfirmation: error thrown when the user fails to confirm a block bypass purge. Replaced: {$count}.
+errDeniedBypassPurge: error thrown when the user is not allowed to purge block bypasses.
 errDeniedBoardBanManagement: error thrown when the user is not allowed to manage bans for a board.
 errDeniedGlobalBanManagement: error thrown when the user is not allowed to manage global bans.
 errDeniedBoardASNBanManagement: error thrown when the user is not allowed to manage ASN bans for a board.
@@ -290,6 +292,7 @@ msgFlagCreated: message used after a new flag is created.
 msgFlagDeleted: message used after deleting a flag.
 msgAsnBanCreated: message used after placing an ASN ban.
 msgBypassValidated: message user after the bypass is validated.
+msgBypassesPurged: message used after block bypasses are purged.
 msgThreadMerged: message when a thread is merged.
 msgFileUnlinked: message used after unlinking a single file.
 msgBoardUnlocked: message used after unlocking a board's auto lock.

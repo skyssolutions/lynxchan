@@ -246,6 +246,7 @@
   {
     "template": "gManagement",
     "prebuiltFields": {
+      "purgeBypassesForm": "removal",
       "customThumbsLink": "removal",
       "trashBinLabel": "inner",
       "appealedBansLabel": "inner",

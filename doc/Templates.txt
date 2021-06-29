@@ -758,6 +758,10 @@ TEM_ID::10
 gManagement: global management page.
 
 Elements:
+purgeBypassesForm:
+    use: might be removed.
+    description: form used to purge block bypasses.
+
 trashBinLabel:
     use: have it's innerHTML manipulated.
     description: label that shows how many posts are currently in the trash bin.
