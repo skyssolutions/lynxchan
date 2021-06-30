@@ -593,11 +593,6 @@
   },
   {
     "type": "boolean",
-    "setting": "useSendmail",
-    "element": "checkboxSendmail"
-  },
-  {
-    "type": "boolean",
     "setting": "disableAccountCreation",
     "element": "checkboxDisableAccountCreation"
   },

@@ -7,22 +7,17 @@ These steps are not mandatory to achieve the dependency status laid out on the r
 4: Run ./configure and them make. You can add -jX where X is the amount of cores yours CPU have if you have more than 1 core available. After compiling, run sudo make install.
 5: Enable the epel-release and PowerTools repositories.
 6: Install ImageMagick from the package manager.
+7: Install sendmail from the package manager and configure it.
 
 Optional:
 If you wish to either make gifs thumbnails with ffmpeg or make thumbnails of videos and audio files.:
-7: Install zlib-devel from the package manager.
-8: Clone git://source.ffmpeg.org/ffmpeg.git and checkout the latest tag for the required version on the readme.
-9: Compile and install just like node. To be able to build native functions, you must run configure with both --enable-shared and --enable-pic. If you have a previous compilation, run make clean beforehand. Also, don't forget to run ldconfig to register the libraries, like "ldconfig /usr/local/lib". If you are having issues with pkg-config not finding it, use "export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"" and try again.
-10: Install ImageMagick-c++-devel from the package manager. This is also required to build the native functions.
-
-If you wish to use sendmail to send e-mails:
-11: Install sendmail from the package manager and configure it.
+8: Install zlib-devel from the package manager.
+9: Clone git://source.ffmpeg.org/ffmpeg.git and checkout the latest tag for the required version on the readme.
+10: Compile and install just like node. To be able to build native functions, you must run configure with both --enable-shared and --enable-pic. If you have a previous compilation, run make clean beforehand. Also, don't forget to run ldconfig to register the libraries, like "ldconfig /usr/local/lib". If you are having issues with pkg-config not finding it, use "export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"" and try again.
+11: Install ImageMagick-c++-devel from the package manager. This is also required to build the native functions.
 
 If you wish to validate mimes:
 12: Install file from the package manager.
 
 If you wish to strip exif data:
 13: Install epel from the package manager and then install perl-Image-ExifTool.
-
-After this you will also have to open the port 25 for smtp, if I am not mistaken, for the sending of e-mails and don't forget the tcp port you wish to provide access through.
-Naturally, if you opt to send e-mails through sendmail you won't necessarily need to open port 25/smtp.

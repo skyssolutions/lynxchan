@@ -578,7 +578,6 @@
       "checkboxOmitUnindexedContent": "checked",
       "checkboxGlobalBanners": "checked",
       "checkboxDisableFloodCheck": "checked",
-      "checkboxSendmail": "checked",
       "checkboxDisableSpamCheck": "checked",
       "checkboxVolunteerSettings": "checked",
       "checkboxVerboseGenerator": "checked",

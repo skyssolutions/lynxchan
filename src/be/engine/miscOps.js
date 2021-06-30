@@ -68,9 +68,9 @@ exports.loadSettings = function() {
   omitUnindexed = settings.omitUnindexedContent;
   verbose = settings.verbose || settings.verboseMisc;
 
-  mailer = require('nodemailer').createTransport(settings.useSendmail ? {
+  mailer = require('nodemailer').createTransport({
     sendmail : true
-  } : require('nodemailer-direct-transport')());
+  });
 
 };
 
