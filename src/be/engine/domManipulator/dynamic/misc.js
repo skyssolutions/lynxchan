@@ -20,6 +20,7 @@ exports.optionalStringLogParameters = [ 'user', 'boardUri', 'after', 'before' ];
 exports.accountSettingsRelation = {
   noBoardReports : 'checkboxNoBoardReports',
   alwaysSignRole : 'checkboxAlwaysSign',
+  noSettingsPassword : 'checkboxNoSettingsPassword',
   reportNotify : 'checkboxReportNotify'
 };
 

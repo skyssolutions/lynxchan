@@ -513,6 +513,7 @@ Name: changeAccountSettings
 Description: changes general account settings.
 
 Parameters:
+    noSettingsPassword: any value indicate the user wishes to not have to confirm his password when changing global settings.
     categoryFilter: report category filter for e-mail notifications. Can be sent multiple times.
     email: new e-mail of the account. 64 characters.
     alwaysSignRole: any value indicates the user wishes to always use his role signature on posts.
@@ -972,6 +973,7 @@ Name: globalSettings
 Description: displays the page that allows for the user to change global settings. Requires authentication. Restricted to root users.
 
 Json output(Object): object with the current global settings. Same as global settings.
+    confirmPassword(Boolean): if true, the user needs to input his password to save the new settings.
 
 ------------------------------------------------------------------------------------------
 

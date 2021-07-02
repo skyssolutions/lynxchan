@@ -213,6 +213,7 @@
     "template": "accountPage",
     "prebuiltFields": {
       "confirmationForm": "removal",
+      "checkboxNoSettingsPassword": "checked",
       "latestPostingsLink": "removal",
       "labelLogin": "inner",
       "labelGlobalRole": "inner",
@@ -481,6 +482,7 @@
   {
     "template": "globalSettingsPage",
     "prebuiltFields": {
+      "authDiv": "removal",
       "checkboxUnlockHistory": "checked",
       "fieldReportCategories": "value",
       "fieldFlagLimit": "value",

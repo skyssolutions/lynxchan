@@ -29,7 +29,7 @@ var keyLength = 256;
 var hashDigest = 'sha512';
 
 exports.validAccountSettings = [ 'alwaysSignRole', 'reportNotify',
-    'noBoardReports' ];
+    'noBoardReports', 'noSettingsPassword' ];
 
 exports.newAccountParameters = [ {
   field : 'login',

@@ -266,10 +266,19 @@ exports.setElements = function(siteSettingsRelation, document) {
 
 };
 
-exports.globalSettings = function(language) {
+exports.globalSettings = function(userSettings, language) {
 
-  var document = templateHandler(language).globalSettingsPage.template.replace(
-      '__title__', lang(language).titGlobalSettings);
+  var template = templateHandler(language).globalSettingsPage;
+
+  var document = template.template.replace('__title__',
+      lang(language).titGlobalSettings);
+
+  if (userSettings.indexOf('noSettingsPassword') < 0) {
+    document = document.replace('__authDiv_location__',
+        template.removable.authDiv);
+  } else {
+    document = document.replace('__authDiv_location__', '');
+  }
 
   return exports.setElements(miscOps.getParametersArray(language), document);
 

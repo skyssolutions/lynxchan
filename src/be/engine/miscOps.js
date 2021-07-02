@@ -607,6 +607,14 @@ exports.processNumberSetting = function(parameters, defaultSettings, item,
   }
 };
 
+exports.askForPassword = function(userData) {
+
+  var userSettings = userData.settings || [];
+
+  return userSettings.indexOf('noSettingsPassword') < 0;
+
+};
+
 exports.setGlobalSettings = function(userData, language, parameters, callback,
     checked) {
 
@@ -614,7 +622,7 @@ exports.setGlobalSettings = function(userData, language, parameters, callback,
     return callback(lang(language).errDeniedGlobalSettings);
   }
 
-  if (!checked) {
+  if (!checked && exports.askForPassword(userData)) {
 
     return accountOps.passwordMatches(userData, parameters.password || '',
         function(error, matches) {

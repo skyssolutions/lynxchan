@@ -681,6 +681,10 @@ labelLogin:
     use: have it's innerHTML manipulated.
     description: contains the user's login.
 
+checkboxNoSettingsPassword:
+    use: might be turned on.
+    description: checkbox that indicates if the user wishes to not have to confirm his password when changing global settings.
+
 checkboxNoBoardReports:
     use: might be turned on.
     description: check-box that indicates the user wishes to not see board reports on the global listing.
@@ -2011,6 +2015,10 @@ TEM_ID::47
 globalSettingsPage: page used to change global settings.
 
 Elements:
+authDiv:
+    use: might be removed.
+    description: div that contains the elements used to confirm the user password when saving new settings.
+
 fieldTrashLimitDays:
     use: have it's value manipulated.
     description: field with the amount of days posts stay in the trash bin before being pruned.
@@ -2142,10 +2150,6 @@ fieldFlagNameLength:
 checkboxUseAlternativeLanguages:
     use: might be turned on.
     description: indicates if the engine should use registered alternative languages.
-
-checkboxSendmail:
-    use: might be turned on.
-    description: indicates if the engine will send mails through sendmail.
 
 checkboxBoardStaffArchiving:
     use: might be turned on.

@@ -14,11 +14,15 @@ exports.getGlobalSettings = function(userData, res, json, auth, language) {
       formOps.outputError(error, 500, res, language, json, auth);
     } else {
 
+      var userSettings = userData.settings || [];
+
       if (json) {
-        formOps.outputResponse('ok', jsonBuilder.globalSettings(), res, null,
-            auth, null, true);
+        formOps.outputResponse('ok', jsonBuilder.globalSettings(userSettings),
+            res, null, auth, null, true);
       } else {
-        return formOps.dynamicPage(res, dom.globalSettings(language), auth);
+
+        return formOps.dynamicPage(res, dom.globalSettings(userSettings,
+            language), auth);
       }
     }
   });

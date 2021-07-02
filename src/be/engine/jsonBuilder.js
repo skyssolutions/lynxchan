@@ -576,7 +576,7 @@ exports.rangeBans = function(rangeBans, boardData, userRole) {
 
 };
 
-exports.globalSettings = function() {
+exports.globalSettings = function(userSettings) {
 
   var toOutput = {};
 
@@ -586,6 +586,8 @@ exports.globalSettings = function() {
     var setting = settingsRelation[i];
     toOutput[setting.setting] = settings[setting.setting];
   }
+
+  toOutput.confirmPassword = userSettings.indexOf('noSettingsPassword') < 0;
 
   return toOutput;
 
