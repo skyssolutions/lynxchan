@@ -212,6 +212,7 @@
   {
     "template": "accountPage",
     "prebuiltFields": {
+      "divSettingsPassword": "removal",
       "confirmationForm": "removal",
       "checkboxNoSettingsPassword": "checked",
       "latestPostingsLink": "removal",

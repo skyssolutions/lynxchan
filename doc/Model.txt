@@ -196,7 +196,7 @@ users: stores users.
         noBoardReports: indicates the user wishes to not see board reports on the global listing.
         alwaysSignRole: indicates the user wishes to always use his role signature on posts.
         reportNotify: indicates the user wishes to receive e-mail notifications of reports.
-        noSettingsPassword: indicates the user wishes to not have to input his password when changing global settings.
+        noSettingsPassword: indicates the user wishes to not have to input his password when changing global or account settings.
     inactive(Boolean): indicates the account is inactive.
     remember(Boolean): indicates if the user wishes to have longer sessions. As it stands, without this, users will be logged out after 1 hour of inactivity and 1 month if set to true.
 

@@ -713,13 +713,8 @@ exports.recoverAccount = function(parameters, language, callback) {
 };
 // } Section 5: Reset request
 
-exports.changeSettings = function(userData, parameters, language, callback) {
-
-  miscOps.sanitizeStrings(parameters, exports.changeSettingsParameters);
-
-  if (!exports.checkEmail(parameters.email, language, callback)) {
-    return;
-  }
+// Section 6: Settings change {
+exports.saveSettings = function(userData, parameters, language, callback) {
 
   var confirmed = parameters.email !== userData.email ? false
       : userData.confirmed;
@@ -750,7 +745,36 @@ exports.changeSettings = function(userData, parameters, language, callback) {
 
 };
 
-// Section 6: Password change {
+exports.changeSettings = function(userData, parameters, language, callback) {
+
+  miscOps.sanitizeStrings(parameters, exports.changeSettingsParameters);
+
+  if (!exports.checkEmail(parameters.email, language, callback)) {
+    return;
+  }
+
+  var currentSettings = userData.settings || [];
+
+  if (currentSettings.indexOf('noSettingsPassword') >= 0) {
+    return exports.saveSettings(userData, parameters, language, callback);
+  }
+
+  exports.passwordMatches(userData, parameters.password || '', function(error,
+      matches) {
+
+    if (error) {
+      callback(error);
+    } else if (!matches) {
+      callback(lang(language).errIncorrectPassword);
+    } else {
+      exports.saveSettings(userData, parameters, language, callback);
+    }
+  });
+
+};
+// Section 6: Settings change {
+
+// Section 7: Password change {
 exports.updatePassword = function(userData, parameters, callback) {
 
   exports.setUserPassword(userData.login, parameters.newPassword,
@@ -771,9 +795,7 @@ exports.changePassword = function(userData, parameters, language, callback,
     override) {
 
   if (parameters.newPassword !== parameters.confirmation) {
-
-    callback(lang(language).errPasswordMismatch);
-    return;
+    return callback(lang(language).errPasswordMismatch);
   }
 
   users.findOne({
@@ -802,7 +824,7 @@ exports.changePassword = function(userData, parameters, language, callback,
   });
 
 };
-// } Section 6: Password change
+// } Section 7: Password change
 
 exports.passwordMatches = function(userData, password, callback) {
 
@@ -975,7 +997,7 @@ exports.addAccount = function(userRole, parameters, language, callback) {
 
 };
 
-// Section 7: Account deletion {
+// Section 8: Account deletion {
 exports.finishAccountDeletion = function(account, callback) {
 
   boards.updateMany({
@@ -1073,9 +1095,9 @@ exports.deleteAccount = function(userData, parameters, language, callback) {
   });
 
 };
-// } Section 7: Account deletion
+// } Section 8: Account deletion
 
-// Section 8: Confirmation request {
+// Section 9: Confirmation request {
 exports.generateRequestKey = function(domain, userData, language, callback) {
 
   var token = crypto.createHash('sha256')
@@ -1139,7 +1161,7 @@ exports.requestConfirmation = function(domain, language, userData, callback) {
   });
 
 };
-// } Section 8: Confirmation request
+// } Section 9: Confirmation request
 
 exports.confirmEmail = function(parameters, language, callback) {
 

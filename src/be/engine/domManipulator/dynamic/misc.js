@@ -161,6 +161,30 @@ exports.setAccountSettingsCheckbox = function(userData, document, removables,
 
 };
 
+exports.setAccountHideableDivs = function(userData, removable, document) {
+
+  var allowed = userData.globalRole <= boardCreationRequirement;
+
+  if (boardCreationRequirement <= miscOps.getMaxStaffRole() && !allowed) {
+    document = document.replace('__boardCreationDiv_location__', '');
+  } else {
+    document = document.replace('__boardCreationDiv_location__',
+        removable.boardCreationDiv);
+  }
+
+  var userSettings = userData.settings || [];
+
+  if (userSettings.indexOf('noSettingsPassword') > -1) {
+    document = document.replace('__divSettingsPassword_location__', '');
+  } else {
+    document = document.replace('__divSettingsPassword_location__',
+        removable.divSettingsPassword);
+  }
+
+  return document;
+
+};
+
 exports.setAccountHideableElements = function(userData, document, removable) {
 
   var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
@@ -170,15 +194,6 @@ exports.setAccountHideableElements = function(userData, document, removable) {
   } else {
     document = document.replace('__globalManagementLink_location__',
         removable.globalManagementLink);
-  }
-
-  var allowed = userData.globalRole <= boardCreationRequirement;
-
-  if (boardCreationRequirement <= miscOps.getMaxStaffRole() && !allowed) {
-    document = document.replace('__boardCreationDiv_location__', '');
-  } else {
-    document = document.replace('__boardCreationDiv_location__',
-        removable.boardCreationDiv);
   }
 
   if (disabledLatestPostings) {
@@ -196,7 +211,7 @@ exports.setAccountHideableElements = function(userData, document, removable) {
         removable.confirmationForm);
   }
 
-  return document;
+  return exports.setAccountHideableDivs(userData, removable, document);
 
 };
 

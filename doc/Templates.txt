@@ -681,9 +681,13 @@ labelLogin:
     use: have it's innerHTML manipulated.
     description: contains the user's login.
 
+divSettingsPassword:
+    use: might be removed.
+    description: div that contains the password confirmation field for saving settings.
+
 checkboxNoSettingsPassword:
     use: might be turned on.
-    description: checkbox that indicates if the user wishes to not have to confirm his password when changing global settings.
+    description: checkbox that indicates if the user wishes to not have to confirm his password when changing global or account settings.
 
 checkboxNoBoardReports:
     use: might be turned on.
