@@ -563,7 +563,7 @@ exports.validate = function(auth, language, callback) {
 // Section 4: Reset request {
 exports.generateRequest = function(domain, login, language, email, callback) {
 
-  var requestHash = crypto.createHash('sha256').update(login + Math.random())
+  var requestHash = crypto.createHash('sha256').update(crypto.randomBytes(256))
       .digest('hex');
 
   var expiration = new Date();
@@ -1100,8 +1100,8 @@ exports.deleteAccount = function(userData, parameters, language, callback) {
 // Section 9: Confirmation request {
 exports.generateRequestKey = function(domain, userData, language, callback) {
 
-  var token = crypto.createHash('sha256')
-      .update(userData.login + Math.random()).digest('hex');
+  var token = crypto.createHash('sha256').update(crypto.randomBytes(256))
+      .digest('hex');
 
   var expiration = new Date();
 

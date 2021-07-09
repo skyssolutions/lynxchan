@@ -194,9 +194,8 @@ exports.updateLatest = function(boardData, enabledCaptcha, language, callback,
 exports.getNewThread = function(req, userData, parameters, board, threadId,
     wishesToSign) {
 
-  var salt = crypto.createHash('sha256').update(
-      threadId + parameters.toString() + Math.random() + new Date()).digest(
-      'hex');
+  var salt = crypto.createHash('sha256').update(crypto.randomBytes(256))
+      .digest('hex');
 
   var ip = logger.ip(req);
 

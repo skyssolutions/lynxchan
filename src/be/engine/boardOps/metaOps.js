@@ -651,8 +651,8 @@ exports.insertBoard = function(parameters, userData, language, callback) {
   boards.insertOne({
     boardUri : parameters.boardUri,
     boardName : parameters.boardName,
-    ipSalt : crypto.createHash('sha256').update(
-        parameters.toString() + Math.random() + new Date()).digest('hex'),
+    ipSalt : crypto.createHash('sha256').update(crypto.randomBytes(256))
+        .digest('hex'),
     boardDescription : parameters.boardDescription,
     owner : userData.login,
     settings : exports.defaultSettings,

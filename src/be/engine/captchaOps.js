@@ -315,8 +315,8 @@ exports.generateImage = function(text, captchaData, callback) {
 
 exports.createCaptcha = function(callback, pool) {
 
-  var text = crypto.createHash('sha256').update(Math.random() + new Date())
-      .digest('hex').substring(0, 6);
+  var text = crypto.createHash('sha256').update(crypto.randomBytes(64)).digest(
+      'hex').substring(0, 6);
 
   var expiration = new Date();
   expiration.setUTCMinutes(expiration.getUTCMinutes() + captchaExpiration);

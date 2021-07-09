@@ -62,7 +62,7 @@ exports.createBypassDoc = function(session, validationCode, validationResult,
 
 exports.getValidationResult = function(session, callback) {
 
-  var validationCode = Math.floor(Math.random() * validationRange).toString();
+  var validationCode = crypto.randomInt(validationRange).toString();
 
   crypto.pbkdf2(session, validationCode, 16384, 256, 'SHA512', function(error,
       result) {
