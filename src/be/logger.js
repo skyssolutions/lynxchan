@@ -326,7 +326,7 @@ exports.getRawIp = function(req) {
   var toRet;
 
   if (req.headers['x-forwarded-for'] && req.trustedProxy) {
-    toRet = req.headers['x-forwarded-for'];
+    toRet = req.headers['x-forwarded-for'].split(',')[0];
   } else {
     toRet = req.connection.remoteAddress;
   }
