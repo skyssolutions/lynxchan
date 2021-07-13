@@ -18,7 +18,7 @@ See other branches named like `1.1.x` for stable versions. They will receive onl
 * [Sendmail](https://www.proofpoint.com/us/open-source-email-solution) 8.14.7 used to send e-mails.
 
 # Optional dependencies
-* [ffmpeg](https://www.ffmpeg.org/) 4.2 if mediaThumb setting is enabled. Requires zlib-devel on centOS to work properly when compiled from source.
+* [ffmpeg](https://www.ffmpeg.org/) 4.2 if mediaThumb setting is enabled. Requires zlib-devel on Rocky Linux to work properly when compiled from source.
 * [file](http://www.darwinsys.com/file/) 5.11 if the option to validate upload mimetypes is enabled.
 * [exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool/) 11.01 if the option to strip exif data is enabled.
 
