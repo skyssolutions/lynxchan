@@ -1,7 +1,7 @@
 'use strict';
 
 var mongo = require('mongodb');
-var ObjectID = mongo.ObjectID;
+var ObjectID = mongo.ObjectId;
 var captchas = require('../db').captchas();
 var captchaOps = require('../engine/captchaOps');
 var formOps = require('../engine/formOps');

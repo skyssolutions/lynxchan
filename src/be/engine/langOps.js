@@ -4,7 +4,7 @@
 
 var fs = require('fs');
 var mongo = require('mongodb');
-var ObjectID = mongo.ObjectID;
+var ObjectID = mongo.ObjectId;
 var dbLanguages = require('../db').languages();
 var verbose;
 var languagePackPath;

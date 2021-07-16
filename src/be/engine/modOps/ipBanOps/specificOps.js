@@ -1,7 +1,7 @@
 'use strict';
 
 var mongo = require('mongodb');
-var ObjectID = mongo.ObjectID;
+var ObjectID = mongo.ObjectId;
 var db = require('../../../db');
 var boards = db.boards();
 var bans = db.bans();

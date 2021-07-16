@@ -3,7 +3,7 @@
 // operations for banner management
 
 var mongo = require('mongodb');
-var ObjectID = mongo.ObjectID;
+var ObjectID = mongo.ObjectId;
 var db = require('../db');
 var boards = db.boards();
 var files = db.files();

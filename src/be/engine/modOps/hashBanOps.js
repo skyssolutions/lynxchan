@@ -3,7 +3,7 @@
 // handles hash ban operations
 
 var mongo = require('mongodb');
-var ObjectID = mongo.ObjectID;
+var ObjectID = mongo.ObjectId;
 var logger = require('../../logger');
 var allowTor;
 var db = require('../../db');

@@ -4,7 +4,7 @@
 
 var url = require('url');
 var mongo = require('mongodb');
-var ObjectID = mongo.ObjectID;
+var ObjectID = mongo.ObjectId;
 var exec = require('child_process').exec;
 var native = require('../kernel').native;
 var captchas = require('../db').captchas();

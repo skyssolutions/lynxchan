@@ -2,7 +2,7 @@
 
 var crypto = require('crypto');
 var mongo = require('mongodb');
-var ObjectID = mongo.ObjectID;
+var ObjectID = mongo.ObjectId;
 var db = require('../db');
 var lang;
 var bypasses = db.bypasses();

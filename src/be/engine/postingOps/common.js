@@ -4,7 +4,7 @@
 
 var fs = require('fs');
 var mongo = require('mongodb');
-var ObjectID = mongo.ObjectID;
+var ObjectID = mongo.ObjectId;
 var crypto = require('crypto');
 var taskListener = require('../../taskListener');
 var logger = require('../../logger');
