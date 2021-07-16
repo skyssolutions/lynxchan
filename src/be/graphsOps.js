@@ -39,7 +39,7 @@ exports.removeDuplicates = function(uploadStream, callback) {
       var ids = results[0].ids;
 
       // style exception, too simple
-      chunks.removeMany({
+      chunks.deleteMany({
         'files_id' : {
           $in : ids
         }
@@ -49,7 +49,7 @@ exports.removeDuplicates = function(uploadStream, callback) {
           callback(error);
         } else {
 
-          files.removeMany({
+          files.deleteMany({
             _id : {
               $in : ids
             }

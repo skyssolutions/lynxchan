@@ -325,7 +325,7 @@ function moveThumbNail(postingData, file, identifier, callback) {
 
 function removeChunks(results, callback) {
 
-  cachedChunks.removeMany({
+  cachedChunks.deleteMany({
     'files_id' : {
       $in : results[0].ids
     }
@@ -335,7 +335,7 @@ function removeChunks(results, callback) {
       callback(error);
     } else {
 
-      cachedFiles.removeMany({
+      cachedFiles.deleteMany({
         _id : {
           $in : results[0].ids
         }

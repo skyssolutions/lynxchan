@@ -354,7 +354,7 @@ exports.deletePrunedFiles = function(identifiers, files, callback) {
     if (error) {
       callback(error);
     } else {
-      references.removeMany({
+      references.deleteMany({
         sha256 : {
           $in : identifiers
         }
@@ -913,7 +913,7 @@ exports.getMedia = function(userData, parameters, language, callback) {
 // Section 4: File deletion {
 exports.deleteReferences = function(userData, identifiers, callback) {
 
-  references.removeMany({
+  references.deleteMany({
     sha256 : {
       $in : identifiers
     }
@@ -1163,7 +1163,7 @@ exports.moveToDisk = function(toMove, callback) {
     uploadStream.once('finish', function() {
 
       // style exception, too simple
-      chunks.removeMany({
+      chunks.deleteMany({
         'files_id' : toMove._id
       }, function removedChunks(error) {
 

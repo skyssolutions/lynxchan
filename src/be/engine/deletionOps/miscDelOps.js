@@ -63,7 +63,7 @@ exports.removeThreads = function(boardUri, threadsToDelete, callback) {
     }
   };
 
-  threads.removeMany(queryBlock, function removedThreads(error, result) {
+  threads.deleteMany(queryBlock, function removedThreads(error, result) {
 
     if (error) {
       callback(error);
@@ -77,7 +77,7 @@ exports.removeThreads = function(boardUri, threadsToDelete, callback) {
       }
 
       // style exception, too simple
-      reports.removeMany(queryBlock, function removedReports(error) {
+      reports.deleteMany(queryBlock, function removedReports(error) {
 
         if (error) {
           callback(error);

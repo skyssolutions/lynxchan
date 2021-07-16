@@ -567,7 +567,7 @@ exports.removeGridFsFiles = function(onDb, callback) {
     return callback();
   }
 
-  chunks.removeMany({
+  chunks.deleteMany({
     'files_id' : {
       $in : onDb.ids
     }
@@ -578,7 +578,7 @@ exports.removeGridFsFiles = function(onDb, callback) {
     } else {
 
       // style exception, too simple
-      files.removeMany({
+      files.deleteMany({
         _id : {
           $in : onDb.ids
         }
@@ -664,7 +664,7 @@ exports.removeDiskFiles = function(onDisk, onDb, callback) {
       return exports.removeGridFsFiles(onDb, callback);
     }
 
-    files.removeMany({
+    files.deleteMany({
       _id : {
         $in : toRemove
       }

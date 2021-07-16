@@ -569,7 +569,7 @@ exports.iteratePruning = function(query, callback, index) {
     return callback();
   }
 
-  pruneCollections[index].removeMany(query, function(error) {
+  pruneCollections[index].deleteMany(query, function(error) {
 
     if (error) {
       callback(error);

@@ -599,7 +599,7 @@ exports.cleanLatestImages = function(callback) {
     } else {
 
       // style exception, too simple
-      globalLatestImages.removeMany({
+      globalLatestImages.deleteMany({
         _id : {
           $in : results[0].ids
         }

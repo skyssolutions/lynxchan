@@ -732,7 +732,7 @@ exports.iterateBoardsForOrphanedPosts = function(boards, callback) {
 
   var board = boards.pop();
 
-  cachedPosts.removeMany({
+  cachedPosts.deleteMany({
     boardUri : board._id,
     threadId : {
       $nin : board.threads

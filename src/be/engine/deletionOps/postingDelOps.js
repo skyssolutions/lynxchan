@@ -267,7 +267,7 @@ exports.removeReportsAndGlobalLatestImages = function(board, parameters, cb,
     } ]
   };
 
-  globalLatestImages.removeMany(matchBlock, function removedLatesImages(error) {
+  globalLatestImages.deleteMany(matchBlock, function removedLatesImages(error) {
 
     if (error) {
       return cb(error);
@@ -276,7 +276,7 @@ exports.removeReportsAndGlobalLatestImages = function(board, parameters, cb,
     if (!parameters.deleteUploads && parameters.action !== 'trash') {
 
       // style exception, too simple
-      reports.removeMany(matchBlock, function removedReports(error) {
+      reports.deleteMany(matchBlock, function removedReports(error) {
 
         if (error) {
           cb(error);

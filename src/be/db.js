@@ -452,7 +452,7 @@ function initTripcodes(callback) {
 
 function initHashBans(callback) {
 
-  cachedHashBans.removeMany({
+  cachedHashBans.deleteMany({
     sha256 : null
   }, function(error) {
 
