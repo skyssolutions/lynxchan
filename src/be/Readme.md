@@ -211,6 +211,7 @@ Settings files that goes into the settings directory:
 * `disableEmail`(Boolean): silently disables sending any e-mails from the server.
 * `noReportCaptcha`(Boolean): disables the need for captcha when reporting.
 * `reportCategories`(Array): array with possible report categories.
+* `defaultTheme`: default theme to be put into the body of all pages the final product of this setting consists of something like class="theme_x". The front-end's theme scripts must be compatible with it.
 * `trashLimitDays`(Number): how many days trashed posts live before being automatically deleted. If none if set, the trash bin is entirely disabled and posts are always immediately deleted.
 * `wsPort`(Number): port to be used for notification web socket. Can't be any of the other ports used.
 * `wssPort`(Number): port to be used for secure notification websocket. A regular websocket won't work under a page loaded through ssl. It will use the same files used for regular ssl. Can't be any of the other ports used.

@@ -2023,6 +2023,10 @@ authDiv:
     use: might be removed.
     description: div that contains the elements used to confirm the user password when saving new settings.
 
+fieldDefaultTheme:
+    use: have it's value manipulated.
+    description: field with the default theme to be used.
+
 fieldTrashLimitDays:
     use: have it's value manipulated.
     description: field with the amount of days posts stay in the trash bin before being pruned.

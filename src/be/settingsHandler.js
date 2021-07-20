@@ -342,12 +342,13 @@ function checkSettingsChanges(settings, callback) {
 
   var feChanged = generalSettings.fePath !== settings.fePath;
   var lChanged = generalSettings.languagePackPath !== settings.languagePackPath;
+  var themeChanged = generalSettings.defaultTheme !== settings.defaultTheme;
 
   if (!settings.allowBoardCustomJs && generalSettings.allowBoardCustomJs) {
     require('./engine/boardOps').custom.clearCustomJs();
   }
 
-  if (feChanged || lChanged) {
+  if (feChanged || lChanged || themeChanged) {
 
     exports.clearIndividualCaches(function clearedIndividualCaches() {
 
@@ -397,7 +398,7 @@ function prepareSettingsForChangeCheck(settings, callback) {
       'topBoardsCount', 'globalLatestPosts', 'forceCaptcha', 'overboard',
       'frontPageStats', 'disableAccountCreation', 'disableCatalogPosting',
       'redactModNames', 'omitUnindexedContent', 'unboundBoardLimits',
-      'noReportCaptcha', 'reportCategories' ];
+      'noReportCaptcha', 'reportCategories', 'defaultTheme' ];
 
   // these ones default to the default values
   var defaultToDefault = [ 'pageSize', 'latestPostsAmount', 'maxFileSizeMB',

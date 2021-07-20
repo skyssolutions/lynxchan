@@ -487,6 +487,7 @@
       "checkboxUnlockHistory": "checked",
       "fieldReportCategories": "value",
       "fieldFlagLimit": "value",
+      "fieldDefaultTheme": "value",
       "checkboxDisableEmail": "checked",
       "fieldTrashLimitDays": "value",
       "checkboxLowercaseBoardUris": "checked",

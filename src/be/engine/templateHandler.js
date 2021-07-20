@@ -12,6 +12,7 @@ var verbose;
 var lang;
 var parser = require('parse5');
 var preBuiltDefault = {};
+var defaultTheme;
 var preBuiltAlternative = {};
 
 exports.simpleAttributes = {
@@ -79,6 +80,7 @@ exports.loadSettings = function() {
 
   var settings = settingsHandler.getGeneralSettings();
   verbose = settings.verbose || settings.verboseMisc;
+  defaultTheme = settings.defaultTheme;
 
 };
 
@@ -451,6 +453,10 @@ exports.checkMainChildren = function(page, document, map) {
     }
   }
 
+  if (defaultTheme && map.body) {
+    exports.setAttribute(map.body, 'class', 'theme_' + defaultTheme);
+  }
+
   return error;
 
 };
@@ -534,6 +540,21 @@ exports.loadPages = function(errors, fePath, templateSettings, prebuiltObject) {
 };
 // } Section 5: Pages
 
+exports.handleTemplatedMap = function(templateSettings, dom) {
+
+  var map = {};
+
+  exports.startMapping(templateSettings.optionalContent, dom.childNodes, map,
+      {});
+
+  if (map.body && defaultTheme) {
+    exports.setAttribute(map.body, 'class', 'theme_' + defaultTheme);
+  }
+
+  return parser.serialize(dom);
+
+};
+
 exports.loadTemplated = function(fePath, templateSettings, prebuilt, language) {
 
   prebuilt.templated = {};
@@ -558,12 +579,7 @@ exports.loadTemplated = function(fePath, templateSettings, prebuilt, language) {
     }
 
     if (dom.childNodes.length > 1) {
-
-      exports.startMapping(templateSettings.optionalContent, dom.childNodes,
-          {}, {});
-
-      content = parser.serialize(dom);
-
+      content = exports.handleTemplatedMap(templateSettings, dom);
     }
 
     prebuilt.templated[entry] = {
