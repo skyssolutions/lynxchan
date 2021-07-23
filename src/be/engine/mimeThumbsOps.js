@@ -78,7 +78,7 @@ exports.processThumbFile = function(toInsert, file, callback) {
     if (error) {
 
       // style exception, too simple
-      thumbs.removeOne({
+      thumbs.deleteOne({
         _id : toInsert._id
       }, function removedThumb(deletionError) {
         callback(deletionError || error);

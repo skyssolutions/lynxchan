@@ -155,7 +155,7 @@ exports.validateBypass = function(bypassId, code, language, callback) {
 
     } else {
 
-      bypasses.removeOne({
+      bypasses.deleteOne({
         _id : bypassId
       }, function() {
         callback(lang(language).errBypassNotFound);

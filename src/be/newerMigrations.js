@@ -518,7 +518,7 @@ exports.applySha256 = function(callback, lastId) {
       if (!sha256) {
 
         // style exception, too simple
-        return references.removeOne({
+        return references.deleteOne({
           _id : foundReferences[0]._id
         }, function(error) {
 

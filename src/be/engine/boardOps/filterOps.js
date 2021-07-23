@@ -131,7 +131,7 @@ exports.deleteFilter = function(userData, parameters, language, callback) {
       return callback(lang(language).errDeniedGlobalManagement);
     }
 
-    return filters.removeOne({
+    return filters.deleteOne({
       originalTerm : parameters.filterIdentifier
     }, callback);
 

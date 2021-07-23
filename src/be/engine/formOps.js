@@ -788,7 +788,7 @@ exports.outputBan = function(ban, bypassable, req, res, json, callback, auth) {
     return;
   }
 
-  bans.removeOne({
+  bans.deleteOne({
     _id : ban._id
   }, function removed(error) {
     if (verbose) {

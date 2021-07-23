@@ -57,7 +57,7 @@ exports.processFlagFile = function(toInsert, file, callback) {
     if (error) {
 
       // style exception, too simple
-      flags.removeOne({
+      flags.deleteOne({
         _id : toInsert._id
       }, function removedFlag(deletionError) {
         callback(deletionError || error);
@@ -199,7 +199,7 @@ exports.cleanFlagFromPostings = function(flagUrl, boardUri, callback) {
 
 exports.removeFlag = function(flag, callback) {
 
-  flags.removeOne({
+  flags.deleteOne({
     _id : flag._id
   }, function removedFlag(error) {
     if (error) {

@@ -382,7 +382,7 @@ exports.updateThread = function(boardData, parameters, thread, language,
   var updateBlock = exports.getSetBlock(thread, post);
 
   var cleanPosts = false;
-  var saged = parameters.email === 'sage';
+  var saged = parameters.email && (parameters.email.toLowerCase() === 'sage');
   var bump = false;
 
   var limitToUse = exports.getBumpLimit(boardData);

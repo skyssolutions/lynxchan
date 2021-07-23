@@ -625,7 +625,7 @@ function checkFoundBypassItem(results, colIndex) {
     }
 
     // style exception, too simple
-    bypassCols[colIndex].removeOne({
+    bypassCols[colIndex].deleteOne({
       _id : results[0]._id
     }, function(error) {
 
