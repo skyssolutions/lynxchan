@@ -127,52 +127,55 @@ exports.countDocuments = function(userData, auth, parameters, req, res) {
 
   boards.countDocuments(queryBlock, function(error, count) {
     if (error) {
-      formOps.outputError(error, 500, res, req.language, json);
-    } else {
-      var pageCount = Math.ceil(count / pageSize);
-
-      pageCount = pageCount || 1;
-
-      var toSkip = (parameters.page - 1) * pageSize;
-
-      // style exception, too simple
-      boards.find(queryBlock, {
-        projection : {
-          _id : 0,
-          boardName : 1,
-          boardUri : 1,
-          inactive : 1,
-          specialSettings : 1,
-          uniqueIps : 1,
-          tags : 1,
-          boardDescription : 1,
-          postsPerHour : 1,
-          lastPostId : 1
-        }
-      }).sort(exports.getSortBlock(parameters)).skip(toSkip).limit(pageSize)
-          .toArray(
-              function(error, foundBoards) {
-                if (error) {
-                  formOps
-                      .outputError(error, 500, res, req.language, json, auth);
-                } else {
-
-                  if (json) {
-                    formOps.outputResponse('ok', jsonBuilder.boards(pageCount,
-                        foundBoards), res, null, auth, null, true);
-                  } else {
-
-                    return formOps
-                        .dynamicPage(res, domManipulator.boards(parameters,
-                            foundBoards, pageCount, req.language), auth);
-
-                  }
-
-                }
-              });
-      // style exception, too simple
-
+      return formOps.outputError(error, 500, res, req.language, json);
     }
+
+    var pageCount = Math.ceil(count / pageSize);
+
+    pageCount = pageCount || 1;
+
+    var toSkip = (page - 1) * pageSize;
+
+    if (toSkip < 0) {
+      toSkip = 0;
+    }
+
+    // style exception, too simple
+    boards.find(queryBlock, {
+      projection : {
+        _id : 0,
+        boardName : 1,
+        boardUri : 1,
+        inactive : 1,
+        specialSettings : 1,
+        uniqueIps : 1,
+        tags : 1,
+        boardDescription : 1,
+        postsPerHour : 1,
+        lastPostId : 1
+      }
+    }).sort(exports.getSortBlock(parameters)).skip(toSkip).limit(pageSize)
+        .toArray(
+            function(error, foundBoards) {
+
+              if (error) {
+                return formOps.outputError(error, 500, res, req.language, json,
+                    auth);
+              }
+
+              if (json) {
+                formOps.outputResponse('ok', jsonBuilder.boards(pageCount,
+                    foundBoards), res, null, auth, null, true);
+              } else {
+
+                return formOps.dynamicPage(res, domManipulator.boards(
+                    parameters, foundBoards, pageCount, req.language), auth);
+
+              }
+
+            });
+    // style exception, too simple
+
   });
 
 };

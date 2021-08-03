@@ -177,7 +177,7 @@ Settings files that goes into the settings directory:
 * `messageLength`(Number): character limit for posted messages. Defaults to 4096.
 * `ffmpegGifs`(Boolean): indicates if ffmpeg should be used to generate animated gif thumbnails. It yields lower quality thumbnails but they are smaller and are processed much faster.
 * `spamIpsSource`: complete url to be used to fetch spammer's ips. It has to be able to be processed by the `unzip` command and contain the ips in plain text separated by commas. Defaults to `https://www.stopforumspam.com/downloads/bannedips.zip`. The ip list is downloaded every midnight UTC or if the file `spamData` can't be found on the `src/be` directory.
-* `checkboxVersatileBlockBypass`(Boolean): indicates if people caught in the spam list or range bans are allowed to use the block bypass, given the block bypass is not disabled.
+* `allowVersatileBlockBypass`(Boolean): indicates if people caught in the spam list or range bans are allowed to use the block bypass, given the block bypass is not disabled.
 * `disableSpamCheck`(Boolean): indicates if the spam check should be skipped. Meant to be used on emergencies where its not possible at all to obtain the spam ip list.
 * `disableCatalogPosting`(Boolean): removes the thread creation form from the board`s catalogs.
 * `ipExpirationDays`(Number): amount of days to wait before removing the ip from postings counting from it's date of creation. Null or any value below 1 means that ips should never be removed. The schedule that clears the ips is run hourly.
