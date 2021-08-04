@@ -68,62 +68,61 @@ exports.gatherContentToDelete = function(threadContext, boardUri, ips,
         $push : '$threadId'
       }
     }
-  } ]).toArray(
-      function gotThreads(error, results) {
+  } ]).toArray(function gotThreads(error, results) {
 
-        if (error) {
-          return callback(error);
+    if (error) {
+      return callback(error);
+    }
+
+    var foundThreads = {};
+
+    for (var i = 0; i < results.length; i++) {
+
+      var result = results[i];
+
+      foundThreads[result._id] = result.threads;
+
+    }
+
+    // style exception, too simple
+    posts.aggregate([ {
+      $match : queryBlock
+    }, {
+      $project : {
+        boardUri : 1,
+        postId : 1
+      }
+    }, {
+      $group : {
+        _id : '$boardUri',
+        posts : {
+          $push : '$postId'
         }
+      }
+    } ]).toArray(function gotPosts(error, results) {
 
-        var foundThreads = {};
+      if (error) {
+        return callback(error);
+      }
 
-        for (var i = 0; i < results.length; i++) {
+      var foundPosts = {};
 
-          var result = results[i];
+      for (var i = 0; i < results.length; i++) {
 
-          foundThreads[result._id] = result.threads;
+        var result = results[i];
 
-        }
+        foundPosts[result._id] = result.posts;
 
-        // style exception, too simple
-        posts.aggregate([ {
-          $match : queryBlock
-        }, {
-          $project : {
-            boardUri : 1,
-            postId : 1
-          }
-        }, {
-          $group : {
-            _id : '$boardUri',
-            posts : {
-              $push : '$postId'
-            }
-          }
-        } ]).toArray(
-            function gotPosts(error, results) {
+      }
 
-              if (error) {
-                return callback(error);
-              }
+      exports.postingDeletions.posting(userData, {
+        action : 'delete'
+      }, foundThreads, foundPosts, language, callback);
 
-              var foundPosts = {};
+    });
+    // style exception, too simple
 
-              for (var i = 0; i < results.length; i++) {
-
-                var result = results[i];
-
-                foundPosts[result._id] = result.posts;
-
-              }
-
-              exports.postingDeletions.posting(userData, {}, foundThreads,
-                  foundPosts, language, callback);
-
-            });
-        // style exception, too simple
-
-      });
+  });
 
 };
 

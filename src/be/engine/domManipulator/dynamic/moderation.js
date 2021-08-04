@@ -552,7 +552,7 @@ exports.trashBin = function(threads, posts, latest, parameters, boardData,
       exports.getPosts(posts, boardData, userRole, language)).replace(
       '__threadList_children__',
       staticPages.getOverboardThreads(threads, latest, language, true,
-          boardData, userRole)).replace('__divBanCaptcha_location__',
+          boardData, userRole, true)).replace('__divBanCaptcha_location__',
       global || noBanCaptcha ? '' : template.removable.divBanCaptcha).replace(
       '__divReportCaptcha_location__',
       noReportCaptcha ? '' : template.removable.divReportCaptcha);

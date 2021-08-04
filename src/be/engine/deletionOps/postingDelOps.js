@@ -1151,7 +1151,7 @@ exports.adjustTrashOption = function(parameters, userData) {
 
     var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
-    if (!userData || !globalStaff) {
+    if (!globalStaff) {
       parameters.action = 'trash';
     }
   } else if (parameters.action === 'trash' && !limitDays) {

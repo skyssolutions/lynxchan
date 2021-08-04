@@ -852,7 +852,7 @@ exports.maintenance = function(language, callback) {
 
 // Section 5: Overboard {
 exports.getOverboardThreads = function(foundThreads, foundPreviews, language,
-    modding, boardData, userRole) {
+    modding, boardData, userRole, preview) {
 
   var children = '';
 
@@ -868,7 +868,7 @@ exports.getOverboardThreads = function(foundThreads, foundPreviews, language,
     }
 
     children += common.getThread(thread, previews, null, modding, boardData,
-        userRole, language, operations);
+        userRole, language, operations, null, preview);
 
   }
 
