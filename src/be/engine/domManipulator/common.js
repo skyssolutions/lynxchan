@@ -350,7 +350,12 @@ exports.setBoardCustomization = function(document, boardData, removable) {
   } else {
     document = document.replace('__head_children__', '');
   }
-  if (boardData.usesCustomJs && allowedJs) {
+
+  var specialSettings = boardData.specialSettings || [];
+  
+  var specialAllowed = specialSettings.indexOf('allowJs') >= 0;
+  
+  if (boardData.usesCustomJs && (allowedJs || specialAllowed)) {
     document = exports.setCustomJs(boardUri, document);
   } else {
     document = document.replace('__body_children__', '');

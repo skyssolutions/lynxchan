@@ -34,6 +34,7 @@ exports.boardProjection = {
   usesCustomJs : 1,
   usesCustomCss : 1,
   settings : 1,
+  specialSettings: 1,
   boardDescription : 1,
   preferredLanguage : 1,
   locationFlagMode : 1,
