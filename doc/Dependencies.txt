@@ -5,19 +5,17 @@ These steps are not mandatory to achieve the dependency status laid out on the r
 2: Install Mongodb according to these instructions: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-red-hat/ Install all packages through the meta-package, you will eventually need them. 
    If mongo isn't started and enabled right after install, use systemctl enable mongod and systemctl start mongod.
 3: You can use https://github.com/nodesource/distributions/blob/master/README.md to install node, but if you don't want to, 
-   clone Node.js source code from https://github.com/nodejs/node.git and checkout the latest tag for the required version on the readme. You can list tags using git tag -l and filter using grep.
-4: Run ./configure and them make. You can add -jX where X is the amount of cores yours CPU have if you have more than 1 core available. After compiling, run sudo make install.
+   clone the Node.js source code from https://github.com/nodejs/node.git and checkout the latest tag for the required version on the readme. You can list tags using git tag -l and filter using grep.
+4: Run ./configure and then make. You can add -jX where X is the amount of cores your CPU has, if you have more than 1 core available. After compiling, run sudo make install.
 5: Enable the epel-release and PowerTools repositories.
 6: Install ImageMagick from the package manager.
 7: Install sendmail from the package manager and configure it.
 
 Optional:
-If you wish to either make gifs thumbnails with ffmpeg or make thumbnails of videos and audio files.:
+If you wish to either make animated gif thumbnails with ffmpeg or make thumbnails of videos and audio files:
 8: Install zlib-devel and yasm from the package manager.
 9: Clone git://source.ffmpeg.org/ffmpeg.git and checkout the latest tag for the required version on the readme.
-10: Compile and install just like node. To be able to build native functions, you must run configure with both --enable-shared and --enable-pic. If you have a previous compilation, run make clean 
-    beforehand. Also, don't forget to run ldconfig to register the libraries, like "ldconfig /usr/local/lib". If you are having issues with pkg-config not finding it, use "export 
-    PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"" and try again.
+10: Compile and install just like node. To be able to build native functions, you must run configure with both --enable-shared and --enable-pic. If you have a previous compilation, run make clean beforehand. Also, don't forget to run ldconfig to register the libraries, like "ldconfig /usr/local/lib". If you are having issues with pkg-config not finding it, use "export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"" and try again.
 11: Install ImageMagick-c++-devel from the package manager. This is also required to build the native functions.
 
 If you wish to validate mimes:
