@@ -8,13 +8,11 @@ var lang = require('../engine/langOps').languagePack;
 exports.renewBypass = function(auth, parameters, res, language, json) {
 
   bypassOps.renewBypass(auth.captchaid, parameters.captcha, language,
-      function renewedBypass(error, results, session, salted) {
+      function renewedBypass(error, bypass, session, salted) {
 
         if (error) {
           formOps.outputError(error, 500, res, language, json);
         } else {
-
-          var bypass = results.ops[0];
 
           formOps.outputResponse(json ? 'ok' : lang(language).msgBypassRenewed,
               json ? null : '/blockBypass.js', res, [ {

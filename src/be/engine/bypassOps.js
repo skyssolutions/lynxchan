@@ -43,8 +43,7 @@ exports.createBypassDoc = function(session, validationCode, validationResult,
   var expiration = new Date();
   expiration.setUTCHours(expiration.getUTCHours() + expirationToAdd);
 
-  // style exception, too simple
-  bypasses.insertOne({
+  var toInsert = {
     session : session,
     creation : new Date(),
     unused : true,
@@ -52,9 +51,11 @@ exports.createBypassDoc = function(session, validationCode, validationResult,
     validationHash : validationResult,
     usesLeft : bypassMaxPosts,
     expiration : expiration
-  }, function inserted(error, results) {
+  };
 
-    callback(error, results, session, validationResult);
+  // style exception, too simple
+  bypasses.insertOne(toInsert, function inserted(error, results) {
+    callback(error, toInsert, session, validationResult);
   });
   // style exception, too simple
 
