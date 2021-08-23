@@ -235,6 +235,33 @@ exports.updateHourlyUsage = function(bypass, rate) {
 
 };
 
+exports.getMissingTime = function(result, usageField, now, req) {
+
+  var left = Math
+      .ceil((result.value[usageField].getTime() - now.getTime()) / 1000);
+
+  var setBlock = {};
+
+  setBlock[usageField] = result.value[usageField];
+
+  bypasses.updateOne({
+    _id : result.value._id
+  }, {
+    $inc : {
+      usesLeft : 1
+    },
+    $set : setBlock
+  }, function(error, data) {
+    if (error) {
+      console.log(error);
+    }
+
+  });
+
+  return lang(req.language).errFlood.replace('{$time}', left);
+
+};
+
 exports.useBypass = function(bypassId, req, callback, thread) {
 
   if (!bypassMode || !bypassId) {
@@ -300,10 +327,8 @@ exports.useBypass = function(bypassId, req, callback, thread) {
       return callback(null, req);
     } else if (!floodDisabled && result.value[usageField] > now) {
 
-      var left = Math
-          .ceil((result.value[usageField].getTime() - now.getTime()) / 1000);
+      errorToReturn = exports.getMissingTime(result, usageField, now, req);
 
-      errorToReturn = lang(req.language).errFlood.replace('{$time}', left);
     } else if (!floodDisabled && limitCheck) {
       errorToReturn = lang(req.language).errHourlyLimit;
     } else {
