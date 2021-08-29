@@ -602,7 +602,7 @@ exports.composePruneQuery = function(foundThreads, results) {
 
   for (i = 0; i < foundBoards.length; i++) {
 
-    if (foundThreads[foundBoards[i]]) {
+    if (foundPosts[foundBoards[i]]) {
       orArray.push({
         boardUri : foundBoards[i],
         postId : {
