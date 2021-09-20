@@ -11,6 +11,7 @@ var modOps = require('../engine/modOps');
 var domManipulator = require('../engine/domManipulator').dynamicPages.miscPages;
 var lang = require('../engine/langOps').languagePack;
 var miscOps = require('../engine/miscOps');
+var bypassOps = require('../engine/bypassOps');
 var deleteOps = require('../engine/deletionOps');
 var deleteActions = [ 'delete', 'trash', 'restore' ];
 var mandatoryAuth = [ 'spoil', 'ban', 'ip-deletion' ];
@@ -163,7 +164,22 @@ exports.checkDeletionActions = function(parameters, reportedObjects, userData,
 
 };
 
-exports.processParameters = function(req, userData, parameters, res, captchaId,
+exports.reportChecks = function(parameters, cookies, json, auth, req, res,
+    callback) {
+
+  bypassOps.useBypass(cookies.bypass, req, function usedBypass(error) {
+
+    if (error) {
+      formOps.outputError(error, 500, res, req.language, json, auth);
+    } else {
+      formOps.checkForBan(req, parameters.boardUri, res, callback, auth, json);
+    }
+
+  });
+
+};
+
+exports.processParameters = function(req, userData, parameters, res, cookies,
     auth) {
 
   var reportedObjects = [];
@@ -193,21 +209,32 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
 
   case 'report': {
 
-    modOps.report.report(req, reportedObjects, parameters, captchaId,
-        function createdReports(error, ban) {
-          if (error) {
-            formOps.outputError(error, 500, res, req.language, json, auth);
-          } else if (ban) {
-            formOps.outputBan(ban, null, req, res, json, null, auth);
-          } else {
+    exports.reportChecks(parameters, cookies, json, auth, req, res, function(
+        error) {
 
-            formOps.outputResponse(json ? 'ok'
-                : lang(req.language).msgContentReported, json ? null
-                : redirectBoard, res, null, auth, req.language, json);
+      if (error) {
+        return formOps.outputError(error, 500, res, req.language, json, auth);
+      }
 
-          }
+      // style exception, too simple
+      modOps.report.report(req, reportedObjects, parameters, cookies.captchaid,
+          function createdReports(error, ban) {
+            if (error) {
+              formOps.outputError(error, 500, res, req.language, json, auth);
+            } else if (ban) {
+              formOps.outputBan(ban, null, req, res, json, null, auth);
+            } else {
 
-        });
+              formOps.outputResponse(json ? 'ok'
+                  : lang(req.language).msgContentReported, json ? null
+                  : redirectBoard, res, null, auth, req.language, json);
+
+            }
+
+          });
+      // style exception, too simple
+
+    });
 
     break;
   }
@@ -215,14 +242,14 @@ exports.processParameters = function(req, userData, parameters, res, captchaId,
   case 'ban':
   case 'ban-delete': {
 
-    modOps.ipBan.specific.ban(userData, reportedObjects, parameters, captchaId,
-        req.language, function(error) {
+    modOps.ipBan.specific.ban(userData, reportedObjects, parameters,
+        cookies.captchaid, req.language, function(error) {
           if (error) {
             formOps.outputError(error, 500, res, req.language, json, auth);
           } else if (parameters.action === 'ban-delete') {
             parameters.action = 'delete';
-            exports.processParameters(req, userData, parameters, res,
-                captchaId, auth);
+            exports.processParameters(req, userData, parameters, res, cookies,
+                auth);
           } else {
             formOps.outputResponse(json ? 'ok'
                 : lang(req.language).msgUsersBanned, json ? null
@@ -310,29 +337,29 @@ exports.runDeletion = function(userData, parameters, threads, posts, language,
 
 exports.process = function(req, res) {
 
-  formOps.getAuthenticatedPost(req, res, true, function gotData(newAuth,
-      userData, parameters) {
+  formOps.getAuthenticatedPost(req, res, true,
+      function gotData(newAuth, userData, parameters) {
 
-    if (parameters.password) {
-      parameters.password = parameters.password.trim();
+        if (parameters.password) {
+          parameters.password = parameters.password.trim();
 
-      if (!parameters.password.length) {
-        delete parameters.password;
-      }
-    }
+          if (!parameters.password.length) {
+            delete parameters.password;
+          }
+        }
 
-    parameters.action = (parameters.action || '').toLowerCase();
+        parameters.action = (parameters.action || '').toLowerCase();
 
-    if (mandatoryAuth.indexOf(parameters.action) > -1 && !userData) {
-      formOps.redirectToLogin(res);
-      return;
-    }
+        if (mandatoryAuth.indexOf(parameters.action) > -1 && !userData) {
+          formOps.redirectToLogin(res);
+          return;
+        }
 
-    var cookies = formOps.getCookies(req);
+        var cookies = formOps.getCookies(req);
 
-    exports.processParameters(req, userData, parameters, res,
-        cookies.captchaid, newAuth);
+        exports.processParameters(req, userData, parameters, res, cookies,
+            newAuth);
 
-  }, true);
+      }, true);
 
 };

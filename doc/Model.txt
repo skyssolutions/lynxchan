@@ -220,6 +220,8 @@ reports: stores reports of threads and posts.
     creation(Date): date of when the report was filled.
     category: category of the report.
     closing(Date): date of when the report was closed.
+    ip(Array): ip of the reporter.
+    bypassId*: _id of the bypass used to make the report.
 
 ----------------------------------------------------------------------------------------
 

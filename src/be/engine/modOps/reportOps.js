@@ -296,7 +296,8 @@ exports.createReport = function(req, report, reportedContent, parameters,
     threadId : +report.thread,
     category : parameters.categoryReport,
     creation : new Date(),
-    ip : logger.ip(req)
+    ip : logger.ip(req),
+    bypassId : req.bypassId
   };
 
   if (parameters.reasonReport) {
@@ -653,28 +654,54 @@ exports.updateReports = function(parameters, foundReports, ids, userData,
   });
 };
 
+exports.getOrEntry = function(report, seenIps, seenBypasses, userQuery) {
+
+  if (report.ip) {
+    var array = seenIps[report.boardUri || '.global'] || [];
+    if (array.indexOf(report.ip.join('.')) >= 0) {
+      return true;
+    }
+
+    seenIps[report.boardUri || '.global'] = array;
+    userQuery.ip = report.ip;
+    array.push(report.ip.join('.'));
+  }
+
+  if (report.bypassId) {
+
+    var bypassArray = seenBypasses[report.boardUri || '.global'] || [];
+
+    if (bypassArray.indexOf(report.bypassId.toString()) >= 0) {
+      return true;
+    }
+
+    seenBypasses[report.boardUri || '.global'] = bypassArray;
+    userQuery.bypassId = report.bypassId;
+    bypassArray.push(report.bypassId.toString());
+  }
+
+};
+
 exports.getQueryForAllReports = function(ids, foundReports) {
 
   var queryOr = [];
 
   var seenIps = {};
+  var seenBypasses = {};
 
   for (var i = 0; i < foundReports.length; i++) {
 
     var report = foundReports[i];
 
-    var array = seenIps[report.boardUri || '.global'] || [];
-    seenIps[report.boardUri || '.global'] = array;
-
-    if (!report.ip || array.indexOf(report.ip.join('.')) >= 0) {
+    if (!report.ip && !report.bypassId) {
       continue;
     }
 
-    array.push(report.ip.join('.'));
+    var userQuery = {};
 
-    var userQuery = {
-      ip : report.ip
-    };
+    if (exports.getOrEntry(report, seenIps, seenBypasses, userQuery)) {
+      continue;
+    }
 
     userQuery.global = report.global;
 
@@ -686,7 +713,7 @@ exports.getQueryForAllReports = function(ids, foundReports) {
 
   }
 
-  return {
+  return !queryOr.length ? null : {
     _id : {
       $nin : ids
     },
@@ -704,7 +731,14 @@ exports.getAllReports = function(parameters, foundReports, ids, userData,
         language, callback);
   }
 
-  reports.find(exports.getQueryForAllReports(ids, foundReports)).toArray(
+  var query = exports.getQueryForAllReports(ids, foundReports);
+
+  if (!query) {
+    return exports.updateReports(parameters, foundReports, ids, userData,
+        language, callback);
+  }
+
+  reports.find(query).toArray(
       function(error, newReports) {
 
         if (error) {
