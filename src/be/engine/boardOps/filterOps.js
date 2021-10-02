@@ -95,7 +95,7 @@ exports.createFilter = function(userData, parameters, language, callback) {
         caseInsensitive : !!parameters.caseInsensitive
       }
     }, {
-      upsert : 1
+      upsert : true
     }, callback);
 
   }
