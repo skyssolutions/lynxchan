@@ -1,6 +1,6 @@
 'use strict';
 
-var dbVersion = 15;
+var dbVersion = 16;
 
 // takes care of the database.
 // initializes and provides pointers to collections or the connection pool
@@ -146,6 +146,10 @@ function upgrade(version, callback) {
 
   case 14:
     newerMigrations.runMissingSha256(callback);
+    break;
+
+  case 15:
+    newerMigrations.upgradeReports(callback);
     break;
 
   default:
@@ -514,7 +518,8 @@ function initReports(callback) {
       boardUri : 1,
       global : 1,
       threadId : 1,
-      postId : 1
+      postId : 1,
+      reporterId : 1
     },
     unique : true
   } ], function setIndex(error, index) {
@@ -525,6 +530,16 @@ function initReports(callback) {
         callback(error);
       }
     } else {
+
+      cachedReports.dropIndex('boardUri_1_global_1_threadId_1_postId_1',
+          function dropped(error) {
+
+            if (error && error.code !== 27) {
+              console.log(error);
+            }
+
+          });
+
       indexSet(callback);
     }
   });

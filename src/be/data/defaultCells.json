@@ -228,6 +228,7 @@
       "categoryDiv": "removal",
       "categoryLabel": "inner",
       "link": "href",
+      "totalLabel": "inner",
       "postingDiv": "inner",
       "closureCheckbox": "name"
     }

@@ -433,18 +433,23 @@ exports.getReportCell = function(report, boardData, language, ops, userRole) {
   var cell = '<div class="reportCell">';
   cell += template.template + '</div>';
 
-  var reason = common.clean(report.reason || '');
+  var reason = common.clean(report.reasons.length ? report.reasons.join(', ')
+      : '');
   cell = cell.replace('__reasonLabel_inner__', reason);
-  cell = cell.replace('__closureCheckbox_name__', 'report-' + report._id);
 
-  cell = cell.replace('__link_href__', common.getReportLink(report));
+  var idToUse = report.boardUri + '-' + report.threadId + '-';
+  idToUse += (report.postId || 'null') + '-';
+  idToUse += (report.global ? 'true' : 'false');
 
-  cell = cell.replace('__boardLabel_inner__', report.boardUri);
+  cell = cell.replace('__closureCheckbox_name__', 'report-' + idToUse).replace(
+      '__link_href__', common.getReportLink(report)).replace(
+      '__boardLabel_inner__', report.boardUri).replace('__totalLabel_inner__',
+      report.total);
 
-  if (report.category) {
+  if (report.categories.length) {
     cell = cell.replace('__categoryDiv_location__',
         template.removable.categoryDiv).replace('__categoryLabel_inner__',
-        report.category);
+        report.categories.join(', '));
 
   } else {
     cell = cell.replace('__categoryDiv_location__', '');

@@ -1581,8 +1581,11 @@ Json ouput(Object): an object with the following fields:
         global(Boolean): indicates if the report is global or not.
         boardUri: the board to which the report belongs to.
         threadId(Number): the thread where the report belongs to.
-        creation(Date): then the report was made.
+        creation(Date): when the last report was made.
         postId(Number): the post to which the report belongs to.
+        reasons(Array): array containing the reasons this post was reported.
+        categories(Array): array containing the categories this post was reported under.
+        total(Number): the total amount of reports for this post.
     reportCategories(Array): an array with the available report categories.
 
 ------------------------------------------------------------------------------------------

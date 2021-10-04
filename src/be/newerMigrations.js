@@ -865,3 +865,60 @@ exports.runMissingSha256 = function(callback) {
   });
 
 };
+
+// Added on 2.7
+exports.upgradeReport = function(report, callback) {
+
+  var update = {
+    $unset : {
+      ip : 1,
+      bypassId : 1
+    }
+  };
+
+  if (report.ip || report.bypassId) {
+    update.$set = {
+      reporterId : report.ip ? report.ip.join('.') : report.bypassId
+    };
+  }
+
+  reports.updateOne({
+    _id : report._id
+  }, update, callback);
+
+};
+
+exports.upgradeReports = function(callback, lastId) {
+
+  reports.find({
+    reporterId : null,
+    _id : lastId ? {
+      $gt : lastId
+    } : {
+      $exists : true
+    }
+  }).sort({
+    _id : 1
+  }).limit(1).toArray(function(error, foundReports) {
+
+    if (error) {
+      return callback(error);
+    } else if (!foundReports.length) {
+      return callback();
+    }
+
+    // style exception, too simple
+    exports.upgradeReport(foundReports[0], function(error) {
+
+      if (error) {
+        callback(error);
+      } else {
+        exports.upgradeReports(callback, foundReports[0]._id);
+      }
+
+    });
+    // style exception, too simple
+
+  });
+
+};

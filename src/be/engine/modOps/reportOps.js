@@ -295,10 +295,16 @@ exports.createReport = function(req, report, reportedContent, parameters,
     boardUri : report.board,
     threadId : +report.thread,
     category : parameters.categoryReport,
-    creation : new Date(),
-    ip : logger.ip(req),
-    bypassId : req.bypassId
+    creation : new Date()
   };
+
+  var readIp = logger.ip(req);
+
+  if (readIp) {
+    toAdd.reporterId = readIp.join('.');
+  } else if (req.bypassId) {
+    toAdd.reporterId = req.bypassId;
+  }
 
   if (parameters.reasonReport) {
     toAdd.reason = parameters.reasonReport;
@@ -478,8 +484,40 @@ exports.logReportClosure = function(foundReports, userData, closureDate,
 
 };
 
+exports.insertNewReportedBan = function(parameters, userData, report, posting,
+    knownIps, knownBypasses, callback) {
+
+  var newBan = {
+    reason : parameters.banReason,
+    appliedBy : userData.login,
+    expiration : parameters.expiration,
+    boardUri : report.global ? undefined : posting.boardUri
+  };
+
+  if (posting.ip) {
+
+    if (knownIps[posting.ip.join('.')]) {
+      return callback();
+    }
+
+    knownIps[posting.ip.join('.')] = true;
+    newBan.ip = posting.ip;
+  } else {
+
+    if (knownBypasses[posting.bypassId.toString()]) {
+      return callback();
+    }
+
+    knownBypasses[posting.bypassId.toString()] = true;
+    newBan.bypassId = posting.bypassId;
+  }
+
+  bans.insertOne(newBan, callback);
+
+};
+
 exports.applyReportBans = function(parameters, foundReports, userData,
-    closureDate, callback, index) {
+    closureDate, callback, index, knownIps, knownBypasses) {
 
   if (index >= foundReports.length || parameters.banTarget !== 1) {
     return exports.logReportClosure(foundReports, userData, closureDate,
@@ -487,6 +525,8 @@ exports.applyReportBans = function(parameters, foundReports, userData,
   }
 
   index = index || 0;
+  knownIps = knownIps || {};
+  knownBypasses = knownBypasses || {};
 
   var report = foundReports[index];
 
@@ -499,9 +539,16 @@ exports.applyReportBans = function(parameters, foundReports, userData,
 
   var query = {
     boardUri : report.boardUri,
-    'ip.0' : {
-      $exists : true
-    }
+    $or : [ {
+      'ip.0' : {
+        $exists : true
+      }
+    }, {
+      bypassId : {
+        $exists : true
+      }
+    } ],
+
   };
 
   var fieldToUse = report.postId ? 'postId' : 'threadId';
@@ -518,25 +565,39 @@ exports.applyReportBans = function(parameters, foundReports, userData,
     }
 
     // style exception, too simple
-    bans.insertOne({
-      ip : posting.ip,
-      reason : parameters.banReason,
-      appliedBy : userData.login,
-      expiration : parameters.expiration,
-      boardUri : report.global ? undefined : posting.boardUri
-    }, function(error) {
+    exports.insertNewReportedBan(parameters, userData, report, posting,
+        knownIps, knownBypasses, function(error) {
 
-      if (error) {
-        callback(error);
-      } else {
-        exports.applyReportBans(parameters, foundReports, userData,
-            closureDate, callback, ++index);
-      }
+          if (error) {
+            callback(error);
+          } else {
+            exports.applyReportBans(parameters, foundReports, userData,
+                closureDate, callback, ++index, knownIps, knownBypasses);
+          }
 
-    });
+        });
     // style exception, too simple
 
   });
+
+};
+
+exports.buildBan = function(parameters, userData, report) {
+
+  var newBan = {
+    reason : parameters.banReason,
+    appliedBy : userData.login,
+    expiration : parameters.expiration,
+    boardUri : report.global ? undefined : report.boardUri
+  };
+
+  if (typeof report.reporterId === 'string') {
+    newBan.ip = report.reporterId.split('.');
+  } else {
+    newBan.bypassId = report.reporterId;
+  }
+
+  return newBan;
 
 };
 
@@ -556,17 +617,11 @@ exports.applyReporterBans = function(parameters, foundReports, userData,
 
     var report = foundReports[i];
 
-    if (!report.ip) {
+    if (!report.reporterId) {
       continue;
     }
 
-    bansToAdd.push({
-      ip : report.ip,
-      reason : parameters.banReason,
-      appliedBy : userData.login,
-      expiration : parameters.expiration,
-      boardUri : report.global ? undefined : report.boardUri
-    });
+    bansToAdd.push(exports.buildBan(parameters, userData, report));
 
   }
 
@@ -656,28 +711,28 @@ exports.updateReports = function(parameters, foundReports, ids, userData,
 
 exports.getOrEntry = function(report, seenIps, seenBypasses, userQuery) {
 
-  if (report.ip) {
+  if (typeof report.reporterId === 'string') {
     var array = seenIps[report.boardUri || '.global'] || [];
-    if (array.indexOf(report.ip.join('.')) >= 0) {
+    if (array.indexOf(report.reporterId) >= 0) {
       return true;
     }
 
     seenIps[report.boardUri || '.global'] = array;
-    userQuery.ip = report.ip;
-    array.push(report.ip.join('.'));
-  }
+    userQuery.reporterId = report.reporterId;
+    array.push(report.reporterId);
 
-  if (report.bypassId) {
+  } else {
 
     var bypassArray = seenBypasses[report.boardUri || '.global'] || [];
 
-    if (bypassArray.indexOf(report.bypassId.toString()) >= 0) {
+    if (bypassArray.indexOf(report.reporterId.toString()) >= 0) {
       return true;
     }
 
     seenBypasses[report.boardUri || '.global'] = bypassArray;
-    userQuery.bypassId = report.bypassId;
-    bypassArray.push(report.bypassId.toString());
+    userQuery.reporterId = report.reporterId;
+    bypassArray.push(report.reporterId.toString());
+
   }
 
 };
@@ -693,7 +748,7 @@ exports.getQueryForAllReports = function(ids, foundReports) {
 
     var report = foundReports[i];
 
-    if (!report.ip && !report.bypassId) {
+    if (!report.reporterId) {
       continue;
     }
 
@@ -816,9 +871,41 @@ exports.closeFoundReports = function(parameters, ids, userData, foundReports,
 
 };
 
-exports.closeReports = function(userData, parameters, language, callback) {
+exports.getCloseQuery = function(reportList) {
 
-  var ids = [];
+  var orList = [];
+
+  for (var i = 0; i < reportList.length; i++) {
+
+    var informedItem = reportList[i].split('-');
+
+    if (informedItem.length < 4) {
+      continue;
+    }
+
+    var toPush = {
+      boardUri : informedItem[0],
+      threadId : +informedItem[1],
+      global : informedItem[3] === 'true' ? true : {
+        $ne : true
+      }
+    };
+
+    var informedPostId = +informedItem[2];
+
+    if (informedPostId) {
+      toPush.postId = informedPostId;
+    }
+
+    orList.push(toPush);
+
+  }
+
+  return orList;
+
+};
+
+exports.closeReports = function(userData, parameters, language, callback) {
 
   parameters.banTarget = +parameters.banTarget;
 
@@ -826,31 +913,29 @@ exports.closeReports = function(userData, parameters, language, callback) {
 
   var reportList = parameters.reports || [];
 
-  if (!reportList.length) {
+  var orList = exports.getCloseQuery(reportList);
+
+  if (!orList.length) {
     return callback(lang(language).errNoReportsInformed);
   }
 
-  for (var i = 0; i < reportList.length; i++) {
-    try {
-      ids.push(new ObjectID(reportList[i]));
-    } catch (error) {
-      callback(lang(language).errReportNotFound);
-      return;
-    }
-  }
-
   reports.find({
-    _id : {
-      $in : ids
-    }
+    $or : orList
   }).toArray(
       function gotReports(error, foundReports) {
 
         if (error) {
           callback(error);
-        } else if (foundReports.length < ids.length) {
+        } else if (!foundReports.length) {
           callback(lang(language).errReportNotFound);
         } else {
+
+          var ids = [];
+
+          for (var i = 0; i < foundReports.length; i++) {
+            ids.push(foundReports[i]._id);
+          }
+
           exports.closeFoundReports(parameters, ids, userData, foundReports,
               language, callback);
         }
@@ -1071,22 +1156,61 @@ exports.getOpenReports = function(userData, parameters, language, callback) {
 
   }
 
-  reports.find(query, {
-    projection : {
-      boardUri : 1,
-      reason : 1,
-      category : 1,
-      threadId : 1,
-      creation : 1,
-      postId : 1,
-      global : 1
+  reports.aggregate([ {
+    $match : query
+  }, {
+    $sort : {
+      creation : -1
     }
-  }).sort({
-    creation : -1
-  }).toArray(function gotReports(error, foundReports) {
+  }, {
+    $group : {
+      _id : {
+        boardUri : '$boardUri',
+        threadId : '$threadId',
+        postId : '$postId',
+        global : '$global'
+
+      },
+      total : {
+        $sum : 1
+      },
+      creation : {
+        $first : '$creation'
+      },
+      categories : {
+        $addToSet : '$category'
+      },
+      reasons : {
+        $addToSet : '$reason'
+      }
+
+    }
+  }, {
+    $project : {
+      _id : 0,
+      total : '$total',
+      boardUri : '$_id.boardUri',
+      threadId : '$_id.threadId',
+      postId : '$_id.postId',
+      global : '$_id.global',
+      creation : '$creation',
+      categories : '$categories',
+      reasons : '$reasons'
+    }
+  } ]).toArray(function(error, foundReports) {
 
     if (error) {
       return callback(error);
+    }
+
+    for (var i = 0; i < foundReports.length; i++) {
+
+      var indexToRemove = foundReports[i].categories.indexOf(null);
+
+      if (indexToRemove > -1) {
+        foundReports[i].categories.splice(indexToRemove, 1);
+      }
+
     }
 
     if (parameters.json || !foundReports.length) {
