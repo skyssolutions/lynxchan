@@ -13,6 +13,7 @@ var taskListener = require('../taskListener');
 var logger = require('../logger');
 var verbose;
 var captchaLimit;
+var captchaPool;
 var spamOps;
 var forceCaptcha;
 var captchaExpiration;
@@ -62,6 +63,7 @@ exports.loadSettings = function() {
   captchaLimit = settings.captchaLimit;
   verbose = settings.verbose || settings.verboseMisc;
   forceCaptcha = settings.forceCaptcha;
+  captchaPool = settings.captchaPool;
   captchaExpiration = settings.captchaExpiration;
 
 };
@@ -382,7 +384,7 @@ exports.getFromPool = function(callback) {
 
   poolIndex++;
 
-  if (poolIndex > captchaLimit) {
+  if (poolIndex > captchaPool) {
     poolIndex = 0;
   }
 
@@ -422,7 +424,7 @@ exports.checkPool = function(callback) {
 
     if (error) {
       callback(error);
-    } else if (amount < captchaLimit) {
+    } else if (amount < captchaPool) {
       exports.createCaptcha(callback, true);
     } else {
       exports.getFromPool(callback);

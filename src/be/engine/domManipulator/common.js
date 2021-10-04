@@ -331,17 +331,7 @@ exports.setFileLimits = function(document, bData, language) {
 
 };
 
-exports.setBoardCustomization = function(document, boardData, removable) {
-
-  if (boardData.boardDescription) {
-
-    document = document.replace('__labelDescription_location__',
-        removable.labelDescription).replace('__labelDescription_inner__',
-        exports.clean(boardData.boardDescription));
-
-  } else {
-    document = document.replace('__labelDescription_location__', '');
-  }
+exports.setBoardCustomFiles = function(boardData, document) {
 
   var boardUri = exports.clean(boardData.boardUri);
 
@@ -352,13 +342,29 @@ exports.setBoardCustomization = function(document, boardData, removable) {
   }
 
   var specialSettings = boardData.specialSettings || [];
-  
+
   var specialAllowed = specialSettings.indexOf('allowJs') >= 0;
-  
+
   if (boardData.usesCustomJs && (allowedJs || specialAllowed)) {
     document = exports.setCustomJs(boardUri, document);
   } else {
     document = document.replace('__body_children__', '');
+  }
+
+  return document;
+
+};
+
+exports.setBoardCustomization = function(document, boardData, removable) {
+
+  if (boardData.boardDescription) {
+
+    document = document.replace('__labelDescription_location__',
+        removable.labelDescription).replace('__labelDescription_inner__',
+        exports.clean(boardData.boardDescription));
+
+  } else {
+    document = document.replace('__labelDescription_location__', '');
   }
 
   if (boardData.boardMarkdown && boardData.boardMarkdown.length) {
@@ -372,7 +378,7 @@ exports.setBoardCustomization = function(document, boardData, removable) {
     document = document.replace('__panelMessage_location__', '');
   }
 
-  return document;
+  return exports.setBoardCustomFiles(boardData, document);
 };
 
 exports.setHeader = function(template, language, bData, flagData, thread) {

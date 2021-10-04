@@ -263,6 +263,11 @@
   },
   {
     "type": "number",
+    "setting": "captchaPool",
+    "element": "fieldCaptchaPool"
+  },
+  {
+    "type": "number",
     "setting": "clusterPort",
     "element": "fieldClusterPort"
   },

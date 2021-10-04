@@ -100,6 +100,7 @@ Settings files that goes into the settings directory:
 * `disable304`(Boolean): if true, will never use http status 304.
 * `torDNSBL`: DNSBL that should be used to detect tor exit nodes instead of the official list. See https://www.dan.me.uk/dnsbl .
 * `captchaLimit`(Number): maximum amount of new captchas served to the same ip per minute. Ignores tor detection.
+* `captchaPool`(Number): maximum amount of captchas in the captcha pool that tor users have access to.
 * `address`: ip to bind the server on. Defaults to `0.0.0.0`.
 * `port`(Number): port to listen for http. Defaults to 80.
 * `imageFont`: font to be used on images. Defaults to DejaVu-Sans.
