@@ -130,6 +130,10 @@ exports.commitBypassValidation = function(bypass, callback) {
 
 exports.validateBypass = function(bypassId, code, language, callback) {
 
+  if (!bypassId) {
+    return callback(lang(language).errBypassNotFound);
+  }
+
   var session = bypassId.substr(24, 344);
   bypassId = bypassId.substr(0, 24);
 
