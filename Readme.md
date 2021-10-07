@@ -5,6 +5,9 @@
 3. Support the most amount of users with the least hardware power.
 4. Having a modular front-end so people can easily create and use different templates.
 
+#BTC donations:
+I accept btc donations: bc1qtqgzhte2ex783lwvyxh4x2zwxsuwf3uplycspy
+
 # Stable versions
 See other branches named like `1.1.x` for stable versions. They will receive only critical bug fixes and will be maintained for at least one year after release. Remember to use a compatible version of your front-end with these stable versions. Newer versions might not have required elements on the templates for these versions.
 
