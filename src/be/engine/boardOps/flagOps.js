@@ -98,13 +98,15 @@ exports.insertFlag = function(parameters, language, callback) {
 exports.createFlag = function(userData, parameters, language, callback) {
 
   if (!parameters.files.length) {
-    callback(lang(language).errNoFiles);
-    return;
-  } else if (parameters.files[0].mime.indexOf('image/') === -1) {
-    callback(lang(language).errNotAnImage);
-    return;
+    return callback(lang(language).errNoFiles);
+  }
+
+  var isSVG = parameters.files[0].mime.indexOf('image/svg') >= 0;
+
+  if (parameters.files[0].mime.indexOf('image/') === -1 || isSVG) {
+    return callback(lang(language).errNotAnImage);
   } else if (parameters.files[0].size > maxFlagSize) {
-    callback(lang(language).errFlagTooLarge);
+    return callback(lang(language).errFlagTooLarge);
   }
 
   miscOps.sanitizeStrings(parameters, newFlagParameters);
@@ -127,7 +129,7 @@ exports.createFlag = function(userData, parameters, language, callback) {
       flags.countDocuments({
         boardUri : parameters.boardUri
       }, function(error, count) {
-        
+
         if (error) {
           callback(error);
         } else if (count >= flagLimit) {

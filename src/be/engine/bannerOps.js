@@ -121,7 +121,9 @@ exports.processBanners = function(parameters, language, ids, callback, index) {
 
   var file = parameters.files[index];
 
-  if (file.mime.indexOf('image/') === -1) {
+  var isSVG = file.mime.indexOf('image/svg') >= 0;
+
+  if (file.mime.indexOf('image/') === -1 || isSVG) {
     return callback(lang(language).errNotAnImage);
   } else if (file.size > maxBannerSize) {
     return callback(lang(language).errBannerTooLarge);

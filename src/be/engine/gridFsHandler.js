@@ -24,6 +24,8 @@ var port;
 
 exports.permanentTypes = [ 'media', 'graph', 'banner' ];
 
+exports.strictMimeTypes = [ 'banner', 'flag' ];
+
 exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
@@ -567,6 +569,10 @@ exports.getHeader = function(stats, req) {
   var header = [];
   var lastM = stats.metadata.lastModified || stats.uploadDate;
   header.push([ 'last-modified', lastM.toUTCString() ]);
+
+  if (exports.strictMimeTypes.indexOf(stats.metadata.type) > -1) {
+    header.push([ 'x-content-type-options', 'nosniff' ]);
+  }
 
   exports.setExpiration(header, stats);
 
