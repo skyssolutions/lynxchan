@@ -236,9 +236,10 @@ exports.getMessageMarkdown = function(message) {
       function prettyLinks(match) {
         var matchesArray = match.match(/\[(.+)\]\((.+)\)/);
 
-        var protocol = matchesArray[2].match(/(.+):/);
+        var protocol = matchesArray[2].match(/(.+):/) || '';
+        var invalidProtocol = exports.validLinkProtocols.indexOf(protocol[1]) < 0;
 
-        if (!protocol || exports.validLinkProtocols.indexOf(protocol[1]) < 0) {
+        if ((!protocol || invalidProtocol) && matchesArray[2].indexOf('/') !== 0) {
           return '';
         }
 
