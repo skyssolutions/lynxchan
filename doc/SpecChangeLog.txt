@@ -1,3 +1,190 @@
+2.7.0:
+
+**Form.txt**
+
+New pages:
+customThumbs
+createMimeThumb
+deleteMimeThumb
+purgeBypasses
+
+---------------------------------------
+
+mod:
+
+New fields:
+omittedPosts
+omittedFiles
+
+---------------------------------------
+
+changeAccountSettings:
+
+New parameters:
+password
+noSettingsPassword
+
+---------------------------------------
+
+globalSettings:
+
+New field:
+confirmPassword
+
+---------------------------------------
+
+saveGlobalSettings:
+
+New parameter:
+password
+---------------------------------------
+
+offenseRecord:
+
+All previous fields were removed.
+
+New fields:
+offenses
+asnBans
+
+---------------------------------------
+
+openReports:
+
+New fields:
+reports.reasons
+reports.categories
+reports.total
+
+---------------------------------------
+
+**Json.txt**
+
+---------------------------------------
+
+/<board>/<page>.json:
+
+Fixed typo on threads.omittedPosts
+
+New field:
+threads.omittedFiles
+
+---------------------------------------
+
+**Language.txt**
+
+New fields:
+errDeniedThumbManagement
+errBypassPurgeConfirmation
+errDeniedBypassPurge
+errMimeThumbNotFound
+errTooManyFlags
+guiOffenseTypes
+msgThumbAdded
+msgBypassesPurged
+msgThumbDeleted
+titMimeThumbs
+
+---------------------------------------
+
+**Model.txt**
+
+New collection:
+mimeThumbs
+
+---------------------------------------
+
+users:
+
+New valid value for settings:
+noSettingsPassword
+
+---------------------------------------
+
+reports:
+
+New field:
+reporterId
+
+---------------------------------------
+
+blockBypasses:
+
+New fields:
+creation
+unused
+
+---------------------------------------
+
+offenseRecords:
+
+New field:
+type
+
+---------------------------------------
+
+**Paths.txt**
+
+New directory:
+/.global/mimeThumbs/
+
+---------------------------------------
+
+**Templates.txt**
+
+New templates:
+mimeThumbsPage
+mimeThumbCell
+
+---------------------------------------
+
+accountPage:
+
+New elements:
+divSettingsPassword
+checkboxNoSettingsPassword
+
+---------------------------------------
+
+gManagement:
+
+New elements:
+purgeBypassesForm
+customThumbsLink
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldCaptchaPool
+authDiv
+fieldDefaultTheme
+fieldFlagLimit
+
+Removed element:
+checkboxSendmail
+
+---------------------------------------
+
+offenseCell:
+
+New elements:
+typeDiv
+typeLabel
+
+---------------------------------------
+
+trashBinPage:
+
+New elements:
+divReportCaptcha
+reportCategoriesDiv
+reportComboboxCategory
+divBanCaptcha
+
+---------------------------------------
+
 2.6.0:
 
 **Form.txt**
