@@ -47,8 +47,8 @@ public:
       return;
     }
 
-    AVCodecParameters* codecParameters =
-        formatContext->streams[videoStream]->codecpar;
+    AVStream* stream = formatContext->streams[videoStream];
+    AVCodecParameters* codecParameters = stream->codecpar;
 
     if (!codecParameters) {
       error = AVERROR_UNKNOWN;
@@ -57,6 +57,14 @@ public:
 
     width = codecParameters->width;
     height = codecParameters->height;
+
+    AVDictionaryEntry* tag = av_dict_get(stream->metadata, "rotate", NULL, 0);
+
+    if (tag && (!strcmp(tag->value, "90") || !strcmp(tag->value, "270"))) {
+      width += height;
+      height = width - height;
+      width -= height;
+    }
 
   }
 

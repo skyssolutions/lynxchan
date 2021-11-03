@@ -16,7 +16,7 @@ var spoilerPath = kernel.spoilerImage();
 var globalLatestImages = db.latestImages();
 var files = db.files();
 var videoDimensionsCommand = 'ffprobe -v error -show_entries ';
-videoDimensionsCommand += 'stream=width,height ';
+videoDimensionsCommand += 'stream=width,height:stream_tags=rotate ';
 var videoThumbCommand = 'ffmpeg -i {$path} -y -vframes 1 -vf scale=';
 var ffmpegGifCommand = 'ffmpeg -i {$path} -y -vf scale=';
 var mp3ThumbCommand = 'ffmpeg -i {$path} -y -an -vcodec copy {$destination}';
@@ -114,25 +114,35 @@ exports.getVideoBounds = function(file, callback) {
   }, function gotDimensions(error, output) {
 
     if (error) {
-      callback(error);
+      return callback(error);
+    }
+
+    var matches = output.match(/width\=(\d+)\nheight\=(\d+)/);
+
+    if (!matches) {
+      var correctedMime = exports.correctedMimesRelation[file.mime];
+
+      if (!correctedMime) {
+        callback('Unable to get dimensions for file.');
+      } else {
+        file.mime = correctedMime;
+        callback(null, null, null);
+      }
     } else {
 
-      var matches = output.match(/width\=(\d+)\nheight\=(\d+)/);
+      var rotationMatches = output.match(/TAG:rotate\=(\d+)/);
 
-      if (!matches) {
-        var correctedMime = exports.correctedMimesRelation[file.mime];
+      if (rotationMatches) {
+        var rotation = +rotationMatches[1];
 
-        if (!correctedMime) {
-          callback('Unable to get dimensions for file.');
-        } else {
-          file.mime = correctedMime;
-          callback(null, null, null);
+        if (rotation === 90 || rotation === 270) {
+          return callback(null, +matches[2], +matches[1]);
         }
-      } else {
-        callback(null, +matches[1], +matches[2]);
       }
 
+      callback(null, +matches[1], +matches[2]);
     }
+
   });
 
 };
