@@ -816,30 +816,11 @@ exports.getAllReports = function(parameters, foundReports, ids, userData,
 
 };
 
-exports.closeFoundReports = function(parameters, ids, userData, foundReports,
-    language, callback) {
+exports.getBoardsForClosing = function(parameters, foundReports, ids, userData,
+    foundClosed, foundOpen, foundBoardsUris, callback, language) {
 
-  var foundBoardsUris = [];
-
-  var isOnGlobalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
-
-  // Get boards for non-global reports, check if reports have been
-  // already closed and global permissions
-  for (var i = 0; i < foundReports.length; i++) {
-    var report = foundReports[i];
-
-    var alreadyIncluded = foundBoardsUris.indexOf(report.boardUri) > -1;
-
-    if (report.closedBy) {
-      callback(lang(language).errReportAlreadyClosed);
-      return;
-    } else if (report.global && !isOnGlobalStaff) {
-      callback(lang(language).errDeniedGlobalReportManagement);
-      return;
-    } else if (!report.global && !alreadyIncluded) {
-      foundBoardsUris.push(report.boardUri);
-    }
-
+  if (foundClosed && !foundOpen) {
+    return callback(lang(language).errReportAlreadyClosed);
   }
 
   boards.find({
@@ -849,25 +830,60 @@ exports.closeFoundReports = function(parameters, ids, userData, foundReports,
   }).toArray(
       function gotBoards(error, foundBoards) {
         if (error) {
-          callback(error);
+          return callback(error);
         } else if (foundBoards.length < foundBoardsUris.length) {
-          callback(lang(language).errBoardNotFound);
-        } else {
+          return callback(lang(language).errBoardNotFound);
+        }
 
-          for (i = 0; i < foundBoards.length; i++) {
+        for (var i = 0; i < foundBoards.length; i++) {
 
-            if (!common.isInBoardStaff(userData, foundBoards[i])) {
-              return callback(lang(language).errDeniedBoardReportManagement);
-            }
-
+          if (!common.isInBoardStaff(userData, foundBoards[i])) {
+            return callback(lang(language).errDeniedBoardReportManagement);
           }
-
-          exports.getAllReports(parameters, foundReports, ids, userData,
-              language, callback);
 
         }
 
+        exports.getAllReports(parameters, foundReports, ids, userData,
+            language, callback);
+
       });
+
+};
+
+exports.closeFoundReports = function(parameters, ids, userData, foundReports,
+    language, callback) {
+
+  var foundBoardsUris = [];
+
+  var isOnGlobalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+
+  // Get boards for non-global reports, check if reports have been
+  // already closed and global permissions
+
+  var foundOpen = false;
+  var foundClosed = false;
+
+  for (var i = 0; i < foundReports.length; i++) {
+    var report = foundReports[i];
+
+    var alreadyIncluded = foundBoardsUris.indexOf(report.boardUri) > -1;
+
+    if (report.closedBy) {
+      foundClosed = true;
+    } else {
+      foundOpen = true;
+    }
+    if (report.global && !isOnGlobalStaff) {
+      return callback(lang(language).errDeniedGlobalReportManagement);
+
+    } else if (!report.global && !alreadyIncluded) {
+      foundBoardsUris.push(report.boardUri);
+    }
+
+  }
+
+  exports.getBoardsForClosing(parameters, foundReports, ids, userData,
+      foundClosed, foundOpen, foundBoardsUris, callback, language);
 
 };
 
@@ -895,6 +911,10 @@ exports.getCloseQuery = function(reportList) {
 
     if (informedPostId) {
       toPush.postId = informedPostId;
+    } else {
+      toPush.postId = {
+        $exists : false
+      };
     }
 
     orList.push(toPush);
