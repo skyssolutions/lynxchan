@@ -668,17 +668,18 @@ exports.deleteClosedContent = function(parameters, foundReports, userData,
 
   }
 
-  delOps.posting(userData, {}, threadsToDelete, postsToDelete, language,
-      function deleted(error) {
+  delOps.posting(userData, {
+    action : 'delete'
+  }, threadsToDelete, postsToDelete, language, function deleted(error) {
 
-        if (error) {
-          callback(error);
-        } else {
-          exports.applyReporterBans(parameters, foundReports, userData,
-              closureDate, callback);
-        }
+    if (error) {
+      callback(error);
+    } else {
+      exports.applyReporterBans(parameters, foundReports, userData,
+          closureDate, callback);
+    }
 
-      });
+  });
 
 };
 
