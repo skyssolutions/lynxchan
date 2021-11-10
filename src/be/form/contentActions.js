@@ -164,21 +164,6 @@ exports.checkDeletionActions = function(parameters, reportedObjects, userData,
 
 };
 
-exports.reportChecks = function(parameters, cookies, json, auth, req, res,
-    callback) {
-
-  bypassOps.useBypass(cookies.bypass, req, function usedBypass(error) {
-
-    if (error) {
-      formOps.outputError(error, 500, res, req.language, json, auth);
-    } else {
-      formOps.checkForBan(req, parameters.boardUri, res, callback, auth, json);
-    }
-
-  });
-
-};
-
 exports.processParameters = function(req, userData, parameters, res, cookies,
     auth) {
 
@@ -209,8 +194,7 @@ exports.processParameters = function(req, userData, parameters, res, cookies,
 
   case 'report': {
 
-    exports.reportChecks(parameters, cookies, json, auth, req, res, function(
-        error) {
+    bypassOps.useBypass(cookies.bypass, req, function(error) {
 
       if (error) {
         return formOps.outputError(error, 500, res, req.language, json, auth);
