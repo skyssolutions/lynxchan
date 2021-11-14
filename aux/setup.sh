@@ -36,19 +36,19 @@ fi
 
 if [ "$answerStable" == "y" ]; then
 
-  git checkout 2.6.x
+  git checkout 2.7.x
 
   if [ "$answerFrontEnd" == "y" ]; then
 
     cd ../src/fe
 
-    git checkout 2.6.x
+    git checkout 2.7.x
 
     cd ../../aux
 
   fi
 
-  echo "Changed to latest stable version: 2.6.x"
+  echo "Changed to latest stable version: 2.7.x"
 
 fi
 
