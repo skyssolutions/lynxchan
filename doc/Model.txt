@@ -211,6 +211,7 @@ recoveryRequests: stores active account recovery requests.
 
 reports: stores reports of threads and posts.
     _id**: unique id of the report.
+    asn(Number): asn of the reporter.
     boardUri*: board where the content resides.
     global(Boolean): indicates if the report is global.
     threadId(Number)*: thread where the content resides or the offending thread.

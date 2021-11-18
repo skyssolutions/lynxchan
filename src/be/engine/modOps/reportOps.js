@@ -21,6 +21,7 @@ var redactedModNames;
 var domManipulator;
 var generator;
 var moduleRoot;
+var locationOps;
 var ipBan;
 var specificOps;
 var formOps;
@@ -63,6 +64,7 @@ exports.loadDependencies = function() {
   logOps = require('../logOps');
   miscOps = require('../miscOps');
   generator = require('../generator');
+  locationOps = require('../locationOps');
   moduleRoot = require('.');
   ipBan = moduleRoot.ipBan.versatile;
   specificOps = moduleRoot.ipBan.specific;
@@ -288,7 +290,7 @@ exports.notifyReport = function(req, report, callback) {
 };
 
 exports.createReport = function(req, report, reportedContent, parameters,
-    callback) {
+    callback, asn) {
 
   var toAdd = {
     global : !!parameters.globalReport,
@@ -301,7 +303,21 @@ exports.createReport = function(req, report, reportedContent, parameters,
   var readIp = logger.ip(req);
 
   if (readIp) {
+
+    if (!asn) {
+
+      return locationOps.getASN(readIp, function(error, readAsn) {
+        exports.createReport(req, report, reportedContent, parameters,
+            callback, readAsn || -1);
+      });
+
+    }
+
+    if (asn !== -1) {
+      toAdd.asn = asn;
+    }
     toAdd.reporterId = readIp.join('.');
+
   } else if (req.bypassId) {
     toAdd.reporterId = req.bypassId;
   }
@@ -484,6 +500,14 @@ exports.logReportClosure = function(foundReports, userData, closureDate,
 
 };
 
+exports.canApplyRangeBan = function(parameters, posting) {
+
+  var rangeBan = +parameters.banType === 1 || +parameters.banType === 2;
+
+  return rangeBan && posting.ip;
+
+};
+
 exports.insertNewReportedBan = function(parameters, userData, report, posting,
     knownIps, knownBypasses, callback) {
 
@@ -491,25 +515,36 @@ exports.insertNewReportedBan = function(parameters, userData, report, posting,
     reason : parameters.banReason,
     appliedBy : userData.login,
     expiration : parameters.expiration,
-    boardUri : report.global ? undefined : posting.boardUri
+    boardUri : report.global ? undefined : posting.boardUri,
+    warning : +parameters.banType === 4
   };
 
-  if (posting.ip) {
+  if (+parameters.banType === 3 && posting.asn) {
+    newBan.asn = posting.asn;
+  } else if (!parameters.banType || newBan.warning) {
 
-    if (knownIps[posting.ip.join('.')]) {
-      return callback();
+    if (posting.ip) {
+
+      if (knownIps[posting.ip.join('.')]) {
+        return callback();
+      }
+
+      knownIps[posting.ip.join('.')] = true;
+      newBan.ip = posting.ip;
+    } else {
+
+      if (knownBypasses[posting.bypassId.toString()]) {
+        return callback();
+      }
+
+      knownBypasses[posting.bypassId.toString()] = true;
+      newBan.bypassId = posting.bypassId;
     }
 
-    knownIps[posting.ip.join('.')] = true;
-    newBan.ip = posting.ip;
+  } else if (exports.canApplyRangeBan(parameters, posting)) {
+    newBan.range = miscOps.getRange(posting.ip, +parameters.banType === 2);
   } else {
-
-    if (knownBypasses[posting.bypassId.toString()]) {
-      return callback();
-    }
-
-    knownBypasses[posting.bypassId.toString()] = true;
-    newBan.bypassId = posting.bypassId;
+    return callback();
   }
 
   bans.insertOne(newBan, callback);
@@ -585,16 +620,34 @@ exports.applyReportBans = function(parameters, foundReports, userData,
 exports.buildBan = function(parameters, userData, report) {
 
   var newBan = {
+    warning : +parameters.banType === 4,
     reason : parameters.banReason,
     appliedBy : userData.login,
     expiration : parameters.expiration,
     boardUri : report.global ? undefined : report.boardUri
   };
 
-  if (typeof report.reporterId === 'string') {
-    newBan.ip = report.reporterId.split('.');
+  var isIp = typeof report.reporterId === 'string';
+
+  if (+parameters.banType === 3 && report.asn) {
+    newBan.asn = report.asn;
+  } else if (!parameters.banType || newBan.warning) {
+
+    if (isIp) {
+      newBan.ip = report.reporterId.split('.').map(function(item) {
+        return +item;
+      });
+    } else {
+      newBan.bypassId = report.reporterId;
+    }
+
+  } else if (+parameters.banType === 1 || +parameters.banType === 2 && isIp) {
+    newBan.range = miscOps.getRange(report.reporterId.split('.').map(
+        function(item) {
+          return +item;
+        }), +parameters.banType === 2);
   } else {
-    newBan.bypassId = report.reporterId;
+    return;
   }
 
   return newBan;
@@ -621,7 +674,11 @@ exports.applyReporterBans = function(parameters, foundReports, userData,
       continue;
     }
 
-    bansToAdd.push(exports.buildBan(parameters, userData, report));
+    var newBan = exports.buildBan(parameters, userData, report);
+
+    if (newBan) {
+      bansToAdd.push(newBan);
+    }
 
   }
 
