@@ -156,6 +156,7 @@
     "headChildren": true,
     "bodyChildren": true,
     "prebuiltFields": {
+      "userCountLabel": "inner",
       "divBanCaptcha": "removal",
       "divReportCaptcha": "removal",
       "divMerge": "removal",

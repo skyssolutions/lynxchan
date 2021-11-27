@@ -227,6 +227,28 @@ exports.setModElements = function(modding, document, userRole, removable,
 
 };
 
+exports.getThreadUserCount = function(posts, threadData) {
+
+  var seenIds = [];
+
+  var threadIdentifier = threadData.bypassId || threadData.ip || '';
+
+  seenIds.push(threadIdentifier.toString());
+
+  for (var i = 0; i < posts.length; i++) {
+    var post = posts[i];
+    var postIdentifier = (post.bypassId || post.ip || '').toString();
+
+    if (seenIds.indexOf(postIdentifier) < 0) {
+      seenIds.push(postIdentifier);
+    }
+
+  }
+
+  return seenIds.length;
+
+};
+
 exports.setThreadCommonInfo = function(template, threadData, boardData,
     language, flagData, posts, modding, userRole, last) {
 
@@ -253,7 +275,9 @@ exports.setThreadCommonInfo = function(template, threadData, boardData,
   }
 
   document = document
-      .replace('__threadIdentifier_value__', threadData.threadId);
+      .replace('__threadIdentifier_value__', threadData.threadId).replace(
+          '__userCountLabel_inner__',
+          exports.getThreadUserCount(posts, threadData));
 
   return exports.setModElements(modding, document, userRole,
       template.removable, threadData.archived);

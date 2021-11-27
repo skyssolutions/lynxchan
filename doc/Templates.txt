@@ -197,6 +197,10 @@ TEM_ID::03
 threadPage: thread page, with all replies.
 
 Elements:
+userCountLabel:
+    use: have it's innerHTML manipulated.
+    description: label that shows how many users have posted in the thread.
+
 divReportCaptcha:
     use: might be removed.
     description: div with the captcha used for reporting.
