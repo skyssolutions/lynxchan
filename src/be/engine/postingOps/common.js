@@ -578,7 +578,11 @@ exports.replaceStyleMarkdown = function(message, replaceCode, boardMessage) {
                 return exports.linkSanitizationRelation[innerMatch];
               });
 
-          return '<a href="' + match + '" target="_blank" rel="noopener noreferrer">' + match + '</a>';
+          var toRet = '<a href="' + match;
+          toRet += '" target="_blank" rel="noopener noreferrer">';
+          toRet += match + '</a>';
+
+          return toRet;
 
         });
 

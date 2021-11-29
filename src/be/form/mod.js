@@ -18,15 +18,32 @@ var generator = require('../engine/generator');
 exports.outputModData = function(bData, flagData, thread, posts, res, json,
     userRole, auth, language) {
 
+  var seenIds = [];
+
+  var threadIdentifier = thread.ip || thread.bypassId || '';
+
+  seenIds.push(threadIdentifier.toString());
+
+  for (var i = 0; i < posts.length; i++) {
+    var post = posts[i];
+
+    var postIdentifier = (post.ip || post.bypassId || '').toString();
+
+    if (seenIds.indexOf(postIdentifier) < 0) {
+      seenIds.push(postIdentifier);
+    }
+
+  }
+
   if (json) {
 
-    formOps.outputResponse('ok', jsonBuilder.thread(bData.boardUri, bData,
-        thread, posts, null, true, userRole, flagData), res, null, auth, null,
-        true);
+    formOps.outputResponse('ok', jsonBuilder.thread(seenIds.length,
+        bData.boardUri, bData, thread, posts, null, true, userRole, flagData),
+        res, null, auth, null, true);
 
   } else {
 
-    domManipulator.thread(bData, flagData, thread, posts,
+    domManipulator.thread(seenIds.length, bData, flagData, thread, posts,
         function gotThreadContent(error, content) {
           if (error) {
             formOps.outputError(error, 500, res, language, json, auth);

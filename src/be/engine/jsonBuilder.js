@@ -252,12 +252,13 @@ exports.addExtraThreadInfo = function(threadObject, boardData) {
 
 };
 
-exports.thread = function(boardUri, boardData, threadData, posts, callback,
-    modding, userRole, flagData) {
+exports.thread = function(userCount, boardUri, boardData, threadData, posts,
+    callback, modding, userRole, flagData) {
 
   var threadObject = exports.getThreadObject(threadData, posts, boardData,
       modding, userRole);
 
+  threadObject.uniquePosters = userCount;
   threadObject.maxMessageLength = messageLength;
   threadObject.usesCustomCss = boardData.usesCustomCss;
   threadObject.noReportCaptcha = noReportCaptcha;

@@ -31,7 +31,8 @@ var mediaThumb;
 var ffmpegGif;
 var verbose;
 var onlySfwImages;
-var apngThreshold = 25 * 1024;
+var fauxAnimThreshold = 25 * 1024;
+var fauxAnimMimes = [ 'image/png', 'image/webp' ];
 
 exports.correctedMimesRelation = {
   'video/webm' : 'audio/webm',
@@ -411,15 +412,15 @@ exports.generateThumb = function(identifier, file, callback) {
 
   var gifCondition = thumbExtension || tooSmall;
 
-  var apngCondition = gifCondition && file.size > apngThreshold;
-  apngCondition = apngCondition && file.mime === 'image/png';
+  var fauxCondition = gifCondition && file.size > fauxAnimThreshold;
+  fauxCondition = fauxCondition && fauxAnimMimes.indexOf(file.mime) >= 0;
 
   var imageCondition = file.mime.indexOf('image/') > -1;
   imageCondition = imageCondition && !tooSmall && file.mime !== 'image/svg+xml';
 
   if (file.mime === 'image/gif' && gifCondition) {
     exports.generateGifThumb(identifier, file, callback);
-  } else if (imageCondition || apngCondition) {
+  } else if (imageCondition || fauxCondition) {
     exports.generateImageThumb(identifier, file, callback);
   } else if (file.mime.indexOf('video/') > -1 && mediaThumb) {
     exports.generateVideoThumb(identifier, file, tooSmall, callback);

@@ -34,7 +34,7 @@ exports.boardProjection = {
   usesCustomJs : 1,
   usesCustomCss : 1,
   settings : 1,
-  specialSettings: 1,
+  specialSettings : 1,
   boardDescription : 1,
   preferredLanguage : 1,
   locationFlagMode : 1,
@@ -76,8 +76,8 @@ exports.loadDependencies = function() {
 };
 
 // Section 1: Thread {
-exports.getThreadNextLanguage = function(boardData, flagData, threadData,
-    foundPosts, lastPosts, language, callback) {
+exports.getThreadNextLanguage = function(userCount, boardData, flagData,
+    threadData, foundPosts, lastPosts, language, callback) {
 
   rootModule.nextLanguage(language, function gotNextLanguage(error, language) {
 
@@ -86,39 +86,59 @@ exports.getThreadNextLanguage = function(boardData, flagData, threadData,
     } else if (!language) {
       callback();
     } else {
-      exports.generateThreadHTML(boardData, flagData, threadData, foundPosts,
-          lastPosts, callback, language);
+      exports.generateThreadHTML(userCount, boardData, flagData, threadData,
+          foundPosts, lastPosts, callback, language);
     }
 
   });
 
 };
 
-exports.generateThreadHTML = function(boardData, flagData, threadData,
-    foundPosts, lastPosts, callback, language) {
+exports.generateThreadHTML = function(userCount, boardData, flagData,
+    threadData, foundPosts, lastPosts, callback, language) {
 
-  domManipulator.thread(boardData, flagData, threadData, foundPosts,
+  domManipulator.thread(userCount, boardData, flagData, threadData, foundPosts,
       function generatedHTML(error) {
 
         if (error) {
-          callback(error);
-        } else {
-
-          domManipulator.thread(boardData, flagData, threadData, lastPosts,
-              function generatedHTML(error) {
-
-                if (!altLanguages) {
-                  return callback();
-                }
-
-                exports.getThreadNextLanguage(boardData, flagData, threadData,
-                    foundPosts, lastPosts, language, callback);
-
-              }, null, null, language, true);
-
+          return callback(error);
         }
 
+        domManipulator.thread(userCount, boardData, flagData, threadData,
+            lastPosts, function generatedHTML(error) {
+
+              if (!altLanguages) {
+                return callback();
+              }
+
+              exports.getThreadNextLanguage(userCount, boardData, flagData,
+                  threadData, foundPosts, lastPosts, language, callback);
+
+            }, null, null, language, true);
+
       }, null, null, language);
+
+};
+
+exports.getThreadUserCount = function(threadData, posts) {
+
+  var seenIds = [];
+
+  var threadIdentifier = threadData.ip || threadData.bypassId || '';
+
+  seenIds.push(threadIdentifier.toString());
+
+  for (var i = 0; i < posts.length; i++) {
+    var post = posts[i];
+    var postIdentifier = (post.ip || post.bypassId || '').toString();
+
+    if (seenIds.indexOf(postIdentifier) < 0) {
+      seenIds.push(postIdentifier);
+    }
+
+  }
+
+  return seenIds.length;
 
 };
 
@@ -202,16 +222,19 @@ exports.thread = function(boardUri, threadId, callback, boardData, threadData,
           return callback(error);
         }
 
+        var uniquePosters = exports.getThreadUserCount(threadData, foundPosts);
+
         // style exception, too simple
-        jsonBuilder.thread(boardUri, boardData, threadData, foundPosts,
-            function savedJson(error) {
+        jsonBuilder.thread(uniquePosters, boardUri, boardData, threadData,
+            foundPosts, function savedJson(error) {
 
               if (error) {
                 return callback(error);
               }
 
-              exports.generateThreadHTML(boardData, flagData, threadData,
-                  foundPosts, foundPosts.slice(-latestLimit), callback);
+              exports.generateThreadHTML(uniquePosters, boardData, flagData,
+                  threadData, foundPosts, foundPosts.slice(-latestLimit),
+                  callback);
 
             }, null, null, flagData);
         // style exception, too simple

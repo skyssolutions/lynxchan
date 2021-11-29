@@ -227,28 +227,6 @@ exports.setModElements = function(modding, document, userRole, removable,
 
 };
 
-exports.getThreadUserCount = function(posts, threadData) {
-
-  var seenIds = [];
-
-  var threadIdentifier = threadData.bypassId || threadData.ip || '';
-
-  seenIds.push(threadIdentifier.toString());
-
-  for (var i = 0; i < posts.length; i++) {
-    var post = posts[i];
-    var postIdentifier = (post.bypassId || post.ip || '').toString();
-
-    if (seenIds.indexOf(postIdentifier) < 0) {
-      seenIds.push(postIdentifier);
-    }
-
-  }
-
-  return seenIds.length;
-
-};
-
 exports.setThreadCommonInfo = function(template, threadData, boardData,
     language, flagData, posts, modding, userRole, last) {
 
@@ -275,9 +253,7 @@ exports.setThreadCommonInfo = function(template, threadData, boardData,
   }
 
   document = document
-      .replace('__threadIdentifier_value__', threadData.threadId).replace(
-          '__userCountLabel_inner__',
-          exports.getThreadUserCount(posts, threadData));
+      .replace('__threadIdentifier_value__', threadData.threadId);
 
   return exports.setModElements(modding, document, userRole,
       template.removable, threadData.archived);
@@ -301,8 +277,8 @@ exports.getThreadPathAndMeta = function(preferredLanguage, boardUri, language,
 
 };
 
-exports.thread = function(boardData, flagData, threadData, posts, callback,
-    modding, userRole, language, last) {
+exports.thread = function(userCount, boardData, flagData, threadData, posts,
+    callback, modding, userRole, language, last) {
 
   var boardUri = boardData.boardUri;
 
@@ -311,7 +287,8 @@ exports.thread = function(boardData, flagData, threadData, posts, callback,
   var document = exports.setThreadCommonInfo(template, threadData, boardData,
       language, flagData, posts, modding, userRole, last).replace(
       '__divReportCaptcha_location__',
-      noReportCaptcha ? '' : template.removable.divReportCaptcha);
+      noReportCaptcha ? '' : template.removable.divReportCaptcha).replace(
+      '__userCountLabel_inner__', userCount);
 
   if (modding) {
 

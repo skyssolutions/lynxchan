@@ -35,7 +35,7 @@ var volunteerSettings;
 var useLanguages;
 var lowercase;
 
-exports.validLinkProtocols = [ 'http', 'https', 'ftp' ];
+exports.validProtocols = [ 'http', 'https', 'ftp' ];
 
 exports.boardManagementProjection = {
   _id : 0,
@@ -237,9 +237,11 @@ exports.getMessageMarkdown = function(message) {
         var matchesArray = match.match(/\[(.+)\]\((.+)\)/);
 
         var protocol = matchesArray[2].match(/(.+):/) || '';
-        var invalidProtocol = exports.validLinkProtocols.indexOf(protocol[1]) < 0;
+        var invalidProtocol = exports.validProtocols.indexOf(protocol[1]) < 0;
 
-        if ((!protocol || invalidProtocol) && matchesArray[2].indexOf('/') !== 0) {
+        var refusedProtocol = !protocol || invalidProtocol;
+
+        if (refusedProtocol && matchesArray[2].indexOf('/') !== 0) {
           return '';
         }
 

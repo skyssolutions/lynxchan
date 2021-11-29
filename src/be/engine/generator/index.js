@@ -23,6 +23,7 @@ exports.postProjection = {
   lastEditTime : 1,
   lastEditLogin : 1,
   id : 1,
+  ip : 1,
   signedRole : 1,
   markdown : 1
 };
