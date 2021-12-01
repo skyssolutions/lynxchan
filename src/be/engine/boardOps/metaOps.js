@@ -10,6 +10,7 @@ var languages = db.languages();
 var users = db.users();
 var boards = db.boards();
 var threads = db.threads();
+var logs = db.logs();
 var posts = db.posts();
 var captchaOps;
 var logOps;
@@ -26,6 +27,7 @@ var lang;
 var maxBoardTags;
 var allowJs;
 var overboard;
+var miscDelOps;
 var onlyConfirmed;
 var sfwOverboard;
 var globalBoardModeration;
@@ -139,6 +141,7 @@ exports.loadDependencies = function() {
   miscOps = require('../miscOps');
   modCommonOps = require('../modOps').common;
   lang = require('../langOps').languagePack;
+  miscDelOps = require('../deletionOps').miscDeletions;
 
 };
 
@@ -1052,3 +1055,411 @@ exports.unlockAutoLock = function(userData, params, language, callback) {
   });
 
 };
+
+// Section 7: Change board Uri {
+exports.migrateLogs = function(parameters, threadRevertOps, postRevertOps,
+    callback) {
+
+  logs.updateMany({
+    boardUri : parameters.boardUri
+  }, {
+    $set : {
+      boardUri : parameters.newUri
+    },
+    $unset : {
+      cache : 1,
+      alternativeCaches : 1
+    }
+  }, function(error) {
+
+    if (error) {
+      return exports.revertMiscCollections(parameters, threadRevertOps,
+          postRevertOps, callback, error);
+    }
+
+    process.send({
+      board : parameters.boardUri,
+      buildAll : true
+    });
+
+    process.send({
+      board : parameters.boardUri,
+      multiboard : true
+    });
+
+    process.send({
+      frontPage : true
+    });
+
+    if (overboard || sfwOverboard) {
+      overboardOps.reaggregate({
+        overboard : true,
+        reaggregate : true
+      });
+    }
+
+    callback();
+
+  });
+
+};
+
+exports.migrateMiscCollections = function(parameters, threadRevertOps,
+    postRevertOps, callback, index) {
+
+  index = index || 0;
+
+  if (index >= miscDelOps.collectionsToClean.length) {
+    return exports.migrateLogs(parameters, threadRevertOps, postRevertOps,
+        callback);
+  }
+
+  miscDelOps.collectionsToClean[index].updateMany({
+    boardUri : parameters.boardUri
+  }, {
+    $set : {
+      boardUri : parameters.newUri
+    }
+  }, function(error) {
+
+    if (error) {
+      exports.revertMiscCollections(parameters, threadRevertOps, postRevertOps,
+          callback, error);
+    } else {
+      exports.migrateMiscCollections(parameters, threadRevertOps,
+          postRevertOps, callback, ++index);
+    }
+
+  });
+
+};
+
+exports.markdownReplace = function(markdown, parameters) {
+
+  var regex = '<a class="quoteLink" href="\/' + parameters.boardUri;
+
+  return markdown.replace(new RegExp(regex, 'g'), function(match) {
+
+    return '<a class="quoteLink" href="/' + parameters.newUri;
+
+  });
+
+};
+
+exports.buildMarkdownReplaceOps = function(postings, ops, reverseOps,
+    parameters) {
+
+  for (var i = 0; i < postings.length; i++) {
+
+    var posting = postings[i];
+
+    ops.push({
+      updateOne : {
+        filter : {
+          _id : posting._id
+        },
+        update : {
+          $unset : miscOps.individualCaches,
+          $set : {
+            markdown : exports.markdownReplace(posting.markdown, parameters),
+            boardUri : parameters.newUri
+          }
+        }
+      }
+    });
+
+    reverseOps.push({
+      updateOne : {
+        filter : {
+          _id : posting._id
+        },
+        update : {
+          $set : {
+            markdown : posting.markdown,
+            boardUri : parameters.boardUri
+          }
+        }
+      }
+    });
+
+  }
+
+};
+
+exports.migrateAllReplies = function(parameters, threadRevertOps, callback) {
+
+  posts.find({
+    boardUri : parameters.boardUri
+  }, {
+    projection : {
+      markdown : 1
+    }
+  }).toArray(
+      function(error, foundPosts) {
+
+        if (error) {
+          return exports.revertThreads(threadRevertOps, parameters, error,
+              callback);
+        } else if (!foundPosts.length) {
+          return exports.migrateMiscCollections(parameters, threadRevertOps,
+              [], callback);
+        }
+
+        var postOps = [];
+        var postReverseOps = [];
+
+        exports.buildMarkdownReplaceOps(foundPosts, postOps, postReverseOps,
+            parameters);
+
+        // style exception, too simple
+        posts.bulkWrite(postOps,
+            function(error) {
+
+              if (error) {
+                exports.revertThreads(threadRevertOps, parameters, error,
+                    callback);
+              } else {
+                exports.migrateMiscCollections(parameters, threadRevertOps,
+                    postReverseOps, callback);
+              }
+
+            });
+        // style exception, too simple
+
+      });
+
+};
+
+exports.migrateAllThreads = function(parameters, callback) {
+
+  threads.find({
+    boardUri : parameters.boardUri
+  }, {
+    projection : {
+      markdown : 1
+    }
+  }).toArray(
+      function(error, foundThreads) {
+
+        if (error) {
+          return exports.revertUsersChange(parameters, error, callback);
+        } else if (!foundThreads.length) {
+          return exports.migrateMiscCollections(parameters, [], [], callback);
+        }
+
+        var threadOps = [];
+        var threadReverseOps = [];
+
+        exports.buildMarkdownReplaceOps(foundThreads, threadOps,
+            threadReverseOps, parameters);
+
+        // style exception, too simple
+        threads.bulkWrite(threadOps, function(error) {
+
+          if (error) {
+            exports.revertUsersChange(parameters, error, callback);
+          } else {
+            exports.migrateAllReplies(parameters, threadReverseOps, callback);
+          }
+
+        });
+        // style exception, too simple
+
+      });
+
+};
+
+exports.revertBoardUriChange = function(parameters, error, callback) {
+
+  boards.updateOne({
+    boardUri : parameters.newUri
+  }, {
+    $set : {
+      boardUri : parameters.boardUri
+    }
+  }, function(newError) {
+    callback(newError || error);
+  });
+
+};
+
+exports.revertUsersChange = function(parameters, error, callback) {
+
+  users.bulkWrite([ {
+    updateOne : {
+      filter : {
+        ownedBoards : parameters.newUri
+      },
+      update : {
+        $set : {
+          'ownedBoards.$' : parameters.boardUri
+        }
+      }
+    }
+  }, {
+    updateMany : {
+      filter : {
+        volunteeredBoards : parameters.newUri
+      },
+      update : {
+        $set : {
+          'volunteeredBoards.$' : parameters.boardUri
+        }
+      }
+    }
+  } ], function(newError) {
+
+    if (newError) {
+      console.log(newError);
+    }
+
+    exports.revertBoardUriChange(parameters, error, callback);
+
+  });
+
+};
+
+exports.revertThreads = function(threadRevertOps, parameters, error, callback) {
+
+  threads.bulkWrite(threadRevertOps, function(newError) {
+
+    if (newError) {
+      console.log(newError);
+    }
+
+    exports.revertUsersChange(parameters, error, callback);
+
+  });
+
+};
+
+exports.revertReplies = function(postRevertOps, threadRevertOps, parameters,
+    error, callback) {
+
+  posts.bulkWrite(postRevertOps, function(newError) {
+
+    if (newError) {
+      console.log(newError);
+    }
+
+    exports.revertThreads(threadRevertOps, parameters, error, callback);
+
+  });
+
+};
+
+exports.revertMiscCollections = function(parameters, threadRevertOps,
+    postRevertOps, callback, error, index) {
+
+  index = index || 0;
+
+  if (index >= miscDelOps.collectionsToClean.length) {
+    return exports.revertReplies(postRevertOps, threadRevertOps, parameters,
+        error, callback);
+  }
+
+  miscDelOps.collectionsToClean[index].updateMany({
+    boardUri : parameters.newUri
+  }, {
+    $set : {
+      boardUri : parameters.boardUri
+    }
+  }, function(newError) {
+
+    if (newError) {
+      console.log(newError);
+    }
+
+    exports.revertReplies(postRevertOps, threadRevertOps, parameters, error,
+        callback);
+
+  });
+
+};
+
+exports.startUriChange = function(parameters, language, callback) {
+
+  boards.updateOne({
+    boardUri : parameters.boardUri
+  }, {
+    $set : {
+      boardUri : parameters.newUri
+    }
+  }, function(error) {
+
+    if (error && error.code !== 11000) {
+      return callback(error);
+    } else if (error) {
+      return callback(lang(language).errUriInUse);
+    }
+
+    // style exception, too simple
+    users.bulkWrite([ {
+      updateOne : {
+        filter : {
+          ownedBoards : parameters.boardUri
+        },
+        update : {
+          $set : {
+            'ownedBoards.$' : parameters.newUri
+          }
+        }
+      }
+    }, {
+      updateMany : {
+        filter : {
+          volunteeredBoards : parameters.boardUri
+        },
+        update : {
+          $set : {
+            'volunteeredBoards.$' : parameters.newUri
+          }
+        }
+      }
+    } ], function(error) {
+
+      if (error) {
+        exports.revertBoardUriChange(parameters, error, callback);
+      } else {
+        exports.migrateAllThreads(parameters, callback);
+      }
+
+    });
+    // style exception, too simple
+
+  });
+
+};
+
+exports.changeBoardUri = function(userData, parameters, language, callback) {
+
+  var admin = userData.globalRole < 2;
+
+  var newUri = parameters.newUri;
+
+  if (!admin) {
+    return callback(lang(language).errDeniedBoardMod);
+  } else if (!parameters.boardUri) {
+    return callback(lang(language).errBoardNotFound);
+  } else if (!parameters.newUri || /\W/.test(parameters.newUri)) {
+    return callback(lang(language).errInvalidUri);
+  } else if (newUri === overboard || newUri === sfwOverboard) {
+    return callback(lang(language).errUriInUse);
+  }
+
+  boards.findOne({
+    boardUri : parameters.boardUri
+  }, function(error, foundBoard) {
+
+    if (error) {
+      callback(error);
+    } else if (!foundBoard) {
+      callback(lang(language).errBoardNotFound);
+    } else {
+      exports.startUriChange(parameters, language, callback);
+    }
+
+  });
+
+};
+// } Section 7: Change board Uri

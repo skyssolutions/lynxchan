@@ -15,6 +15,7 @@
   "errInvalidLogin": "Invalid login.",
   "errTooManyFlags": "This board exceeded the flag limit.",
   "errLoginInUse": "Login is already in use.",
+  "msgUriChanged": "Uri changed.",
   "errBoardBannerLimit": "Banner limit reached.",
   "errBypassPurgeConfirmation": "You must confirm you wish to purge {$count} block bypasses.",
   "errLoginFailed": "Login failed.",

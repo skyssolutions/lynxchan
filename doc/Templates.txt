@@ -1677,6 +1677,10 @@ checkboxAllowJs:
     use: might be turned on.
     description: checkbox that indicates if the board can have js uploaded even if not globally allowed.
 
+uriChangeIdentifier:
+    use: have it's value manipulated.
+    description: hidden input that identifies the board for the uri change.
+
 boardTransferIdentifier:
     use: have it's value manipulated.
     description: hidden input that identifies the board for the transfer operation.

@@ -15,7 +15,8 @@ var staticPages;
 var noBanCaptcha;
 
 exports.boardModerationIdentifiers = [ 'boardTransferIdentifier',
-    'boardDeletionIdentifier', 'specialSettingsIdentifier' ];
+    'boardDeletionIdentifier', 'specialSettingsIdentifier',
+    'uriChangeIdentifier' ];
 
 exports.specialSettingsRelation = {
   sfw : 'checkboxSfw',

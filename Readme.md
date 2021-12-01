@@ -94,5 +94,6 @@ Lleaff: early front-end contributions and feedback.
 Endchan's staff: early adopters and feedback.
 Megamilk: feedback and testing from 1.8 to 2.1.
 lt_barclay: mobile support for PenumbraLynx.
+Tjark: fucking legend.
 
 [WHAT IS THE INTERNET? WHAT IS A CHAN?](https://en.wikipedia.org/wiki/Imageboard)

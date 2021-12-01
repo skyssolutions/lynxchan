@@ -1656,5 +1656,17 @@ Parameters:
 
 ------------------------------------------------------------------------------------------
 
+PAG_ID:: 101
+
+Name: changeBoardUri
+
+Description: changes a board uri. Only usable by root and admin accounts.
+
+Parameters:
+  boardUri: current uri of the board.
+  newUri: new uri of the board.
+
+------------------------------------------------------------------------------------------
+
 *: mandatory parameters.
 ***: will be ignored if its value its greater than the global equivalent or elements that are not present on the global equivalent array.

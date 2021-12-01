@@ -262,6 +262,7 @@ msgContentDeleted: message used after deleting content. Replaces: {$threads}, {$
 msgBannerCreated: message used after creating a board banner.
 msgBoardCreated: message used after creating a board.
 msgFilterCreated: message used after creating a filter.
+msgUriChanged: message used after changing a board's uri.
 msgBannerDeleted: message used after deleting a banner.
 msgBoardDeleted: message used after deleting a board.
 msgFilterDeleted: message used after deleting a filter.
