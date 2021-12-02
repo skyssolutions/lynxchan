@@ -10,6 +10,7 @@ var languages = db.languages();
 var users = db.users();
 var boards = db.boards();
 var threads = db.threads();
+var files = db.files();
 var logs = db.logs();
 var posts = db.posts();
 var captchaOps;
@@ -1057,6 +1058,100 @@ exports.unlockAutoLock = function(userData, params, language, callback) {
 };
 
 // Section 7: Change board Uri {
+exports.migrateFiles = function(parameters, threadRevertOps, postRevertOps,
+    callback) {
+
+  files.find({
+    'metadata.boardUri' : parameters.boardUri
+  }, {
+    projection : {
+      filename : 1
+    }
+  }).toArray(
+      function(error, foundFiles) {
+
+        if (error) {
+          return exports.revertLogs(parameters, threadRevertOps, postRevertOps,
+              callback, error);
+        }
+
+        var fileOps = [ {
+          updateMany : {
+            filter : {
+              'metadata.boardUri' : parameters.boardUri
+            },
+            update : {
+              $set : {
+                'metadata.boardUri' : parameters.newUri
+              }
+            }
+          }
+        } ];
+
+        for (var i = 0; i < foundFiles.length; i++) {
+
+          var file = foundFiles[i];
+
+          if (file.filename.indexOf('/' + parameters.boardUri + '/') !== 0) {
+            continue;
+          }
+
+          var oldPath = '/' + parameters.boardUri + '/';
+          var newPath = '/' + parameters.newUri + '/';
+
+          fileOps.push({
+            updateOne : {
+              filter : {
+                _id : file._id
+              },
+              update : {
+                $set : {
+                  filename : file.filename.replace(oldPath, newPath)
+                }
+              }
+            }
+          });
+
+        }
+
+        // style exception, too simple
+        files.bulkWrite(fileOps, function(error) {
+
+          if (error) {
+            return exports.revertLogs(parameters, threadRevertOps,
+                postRevertOps, callback, error);
+          }
+
+          process.send({
+            board : parameters.boardUri,
+            buildAll : true
+          });
+
+          process.send({
+            board : parameters.boardUri,
+            multiboard : true
+          });
+
+          process.send({
+            frontPage : true
+          });
+
+          if (overboard || sfwOverboard) {
+            overboardOps.reaggregate({
+              overboard : true,
+              reaggregate : true
+            });
+          }
+
+          callback();
+
+        });
+        // style exception, too simple
+
+      });
+
+};
+
 exports.migrateLogs = function(parameters, threadRevertOps, postRevertOps,
     callback) {
 
@@ -1077,28 +1172,7 @@ exports.migrateLogs = function(parameters, threadRevertOps, postRevertOps,
           postRevertOps, callback, error);
     }
 
-    process.send({
-      board : parameters.boardUri,
-      buildAll : true
-    });
-
-    process.send({
-      board : parameters.boardUri,
-      multiboard : true
-    });
-
-    process.send({
-      frontPage : true
-    });
-
-    if (overboard || sfwOverboard) {
-      overboardOps.reaggregate({
-        overboard : true,
-        reaggregate : true
-      });
-    }
-
-    callback();
+    exports.migrateFiles(parameters, threadRevertOps, postRevertOps, callback);
 
   });
 
@@ -1219,6 +1293,7 @@ exports.migrateAllReplies = function(parameters, threadRevertOps, callback) {
                 exports.revertThreads(threadRevertOps, parameters, error,
                     callback);
               } else {
+
                 exports.migrateMiscCollections(parameters, threadRevertOps,
                     postReverseOps, callback);
               }
@@ -1372,6 +1447,28 @@ exports.revertMiscCollections = function(parameters, threadRevertOps,
 
     exports.revertReplies(postRevertOps, threadRevertOps, parameters, error,
         callback);
+
+  });
+
+};
+
+exports.revertLogs = function(parameters, threadRevertOps, postRevertOps,
+    callback, error) {
+
+  logs.updateMany({
+    boardUri : parameters.newUri
+  }, {
+    $set : {
+      boardUri : parameters.boardUri
+    }
+  }, function(newError) {
+
+    if (newError) {
+      console.log(newError);
+    }
+
+    exports.revertMiscCollections(parameters, threadRevertOps, postRevertOps,
+        callback, error);
 
   });
 
