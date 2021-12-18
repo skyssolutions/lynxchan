@@ -519,6 +519,7 @@ exports.placeIndex = function(task, dest) {
     return exports.pushIndex(boardIndex, task.meta.type, dest);
   }
 
+  case 'last':
   case 'thread': {
     return exports.pushIndex(boardIndex.threads, task.meta.threadId, dest);
   }
