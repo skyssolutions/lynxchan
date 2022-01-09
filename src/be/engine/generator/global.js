@@ -899,6 +899,12 @@ exports.multiboard = function(boardList, callback) {
   }
 
   threads.find({
+    trash : {
+      $ne : true
+    },
+    archived : {
+      $ne : true
+    },
     boardUri : {
       $in : boardList
     }
