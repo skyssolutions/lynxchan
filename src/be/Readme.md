@@ -103,6 +103,7 @@ Settings files that goes into the settings directory:
 * `captchaPool`(Number): maximum amount of captchas in the captcha pool that tor users have access to.
 * `address`: ip to bind the server on. Defaults to `0.0.0.0`.
 * `port`(Number): port to listen for http. Defaults to 80.
+* `autoCaptchaLimit`(Number): amount of threads required to be made in an hour for captcha to activated on any board.
 * `imageFont`: font to be used on images. Defaults to DejaVu-Sans.
 * `ssl`(Number): SSL mode. If 0 it won`t be used, if 1 it will be used, if 2 all plain HTTP requests will be redirected to their HTTPS equivalent.
 * `sslPass`: optional passphrase for the ssl key.

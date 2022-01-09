@@ -20,12 +20,14 @@ var overboard;
 var threadLimit;
 var unboundBoardSettings;
 var globalLatestPosts;
+var globalAutoCaptchaTreshold;
 var sfwOverboard;
 
 exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  globalAutoCaptchaTreshold = settings.autoCaptchaLimit;
   unboundBoardSettings = settings.unboundBoardLimits;
   sfwOverboard = settings.sfwOverboard;
   overboard = settings.overboard;
@@ -439,6 +441,18 @@ exports.setCaptchaEnabling = function(updateBlock) {
   return true;
 };
 
+exports.getTresholdToUse = function(board) {
+
+  if (!board.autoCaptchaThreshold) {
+    return globalAutoCaptchaTreshold;
+  } else if (board.autoCaptchaThreshold > globalAutoCaptchaTreshold) {
+    return globalAutoCaptchaTreshold;
+  } else {
+    return board.autoCaptchaThreshold;
+  }
+
+};
+
 exports.setUpdateForAutoCaptcha = function(updateBlock, board) {
 
   if (board.captchaMode) {
@@ -452,22 +466,19 @@ exports.setUpdateForAutoCaptcha = function(updateBlock, board) {
 
   if (setBlock) {
     usedSet = true;
-
   } else {
     setBlock = {};
   }
 
   if (board.autoCaptchaStartTime <= expiration) {
-
     usedSet = exports.setAutoCaptchaReset(board, setBlock);
-
   } else {
     updateBlock.$inc.autoCaptchaCount = 1;
   }
 
   exports.setStartTime(usedSet, board, setBlock, updateBlock);
 
-  if (board.autoCaptchaCount >= board.autoCaptchaThreshold - 1) {
+  if (board.autoCaptchaCount >= exports.getTresholdToUse(board) - 1) {
     return exports.setCaptchaEnabling(updateBlock);
   }
 };
@@ -487,7 +498,7 @@ exports.getNewThreadId = function(req, userData, parameters, board,
 
   var enabledCaptcha;
 
-  if (board.autoCaptchaThreshold) {
+  if (board.autoCaptchaThreshold || globalAutoCaptchaTreshold) {
     enabledCaptcha = exports.setUpdateForAutoCaptcha(updateBlock, board);
   }
 

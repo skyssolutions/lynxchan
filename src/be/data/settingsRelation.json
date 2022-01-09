@@ -208,6 +208,11 @@
   },
   {
     "type": "number",
+    "setting": "autoCaptchaLimit",
+    "element": "fieldAutoCaptchaLimit"
+  },
+  {
+    "type": "number",
     "setting": "bypassValidationRange",
     "element": "fieldBypassValidationRange"
   },
