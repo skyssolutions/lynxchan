@@ -450,21 +450,18 @@ exports.removeGlobalLatestPosts = function(userData, board, parameters, cb,
   globalLatestPosts.bulkWrite(operations, function removedLatestPosts(error) {
 
     if (error) {
-      cb(error);
+      return cb(error);
+    }
+
+    if (exports.isAllowedByStaffPower(userData, board)) {
+
+      exports.logRemoval(userData, board, parameters, cb, foundThreads,
+          rawPosts, foundPosts, parentThreads, filteredThreads, filteredPosts);
+
     } else {
 
-      if (userData) {
-
-        exports
-            .logRemoval(userData, board, parameters, cb, foundThreads,
-                rawPosts, foundPosts, parentThreads, filteredThreads,
-                filteredPosts);
-
-      } else {
-
-        exports.removeReportsAndGlobalLatestImages(board, parameters, cb,
-            foundThreads, rawPosts, parentThreads);
-      }
+      exports.removeReportsAndGlobalLatestImages(board, parameters, cb,
+          foundThreads, rawPosts, parentThreads);
     }
 
   });
