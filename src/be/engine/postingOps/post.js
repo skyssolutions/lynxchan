@@ -520,8 +520,8 @@ exports.createPost = function(req, parameters, newFiles, userData, postId,
     } else if (error) {
       parameters.creationDate = new Date();
 
-      exports.createPost(req, parameters, userData, postId + 1, thread, board,
-          wishesToSign, enabledCaptcha, cb);
+      exports.createPost(req, parameters, newFiles, userData, postId + 1, thread,
+       board, wishesToSign, enabledCaptcha, cb);
     } else {
 
       if (wsEnabled) {
