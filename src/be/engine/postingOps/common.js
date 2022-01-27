@@ -774,11 +774,14 @@ exports.markdownText = function(message, board, replaceCode, callback) {
 };
 // } Section 2: Markdown
 
-exports.createId = function(salt, boardUri, ip) {
+exports.createId = function(salt, boardUri, ip, bypassId) {
 
   if (ip) {
     return crypto.createHash('sha256').update(salt + ip + boardUri).digest(
         'hex').substring(0, 6);
+  } else if (bypassId) {
+    return crypto.createHash('sha256').update(
+        salt + bypassId.toString() + boardUri).digest('hex').substring(0, 6);
   } else {
     return null;
   }

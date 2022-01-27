@@ -202,7 +202,7 @@ exports.getNewThread = function(req, userData, parameters, board, threadId,
   var ip = logger.ip(req);
 
   var id = board.settings.indexOf('disableIds') > -1 ? null : common.createId(
-      salt, parameters.boardUri, ip);
+      salt, parameters.boardUri, ip, req.bypassId);
 
   var nameToUse = parameters.name || board.anonymousName;
   nameToUse = nameToUse || common.defaultAnonymousName;

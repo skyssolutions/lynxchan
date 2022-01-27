@@ -465,8 +465,8 @@ exports.getNewPost = function(req, parameters, userData, postId, thread, board,
 
   var hideId = board.settings.indexOf('disableIds') > -1;
 
-  var id = hideId ? null : common
-      .createId(thread.salt, parameters.boardUri, ip);
+  var id = hideId ? null : common.createId(thread.salt, parameters.boardUri,
+      ip, req.bypassId);
 
   var nameToUse = parameters.name || board.anonymousName;
   nameToUse = nameToUse || common.defaultAnonymousName;
@@ -520,8 +520,8 @@ exports.createPost = function(req, parameters, newFiles, userData, postId,
     } else if (error) {
       parameters.creationDate = new Date();
 
-      exports.createPost(req, parameters, newFiles, userData, postId + 1, thread,
-       board, wishesToSign, enabledCaptcha, cb);
+      exports.createPost(req, parameters, newFiles, userData, postId + 1,
+          thread, board, wishesToSign, enabledCaptcha, cb);
     } else {
 
       if (wsEnabled) {
