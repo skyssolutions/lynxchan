@@ -566,7 +566,7 @@ exports.liftBan = function(userData, parameters, language, callback) {
 // } Section 3: Lift ban
 
 // Section 4: Appealed bans {
-exports.readAppealedBans = function(parameters, callback) {
+exports.readAppealedBans = function(parameters, userData, callback) {
 
   var queryBlock = {
     appeal : {
@@ -577,9 +577,12 @@ exports.readAppealedBans = function(parameters, callback) {
     }
   };
 
+  var userSettings = userData.settings || [];
+  var noBoard = userSettings.indexOf('noBoardReports') >= 0;
+
   if (parameters.boardUri) {
     queryBlock.boardUri = parameters.boardUri;
-  } else if (!globalBoardModeration) {
+  } else if (!globalBoardModeration || noBoard) {
     queryBlock.boardUri = null;
   }
 
@@ -619,13 +622,13 @@ exports.getAppealedBans = function(userData, parameters, language, callback) {
       } else if (!common.isInBoardStaff(userData, board, 2)) {
         callback(lang(language).errDeniedBoardBanManagement);
       } else {
-        exports.readAppealedBans(parameters, callback);
+        exports.readAppealedBans(parameters, userData, callback);
       }
     });
   } else if (!isOnGlobalStaff) {
     callback(lang(language).errDeniedGlobalBanManagement);
   } else {
-    exports.readAppealedBans(parameters, callback);
+    exports.readAppealedBans(parameters, userData, callback);
   }
 
 };
