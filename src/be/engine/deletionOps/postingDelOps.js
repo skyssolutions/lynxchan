@@ -725,6 +725,7 @@ exports.trashFoundContent = function(userData, board, parameters, cb,
       $in : foundThreads
     }
   }, {
+    $unset : miscOps.individualCaches,
     $set : {
       trashDate : new Date(),
       trash : true
@@ -741,6 +742,7 @@ exports.trashFoundContent = function(userData, board, parameters, cb,
         $in : rawPosts
       }
     }, {
+      $unset : miscOps.individualCaches,
       $set : {
         trashDate : new Date(),
         trash : true

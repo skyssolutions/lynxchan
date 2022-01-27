@@ -74,6 +74,7 @@
         "inner",
         "removal"
       ],
+      "trashIndicator": "removal",
       "labelOmission": [
         "inner",
         "removal"
@@ -127,6 +128,7 @@
     "template": "postCell",
     "prebuiltFields": {
       "panelASN": "removal",
+      "trashIndicator": "removal",
       "panelBypassId": "removal",
       "labelBypassId": "inner",
       "labelBoard": [

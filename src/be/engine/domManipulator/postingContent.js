@@ -296,6 +296,13 @@ exports.setSharedHideableElements = function(posting, removable, postingCell,
     postingCell = postingCell.replace('__labelSubject_location__', '');
   }
 
+  if (!posting.trash) {
+    postingCell = postingCell.replace('__trashIndicator_location__', '');
+  } else {
+    postingCell = postingCell.replace('__trashIndicator_location__',
+        removable.trashIndicator);
+  }
+
   if (posting.id) {
     return postingCell.replace('__spanId_location__', removable.spanId)
         .replace('__labelId_inner__', posting.id).replace('__labelId_style__',

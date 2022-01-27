@@ -16,6 +16,7 @@ exports.postProjection = {
   flagCode : 1,
   banMessage : 1,
   innerCache : 1,
+  trash : 1,
   outerCache : 1,
   alternativeCaches : 1,
   message : 1,
@@ -31,6 +32,7 @@ exports.postProjection = {
 exports.threadProjection = {
   _id : 0,
   id : 1,
+  trash : 1,
   subject : 1,
   signedRole : 1,
   bypassId : 1,

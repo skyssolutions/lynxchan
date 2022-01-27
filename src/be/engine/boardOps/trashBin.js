@@ -268,6 +268,15 @@ exports.restorePosts = function(board, foundThreads, foundPosts, parentThreads,
     } ]
   }, {
     $unset : {
+      innerCache : 1,
+      outerCache : 1,
+      previewCache : 1,
+      clearCache : 1,
+      alternativeCaches : 1,
+      hashedCache : 1,
+      previewHashedCache : 1,
+      outerHashedCache : 1,
+      outerClearCache : 1,
       trash : true
     }
   }, function(error) {
@@ -396,6 +405,15 @@ exports.restoreThreads = function(board, foundThreads, postsToRestore, cb) {
     }
   }, {
     $unset : {
+      innerCache : 1,
+      outerCache : 1,
+      previewCache : 1,
+      clearCache : 1,
+      alternativeCaches : 1,
+      hashedCache : 1,
+      previewHashedCache : 1,
+      outerHashedCache : 1,
+      outerClearCache : 1,
       trash : true
     }
   }, function(error) {

@@ -393,6 +393,10 @@ linkOffenseRecord:
     use: have it's href manipulated or might be removed.
     description: link to the offense record of the poster's ip.
 
+trashIndicator:
+    use: might be removed.
+    description: label that indicates if the post was trashed.
+
 panelASN:
     use: might be removed.
     description: panel with the ASN label.
@@ -553,6 +557,10 @@ Elements:
 linkOffenseRecord:
     use: have it's href manipulated or might be removed.
     description: link to the offense record of the poster's ip.
+
+trashIndicator:
+    use: might be removed.
+    description: label that indicates if the post was trashed.
 
 panelBypassId:
     use: might be removed.
