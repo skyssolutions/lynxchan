@@ -41,6 +41,7 @@ exports.boardSettingsRelation = {
   requireThreadFile : 'requireFileCheckbox',
   uniquePosts : 'uniquePostsCheckbox',
   uniqueFiles : 'uniqueFilesCheckbox',
+  threadR9k : 'threadR9KCheckbox',
   textBoard : 'textBoardCheckbox'
 };
 

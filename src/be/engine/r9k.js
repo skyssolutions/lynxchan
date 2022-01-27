@@ -14,12 +14,16 @@ exports.loadDependencies = function() {
 
 // Section 1: Checking for duplicates {
 exports.getQuery = function(boardData, checkMessage, checkFiles, parameters,
-    language, callback) {
+    language, callback, threadId) {
 
   var query = {
     boardUri : boardData.boardUri,
     $or : []
   };
+
+  if (boardData.settings.indexOf('threadR9k') >= 0 && threadId) {
+    query.threadId = threadId;
+  }
 
   if (checkMessage) {
     query.$or.push({
@@ -35,9 +39,7 @@ exports.getQuery = function(boardData, checkMessage, checkFiles, parameters,
       var file = parameters.files[i];
 
       if (sha256s.indexOf(file.sha256) > -1) {
-        callback(lang(language).errDuplicateFileBeingPosted);
-
-        return;
+        return callback(lang(language).errDuplicateFileBeingPosted);
       }
 
       sha256s.push(file.sha256);
@@ -74,13 +76,12 @@ exports.getPost = function(parameters, query, language, callback) {
 
 };
 
-exports.check = function(parameters, boardData, language, callback) {
+exports.check = function(parameters, boardData, language, callback, threadId) {
 
   var settings = boardData.settings;
 
   if (!settings || !settings.length) {
-    callback();
-    return;
+    return callback();
   }
 
   var checkMessage = parameters.message && parameters.message.length;
@@ -89,14 +90,14 @@ exports.check = function(parameters, boardData, language, callback) {
   var checkFiles = parameters.files.length;
   checkFiles = checkFiles && boardData.settings.indexOf('uniqueFiles') > -1;
 
-  if (!checkMessage && !checkFiles) {
-    callback();
+  var skipForThread = settings.indexOf('threadR9k') > -1 && !threadId;
 
-    return;
+  if ((!checkMessage && !checkFiles) || skipForThread) {
+    return callback();
   }
 
   var query = exports.getQuery(boardData, checkMessage, checkFiles, parameters,
-      language, callback);
+      language, callback, threadId);
 
   if (!query) {
     return;

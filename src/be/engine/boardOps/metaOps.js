@@ -149,7 +149,7 @@ exports.loadDependencies = function() {
 exports.getValidSettings = function() {
   return [ 'disableIds', 'forceAnonymity', 'allowCode', 'early404', 'unindex',
       'blockDeletion', 'requireThreadFile', 'uniqueFiles', 'uniquePosts',
-      'textBoard' ];
+      'textBoard', 'threadR9k' ];
 };
 
 // Section 1: New settings {

@@ -600,7 +600,7 @@ exports.handleFiles = function(req, parameters, userData, postId, thread,
             wishesToSign, enabledCaptcha, callback);
       }
 
-    });
+    }, parameters.threadId);
     // style exception, too simple
 
   });

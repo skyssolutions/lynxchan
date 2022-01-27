@@ -27,6 +27,7 @@ boards: stores boards.
         unindex: removes board from index.
         uniqueFiles: board uses R9K to enforce unique files.
         uniquePosts: board uses R9K to enforce unique posts.
+        threadR9k: R9K is only restricted to posts within the same thread.
         requireThreadFile: threads can only be created with a file.
         allowCode: allows the usage of [code] on postings.
         early404: makes threads with less than 5 replies to be deleted after they leave the top 1/3 threads.

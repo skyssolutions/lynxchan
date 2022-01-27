@@ -886,6 +886,10 @@ TEM_ID::12
 bManagement: board management page.
 
 Elements:
+threadR9KCheckbox:
+    use: might be turned on.
+    description: checkbox that indicates that R9K is only enforced within threads.
+
 linkTrash:
     use: have it's href manipulated.
     description: link that takes the user to the board's trash bin.

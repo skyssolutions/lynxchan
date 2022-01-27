@@ -277,6 +277,7 @@
     "template": "bManagement",
     "prebuiltFields": {
       "settingsForm": "removal",
+      "threadR9KCheckbox": "checked",
       "languageCombobox": "children",
       "resetBoardLockForm": "removal",
       "resetLockIdentifier": "value",
