@@ -498,6 +498,11 @@
   },
   {
     "type": "boolean",
+    "setting": "websocketData",
+    "element": "checkboxWebsocketData"
+  },
+  {
+    "type": "boolean",
     "setting": "disableBanCaptcha",
     "element": "checkboxDisableBanCaptcha"
   },

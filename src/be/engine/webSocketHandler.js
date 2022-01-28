@@ -40,7 +40,8 @@ exports.notify = function(task) {
 
   var payload = JSON.stringify({
     action : task.action,
-    target : task.target
+    target : task.target,
+    data : task.data
   });
 
   for (var i = 0; i < array.length; i++) {

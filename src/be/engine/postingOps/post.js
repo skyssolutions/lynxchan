@@ -8,6 +8,7 @@ var posts = db.posts();
 var reports = db.reports();
 var threads = db.threads();
 var logger = require('../../logger');
+var taskHandler = require('../../taskListener');
 var common;
 var overboardOps;
 var formOps;
@@ -19,7 +20,7 @@ var unboundBoardSettings;
 var miscOps;
 var captchaOps;
 var overboard;
-var taskHandler = require('../../taskListener');
+var wsData;
 var wsEnabled;
 var sfwOverboard;
 var pageLimit;
@@ -28,10 +29,15 @@ var latestPostsCount;
 var pinnedLatest;
 var globalLatestPosts;
 
+var validsocketData = [ 'files', 'creation', 'message', 'subject', 'markdown',
+    'id', 'postId', 'name', 'signedRole', 'email', 'flag', 'flagCode',
+    'flagName' ];
+
 exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
 
+  wsData = settings.websocketData;
   wsEnabled = settings.wsPort || settings.wssPort;
   pinnedLatest = settings.latestPostPinned;
   unboundBoardSettings = settings.unboundBoardLimits;
@@ -503,6 +509,26 @@ exports.getNewPost = function(req, parameters, userData, postId, thread, board,
 
 };
 
+exports.getSocketData = function(posting) {
+
+  if (!wsData) {
+    return;
+  }
+
+  var data = {};
+
+  for ( var key in posting) {
+
+    if (validsocketData.indexOf(key) >= 0) {
+      data[key] = posting[key];
+    }
+
+  }
+
+  return data;
+
+};
+
 exports.createPost = function(req, parameters, newFiles, userData, postId,
     thread, board, wishesToSign, enabledCaptcha, cb) {
 
@@ -530,6 +556,7 @@ exports.createPost = function(req, parameters, newFiles, userData, postId,
           type : 'notifySockets',
           threadId : postToAdd.threadId,
           boardUri : postToAdd.boardUri,
+          data : exports.getSocketData(postToAdd),
           target : [ postId ],
           action : 'post'
         });
