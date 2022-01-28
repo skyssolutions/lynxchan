@@ -538,8 +538,7 @@ exports.liftBan = function(userData, parameters, language, callback) {
   try {
     parameters.banId = new ObjectID(parameters.banId);
   } catch (error) {
-    callback();
-    return;
+    return callback();
   }
 
   bans.findOne({

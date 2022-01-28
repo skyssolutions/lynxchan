@@ -5,7 +5,9 @@
 var crypto = require('crypto');
 var taskListener = require('../taskListener');
 var db = require('../db');
+var bans = db.bans();
 var users = db.users();
+var reports = db.reports();
 var boards = db.boards();
 var requests = db.recoveryRequests();
 var confirmations = db.confirmations();
@@ -17,7 +19,9 @@ var captchaOps;
 var redactedModNames;
 var domManipulator;
 var lang;
+var reportOps;
 var reportCategories;
+var globalBoardModeration;
 var domainWhiteList;
 var authLimit;
 
@@ -50,6 +54,7 @@ exports.loadSettings = function() {
 
   var settings = require('../settingsHandler').getGeneralSettings();
 
+  globalBoardModeration = settings.allowGlobalBoardModeration;
   reportCategories = settings.reportCategories || [];
   domainWhiteList = settings.emailDomainWhiteList;
   authLimit = settings.authenticationLimit;
@@ -61,6 +66,7 @@ exports.loadSettings = function() {
 exports.loadDependencies = function() {
 
   boardOps = require('./boardOps').meta;
+  reportOps = require('./modOps').report;
   logOps = require('./logOps');
   miscOps = require('./miscOps');
   captchaOps = require('./captchaOps');
@@ -1187,6 +1193,56 @@ exports.confirmEmail = function(parameters, language, callback) {
         }
       }, callback);
 
+    }
+
+  });
+
+};
+
+exports.getAppealsCount = function(userData, reportCount, callback) {
+
+  var allowedBans = userData.globalRole < miscOps.getMaxStaffRole();
+
+  if (!allowedBans) {
+    return callback(null, null, reportCount);
+  }
+
+  var query = {
+    appeal : {
+      $exists : true
+    },
+    denied : {
+      $exists : false
+    }
+  };
+
+  var globalOnly = userData.settings.indexOf('noBoardReports') >= 0;
+
+  if (!globalBoardModeration || globalOnly) {
+    query.boardUri = null;
+  }
+
+  bans.countDocuments(query, function gotBans(error, foundBans) {
+    callback(error, foundBans, reportCount);
+  });
+
+};
+
+exports.getQueueInfo = function(userData, callback) {
+
+  var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
+
+  if (!globalStaff) {
+    return callback();
+  }
+
+  reports.countDocuments(reportOps.getQueryBlock({}, userData), function(error,
+      count) {
+
+    if (error) {
+      callback(error);
+    } else {
+      exports.getAppealsCount(userData, count, callback);
     }
 
   });

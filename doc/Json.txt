@@ -50,6 +50,7 @@ Root(Object):
     maxMessageLength(Number): maximum allowed message length.
     maxFileCount(Number): maximum amount of files allowed.
     maxFileSize: maximimum size allowed for files.
+    trash(Boolean): true if the thread is trashed.
     usesCustomJs(Boolean): true of the board uses custom js.
     captcha(Boolean): true if the thread requires captcha to be replied to.
     textBoard(Boolean): true if the board is a textboard.
@@ -88,6 +89,7 @@ Root(Object):
         height(Number): size of the file, if image.
     posts(Array): array of the posts in this thread. Each object contains the following fields:
         name: name of the poster.
+        trash(Boolean): true if the post is trashed.
         signedRole: role of the user that posted the thread.
         email: email of the poster.
         flag: url of the used flag.
@@ -139,6 +141,7 @@ Root(Object):
         boardUri: uri of the board where the thread belongs to.
         banMessage: message to be displayed indicating this message was a cause to a ban.
         id: thread-wise id of the poster.
+        trash(Boolean): true of the thread is trashed.
         email: email of the poster.
         markdown: message with html markdown applied.
         threadId(Number): unique id of the thread inside the board.
@@ -166,6 +169,7 @@ Root(Object):
             height(Number): size of the file, if image.
         posts(Array): array of the posts in this thread. Each object contains the following fields:
             name: name of the poster.
+            trash(Boolean): true if the post is trashed.
             signedRole: role of the user that posted the thread.
             markdown: message with html markdown applied.
             email: email of the poster.

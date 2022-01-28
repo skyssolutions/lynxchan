@@ -685,6 +685,22 @@ TEM_ID::07
 accountPage: page used for user's accounts.
 
 Elements:
+appealedBansLabel:
+    use: have it's innerHTML manipulated.
+    description: label that holds the count of global appealed bans.
+
+openReportsLabel:
+    use: have it's innerHTML manipulated.
+    description: label that holds the count of global open reports.
+
+globalBansLink:
+    use: might be removed.
+    description: link to the global appealed bans page.
+
+globalReportsLink:
+    use: might be removed.
+    description: link to the global open reports page.
+
 reportFilterDiv:
     use: might be removed or have children appended to it.
     description: div with the available report categories to filter report notifications.

@@ -376,6 +376,10 @@ exports.applyFilters = function(boardFilters, message, callback) {
 
         }
 
+        if (message.length > exports.postingParameters[3].length) {
+          message = message.substring(0, exports.postingParameters[3].length);
+        }
+
         callback(null, message);
 
       });

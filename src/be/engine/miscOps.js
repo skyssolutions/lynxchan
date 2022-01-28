@@ -425,7 +425,9 @@ exports.getAppealedBansCount = function(userData, foundUsers, callback) {
     }
   };
 
-  if (!globalBoardModeration) {
+  var globalOnly = userData.settings.indexOf('noBoardReports') >= 0;
+
+  if (!globalBoardModeration || globalOnly) {
     query.boardUri = null;
   }
 

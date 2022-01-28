@@ -185,15 +185,28 @@ exports.setAccountHideableDivs = function(userData, removable, document) {
 
 };
 
-exports.setAccountHideableElements = function(userData, document, removable) {
+exports.setAccountHideableElements = function(userData, document, removable,
+    openReportsCount, appeals) {
 
   var globalStaff = userData.globalRole <= miscOps.getMaxStaffRole();
 
   if (!globalStaff) {
-    document = document.replace('__globalManagementLink_location__', '');
+    document = document.replace('__globalManagementLink_location__', '')
+        .replace('__globalReportsLink_location__', '');
   } else {
     document = document.replace('__globalManagementLink_location__',
-        removable.globalManagementLink);
+        removable.globalManagementLink).replace(
+        '__globalReportsLink_location__', removable.globalReportsLink).replace(
+        '__openReportsLabel_inner__', openReportsCount);
+  }
+
+  if (typeof appeals === 'number') {
+
+    document = document.replace('__globalBansLink_location__',
+        removable.globalBansLink).replace('__appealedBansLabel_inner__',
+        appeals);
+  } else {
+    document = document.replace('__globalBansLink_location__', '');
   }
 
   if (disabledLatestPostings) {
@@ -215,7 +228,7 @@ exports.setAccountHideableElements = function(userData, document, removable) {
 
 };
 
-exports.account = function(userData, language) {
+exports.account = function(userData, language, openReportsCount, appealCount) {
 
   var template = templateHandler(language).accountPage;
 
@@ -227,7 +240,7 @@ exports.account = function(userData, language) {
   document = document.replace('__labelLogin_inner__', login);
 
   document = exports.setAccountHideableElements(userData, document,
-      template.removable);
+      template.removable, openReportsCount, appealCount);
 
   document = exports.setAccountSettingsCheckbox(userData, document,
       template.removable, language);

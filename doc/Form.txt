@@ -100,6 +100,8 @@ Json output(Object): object with the account data. Contains the following fields
     noCaptchaBan(Boolean): indicates if captcha for bans is entirely disabled.
     login: login of the user.
     email: e-mail of the user.
+    appeals(Number): if set, holds the amount of global appealed bans.
+    openReports(Numbers): if set: holds the amount of global open reports.
     globalRole(Number): global role of the user.
     disabledLatestPostings(Boolean): indicates if the viewing of latest postings is disabled.
     volunteeredBoards(Array): array with the boards where this user is a volunteer.
@@ -393,6 +395,7 @@ Json output(Object): object with the data of the thread.
         name: name of the flag.
     markdown: message with html markdown applied.
     flag: url of the used flag.
+    trash(Boolean): true if the thread is trashed.
     noReportCaptcha(Boolean): indicates no captcha is needed for reporting.
     reportCategories(Array): array with the available report categories.
     flagName: name of the used flag.
@@ -423,7 +426,8 @@ Json output(Object): object with the data of the thread.
         height(Number): size of the file, if image.
     posts(Array): array of the posts in this thread. Each object contains the following fields:
         name: name of the poster.
-        signedRole: role of the user that posted the thread.
+        trash(Boolean): true if the post is trashed.
+        signedRole: role of the user that posted the post.
         email: email of the poster.
         flag: url of the used flag.
         flagName: name of the used flag.
@@ -1350,6 +1354,7 @@ JSON output(Array): array where each element is an object with the following fie
     asn: asn relative to the ip.
     broadRange: range of 1/2 of the ip.
     narrowRange: range of 1/4 of the ip.
+    trash(Boolean): true of the posting is trashed.
     banMessage: message to be displayed indicating this message was a cause to a ban.
     id: thread-wise id of the poster.
     email: email of the poster.

@@ -215,6 +215,10 @@
     "prebuiltFields": {
       "divSettingsPassword": "removal",
       "confirmationForm": "removal",
+      "globalReportsLink": "removal",
+      "globalBansLink": "removal",
+      "openReportsLabel": "inner",
+      "appealedBansLabel": "inner",
       "checkboxNoSettingsPassword": "checked",
       "latestPostingsLink": "removal",
       "labelLogin": "inner",
