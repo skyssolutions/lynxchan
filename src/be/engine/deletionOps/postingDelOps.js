@@ -26,12 +26,14 @@ var overboardOps;
 var miscOps;
 var limitDays;
 var logOps;
+var autoHashBan;
 
 exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
   redactedModNames = settings.redactModNames;
   sfwOverboard = settings.sfwOverboard;
+  autoHashBan = settings.autoMediaBan;
   wsEnabled = settings.wsPort || settings.wssPort;
   limitDays = settings.trashLimitDays;
   globalLatestPostsCount = settings.globalLatestPosts;
@@ -996,7 +998,7 @@ exports.getPostsToDelete = function(userData, board, postsToDelete, parameters,
               exports.removeFoundContent(userData, board, parameters, cb,
                   foundThreads, rawPosts, foundPosts, parentThreads);
 
-            });
+            }, parameters.deleteMedia && autoHashBan);
         // style exception, too simple
 
       });

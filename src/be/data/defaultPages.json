@@ -486,6 +486,7 @@
   {
     "template": "globalSettingsPage",
     "prebuiltFields": {
+      "checkboxAutoMediaBan": "checked",
       "checkboxNoReportCaptcha": "checked",
       "fieldAutoCaptchaLimit": "value",
       "authDiv": "removal",

@@ -2039,6 +2039,10 @@ TEM_ID::47
 globalSettingsPage: page used to change global settings.
 
 Elements:
+checkboxAutoMediaBan:
+    use: might be checked.
+    description: indicates if auto media ban is enabled.
+
 fieldAutoCaptchaLimit:
     use: have it's value manipulated.
     description: field with the thread limit required for automatic captcha activation on a board.

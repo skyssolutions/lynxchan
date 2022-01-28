@@ -183,7 +183,7 @@ exports.getOperations = function(postReferences, threadReferences) {
 };
 
 exports.updateReferencesCount = function(postReferences, threadReferences,
-    deleteMedia, userData, language, callback) {
+    deleteMedia, userData, language, autoban, callback) {
 
   var groupedReferences = postReferences.concat(threadReferences);
 
@@ -197,7 +197,8 @@ exports.updateReferencesCount = function(postReferences, threadReferences,
   }
 
   if (deleteMedia) {
-    exports.deleteFiles(null, identifiers, userData, language, callback, true);
+    exports.deleteFiles(null, identifiers, userData, language, autoban,
+        callback, true);
   } else {
     exports.checkNewOrphans(identifiers, callback);
   }
@@ -205,11 +206,12 @@ exports.updateReferencesCount = function(postReferences, threadReferences,
 };
 
 exports.getThreadReferences = function(postReferences, boardUri,
-    threadsToClear, deleteMedia, userData, language, callback, boardDeletion) {
+    threadsToClear, deleteMedia, userData, language, autoban, callback,
+    boardDeletion) {
 
   if ((!threadsToClear || !threadsToClear.length) && !boardDeletion) {
     exports.updateReferencesCount(postReferences, [], deleteMedia, userData,
-        language, callback);
+        language, autoban, callback);
 
     return;
   }
@@ -246,7 +248,7 @@ exports.getThreadReferences = function(postReferences, boardUri,
             }
 
             exports.updateReferencesCount(postReferences, results, deleteMedia,
-                userData, language, callback);
+                userData, language, autoban, callback);
 
           });
           // style exception, too simple
@@ -259,7 +261,7 @@ exports.getThreadReferences = function(postReferences, boardUri,
 
 exports.clearPostingReferences = function(boardUri, threadsToClear,
     postsToClear, onlyFilesDeletion, mediaDeletion, userData, language,
-    callback) {
+    callback, autoban) {
 
   var query = {
     boardUri : boardUri,
@@ -288,7 +290,7 @@ exports.clearPostingReferences = function(boardUri, threadsToClear,
 
   if (!addedLimiter) {
     exports.getThreadReferences([], boardUri, threadsToClear, mediaDeletion,
-        userData, language, callback);
+        userData, language, autoban, callback);
 
     return;
   }
@@ -313,7 +315,7 @@ exports.clearPostingReferences = function(boardUri, threadsToClear,
             }
 
             exports.getThreadReferences(results, boardUri, threadsToClear,
-                mediaDeletion, userData, language, callback);
+                mediaDeletion, userData, language, autoban, callback);
 
           });
           // style exception, too simple
@@ -338,7 +340,7 @@ exports.clearBoardReferences = function(boardUri, language, callback) {
           callback(error);
         } else {
           exports.getThreadReferences(results, boardUri, null, false, null,
-              language, callback, true);
+              language, null, callback, true);
         }
 
       });
@@ -982,7 +984,7 @@ exports.handleDeletionResults = function(parameters, files, userData,
 };
 
 exports.deleteFiles = function(parameters, identifiers, userData, language,
-    callback, override) {
+    autoban, callback, override) {
 
   if (!override) {
     var allowed = userData.globalRole <= maxGlobalStaffRole;
@@ -994,6 +996,10 @@ exports.deleteFiles = function(parameters, identifiers, userData, language,
   }
 
   parameters = parameters || {};
+
+  if (autoban) {
+    parameters.ban = true;
+  }
 
   miscOps.sanitizeStrings(parameters, hashBanOps.hashBanArguments);
 

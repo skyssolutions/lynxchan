@@ -493,6 +493,11 @@
   },
   {
     "type": "boolean",
+    "setting": "autoMediaBan",
+    "element": "checkboxAutoMediaBan"
+  },
+  {
+    "type": "boolean",
     "setting": "disableBanCaptcha",
     "element": "checkboxDisableBanCaptcha"
   },
