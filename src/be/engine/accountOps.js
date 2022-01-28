@@ -1216,7 +1216,7 @@ exports.getAppealsCount = function(userData, reportCount, callback) {
     }
   };
 
-  var globalOnly = userData.settings.indexOf('noBoardReports') >= 0;
+  var globalOnly = (userData.settings || []).indexOf('noBoardReports') >= 0;
 
   if (!globalBoardModeration || globalOnly) {
     query.boardUri = null;
