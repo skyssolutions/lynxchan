@@ -187,7 +187,7 @@ exports.getLogLockData = function(fileParts) {
   var boardUri = fileParts[3];
   var matches = fileParts[4].match(/^(\d{4})-(\d{2})-(\d{2})\.(html|json)$/);
 
-  if (!matches) {
+  if (!matches || !boardUri) {
     return;
   }
 
