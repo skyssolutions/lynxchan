@@ -308,7 +308,7 @@ exports.merge = function(parameters, userData, language, callback) {
     boardUri : parameters.boardUri
   }, function(error, boardData) {
 
-    if (error) {
+    if (error || !boardData) {
       return callback(lang(language).errBoardNotFound);
     } else if (!delOps.isAllowedByStaffPower(userData, boardData)) {
       return callback(lang(language).errDeniedThreadManagement);
