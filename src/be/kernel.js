@@ -23,6 +23,12 @@ var generator;
 var MINIMUM_WORKER_UPTIME = 5000;
 var forkTime = {};
 
+if (fs.existsSync(__dirname + '/customImConfig')) {
+  process.env.MAGICK_CONFIGURE_PATH = __dirname + '/customImConfig';
+} else {
+  process.env.MAGICK_CONFIGURE_PATH = __dirname + '/defaultImConfig';
+}
+
 var defaultFilesArray;
 var defaultImages = [ 'thumb', 'audioThumb', 'defaultBanner', 'spoiler',
     'maintenanceImage' ];

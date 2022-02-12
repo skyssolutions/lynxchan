@@ -51,6 +51,7 @@ The dependencies versions are not exactly mandatory and only reflect the version
 * Pages that are generated, like board and thread pages, won't reflect template changes immediatly. Consult src/be's readme to learn how to manually reload these pages. And even then, keep in mind the server will cache templates when not running on debug mode, so even if you reload the page, a running server might use outdated versions of templates when regenerating pages.
 * There is no default admin account. Consult the src/be readme to see how to use the terminal to create a root account or convert an existing one to root.
 * If you start the engine on the master branch and then checkout a stable version that is too old, the database might not work or even get corrupted. So if you started it on the master branch and you wish to use a stable version, drop the database if anything weird happens.
+* If you wish to allow svgs but the IM policy is keeping you from doing so, you can re-enable them by creating a [policy file](https://imagemagick.org/script/security-policy.php) on src/be/customImConfig. By default the policy is strict due to security concerns, but Rocky 8 is not vulnerable to it and you can allow these files without any concerns.
 
 # Running
 You can either run the `lynxchan` command or start the `lynxchan` service if you ran the `aux/root-setup.sh` script. You could just run the `src/be/boot.js` file. Run ``` sudo setcap 'cap_net_bind_service=+ep' `which node` ``` to be able to run it on port 80 without root access.

@@ -33,6 +33,9 @@ var validsocketData = [ 'files', 'creation', 'message', 'subject', 'markdown',
     'id', 'postId', 'name', 'signedRole', 'email', 'flag', 'flagCode',
     'flagName' ];
 
+var validFileData = [ 'originalName', 'path', 'mime', 'thumb', 'size', 'width',
+    'height' ];
+
 exports.loadSettings = function() {
 
   var settings = require('../../settingsHandler').getGeneralSettings();
@@ -509,6 +512,26 @@ exports.getNewPost = function(req, parameters, userData, postId, thread, board,
 
 };
 
+exports.getFileSocketData = function(posting) {
+
+  return posting.files.map(function(element) {
+
+    var newFile = {};
+
+    for ( var fileKey in element) {
+
+      if (validFileData.indexOf(fileKey) >= 0) {
+        newFile[fileKey] = element[fileKey];
+      }
+
+    }
+
+    return newFile;
+
+  });
+
+};
+
 exports.getSocketData = function(posting) {
 
   if (!wsData) {
@@ -520,7 +543,15 @@ exports.getSocketData = function(posting) {
   for ( var key in posting) {
 
     if (validsocketData.indexOf(key) >= 0) {
-      data[key] = posting[key];
+
+      if (key === 'files') {
+
+        data[key] = exports.getFileSocketData(posting);
+
+      } else {
+        data[key] = posting[key];
+      }
+
     }
 
   }
