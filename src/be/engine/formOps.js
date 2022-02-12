@@ -470,9 +470,13 @@ exports.getPostData = function(req, res, callback, arrayParams) {
   res.on('finish', endingCb);
 
   parser.on('error', function(error) {
-    exports.outputError(
-        error.code === 'ETOOBIG' ? lang(req.language).errRequestTooBig : error,
-        500, res, req.language, json);
+
+    if (verbose) {
+      console.log(error);
+    }
+
+    exports.outputError(lang(req.language).errRequestTooBig, 500, res,
+        req.language, json);
   });
 
   parser.on('field', function(name, value) {

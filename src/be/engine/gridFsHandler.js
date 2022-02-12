@@ -24,7 +24,7 @@ var port;
 
 exports.permanentTypes = [ 'media', 'graph', 'banner' ];
 
-exports.strictMimeTypes = [ 'banner', 'flag' ];
+exports.strictMimeTypes = [ 'banner', 'flag', 'media' ];
 
 exports.loadSettings = function() {
 

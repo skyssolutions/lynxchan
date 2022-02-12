@@ -170,7 +170,7 @@ exports.setThreadTitle = function(document, threadData) {
   if (threadData.subject) {
     title += common.clean(threadData.subject);
   } else {
-    title += common.clean(threadData.message.substring(0, 256));
+    title += common.clean(threadData.message.substring(0, 256), true);
   }
 
   return document.replace('__title__', title);

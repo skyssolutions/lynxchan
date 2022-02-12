@@ -22,7 +22,7 @@
   "errDeniedBypassPurge": "You are not allowed to purge block bypasses.",
   "msgBypassesPurged": "Block bypasses purged.",
   "errInvalidAccount": "Invalid account.",
-  "errRequestTooBig": "Request size limit exceeded.",
+  "errRequestTooBig": "Request size limit exceeded or invalid request.",
   "subPasswordRequest": "Password reset request",
   "errAccountNotFound": "Account not found.",
   "errNoEmailForAccount": "Account doesn't have an email associated to it.",

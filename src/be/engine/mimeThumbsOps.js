@@ -107,7 +107,7 @@ exports.addThumb = function(userData, params, language, callback) {
   }
 
   var toInsert = {
-    mime : params.mime
+    mime : miscOps.cleanHTML(params.mime)
   };
 
   thumbs.insertOne(toInsert, function(error, document) {
