@@ -469,7 +469,7 @@ exports.getPostData = function(req, res, callback, arrayParams) {
 
   res.on('finish', endingCb);
 
-  parser.on('error', function(error) {
+  parser.once('error', function(error) {
 
     if (verbose) {
       console.log(error);
@@ -489,6 +489,10 @@ exports.getPostData = function(req, res, callback, arrayParams) {
 
   parser.on('file', function(name, file) {
 
+    //shit changed on the library and I can't be assed to fix all over the codebase
+    file.path = file.filepath;
+    file.type = file.mimetype;
+
     filesToDelete.push(file.path);
 
     var array = files[name] || [];
@@ -497,7 +501,7 @@ exports.getPostData = function(req, res, callback, arrayParams) {
 
   });
 
-  parser.on('end', function() {
+  parser.once('end', function() {
 
     files.files = files.files || [];
 
