@@ -72,6 +72,8 @@ exports.getTrashPosts = function(threadsArray, latestPosts, parentThreads,
 
   posts.find(query, {
     projection : generator.postModProjection
+  }).sort({
+    creation : -1
   }).toArray(
       function(error, foundPosts) {
 
@@ -686,7 +688,10 @@ exports.getPostsToPrune = function(limit, foundThreads, callback) {
 exports.prune = function(callback) {
 
   var limit = new Date();
-  limit.setUTCDate(limit.getUTCDate() - limitDays);
+
+  if (limitDays) {
+    limit.setUTCDate(limit.getUTCDate() - limitDays);
+  }
 
   callback = callback || function(error) {
 
@@ -696,10 +701,6 @@ exports.prune = function(callback) {
     }
 
   };
-
-  if (!limitDays) {
-    return callback();
-  }
 
   threads.aggregate([ {
     $match : {
