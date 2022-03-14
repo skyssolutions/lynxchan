@@ -5,4 +5,5 @@ A stringified json object will be sent on updates, it will contain the following
     post: used when a new post is made.
     delete: used when a post is either deleted or have images deleted.
     edit: used when a post is edited.
+    unlink: used when a post's files are unlinked.
   target(Array): contains the ids of the relevant posts.

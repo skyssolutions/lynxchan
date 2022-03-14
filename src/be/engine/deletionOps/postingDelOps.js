@@ -635,7 +635,7 @@ exports.wsNotify = function(boardUri, foundPosts, parentThreads, uploads) {
       threadId : post._id,
       boardUri : boardUri,
       target : post.posts,
-      action : 'delete'
+      action : uploads ? 'unlink' : 'delete'
     });
 
   }
