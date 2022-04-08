@@ -1,3 +1,147 @@
+2.8.0:
+
+**Form.txt**
+
+New page:
+changeBoardUri
+
+---------------------------------------
+
+account:
+
+New fields:
+appeals
+openReports
+
+---------------------------------------
+
+closeReports:
+
+New parameter:
+banType
+
+---------------------------------------
+
+mod:
+
+New fields:
+uniquePosters
+trash
+posts.trash
+
+---------------------------------------
+
+latestPostings:
+
+New field:
+trash
+
+---------------------------------------
+
+**Json.txt**
+
+/<board>/res/<thread>.json:
+
+New fields:
+trash
+uniquePosters
+posts.trash
+
+---------------------------------------
+
+/<board>/<page>.json:
+
+New fields:
+threads.trash
+threads.posts.trash
+
+---------------------------------------
+
+**Language.txt**
+
+New entry:
+msgUriChanged
+
+---------------------------------------
+
+**Model.txt**
+
+boards:
+
+New fields:
+settings.threadR9k
+
+---------------------------------------
+
+reports:
+
+New field:
+asn
+
+---------------------------------------
+
+**Templates.txt**
+
+threadPage:
+
+New element:
+userCountLabel
+
+---------------------------------------
+
+opCell:
+
+New element:
+trashIndicator
+
+---------------------------------------
+
+postCell:
+
+New element:
+trashIndicator
+
+---------------------------------------
+
+accountPage:
+
+New elements:
+appealedBansLabel
+openReportsLabel
+globalBansLink
+globalReportsLink
+
+---------------------------------------
+
+bManagement:
+
+New element:
+threadR9KCheckbox
+
+---------------------------------------
+
+boardModerationPage:
+
+New element:
+uriChangeIdentifier
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+checkboxAutoMediaBan
+fieldAutoCaptchaLimit
+
+---------------------------------------
+
+**WebSockets.txt**
+
+New value for "action":
+unlink
+
+---------------------------------------
+
 2.7.0:
 
 **Form.txt**
