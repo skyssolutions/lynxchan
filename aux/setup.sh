@@ -12,7 +12,7 @@ read answerSettings
 echo "Do you wish to install the necessary data to use location flags? (y,n)"
 read answerLocation
 
-stable="n"
+stable="y"
 
 if [ "$stable" == "n" ]; then
 
@@ -27,7 +27,7 @@ if [ "$answerFrontEnd" == "y" ]; then
 
   git clone https://gitgud.io/LynxChan/PenumbraLynx.git ../src/fe
   cd ../src/fe
-  git checkout master
+  git checkout 2.8.x
   cd ../../aux
 
   echo "Default front-end installed."
