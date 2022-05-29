@@ -544,13 +544,13 @@ exports.getThread = function(thread, posts, innerPage, modding, boardData,
 
   var currentCache = exports.getPostingCache(cacheField, thread, language);
 
-  if ((!currentCache || !individualCaches) && !thread.tempCache) {
+  if (!currentCache || !individualCaches) {
 
     var threadContent = exports.getThreadContent(thread, posts, innerPage,
         modding, userRole, boardData, language, preview);
 
     if (!last && !modding && innerPage) {
-      thread.tempCache = threadContent;
+      exports.setTempCache(cacheField, language, threadContent, thread);
     }
 
     threadCell += threadContent;
@@ -561,7 +561,7 @@ exports.getThread = function(thread, posts, innerPage, modding, boardData,
     }
 
   } else {
-    threadCell += currentCache || thread.tempCache;
+    threadCell += currentCache;
   }
 
   threadCell = threadCell.replace('__divPosts_children__', exports.getPosts(
@@ -603,15 +603,15 @@ exports.getPostInnerElements = function(post, preview, language, operations,
 
   var currentCache = exports.getPostingCache(cacheField, post, language);
 
-  if ((individualCaches && currentCache) || post.tempCache) {
-    return currentCache || post.tempCache;
+  if (individualCaches && currentCache) {
+    return currentCache;
   }
 
   var innerContent = exports.generatePostHTML(post, language, innerPage,
       modding, preview, boardData, userRole, cacheField, operations, last);
 
   if (!last && !modding && innerPage) {
-    post.tempCache = innerContent;
+    exports.setTempCache(cacheField, language, innerContent, post);
   }
 
   return innerContent;
@@ -656,6 +656,20 @@ exports.getPostingCache = function(field, posting, language) {
     return posting[field];
   } else {
     return (posting.alternativeCaches || {})[field];
+  }
+
+};
+
+exports.setTempCache = function (cacheField, language, innerHTML, posting) {
+
+  if (!language) {
+    posting[cacheField] = innerHTML;
+  } else {
+
+    var alts = posting.alternativeCaches || {};
+    posting.alternativeCaches = alts;
+
+    alts[cacheField] = innerHTML;
   }
 
 };

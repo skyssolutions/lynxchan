@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://gitgud.io/LynxChan/LynxChan.git"
   },
-  "version": "2.8.0",
+  "version": "2.8.1",
   "dependencies": {
     "http-proxy": "1.18.x",
     "mongodb": "4.4.x",
