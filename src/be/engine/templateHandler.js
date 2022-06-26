@@ -216,7 +216,7 @@ exports.processFieldUses = function(field, uses, removed, element) {
 
 };
 
-exports.handleRemovableFields = function(removed, map) {
+exports.handleRemovableFields = function(removed, map, language) {
 
   var removable = {};
 
@@ -232,9 +232,10 @@ exports.handleRemovableFields = function(removed, map) {
     var parent = element.parentNode;
     var index = parent.childNodes.indexOf(element);
 
-    removable[removed[i]] = parser.serialize({
-      childNodes : [ element ]
-    });
+    removable[removed[i]] = exports.translateContent(language, parser
+        .serialize({
+          childNodes : [ element ]
+        }));
 
     parent.childNodes.splice(index, 1, {
       nodeName : '#text',
@@ -268,14 +269,14 @@ exports.iteratePrebuiltFields = function(uses, removed, map) {
 
 };
 
-exports.loadPrebuiltFields = function(dom, object, page, map) {
+exports.loadPrebuiltFields = function(dom, object, page, map, language) {
 
   var removed = [];
 
   var error = page.prebuiltFields ? exports.iteratePrebuiltFields(
       page.prebuiltFields, removed, map) : '';
 
-  var removable = exports.handleRemovableFields(removed, map);
+  var removable = exports.handleRemovableFields(removed, map, language);
 
   var toInsert = {
     template : parser.serialize(dom),
@@ -359,7 +360,8 @@ exports.startMapping = function(optional, childNodes, map, uses, cell) {
 // } Section 3: Mapping
 
 // Section 4: Cells {
-exports.processCell = function(cell, fePath, templateSettings, prebuiltObj) {
+exports.processCell = function(cell, fePath, templateSettings, prebuiltObj,
+    language) {
 
   var fullPath = fePath + '/templates/' + templateSettings[cell.template];
 
@@ -385,12 +387,13 @@ exports.processCell = function(cell, fePath, templateSettings, prebuiltObj) {
   exports.startMapping(templateSettings.optionalContent, dom.childNodes, map,
       cell.prebuiltFields, true);
 
-  var error = exports.loadPrebuiltFields(dom, prebuiltObj, cell, map);
+  var error = exports.loadPrebuiltFields(dom, prebuiltObj, cell, map, language);
 
   return error;
 };
 
-exports.loadCells = function(errors, fePath, templateSettings, prebuiltObject) {
+exports.loadCells = function(errors, fePath, templateSettings, prebuiltObject,
+    language) {
 
   for (var i = 0; i < exports.cellTests.length; i++) {
 
@@ -403,7 +406,7 @@ exports.loadCells = function(errors, fePath, templateSettings, prebuiltObject) {
     }
 
     var error = exports.processCell(cell, fePath, templateSettings,
-        prebuiltObject);
+        prebuiltObject, language);
 
     if (error.length) {
       errors.push('\nCell ' + cell.template + error);
@@ -487,7 +490,8 @@ exports.setTitleToken = function(map, page) {
 
 };
 
-exports.processPage = function(page, fePath, templateSettings, prebuiltObject) {
+exports.processPage = function(page, fePath, templateSettings, prebuiltObject,
+    language) {
 
   var fullPath = fePath + '/templates/' + templateSettings[page.template];
 
@@ -510,13 +514,15 @@ exports.processPage = function(page, fePath, templateSettings, prebuiltObject) {
 
   var error = exports.checkMainChildren(page, document, map);
 
-  error += exports.loadPrebuiltFields(document, prebuiltObject, page, map);
+  error += exports.loadPrebuiltFields(document, prebuiltObject, page, map,
+      language);
 
   return error;
 
 };
 
-exports.loadPages = function(errors, fePath, templateSettings, prebuiltObject) {
+exports.loadPages = function(errors, fePath, templateSettings, prebuiltObject,
+    language) {
 
   for (var i = 0; i < exports.pageTests.length; i++) {
 
@@ -529,7 +535,7 @@ exports.loadPages = function(errors, fePath, templateSettings, prebuiltObject) {
     }
 
     var error = exports.processPage(page, fePath, templateSettings,
-        prebuiltObject);
+        prebuiltObject, language);
 
     if (error.length) {
       errors.push('\nPage ' + page.template + error);
@@ -583,7 +589,7 @@ exports.loadTemplated = function(fePath, templateSettings, prebuilt, language) {
     }
 
     prebuilt.templated[entry] = {
-      data : Buffer.from(exports.translatePage(language, content), 'utf-8'),
+      data : Buffer.from(exports.translateContent(language, content), 'utf-8'),
       stats : {
         mtime : new Date()
       }
@@ -614,14 +620,14 @@ exports.runTemplateLoading = function(fePath, templateSettings, prebuilt,
   }
 
   exports.loadTemplated(fePath, templateSettings, prebuilt, language);
-  exports.loadCells(errors, fePath, templateSettings, prebuilt);
-  exports.loadPages(errors, fePath, templateSettings, prebuilt);
+  exports.loadCells(errors, fePath, templateSettings, prebuilt, language);
+  exports.loadPages(errors, fePath, templateSettings, prebuilt, language);
 
   exports.handleLoadingErrors(errors);
 
 };
 
-exports.translatePage = function(language, content) {
+exports.translateContent = function(language, content) {
 
   return content.replace(/\$\w+/g, function(match) {
     return lang(language)[match.substring(1)] || match;
@@ -635,7 +641,7 @@ exports.translate = function(language, object) {
 
     if (key !== 'templated') {
 
-      object[key].template = exports.translatePage(language,
+      object[key].template = exports.translateContent(language,
           object[key].template);
 
     }
