@@ -25,11 +25,8 @@ jobs:
       - name: prepare variables
         uses: ./.github/actions/docker-push-variables
         id: ev
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       - name: Login to Container Registry
         uses: docker/login-action@v2
-        if: ${{ steps.ev.outputs.shouldBuild == 'true' }}
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
