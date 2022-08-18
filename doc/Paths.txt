@@ -1,0 +1,36 @@
+Here are documented the general paths used by the engine to find resources. * means any text.
+
+/*.js are used to access the form api.
+/.static/* are used to access static files for the front-end.
+
+Anything else is used to access files saved on mongo. 
+
+/.media/ are used to store uploaded files.
+The engine stores global files on the following paths:
+/.global/captcha/ are used to store captcha images.
+/.global/logs/ stores staff logs pages. Global log pages are stored in /.global/logs/.global while board log pages replace the second .global with the board uri.
+/.global/banners/ stores global banners.
+/.global/graphs/ stores daily graphs.
+/.global/mimeThumbs/ stores custom thumbnails for mimes.
+/maintenance.html stores the maintenance page.
+/404.html stores the 404 page.
+/login.html stores the login page.
+/ stores the front-page.
+/genericThumb.* stores the generic thumb for files.
+/maintenanceImage.* stores the maintenance image.
+/audioGenericThumb.* stores the generic thumb for audio files.
+/defaultBanner.* stores the default banner.
+/spoiler.* stores the default spoiler image.
+
+Board files are stored on the following paths:
+/{$boardUri}/ stores the first page of boards.
+/{$boardUri}/X.html stores the other pages of boards where X is the number of the page. Pages are indexed from 1.
+/{$boardUri}/banners/ stores board banners.
+/{$boardUri}/flags/ stores board flags.
+/{$boardUri}/custom.css stores the board custom css.
+/{$boardUri}/custom.js stores the board custom js.
+/{$boardUri}/rules.html stores the page with the board rules.
+/{$boardUri}/custom.spoiler stores the board custom spoiler.
+/{$boardUri}/res/{$threadId}.html stores threads.
+/{$boardUri}/catalog.html stores the catalog.
+/{$boardUri}/index.rss stores the rss feed.

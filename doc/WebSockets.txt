@@ -1,0 +1,9 @@
+The ports used for ws and wss are informed in every thread's json. 
+After connecting, send a string in the format boardUri-threadId to be informed every time an update is made on that thread.
+A stringified json object will be sent on updates, it will contain the following fields:
+  action: a string informing the kind of update. It can be one of the following: 
+    post: used when a new post is made.
+    delete: used when a post is either deleted or have images deleted.
+    edit: used when a post is edited.
+    unlink: used when a post's files are unlinked.
+  target(Array): contains the ids of the relevant posts.

@@ -1,0 +1,5 @@
+<policymap>
+  <policy domain="coder" rights="none" pattern="*" />
+   <!-- Read the readme before touching this. -->
+  <policy domain="coder" rights="read|write" pattern="{MPR,GIF,JPEG,JPG,PNG,WEBP,XC}" />
+</policymap>

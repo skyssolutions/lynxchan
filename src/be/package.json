@@ -1,0 +1,24 @@
+{
+  "name": "LynxChan",
+  "description": "The best chan engine you will ever shitpost with",
+  "readme": "Refer to Readme.md and src/be/Readme.md",
+  "repository": {
+    "type": "git",
+    "url": "https://gitgud.io/LynxChan/LynxChan.git"
+  },
+  "version": "2.8.3",
+  "dependencies": {
+    "http-proxy": "1.18.x",
+    "mongodb": "4.4.x",
+    "formidable": "2.0.x",
+    "nodemailer": "6.7.x",
+    "parse5": "6.0.x",
+    "node-addon-api": "4.3.x",
+    "ws": "8.5.x",
+    "bufferutil": "4.0.x",
+    "utf-8-validate": "5.0.x"
+  },
+  "gypfile": true,
+  "author": "Stephen Lynx",
+  "license": "MIT"
+}

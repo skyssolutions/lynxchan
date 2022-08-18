@@ -1,0 +1,3262 @@
+2.8.0:
+
+**Form.txt**
+
+New page:
+changeBoardUri
+
+---------------------------------------
+
+account:
+
+New fields:
+appeals
+openReports
+
+---------------------------------------
+
+closeReports:
+
+New parameter:
+banType
+
+---------------------------------------
+
+mod:
+
+New fields:
+uniquePosters
+trash
+posts.trash
+
+---------------------------------------
+
+latestPostings:
+
+New field:
+trash
+
+---------------------------------------
+
+**Json.txt**
+
+/<board>/res/<thread>.json:
+
+New fields:
+trash
+uniquePosters
+posts.trash
+
+---------------------------------------
+
+/<board>/<page>.json:
+
+New fields:
+threads.trash
+threads.posts.trash
+
+---------------------------------------
+
+**Language.txt**
+
+New entry:
+msgUriChanged
+
+---------------------------------------
+
+**Model.txt**
+
+boards:
+
+New fields:
+settings.threadR9k
+
+---------------------------------------
+
+reports:
+
+New field:
+asn
+
+---------------------------------------
+
+**Templates.txt**
+
+threadPage:
+
+New element:
+userCountLabel
+
+---------------------------------------
+
+opCell:
+
+New element:
+trashIndicator
+
+---------------------------------------
+
+postCell:
+
+New element:
+trashIndicator
+
+---------------------------------------
+
+accountPage:
+
+New elements:
+appealedBansLabel
+openReportsLabel
+globalBansLink
+globalReportsLink
+
+---------------------------------------
+
+bManagement:
+
+New element:
+threadR9KCheckbox
+
+---------------------------------------
+
+boardModerationPage:
+
+New element:
+uriChangeIdentifier
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+checkboxAutoMediaBan
+fieldAutoCaptchaLimit
+
+---------------------------------------
+
+**WebSockets.txt**
+
+New value for "action":
+unlink
+
+---------------------------------------
+
+2.7.0:
+
+**Form.txt**
+
+New pages:
+customThumbs
+createMimeThumb
+deleteMimeThumb
+purgeBypasses
+
+---------------------------------------
+
+mod:
+
+New fields:
+omittedPosts
+omittedFiles
+
+---------------------------------------
+
+changeAccountSettings:
+
+New parameters:
+password
+noSettingsPassword
+
+---------------------------------------
+
+globalSettings:
+
+New field:
+confirmPassword
+
+---------------------------------------
+
+saveGlobalSettings:
+
+New parameter:
+password
+---------------------------------------
+
+offenseRecord:
+
+All previous fields were removed.
+
+New fields:
+offenses
+asnBans
+
+---------------------------------------
+
+openReports:
+
+New fields:
+reports.reasons
+reports.categories
+reports.total
+
+---------------------------------------
+
+**Json.txt**
+
+---------------------------------------
+
+/<board>/<page>.json:
+
+Fixed typo on threads.omittedPosts
+
+New field:
+threads.omittedFiles
+
+---------------------------------------
+
+**Language.txt**
+
+New fields:
+errDeniedThumbManagement
+errBypassPurgeConfirmation
+errDeniedBypassPurge
+errMimeThumbNotFound
+errTooManyFlags
+guiOffenseTypes
+msgThumbAdded
+msgBypassesPurged
+msgThumbDeleted
+titMimeThumbs
+
+---------------------------------------
+
+**Model.txt**
+
+New collection:
+mimeThumbs
+
+---------------------------------------
+
+users:
+
+New valid value for settings:
+noSettingsPassword
+
+---------------------------------------
+
+reports:
+
+New field:
+reporterId
+
+---------------------------------------
+
+blockBypasses:
+
+New fields:
+creation
+unused
+
+---------------------------------------
+
+offenseRecords:
+
+New field:
+type
+
+---------------------------------------
+
+**Paths.txt**
+
+New directory:
+/.global/mimeThumbs/
+
+---------------------------------------
+
+**Templates.txt**
+
+New templates:
+mimeThumbsPage
+mimeThumbCell
+
+---------------------------------------
+
+accountPage:
+
+New elements:
+divSettingsPassword
+checkboxNoSettingsPassword
+
+---------------------------------------
+
+gManagement:
+
+New elements:
+purgeBypassesForm
+customThumbsLink
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldCaptchaPool
+authDiv
+fieldDefaultTheme
+fieldFlagLimit
+
+Removed element:
+checkboxSendmail
+
+---------------------------------------
+
+offenseCell:
+
+New elements:
+typeDiv
+typeLabel
+
+---------------------------------------
+
+trashBinPage:
+
+New elements:
+divReportCaptcha
+reportCategoriesDiv
+reportComboboxCategory
+divBanCaptcha
+
+---------------------------------------
+
+2.6.0:
+
+**Form.txt**
+
+New pages:
+openReports
+trashBin
+
+---------------------------------------
+
+account:
+
+New field:
+reportFilter
+
+---------------------------------------
+
+globalManagement:
+
+New field:
+trashCount
+
+---------------------------------------
+
+boardManagement:
+
+New field:
+trashCount
+
+---------------------------------------
+
+contentActions:
+
+New parameter:
+categoryReport
+
+
+action now accepts the values "trash" and "restore".
+
+---------------------------------------
+
+mod:
+
+New fields:
+noReportCaptcha
+reportCategories
+
+---------------------------------------
+
+changeAccountSettings:
+
+New parameter:
+categoryFilter
+
+---------------------------------------
+
+deleteRule:
+
+Renamed to "ruleAction".
+
+New parameters:
+rule
+action
+
+---------------------------------------
+
+setSpecialBoardSettings:
+
+New parameter:
+allowJs
+
+---------------------------------------
+
+**Json.txt**
+
+/<board>/res/<thread>.json:
+
+New fields:
+reportCategories
+noReportCaptcha
+
+---------------------------------------
+
+/<board>/<page>.json:
+
+New fields:
+reportCategories
+noReportCaptcha
+
+---------------------------------------
+
+**Json.txt**
+
+New entries:
+errOnlyConfirmedEmail
+errNonWhiteListedEmail
+msgRestored
+msgRuleEdited
+titTrashBin
+
+---------------------------------------
+
+**Model.txt**
+
+boards:
+
+New valid value for "specialSettings":
+allowJs
+
+---------------------------------------
+
+threads:
+
+New fields:
+trash
+trashDate
+
+---------------------------------------
+
+posts:
+
+New fields:
+trash
+trashDate
+
+---------------------------------------
+
+users:
+
+New fields:
+reportFilter
+
+---------------------------------------
+
+reports:
+
+New field:
+category
+
+---------------------------------------
+
+**Templates.txt**
+
+New templates:
+reportCategoryFilterCell
+trashBinPage
+
+---------------------------------------
+
+boardPage:
+
+New elements:
+divReportCaptcha
+reportCategoriesDiv
+reportComboboxCategory
+
+---------------------------------------
+
+threadPage:
+
+New elements:
+divReportCaptcha
+reportCategoriesDiv
+reportComboboxCategory
+
+---------------------------------------
+
+accountPage:
+
+New element:
+reportFilterDiv
+
+---------------------------------------
+
+gManagement:
+
+New element:
+trashBinLabel
+
+---------------------------------------
+
+bManagement:
+
+New elements:
+linkTrash
+trashBinLabel
+
+---------------------------------------
+
+reportCell:
+
+New elements:
+categoryDiv
+categoryLabel
+
+---------------------------------------
+
+boardModerationPage
+
+New element:
+checkboxAllowJs
+
+---------------------------------------
+
+ruleManagementCell:
+
+Removed element:
+textLabel
+
+New element:
+textField
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldTrashLimitDays
+fieldReportCategories
+fieldEmailDomainWhiteList
+checkboxNoReportCaptcha
+
+---------------------------------------
+
+overboard:
+
+New elements:
+divReportCaptcha
+reportCategoriesDiv
+reportComboboxCategory
+
+---------------------------------------
+
+openReportsPage:
+
+New elements:
+filterCategoriesDiv
+filterBoardIdentifier
+filterForm
+
+---------------------------------------
+
+2.5.0:
+
+New document: WebSockets.txt
+
+**Form.txt**
+
+New page: validateBypass
+
+---------------------------------------
+
+account:
+
+New field: noCaptchaBan
+
+---------------------------------------
+
+contentActions:
+
+Removed parameter: captcha
+
+New parameters:
+captchaReport
+captchaBan
+
+---------------------------------------
+
+mod:
+
+New json output fields:
+wsPort
+wssPort
+
+---------------------------------------
+
+blockBypass:
+
+New json output field: validated
+
+---------------------------------------
+
+**Json.txt**
+
+---------------------------------------
+
+/<board>/res/<thread>.json:
+
+New fields:
+wsPort
+wssPort
+
+---------------------------------------
+
+/<board>/catalog.json:
+
+New field: mime
+
+---------------------------------------
+
+**Language.txt*
+
+errFlood now has a new string to be replaced.
+
+---------------------------------------
+
+New fields:
+errInvalidWsPort
+errBypassNotFound
+guiTypeThreadMerge
+logThreadMerge
+logPostingBan.midPieceWarning
+msgBypassValidated
+
+---------------------------------------
+
+**Model.txt**
+
+---------------------------------------
+
+captchas:
+
+New field: session
+
+---------------------------------------
+
+blockBypasses:
+
+New fields:
+validationCode
+session
+validated
+validationHash
+
+---------------------------------------
+
+**Templates.txt**
+
+Now templates and static files can use language pack entries in the $X form. Only templated static files can use this feature.
+
+---------------------------------------
+
+Removed templates:
+rangeBanCell 
+asnBanCell
+
+---------------------------------------
+
+boardPage:
+
+New element: divBanCaptcha
+
+---------------------------------------
+
+threadPage:
+
+New element: divBanCaptcha
+
+---------------------------------------
+
+banCell:
+
+New elements: 
+asnPanel
+asnLabel
+
+---------------------------------------
+
+catalogCell:
+
+linkThumb has a new usage.
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldBypassValidationRange
+checkboxDisableBanCaptcha
+checkboxUnlockHistory
+checkboxLowercaseBoardUris
+fieldWsPort
+fieldWssPort
+
+---------------------------------------
+
+bypassPage:
+
+New fields:
+indicatorNotValidated
+labelBypass
+
+---------------------------------------
+
+2.4.0:
+
+**Form.txt**
+
+New json dynamic response status: hashBan.
+
+When posting files by reference or individually spoiling them, fileMd5 was changed to fileSha256.
+
+---------------------------------------
+
+account:
+
+New valid values on settings on the json version:
+noBoardReports
+reportNotify
+
+---------------------------------------
+
+globalManagement:
+
+appealedBans changed from an array to a number.
+
+Added openReports on the json response.
+
+---------------------------------------
+
+boardManagement:
+
+appealedBans and openReports changed from an array to a number.
+
+---------------------------------------
+
+contentActions:
+
+New parameters:
+nonBypassable
+reasonBan
+globalReport
+globalBan
+reasonReport
+
+Removed parameters:
+reason
+global
+
+---------------------------------------
+
+closeReports:
+
+banReporter changed to banTarget.
+
+New parameter: closeAllFromReporter
+
+---------------------------------------
+
+mod:
+
+New parameter: page
+
+New output json value: bypassId.
+md5 changed to sha256.
+
+---------------------------------------
+
+bans:
+
+New json output field: ip.
+
+---------------------------------------
+
+changeAccountSettings:
+
+New parameter: noBoardReports
+
+---------------------------------------
+
+setBoardSettings:
+
+New parameter: autoFullCaptchaLimit
+
+---------------------------------------
+
+boards:
+
+New parameter: unindexed
+
+---------------------------------------
+
+placeRangeBan:
+
+New parameter: nonBypassable
+reason changed to reasonBan
+
+---------------------------------------
+
+hashBans:
+
+Json output field change from md5 to sha256
+
+---------------------------------------
+
+checkFileIdentifier:
+
+Changed format of the identifier.
+
+---------------------------------------
+
+mediaManagement:
+
+New parameter: banId
+
+---------------------------------------
+
+deleteMedia
+
+Added parameters: 
+ban
+reason
+text
+
+---------------------------------------
+
+latestPostings:
+
+New parameter: banId
+
+New json output fields:
+bypassId
+boardUri
+postId
+
+Changed files.md5 to files.sha256
+
+---------------------------------------
+
+placeAsnBan
+
+New parameter: nonBypassable
+
+Changed reason to reasonBan
+
+---------------------------------------
+
+New pages:
+storeFile
+removeFiles
+offenseRecord
+unlinkSingle
+appealedBans
+mergeThread
+
+---------------------------------------
+
+**Language.txt**
+
+New entries:
+errDeniedSingleDeletion
+errDeniedOffenseHistory
+errSourceThreadNotFound
+errDestinationThreadNotFound
+errHourlyLimit
+guiCaptchaSecurity
+msgThreadMerged
+msgFileUnlinked
+titOffenseRecord
+titOpenReports
+titAppealedBansManagement
+
+Removed entries:
+errExpiredCaptcha
+errWrongCaptcha
+
+---------------------------------------
+
+New specification document: Native.txt
+
+---------------------------------------
+
+**Templates.txt**
+
+threadPage:
+
+New elements:
+divMerge
+mergeThreadIdentifier
+mergeBoardIdentifier
+
+---------------------------------------
+
+opCell:
+
+New elements:
+linkOffenseRecord
+panelBypassId
+labelBypassId
+
+---------------------------------------
+
+postCell:
+
+New elements:
+linkOffenseRecord
+panelBypassId
+labelBypassId
+
+---------------------------------------
+
+accountPage:
+
+New elements:
+checkboxNoBoardReports
+
+---------------------------------------
+
+gManagement:
+
+New elements:
+appealedBansLabel
+openReportsLabel
+
+Removed element:
+reportDiv
+
+---------------------------------------
+
+bManagement:
+
+New elements:
+appealedBansLink
+appealedBansLabel
+openReportsLabel
+autoFullCaptchaThresholdField
+openReportsLink
+
+Removed element:
+reportDiv
+
+---------------------------------------
+
+reportCell:
+
+Removed element:
+boardPanel
+
+---------------------------------------
+
+banCell:
+
+New elements:
+targetLabel
+offenseRecordLink
+fileHistoryLink
+postHistoryLink
+
+---------------------------------------
+
+uploadCell:
+
+New elements:
+unlinkLink
+unlinkAndDeleteLink
+
+---------------------------------------
+
+catalogPage:
+
+New elements:
+divName
+
+---------------------------------------
+
+filterManagement:
+
+New elements:
+maxLengthLabel
+
+---------------------------------------
+
+rangeBanCell:
+
+New elements:
+bypassableLabel
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+comboCaptchaMode
+fieldMaxFilterLength
+fieldLatestPostPinned
+checkboxDiskMedia
+
+---------------------------------------
+
+hashBanCellDisplay:
+
+New elements:
+labelReason
+
+---------------------------------------
+
+mediaManagementPage:
+
+New elements:
+banPanel
+banIdentifier
+
+---------------------------------------
+
+latestPostingsPage:
+
+New elements:
+inputBanId
+
+---------------------------------------
+
+asnBanCell:
+
+New elements:
+bypassableLabel
+
+---------------------------------------
+
+New pages:
+offenseRecordPage
+offenseCell
+openReportsPage
+
+---------------------------------------
+
+2.3.0:
+
+**Form.txt**
+
+New fields returned on json response in case of a ban:
+warning
+asn
+range
+banId
+
+---------------------------------------
+
+createBoard:
+
+boardDescription no longer mandatory.
+
+---------------------------------------
+
+boardManagement:
+
+New fields on json format:
+preferredLanguage
+availableLanguages
+
+---------------------------------------
+
+contentActions:
+
+New value for banType: 3.
+
+---------------------------------------
+
+closeReports:
+
+New parameter:
+banReason
+
+---------------------------------------
+
+createBanner:
+
+renamed to createBanners. Board uri now made optional. Now takes multiple files.
+
+New format on json format.
+
+---------------------------------------
+
+setBoardSettings:
+
+New parameters:
+preferredLanguage
+
+boardDescription now made optional.
+
+---------------------------------------
+
+logs:
+
+New parameter:
+boardUri
+
+---------------------------------------
+
+filterManagement:
+
+boardUri made optional.
+
+---------------------------------------
+
+filterManagement:
+
+boardUri made optional.
+
+---------------------------------------
+
+createFilter:
+
+boardUri made optional.
+
+---------------------------------------
+
+deleteFilter:
+
+boardUri made optional.
+
+---------------------------------------
+
+rangeBans:
+
+New fields on json format:
+expiration
+reason
+
+---------------------------------------
+
+placeRangeBan:
+
+New format on the range.
+
+New parameters:
+reason
+duration
+
+---------------------------------------
+
+hashBans:
+
+New fields on json format:
+date
+user
+reason
+
+---------------------------------------
+
+placeHashBan
+
+New parameter:
+reason
+
+---------------------------------------
+
+mediaManagement:
+
+New parameters:
+boardUri
+threadId
+postId
+
+---------------------------------------
+
+deleteAccount:
+
+account made optional.
+
+---------------------------------------
+
+latestPostings:
+
+New parameters:
+ip
+boardUri
+postId
+threadId
+
+New fields on json format:
+ip
+asn
+broadRange
+narrowRange
+
+---------------------------------------
+
+New pages:
+placeAsnBan
+asnBans
+resetBoardLock
+
+---------------------------------------
+
+**Json.txt**
+
+New format for the log pages uri.
+
+---------------------------------------
+
+**Language.txt**
+
+New entries:
+errOwnsBoards
+errGeneralBanLimit
+errInvalidASN
+errDeniedBoardASNBanManagement
+errDeniedGlobalASNBanManagement
+errCaptchaLimitExceeded
+errBoardBannerLimit
+errRequestTooBig
+errAuthLimitExceeded
+errTotalFileLimitExceeded
+guiGlobalLogsIndex
+guiRedactedName
+guiNoPreferredLanguage
+guiWarningDescription
+guiBanDescriptionAsn
+guiBanDescriptionRange
+guiBanDescription
+guiPruningModes
+logPostingBan.expirationPiece
+logPostingBan.permanentExpirationPiece
+logPostingBan.boardPiece
+msgAsnBanCreated
+msgBoardUnlocked
+titBoardFilters
+titGlobalFilters
+titAsnBans
+
+Removed entries:
+titFilters
+errRangeBanLimit
+
+---------------------------------------
+
+**Model.txt**
+
+New collections:
+filters
+redirects
+
+Removed collection:
+floodRecord
+
+---------------------------------------
+
+boards:
+
+New field: 
+preferredLanguage
+
+---------------------------------------
+
+threads:
+
+New fields:
+asn
+outerHashedCache
+outerClearCache
+previewHashedCache
+
+---------------------------------------
+
+posts:
+
+New fields:
+asn
+outerHashedCache
+outerClearCache
+
+---------------------------------------
+
+hashBans:
+
+New fields:
+reason
+user
+date
+
+---------------------------------------
+
+blockBypasses:
+New field:
+nextThreadUsage
+
+---------------------------------------
+
+**Paths.txt**
+
+Change on how log pages paths are used.
+
+---------------------------------------
+
+**Templates.txt**
+
+New templates:
+asnBansPage
+asnBanCell
+
+Removed template:
+rangeBanPage
+
+---------------------------------------
+
+boardPage:
+
+labelDescription now might be removed.
+
+New elements:
+linkLogs
+divMod
+linkMod
+
+---------------------------------------
+
+threadPage:
+
+labelDescription now might be removed.
+
+---------------------------------------
+
+opCell:
+
+No longer have the class "multipleUploads" added to it.
+panelUploads might have it's class manipulated.
+
+New elements:
+panelASN
+linkLast
+labelASN
+linkHistory
+linkFileHistory
+
+---------------------------------------
+
+postCell:
+
+No longer have the class "multipleUploads" added to it.
+panelUploads might have it's class manipulated.
+
+New elements:
+labelBoard
+panelASN
+linkFileHistory
+labelASN
+linkHistory
+
+---------------------------------------
+
+gManagement:
+
+New elements:
+globalFiltersLink
+asnBansLink
+
+---------------------------------------
+
+bManagement:
+
+New elements:
+languageCombobox
+settingsForm
+resetBoardLockForm
+resetLockIdentifier
+asnBansLink
+
+---------------------------------------
+
+reportCell:
+
+New elements:
+boardPanel
+boardLabel
+
+---------------------------------------
+
+banCell:
+
+New elements:
+reasonPanel
+expirationPanel
+
+---------------------------------------
+
+banPage:
+
+New elements:
+reasonPanel
+expirationPanel
+descriptionLabel
+
+Removed element:
+boardLabel
+
+---------------------------------------
+
+bannerManagementPage:
+
+New elements:
+maxBannerDiv
+maxBannerLabel
+
+---------------------------------------
+
+filterManagement:
+
+boardIdentifier now might be removed.
+
+---------------------------------------
+
+filterCell:
+
+boardIdentifier now might be removed.
+
+---------------------------------------
+
+boardsCell:
+
+divDescription now might be removed.
+
+---------------------------------------
+
+rangeBanCell:
+
+New elements:
+reasonLabel
+expirationLabel
+
+---------------------------------------
+
+hashBanCell:
+
+New elements:
+reasonLabel
+userLabel
+dateLabel
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+checkboxValidateMimes
+checkboxStripExif
+fieldMaxBoardBanners
+fieldFileProcessingLimit
+fieldImageFont
+fieldTorDNSL
+checkboxUnboundBoardLimits
+checkboxHttp2
+checkboxVolunteerSettings
+fieldLatestPostsAmount
+fieldFileLimit
+fieldTrustedProxies
+fieldCaptchaLimit
+fieldMaxBoardGeneralBans
+checkboxDontProcessLinks
+checkboxVersatileBlockBypass
+fieldDnsbl
+checkboxRedactModNames
+comboPruningMode
+
+Removed element:
+fieldMaxBoardRangeBans
+checkboxSpamBypass
+
+---------------------------------------
+
+logIndexPage:
+
+New element:
+labelBoard
+
+---------------------------------------
+
+mediaManagementPage:
+
+New elements:
+boardUriIdentifier
+threadIdIdentifier
+postIdIdentifier
+
+---------------------------------------
+
+latestPostingsPage:
+
+New elements:
+fieldIp
+inputBoardUri
+inputPostId
+inputThreadId
+panelIp
+
+
+
+---------------------------------------
+
+2.2.0:
+
+**Api.txt**
+
+Removed. Output data integrated into Form.txt.
+
+---------------------------------------
+
+**Form.txt**
+
+Now every page and not just some can return data as json.
+When returning data as json, a status will be returned along with the data, on it's own field.
+Spoiling individual files on posts are now supported.
+
+---------------------------------------
+
+New pages:
+archiveThread
+archives
+
+---------------------------------------
+
+**Json.txt**
+
+Threads now have a boolean field named "archived" to inform if they are archived threads.
+
+---------------------------------------
+
+**Language.txt**
+
+New entries:
+errArchiveConfirmation
+errNotAllowedToArchive
+errReferralMismatch
+msgThreadArchived
+titArchives
+
+---------------------------------------
+
+**Model.txt**
+
+---------------------------------------
+
+threads:
+
+New field:
+archived
+
+---------------------------------------
+
+**Paths.txt**
+
+Removed the .api main directory.
+
+---------------------------------------
+
+**Templates.txt**
+
+Optional elements can be declared on templates and on static html files to be filled with the content of another file.
+Removed the dynamic header and footer.
+
+---------------------------------------
+
+boardPage:
+
+New elements:
+inputFiles
+
+---------------------------------------
+
+threadPage
+
+New elements:
+divArchive
+archiveThreadIdentifier
+archiveBoardIdentifier
+inputFiles
+
+---------------------------------------
+
+opCell:
+
+New elements:
+archiveIndicator
+
+---------------------------------------
+
+catalogPage:
+
+New elements:
+inputFiles
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldArchiveThreshold
+checkboxSendmail
+checkboxBoardStaffArchiving
+
+---------------------------------------
+
+New templates:
+archivePage
+archiveCell
+
+---------------------------------------
+
+2.1.0:
+
+**Api.txt**
+
+---------------------------------------
+
+closeReports:
+
+New parameters:
+banReporter
+duration
+
+---------------------------------------
+
+placeRangeBan:
+
+Removed parameters:
+captcha
+
+---------------------------------------
+
+deleteFromIpOnBoard:
+
+New parameters:
+confirmation
+
+---------------------------------------
+
+**Addons**
+
+New addon property:
+requestAlias
+
+---------------------------------------
+
+**Form.txt**
+
+Now error pages output errors as a json formatted string when the json format is requested.
+
+---------------------------------------
+
+account:
+
+Added fields on json output:
+disabledLatestPostings
+
+---------------------------------------
+
+contentActions:
+
+New parameters:
+confirmation
+
+---------------------------------------
+
+closeReports:
+
+New parameters:
+banReporter
+duration
+
+---------------------------------------
+
+captcha
+
+Now redirects are used instead of dynamic content.
+
+Removed parameters:
+captchaId
+
+---------------------------------------
+
+placeRangeBan
+
+Removed parameters:
+captcha
+
+---------------------------------------
+
+New pages:
+latestPostings
+
+---------------------------------------
+
+**Language.txt**
+
+New entries:
+errRangeBanLimit
+errNoIpDeletionConfirmation
+errDisabledLatestPostings
+
+New entries:
+titLatestPostings
+
+Changed entries:
+logReportClosure.finalPiece doesn't use the {$reason} token anymore.
+
+---------------------------------------
+
+**Templates.txt**
+
+---------------------------------------
+
+accountPage:
+
+New element:
+latestPostingsLink
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldMaxBoardRangeBans
+checkboxDisableLatestPostings
+
+---------------------------------------
+
+New template:
+latestPostingsPage
+
+---------------------------------------
+
+2.0.0:
+
+**Api.txt**
+
+The auth block on the response now contains a new field named 'expiration' with the time for when the session expires.
+
+---------------------------------------
+
+registerAccount:
+
+Removed response data.
+
+---------------------------------------
+
+login:
+
+New parameters:
+remember
+
+---------------------------------------
+
+changeAccountSettings:
+
+New parameters:
+settings.reportNotify
+
+---------------------------------------
+
+renewBypass:
+
+Changed output from a string to an object.
+
+---------------------------------------
+
+addAccount:
+
+New parameters:
+email
+
+---------------------------------------
+
+New pages:
+
+requestEmailConfirmation
+
+---------------------------------------
+
+Removed pages:
+takeMessage
+
+---------------------------------------
+
+renewBypass:
+
+Changed output from a string to an object.
+
+---------------------------------------
+
+**Form.txt**
+
+account:
+
+Added fields on json output:
+globalRole
+
+---------------------------------------
+
+login:
+
+New parameters:
+remember
+
+---------------------------------------
+
+globalManagement:
+
+Removed fields on json output:
+globalRole
+
+---------------------------------------
+
+changeAccountSettings:
+
+New parameters:
+reportNotify
+
+---------------------------------------
+
+addAccount:
+
+New parameters:
+email
+
+---------------------------------------
+
+New pages:
+mediaDetails
+requestEmailConfirmation
+confirmEmail
+
+---------------------------------------
+
+**Json.txt**
+
+<board>/res/<thread>.json:
+
+New fields:
+boardName
+boardDescription
+boardMarkdown
+usesCustomCss
+maxMessageLength
+maxFileCount
+maxFileSize
+usesCustomJs
+captcha
+textBoard
+forceAnonymity
+
+---------------------------------------
+
+<board>/catalog.json
+
+New fields:
+markdown
+
+---------------------------------------
+
+Removed pages:
+<board>/preview/<posting>.json
+
+---------------------------------------
+
+**Language.txt**
+
+New entries:
+errPendingConfirmation
+errMediaNotFound
+errHashBanLimit
+errInvalidConfirmation
+errNotConfirmed
+guiTypeMediaDeletion
+guiTypeFilePruning
+logFilePruning
+msgConfirmationSent
+msgEmailConfirmed
+logMediaDeletion
+subEmailConfirmation
+subReportNotify
+titMediaDetails
+
+---------------------------------------
+
+Removed entries:
+logHashBan
+msgThreadCreated
+msgPostCreated
+
+---------------------------------------
+
+**Model.txt**
+
+users:
+
+New fields:
+confirmed
+remember
+settings.reportNotify
+
+Removed fields:
+settings.lockEnabled
+
+---------------------------------------
+
+Removed collections:
+rebuildMessages
+cacheLocks
+
+---------------------------------------
+
+New collections:
+confirmationRequests
+
+---------------------------------------
+
+**Templates.txt**
+
+opCell:
+
+Removed elements:
+linkPreview
+
+---------------------------------------
+
+postCell:
+
+Removed elements:
+linkPreview
+
+---------------------------------------
+
+accountPage:
+
+New elements:
+checkboxReportNotify
+confirmationForm
+labelGlobalRole
+
+---------------------------------------
+
+recoveryEmail:
+
+New elements:
+loginLabel
+
+---------------------------------------
+
+gManagement:
+
+Removed elements:
+userLabel
+
+---------------------------------------
+
+bManagement:
+
+New elements:
+messageLengthLabel
+requireFileCheckbox
+maxFilesField
+maxFileSizeField
+maxThreadsField
+autoSageLimitField
+validMimesField
+
+---------------------------------------
+
+boardModerationPage:
+
+New elements:
+linkOwner
+divVolunteers
+
+Removed elements:
+labelOwner
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldClusterPort
+fieldMaxBoardHashBans
+fieldStaticExpiration
+checkboxOmitUnindexedContent
+fieldBoardMessageLength
+checkboxVerboseCache
+
+Removed elements:
+checkboxPreemptiveCaching
+fieldConcurrentRebuildMessages
+checkboxVerboseStatic
+
+---------------------------------------
+
+mediaCell:
+
+New elements:
+detailsLink
+
+---------------------------------------
+
+accountManagementPage:
+
+New elements:
+loginLabel
+
+---------------------------------------
+
+New templates:
+mediaDetailsPage
+header
+footer
+confirmationEmail
+reportNotificationEmail
+
+---------------------------------------
+
+Removed templates:
+logIndexCell
+previewPage
+topBoardCell
+accountCell
+latestImageCell
+graphIndexCell
+
+---------------------------------------
+
+1.9.0:
+
+**Api.txt**
+
+saveEdit:
+
+New parameters:
+subject
+
+---------------------------------------
+
+setSpecialBoardSettings:
+
+New parameters:
+specialSettings.locked
+
+---------------------------------------
+
+New pages:
+restartSocket
+massBan
+
+---------------------------------------
+
+**Form.txt**:
+
+globalManagement:
+
+Added fields on json output:
+appealedBans.boardUri
+
+---------------------------------------
+
+bans:
+
+Added fields on json output:
+boardUri
+
+---------------------------------------
+
+boardModeration:
+
+Added fields on json output:
+specialSettings.locked
+
+---------------------------------------
+
+boards:
+
+Added fields on json output:
+boards.specialSettings.locked
+
+---------------------------------------
+
+edit:
+
+Added fields on json output:
+subject
+
+---------------------------------------
+
+saveEdit:
+
+New parameters:
+subject
+
+---------------------------------------
+
+blockBypass:
+
+Added json output.
+
+---------------------------------------
+
+New pages:
+
+socketControl
+restartSocket
+massBan
+
+---------------------------------------
+
+**Language.txt**
+
+New fields:
+errLockedBoard
+errNotAllowedToManageSocket
+errNotAllowedToMassBan
+miscSocketOk
+msgSocketRestarted
+msgMassBanned
+titSocketManagement
+
+---------------------------------------
+
+**Templates.txt**
+
+gManagement:
+
+New elements:
+socketLink
+massBanPanel
+
+---------------------------------------
+
+banCell:
+
+New elements:
+boardLabel
+boardPanel
+
+---------------------------------------
+
+boardModerationPage:
+
+New elements:
+checkboxLocked
+
+---------------------------------------
+
+bypassPage:
+
+New elements:
+renewForm
+
+---------------------------------------
+
+editPage:
+
+New elements:
+fieldSubject
+
+---------------------------------------
+
+globalSettingsPage:
+
+Removed elements:
+checkboxSsl
+
+New elements:
+comboSsl
+checkboxPreemptiveCaching
+
+---------------------------------------
+
+New templates:
+socketManagementPage
+
+---------------------------------------
+
+1.8.0:
+
+**Api.txt**
+
+newThread:
+
+New parameters:
+noFlag
+
+---------------------------------------
+
+replyThread:
+
+New parameters:
+noFlag
+
+---------------------------------------
+
+setBoardSettings:
+
+New parameters:
+locationFlagMode
+maxBumpAge
+
+Removed parameters:
+settings.locationFlags
+
+---------------------------------------
+
+New pages:
+addAccount
+deleteAccount
+addLanguage
+deleteLanguage
+
+---------------------------------------
+
+**Form.txt**
+
+newThread:
+
+New parameters:
+noFlag
+
+---------------------------------------
+
+replyThread:
+
+New parameters:
+noFlag
+
+---------------------------------------
+
+boardManagement:
+
+Added fields on json output:
+locationFlagMode
+maxBumpAgeDays
+
+Removed fields on json output:
+settings.locationFlags
+
+---------------------------------------
+
+setBoardSettings:
+
+New parameters:
+maxBumpAge
+locationFlagMode
+
+Removed parameters:
+locationFlags
+
+---------------------------------------
+
+New pages:
+languages
+addLanguage
+deleteLanguage
+accounts
+accountManagement
+addAccount
+deleteAccount
+
+---------------------------------------
+
+**Language.txt**
+
+New fields:
+errDeniedLanguageManagement
+errDeniedAccountManagement
+errNoAccountDeletionConfirmation
+errNotAllowedToDeleteAccount
+guiTorPostingLevels
+msgLanguageAdded
+msgLanguageDeleted
+msgAccountAdded
+msgAccountDeleted
+titLanguages
+titAccountManagement
+titAccounts
+
+---------------------------------------
+
+**Templates.txt**
+
+boardPage:
+
+New elements:
+noFlagDiv
+
+---------------------------------------
+
+threadPage:
+
+New elements:
+noFlagDiv
+
+---------------------------------------
+
+gManagement:
+
+New elements:
+accountsLink
+languagesLink
+
+---------------------------------------
+
+bManagement:
+
+New elements:
+locationComboBox
+maxBumpAgeField
+
+Removed elements:
+locationCheckBox
+
+---------------------------------------
+
+catalogPage:
+
+New elements:
+noFlagDiv
+
+---------------------------------------
+
+flagsPage:
+
+New elements:
+maxNameLengthLabel
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldFlagNameLength
+checkboxUseAlternativeLanguages
+checkboxBlockedReport
+fieldIncrementalSpamIpsSource
+comboTorPostingLevel
+checkboxVerboseMisc
+checkboxVerboseGenerator
+checkboxVerboseQueue
+checkboxVerboseGridfs
+checkboxVerboseStatic
+checkboxVerboseApis
+
+Removed elements:
+checkboxAllowTorPosting
+
+---------------------------------------
+
+New templates:
+languagesManagementPage
+languageCell
+topBoardCell
+accountsPage
+accountCell
+accountManagementPage
+
+---------------------------------------
+
+1.7.0:
+
+**Api.txt**
+
+deleteContent:
+
+Added output to it with information on deleted content.
+
+---------------------------------------
+
+banUsers:
+
+captcha is now ignored for global staff.
+
+Removed parameters:
+range
+expiration
+
+New parameters:
+banType
+duration
+
+---------------------------------------
+
+setBoardSettings:
+
+New parameters:
+textBoard
+
+---------------------------------------
+
+Removed pages:
+closeReport
+
+New pages:
+closeReports
+deleteFromIpOnBoard
+
+---------------------------------------
+
+**Form.txt**
+
+boardManagement:
+
+New fields on json output:
+settings.textBoard
+
+---------------------------------------
+
+contentActions:
+
+Removed parameters:
+range
+expiration
+
+New parameters:
+banType
+duration
+
+---------------------------------------
+
+mod:
+
+Removed fields on json output:
+range
+posts.range
+
+New fields on json output:
+flagCode
+posts.flagCode
+narrowRange
+broadRange
+posts.narrowRange
+posts.broadRange
+
+---------------------------------------
+
+setBoardSettings:
+
+New parameters:
+textBoard
+
+---------------------------------------
+
+boards:
+
+New fields on json output:
+overboard
+sfwOverboard
+
+---------------------------------------
+
+mediaManagement:
+
+New fields on json output:
+media.extension
+
+---------------------------------------
+
+Removed pages:
+closeReport
+
+New pages:
+closeReports
+
+---------------------------------------
+
+**Json.txt**
+
+index.json:
+
+New fields:
+version
+totalPPH
+totalBoards
+totalFiles
+totalSize
+
+---------------------------------------
+
+/<board>/res/<thread>.json:
+
+New fields:
+flagCode
+posts.flagCode
+
+---------------------------------------
+
+/<board>/preview/<posting>.json:
+flagCode
+
+---------------------------------------
+
+/<board>/<page>.json:
+
+New fields:
+globalCaptcha
+captchaMode
+maxMessageLength
+maxFileCount
+maxFileSize
+threads.ommitedPosts
+threads.flagCode
+threads.posts.flagCode
+
+---------------------------------------
+
+**Language.txt**
+
+Removed fields:
+errInvalidExpiration
+msgReportClosed
+
+New fields:
+errTextBoard
+errDeniedBoardIpDeletion
+errSpammer
+errNoReportsInformed
+msgReportsClosed
+
+Changed fields:
+msgContentDeleted, now it has two replace tokens.
+
+---------------------------------------
+
+**Templates.txt**
+
+index:
+
+New elements:
+labelTotalFiles
+labelTotalSize
+
+---------------------------------------
+
+boardPage:
+
+New elements:
+labelMessageLength
+divUpload
+
+---------------------------------------
+
+threadPage:
+
+New elements:
+labelMessageLength
+divUpload
+
+---------------------------------------
+
+opCell:
+
+Removed elements:
+labelRange
+
+New elements:
+labelBroadRange
+labelNarrowRange
+
+Changed use:
+labelId: now it also sets an inlined style.
+
+---------------------------------------
+
+postCell:
+
+Removed elements:
+labelRange
+
+New elements:
+labelBroadRange
+labelNarrowRange
+
+Changed use:
+labelId: now it also sets an inlined style.
+
+---------------------------------------
+
+bManagement:
+
+New elements:
+textBoardCheckbox
+
+---------------------------------------
+
+reportCell:
+
+Changed root elements from form to div.
+
+Removed elements:
+idIdentifier
+
+New elements:
+postingDiv
+closureCheckbox
+
+---------------------------------------
+
+uploadCell:
+
+Changed use:
+originalNameLink: now the download attribute is manipulated too.
+
+---------------------------------------
+
+catalogPage:
+
+New elements:
+postingForm
+flagsDiv
+flagCombobox
+boardIdentifier
+captchaDiv
+labelMaxFileSize
+labelMaxFiles
+labelMessageLength
+divUpload
+
+---------------------------------------
+
+editPage:
+
+New elements:
+labelMessageLength
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldIpExpiration
+fieldSpamIpsSource
+checkboxDisableCatalogPosting
+checkboxDisableSpamCheck
+checkboxSpamBypass
+fieldMessageLength
+checkboxFfmpegGifs
+checkboxAllowTorPosting
+checkboxAllowTorFiles
+
+Removed elements:
+comboTorAccess
+
+---------------------------------------
+
+1.6.0:
+
+**Api.txt**
+
+Now one can inform the md5 and mime fields on uploaded files instead of content to only reference and existing file instead of uploading it.
+
+deleteContent:
+
+New parameter:
+deleteMedia
+
+---------------------------------------
+
+banUsers:
+
+New parameter:
+range 
+
+---------------------------------------
+
+setBoardSettings:
+
+Removed parameters:
+disableCaptcha
+archive
+
+New parameter:
+captchaMode
+
+---------------------------------------
+
+saveGlobalSettings:
+
+Now the parameters are the same as global settings.
+
+---------------------------------------
+
+Removed pages:
+
+deleteArchivedBoard
+deleteArchivedThread
+deleteArchivedUpload
+
+New pages:
+setSpecialBoardSettings
+deleteMedia
+
+---------------------------------------
+
+**Form.txt**
+
+boardManagement:
+
+New field on json output:
+captchaMode
+
+Removed fields on json output:
+disableCaptcha
+archive
+
+---------------------------------------
+
+contentActions:
+
+New parameters:
+deleteMedia
+range
+
+---------------------------------------
+
+mod:
+
+Removed fields on json output:
+files.name
+posts.files.name
+
+---------------------------------------
+
+setBoardSettings:
+
+Removed parameters:
+disableCaptcha
+archive
+
+New parameter:
+captchaMode
+
+---------------------------------------
+
+boardModeration:
+
+New fields on json output:
+lastSeen
+specialSettings
+
+---------------------------------------
+
+boards:
+
+New parameters:
+inactive
+sfw
+
+New fields on json output:
+boards.inactive
+boards.specialSettings
+
+---------------------------------------
+
+globalSettings:
+
+Now its json output is the same as global settings.
+
+---------------------------------------
+
+saveGlobalSettings:
+
+Now the parameters it takes are the same as global settings.
+
+---------------------------------------
+
+Removed pages:
+archiveDeletion
+deleteArchivedBoard
+deleteArchivedThread
+deleteArchivedUpload
+
+New pages:
+checkFileIdentifier
+setSpecialBoardSettings
+mediaManagement
+deleteMedia
+
+---------------------------------------
+
+**Json.txt**
+
+index.json:
+
+Removed field:
+totalFiles
+
+---------------------------------------
+
+<board>/res/<thread>.json:
+
+Removed fields:
+files.name
+posts.files.name
+
+---------------------------------------
+
+<board>/preview/<posting>.json:
+
+New field:
+files
+
+---------------------------------------
+
+<board>/<page>.json:
+
+Removed fields:
+threads.files.name
+threads.posts.files.name
+
+---------------------------------------
+
+**Language.txt**
+
+Removed entries:
+errNotServingArchives
+errArchiveNotLoaded
+errDeniedArchiveDeletion
+errUnknownExtension
+guiAllTypes
+guiTypeRange
+guiArchiveLevels
+guiTypeArchiveDeletion
+logBanLift.globalRangeBanPiece
+logBanLift.boardRangeBanPiece
+logBanLift.finalRangeBanPIece
+logRangeBan
+msgArchiveRemoved
+logArchiveDeletion
+titMainArchive
+titBoardArchive
+titArchiveDeletion
+
+New entries:
+errDeniedMediaManagement
+msgBoardSpecialSettingsSaved
+titMediaManagement
+msgMediaDeleted
+guiCaptchaModes
+
+Renamed entries:
+guiOmmitedInfo -> guiOmittedInfo
+logBanLift.finalBanPiece -> logBanLift.finalPiece
+
+---------------------------------------
+
+**Templates.txt**
+
+index:
+
+Removed elements:
+labelTotalFiles
+
+---------------------------------------
+
+boardPage:
+
+New element:
+labelMaxFiles
+
+---------------------------------------
+
+threadPage:
+
+Removed elements:
+inputBan
+inputSpoil
+divBanInput
+
+New elements:
+divMod
+labelMaxFiles
+
+---------------------------------------
+
+opCell:
+
+New element:
+panelRange
+
+---------------------------------------
+
+postCell:
+
+New element:
+panelRange
+
+---------------------------------------
+
+gManagement:
+
+Removed element:
+archiveDeletionLink
+
+---------------------------------------
+
+bManagement:
+
+Removed elements:
+disableCaptchaCheckbox
+enableArchiveCheckbox
+
+New element:
+captchaModeComboBox
+
+---------------------------------------
+
+uploadCell:
+
+Changed usage:
+nameLink
+
+---------------------------------------
+
+boardModerationPage:
+
+New elements:
+specialSettingsIdentifier
+checkboxSfw
+
+---------------------------------------
+
+boardsPage:
+
+New element:
+linkSfwOver
+
+---------------------------------------
+
+boardsCell:
+
+New elements:
+indicatorSfw
+indicatorInactive
+
+---------------------------------------
+
+globalSettingsPage:
+
+New elements:
+fieldSfwOverboard
+fieldCSP
+checkboxSFWLatestImages
+fieldTorPort
+fieldInactivityThreshold
+fieldMediaPageSize
+
+Removed elements:
+checkboxServeArchive
+comboArchive
+
+---------------------------------------
+
+Removed templates:
+mainArchivePage
+mainArchiveCell
+boardArchivePage
+boardArchiveCell
+archiveDeletionPage
+
+New templates:
+mediaManagementPage
+mediaCell
+
+---------------------------------------
+
+1.5.0:
+
+**Api.txt**
+
+newThread:
+
+message max length is now 4096.
+
+---------------------------------------
+
+replyThread:
+message max length is now 4096.
+
+---------------------------------------
+
+setBoardSettings:
+
+New parameters:
+autoSageLimit
+maxThreadCount
+maxFileSizeMB
+acceptedMimes
+maxFiles
+locationFlags
+
+---------------------------------------
+
+saveEdit:
+
+message max length is now 4096.
+
+---------------------------------------
+
+saveGlobalSettings:
+
+Removed parameters:
+proxyAccess
+
+New parameters:
+master
+slaves
+frontPageStats
+
+---------------------------------------
+
+Removed pages:
+liftProxyBan
+
+New pages:
+takeMessage
+takeSettings
+
+---------------------------------------
+
+**Form.txt**
+
+newThread:
+
+message max length is now 4096.
+
+---------------------------------------
+
+replyThread:
+message max length is now 4096.
+
+---------------------------------------
+
+setBoardSettings:
+
+New parameters:
+autoSageLimit
+maxThreadCount
+maxFileSizeMB
+acceptedMimes
+maxFiles
+locationFlags
+
+---------------------------------------
+
+saveEdit:
+
+message max length is now 4096.
+
+---------------------------------------
+
+account:
+
+New json values:
+volunteeredBoards
+
+---------------------------------------
+
+boardManagement:
+
+New json values:
+autoSageLimit
+maxThreadCount
+maxFileSizeMB
+acceptedMimes
+maxFiles
+settings.locationFlags
+
+---------------------------------------
+
+mod:
+
+New json values:
+autoSage
+
+Removed json values:
+proxyIp
+posts.proxyIp
+
+---------------------------------------
+
+boards:
+
+New parameters:
+sorting
+
+---------------------------------------
+
+globalSettings:
+
+New json values:
+master
+slaves
+frontPageStats
+
+Removed json values:
+proxyAccess
+
+---------------------------------------
+
+saveGlobalSettings:
+
+Removed parameters:
+proxyAccess
+
+New parameters:
+master
+slaves
+frontPageStats
+
+---------------------------------------
+
+Removed pages:
+proxyBans
+placeProxyBan
+liftProxyBan
+
+New pages:
+graphs
+
+---------------------------------------
+
+**Language.txt**
+
+Removed entries:
+errBlockedProxy
+errProxyFilesBlocked
+errDeniedGlobalProxyBansManagement
+errDeniedBoardProxyBanManagement
+guiProxyLevels
+guiTypeProxyBan
+guiTypeProxyBanLift
+logProxyBan
+logProxyBanLift
+msgProxyBanCreated
+msgProxyBanLifted
+titProxyBans
+
+New entries:
+errFileTooLargeForBoard
+errInvalidMimeForBoard
+titGraphs
+
+---------------------------------------
+
+**Templates.txt**
+
+index:
+
+Added:
+divStats
+labelTotalPosts
+labelTotalIps
+labelTotalFiles
+labelTotalBoards
+labelTotalPPH
+
+---------------------------------------
+
+opCell:
+
+Removed:
+panelProxyIp
+labelProxyIp
+
+Added:
+bumpLockIndicator
+
+---------------------------------------
+
+postCell:
+
+Removed:
+panelProxyIp
+labelProxyIp
+
+---------------------------------------
+
+accountPage:
+
+Renamed:
+boardsDiv -> ownedDiv
+
+Added:
+volunteeredDiv
+
+---------------------------------------
+
+gManagement:
+
+Removed:
+proxyBansLink
+
+---------------------------------------
+
+bManagement:
+
+Removed:
+proxyBansLink
+
+Added:
+locationCheckBox
+
+---------------------------------------
+
+catalogCell:
+
+Added:
+bumpLockIndicator
+
+---------------------------------------
+
+globalSettingsPage:
+
+Removed:
+comboProxyAccess
+
+Added:
+checkboxFrontPageStats
+fieldMaster
+fieldSlaves
+
+---------------------------------------
+
+overboard:
+
+Removed:
+bannerImage
+
+---------------------------------------
+
+Removed templates:
+proxyBansPage
+proxyBanCell
+proxyBanPage
+
+Added templates:
+graphsIndexPage
+graphIndexCell
