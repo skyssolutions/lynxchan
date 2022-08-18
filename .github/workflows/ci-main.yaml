@@ -1,8 +1,9 @@
 name: ci-main
 
 on:
-  push:
-   - main
+ push:
+  branches:
+   - master
 
 
 jobs:
