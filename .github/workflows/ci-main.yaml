@@ -43,5 +43,4 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/lynxchan:gh-${{ steps.ev.outputs.branchNameContainer }}-${{ steps.ev.outputs.timestamp }}-${{ steps.ev.outputs.sha }}
           build-args: |
             GIT_BUILD_HASH=${{ steps.ev.outputs.sha }}
-            VERSION_FAMILY=${{ steps.ev.outputs.versionFamily }}
           platforms: ${{ matrix.arch }}
