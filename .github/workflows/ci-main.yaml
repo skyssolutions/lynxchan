@@ -8,8 +8,8 @@ on:
 
 jobs:
  build:
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
+    runs-on: ["self-hosted", "X64", "default"] 
+    #timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
