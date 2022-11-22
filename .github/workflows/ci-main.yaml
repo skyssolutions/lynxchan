@@ -59,7 +59,7 @@ jobs:
       - name: Building Docker Image
         uses: docker/build-push-action@v3
         with:
-          push: ${{ steps.ev.outputs.shouldBuild == 'true' }}
+          push: ${{ steps.prep.outputs.push }}
           tags: |
             ghcr.io/${{ github.repository_owner }}/lynxchan:gh-${{ steps.ev.outputs.branchNameContainer }}
             ghcr.io/${{ github.repository_owner }}/lynxchan:gh-${{ steps.ev.outputs.branchNameContainer }}-${{ steps.ev.outputs.timestamp }}-${{ steps.ev.outputs.sha }}
